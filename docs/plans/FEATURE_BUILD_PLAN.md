@@ -2,7 +2,7 @@
 
 **Date:** June 2026  
 **Build state entering this plan:** V1 — 101 pages, clean build, dev server :3003  
-**Plan scope:** 18 commercial-depth features across 14 build levels, 90 steps  
+**Plan scope:** 25 commercial-depth features across 15 build levels, 102 steps  
 **Constraint:** Zero new mandatory paid APIs. Stripe, WhatsApp, SMS, Xero = optional addons noted where relevant.  
 **Goal:** Best event management platform in the market — agency-first, supplier-deep, AI-embedded, venue-capable.
 
@@ -59,6 +59,7 @@ New sidebar order: Home → Leads → Events → Venues → Suppliers → Tasks 
 | **12** | Team & Staffing | 64–69 | Event assignments, workload dashboard, shift scheduling, run sheet assignments, team calendar, availability |
 | **13** | Floor Plan Builder | 70–75 | SVG canvas, element library, guest seating, multi-layout, print/export |
 | **14** | Venue-Side Management (Option B) | 76–90 | Dual-sided platform — spaces, availability calendar, booking lifecycle, F&B packages, BEO, staff scheduling, venue portal, multi-venue dashboard |
+| **15** | Final Feature Layer | 91–102 | Mood board, guest QR check-in, expense tracking, supplier contracts, milestone countdown, white-label portal, PWA + offline event day |
 
 ---
 
@@ -3452,7 +3453,753 @@ When the venue confirms the booking:
 
 ---
 
+---
+
+## LEVEL 15 — FINAL FEATURE LAYER
+
+*Target: The 7 features that separate "great" from "best in market" — mood boards, QR check-in, expense tracking, supplier contracts, milestone countdown, white-label portal, PWA offline mode.*
+
+---
+
+### Step 91 — Mood Board DB Schema + Types
+
+**What:** A visual inspiration board per event where the planner and client collaboratively upload images, colour swatches, and notes. Aisle Planner's most-praised and highest-retention feature. Simple to build — image grid stored as JSON, drag-to-reorder with sort_order.
+
+**New DB tables:**
+```sql
+event_mood_boards (
+  id uuid PK default gen_random_uuid(),
+  workspace_id uuid NOT NULL,
+  event_id uuid NOT NULL UNIQUE,   -- one board per event
+  title text NOT NULL DEFAULT 'Mood Board',
+  colour_palette jsonb NOT NULL DEFAULT '[]',
+    -- [{hex: "#4F46E5", name: "Brand Indigo"}, ...]
+  notes text,
+  share_token text UNIQUE,         -- read-only share link for client
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+)
+
+mood_board_items (
+  id uuid PK default gen_random_uuid(),
+  workspace_id uuid NOT NULL,
+  mood_board_id uuid NOT NULL REFERENCES event_mood_boards(id) ON DELETE CASCADE,
+  item_type text NOT NULL DEFAULT 'image',
+    -- values: image | colour-swatch | text-note
+  storage_key text,        -- Supabase Storage key (for images)
+  colour_hex text,         -- for colour-swatch items
+  text_content text,       -- for text-note items
+  caption text,            -- label under image or swatch
+  sort_order integer NOT NULL DEFAULT 0,
+  width_units integer NOT NULL DEFAULT 1,   -- 1, 2, or 3 (grid column span)
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz NOT NULL DEFAULT now()
+)
+```
+
+**TypeScript types:**
+```typescript
+export type MoodBoardItemType = "image" | "colour-swatch" | "text-note";
+
+export interface EventMoodBoard {
+  id: string; workspace_id: string; event_id: string;
+  title: string;
+  colour_palette: { hex: string; name: string }[];
+  notes: string | null; share_token: string | null;
+  created_at: string; updated_at: string;
+}
+
+export interface MoodBoardItem {
+  id: string; workspace_id: string; mood_board_id: string;
+  item_type: MoodBoardItemType;
+  storage_key: string | null; colour_hex: string | null;
+  text_content: string | null; caption: string | null;
+  sort_order: number; width_units: 1 | 2 | 3;
+  created_by: string | null; created_at: string;
+}
+```
+
+**Add to Step 1 DB migration section.**
+
+---
+
+### Step 92 — Mood Board Tab + Canvas UI
+
+**What:** "Mood Board" appears as a tab in the event detail page. A masonry-style image grid with upload, drag-to-reorder, and colour palette management.
+
+**Event detail tab addition:**
+```typescript
+{ id: "moodboard", label: "Mood Board" }
+```
+
+**Tab layout — two sections:**
+
+*Colour Palette strip (top):*
+Row of colour swatches from `colour_palette` JSON. Each swatch: coloured circle + hex label.
+"Add Colour" button → opens a colour picker (`<input type="color">` — no library, built into every browser) + optional name input. Saves to `colour_palette` JSON array.
+Remove swatch: X on hover.
+
+*Image Grid (main area):*
+Masonry/CSS grid layout. Each item renders based on `item_type`:
+
+- **image:** `<img>` from signed Supabase Storage URL. On hover: caption overlay + drag handle + delete button + width toggle (1/2/3 columns).
+- **colour-swatch:** Large coloured square with hex label and name.
+- **text-note:** Card with text content (styled like a sticky note — `bg-warning-50`).
+
+**Upload:** `<label><input type="file" accept="image/*" multiple className="hidden" /></label>` — multiple images at once. Each uploaded to `mood-boards/[moodBoardId]/[filename]` in Supabase Storage. Insert `mood_board_items` row per file.
+
+**Add Text Note:** Button → inline form (textarea, 3 lines max for short note). INSERT with `item_type = 'text-note'`.
+
+**Drag to reorder:** HTML5 `draggable` on each item + `ondragover`/`ondrop` handlers updating `sort_order`. Debounced batch UPDATE. Same approach as kanban board (Level 2).
+
+**Width toggle:** "Expand" icon on each image — cycles through 1→2→3 column span. Updates `width_units`. CSS Grid handles layout: `grid-template-columns: repeat(3, 1fr)`. Items with `width_units: 2` span 2 columns via `grid-column: span 2`.
+
+**Empty state:** "Start building your vision board. Upload inspiration images, add colours and notes." with an Upload CTA.
+
+---
+
+### Step 93 — Mood Board Client Share + Portal Integration
+
+**What:** Share the mood board with the client (read-only link). Client can view and comment. Feeds into the client portal.
+
+**Share button (mood board header):**
+"Share with Client" → generates `share_token` → shows URL: `/mood-board/[token]`
+
+**Public route:** `src/app/mood-board/[token]/page.tsx`
+Add `/mood-board` to proxy.ts PUBLIC_PREFIXES.
+
+**Public mood board page:**
+- Clean layout, workspace logo
+- Event name + "Mood Board" heading
+- Read-only image grid (same layout, no controls)
+- Colour palette strip
+- "This board was prepared by [workspace name]" footer
+- No editing, no deletion — view only
+
+**Client portal integration (Step 43 update):**
+Add a "Mood Board" tab to the client portal (`/portal/[token]`) that embeds the mood board in read-only mode. Shows a link to open the full board.
+
+**Seed data (Carter Wedding mood board):**
+Pre-populate 6 images (placeholder gradient divs if real images not available) + 3 colour swatches:
+```
+Colours: #2D1B5E (Deep Plum) | #C9A96E (Champagne Gold) | #F5F0E8 (Ivory Cream)
+Text note: "Elegant, romantic, candlelit atmosphere. Think Thornbury Castle in winter."
+```
+
+---
+
+### Step 94 — Guest Check-In DB Schema + QR Code Generation
+
+**What:** Each guest gets a unique QR code. Scanning it on event day marks them as arrived in real time. No app required — mobile browser camera.
+
+**DB changes:**
+```sql
+-- Add to event_guests table (from Step 19):
+ALTER TABLE event_guests ADD COLUMN check_in_token text UNIQUE;
+  -- UUID generated on first access, used in QR code URL
+ALTER TABLE event_guests ADD COLUMN checked_in_at timestamptz;
+ALTER TABLE event_guests ADD COLUMN checked_in_by uuid REFERENCES auth.users(id);
+```
+
+**TypeScript type update:**
+```typescript
+// Add to EventGuest interface:
+check_in_token: string | null;
+checked_in_at: string | null;
+checked_in_by: string | null;
+```
+
+**QR code generation:**
+Use the `qrcode` npm package (MIT license, zero cost):
+```bash
+npm install qrcode
+npm install --save-dev @types/qrcode
+```
+
+Each guest's QR code encodes: `https://yourdomain.com/check-in/[check_in_token]`
+
+**QR generation in Guests tab:**
+- "Generate QR Codes" button in the Guests tab header → batch-generates `check_in_token` for all guests that don't have one (UUID per guest, saved to DB)
+- Each guest row gains a "QR" icon button → click shows their individual QR code in a modal
+- "Print All QR Codes" → print-optimised page: grid of QR codes, one per guest, with name + table number label below. Perfect for printing name badges.
+
+**New route for QR badge print page:** `src/app/(app)/events/[eventId]/guests/print-qr/page.tsx`
+
+**Public check-in route:**
+```
+src/app/check-in/[token]/page.tsx
+```
+Add `/check-in` to proxy.ts PUBLIC_PREFIXES.
+
+**Check-in page behaviour:**
+- No auth required
+- Looks up `event_guests` by `check_in_token`
+- If found and not yet checked in: shows guest name + "Tap to Check In" button
+- On tap: UPDATE `checked_in_at = now()`, `rsvp_status = 'confirmed'`
+- Shows: "✓ Welcome, [Name]! You're checked in." with event name
+- If already checked in: "Already checked in at [time]"
+- If token invalid: "QR code not recognised. Please see the event team."
+
+---
+
+### Step 95 — QR Arrival Scanner (Mobile Browser)
+
+**What:** A scanner page for the event team's phone. Point camera at a guest's QR code → guest is instantly checked in. No dedicated app — just a browser tab.
+
+**Route:** `src/app/(app)/events/[eventId]/guests/scan/page.tsx`
+
+**Scanner UI:**
+- Full-screen camera viewport (mobile-optimised)
+- Green overlay rectangle showing the scan zone
+- "Scanning for QR code..." pulsing label
+- When detected: flash green + plays success sound (short beep via Web Audio API) + shows guest name card for 2 seconds
+
+**Implementation using `@zxing/browser` (Apache 2.0, free):**
+```typescript
+import { BrowserQRCodeReader } from "@zxing/browser";
+
+const codeReader = new BrowserQRCodeReader();
+// continuous scan — calls callback on each decoded result
+codeReader.decodeFromVideoDevice(null, videoRef.current, (result) => {
+  if (result) handleCheckIn(result.getText());
+});
+```
+
+**Or native BarcodeDetector API** (no library, supported in Chrome/Edge/Android):
+```typescript
+const detector = new BarcodeDetector({ formats: ["qr_code"] });
+// requestAnimationFrame loop scanning each video frame
+```
+
+**On successful scan:**
+1. Parse the check-in URL from QR content → extract token
+2. Call Supabase UPDATE via server action: `check_in_token = [token]` → sets `checked_in_at`
+3. Show: large card — "✓ [Guest Name] — Table [X]" + dietary flag if any
+4. Auto-dismiss after 3 seconds, return to scanning
+
+**Scan history panel (collapsible at bottom of scanner page):**
+Last 10 check-ins in reverse order: "[Name] — 14:32" — gives the team a quick audit.
+
+**Entry in Guests tab:** "Scan Check-In" button in the Guests tab header → opens scanner.
+
+---
+
+### Step 96 — Event Day Mode Arrival Counter
+
+**What:** The Event Day Mode live screen (`/events/[eventId]/event-day`) shows a real-time arrival counter.
+
+**Event Day Mode additions:**
+
+*Arrivals panel (new right-rail section):*
+```
+GUEST ARRIVALS
+──────────────────
+  68 / 120 confirmed
+  ████████░░░░░ 57%
+
+  [Live] updating...
+
+  [Open Scanner]
+```
+
+- Count of guests where `checked_in_at IS NOT NULL` ÷ total confirmed guests × 100%
+- Animated progress bar
+- Supabase Realtime subscription on `event_guests` table for this event — increments counter when `checked_in_at` updates without page reload
+- "Open Scanner" → navigates to `/events/[eventId]/guests/scan`
+
+**Supabase Realtime subscription:**
+```typescript
+supabase
+  .channel(`guests-${eventId}`)
+  .on('postgres_changes', {
+    event: 'UPDATE',
+    schema: 'public',
+    table: 'event_guests',
+    filter: `event_id=eq.${eventId}`
+  }, (payload) => {
+    if (payload.new.checked_in_at) setArrivedCount(c => c + 1);
+  })
+  .subscribe();
+```
+
+This makes Event Day Mode genuinely live — the whole team can see arrivals in real time from different devices.
+
+---
+
+### Step 97 — Expense Tracking DB Schema + Types
+
+**What:** Track actual money spent on an event. Receipts uploaded. Budget vs Actual view. This is what makes the P&L Margin figure real — currently it can only be estimated from quotes, not from actual spend.
+
+**New DB tables:**
+```sql
+event_expenses (
+  id uuid PK default gen_random_uuid(),
+  workspace_id uuid NOT NULL,
+  event_id uuid NOT NULL,
+  category text NOT NULL,
+    -- values: venue-hire | catering | av-tech | photography | floristry
+    --         entertainment | staffing | transport | stationery | accommodation
+    --         insurance | licences | miscellaneous
+  description text NOT NULL,
+  amount_pence bigint NOT NULL,
+  supplier_id uuid,          -- optional link to supplier
+  receipt_path text,         -- Supabase Storage key for receipt image/PDF
+  expense_date date NOT NULL DEFAULT CURRENT_DATE,
+  paid_by_name text,         -- name of team member who paid
+  paid_by_user_id uuid REFERENCES auth.users(id),
+  reimbursed boolean NOT NULL DEFAULT false,
+  reimbursed_at timestamptz,
+  notes text,
+  status text NOT NULL DEFAULT 'recorded',
+    -- values: recorded | approved | reimbursed
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+)
+
+event_budgets (
+  id uuid PK default gen_random_uuid(),
+  workspace_id uuid NOT NULL,
+  event_id uuid NOT NULL UNIQUE,
+  total_budget_pence bigint NOT NULL DEFAULT 0,
+  allocations jsonb NOT NULL DEFAULT '{}',
+    -- {"venue-hire": 380000, "catering": 520000, "av-tech": 120000, ...}
+  currency text NOT NULL DEFAULT 'GBP',
+  notes text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+)
+```
+
+**TypeScript types:**
+```typescript
+export type ExpenseCategory =
+  | "venue-hire" | "catering" | "av-tech" | "photography" | "floristry"
+  | "entertainment" | "staffing" | "transport" | "stationery" | "accommodation"
+  | "insurance" | "licences" | "miscellaneous";
+
+export type ExpenseStatus = "recorded" | "approved" | "reimbursed";
+
+export interface EventExpense {
+  id: string; workspace_id: string; event_id: string;
+  category: ExpenseCategory; description: string;
+  amount_pence: number; supplier_id: string | null;
+  receipt_path: string | null; expense_date: string;
+  paid_by_name: string | null; paid_by_user_id: string | null;
+  reimbursed: boolean; reimbursed_at: string | null;
+  notes: string | null; status: ExpenseStatus;
+  created_by: string | null; created_at: string; updated_at: string;
+}
+
+export interface EventBudget {
+  id: string; workspace_id: string; event_id: string;
+  total_budget_pence: number; allocations: Record<ExpenseCategory, number>;
+  currency: string; notes: string | null;
+  created_at: string; updated_at: string;
+}
+```
+
+**Seed data for Carter Wedding:**
+```
+1. Thornbury Castle hire         | venue-hire    | £3,800 | 01 Jun 2026 | receipt uploaded
+2. Noble Kitchen Co. catering    | catering      | £4,200 | 14 Jun 2026 | pending
+3. Sound & Vision AV             | av-tech       | £1,200 | 14 Jun 2026 | receipt uploaded
+4. Florals by Hannah             | floristry     | £980   | 14 Jun 2026 | pending
+5. Second shooter fee            | photography   | £350   | 14 Jun 2026 | recorded
+```
+
+Budget allocations: Venue: £4,000 | Catering: £4,500 | AV: £1,500 | Floristry: £1,000 | Photo: £500 | Other: £700
+
+---
+
+### Step 98 — Expense Register UI + Budget vs Actual
+
+**What:** A new "Expenses" tab in the event detail Finance section + a Budget vs Actual view that shows how actual spend compares to allocated budget.
+
+**Event detail → Finance tab → add "Expenses" sub-section:**
+(Alternatively add as its own tab — "Expenses" — adjacent to Finance on event detail)
+
+**Expense log table:**
+| Date | Category | Description | Amount | Paid By | Receipt | Status | Actions |
+|---|---|---|---|---|---|---|---|
+| 01 Jun | Venue Hire | Thornbury Castle | £3,800 | Nina | 📎 | Approved | Edit, Delete |
+
+**"Add Expense" button:** Opens inline form:
+- Date, Category (select), Description, Amount (£)
+- Paid By (select from team members or free text)
+- Receipt upload: `<label><input type="file" accept="image/*,.pdf" className="hidden" /></label>`
+- Notes
+
+**Total actual spend:** Sum of all expense amounts, shown prominently.
+
+**Budget vs Actual panel:**
+Horizontal progress bars per category:
+```
+Venue Hire      ████████████░░░  £3,800 / £4,000  (95%)
+Catering        ████████████████ £4,200 / £4,500  (93%)
+AV & Tech       ████████░░░░░░░  £1,200 / £1,500  (80%)
+Floristry       █████████░░░░░░  £980   / £1,000  (98%)  ⚠ Near limit
+Photography     ████████░░░░░░░  £350   / £500    (70%)
+───────────────────────────────────────────────────────
+Total           ████████████░░░  £10,530 / £12,200 (86%)
+```
+
+Bar turns amber at 85% of budget. Red at 100%+.
+
+**Integration with P&L / Finance:**
+The Finance tab "Profit" calculation is updated: instead of (invoice total − quote total), it becomes (invoice total − actual expenses total). This is the real gross margin. If expenses haven't been logged, it falls back to the quote-based estimate with a "(estimated)" label.
+
+**Global expense register:**
+Also accessible from Finance (`/app/finance`) as a new "Expenses" tab alongside Quotes/Invoices/Payments/Profit. Shows all expenses across all events. Filter by category, date range, event. Export to CSV.
+
+---
+
+### Step 99 — Supplier Contracts (Post-Quote E-Sign)
+
+**What:** Once a supplier quote is accepted, the planner sends a supplier booking confirmation / contract to the supplier for signature. Same e-sign approach as proposals (Step 16) — checkbox + typed name, legally valid in UK. Closes the full supplier loop: RFQ → Quote → Contract → Signed.
+
+**New DB table:**
+```sql
+supplier_contracts (
+  id uuid PK default gen_random_uuid(),
+  workspace_id uuid NOT NULL,
+  supplier_id uuid NOT NULL,
+  event_id uuid,
+  quote_id uuid,           -- the accepted quote this derives from
+  title text NOT NULL,     -- "Noble Kitchen Co. — Carter Wedding Catering Contract"
+  contract_body text,      -- contract terms (from template or custom)
+  status text NOT NULL DEFAULT 'draft',
+    -- values: draft | sent | viewed | signed | expired | cancelled
+  valid_until date,
+  share_token text UNIQUE, -- public URL for supplier to sign
+  signed_by_name text,
+  signed_at timestamptz,
+  signed_ip text,
+  viewed_at timestamptz,
+  deleted_at timestamptz,
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+)
+```
+
+**TypeScript type:**
+```typescript
+export type SupplierContractStatus = "draft" | "sent" | "viewed" | "signed" | "expired" | "cancelled";
+export interface SupplierContract {
+  id: string; workspace_id: string; supplier_id: string;
+  event_id: string | null; quote_id: string | null;
+  title: string; contract_body: string | null; status: SupplierContractStatus;
+  valid_until: string | null; share_token: string | null;
+  signed_by_name: string | null; signed_at: string | null; signed_ip: string | null;
+  viewed_at: string | null; deleted_at: string | null;
+  created_by: string | null; created_at: string; updated_at: string;
+}
+```
+
+**UI — Supplier Detail → new "Contracts" tab:**
+- Contracts table: title | event | status badge | signed date | actions
+- "New Contract" button
+
+**"New Contract" flow:**
+- Pre-fill title from: "[Supplier Name] — [Event Name] Contract"
+- Body: editable textarea (or select from a "Contract Templates" library — see below)
+- Valid until date
+- "Send to Supplier" → generates `share_token` → sets status = 'sent'
+
+**Default contract template (pre-loaded text):**
+```
+SUPPLIER BOOKING CONFIRMATION
+
+This agreement confirms the booking of [Supplier Name] for [Event Name] on [Event Date].
+
+Services Agreed:
+[Services from linked quote, auto-populated]
+
+Payment Terms:
+[From quote / proposal]
+
+Cancellation Policy:
+In the event of cancellation by the client with less than 30 days' notice, 50% of the agreed fee is payable. With less than 14 days' notice, 100% is payable.
+
+Special Requirements:
+[Free text field]
+
+By signing below, both parties agree to the terms stated in this document.
+```
+
+**Contract signing page:** `src/app/supplier-contract/[token]/page.tsx`
+Add `/supplier-contract` to proxy.ts PUBLIC_PREFIXES.
+
+Identical flow to the proposal signing page (Step 16) — checkbox + typed name + "Sign Contract" button. On sign: UPDATE status = 'signed', record name/timestamp/IP.
+
+**Integration with Quote flow:**
+When a quote is marked as "Accepted" on the Finance → Quotes page → a prompt appears: "Create a supplier contract for this booking?" → one-click creates a draft contract pre-filled from the quote data.
+
+---
+
+### Step 100 — Event Milestone Countdown Timeline
+
+**What:** A visual countdown timeline on each event showing key deadlines working backwards from the event date. One glance shows what's coming up, what's overdue, and where you are in the delivery journey.
+
+**No new DB table needed** — milestones are generated from the event date and stored as a JSON column or computed client-side from a template. Custom milestones stored as an override JSON.
+
+**DB addition (lightweight):**
+```sql
+ALTER TABLE events ADD COLUMN milestone_overrides jsonb DEFAULT '[]';
+-- [{id, label, days_before, completed, completed_at}]
+```
+
+**Standard milestone template (auto-generated from event date):**
+```typescript
+const MILESTONE_TEMPLATES = [
+  { id: "send-proposals",     label: "Send proposals to client",        days_before: 90 },
+  { id: "confirm-venue",      label: "Confirm venue booking",           days_before: 60 },
+  { id: "confirm-suppliers",  label: "Confirm all supplier bookings",   days_before: 45 },
+  { id: "final-headcount",    label: "Final headcount from client",     days_before: 30 },
+  { id: "finalise-run-sheet", label: "Finalise run sheet",              days_before: 14 },
+  { id: "send-beo",           label: "Send BEO to venue and suppliers", days_before: 7  },
+  { id: "confirm-timings",    label: "Confirm timings with team",       days_before: 3  },
+  { id: "event-day",          label: "Event Day",                       days_before: 0  },
+];
+```
+
+Each milestone date = `event_date - days_before`.
+
+**UI — Event Detail Overview tab, new "Milestones" section:**
+
+Horizontal timeline (desktop) or vertical list (mobile):
+```
+───●─────────────────●───────●─────────────────────●────────────────●──▶
+  ✓ Jun 1           ✓ Jun 3  TODAY                ⏳ Jun 30        ⏳ Jul 7
+  Send proposals    Confirm  ───────────────────── Final headcount  BEO to venue
+                    venue                          ← 18 days away   ← 25 days away
+```
+
+**Visual state per milestone:**
+- ✅ Past + completed: Green dot, strikethrough label, completed date
+- ✅ Past + auto-completed (date passed): Green dot, "Done" (assumes completed if date passed without explicit action)
+- ⏳ Upcoming: Brand colour dot, "X days away" label
+- 🔴 Overdue: Red dot, "X days overdue" label
+- ▶ Today: Pulse animation, "Today" label with current date
+
+**"Mark Complete" action per milestone:** Click milestone → toggle completion status → saves to `milestone_overrides` JSON.
+
+**"Customise Milestones" action:**
+- Edit button → opens modal with all milestones listed
+- Change labels, adjust days_before, add custom milestones, remove unwanted ones
+- "Reset to defaults" button
+
+**Integration with Home Dashboard:**
+The home page's "Upcoming Events" card gains a "Next milestone in X days" sub-label per event. Click-through to the event detail milestones section.
+
+---
+
+### Step 101 — White-Label Client Portal (Custom Domain)
+
+**What:** Agency plan feature. The planner's client portal uses the agency's own domain (`portal.youragency.com`) instead of the Gala Dock domain. Critical for agencies charging £2k–£10k/event who want to appear fully branded.
+
+**DB addition:**
+```sql
+-- Add to workspace_settings or workspaces table:
+ALTER TABLE workspaces ADD COLUMN portal_custom_domain text;
+  -- e.g. "portal.infinityevents.co.uk"
+ALTER TABLE workspaces ADD COLUMN portal_custom_domain_verified boolean DEFAULT false;
+```
+
+**Settings UI — Settings → Branding → new "Client Portal Domain" section:**
+```
+┌────────────────────────────────────────────────────────────────────┐
+│ Custom Portal Domain                          ○ Not configured     │
+│                                                                    │
+│ portal.youragency.com  [Save]                                     │
+│                                                                    │
+│ DNS Setup:                                                         │
+│ Add a CNAME record pointing to:  portals.galadock.com             │
+│                                                                    │
+│ Once added, click [Verify DNS] to confirm.                        │
+│                                                                    │
+│ Status: ● Pending verification                                    │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+**How it works technically:**
+
+1. Planner sets `portal_custom_domain = "portal.infinityevents.co.uk"` in settings
+2. Their DNS: CNAME `portal.infinityevents.co.uk` → `portals.galadock.com`
+3. In `proxy.ts` (middleware), check the incoming `host` header:
+   ```typescript
+   const host = request.headers.get('host') ?? '';
+   // If host is not the main galadock.com domain, look up the workspace
+   if (!host.includes('galadock.com') && !host.includes('localhost')) {
+     // Look up workspace by portal_custom_domain
+     // Rewrite the request to /portal/[token] for that workspace
+   }
+   ```
+4. Vercel (or any hosting) handles the domain via their "Custom Domains" feature — or via the `domains` config in Next.js
+
+**Verification:** "Verify DNS" button calls a server action that does a DNS lookup (`dns.resolve()` in Node.js) to confirm the CNAME is pointing to the right place. Sets `portal_custom_domain_verified = true`.
+
+**Fallback:** If custom domain is not verified or not set, portal always works via `galadock.com/portal/[token]` — no client impact.
+
+**Plan tier gate:** Only available on Agency plan (£299/month). In Settings, show the section with a "Upgrade to Agency plan to unlock custom portal domains" lock if on Starter/Growth.
+
+---
+
+### Step 102 — PWA + Offline Event Day Mode
+
+**What:** Gala Dock becomes installable as an app on any phone or desktop. Event Day Mode works offline — critical because event venues frequently have poor WiFi/signal. A Service Worker caches the run sheet for the current day's events.
+
+**Part A — PWA manifest:**
+
+**File:** `public/manifest.json`
+```json
+{
+  "name": "Gala Dock",
+  "short_name": "Gala Dock",
+  "description": "The Event Delivery OS",
+  "start_url": "/app/home",
+  "display": "standalone",
+  "background_color": "#0e0c27",
+  "theme_color": "#4F46E5",
+  "orientation": "any",
+  "icons": [
+    { "src": "/gala-dock-favicon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/gala-dock-logo.png",    "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/event-day.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow" }
+  ],
+  "categories": ["business", "productivity"]
+}
+```
+
+**File:** `src/app/layout.tsx` — add manifest link:
+```html
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#4F46E5" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+```
+
+**Part B — Service Worker for Offline Event Day:**
+
+**File:** `public/sw.js`
+```javascript
+const CACHE_VERSION = 'gala-dock-v1';
+const EVENT_DAY_ROUTES = ['/app/events', '/_next/static'];
+
+// Install: cache core app shell
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_VERSION).then(cache =>
+      cache.addAll(['/', '/app/home', '/offline.html'])
+    )
+  );
+});
+
+// Fetch: network-first for API calls, cache-first for assets
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Cache-first for static assets
+  if (url.pathname.startsWith('/_next/static')) {
+    event.respondWith(cacheFirst(event.request));
+    return;
+  }
+  
+  // Network-first for everything else, fallback to cache
+  event.respondWith(networkFirstWithFallback(event.request));
+});
+
+// Message from app: "cache this event for offline"
+self.addEventListener('message', (event) => {
+  if (event.data.type === 'CACHE_EVENT_DAY') {
+    const { eventId } = event.data;
+    // Cache the event day route and its data
+    caches.open(CACHE_VERSION).then(cache => {
+      cache.add(`/app/events/${eventId}/event-day`);
+    });
+  }
+});
+```
+
+**Service Worker registration** (`src/app/layout.tsx` or a client component):
+```typescript
+"use client";
+useEffect(() => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(console.error);
+  }
+}, []);
+```
+
+**"Go Offline" button in Event Day Mode:**
+When the planner opens Event Day Mode → a banner at top:
+```
+📱 Save for offline use? If signal drops during the event, your run sheet will still work.
+[Save Offline]  [Dismiss]
+```
+
+On click: sends `CACHE_EVENT_DAY` message to the Service Worker → caches the current event's run sheet data.
+
+**Offline page:** `public/offline.html` — minimal HTML page: "You're offline. Your run sheet is available if you cached it before the event." with a link to the last-opened event.
+
+**Install prompt:**
+```typescript
+// Handle beforeinstallprompt
+let deferredPrompt: BeforeInstallPromptEvent | null = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setShowInstallBanner(true);
+});
+```
+
+Show an "Install App" banner in the top nav when `deferredPrompt` is set (Chrome/Edge/Android only — iOS uses "Add to Home Screen" instructions instead).
+
+**iOS install instructions:**
+Small modal triggered by a "Add to Home Screen" button in Settings → Account → "Install Gala Dock on your phone":
+```
+On iPhone/iPad:
+1. Tap the Share button (□↑) in Safari
+2. Scroll down and tap "Add to Home Screen"
+3. Tap "Add"
+```
+
+---
+
 ## UPDATED BUILD ORDER SUMMARY
+
+```
+Week 1:   Level 1 (Foundation) + Level 2 (Leads CRM)
+Week 2:   Level 3 (Proposals + E-Sign) + Level 4 (Guest Management)
+Week 3:   Level 5 (Reports) + Level 6 (Inbox)
+Week 4:   Level 7 (Finance) + Level 8 (Forms + Portal)
+Week 5:   Level 9 (Venue CRM) + Level 10 (Polish V1.5)
+Week 6:   Level 11 (Supplier Depth)
+Week 7:   Level 12 (Team & Staffing)
+Week 8:   Level 13 (Floor Plan Builder)
+Week 9:   Level 14 Pt.1 (Venue-Side — spaces, calendar, booking lifecycle)
+Week 10:  Level 14 Pt.2 (F&B, BEO, staff, venue portal, dual-sync)
+Week 11:  Level 15 Pt.1 (Mood Board + Guest QR Check-in)
+Week 12:  Level 15 Pt.2 (Expenses + Supplier Contracts + Milestones + PWA)
+```
+
+**Final Plan Totals:**
+
+| Metric | Count |
+|---|---|
+| Build levels | 15 |
+| Total steps | 102 |
+| New app routes | 50+ pages |
+| New public routes | 12 (portal, sign, form fill, check-in, mood board, floor plan, supplier portal, supplier contract, venue portal, BEO share) |
+| New DB tables | 34 tables |
+| New TypeScript interfaces/types | 60+ |
+| New shared UI components | 6 primitives |
+| npm packages added | 2 (qrcode MIT, @zxing/browser Apache 2.0) — both free |
+| External APIs required | 0 |
+| External APIs optional | 8 (all addons, all off by default) |
 
 ```
 Week 1:   Level 1 (Foundation) + Level 2 (Leads CRM)
