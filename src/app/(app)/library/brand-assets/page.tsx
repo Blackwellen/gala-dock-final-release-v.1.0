@@ -1,41 +1,45 @@
-"use client";
-
-import { Upload, Image } from "lucide-react";
-import { useState } from "react";
+import Link from "next/link";
+import { Upload, Image as ImageIcon } from "lucide-react";
+import { requireWorkspace } from "@/lib/workspace";
+import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { kindLabel, formatLibDate, type LibraryKind } from "../library-utils";
 
-const BRAND_COLOURS = [
-  { name: "Primary Brand",  hex: "#4F46E5" },
-  { name: "Brand Light",    hex: "#818CF8" },
-  { name: "Success Green",  hex: "#16A34A" },
-  { name: "Warning Amber",  hex: "#D97706" },
-  { name: "Danger Red",     hex: "#DC2626" },
-  { name: "Surface Dark",   hex: "#1E293B" },
-];
+export const metadata = { title: "Brand Assets" };
 
-const BRAND_FONTS = [
-  { name: "Primary Typeface",  value: "Inter",       usage: "Body text, UI elements" },
-  { name: "Display Typeface",  value: "Sora",        usage: "Headings, hero text"   },
-  { name: "Monospace",         value: "JetBrains Mono", usage: "Code, references"   },
-];
+const BRAND_KINDS: LibraryKind[] = ["asset", "poster", "flyer", "signage", "presentation"];
 
-export default function BrandAssetsPage() {
-  const [colours, setColours] = useState(BRAND_COLOURS);
+export default async function BrandAssetsPage() {
+  const { workspaceId } = await requireWorkspace();
+  const supabase = await createClient();
 
-  function updateColour(index: number, hex: string) {
-    setColours((prev) => prev.map((c, i) => (i === index ? { ...c, hex } : c)));
-  }
+  const { data: assets } = await supabase
+    .from("library_assets")
+    .select("id, title, kind, created_at")
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .in("kind", BRAND_KINDS)
+    .order("created_at", { ascending: false });
+
+  const rows = assets ?? [];
 
   return (
     <div className="flex flex-col min-h-full bg-surface-50">
       <PageHeader
         title="Brand Assets"
-        description="Logos, colour palettes and typography for your brand"
+        description="Logos, posters and brand collateral for your workspace"
+        actions={
+          <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors cursor-pointer">
+            <Upload className="w-4 h-4" />
+            Upload Asset
+            <input type="file" className="hidden" accept="image/*,.svg" />
+          </label>
+        }
       />
 
       <div className="flex-1 p-6 space-y-8 max-w-4xl">
-
-        {/* Primary Logo */}
+        {/* Primary Logo uploader (upload-only) */}
         <div className="bg-white rounded-xl border border-surface-200 shadow-card p-6">
           <h2 className="text-sm font-semibold text-surface-900 mb-4">Primary Logo</h2>
           <label className="flex flex-col items-center justify-center gap-3 w-full max-w-sm border-2 border-dashed border-surface-200 rounded-xl p-8 hover:border-brand-400 hover:bg-brand-50/30 transition-colors cursor-pointer">
@@ -48,66 +52,45 @@ export default function BrandAssetsPage() {
               <p className="text-xs text-surface-400 mt-1">SVG, PNG or JPG · recommended 400×100px</p>
             </div>
           </label>
+        </div>
 
-          <div className="mt-4">
-            <p className="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-3">Other Logo Variants</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {["Dark Background Logo", "Icon / Favicon", "Horizontal Lockup"].map((variant) => (
-                <label key={variant} className="flex flex-col items-center justify-center gap-2 border border-dashed border-surface-200 rounded-lg p-4 hover:border-brand-300 hover:bg-brand-50/20 transition-colors cursor-pointer">
-                  <input type="file" className="hidden" accept="image/*,.svg" />
-                  <Image className="w-5 h-5 text-surface-300" strokeWidth={1.8} />
-                  <span className="text-xs font-medium text-surface-500 text-center">{variant}</span>
-                </label>
+        {/* Live brand assets */}
+        <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
+          <div className="p-6 border-b border-surface-100">
+            <h2 className="text-sm font-semibold text-surface-900">Saved Brand Assets</h2>
+          </div>
+          {rows.length === 0 ? (
+            <EmptyState
+              icon={ImageIcon}
+              title="No brand assets yet"
+              description="Upload logos, posters and presentation assets to keep your brand collateral in one place."
+              compact
+            />
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
+              {rows.map((asset) => (
+                <Link
+                  key={asset.id}
+                  href={`/library/files/${asset.id}`}
+                  className="group bg-white rounded-xl border border-surface-200 shadow-card hover:border-brand-200 hover:shadow-md transition-all overflow-hidden"
+                >
+                  <div className="h-24 flex items-center justify-center bg-success-50">
+                    <ImageIcon className="w-6 h-6 text-success-600" strokeWidth={1.8} />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-xs font-medium text-surface-900 truncate">{asset.title}</p>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-100 text-surface-500">
+                        {kindLabel(asset.kind)}
+                      </span>
+                      <span className="text-[10px] text-surface-400">{formatLibDate(asset.created_at)}</span>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
-          </div>
+          )}
         </div>
-
-        {/* Brand Colours */}
-        <div className="bg-white rounded-xl border border-surface-200 shadow-card p-6">
-          <h2 className="text-sm font-semibold text-surface-900 mb-4">Brand Colours</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {colours.map((colour, i) => (
-              <div key={i} className="flex flex-col gap-2">
-                <div
-                  className="w-full h-16 rounded-xl border border-surface-200 shadow-sm"
-                  style={{ backgroundColor: colour.hex }}
-                />
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-surface-700">{colour.name}</span>
-                </div>
-                <input
-                  type="text"
-                  value={colour.hex}
-                  onChange={(e) => updateColour(i, e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-md border border-surface-200 text-xs text-surface-900 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                />
-              </div>
-            ))}
-          </div>
-          <button className="mt-4 px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 transition-colors">
-            Save Colours
-          </button>
-        </div>
-
-        {/* Typography */}
-        <div className="bg-white rounded-xl border border-surface-200 shadow-card p-6">
-          <h2 className="text-sm font-semibold text-surface-900 mb-4">Typography</h2>
-          <div className="space-y-3">
-            {BRAND_FONTS.map((font, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-surface-50 border border-surface-100">
-                <div>
-                  <p className="text-xs font-medium text-surface-500 uppercase tracking-wider">{font.name}</p>
-                  <p className="text-base font-semibold text-surface-900 mt-0.5" style={{ fontFamily: font.value }}>
-                    {font.value}
-                  </p>
-                  <p className="text-xs text-surface-400 mt-0.5">{font.usage}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
       </div>
     </div>
   );

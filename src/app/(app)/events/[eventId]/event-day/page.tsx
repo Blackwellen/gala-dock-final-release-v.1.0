@@ -1,345 +1,53 @@
-"use client";
+import { notFound } from "next/navigation";
+import { EventDayBoard, type EventDayItem } from "@/components/events/EventDayBoard";
+import { requireWorkspace } from "@/lib/workspace";
+import { createClient } from "@/lib/supabase/server";
+import { formatEventDate, formatTimeOfDay, venueLabel } from "../../_lib";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  Circle,
-  Clock,
-  PenLine,
-  Phone,
-  Flag,
-  LogOut,
-  ChevronLeft,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+export const dynamic = "force-dynamic";
 
-// ── Run sheet seed data ───────────────────────────────────────────────────────
-const INITIAL_RUN_SHEET = [
-  {
-    id: "rs1",
-    time: "9:00",
-    title: "Venue Setup begins",
-    lane: "logistics",
-    done: false,
-  },
-  {
-    id: "rs2",
-    time: "11:30",
-    title: "Catering arrives",
-    lane: "catering",
-    done: false,
-  },
-  {
-    id: "rs3",
-    time: "12:00",
-    title: "AV check",
-    lane: "av",
-    done: false,
-  },
-  {
-    id: "rs4",
-    time: "13:00",
-    title: "Doors open",
-    lane: "logistics",
-    done: false,
-  },
-  {
-    id: "rs5",
-    time: "14:00",
-    title: "Ceremony",
-    lane: "ceremony",
-    done: false,
-  },
-  {
-    id: "rs6",
-    time: "15:30",
-    title: "Reception drinks",
-    lane: "catering",
-    done: false,
-  },
-  {
-    id: "rs7",
-    time: "17:00",
-    title: "Wedding breakfast",
-    lane: "catering",
-    done: false,
-  },
-  {
-    id: "rs8",
-    time: "20:00",
-    title: "Evening guests arrive",
-    lane: "logistics",
-    done: false,
-  },
-];
+export default async function EventDayPage({
+  params,
+}: {
+  params: Promise<{ eventId: string }>;
+}) {
+  const { eventId } = await params;
+  const { workspaceId } = await requireWorkspace();
+  const supabase = await createClient();
 
-const LANE_COLOURS: Record<string, string> = {
-  logistics: "bg-brand-500",
-  catering: "bg-warning-500",
-  av: "bg-violet-500",
-  ceremony: "bg-success-500",
-};
+  const { data: event } = await supabase
+    .from("events")
+    .select("id, name, start_at, location, venue_name_snapshot")
+    .eq("id", eventId)
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .maybeSingle();
 
-const LANE_LABELS: Record<string, string> = {
-  logistics: "Logistics",
-  catering: "Catering",
-  av: "AV",
-  ceremony: "Ceremony",
-};
+  if (!event) notFound();
 
-function formatTime(date: Date) {
-  return date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
+  const { data: runSheet } = await supabase
+    .from("event_run_sheet_items")
+    .select("id, title, lane, starts_at, position")
+    .eq("workspace_id", workspaceId)
+    .eq("event_id", eventId)
+    .order("position", { ascending: true });
 
-export default function EventDayPage() {
-  const router = useRouter();
-  const [now, setNow] = useState(new Date());
-  const [items, setItems] = useState(INITIAL_RUN_SHEET);
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [noteText, setNoteText] = useState("");
+  const items: EventDayItem[] = (runSheet ?? []).map((r) => ({
+    id: r.id,
+    time: formatTimeOfDay(r.starts_at, "TBC"),
+    title: r.title,
+    lane: r.lane ?? "other",
+  }));
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 10_000);
-    return () => clearInterval(id);
-  }, []);
-
-  function toggleItem(id: string) {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, done: !item.done } : item
-      )
-    );
-  }
-
-  const doneCount = items.filter((i) => i.done).length;
-  const progress = Math.round((doneCount / items.length) * 100);
+  const venue = venueLabel(event);
+  const dateLabel = [formatEventDate(event.start_at), venue].filter(Boolean).join(" · ");
 
   return (
-    <div className="min-h-screen bg-surface-950 text-white flex flex-col">
-      {/* Header */}
-      <header className="border-b border-white/10 px-6 py-5">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-600 to-violet-600 text-white">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-                  </span>
-                  Event Day Mode
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                Hartley Wedding — June 2026
-              </h1>
-              <p className="text-surface-400 text-sm mt-1">
-                Sunday 21 June 2026 · Hartley Manor, Berkshire
-              </p>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="flex items-center gap-2 text-surface-300">
-                <Clock className="w-4 h-4" strokeWidth={1.8} />
-                <span className="text-2xl font-mono font-semibold tabular-nums">
-                  {formatTime(now)}
-                </span>
-              </div>
-              <p className="text-xs text-surface-500 mt-1">Live clock</p>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="mt-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-surface-400">
-                Run sheet progress
-              </span>
-              <span className="text-xs font-semibold text-white">
-                {doneCount} / {items.length} completed ({progress}%)
-              </span>
-            </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-brand-500 to-success-500 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Quick actions bar */}
-      <div className="border-b border-white/10 bg-white/5 px-6 py-3">
-        <div className="max-w-4xl mx-auto flex items-center gap-3 overflow-x-auto">
-          <button
-            type="button"
-            onClick={() => setNoteOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors whitespace-nowrap shrink-0"
-          >
-            <PenLine className="w-4 h-4" strokeWidth={1.8} />
-            Add Note
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors whitespace-nowrap shrink-0"
-          >
-            <Phone className="w-4 h-4" strokeWidth={1.8} />
-            Contact Supplier
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-warning-300 bg-warning-500/10 hover:bg-warning-500/20 rounded-lg transition-colors whitespace-nowrap shrink-0"
-          >
-            <Flag className="w-4 h-4" strokeWidth={1.8} />
-            Flag Issue
-          </button>
-
-          <div className="ml-auto shrink-0">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-surface-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <LogOut className="w-4 h-4" strokeWidth={1.8} />
-              Exit Event Day Mode
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Run Sheet */}
-      <main className="flex-1 px-6 py-8">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xs font-semibold text-surface-400 uppercase tracking-widest mb-4">
-            Run Sheet
-          </h2>
-
-          <div className="space-y-2">
-            {items.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => toggleItem(item.id)}
-                className={cn(
-                  "w-full flex items-center gap-4 px-5 py-4 rounded-xl border transition-all text-left group",
-                  item.done
-                    ? "bg-white/5 border-white/5 opacity-60"
-                    : "bg-white/8 border-white/10 hover:bg-white/12 hover:border-white/20"
-                )}
-                style={{ background: item.done ? undefined : "rgba(255,255,255,0.05)" }}
-              >
-                {/* Lane colour pill */}
-                <div
-                  className={cn(
-                    "w-1 h-8 rounded-full shrink-0",
-                    LANE_COLOURS[item.lane] ?? "bg-surface-600"
-                  )}
-                />
-
-                {/* Time */}
-                <div className="w-16 shrink-0">
-                  <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-white/10 text-xs font-mono font-semibold text-surface-300">
-                    {item.time}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={cn(
-                      "text-sm font-medium transition-all",
-                      item.done
-                        ? "line-through text-surface-500"
-                        : "text-white"
-                    )}
-                  >
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-surface-500 mt-0.5">
-                    {LANE_LABELS[item.lane] ?? item.lane}
-                  </p>
-                </div>
-
-                {/* Check */}
-                <div className="shrink-0">
-                  {item.done ? (
-                    <CheckCircle2
-                      className="w-5 h-5 text-success-500"
-                      strokeWidth={2}
-                    />
-                  ) : (
-                    <Circle
-                      className="w-5 h-5 text-surface-600 group-hover:text-surface-400 transition-colors"
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Legend */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            {Object.entries(LANE_LABELS).map(([key, label]) => (
-              <div key={key} className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "w-2.5 h-2.5 rounded-full",
-                    LANE_COLOURS[key]
-                  )}
-                />
-                <span className="text-xs text-surface-500">{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-
-      {/* Add Note Modal */}
-      {noteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-surface-900 rounded-2xl border border-white/10 p-6">
-            <h3 className="text-base font-semibold text-white mb-4">
-              Add Event Note
-            </h3>
-            <textarea
-              rows={4}
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Type your note here…"
-              className="w-full px-3 py-2 text-sm text-white placeholder:text-surface-500 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-              autoFocus
-            />
-            <div className="flex items-center justify-end gap-3 mt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setNoteOpen(false);
-                  setNoteText("");
-                }}
-                className="px-4 py-2 text-sm text-surface-400 hover:text-white transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setNoteOpen(false);
-                  setNoteText("");
-                }}
-                className="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
-              >
-                Save Note
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <EventDayBoard
+      eventId={event.id}
+      eventName={event.name}
+      dateLabel={dateLabel}
+      items={items}
+    />
   );
 }

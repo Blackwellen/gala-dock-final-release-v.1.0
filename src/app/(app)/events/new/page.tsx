@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createEvent } from "../actions";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import {
   ArrowLeft,
@@ -690,17 +691,48 @@ export default function NewEventPage() {
     if (step > 1) setStep((s) => s - 1);
   };
 
+  const buildFormData = () => {
+    const fd = new FormData();
+    fd.set("name", form.eventName);
+    fd.set("event_type", form.eventType);
+    fd.set("description", form.brief ? `${form.description}\n\n${form.brief}`.trim() : form.description);
+    fd.set("client_name", form.clientName);
+    fd.set("client_email", form.clientEmail);
+    fd.set("client_phone", form.clientPhone);
+    fd.set("client_company", form.clientCompany);
+    fd.set("venue_name", form.venueName);
+    const location = [form.venueAddress, form.venueCity, form.venuePostcode]
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .join(", ");
+    fd.set("location", location);
+    fd.set("budget", form.budget);
+    fd.set("guest_count_day", form.guestCount);
+    fd.set("guest_count_evening", form.eveningGuests);
+    if (form.owner || form.teamMembers.length > 0) {
+      const team = form.teamMembers.length > 0 ? `Team: ${form.teamMembers.join(", ")}` : "";
+      fd.set("pipeline_notes", [form.owner ? `Owner: ${form.owner}` : "", team].filter(Boolean).join("\n"));
+    }
+    return fd;
+  };
+
   const handleSaveDraft = async () => {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSaving(false);
-    // In production: POST to API
+    try {
+      // createEvent redirects on success; persists the in-progress event as a new enquiry.
+      await createEvent(buildFormData());
+    } catch {
+      setSaving(false);
+    }
   };
 
   const handleCreate = async () => {
     setCreating(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    router.push("/events");
+    try {
+      await createEvent(buildFormData());
+    } catch {
+      setCreating(false);
+    }
   };
 
   const STEP_TITLES: Record<number, string> = {

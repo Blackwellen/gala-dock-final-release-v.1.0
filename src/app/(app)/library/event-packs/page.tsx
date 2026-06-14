@@ -1,42 +1,38 @@
-"use client";
-
-import { Download, Package, FileText, Image, CheckSquare } from "lucide-react";
+import { Package } from "lucide-react";
+import { requireWorkspace } from "@/lib/workspace";
+import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 
-const PACKS = [
-  {
-    id: "1",
-    name: "Wedding Essentials Pack",
-    description: "Everything you need to run a full-day wedding event. Includes ceremony run sheet, catering brief template, photography checklist, and supplier confirmation emails.",
-    fileCount: 8,
-    icon: Package,
-    iconColor: "text-brand-600",
-    iconBg: "bg-brand-50",
-    tags: ["Run Sheet", "Brief", "Checklist", "Email Templates"],
-  },
-  {
-    id: "2",
-    name: "Corporate Event Pack",
-    description: "Comprehensive pack for corporate conferences and seminars. Includes AV technical rider, delegate management sheet, speaker brief, and post-event survey template.",
-    fileCount: 6,
-    icon: FileText,
-    iconColor: "text-violet-600",
-    iconBg: "bg-violet-50",
-    tags: ["Technical Rider", "Speaker Brief", "Survey", "Run Sheet"],
-  },
-  {
-    id: "3",
-    name: "Birthday Party Pack",
-    description: "Starter pack for private birthday events. Includes party timeline, venue layout guide, catering preferences form, and entertainment briefing template.",
-    fileCount: 4,
-    icon: CheckSquare,
-    iconColor: "text-success-600",
-    iconBg: "bg-success-50",
-    tags: ["Timeline", "Venue Layout", "Catering", "Entertainment"],
-  },
-];
+export const metadata = { title: "Event Packs" };
 
-export default function EventPacksPage() {
+export default async function EventPacksPage() {
+  const { workspaceId } = await requireWorkspace();
+  const supabase = await createClient();
+
+  // Event packs are library_collections of kind "event_pack".
+  const { data: collections } = await supabase
+    .from("library_collections")
+    .select("id, name, description, created_at")
+    .eq("workspace_id", workspaceId)
+    .eq("kind", "event_pack")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+
+  const packs = collections ?? [];
+
+  // Resolve member counts per collection.
+  const countByCollection = new Map<string, number>();
+  if (packs.length > 0) {
+    const { data: members } = await supabase
+      .from("library_collection_members")
+      .select("collection_id")
+      .in("collection_id", packs.map((p) => p.id));
+    for (const m of members ?? []) {
+      countByCollection.set(m.collection_id, (countByCollection.get(m.collection_id) ?? 0) + 1);
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-full bg-surface-50">
       <PageHeader
@@ -45,43 +41,39 @@ export default function EventPacksPage() {
       />
 
       <div className="flex-1 p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PACKS.map((pack) => (
-            <div
-              key={pack.id}
-              className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden hover:shadow-md transition-shadow"
-            >
-              {/* Header */}
-              <div className="p-6 border-b border-surface-100">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${pack.iconBg} mb-4`}>
-                  <pack.icon className={`w-6 h-6 ${pack.iconColor}`} strokeWidth={1.8} />
+        {packs.length === 0 ? (
+          <div className="bg-white rounded-xl border border-surface-200 shadow-card">
+            <EmptyState
+              icon={Package}
+              title="No event packs yet"
+              description="Group templates and documents into reusable packs for common event types."
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {packs.map((pack) => (
+              <div
+                key={pack.id}
+                className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="p-6 border-b border-surface-100">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-brand-50 mb-4">
+                    <Package className="w-6 h-6 text-brand-600" strokeWidth={1.8} />
+                  </div>
+                  <h3 className="text-base font-semibold text-surface-900 mb-2">{pack.name}</h3>
+                  {pack.description && (
+                    <p className="text-sm text-surface-500 leading-relaxed">{pack.description}</p>
+                  )}
                 </div>
-                <h3 className="text-base font-semibold text-surface-900 mb-2">{pack.name}</h3>
-                <p className="text-sm text-surface-500 leading-relaxed">{pack.description}</p>
-              </div>
-
-              {/* Tags */}
-              <div className="px-6 py-4 border-b border-surface-100">
-                <div className="flex flex-wrap gap-1.5">
-                  {pack.tags.map((tag) => (
-                    <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600 border border-surface-200">
-                      {tag}
-                    </span>
-                  ))}
+                <div className="px-6 py-4">
+                  <span className="text-xs text-surface-400">
+                    {countByCollection.get(pack.id) ?? 0} files included
+                  </span>
                 </div>
               </div>
-
-              {/* Footer */}
-              <div className="px-6 py-4 flex items-center justify-between">
-                <span className="text-xs text-surface-400">{pack.fileCount} files included</span>
-                <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-medium hover:bg-brand-700 transition-colors">
-                  <Download className="w-3.5 h-3.5" />
-                  Download Pack
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

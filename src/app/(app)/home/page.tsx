@@ -1,43 +1,174 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  CalendarDays, Users2, CheckSquare, AlertTriangle,
-  TrendingUp, Clock, Banknote, Sparkles,
-  ArrowRight, Plus, FileDown,
+  CalendarDays, CheckSquare, AlertTriangle, Banknote,
+  TrendingUp, Clock, Users2, Sparkles,
+  ArrowRight, Plus, FileDown, CalendarOff, ListChecks,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { requireWorkspace } from "@/lib/workspace";
+import { createClient } from "@/lib/supabase/server";
+import type { Event, Task } from "@/lib/supabase/types";
 
 export const metadata: Metadata = { title: "Home" };
 
-const KPI_DATA = [
-  { label: "Active Events",           value: "12",  icon: CalendarDays, iconColor: "text-brand-600",   iconBg: "bg-brand-50",   href: "/events" },
-  { label: "Events This Month",       value: "5",   icon: CalendarDays, iconColor: "text-violet-600",  iconBg: "bg-violet-50",  href: "/events" },
-  { label: "Tasks Due",               value: "28",  icon: CheckSquare,  iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/tasks" },
-  { label: "Overdue Tasks",           value: "4",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/tasks" },
-  { label: "Supplier Quotes Pending", value: "9",   icon: Users2,       iconColor: "text-info-600",    iconBg: "bg-info-50",    href: "/suppliers" },
-  { label: "Client Approvals Pending",value: "3",   icon: Clock,        iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/finance/quotes" },
-  { label: "Payments Overdue",        value: "2",   icon: Banknote,     iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/finance/payments" },
-  { label: "Events at Risk",          value: "1",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/events" },
-];
+// events.status is stored with underscores; StatusBadge expects hyphenated values.
+function eventBadgeStatus(status: string) {
+  return status.replace(/_/g, "-");
+}
 
-const UPCOMING_EVENTS = [
-  { id: "1", name: "The Carter Wedding",       date: "14 Jun 2026", status: "confirmed"  as const, client: "S. Carter" },
-  { id: "2", name: "Meridian Tech Summit",     date: "19 Jun 2026", status: "in-delivery"as const, client: "Meridian Ltd" },
-  { id: "3", name: "Hawthorn Birthday Ball",   date: "28 Jun 2026", status: "quoting"   as const, client: "J. Hawthorn" },
-  { id: "4", name: "Thornbury Gala Dinner",    date: "5 Jul 2026",  status: "confirmed"  as const, client: "Thornbury CC" },
-];
+function formatGBP(cents: number) {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(cents / 100);
+}
 
-const OVERDUE_TASKS = [
-  { id: "1", title: "Send AV brief to supplier",         event: "Meridian Tech Summit", due: "2 days ago" },
-  { id: "2", title: "Confirm final guest count",          event: "The Carter Wedding",  due: "1 day ago" },
-  { id: "3", title: "Chase catering contract signature",  event: "Hawthorn Birthday",   due: "Today" },
-  { id: "4", title: "Upload venue floor plan",            event: "Thornbury Gala",      due: "3 days ago" },
-];
+function formatDate(value: string | null) {
+  if (!value) return "—";
+  return new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
-export default function HomePage() {
-  const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+function formatDueLabel(due: string | null) {
+  if (!due) return "No due date";
+  const dueDate = new Date(due);
+  const now = new Date();
+  const dayMs = 1000 * 60 * 60 * 24;
+  const startOfDue = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((startOfDue.getTime() - startOfNow.getTime()) / dayMs);
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "1 day ago";
+  if (diffDays < 0) return `${Math.abs(diffDays)} days ago`;
+  return `In ${diffDays} days`;
+}
+
+export default async function HomePage() {
+  const { workspaceId } = await requireWorkspace();
+  const supabase = await createClient();
+  const nowIso = new Date().toISOString();
+  const soonIso = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString();
+
+  const today = new Date().toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  // ── KPI: active events (not completed/cancelled) ───────────────────────────
+  const { count: activeEventsCount } = await supabase
+    .from("events")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .not("status", "in", "(completed,cancelled)");
+
+  // ── KPI: upcoming events (start_at >= now) ─────────────────────────────────
+  const { count: upcomingEventsCount } = await supabase
+    .from("events")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .gte("start_at", nowIso);
+
+  // ── KPI: open tasks (not done/cancelled) ───────────────────────────────────
+  const { count: openTasksCount } = await supabase
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null)
+    .not("status", "in", "(done,cancelled)");
+
+  // ── KPI: outstanding invoice total (total_cents - paid_cents, not paid/void) ─
+  const { data: outstandingInvoices } = await supabase
+    .from("invoices")
+    .select("total_cents, paid_cents")
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null)
+    .not("status", "in", "(paid,void)");
+
+  const outstandingCents = (outstandingInvoices ?? []).reduce(
+    (sum, inv) => sum + Math.max((inv.total_cents ?? 0) - (inv.paid_cents ?? 0), 0),
+    0
+  );
+
+  // ── Upcoming events list ───────────────────────────────────────────────────
+  const { data: upcomingEvents } = await supabase
+    .from("events")
+    .select("id, name, status, start_at, location, client_name")
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .gte("start_at", nowIso)
+    .order("start_at", { ascending: true })
+    .limit(6);
+
+  // ── Tasks needing attention: due soon or overdue, still open ───────────────
+  const { data: attentionTasks } = await supabase
+    .from("tasks")
+    .select("id, title, status, due_at, event_id")
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null)
+    .not("status", "in", "(done,cancelled)")
+    .not("due_at", "is", null)
+    .lte("due_at", soonIso)
+    .order("due_at", { ascending: true })
+    .limit(6);
+
+  const events = (upcomingEvents ?? []) as Pick<
+    Event,
+    "id" | "name" | "status" | "start_at" | "location" | "client_name"
+  >[];
+  const tasks = (attentionTasks ?? []) as Pick<
+    Task,
+    "id" | "title" | "status" | "due_at" | "event_id"
+  >[];
+
+  const kpis = [
+    {
+      label: "Active Events",
+      value: activeEventsCount ?? 0,
+      icon: CalendarDays,
+      iconColor: "text-brand-600",
+      iconBg: "bg-brand-50",
+      href: "/events",
+    },
+    {
+      label: "Upcoming Events",
+      value: upcomingEventsCount ?? 0,
+      icon: CalendarDays,
+      iconColor: "text-violet-600",
+      iconBg: "bg-violet-50",
+      href: "/events",
+    },
+    {
+      label: "Open Tasks",
+      value: openTasksCount ?? 0,
+      icon: CheckSquare,
+      iconColor: "text-warning-600",
+      iconBg: "bg-warning-50",
+      href: "/tasks",
+    },
+    {
+      label: "Outstanding Invoices",
+      value: formatGBP(outstandingCents),
+      icon: Banknote,
+      iconColor: "text-danger-600",
+      iconBg: "bg-danger-50",
+      href: "/finance/payments",
+    },
+  ];
 
   return (
     <div className="animate-fade-in">
@@ -72,7 +203,7 @@ export default function HomePage() {
             Overview
           </h2>
           <KPIGrid>
-            {KPI_DATA.map((kpi) => (
+            {kpis.map((kpi) => (
               <MetricCard key={kpi.label} {...kpi} />
             ))}
           </KPIGrid>
@@ -89,55 +220,85 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
-              <table className="w-full text-sm">
-                <tbody className="divide-y divide-surface-100">
-                  {UPCOMING_EVENTS.map((event) => (
-                    <tr key={event.id} className="hover:bg-surface-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <Link href={`/events/${event.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
-                          {event.name}
-                        </Link>
-                        <p className="text-xs text-surface-400 mt-0.5">{event.client}</p>
-                      </td>
-                      <td className="px-4 py-3 text-surface-500 text-xs whitespace-nowrap">{event.date}</td>
-                      <td className="px-4 py-3 text-right">
-                        <StatusBadge status={event.status} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {events.length === 0 ? (
+                <EmptyState
+                  compact
+                  icon={CalendarOff}
+                  title="No upcoming events"
+                  description="Events with a future start date will appear here."
+                />
+              ) : (
+                <table className="w-full text-sm">
+                  <tbody className="divide-y divide-surface-100">
+                    {events.map((event) => (
+                      <tr key={event.id} className="hover:bg-surface-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <Link href={`/events/${event.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
+                            {event.name}
+                          </Link>
+                          <p className="text-xs text-surface-400 mt-0.5">
+                            {event.client_name ?? event.location ?? "—"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3 text-surface-500 text-xs whitespace-nowrap">
+                          {formatDate(event.start_at)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <StatusBadge status={eventBadgeStatus(event.status) as never} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
 
-          {/* Overdue tasks */}
+          {/* Tasks needing attention */}
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-surface-900">Overdue Tasks</h2>
+              <h2 className="text-sm font-semibold text-surface-900">Needs Attention</h2>
               <Link href="/tasks" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
                 View all <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
             <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
-              <table className="w-full text-sm">
-                <tbody className="divide-y divide-surface-100">
-                  {OVERDUE_TASKS.map((task) => (
-                    <tr key={task.id} className="hover:bg-surface-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <Link href={`/tasks/${task.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
-                          {task.title}
-                        </Link>
-                        <p className="text-xs text-surface-400 mt-0.5">{task.event}</p>
-                      </td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <span className="text-xs font-medium text-danger-600 bg-danger-50 px-2 py-0.5 rounded-full border border-danger-200">
-                          {task.due}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {tasks.length === 0 ? (
+                <EmptyState
+                  compact
+                  icon={ListChecks}
+                  title="Nothing due soon"
+                  description="Tasks that are overdue or due within the next week will appear here."
+                />
+              ) : (
+                <table className="w-full text-sm">
+                  <tbody className="divide-y divide-surface-100">
+                    {tasks.map((task) => {
+                      const overdue = task.due_at != null && new Date(task.due_at) < new Date();
+                      return (
+                        <tr key={task.id} className="hover:bg-surface-50 transition-colors">
+                          <td className="px-4 py-3">
+                            <Link href={`/tasks/${task.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
+                              {task.title}
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3 text-right whitespace-nowrap">
+                            <span
+                              className={
+                                overdue
+                                  ? "text-xs font-medium text-danger-600 bg-danger-50 px-2 py-0.5 rounded-full border border-danger-200"
+                                  : "text-xs font-medium text-warning-600 bg-warning-50 px-2 py-0.5 rounded-full border border-warning-200"
+                              }
+                            >
+                              {formatDueLabel(task.due_at)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
         </div>
@@ -174,9 +335,9 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: "View Event Pipeline",    href: "/events",             icon: TrendingUp },
-              { label: "View Overdue Tasks",     href: "/tasks",              icon: AlertTriangle },
+              { label: "View Open Tasks",        href: "/tasks",              icon: AlertTriangle },
               { label: "View Client Approvals",  href: "/finance/quotes",     icon: Clock },
-              { label: "View Supplier Chases",   href: "/suppliers",          icon: Users2 },
+              { label: "View Suppliers",         href: "/suppliers",          icon: Users2 },
             ].map(({ label, href, icon: Icon }) => (
               <Link
                 key={label}
