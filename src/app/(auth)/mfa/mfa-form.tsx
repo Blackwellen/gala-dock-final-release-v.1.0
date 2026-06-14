@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const CODE_LENGTH = 6;
 
@@ -11,6 +12,7 @@ export default function MfaForm() {
   const router = useRouter();
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   function handleDigitChange(index: number, value: string) {
@@ -40,8 +42,48 @@ export default function MfaForm() {
     e.preventDefault();
     if (digits.join("").length < CODE_LENGTH) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    const supabase = createClient();
+
+    // Find the enrolled TOTP factor, open a challenge, then verify the code.
+    const { data: factorsData, error: factorsError } =
+      await supabase.auth.mfa.listFactors();
+    if (factorsError) {
+      setError(factorsError.message);
+      setLoading(false);
+      return;
+    }
+
+    const totpFactor = factorsData?.totp?.[0];
+    if (!totpFactor) {
+      setError("No authenticator app is enrolled on this account.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: challengeData, error: challengeError } =
+      await supabase.auth.mfa.challenge({ factorId: totpFactor.id });
+    if (challengeError) {
+      setError(challengeError.message);
+      setLoading(false);
+      return;
+    }
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: totpFactor.id,
+      challengeId: challengeData.id,
+      code: digits.join(""),
+    });
+
+    if (verifyError) {
+      setError(verifyError.message);
+      setLoading(false);
+      return;
+    }
+
     router.push("/home");
+    router.refresh();
   }
 
   const isComplete = digits.every((d) => d.length === 1);
@@ -56,6 +98,13 @@ export default function MfaForm() {
 
           <h1 className="text-2xl font-bold text-surface-900 tracking-tight">Two-factor authentication</h1>
           <p className="mt-2 text-sm text-surface-500 leading-relaxed">Enter the 6-digit code from your authenticator app.</p>
+
+          {error && (
+            <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700 text-left">
+              <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleVerify} className="mt-8">
             <div className="flex items-center justify-center gap-2.5" onPaste={handlePaste}>

@@ -1,17 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Mail, ArrowLeft, RefreshCw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Mail, ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function VerifyEmailForm() {
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fall back to the signed-in user's email if no ?email= param was supplied.
+  useEffect(() => {
+    if (email) return;
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setEmail(data.user.email);
+    });
+  }, [email]);
 
   async function handleResend() {
+    if (!email) {
+      setError("We couldn't determine which email to resend to. Please sign up again.");
+      return;
+    }
     setResending(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+    });
+
     setResending(false);
+    if (resendError) {
+      setError(resendError.message);
+      return;
+    }
     setResent(true);
     setTimeout(() => setResent(false), 4000);
   }
@@ -35,6 +64,13 @@ export default function VerifyEmailForm() {
                 <path d="M3 8l3.5 3.5 6.5-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Verification email sent!
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700 text-left">
+              <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+              {error}
             </div>
           )}
 

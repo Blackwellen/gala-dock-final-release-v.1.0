@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Phone, Clock, Upload, ChevronRight } from "lucide-react";
+import { User, Phone, Clock, Upload, ChevronRight, AlertCircle } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
+import { createClient } from "@/lib/supabase/client";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -27,6 +28,7 @@ const TIMEZONES = [
 export default function OnboardingAccountPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [form, setForm] = useState({
     fullName: "",
@@ -50,7 +52,41 @@ export default function OnboardingAccountPage() {
   async function handleNext(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    setError(null);
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setError("Your session has expired. Please sign in again.");
+      setLoading(false);
+      router.push("/login");
+      return;
+    }
+
+    // Persist profile details. The profile row is created on sign-up by a trigger;
+    // update display name + timezone here (phone has no profile column).
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
+        display_name: form.fullName,
+        timezone: form.timezone,
+      })
+      .eq("user_id", user.id);
+
+    if (profileError) {
+      setError(profileError.message);
+      setLoading(false);
+      return;
+    }
+
+    // Carry the timezone forward so the workspace step can reuse it.
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("onboarding_timezone", form.timezone);
+    }
+
     router.push("/onboarding/workspace");
   }
 
@@ -71,6 +107,13 @@ export default function OnboardingAccountPage() {
             Tell us a bit about yourself so we can personalise your experience.
           </p>
         </div>
+
+        {error && (
+          <div className="mb-6 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+            <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleNext} className="space-y-6">
           {/* Avatar upload */}

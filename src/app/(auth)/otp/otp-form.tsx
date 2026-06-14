@@ -1,18 +1,23 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { KeyRound } from "lucide-react";
+import { KeyRound, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const CODE_LENGTH = 6;
 
 export default function OtpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get("email") ?? "";
+  const [email, setEmail] = useState(emailParam);
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   function handleDigitChange(index: number, value: string) {
@@ -41,15 +46,46 @@ export default function OtpForm() {
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
     if (digits.join("").length < CODE_LENGTH) return;
+    if (!email) {
+      setError("Enter the email address you requested the code for.");
+      return;
+    }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    const supabase = createClient();
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: digits.join(""),
+      type: "email",
+    });
+
+    if (verifyError) {
+      setError(verifyError.message);
+      setLoading(false);
+      return;
+    }
+
     router.push("/home");
+    router.refresh();
   }
 
   async function handleResend() {
+    if (!email) {
+      setError("Enter your email address to receive a code.");
+      return;
+    }
     setResending(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.signInWithOtp({ email });
+
     setResending(false);
+    if (resendError) {
+      setError(resendError.message);
+      return;
+    }
     setResent(true);
     setTimeout(() => setResent(false), 4000);
   }
@@ -69,7 +105,29 @@ export default function OtpForm() {
             Enter the 6-digit code sent to your email address.
           </p>
 
+          {error && (
+            <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700 text-left">
+              <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleVerify} className="mt-8">
+            {!emailParam && (
+              <div className="mb-5 text-left">
+                <label className="block text-sm font-medium text-surface-700 mb-1.5">Email address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  required
+                  className="w-full px-4 py-2.5 text-sm border border-surface-200 rounded-lg bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all placeholder:text-surface-400"
+                />
+              </div>
+            )}
+
             <div className="flex items-center justify-center gap-2.5" onPaste={handlePaste}>
               {digits.map((digit, i) => (
                 <input

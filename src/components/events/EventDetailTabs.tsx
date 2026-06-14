@@ -13,6 +13,7 @@ import { TabNav, type Tab } from "@/components/ui/TabNav";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { GuestsTab, type GuestRow } from "@/components/events/GuestsTab";
 import { cn } from "@/lib/utils";
 
 export interface DetailSupplierRow {
@@ -65,6 +66,7 @@ export interface EventDetailData {
   tasks: DetailTaskRow[];
   runSheet: DetailRunSheetRow[];
   files: DetailFileRow[];
+  guests: GuestRow[];
 }
 
 type SupplierBadgeStatus =
@@ -484,6 +486,7 @@ export function EventDetailTabs({ data }: { data: EventDetailData }) {
   const [activeTab, setActiveTab] = useState("overview");
 
   const openTasks = data.tasks.filter((t) => t.status !== "completed").length;
+  const confirmedGuests = data.guests.filter((g) => g.rsvp_status === "confirmed").length;
 
   const tabs: Tab[] = [
     { id: "overview", label: "Overview" },
@@ -493,6 +496,7 @@ export function EventDetailTabs({ data }: { data: EventDetailData }) {
     { id: "runsheet", label: "Run Sheet" },
     { id: "finance", label: "Finance" },
     { id: "files", label: "Files", count: data.files.length || undefined },
+    { id: "guests", label: "Guests", count: confirmedGuests || undefined },
     { id: "activity", label: "Activity" },
   ];
 
@@ -504,6 +508,7 @@ export function EventDetailTabs({ data }: { data: EventDetailData }) {
     runsheet: <RunSheetTab data={data} />,
     finance: <FinanceTab data={data} />,
     files: <FilesTab data={data} />,
+    guests: <GuestsTab eventId={data.eventId} guests={data.guests} />,
     activity: <ActivityTab />,
   };
 

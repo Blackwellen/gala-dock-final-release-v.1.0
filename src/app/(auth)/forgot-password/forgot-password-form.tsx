@@ -2,18 +2,33 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Mail, ArrowLeft, Send } from "lucide-react";
+import { Mail, ArrowLeft, Send, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    const supabase = createClient();
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo:
+        typeof window !== "undefined"
+          ? `${window.location.origin}/reset-password`
+          : undefined,
+    });
+
     setLoading(false);
+    if (resetError) {
+      setError(resetError.message);
+      return;
+    }
     setSent(true);
   }
 
@@ -30,6 +45,13 @@ export default function ForgotPasswordForm() {
               <p className="mt-2 text-sm text-surface-500 leading-relaxed">
                 No problem. Enter your email address and we&apos;ll send you a link to reset it.
               </p>
+
+              {error && (
+                <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+                  <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+                  {error}
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="mt-7 space-y-5">
                 <div>

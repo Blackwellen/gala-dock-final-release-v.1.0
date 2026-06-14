@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { User, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -25,10 +27,36 @@ export default function SignupForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!agreed) return;
+    if (!agreed || passwordMismatch) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    router.push("/onboarding/account");
+    setError(null);
+
+    const supabase = createClient();
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: { display_name: form.fullName },
+        emailRedirectTo:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/onboarding/account`
+            : undefined,
+      },
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    // If Supabase requires email confirmation, no active session is returned.
+    if (data.session) {
+      router.push("/onboarding/account");
+      router.refresh();
+    } else {
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
+    }
   }
 
   const passwordMismatch =
@@ -105,6 +133,13 @@ export default function SignupForm() {
               Start your 14-day free trial — no card required
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+              <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+              {error}
+            </div>
+          )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>

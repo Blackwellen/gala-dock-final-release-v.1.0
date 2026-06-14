@@ -7,8 +7,14 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
-import type { InvoiceLineItem, InvoicePayment } from "@/lib/supabase/types";
+import type {
+  InvoiceLineItem,
+  InvoicePayment,
+  InvoicePaymentSchedule,
+} from "@/lib/supabase/types";
 import { invoiceBadgeStatus } from "../../_lib/finance";
+import { PaymentScheduleSection } from "./PaymentScheduleSection";
+import { PaymentLinkCard } from "./PaymentLinkCard";
 
 export const metadata = { title: "Invoice" };
 
@@ -31,24 +37,45 @@ export default async function InvoiceDetailPage({
 
   if (!invoice) notFound();
 
-  const [{ data: lineData }, { data: paymentData }] = await Promise.all([
-    supabase
-      .from("invoice_line_items")
-      .select("*")
-      .eq("workspace_id", workspaceId)
-      .eq("invoice_id", invoiceId)
-      .order("position", { ascending: true }),
-    supabase
-      .from("invoice_payments")
-      .select("*")
-      .eq("workspace_id", workspaceId)
-      .eq("invoice_id", invoiceId)
-      .order("paid_at", { ascending: false }),
-  ]);
+  const [{ data: lineData }, { data: paymentData }, { data: scheduleData }] =
+    await Promise.all([
+      supabase
+        .from("invoice_line_items")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .eq("invoice_id", invoiceId)
+        .order("position", { ascending: true }),
+      supabase
+        .from("invoice_payments")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .eq("invoice_id", invoiceId)
+        .order("paid_at", { ascending: false }),
+      supabase
+        .from("invoice_payment_schedules")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .eq("invoice_id", invoiceId)
+        .order("sort_order", { ascending: true }),
+    ]);
 
   const lines = (lineData ?? []) as InvoiceLineItem[];
   const payments = (paymentData ?? []) as InvoicePayment[];
   const currency = invoice.currency;
+
+  // Auto-flag overdue at render time: due_date < today AND not yet paid.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const schedule = ((scheduleData ?? []) as InvoicePaymentSchedule[]).map(
+    (s) => {
+      const effectiveStatus: "pending" | "paid" | "overdue" =
+        s.status === "paid"
+          ? "paid"
+          : s.due_date < todayIso
+            ? "overdue"
+            : "pending";
+      return { ...s, effectiveStatus };
+    }
+  );
   const balance = invoice.total_cents - invoice.paid_cents;
   const paidPct =
     invoice.total_cents > 0
@@ -165,6 +192,19 @@ export default async function InvoiceDetailPage({
             <span>{formatCurrency(balance / 100, currency)} remaining</span>
           </div>
         </div>
+
+        <PaymentScheduleSection
+          invoiceId={invoiceId}
+          currency={currency}
+          invoiceTotalCents={invoice.total_cents}
+          baseDate={invoice.issued_on ?? invoice.due_on ?? todayIso}
+          schedule={schedule}
+        />
+
+        <PaymentLinkCard
+          paymentLinkUrl={invoice.stripe_payment_link_url}
+          stripeConfigured={Boolean(invoice.stripe_account_id)}
+        />
 
         <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-200">

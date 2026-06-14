@@ -8,6 +8,7 @@ import {
   type DetailRunSheetRow,
   type DetailFileRow,
 } from "@/components/events/EventDetailTabs";
+import type { GuestRow } from "@/components/events/GuestsTab";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -70,6 +71,7 @@ export default async function EventDetailPage({
     { data: eventSuppliers },
     { data: files },
     { data: runSheet },
+    { data: guests },
   ] = await Promise.all([
     supabase
       .from("event_tasks")
@@ -96,6 +98,15 @@ export default async function EventDetailPage({
       .eq("workspace_id", workspaceId)
       .eq("event_id", eventId)
       .order("position", { ascending: true }),
+    supabase
+      .from("event_guests")
+      .select(
+        "id, first_name, last_name, email, phone, guest_type, rsvp_status, meal_choice, dietary_notes, table_number, seat_number, plus_one_name, notes",
+      )
+      .eq("workspace_id", workspaceId)
+      .eq("event_id", eventId)
+      .order("last_name", { ascending: true })
+      .order("first_name", { ascending: true }),
   ]);
 
   const supplierRows: DetailSupplierRow[] = (eventSuppliers ?? []).map((s) => {
@@ -135,6 +146,22 @@ export default async function EventDetailPage({
     date: formatEventDate(f.created_at),
   }));
 
+  const guestRows: GuestRow[] = (guests ?? []).map((g) => ({
+    id: g.id,
+    first_name: g.first_name,
+    last_name: g.last_name,
+    email: g.email,
+    phone: g.phone,
+    guest_type: g.guest_type,
+    rsvp_status: g.rsvp_status,
+    meal_choice: g.meal_choice,
+    dietary_notes: g.dietary_notes,
+    table_number: g.table_number,
+    seat_number: g.seat_number,
+    plus_one_name: g.plus_one_name,
+    notes: g.notes,
+  }));
+
   const detailData: EventDetailData = {
     eventId: event.id,
     budgetLabel: formatGbpFromCents(event.budget_cents),
@@ -151,6 +178,7 @@ export default async function EventDetailPage({
     tasks: taskRows,
     runSheet: runSheetRows,
     files: fileRows,
+    guests: guestRows,
   };
 
   const guestCount = event.guest_count_day || event.guest_count_evening || undefined;

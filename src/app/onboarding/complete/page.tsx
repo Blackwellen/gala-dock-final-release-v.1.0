@@ -1,6 +1,10 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, Clock, LayoutDashboard, MessageCircle, ArrowRight } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
+import { createClient } from "@/lib/supabase/client";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -32,6 +36,48 @@ const NEXT_STEPS = [
 ];
 
 export default function OnboardingCompletePage() {
+  const router = useRouter();
+  const [finishing, setFinishing] = useState(false);
+
+  // Persist real onboarding completion as soon as the user reaches this step.
+  useEffect(() => {
+    const supabase = createClient();
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase
+        .from("profiles")
+        .update({
+          onboarding_state: { completed: true, completed_at: new Date().toISOString() },
+        })
+        .eq("user_id", user.id);
+    })();
+    // Clean up any onboarding scratch state.
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("onboarding_timezone");
+    }
+  }, []);
+
+  async function goToDashboard() {
+    setFinishing(true);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({
+          onboarding_state: { completed: true, completed_at: new Date().toISOString() },
+        })
+        .eq("user_id", user.id);
+    }
+    router.push("/home");
+    router.refresh();
+  }
+
   return (
     <div className="w-full max-w-2xl animate-fade-in">
       <div className="bg-white rounded-2xl border border-surface-200 shadow-card p-8">
@@ -93,13 +139,21 @@ export default function OnboardingCompletePage() {
 
         {/* CTA */}
         <div className="mt-8">
-          <Link
-            href="/home"
-            className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-brand"
+          <button
+            type="button"
+            onClick={goToDashboard}
+            disabled={finishing}
+            className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-brand"
           >
-            Go to dashboard
-            <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-          </Link>
+            {finishing ? (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                Go to dashboard
+                <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

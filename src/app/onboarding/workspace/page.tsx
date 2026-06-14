@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Upload, Globe, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Building2,
+  Upload,
+  Globe,
+  ChevronRight,
+  ChevronLeft,
+  AlertCircle,
+  Check,
+  Loader2,
+} from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { slugify } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -28,8 +38,12 @@ const BUSINESS_TYPES = [
 export default function OnboardingWorkspacePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
+  const [slugStatus, setSlugStatus] = useState<
+    "idle" | "checking" | "available" | "taken"
+  >("idle");
   const [form, setForm] = useState({
     workspaceName: "",
     slug: "",
@@ -41,6 +55,29 @@ export default function OnboardingWorkspacePage() {
       setForm((prev) => ({ ...prev, slug: slugify(prev.workspaceName) }));
     }
   }, [form.workspaceName, slugEdited]);
+
+  // Debounced live slug-availability check against the live DB.
+  useEffect(() => {
+    const slug = form.slug;
+    if (!slug) {
+      setSlugStatus("idle");
+      return;
+    }
+    setSlugStatus("checking");
+    const supabase = createClient();
+    const handle = setTimeout(async () => {
+      const { data, error: rpcError } = await supabase.rpc(
+        "is_workspace_slug_available",
+        { _slug: slug }
+      );
+      if (rpcError) {
+        setSlugStatus("idle");
+        return;
+      }
+      setSlugStatus(data ? "available" : "taken");
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [form.slug]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -62,9 +99,56 @@ export default function OnboardingWorkspacePage() {
 
   async function handleNext(e: React.FormEvent) {
     e.preventDefault();
+    if (slugStatus === "taken") {
+      setError("That workspace URL is already taken. Please choose another.");
+      return;
+    }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    setError(null);
+
+    const supabase = createClient();
+
+    // Final availability guard before creating.
+    const { data: available, error: availError } = await supabase.rpc(
+      "is_workspace_slug_available",
+      { _slug: form.slug }
+    );
+    if (availError) {
+      setError(availError.message);
+      setLoading(false);
+      return;
+    }
+    if (!available) {
+      setSlugStatus("taken");
+      setError("That workspace URL is already taken. Please choose another.");
+      setLoading(false);
+      return;
+    }
+
+    const timezone =
+      (typeof window !== "undefined" &&
+        window.sessionStorage.getItem("onboarding_timezone")) ||
+      "Europe/London";
+
+    const { error: createError } = await supabase.rpc(
+      "create_workspace_for_current_user",
+      {
+        _name: form.workspaceName,
+        _slug: form.slug,
+        _timezone: timezone,
+        _currency: "GBP",
+        _branding: { business_type: form.businessType },
+      }
+    );
+
+    if (createError) {
+      setError(createError.message);
+      setLoading(false);
+      return;
+    }
+
     router.push("/onboarding/role");
+    router.refresh();
   }
 
   return (
@@ -84,6 +168,13 @@ export default function OnboardingWorkspacePage() {
             Your workspace is where your team manages events and collaborates.
           </p>
         </div>
+
+        {error && (
+          <div className="mb-6 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+            <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleNext} className="space-y-6">
           {/* Logo upload */}
@@ -162,9 +253,28 @@ export default function OnboardingWorkspacePage() {
                 className="flex-1 py-2.5 pr-4 text-sm bg-transparent focus:outline-none text-surface-900 placeholder:text-surface-400"
               />
             </div>
-            <p className="mt-1.5 text-xs text-surface-400">
-              Only lowercase letters, numbers and hyphens.
-            </p>
+            {slugStatus === "checking" && (
+              <p className="mt-1.5 text-xs text-surface-400 inline-flex items-center gap-1.5">
+                <Loader2 className="w-3 h-3 animate-spin" strokeWidth={2} />
+                Checking availability…
+              </p>
+            )}
+            {slugStatus === "available" && (
+              <p className="mt-1.5 text-xs text-success-600 inline-flex items-center gap-1.5">
+                <Check className="w-3 h-3" strokeWidth={2.5} />
+                This URL is available.
+              </p>
+            )}
+            {slugStatus === "taken" && (
+              <p className="mt-1.5 text-xs text-danger-600">
+                This URL is already taken. Please choose another.
+              </p>
+            )}
+            {slugStatus === "idle" && (
+              <p className="mt-1.5 text-xs text-surface-400">
+                Only lowercase letters, numbers and hyphens.
+              </p>
+            )}
           </div>
 
           {/* Business type */}
@@ -198,7 +308,7 @@ export default function OnboardingWorkspacePage() {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || slugStatus === "taken" || slugStatus === "checking" || !form.slug}
               className="inline-flex items-center gap-2 py-2.5 px-6 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-brand"
             >
               {loading ? (

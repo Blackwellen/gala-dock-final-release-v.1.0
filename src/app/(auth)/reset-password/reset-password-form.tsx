@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -19,8 +21,19 @@ export default function ResetPasswordForm() {
     e.preventDefault();
     if (form.password !== form.confirmPassword) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+
+    // The recovery session is established from the email link before this page loads.
+    const supabase = createClient();
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: form.password,
+    });
+
     setLoading(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
     setDone(true);
   }
 
@@ -40,6 +53,13 @@ export default function ResetPasswordForm() {
               <p className="mt-2 text-sm text-surface-500 leading-relaxed">
                 Choose a strong new password for your Gala Dock account.
               </p>
+
+              {error && (
+                <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+                  <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+                  {error}
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="mt-7 space-y-5">
                 <div>
