@@ -8,8 +8,11 @@ import {
   Megaphone,
   CalendarDays,
   Building2,
+  Hotel,
   Users2,
+  ClipboardList,
   CheckSquare,
+  UsersRound,
   Banknote,
   MessageSquare,
   FolderOpen,
@@ -19,16 +22,19 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/home",      label: "Home",      icon: LayoutDashboard },
-  { href: "/leads",     label: "Leads",     icon: Megaphone },
-  { href: "/events",    label: "Events",    icon: CalendarDays },
-  { href: "/venues",    label: "Venues",    icon: Building2 },
-  { href: "/suppliers", label: "Suppliers", icon: Users2 },
-  { href: "/tasks",     label: "Tasks",     icon: CheckSquare },
-  { href: "/finance",   label: "Finance",   icon: Banknote },
-  { href: "/inbox",     label: "Inbox",     icon: MessageSquare },
-  { href: "/library",   label: "Library",   icon: FolderOpen },
-  { href: "/settings",  label: "Settings",  icon: Settings2 },
+  { href: "/home",            label: "Home",       icon: LayoutDashboard },
+  { href: "/leads",           label: "Leads",      icon: Megaphone },
+  { href: "/events",          label: "Events",     icon: CalendarDays },
+  { href: "/venues",          label: "Venues",     icon: Building2 },
+  { href: "/venue-management", label: "Venue Ops", icon: Hotel },
+  { href: "/suppliers",       label: "Suppliers",  icon: Users2 },
+  { href: "/rfqs",            label: "RFQs",       icon: ClipboardList },
+  { href: "/tasks",           label: "Tasks",      icon: CheckSquare },
+  { href: "/team",            label: "Team",       icon: UsersRound },
+  { href: "/finance",         label: "Finance",    icon: Banknote },
+  { href: "/inbox",           label: "Inbox",      icon: MessageSquare },
+  { href: "/library",         label: "Library",    icon: FolderOpen },
+  { href: "/settings",        label: "Settings",   icon: Settings2 },
 ];
 
 export function AppSidebar() {

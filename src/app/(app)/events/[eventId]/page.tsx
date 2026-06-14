@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Users2, LayoutGrid, Image as ImageIcon, Receipt, QrCode, FileText } from "lucide-react";
 import { EventHero } from "@/components/events/EventHero";
 import {
   EventDetailTabs,
@@ -195,6 +197,25 @@ export default async function EventDetailPage({
         owner={ownerLabel}
         guestCount={guestCount}
       />
+      <div className="px-6 lg:px-8 -mt-2 mb-2 flex flex-wrap gap-2">
+        {[
+          { href: `/events/${event.id}/staffing`, label: "Staffing", icon: Users2 },
+          { href: `/events/${event.id}/floor-plan`, label: "Floor Plan", icon: LayoutGrid },
+          { href: `/events/${event.id}/mood-board`, label: "Mood Board", icon: ImageIcon },
+          { href: `/events/${event.id}/expenses`, label: "Expenses", icon: Receipt },
+          { href: `/events/${event.id}/check-in`, label: "Check-in", icon: QrCode },
+          { href: `/events/${event.id}/beo`, label: "Event Order (BEO)", icon: FileText },
+        ].map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-200 bg-white text-sm font-medium text-surface-600 hover:text-brand-700 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+          >
+            <Icon className="w-3.5 h-3.5" strokeWidth={1.8} />
+            {label}
+          </Link>
+        ))}
+      </div>
       <EventDetailTabs data={detailData} />
     </div>
   );
