@@ -60,7 +60,7 @@ export function EventHero({ eventId, name, status, date, venue, client, owner, g
               <span className="hidden sm:inline">Export Pack</span>
             </button>
             <Link
-              href={`/app/events/${eventId}/edit`}
+              href={`/events/${eventId}/edit`}
               className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"
             >
               <Edit2 className="w-3.5 h-3.5" strokeWidth={2} />

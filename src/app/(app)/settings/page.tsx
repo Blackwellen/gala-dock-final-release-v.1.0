@@ -1,2 +1,2 @@
 import { redirect } from 'next/navigation';
-export default function Page() { redirect('/app/settings/account'); }
+export default function Page() { redirect('/settings/account'); }

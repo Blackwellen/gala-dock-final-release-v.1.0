@@ -12,14 +12,14 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 export const metadata: Metadata = { title: "Home" };
 
 const KPI_DATA = [
-  { label: "Active Events",           value: "12",  icon: CalendarDays, iconColor: "text-brand-600",   iconBg: "bg-brand-50",   href: "/app/events" },
-  { label: "Events This Month",       value: "5",   icon: CalendarDays, iconColor: "text-violet-600",  iconBg: "bg-violet-50",  href: "/app/events" },
-  { label: "Tasks Due",               value: "28",  icon: CheckSquare,  iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/app/tasks" },
-  { label: "Overdue Tasks",           value: "4",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/app/tasks" },
-  { label: "Supplier Quotes Pending", value: "9",   icon: Users2,       iconColor: "text-info-600",    iconBg: "bg-info-50",    href: "/app/suppliers" },
-  { label: "Client Approvals Pending",value: "3",   icon: Clock,        iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/app/finance/quotes" },
-  { label: "Payments Overdue",        value: "2",   icon: Banknote,     iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/app/finance/payments" },
-  { label: "Events at Risk",          value: "1",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/app/events" },
+  { label: "Active Events",           value: "12",  icon: CalendarDays, iconColor: "text-brand-600",   iconBg: "bg-brand-50",   href: "/events" },
+  { label: "Events This Month",       value: "5",   icon: CalendarDays, iconColor: "text-violet-600",  iconBg: "bg-violet-50",  href: "/events" },
+  { label: "Tasks Due",               value: "28",  icon: CheckSquare,  iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/tasks" },
+  { label: "Overdue Tasks",           value: "4",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/tasks" },
+  { label: "Supplier Quotes Pending", value: "9",   icon: Users2,       iconColor: "text-info-600",    iconBg: "bg-info-50",    href: "/suppliers" },
+  { label: "Client Approvals Pending",value: "3",   icon: Clock,        iconColor: "text-warning-600", iconBg: "bg-warning-50", href: "/finance/quotes" },
+  { label: "Payments Overdue",        value: "2",   icon: Banknote,     iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/finance/payments" },
+  { label: "Events at Risk",          value: "1",   icon: AlertTriangle,iconColor: "text-danger-600",  iconBg: "bg-danger-50",  href: "/events" },
 ];
 
 const UPCOMING_EVENTS = [
@@ -55,7 +55,7 @@ export default function HomePage() {
               <span className="hidden sm:inline">AI Briefing</span>
             </button>
             <Link
-              href="/app/events/new"
+              href="/events/new"
               className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
@@ -84,7 +84,7 @@ export default function HomePage() {
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-surface-900">Upcoming Events</h2>
-              <Link href="/app/events" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
+              <Link href="/events" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
                 View all <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
@@ -94,7 +94,7 @@ export default function HomePage() {
                   {UPCOMING_EVENTS.map((event) => (
                     <tr key={event.id} className="hover:bg-surface-50 transition-colors">
                       <td className="px-4 py-3">
-                        <Link href={`/app/events/${event.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
+                        <Link href={`/events/${event.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
                           {event.name}
                         </Link>
                         <p className="text-xs text-surface-400 mt-0.5">{event.client}</p>
@@ -114,7 +114,7 @@ export default function HomePage() {
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-surface-900">Overdue Tasks</h2>
-              <Link href="/app/tasks" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
+              <Link href="/tasks" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
                 View all <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
@@ -124,7 +124,7 @@ export default function HomePage() {
                   {OVERDUE_TASKS.map((task) => (
                     <tr key={task.id} className="hover:bg-surface-50 transition-colors">
                       <td className="px-4 py-3">
-                        <Link href={`/app/tasks/${task.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
+                        <Link href={`/tasks/${task.id}`} className="font-medium text-surface-900 hover:text-brand-600 transition-colors">
                           {task.title}
                         </Link>
                         <p className="text-xs text-surface-400 mt-0.5">{task.event}</p>
@@ -173,10 +173,10 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "View Event Pipeline",    href: "/app/events",             icon: TrendingUp },
-              { label: "View Overdue Tasks",     href: "/app/tasks",              icon: AlertTriangle },
-              { label: "View Client Approvals",  href: "/app/finance/quotes",     icon: Clock },
-              { label: "View Supplier Chases",   href: "/app/suppliers",          icon: Users2 },
+              { label: "View Event Pipeline",    href: "/events",             icon: TrendingUp },
+              { label: "View Overdue Tasks",     href: "/tasks",              icon: AlertTriangle },
+              { label: "View Client Approvals",  href: "/finance/quotes",     icon: Clock },
+              { label: "View Supplier Chases",   href: "/suppliers",          icon: Users2 },
             ].map(({ label, href, icon: Icon }) => (
               <Link
                 key={label}

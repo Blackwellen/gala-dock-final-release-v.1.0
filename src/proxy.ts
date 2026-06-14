@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/accept-invite", "/pricing", "/features", "/security", "/contact", "/book-demo", "/product", "/onboarding", "/_next", "/api"];
+const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/accept-invite", "/pricing", "/features", "/security", "/contact", "/book-demo", "/product", "/onboarding", "/_next", "/api",
+  // Public token-based routes (proposal sign, form fill, client/supplier/venue portals, guest QR check-in)
+  "/p", "/f", "/portal", "/rfq", "/supplier-portal", "/venue-portal", "/check-in"];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

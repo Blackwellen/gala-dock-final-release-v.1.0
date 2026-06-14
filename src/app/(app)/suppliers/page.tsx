@@ -164,7 +164,7 @@ export default function SuppliersPage() {
               <span className="hidden sm:inline">Export</span>
             </button>
             <Link
-              href="/app/suppliers/new"
+              href="/suppliers/new"
               className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
@@ -207,7 +207,7 @@ export default function SuppliersPage() {
               description="Try a different filter or add a new supplier."
               action={
                 <Link
-                  href="/app/suppliers/new"
+                  href="/suppliers/new"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors"
                 >
                   <Plus className="w-4 h-4" strokeWidth={2.5} />
@@ -234,7 +234,7 @@ export default function SuppliersPage() {
                   <tr key={supplier.id} className="hover:bg-surface-50 transition-colors group">
                     <td className="px-4 py-3.5">
                       <Link
-                        href={`/app/suppliers/${supplier.id}`}
+                        href={`/suppliers/${supplier.id}`}
                         className="font-medium text-surface-900 hover:text-brand-600 transition-colors"
                       >
                         {supplier.name}

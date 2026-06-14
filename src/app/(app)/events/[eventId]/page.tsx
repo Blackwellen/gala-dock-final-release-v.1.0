@@ -390,7 +390,7 @@ function RunSheetTab() {
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><Sparkles className="w-4 h-4 text-brand-500" strokeWidth={1.8} />Generate with AI</button>
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><Printer className="w-4 h-4" strokeWidth={1.8} />Print</button>
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><FileDown className="w-4 h-4" strokeWidth={1.8} />Export PDF</button>
-        <Link href={`/app/events/${EVENT.id}/event-day`} className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-brand-300 text-brand-700 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors">
+        <Link href={`/events/${EVENT.id}/event-day`} className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-brand-300 text-brand-700 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors">
           <Play className="w-4 h-4" strokeWidth={1.8} />Event Day Mode
         </Link>
       </div>
@@ -439,7 +439,7 @@ function FinanceTab() {
       <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
         <div className="px-5 py-3.5 border-b border-surface-100 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-surface-900">Client Invoices</h3>
-          <Link href="/app/finance/invoices" className="text-xs text-brand-600 hover:text-brand-700 font-medium">View in Finance</Link>
+          <Link href="/finance/invoices" className="text-xs text-brand-600 hover:text-brand-700 font-medium">View in Finance</Link>
         </div>
         <table className="w-full text-sm">
           <thead><tr className="border-b border-surface-200 bg-surface-50">{["Ref","Description","Amount","Date","Status",""].map((h,i) => <th key={i} className={cn("px-4 py-3 text-left text-xs font-semibold text-surface-500 uppercase tracking-wider", !h && "w-10")}>{h}</th>)}</tr></thead>

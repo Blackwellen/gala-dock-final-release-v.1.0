@@ -700,7 +700,7 @@ export default function NewEventPage() {
   const handleCreate = async () => {
     setCreating(true);
     await new Promise((r) => setTimeout(r, 1200));
-    router.push("/app/events");
+    router.push("/events");
   };
 
   const STEP_TITLES: Record<number, string> = {
@@ -732,7 +732,7 @@ export default function NewEventPage() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => router.push("/app/events")}
+            onClick={() => router.push("/events")}
             className="p-2 rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-700 transition-colors"
           >
             <X className="w-5 h-5" strokeWidth={1.8} />

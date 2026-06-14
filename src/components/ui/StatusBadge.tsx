@@ -8,7 +8,10 @@ type Status =
   | "preferred" | "archived" | "at-risk" | "missing" | "verified"
   | "open" | "in-progress" | "resolved" | "closed"
   | "trialing" | "past-due" | "suspended" | "operational" | "degraded" | "down"
-  | "expired" | "partial" | "void" | "accepted";
+  | "expired" | "partial" | "void" | "accepted"
+  // Lead stages / proposal / RSVP / forms
+  | "contacted" | "proposal-sent" | "negotiating" | "won" | "lost"
+  | "viewed" | "signed" | "declined" | "converted" | "maybe" | "published";
 
 const STATUS_MAP: Record<Status, { label: string; classes: string }> = {
   "new-enquiry":       { label: "New Enquiry",      classes: "bg-info-50     text-info-600     border-info-200" },
@@ -48,6 +51,17 @@ const STATUS_MAP: Record<Status, { label: string; classes: string }> = {
   "partial":           { label: "Partial",           classes: "bg-warning-50  text-warning-600  border-warning-200" },
   "void":              { label: "Void",              classes: "bg-surface-100 text-surface-400  border-surface-200" },
   "accepted":          { label: "Accepted",          classes: "bg-success-50  text-success-700  border-success-200" },
+  "contacted":         { label: "Contacted",         classes: "bg-info-50     text-info-600     border-info-200" },
+  "proposal-sent":     { label: "Proposal Sent",     classes: "bg-violet-50   text-violet-600   border-violet-200" },
+  "negotiating":       { label: "Negotiating",       classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "won":               { label: "Won",               classes: "bg-success-50  text-success-700  border-success-200" },
+  "lost":              { label: "Lost",              classes: "bg-surface-100 text-surface-500  border-surface-200" },
+  "viewed":            { label: "Viewed",            classes: "bg-info-50     text-info-600     border-info-200" },
+  "signed":            { label: "Signed",            classes: "bg-success-50  text-success-700  border-success-200" },
+  "declined":          { label: "Declined",          classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "converted":         { label: "Converted",         classes: "bg-brand-50    text-brand-700    border-brand-200" },
+  "maybe":             { label: "Maybe",             classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "published":         { label: "Published",         classes: "bg-success-50  text-success-700  border-success-200" },
 };
 
 interface StatusBadgeProps {

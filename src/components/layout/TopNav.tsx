@@ -22,14 +22,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const QUICK_CREATE = [
-  { label: "New Event",       icon: CalendarDays, href: "/app/events/new" },
-  { label: "New Supplier",    icon: Users2,       href: "/app/suppliers/new" },
-  { label: "New Task",        icon: CheckSquare,  href: "/app/tasks/new" },
-  { label: "New Quote",       icon: Banknote,     href: "/app/finance/quotes/new" },
-  { label: "New Invoice",     icon: Banknote,     href: "/app/finance/invoices/new" },
-  { label: "Upload File",     icon: FolderOpen,   href: "/app/library/files" },
-  { label: "Invite Client",   icon: UserPlus,     href: "/app/settings/team" },
-  { label: "Invite Supplier", icon: UserPlus,     href: "/app/suppliers/new" },
+  { label: "New Event",       icon: CalendarDays, href: "/events/new" },
+  { label: "New Supplier",    icon: Users2,       href: "/suppliers/new" },
+  { label: "New Task",        icon: CheckSquare,  href: "/tasks/new" },
+  { label: "New Quote",       icon: Banknote,     href: "/finance/quotes/new" },
+  { label: "New Invoice",     icon: Banknote,     href: "/finance/invoices/new" },
+  { label: "Upload File",     icon: FolderOpen,   href: "/library/files" },
+  { label: "Invite Client",   icon: UserPlus,     href: "/settings/team" },
+  { label: "Invite Supplier", icon: UserPlus,     href: "/suppliers/new" },
 ];
 
 interface TopNavProps {
@@ -169,12 +169,12 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
                 </div>
                 <div className="py-1.5">
                   {[
-                    { label: "My Profile",          href: "/app/settings/account" },
-                    { label: "Account Settings",    href: "/app/settings/account" },
-                    { label: "Workspace Settings",  href: "/app/settings/workspace" },
-                    { label: "Billing",             href: "/app/settings/billing" },
-                    { label: "Notifications",       href: "/app/settings/notifications" },
-                    { label: "Security",            href: "/app/settings/security" },
+                    { label: "My Profile",          href: "/settings/account" },
+                    { label: "Account Settings",    href: "/settings/account" },
+                    { label: "Workspace Settings",  href: "/settings/workspace" },
+                    { label: "Billing",             href: "/settings/billing" },
+                    { label: "Notifications",       href: "/settings/notifications" },
+                    { label: "Security",            href: "/settings/security" },
                     { label: "Help",                href: "/help" },
                   ].map(({ label, href }) => (
                     <Link

@@ -8,49 +8,49 @@ const NAV_SECTIONS = [
   {
     label: "Account",
     links: [
-      { href: "/app/settings/account", label: "Account" },
-      { href: "/app/settings/security", label: "Security" },
-      { href: "/app/settings/preferences", label: "Preferences" },
+      { href: "/settings/account", label: "Account" },
+      { href: "/settings/security", label: "Security" },
+      { href: "/settings/preferences", label: "Preferences" },
     ],
   },
   {
     label: "Workspace",
     links: [
-      { href: "/app/settings/workspace", label: "Workspace" },
-      { href: "/app/settings/branding", label: "Branding" },
-      { href: "/app/settings/team", label: "Team" },
-      { href: "/app/settings/roles", label: "Roles" },
+      { href: "/settings/workspace", label: "Workspace" },
+      { href: "/settings/branding", label: "Branding" },
+      { href: "/settings/team", label: "Team" },
+      { href: "/settings/roles", label: "Roles" },
     ],
   },
   {
     label: "Billing",
     links: [
-      { href: "/app/settings/billing", label: "Billing" },
-      { href: "/app/settings/usage", label: "Usage" },
+      { href: "/settings/billing", label: "Billing" },
+      { href: "/settings/usage", label: "Usage" },
     ],
   },
   {
     label: "Defaults",
     links: [
-      { href: "/app/settings/supplier-defaults", label: "Supplier Defaults" },
-      { href: "/app/settings/event-defaults", label: "Event Defaults" },
-      { href: "/app/settings/finance-defaults", label: "Finance Defaults" },
+      { href: "/settings/supplier-defaults", label: "Supplier Defaults" },
+      { href: "/settings/event-defaults", label: "Event Defaults" },
+      { href: "/settings/finance-defaults", label: "Finance Defaults" },
     ],
   },
   {
     label: "Automation",
     links: [
-      { href: "/app/settings/smart-rules", label: "Smart Rules" },
-      { href: "/app/settings/ai", label: "AI" },
+      { href: "/settings/smart-rules", label: "Smart Rules" },
+      { href: "/settings/ai", label: "AI" },
     ],
   },
   {
     label: "Other",
     links: [
-      { href: "/app/settings/affiliate", label: "Affiliate" },
-      { href: "/app/settings/notifications", label: "Notifications" },
-      { href: "/app/settings/data-export", label: "Data Export" },
-      { href: "/app/settings/audit", label: "Audit" },
+      { href: "/settings/affiliate", label: "Affiliate" },
+      { href: "/settings/notifications", label: "Notifications" },
+      { href: "/settings/data-export", label: "Data Export" },
+      { href: "/settings/audit", label: "Audit" },
     ],
   },
 ];

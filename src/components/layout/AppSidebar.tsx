@@ -5,10 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Megaphone,
   CalendarDays,
+  Building2,
   Users2,
   CheckSquare,
   Banknote,
+  MessageSquare,
   FolderOpen,
   Settings2,
   ChevronRight,
@@ -16,21 +19,24 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/app/home",      label: "Home",      icon: LayoutDashboard },
-  { href: "/app/events",    label: "Events",    icon: CalendarDays },
-  { href: "/app/suppliers", label: "Suppliers", icon: Users2 },
-  { href: "/app/tasks",     label: "Tasks",     icon: CheckSquare },
-  { href: "/app/finance",   label: "Finance",   icon: Banknote },
-  { href: "/app/library",   label: "Library",   icon: FolderOpen },
-  { href: "/app/settings",  label: "Settings",  icon: Settings2 },
+  { href: "/home",      label: "Home",      icon: LayoutDashboard },
+  { href: "/leads",     label: "Leads",     icon: Megaphone },
+  { href: "/events",    label: "Events",    icon: CalendarDays },
+  { href: "/venues",    label: "Venues",    icon: Building2 },
+  { href: "/suppliers", label: "Suppliers", icon: Users2 },
+  { href: "/tasks",     label: "Tasks",     icon: CheckSquare },
+  { href: "/finance",   label: "Finance",   icon: Banknote },
+  { href: "/inbox",     label: "Inbox",     icon: MessageSquare },
+  { href: "/library",   label: "Library",   icon: FolderOpen },
+  { href: "/settings",  label: "Settings",  icon: Settings2 },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
 
   function isActive(href: string) {
-    if (href === "/app/home") return pathname === "/app/home";
-    return pathname.startsWith(href);
+    if (href === "/home") return pathname === "/home";
+    return pathname === href || pathname.startsWith(href + "/");
   }
 
   return (

@@ -176,7 +176,7 @@ export default function EventsPage() {
               <span className="hidden sm:inline">Export</span>
             </button>
             <Link
-              href="/app/events/new"
+              href="/events/new"
               className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
@@ -400,7 +400,7 @@ export default function EventsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <Link
-                          href={`/app/events/${event.id}`}
+                          href={`/events/${event.id}`}
                           className="font-medium text-surface-900 hover:text-brand-600 transition-colors"
                         >
                           {event.name}
