@@ -61,6 +61,25 @@ export type FormSubmission = Tables<"form_submissions">;
 export type VenueDocument = Tables<"venue_documents">;
 export type VenueNote = Tables<"venue_notes">;
 
+// ── Levels 11-15 feature row aliases ────────────────────────────────────────
+export type SupplierRateCard = Tables<"supplier_rate_cards">;
+export type SupplierBlockedDate = Tables<"supplier_blocked_dates">;
+export type SupplierRating = Tables<"supplier_ratings">;
+export type Rfq = Tables<"rfqs">;
+export type RfqRecipient = Tables<"rfq_recipients">;
+export type SupplierContract = Tables<"supplier_contracts">;
+export type EventStaffAssignment = Tables<"event_staff_assignments">;
+export type TeamAvailabilityBlock = Tables<"team_availability_blocks">;
+export type EventFloorPlan = Tables<"event_floor_plans">;
+export type VenueSpace = Tables<"venue_spaces">;
+export type VenueBooking = Tables<"venue_bookings">;
+export type VenueFbPackage = Tables<"venue_fb_packages">;
+export type VenueBookingFbSelection = Tables<"venue_booking_fb_selections">;
+export type VenueStaffAssignment = Tables<"venue_staff_assignments">;
+export type EventMoodBoard = Tables<"event_mood_boards">;
+export type MoodBoardItem = Tables<"mood_board_items">;
+export type EventExpense = Tables<"event_expenses">;
+
 // ── Enum aliases (schema-accurate) ──────────────────────────────────────────
 export type WorkspaceMemberRole = Enums<"workspace_role">;
 // events.status is a text column (not a PG enum) — keep the known lifecycle values.
