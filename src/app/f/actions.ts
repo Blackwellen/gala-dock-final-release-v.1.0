@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { coerceFieldType, isInputField } from "@/app/(app)/forms/lib";
+import { coerceFieldType, isInputField } from "@/app/event-manager/forms/lib";
 
 export interface SubmitResult {
   ok: boolean;

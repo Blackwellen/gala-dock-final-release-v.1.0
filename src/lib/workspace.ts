@@ -78,3 +78,46 @@ export async function requireWorkspace(): Promise<WorkspaceContext> {
 
   return { user, workspaceId, workspace };
 }
+
+/** Roles allowed to manage Workspace + Billing settings (3-settings model). */
+const MANAGER_ROLES = ["owner", "admin", "manager"] as const;
+
+/**
+ * The current user's role in the active workspace, or null if not a member.
+ */
+export async function getWorkspaceRole(): Promise<string | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const workspaceId = await getActiveWorkspaceId();
+  if (!workspaceId) return null;
+
+  const { data: member } = await supabase
+    .from("workspace_members")
+    .select("role")
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  return member?.role ?? null;
+}
+
+/** Whether the current user can manage Workspace + Billing settings. */
+export async function canManageWorkspace(): Promise<boolean> {
+  const role = await getWorkspaceRole();
+  return role != null && (MANAGER_ROLES as readonly string[]).includes(role);
+}
+
+/**
+ * Require the current user to be a workspace manager (owner/admin/manager).
+ * Redirects members without management rights back to their account settings.
+ */
+export async function requireWorkspaceManager(): Promise<WorkspaceContext> {
+  const ctx = await requireWorkspace();
+  if (!(await canManageWorkspace())) redirect("/event-manager/settings/account");
+  return ctx;
+}

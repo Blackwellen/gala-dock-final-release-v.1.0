@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save } from "lucide-react";
-import { updateEvent } from "@/app/(app)/events/actions";
+import { updateEvent } from "@/app/event-manager/events/actions";
 
 const EVENT_TYPES = [
   "Wedding",
@@ -144,7 +144,7 @@ export function EditEventForm({ initial }: { initial: EditEventInitial }) {
         <div className="flex items-center gap-2 mb-3">
           <button
             type="button"
-            onClick={() => router.push(`/events/${initial.id}`)}
+            onClick={() => router.push(`/event-manager/events/${initial.id}`)}
             className="flex items-center gap-1 text-sm text-surface-500 hover:text-surface-900 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
@@ -159,7 +159,7 @@ export function EditEventForm({ initial }: { initial: EditEventInitial }) {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => router.push(`/events/${initial.id}`)}
+              onClick={() => router.push(`/event-manager/events/${initial.id}`)}
               className="px-4 py-2 text-sm font-medium text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
             >
               Cancel
@@ -272,7 +272,7 @@ export function EditEventForm({ initial }: { initial: EditEventInitial }) {
           <div className="flex items-center justify-end gap-3 mt-6 pb-8">
             <button
               type="button"
-              onClick={() => router.push(`/events/${initial.id}`)}
+              onClick={() => router.push(`/event-manager/events/${initial.id}`)}
               className="px-4 py-2 text-sm font-medium text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
             >
               Cancel

@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Search,
   Plus,
   Sparkles,
-  Bell,
   HelpCircle,
   ChevronDown,
   Menu,
-  X,
   CalendarDays,
   Users2,
   CheckSquare,
@@ -20,29 +17,69 @@ import {
   UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationsMenu } from "@/components/layout/NotificationsMenu";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { openCopilot } from "@/lib/shell/copilot-bus";
+import type { WorkspaceType } from "@/lib/flags/registry";
+import type { FlagMap } from "@/lib/flags/resolve";
+import type { ShellNotification } from "@/lib/shell/data";
 
 const QUICK_CREATE = [
-  { label: "New Event",       icon: CalendarDays, href: "/events/new" },
-  { label: "New Supplier",    icon: Users2,       href: "/suppliers/new" },
-  { label: "New Task",        icon: CheckSquare,  href: "/tasks/new" },
-  { label: "New Quote",       icon: Banknote,     href: "/finance/quotes/new" },
-  { label: "New Invoice",     icon: Banknote,     href: "/finance/invoices/new" },
-  { label: "Upload File",     icon: FolderOpen,   href: "/library/files" },
-  { label: "Invite Client",   icon: UserPlus,     href: "/settings/team" },
-  { label: "Invite Supplier", icon: UserPlus,     href: "/suppliers/new" },
+  { label: "New Event",       icon: CalendarDays, href: "/event-manager/events/new" },
+  { label: "New Supplier",    icon: Users2,       href: "/event-manager/suppliers/new" },
+  { label: "New Task",        icon: CheckSquare,  href: "/event-manager/tasks/new" },
+  { label: "New Quote",       icon: Banknote,     href: "/event-manager/finance/quotes/new" },
+  { label: "New Invoice",     icon: Banknote,     href: "/event-manager/finance/invoices/new" },
+  { label: "Upload File",     icon: FolderOpen,   href: "/event-manager/library/files" },
+  { label: "Invite Client",   icon: UserPlus,     href: "/event-manager/settings/team" },
+  { label: "Invite Supplier", icon: UserPlus,     href: "/event-manager/suppliers/new" },
 ];
 
 interface TopNavProps {
   breadcrumb?: { label: string; href?: string }[];
   onMenuToggle?: () => void;
+  workspaceType?: WorkspaceType;
+  flags?: Partial<FlagMap>;
+  notifications?: ShellNotification[];
+  unreadCount?: number;
+  userInitials?: string;
+  userEmail?: string;
 }
 
-export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
+export function TopNav({
+  breadcrumb,
+  onMenuToggle,
+  workspaceType = "organizer",
+  flags,
+  notifications = [],
+  unreadCount = 0,
+  userInitials = "GD",
+  userEmail = "",
+}: TopNavProps) {
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // ⌘K / Ctrl+K opens the command palette anywhere in the shell.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <header className="h-14 bg-white border-b border-surface-200 flex items-center px-4 gap-3 shrink-0 relative z-30">
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        workspaceType={workspaceType}
+        flags={flags}
+      />
       {/* Mobile menu toggle */}
       <button
         onClick={onMenuToggle}
@@ -76,7 +113,10 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
       {/* Right actions */}
       <div className="flex items-center gap-1.5 shrink-0">
         {/* Search */}
-        <button className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-surface-200 bg-surface-50 text-surface-400 text-sm hover:border-brand-300 hover:bg-white transition-all w-52 xl:w-64 group">
+        <button
+          onClick={() => setPaletteOpen(true)}
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-surface-200 bg-surface-50 text-surface-400 text-sm hover:border-brand-300 hover:bg-white transition-all w-52 xl:w-64 group"
+        >
           <Search className="w-3.5 h-3.5 shrink-0" />
           <span className="flex-1 text-left text-surface-400 text-xs">
             Search anything...
@@ -84,6 +124,14 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
           <kbd className="hidden xl:inline-flex items-center gap-0.5 text-[10px] font-mono bg-surface-100 border border-surface-200 px-1.5 py-0.5 rounded text-surface-400">
             ⌘K
           </kbd>
+        </button>
+        {/* Search (mobile icon) */}
+        <button
+          onClick={() => setPaletteOpen(true)}
+          className="md:hidden p-2 rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-900 transition-colors"
+          aria-label="Search"
+        >
+          <Search className="w-4.5 h-4.5" strokeWidth={1.8} />
         </button>
 
         {/* Quick Create */}
@@ -126,6 +174,7 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
 
         {/* Copilot */}
         <button
+          onClick={() => openCopilot()}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-brand-600 hover:bg-brand-50 transition-colors border border-brand-200 hover:border-brand-300"
           title="Open Gala Copilot"
         >
@@ -134,10 +183,7 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
         </button>
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-900 transition-colors">
-          <Bell className="w-4.5 h-4.5" strokeWidth={1.8} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-600 rounded-full border-2 border-white" />
-        </button>
+        <NotificationsMenu notifications={notifications} unreadCount={unreadCount} />
 
         {/* Help */}
         <button className="p-2 rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-900 transition-colors">
@@ -151,7 +197,7 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-surface-100 transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center shrink-0">
-              <span className="text-white text-[11px] font-semibold">JT</span>
+              <span className="text-white text-[11px] font-semibold">{userInitials}</span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-surface-400 hidden sm:block" />
           </button>
@@ -165,17 +211,16 @@ export function TopNav({ breadcrumb, onMenuToggle }: TopNavProps) {
               <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-surface-200 shadow-dropdown z-50 animate-scale-in overflow-hidden">
                 <div className="px-4 py-3 border-b border-surface-100">
                   <p className="text-sm font-medium text-surface-900 truncate">My Account</p>
-                  <p className="text-xs text-surface-500 truncate">user@example.com</p>
+                  <p className="text-xs text-surface-500 truncate">{userEmail || "Signed in"}</p>
                 </div>
+                {/* Account tier only — Workspace + Billing live in the admin-only
+                    sidebar Settings (3-settings model). Account is for everyone. */}
                 <div className="py-1.5">
                   {[
-                    { label: "My Profile",          href: "/settings/account" },
-                    { label: "Account Settings",    href: "/settings/account" },
-                    { label: "Workspace Settings",  href: "/settings/workspace" },
-                    { label: "Billing",             href: "/settings/billing" },
-                    { label: "Notifications",       href: "/settings/notifications" },
-                    { label: "Security",            href: "/settings/security" },
-                    { label: "Help",                href: "/help" },
+                    { label: "Account Settings", href: "/event-manager/settings/account" },
+                    { label: "Notifications",    href: "/event-manager/settings/account#notifications" },
+                    { label: "Security",         href: "/event-manager/settings/account#security" },
+                    { label: "Help & Support",   href: "/help" },
                   ].map(({ label, href }) => (
                     <Link
                       key={label}

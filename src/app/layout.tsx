@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { RegisterSW } from "@/components/pwa/RegisterSW";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
-      <body className="h-full antialiased">{children}</body>
+      <body className="h-full antialiased">
+        {children}
+        <RegisterSW />
+      </body>
     </html>
   );
 }

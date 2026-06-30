@@ -367,7 +367,7 @@ function RunSheetTab({ data }: { data: EventDetailData }) {
       <div className="flex items-center gap-2 flex-wrap">
         <button className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"><Plus className="w-4 h-4" strokeWidth={2.5} />Add Item</button>
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><Printer className="w-4 h-4" strokeWidth={1.8} />Print</button>
-        <Link href={`/events/${data.eventId}/event-day`} className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-brand-300 text-brand-700 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors">
+        <Link href={`/event-manager/events/${data.eventId}/event-day`} className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-brand-300 text-brand-700 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors">
           <Play className="w-4 h-4" strokeWidth={1.8} />Event Day Mode
         </Link>
       </div>
@@ -406,7 +406,7 @@ function FinanceTab({ data }: { data: EventDetailData }) {
       <div className="flex items-center gap-2 flex-wrap">
         <button className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"><Plus className="w-4 h-4" strokeWidth={2.5} />Create Quote</button>
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><FileText className="w-4 h-4" strokeWidth={1.8} />Create Invoice</button>
-        <Link href="/finance/invoices" className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><Download className="w-4 h-4" strokeWidth={1.8} />View in Finance</Link>
+        <Link href="/event-manager/finance/invoices" className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors"><Download className="w-4 h-4" strokeWidth={1.8} />View in Finance</Link>
       </div>
       <KPIGrid className="grid-cols-2 sm:grid-cols-2">
         <MetricCard label="Client Budget" value={data.budgetLabel} icon={Banknote} iconColor="text-brand-600" iconBg="bg-brand-50" />

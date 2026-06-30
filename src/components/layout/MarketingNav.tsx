@@ -7,10 +7,11 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
+  { label: "Events",   href: "/discover" },
+  { label: "Tickets",  href: "/discover" },
   { label: "Product",  href: "/product" },
   { label: "Features", href: "/features" },
   { label: "Pricing",  href: "/pricing" },
-  { label: "Security", href: "/security" },
   { label: "Affiliate",href: "/affiliate" },
 ];
 

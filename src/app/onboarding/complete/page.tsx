@@ -74,7 +74,7 @@ export default function OnboardingCompletePage() {
         })
         .eq("user_id", user.id);
     }
-    router.push("/home");
+    router.push("/event-manager/home");
     router.refresh();
   }
 

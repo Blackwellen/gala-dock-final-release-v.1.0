@@ -82,7 +82,7 @@ export default function MfaForm() {
       return;
     }
 
-    router.push("/home");
+    router.push("/event-manager/home");
     router.refresh();
   }
 

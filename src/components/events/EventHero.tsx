@@ -6,6 +6,7 @@ import {
   Sparkles, FileDown, Calendar, Archive, MapPin, User,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EventTypeChip } from "@/components/events/EventTypeChip";
 import { cn } from "@/lib/utils";
 
 interface EventHeroProps {
@@ -17,6 +18,8 @@ interface EventHeroProps {
   client: string;
   owner: string;
   guestCount?: number;
+  eventType?: string | null;
+  layoutMode?: string | null;
 }
 
 const PIPELINE = [
@@ -29,7 +32,7 @@ const PIPELINE = [
   { id: "completed",         label: "Done" },
 ];
 
-export function EventHero({ eventId, name, status, date, venue, client, owner, guestCount }: EventHeroProps) {
+export function EventHero({ eventId, name, status, date, venue, client, owner, guestCount, eventType, layoutMode }: EventHeroProps) {
   const pipelineIdx = PIPELINE.findIndex((s) => s.id === status);
 
   return (
@@ -37,9 +40,10 @@ export function EventHero({ eventId, name, status, date, venue, client, owner, g
       <div className="px-6 py-5">
         {/* Name row */}
         <div className="flex items-start gap-4 justify-between mb-4">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0 flex-wrap">
             <h1 className="text-xl font-bold text-surface-900 tracking-tight truncate">{name}</h1>
             <StatusBadge status={status} />
+            <EventTypeChip typeKey={eventType} layoutMode={layoutMode} />
           </div>
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
@@ -60,7 +64,7 @@ export function EventHero({ eventId, name, status, date, venue, client, owner, g
               <span className="hidden sm:inline">Export Pack</span>
             </button>
             <Link
-              href={`/events/${eventId}/edit`}
+              href={`/event-manager/events/${eventId}/edit`}
               className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand"
             >
               <Edit2 className="w-3.5 h-3.5" strokeWidth={2} />

@@ -100,7 +100,7 @@ export function AdminSidebar() {
       {/* Back to app */}
       <div className="px-3 py-4 border-t border-[#1f1d45]">
         <Link
-          href="/home"
+          href="/event-manager/home"
           className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[#c8cae0] hover:bg-[#1a183d] hover:text-white transition-colors text-sm group"
         >
           <ArrowLeft className="w-4 h-4 text-[#7275a0] group-hover:text-white transition-colors" strokeWidth={1.8} />

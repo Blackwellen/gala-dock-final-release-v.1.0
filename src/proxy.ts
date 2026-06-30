@@ -3,7 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/accept-invite", "/pricing", "/features", "/security", "/contact", "/book-demo", "/product", "/onboarding", "/_next", "/api",
   // Public token-based routes (proposal sign, form fill, client/supplier/venue portals, guest QR check-in)
-  "/p", "/f", "/portal", "/rfq", "/supplier-portal", "/venue-portal", "/check-in"];
+  "/p", "/f", "/portal", "/rfq", "/supplier-portal", "/venue-portal", "/check-in",
+  // Public event pages + discovery directory (EB-L / 15-9 / V2-8)
+  "/e", "/discover"];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -43,7 +45,7 @@ export async function proxy(request: NextRequest) {
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/home";
+    url.pathname = "/event-manager/home";
     return NextResponse.redirect(url);
   }
 

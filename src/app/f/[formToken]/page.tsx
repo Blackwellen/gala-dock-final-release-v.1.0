@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Form, FormField } from "@/lib/supabase/types";
-import { coerceFieldType, normaliseOptions } from "@/app/(app)/forms/lib";
+import { coerceFieldType, normaliseOptions } from "@/app/event-manager/forms/lib";
 import { PublicFormClient, type PublicField } from "./PublicFormClient";
 import { FileX2 } from "lucide-react";
 

@@ -15,7 +15,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EventCard } from "@/components/events/EventCard";
 import { cn } from "@/lib/utils";
-import type { UiEventStatus } from "@/app/(app)/events/_lib";
+import type { UiEventStatus } from "@/app/event-manager/events/_lib";
 
 export interface EventListRow {
   id: string;
@@ -272,7 +272,7 @@ export function EventsListView({
                       </td>
                       <td className="px-4 py-3">
                         <Link
-                          href={`/events/${event.id}`}
+                          href={`/event-manager/events/${event.id}`}
                           className="font-medium text-surface-900 hover:text-brand-600 transition-colors"
                         >
                           {event.name}

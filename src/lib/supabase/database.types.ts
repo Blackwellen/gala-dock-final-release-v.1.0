@@ -56,8 +56,11 @@ export type Database = {
           last_owner_notified_at: string | null
           min_payout_currency: string
           notes_internal: string | null
+          override_rate_pct: number
+          parent_account_id: string | null
           payout_method: Database["public"]["Enums"]["affiliate_payout_method"]
           payout_threshold_cents: number
+          recruit_code: string | null
           status: Database["public"]["Enums"]["affiliate_account_status"]
           stripe_connect_account_id: string | null
           stripe_connect_charges_enabled: boolean
@@ -66,6 +69,7 @@ export type Database = {
           stripe_connect_synced_at: string | null
           terms_accepted_at: string | null
           terms_version: string | null
+          tier: number
           updated_at: string
           workspace_id: string
         }
@@ -77,8 +81,11 @@ export type Database = {
           last_owner_notified_at?: string | null
           min_payout_currency?: string
           notes_internal?: string | null
+          override_rate_pct?: number
+          parent_account_id?: string | null
           payout_method?: Database["public"]["Enums"]["affiliate_payout_method"]
           payout_threshold_cents?: number
+          recruit_code?: string | null
           status?: Database["public"]["Enums"]["affiliate_account_status"]
           stripe_connect_account_id?: string | null
           stripe_connect_charges_enabled?: boolean
@@ -87,6 +94,7 @@ export type Database = {
           stripe_connect_synced_at?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
+          tier?: number
           updated_at?: string
           workspace_id: string
         }
@@ -98,8 +106,11 @@ export type Database = {
           last_owner_notified_at?: string | null
           min_payout_currency?: string
           notes_internal?: string | null
+          override_rate_pct?: number
+          parent_account_id?: string | null
           payout_method?: Database["public"]["Enums"]["affiliate_payout_method"]
           payout_threshold_cents?: number
+          recruit_code?: string | null
           status?: Database["public"]["Enums"]["affiliate_account_status"]
           stripe_connect_account_id?: string | null
           stripe_connect_charges_enabled?: boolean
@@ -108,10 +119,25 @@ export type Database = {
           stripe_connect_synced_at?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
+          tier?: number
           updated_at?: string
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "affiliate_accounts_parent_account_id_fkey"
+            columns: ["parent_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_accounts_parent_account_id_fkey"
+            columns: ["parent_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_conversions_quarantined"
+            referencedColumns: ["account_id"]
+          },
           {
             foreignKeyName: "affiliate_accounts_workspace_id_fkey"
             columns: ["workspace_id"]
@@ -311,6 +337,78 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "affiliate_conversions_quarantined"
             referencedColumns: ["account_id"]
+          },
+        ]
+      }
+      affiliate_overrides: {
+        Row: {
+          amount_cents: number
+          child_account_id: string
+          created_at: string
+          currency: string
+          id: string
+          override_rate_pct: number
+          parent_account_id: string
+          source_conversion_id: string
+          status: string
+        }
+        Insert: {
+          amount_cents?: number
+          child_account_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          override_rate_pct?: number
+          parent_account_id: string
+          source_conversion_id: string
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          child_account_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          override_rate_pct?: number
+          parent_account_id?: string
+          source_conversion_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_overrides_child_account_id_fkey"
+            columns: ["child_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_overrides_child_account_id_fkey"
+            columns: ["child_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_conversions_quarantined"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "affiliate_overrides_parent_account_id_fkey"
+            columns: ["parent_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_overrides_parent_account_id_fkey"
+            columns: ["parent_account_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_conversions_quarantined"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "affiliate_overrides_source_conversion_id_fkey"
+            columns: ["source_conversion_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_conversions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2247,6 +2345,157 @@ export type Database = {
         }
         Relationships: []
       }
+      event_accessibility: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          id: string
+          need: string
+          notes: string | null
+          provision: string | null
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          need?: string
+          notes?: string | null
+          provision?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          need?: string
+          notes?: string | null
+          provision?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_accessibility_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_accessibility_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_accessibility_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_act_sets: {
+        Row: {
+          act_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          ends_at: string
+          event_id: string
+          id: string
+          label: string | null
+          notes: string | null
+          room_id: string | null
+          soundcheck_at: string | null
+          starts_at: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          act_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          ends_at: string
+          event_id: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          room_id?: string | null
+          soundcheck_at?: string | null
+          starts_at: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          act_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          ends_at?: string
+          event_id?: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          room_id?: string | null
+          soundcheck_at?: string | null
+          starts_at?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_act_sets_act_id_fkey"
+            columns: ["act_id"]
+            isOneToOne: false
+            referencedRelation: "event_acts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_act_sets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_act_sets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_act_sets_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "event_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_act_sets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_activity: {
         Row: {
           action: string
@@ -2304,6 +2553,152 @@ export type Database = {
           },
           {
             foreignKeyName: "event_activity_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_acts: {
+        Row: {
+          contact: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          fee_cents: number
+          fee_type: string
+          id: string
+          kind: string
+          name: string
+          rider_notes: string | null
+          supplier_id: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          fee_cents?: number
+          fee_type?: string
+          id?: string
+          kind?: string
+          name: string
+          rider_notes?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          fee_cents?: number
+          fee_type?: string
+          id?: string
+          kind?: string
+          name?: string
+          rider_notes?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_acts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_acts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_acts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_bar_terms: {
+        Row: {
+          bar_deposit_cents: number
+          bar_manager_contact_id: string | null
+          bar_revenue_share_pct: number
+          created_at: string
+          created_by: string | null
+          event_id: string
+          guarantee_cents: number
+          id: string
+          min_spend_cents: number
+          notes: string | null
+          settled: boolean
+          settlement_cents: number | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          bar_deposit_cents?: number
+          bar_manager_contact_id?: string | null
+          bar_revenue_share_pct?: number
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          guarantee_cents?: number
+          id?: string
+          min_spend_cents?: number
+          notes?: string | null
+          settled?: boolean
+          settlement_cents?: number | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          bar_deposit_cents?: number
+          bar_manager_contact_id?: string | null
+          bar_revenue_share_pct?: number
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          guarantee_cents?: number
+          id?: string
+          min_spend_cents?: number
+          notes?: string | null
+          settled?: boolean
+          settlement_cents?: number | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_bar_terms_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_bar_terms_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_bar_terms_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -2387,6 +2782,302 @@ export type Database = {
           },
         ]
       }
+      event_comms_channels: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          id: string
+          kind: string
+          name: string
+          notes: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          kind?: string
+          name: string
+          notes?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          kind?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_comms_channels_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_comms_channels_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_comms_channels_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_contingency_plans: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          id: string
+          owner_name: string | null
+          plan: string | null
+          scenario: string
+          trigger: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          owner_name?: string | null
+          plan?: string | null
+          scenario: string
+          trigger?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          owner_name?: string | null
+          plan?: string | null
+          scenario?: string
+          trigger?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_contingency_plans_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_contingency_plans_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_contingency_plans_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_contracts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          document_path: string | null
+          event_id: string | null
+          id: string
+          kind: string
+          party_name: string | null
+          proposal_id: string | null
+          signature_ip_hash: string | null
+          signed_at: string | null
+          signed_by_name: string | null
+          status: string
+          terms: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          document_path?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          party_name?: string | null
+          proposal_id?: string | null
+          signature_ip_hash?: string | null
+          signed_at?: string | null
+          signed_by_name?: string | null
+          status?: string
+          terms?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          document_path?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          party_name?: string | null
+          proposal_id?: string | null
+          signature_ip_hash?: string | null
+          signed_at?: string | null
+          signed_by_name?: string | null
+          status?: string
+          terms?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_contracts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_contracts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_contracts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_contracts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_deposits: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          deleted_at: string | null
+          due_date: string | null
+          event_id: string
+          id: string
+          kind: string
+          label: string
+          notes: string | null
+          paid_at: string | null
+          proof_path: string | null
+          refundable: boolean
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          due_date?: string | null
+          event_id: string
+          id?: string
+          kind?: string
+          label: string
+          notes?: string | null
+          paid_at?: string | null
+          proof_path?: string | null
+          refundable?: boolean
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          due_date?: string | null
+          event_id?: string
+          id?: string
+          kind?: string
+          label?: string
+          notes?: string | null
+          paid_at?: string | null
+          proof_path?: string | null
+          refundable?: boolean
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_deposits_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_deposits_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_deposits_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_drafts: {
         Row: {
           cover_path: string | null
@@ -2419,6 +3110,76 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: []
+      }
+      event_drinks_packages: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          deleted_at: string | null
+          event_id: string
+          id: string
+          kind: string
+          min_spend_cents: number
+          name: string
+          notes: string | null
+          price_per_head_cents: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          kind?: string
+          min_spend_cents?: number
+          name: string
+          notes?: string | null
+          price_per_head_cents?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          kind?: string
+          min_spend_cents?: number
+          name?: string
+          notes?: string | null
+          price_per_head_cents?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_drinks_packages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_drinks_packages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_drinks_packages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       event_expenses: {
         Row: {
@@ -2497,6 +3258,58 @@ export type Database = {
           },
           {
             foreignKeyName: "event_expenses_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          event_id: string
+          id: string
+          rating: number | null
+          source: string
+          workspace_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          rating?: number | null
+          source?: string
+          workspace_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          rating?: number | null
+          source?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_feedback_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_feedback_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_feedback_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -2729,6 +3542,298 @@ export type Database = {
           },
         ]
       }
+      event_incidents: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          event_id: string
+          evidence_path: string | null
+          id: string
+          occurred_at: string
+          owner_name: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          event_id: string
+          evidence_path?: string | null
+          id?: string
+          occurred_at?: string
+          owner_name?: string | null
+          severity?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          event_id?: string
+          evidence_path?: string | null
+          id?: string
+          occurred_at?: string
+          owner_name?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_incidents_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_incidents_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_incidents_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_inventory_items: {
+        Row: {
+          assigned: number
+          category: string
+          created_at: string
+          created_by: string | null
+          damaged: number
+          deleted_at: string | null
+          event_id: string
+          id: string
+          lost: number
+          name: string
+          notes: string | null
+          quantity: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          assigned?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          damaged?: number
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          lost?: number
+          name: string
+          notes?: string | null
+          quantity?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          assigned?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          damaged?: number
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          lost?: number
+          name?: string
+          notes?: string | null
+          quantity?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_inventory_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_inventory_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_inventory_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_licenses: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          evidence_path: string | null
+          expiry_date: string | null
+          id: string
+          kind: string
+          reference: string | null
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          evidence_path?: string | null
+          expiry_date?: string | null
+          id?: string
+          kind?: string
+          reference?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          evidence_path?: string | null
+          expiry_date?: string | null
+          id?: string
+          kind?: string
+          reference?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_licenses_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_licenses_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_licenses_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_menu_items: {
+        Row: {
+          allergens: string | null
+          course: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          deleted_at: string | null
+          description: string | null
+          dietary: string | null
+          event_id: string
+          id: string
+          name: string
+          package: string | null
+          price_cents: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          allergens?: string | null
+          course?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          dietary?: string | null
+          event_id: string
+          id?: string
+          name: string
+          package?: string | null
+          price_cents?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          allergens?: string | null
+          course?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          dietary?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          package?: string | null
+          price_cents?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_menu_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_menu_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_menu_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_mood_boards: {
         Row: {
           created_at: string
@@ -2784,12 +3889,429 @@ export type Database = {
           },
         ]
       }
+      event_passes: {
+        Row: {
+          code: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          holder_name: string
+          id: string
+          kind: string
+          scanned_at: string | null
+          updated_at: string
+          workspace_id: string
+          zones: string | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          holder_name: string
+          id?: string
+          kind?: string
+          scanned_at?: string | null
+          updated_at?: string
+          workspace_id: string
+          zones?: string | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          holder_name?: string
+          id?: string
+          kind?: string
+          scanned_at?: string | null
+          updated_at?: string
+          workspace_id?: string
+          zones?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_passes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_passes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_passes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_playbooks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data: Json
+          deleted_at: string | null
+          event_type: string | null
+          id: string
+          name: string
+          source_event_id: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          deleted_at?: string | null
+          event_type?: string | null
+          id?: string
+          name: string
+          source_event_id?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          deleted_at?: string | null
+          event_type?: string | null
+          id?: string
+          name?: string
+          source_event_id?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_playbooks_source_event_id_fkey"
+            columns: ["source_event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_playbooks_source_event_id_fkey"
+            columns: ["source_event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_playbooks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_public_pages: {
+        Row: {
+          category: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          event_id: string
+          headline: string | null
+          hero_path: string | null
+          id: string
+          published: boolean
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          starts_at: string | null
+          summary: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          category?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          headline?: string | null
+          hero_path?: string | null
+          id?: string
+          published?: boolean
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          starts_at?: string | null
+          summary?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          category?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          headline?: string | null
+          hero_path?: string | null
+          id?: string
+          published?: boolean
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          starts_at?: string | null
+          summary?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_public_pages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_public_pages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_public_pages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_purchase_orders: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          deleted_at: string | null
+          delivery_window: string | null
+          event_id: string
+          id: string
+          notes: string | null
+          reference: string | null
+          status: string
+          supplier_id: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          delivery_window?: string | null
+          event_id: string
+          id?: string
+          notes?: string | null
+          reference?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          delivery_window?: string | null
+          event_id?: string
+          id?: string
+          notes?: string | null
+          reference?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_purchase_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_purchase_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_purchase_orders_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_registrations: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_id: string
+          id: string
+          name: string
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          name: string
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registrations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_risks: {
+        Row: {
+          category: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          due_date: string | null
+          event_id: string
+          evidence_path: string | null
+          id: string
+          impact: number
+          likelihood: number
+          mitigation: string | null
+          owner_name: string | null
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          due_date?: string | null
+          event_id: string
+          evidence_path?: string | null
+          id?: string
+          impact?: number
+          likelihood?: number
+          mitigation?: string | null
+          owner_name?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          due_date?: string | null
+          event_id?: string
+          evidence_path?: string | null
+          id?: string
+          impact?: number
+          likelihood?: number
+          mitigation?: string | null
+          owner_name?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_risks_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_risks_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_risks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rooms: {
         Row: {
+          capacity: number | null
           created_at: string
           event_id: string
           id: string
           is_primary: boolean
+          layout_mode: string | null
+          name: string | null
           notes: string | null
           position: number
           room_id: string
@@ -2797,10 +4319,13 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          capacity?: number | null
           created_at?: string
           event_id: string
           id?: string
           is_primary?: boolean
+          layout_mode?: string | null
+          name?: string | null
           notes?: string | null
           position?: number
           room_id: string
@@ -2808,10 +4333,13 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          capacity?: number | null
           created_at?: string
           event_id?: string
           id?: string
           is_primary?: boolean
+          layout_mode?: string | null
+          name?: string | null
           notes?: string | null
           position?: number
           room_id?: string
@@ -2901,6 +4429,197 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_settlement_lines: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          kind: string
+          label: string
+          party_name: string | null
+          settlement_id: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          label: string
+          party_name?: string | null
+          settlement_id: string
+          workspace_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string
+          party_name?: string | null
+          settlement_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_settlement_lines_settlement_id_fkey"
+            columns: ["settlement_id"]
+            isOneToOne: false
+            referencedRelation: "event_settlements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_settlement_lines_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_settlements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deposits_returned_cents: number
+          deposits_withheld_cents: number
+          event_id: string
+          gross_revenue_cents: number
+          id: string
+          net_profit_cents: number
+          settled_at: string | null
+          statement_path: string | null
+          status: string
+          total_costs_cents: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deposits_returned_cents?: number
+          deposits_withheld_cents?: number
+          event_id: string
+          gross_revenue_cents?: number
+          id?: string
+          net_profit_cents?: number
+          settled_at?: string | null
+          statement_path?: string | null
+          status?: string
+          total_costs_cents?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deposits_returned_cents?: number
+          deposits_withheld_cents?: number
+          event_id?: string
+          gross_revenue_cents?: number
+          id?: string
+          net_profit_cents?: number
+          settled_at?: string | null
+          statement_path?: string | null
+          status?: string
+          total_costs_cents?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_settlements_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_settlements_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_settlements_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_splits: {
+        Row: {
+          applies_to: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          fixed_cents: number
+          id: string
+          kind: string
+          notes: string | null
+          party_name: string
+          pct: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          applies_to?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          fixed_cents?: number
+          id?: string
+          kind?: string
+          notes?: string | null
+          party_name: string
+          pct?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          applies_to?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          fixed_cents?: number
+          id?: string
+          kind?: string
+          notes?: string | null
+          party_name?: string
+          pct?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_splits_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_splits_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_splits_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -3050,6 +4769,83 @@ export type Database = {
           },
         ]
       }
+      event_tables: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          event_id: string
+          id: string
+          kind: string
+          name: string
+          pos_x: number | null
+          pos_y: number | null
+          room_id: string | null
+          seats: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          kind?: string
+          name: string
+          pos_x?: number | null
+          pos_y?: number | null
+          room_id?: string | null
+          seats?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          kind?: string
+          name?: string
+          pos_x?: number | null
+          pos_y?: number | null
+          room_id?: string | null
+          seats?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_tables_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_tables_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_tables_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "event_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_tables_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_tasks: {
         Row: {
           archived_at: string | null
@@ -3155,6 +4951,187 @@ export type Database = {
         }
         Relationships: []
       }
+      event_theme_plans: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          decor_budget_cents: number
+          decor_supplier: string | null
+          deleted_at: string | null
+          event_id: string
+          id: string
+          moodboard_path: string | null
+          notes: string | null
+          palette: string | null
+          room_id: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          decor_budget_cents?: number
+          decor_supplier?: string | null
+          deleted_at?: string | null
+          event_id: string
+          id?: string
+          moodboard_path?: string | null
+          notes?: string | null
+          palette?: string | null
+          room_id?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          decor_budget_cents?: number
+          decor_supplier?: string | null
+          deleted_at?: string | null
+          event_id?: string
+          id?: string
+          moodboard_path?: string | null
+          notes?: string | null
+          palette?: string | null
+          room_id?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_theme_plans_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_theme_plans_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_theme_plans_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "event_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_theme_plans_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_type_templates: {
+        Row: {
+          created_at: string
+          data: Json
+          event_type_id: string
+          id: string
+          kind: string
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          event_type_id: string
+          id?: string
+          kind: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          event_type_id?: string
+          id?: string
+          kind?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_type_templates_event_type_id_fkey"
+            columns: ["event_type_id"]
+            isOneToOne: false
+            referencedRelation: "event_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_type_templates_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_types: {
+        Row: {
+          category: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_default: boolean
+          key: string
+          name: string
+          sort: number
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean
+          key: string
+          name: string
+          sort?: number
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean
+          key?: string
+          name?: string
+          sort?: number
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_types_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_venues: {
         Row: {
           created_at: string
@@ -3220,6 +5197,55 @@ export type Database = {
           },
         ]
       }
+      event_waitlist: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_id: string
+          id: string
+          name: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          name: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_waitlist_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_waitlist_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_waitlist_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           budget_cents: number
@@ -3245,6 +5271,7 @@ export type Database = {
           guest_count_evening: number
           id: string
           internal_notes: string | null
+          layout_mode: string | null
           location: string | null
           name: string
           owner_user_id: string | null
@@ -3286,6 +5313,7 @@ export type Database = {
           guest_count_evening?: number
           id?: string
           internal_notes?: string | null
+          layout_mode?: string | null
           location?: string | null
           name: string
           owner_user_id?: string | null
@@ -3327,6 +5355,7 @@ export type Database = {
           guest_count_evening?: number
           id?: string
           internal_notes?: string | null
+          layout_mode?: string | null
           location?: string | null
           name?: string
           owner_user_id?: string | null
@@ -8383,6 +10412,162 @@ export type Database = {
           },
         ]
       }
+      ticket_orders: {
+        Row: {
+          amount_cents: number
+          buyer_email: string | null
+          buyer_name: string | null
+          created_at: string
+          currency: string
+          event_id: string
+          id: string
+          quantity: number
+          status: string
+          stripe_session_id: string | null
+          ticket_type_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          buyer_email?: string | null
+          buyer_name?: string | null
+          created_at?: string
+          currency?: string
+          event_id: string
+          id?: string
+          quantity?: number
+          status?: string
+          stripe_session_id?: string | null
+          ticket_type_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          amount_cents?: number
+          buyer_email?: string | null
+          buyer_name?: string | null
+          created_at?: string
+          currency?: string
+          event_id?: string
+          id?: string
+          quantity?: number
+          status?: string
+          stripe_session_id?: string | null
+          ticket_type_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_orders_ticket_type_id_fkey"
+            columns: ["ticket_type_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_orders_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_types: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          deleted_at: string | null
+          description: string | null
+          event_id: string
+          id: string
+          name: string
+          price_cents: number
+          quantity: number | null
+          sales_end: string | null
+          sales_start: string | null
+          sold: number
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          event_id: string
+          id?: string
+          name: string
+          price_cents?: number
+          quantity?: number | null
+          sales_end?: string | null
+          sales_start?: string | null
+          sold?: number
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          price_cents?: number
+          quantity?: number | null
+          sales_end?: string | null
+          sales_start?: string | null
+          sold?: number
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_types_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_types_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_types_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_notification_preferences: {
         Row: {
           category: string
@@ -9638,6 +11823,7 @@ export type Database = {
         Row: {
           activated_at: string | null
           branding: Json
+          country: string
           created_at: string
           currency: string
           deleted_at: string | null
@@ -9646,6 +11832,7 @@ export type Database = {
           name: string
           owner_user_id: string
           plan: string
+          release_stage: string
           slug: string
           stripe_billing_account_id: string | null
           stripe_billing_charges_enabled: boolean
@@ -9662,10 +11849,12 @@ export type Database = {
           timezone: string
           trial_ends_at: string | null
           updated_at: string
+          workspace_type: string
         }
         Insert: {
           activated_at?: string | null
           branding?: Json
+          country?: string
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -9674,6 +11863,7 @@ export type Database = {
           name: string
           owner_user_id: string
           plan?: string
+          release_stage?: string
           slug: string
           stripe_billing_account_id?: string | null
           stripe_billing_charges_enabled?: boolean
@@ -9690,10 +11880,12 @@ export type Database = {
           timezone?: string
           trial_ends_at?: string | null
           updated_at?: string
+          workspace_type?: string
         }
         Update: {
           activated_at?: string | null
           branding?: Json
+          country?: string
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -9702,6 +11894,7 @@ export type Database = {
           name?: string
           owner_user_id?: string
           plan?: string
+          release_stage?: string
           slug?: string
           stripe_billing_account_id?: string | null
           stripe_billing_charges_enabled?: boolean
@@ -9718,6 +11911,7 @@ export type Database = {
           timezone?: string
           trial_ends_at?: string | null
           updated_at?: string
+          workspace_type?: string
         }
         Relationships: []
       }
@@ -11184,6 +13378,7 @@ export type Database = {
         Returns: {
           activated_at: string | null
           branding: Json
+          country: string
           created_at: string
           currency: string
           deleted_at: string | null
@@ -11192,6 +13387,7 @@ export type Database = {
           name: string
           owner_user_id: string
           plan: string
+          release_stage: string
           slug: string
           stripe_billing_account_id: string | null
           stripe_billing_charges_enabled: boolean
@@ -11208,6 +13404,7 @@ export type Database = {
           timezone: string
           trial_ends_at: string | null
           updated_at: string
+          workspace_type: string
         }
         SetofOptions: {
           from: "*"

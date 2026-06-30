@@ -55,7 +55,7 @@ export function EventCard({
       <div className="px-4 pt-4 pb-3 border-b border-surface-100">
         <div className="flex items-start justify-between gap-2 mb-2">
           <Link
-            href={`/events/${id}`}
+            href={`/event-manager/events/${id}`}
             className="font-semibold text-surface-900 text-sm leading-snug group-hover:text-brand-600 transition-colors line-clamp-2"
           >
             {name}
@@ -122,7 +122,7 @@ export function EventCard({
       {/* Footer */}
       <div className="px-4 py-3 border-t border-surface-100">
         <Link
-          href={`/events/${id}`}
+          href={`/event-manager/events/${id}`}
           className="flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors"
         >
           Open

@@ -6,7 +6,7 @@ import {
   formatDate,
   formatDateTime,
   formatGBP,
-} from "../../(app)/venue-management/lib";
+} from "../../event-manager/venue-management/lib";
 
 export const dynamic = "force-dynamic";
 

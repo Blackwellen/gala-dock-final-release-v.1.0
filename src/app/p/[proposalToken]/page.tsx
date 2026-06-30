@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Proposal, ProposalLineItem } from "@/lib/supabase/types";
-import { ProposalDocument } from "@/app/(app)/proposals/_components/ProposalDocument";
+import { ProposalDocument } from "@/app/event-manager/proposals/_components/ProposalDocument";
 import { SignPanel } from "./SignPanel";
 
 export const metadata = { title: "Proposal", robots: { index: false } };

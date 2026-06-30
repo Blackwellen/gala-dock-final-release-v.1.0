@@ -4,53 +4,48 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-const NAV_SECTIONS = [
+// 3-settings model (product brief): exactly three types.
+//   • Account   — for EVERY member (personal profile, security, prefs, notifications).
+//   • Workspace — admin / workspace-manager only (workspace config, team, defaults, automation, data).
+//   • Billing   — admin / workspace-manager only (plan, usage).
+// `scope` lets us hide the admin-only groups from members who can't manage the workspace.
+type SettingsScope = "account" | "workspace" | "billing";
+
+const NAV_SECTIONS: { label: string; scope: SettingsScope; links: { href: string; label: string }[] }[] = [
   {
     label: "Account",
+    scope: "account",
     links: [
-      { href: "/settings/account", label: "Account" },
-      { href: "/settings/security", label: "Security" },
-      { href: "/settings/preferences", label: "Preferences" },
+      { href: "/event-manager/settings/account", label: "Account" },
+      { href: "/event-manager/settings/security", label: "Security" },
+      { href: "/event-manager/settings/preferences", label: "Preferences" },
+      { href: "/event-manager/settings/notifications", label: "Notifications" },
     ],
   },
   {
     label: "Workspace",
+    scope: "workspace",
     links: [
-      { href: "/settings/workspace", label: "Workspace" },
-      { href: "/settings/branding", label: "Branding" },
-      { href: "/settings/team", label: "Team" },
-      { href: "/settings/roles", label: "Roles" },
+      { href: "/event-manager/settings/workspace", label: "General" },
+      { href: "/event-manager/settings/branding", label: "Branding" },
+      { href: "/event-manager/settings/team", label: "Team" },
+      { href: "/event-manager/settings/roles", label: "Roles" },
+      { href: "/event-manager/settings/event-defaults", label: "Event Defaults" },
+      { href: "/event-manager/settings/supplier-defaults", label: "Supplier Defaults" },
+      { href: "/event-manager/settings/finance-defaults", label: "Finance Defaults" },
+      { href: "/event-manager/settings/smart-rules", label: "Smart Rules" },
+      { href: "/event-manager/settings/ai", label: "AI" },
+      { href: "/event-manager/settings/affiliate", label: "Affiliate" },
+      { href: "/event-manager/settings/data-export", label: "Data Export" },
+      { href: "/event-manager/settings/audit", label: "Audit Log" },
     ],
   },
   {
     label: "Billing",
+    scope: "billing",
     links: [
-      { href: "/settings/billing", label: "Billing" },
-      { href: "/settings/usage", label: "Usage" },
-    ],
-  },
-  {
-    label: "Defaults",
-    links: [
-      { href: "/settings/supplier-defaults", label: "Supplier Defaults" },
-      { href: "/settings/event-defaults", label: "Event Defaults" },
-      { href: "/settings/finance-defaults", label: "Finance Defaults" },
-    ],
-  },
-  {
-    label: "Automation",
-    links: [
-      { href: "/settings/smart-rules", label: "Smart Rules" },
-      { href: "/settings/ai", label: "AI" },
-    ],
-  },
-  {
-    label: "Other",
-    links: [
-      { href: "/settings/affiliate", label: "Affiliate" },
-      { href: "/settings/notifications", label: "Notifications" },
-      { href: "/settings/data-export", label: "Data Export" },
-      { href: "/settings/audit", label: "Audit" },
+      { href: "/event-manager/settings/billing", label: "Plan & Billing" },
+      { href: "/event-manager/settings/usage", label: "Usage" },
     ],
   },
 ];
@@ -58,11 +53,14 @@ const NAV_SECTIONS = [
 interface SettingsShellProps {
   title: string;
   description?: string;
+  /** When false, the admin-only Workspace + Billing groups are hidden. Defaults to true. */
+  canManageWorkspace?: boolean;
   children: React.ReactNode;
 }
 
-export function SettingsShell({ title, description, children }: SettingsShellProps) {
+export function SettingsShell({ title, description, canManageWorkspace = true, children }: SettingsShellProps) {
   const pathname = usePathname();
+  const sections = NAV_SECTIONS.filter((s) => s.scope === "account" || canManageWorkspace);
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -75,7 +73,7 @@ export function SettingsShell({ title, description, children }: SettingsShellPro
       <div className="flex gap-0">
         {/* Left nav */}
         <aside className="w-[200px] shrink-0 border-r border-surface-200 bg-white min-h-[calc(100vh-73px)] p-4 hidden md:block">
-          {NAV_SECTIONS.map((section) => (
+          {sections.map((section) => (
             <div key={section.label} className="mb-5">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-surface-400 mb-1.5 px-2">
                 {section.label}
@@ -107,7 +105,7 @@ export function SettingsShell({ title, description, children }: SettingsShellPro
         {/* Mobile nav */}
         <div className="md:hidden w-full border-b border-surface-200 bg-white px-4 py-2 overflow-x-auto">
           <div className="flex gap-1">
-            {NAV_SECTIONS.flatMap((s) => s.links).map((link) => {
+            {sections.flatMap((s) => s.links).map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link

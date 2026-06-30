@@ -91,7 +91,7 @@ export default function AcceptInviteForm() {
       return;
     }
 
-    router.push("/home");
+    router.push("/event-manager/home");
     router.refresh();
   }
 

@@ -4,12 +4,22 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
-export function formatCurrency(amount: number, currency = "GBP"): string {
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(amount);
+// Locale-aware formatters (INTL-0). Default to en-GB / GBP so existing call sites are
+// unchanged; pass a BCP-47 locale (and currency) to localise per workspace/country.
+export function formatCurrency(amount: number, currency = "GBP", locale = "en-GB"): string {
+  return new Intl.NumberFormat(locale, { style: "currency", currency }).format(amount);
 }
 
-export function formatDate(date: string | Date, options?: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat("en-GB", {
+export function formatNumber(value: number, locale = "en-GB", options?: Intl.NumberFormatOptions): string {
+  return new Intl.NumberFormat(locale, options).format(value);
+}
+
+export function formatDate(
+  date: string | Date,
+  options?: Intl.DateTimeFormatOptions,
+  locale = "en-GB"
+): string {
+  return new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",

@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Gala Dock",
     short_name: "Gala Dock",
     description: "The Event Delivery OS — plan, deliver and manage events end to end.",
-    start_url: "/home",
+    start_url: "/event-manager/home",
     scope: "/",
     display: "standalone",
     orientation: "any",

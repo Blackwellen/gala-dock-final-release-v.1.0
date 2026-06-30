@@ -14,7 +14,7 @@ import {
   updateGuest,
   removeGuest,
   importGuests,
-} from "@/app/(app)/events/[eventId]/guest-actions";
+} from "@/app/event-manager/events/[eventId]/guest-actions";
 
 /** Mirrors the (non-exported) GuestInput shape in guest-actions.ts. */
 export interface GuestInput {

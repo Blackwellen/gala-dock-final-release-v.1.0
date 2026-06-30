@@ -153,7 +153,7 @@ export function EventDayBoard({ eventId, eventName, dateLabel, items }: EventDay
           <div className="ml-auto shrink-0">
             <button
               type="button"
-              onClick={() => router.push(`/events/${eventId}`)}
+              onClick={() => router.push(`/event-manager/events/${eventId}`)}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-surface-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             >
               <LogOut className="w-4 h-4" strokeWidth={1.8} />
