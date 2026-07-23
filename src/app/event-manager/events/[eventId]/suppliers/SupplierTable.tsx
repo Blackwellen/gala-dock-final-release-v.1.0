@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Pencil, Check, X, Loader2, CheckCircle2, Clock, AlertCircle, XCircle, Mail, Phone } from "lucide-react";
+import { Pencil, Check, X, Loader2, CheckCircle2, Clock, AlertCircle, XCircle, Mail, Phone, Banknote } from "lucide-react";
 import { updateEventSupplierField } from "./actions";
 
 const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  confirmed:   { label: "Confirmed",   className: "bg-success-100 text-success-700 border-success-200" },
   shortlisted: { label: "Shortlisted", className: "bg-blue-100 text-blue-700 border-blue-200" },
   contacted:   { label: "Contacted",   className: "bg-warning-100 text-warning-700 border-warning-200" },
+  confirmed:   { label: "Confirmed",   className: "bg-success-100 text-success-700 border-success-200" },
   declined:    { label: "Declined",    className: "bg-danger-100 text-danger-700 border-danger-200" },
   cancelled:   { label: "Cancelled",   className: "bg-surface-100 text-surface-500 border-surface-200" },
 };
@@ -24,18 +24,21 @@ function StatusIcon({ status }: { status: string | null }) {
   return <AlertCircle className="h-3.5 w-3.5" />;
 }
 
+function formatGBP(cents: number | null): string | null {
+  if (!cents) return null;
+  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(cents / 100);
+}
+
 export interface SupplierRow {
   id: string;
-  role_on_event: string | null;
+  role: string | null;
+  supplier_name: string;
   status: string | null;
   notes: string | null;
-  suppliers: {
-    id: string;
-    name: string | null;
-    primary_email: string | null;
-    primary_phone: string | null;
-    category: string | null;
-  } | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  contract_value_cents: number | null;
 }
 
 function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }) {
@@ -43,17 +46,13 @@ function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState({
-    role_on_event: row.role_on_event ?? "",
-    status:        row.status ?? "shortlisted",
-    notes:         row.notes ?? "",
+    role:   row.role ?? "",
+    status: row.status ?? "shortlisted",
+    notes:  row.notes ?? "",
   });
 
   const openEdit = useCallback(() => {
-    setDraft({
-      role_on_event: row.role_on_event ?? "",
-      status:        row.status ?? "shortlisted",
-      notes:         row.notes ?? "",
-    });
+    setDraft({ role: row.role ?? "", status: row.status ?? "shortlisted", notes: row.notes ?? "" });
     setError(null);
     setExpanded(true);
   }, [row]);
@@ -72,6 +71,7 @@ function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }
   }, [draft, eventId, row.id]);
 
   const st = statusStyle(row.status);
+  const valueStr = formatGBP(row.contract_value_cents);
 
   const inputCls = "w-full rounded-lg border border-surface-200 px-2.5 py-1.5 text-xs text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500";
   const labelCls = "text-[10px] font-semibold uppercase tracking-wider text-surface-500 mb-0.5";
@@ -80,12 +80,12 @@ function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }
     <>
       <tr className="hover:bg-surface-50 transition-colors group">
         <td className="px-5 py-3.5">
-          <p className="font-medium text-surface-900">{row.suppliers?.name ?? "Unknown supplier"}</p>
-          {row.suppliers?.category && (
-            <p className="text-xs text-surface-400">{row.suppliers.category}</p>
+          <p className="font-medium text-surface-900">{row.supplier_name}</p>
+          {row.contact_name && (
+            <p className="text-xs text-surface-400">{row.contact_name}</p>
           )}
         </td>
-        <td className="px-5 py-3.5 text-surface-700">{row.role_on_event ?? "—"}</td>
+        <td className="px-5 py-3.5 text-surface-700">{row.role ?? "—"}</td>
         <td className="px-5 py-3.5">
           <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${st.className}`}>
             <StatusIcon status={row.status} />
@@ -94,15 +94,21 @@ function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }
         </td>
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-3">
-            {row.suppliers?.primary_email && (
-              <a href={`mailto:${row.suppliers.primary_email}`} className="text-surface-400 hover:text-brand-600 transition-colors">
+            {row.contact_email && (
+              <a href={`mailto:${row.contact_email}`} className="text-surface-400 hover:text-brand-600 transition-colors" title={row.contact_email}>
                 <Mail className="h-4 w-4" />
               </a>
             )}
-            {row.suppliers?.primary_phone && (
-              <a href={`tel:${row.suppliers.primary_phone}`} className="text-surface-400 hover:text-brand-600 transition-colors">
+            {row.contact_phone && (
+              <a href={`tel:${row.contact_phone}`} className="text-surface-400 hover:text-brand-600 transition-colors" title={row.contact_phone}>
                 <Phone className="h-4 w-4" />
               </a>
+            )}
+            {valueStr && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-surface-500">
+                <Banknote className="h-3.5 w-3.5" />
+                {valueStr}
+              </span>
             )}
           </div>
         </td>
@@ -124,14 +130,17 @@ function SupplierRowComp({ row, eventId }: { row: SupplierRow; eventId: string }
             <div className="grid grid-cols-3 gap-x-6 gap-y-3 max-w-2xl">
               <div>
                 <p className={labelCls}>Role on Event</p>
-                <input className={inputCls} value={draft.role_on_event} placeholder="e.g. AV & Technical Production" onChange={(e) => setDraft((d) => ({ ...d, role_on_event: e.target.value }))} />
+                <input className={inputCls} value={draft.role} placeholder="e.g. AV & Technical Production" onChange={(e) => setDraft((d) => ({ ...d, role: e.target.value }))} />
               </div>
               <div>
                 <p className={labelCls}>Status</p>
                 <select className={inputCls} value={draft.status} onChange={(e) => setDraft((d) => ({ ...d, status: e.target.value }))}>
                   {[
-                    ["shortlisted","Shortlisted"],["contacted","Contacted"],["confirmed","Confirmed"],
-                    ["declined","Declined"],["cancelled","Cancelled"],
+                    ["shortlisted", "Shortlisted"],
+                    ["contacted",   "Contacted"],
+                    ["confirmed",   "Confirmed"],
+                    ["declined",    "Declined"],
+                    ["cancelled",   "Cancelled"],
                   ].map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                 </select>
               </div>
@@ -171,7 +180,7 @@ export function SupplierTable({ rows, eventId }: SupplierTableProps) {
             <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500">Supplier</th>
             <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500">Role</th>
             <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500">Status</th>
-            <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500">Contact</th>
+            <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500">Contact / Value</th>
             <th className="px-5 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-surface-500 w-20">Edit</th>
           </tr>
         </thead>

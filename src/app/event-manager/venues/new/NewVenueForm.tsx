@@ -6,9 +6,8 @@ import { X, Building2, Upload, CheckCircle2 } from "lucide-react";
 import { createVenue } from "../actions";
 
 const STATUSES = [
-  { value: "preferred", label: "Preferred" },
   { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
+  { value: "archived", label: "Archived" },
 ];
 
 const inputCls =
@@ -77,6 +76,7 @@ export function NewVenueForm() {
 
   const [name, setName] = useState("");
   const [status, setStatus] = useState("active");
+  const [isPreferred, setIsPreferred] = useState(false);
   const [website, setWebsite] = useState("");
   const [addr1, setAddr1] = useState("");
   const [addr2, setAddr2] = useState("");
@@ -97,6 +97,7 @@ export function NewVenueForm() {
     const fd = new FormData();
     fd.set("name", name);
     fd.set("status", status);
+    if (isPreferred) fd.set("is_preferred", "on");
     fd.set("website", website);
     fd.set("address_line1", addr1);
     fd.set("address_line2", addr2);
@@ -175,6 +176,17 @@ export function NewVenueForm() {
             </Field>
             <Field label="Website">
               <input type="url" placeholder="https://example.com" value={website} onChange={(e) => setWebsite(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Preferred">
+              <label className="flex items-center gap-2 text-sm text-surface-600">
+                <input
+                  type="checkbox"
+                  checked={isPreferred}
+                  onChange={(e) => setIsPreferred(e.target.checked)}
+                  className="rounded border-surface-300"
+                />
+                Mark as a preferred venue for this workspace
+              </label>
             </Field>
             <Field label="Cover Image">
               <label className="flex items-center gap-3 cursor-pointer">

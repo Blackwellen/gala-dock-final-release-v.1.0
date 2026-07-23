@@ -25,6 +25,7 @@ export interface ShellData {
   unreadCount: number;
   userInitials: string;
   userEmail: string;
+  sidebarCollapsed: boolean;
 }
 
 function initials(name: string | null, email: string): string {
@@ -47,6 +48,7 @@ export async function getShellData(): Promise<ShellData> {
     unreadCount: 0,
     userInitials: "GD",
     userEmail: "",
+    sidebarCollapsed: false,
   };
 
   const supabase = await createClient();
@@ -58,7 +60,7 @@ export async function getShellData(): Promise<ShellData> {
   const [{ data: profile }, { data: members }, { data: notifs }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("active_workspace_id, display_name")
+      .select("active_workspace_id, display_name, sidebar_collapsed")
       .eq("user_id", user.id)
       .maybeSingle(),
     supabase
@@ -100,5 +102,6 @@ export async function getShellData(): Promise<ShellData> {
     unreadCount: notifications.filter((n) => !n.read).length,
     userInitials: initials(profile?.display_name ?? null, user.email ?? ""),
     userEmail: user.email ?? "",
+    sidebarCollapsed: profile?.sidebar_collapsed ?? false,
   };
 }

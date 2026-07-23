@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Database,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { cn } from "@/lib/utils";
+import { getOrStartOnboardingSession, saveOnboardingStep } from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -54,10 +55,23 @@ export default function OnboardingDemoDataPage() {
   const router = useRouter();
   const [loadDemo, setLoadDemo] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "demo-data");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      const saved = result.data.draft?.["demo-data"] as { loadDemo?: boolean } | undefined;
+      if (typeof saved?.loadDemo === "boolean") setLoadDemo(saved.loadDemo);
+    })();
+  }, []);
 
   async function handleNext() {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "demo-data", { loadDemo }, "first-event");
+    }
     router.push("/onboarding/first-event");
   }
 

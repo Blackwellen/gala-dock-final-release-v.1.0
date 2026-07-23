@@ -19,10 +19,14 @@ const FOOTER_LINKS = {
   ],
   Company: [
     { label: "Security",  href: "/security" },
-    { label: "Affiliate", href: "/affiliate" },
     { label: "Contact",   href: "/contact" },
     { label: "Book Demo", href: "/book-demo" },
     { label: "Status",    href: "/status" },
+  ],
+  "Account Access": [
+    { label: "Customer Login",  href: "/customer/login" },
+    { label: "Operator Login",  href: "/operator/login" },
+    { label: "Affiliate Login", href: "/affiliate/login" },
   ],
   Legal: [
     { label: "Privacy Policy",     href: "/legal/privacy" },
@@ -41,7 +45,7 @@ export function MarketingFooter() {
     <footer className="bg-surface-900 text-surface-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         {/* Top: logo + links */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <Image src="/gala-dock-logo.png" alt="Gala Dock" width={120} height={30} className="brightness-0 invert" />
             <p className="mt-3 text-sm text-surface-400 leading-relaxed">

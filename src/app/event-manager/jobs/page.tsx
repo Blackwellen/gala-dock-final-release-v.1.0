@@ -1,13 +1,16 @@
-import Link from "next/link";
 import { Briefcase } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionTabs, JOBS_TABS } from "@/components/ui/SectionTabs";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { JobsList } from "./JobsList";
 
 export const dynamic = "force-dynamic";
 
 // Supplier "Jobs" view — the supplier persona's work queue (tasks/jobs in their workspace).
+// Overview shows every job in the workspace; see Assigned/Completed/Evidence for the
+// depth sub-tabs (JOBS_TABS in @/components/ui/SectionTabs).
 export default async function JobsPage() {
   const { workspaceId } = await requireWorkspace();
   const supabase = await createClient();
@@ -16,6 +19,7 @@ export default async function JobsPage() {
     .from("tasks")
     .select("id, title, status, due_at")
     .eq("workspace_id", workspaceId)
+    .is("archived_at", null)
     .order("due_at", { ascending: true, nullsFirst: false })
     .limit(50);
 
@@ -23,7 +27,11 @@ export default async function JobsPage() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Jobs" description="Work assigned to you across events." />
+      <PageHeader
+        title="Jobs"
+        description="Work assigned to you across events."
+        tabs={<SectionTabs tabs={JOBS_TABS} />}
+      />
       <div className="px-6 lg:px-8 pb-8">
         {rows.length === 0 ? (
           <EmptyState
@@ -32,18 +40,7 @@ export default async function JobsPage() {
             description="Jobs you're assigned to from events and RFQs will appear here."
           />
         ) : (
-          <div className="rounded-xl border border-surface-200 bg-white divide-y divide-surface-100">
-            {rows.map((j) => (
-              <Link
-                key={j.id}
-                href={`/event-manager/tasks/${j.id}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-surface-50"
-              >
-                <span className="text-sm text-surface-800 truncate">{j.title}</span>
-                <span className="text-xs text-surface-400 shrink-0 ml-3">{String(j.status)}</span>
-              </Link>
-            ))}
-          </div>
+          <JobsList jobs={rows} />
         )}
       </div>
     </div>

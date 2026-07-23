@@ -4,7 +4,7 @@ import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-const SUPPLIER_EDITABLE = new Set(["role_on_event", "status", "notes"]);
+const SUPPLIER_EDITABLE = new Set(["role", "status", "notes"]);
 
 export async function updateEventSupplierField(
   eventId: string,

@@ -34,6 +34,17 @@ export type SupplierContact = Tables<"supplier_contacts">;
 
 export type Task = Tables<"tasks">;
 export type TaskList = Tables<"task_lists">;
+export type TaskAssignee = Tables<"task_assignees">;
+export type TaskComment = Tables<"task_comments">;
+export type TaskChecklistItem = Tables<"task_checklist_items">;
+export type TaskDependency = Tables<"task_dependencies">;
+export type TaskWatcher = Tables<"task_watchers">;
+export type TaskAttachment = Tables<"task_attachments">;
+export type TaskActivity = Tables<"task_activity">;
+export type TaskStatusHistory = Tables<"task_status_history">;
+export type TaskTemplate = Tables<"task_templates">;
+export type TaskTemplateItem = Tables<"task_template_items">;
+export type TaskTemplateUsage = Tables<"task_template_usage">;
 
 export type Quote = Tables<"quotes">;
 export type QuoteLine = Tables<"quote_lines">;
@@ -79,6 +90,15 @@ export type VenueStaffAssignment = Tables<"venue_staff_assignments">;
 export type EventMoodBoard = Tables<"event_mood_boards">;
 export type MoodBoardItem = Tables<"mood_board_items">;
 export type EventExpense = Tables<"event_expenses">;
+export type EventExpensePayment = Tables<"event_expense_payments">;
+export type EventDeposit = Tables<"event_deposits">;
+export type EventDepositPayment = Tables<"event_deposit_payments">;
+export type SupplierPaymentBatch = Tables<"supplier_payment_batches">;
+export type Timesheet = Tables<"timesheets">;
+export type PayrollExport = Tables<"payroll_exports">;
+export type TicketOrder = Tables<"ticket_orders">;
+export type TicketType = Tables<"ticket_types">;
+export type FinanceActivityLogEntry = Tables<"finance_activity_log">;
 
 // ── Enum aliases (schema-accurate) ──────────────────────────────────────────
 export type WorkspaceMemberRole = Enums<"workspace_role">;

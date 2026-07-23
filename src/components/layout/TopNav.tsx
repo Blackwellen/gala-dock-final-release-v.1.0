@@ -19,10 +19,11 @@ import {
 import { cn } from "@/lib/utils";
 import { NotificationsMenu } from "@/components/layout/NotificationsMenu";
 import { CommandPalette } from "@/components/layout/CommandPalette";
+import { WorkspaceSwitcher } from "@/components/layout/WorkspaceSwitcher";
 import { openCopilot } from "@/lib/shell/copilot-bus";
 import type { WorkspaceType } from "@/lib/flags/registry";
 import type { FlagMap } from "@/lib/flags/resolve";
-import type { ShellNotification } from "@/lib/shell/data";
+import type { ShellNotification, ShellWorkspace } from "@/lib/shell/data";
 
 const QUICK_CREATE = [
   { label: "New Event",       icon: CalendarDays, href: "/event-manager/events/new" },
@@ -44,6 +45,9 @@ interface TopNavProps {
   unreadCount?: number;
   userInitials?: string;
   userEmail?: string;
+  workspaceName?: string;
+  workspaces?: ShellWorkspace[];
+  activeWorkspaceId?: string | null;
 }
 
 export function TopNav({
@@ -55,6 +59,9 @@ export function TopNav({
   unreadCount = 0,
   userInitials = "GD",
   userEmail = "",
+  workspaceName = "My Workspace",
+  workspaces = [],
+  activeWorkspaceId = null,
 }: TopNavProps) {
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -73,7 +80,7 @@ export function TopNav({
   }, []);
 
   return (
-    <header className="h-14 bg-white border-b border-surface-200 flex items-center px-4 gap-3 shrink-0 relative z-30">
+    <header className="h-[var(--topbar-height)] bg-white/95 backdrop-blur-md border border-sidebar-border rounded-[var(--shell-radius)] shadow-shell-topbar flex items-center px-4 gap-3 shrink-0 relative z-30">
       <CommandPalette
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
@@ -88,6 +95,16 @@ export function TopNav({
       >
         <Menu className="w-5 h-5" />
       </button>
+
+      {/* Workspace switcher */}
+      <WorkspaceSwitcher
+        variant="header"
+        workspaces={workspaces}
+        activeWorkspaceId={activeWorkspaceId}
+        workspaceName={workspaceName}
+        subtitle=""
+      />
+      <span className="hidden md:block w-px h-5 bg-surface-200 shrink-0" />
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 flex-1 min-w-0">

@@ -1,82 +1,93 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   MessageSquare, Plus, Search, Inbox as InboxIcon, MailOpen, Users, StickyNote,
-  ChevronRight, CalendarDays,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
+import { MetricCard } from "@/components/ui/MetricCard";
 import { TabNav } from "@/components/ui/TabNav";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { cn } from "@/lib/utils";
-import { ComposeDialog, type EventOption } from "./ComposeDialog";
-import { COMM_TYPE_META, formatRelative, type ThreadSummary } from "./inbox-utils";
+import { ConversationListItem } from "@/components/inbox/ConversationListItem";
+import { ConversationThread } from "@/components/inbox/ConversationThread";
+import { useConversationListRealtime } from "@/lib/messaging/realtime";
+import { NewMessageDialog, type EventOption } from "./NewMessageDialog";
+import type { ConversationDetail, ConversationSummary, InboxMetrics, InboxTab, MessageSummary } from "@/lib/messaging/types";
 
-export interface InboxMetrics {
-  conversations: number;
-  unread: number;
-  clientThreads: number;
-  internalThreads: number;
-}
-
-type FilterTab = "all" | "unread" | "client" | "internal";
+const TAB_LABELS: Record<InboxTab, string> = {
+  all: "All",
+  unread: "Unread",
+  conversations: "Conversations",
+  internal: "Internal",
+};
 
 export function InboxClient({
-  threads,
+  workspaceId,
+  tab,
+  conversations,
   metrics,
+  selectedConversation,
+  messages,
   events,
 }: {
-  threads: ThreadSummary[];
+  workspaceId: string;
+  tab: InboxTab;
+  conversations: ConversationSummary[];
   metrics: InboxMetrics;
+  selectedConversation: ConversationDetail | null;
+  messages: MessageSummary[];
   events: EventOption[];
 }) {
-  const [tab, setTab] = useState<FilterTab>("all");
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [composeOpen, setComposeOpen] = useState(false);
+  const liveConversations = useConversationListRealtime(workspaceId, tab, undefined, conversations);
 
-  const counts = useMemo(
-    () => ({
-      all: threads.length,
-      unread: threads.filter((t) => t.unreadCount > 0).length,
-      client: threads.filter((t) => t.category === "client").length,
-      internal: threads.filter((t) => t.category === "internal").length,
-    }),
-    [threads]
-  );
-
-  const TABS = [
-    { id: "all", label: "All", count: counts.all },
-    { id: "unread", label: "Unread", count: counts.unread, badge: "danger" as const },
-    { id: "client", label: "Conversations", count: counts.client },
-    { id: "internal", label: "Internal", count: counts.internal },
-  ];
+  const TABS = (["all", "unread", "conversations", "internal"] as InboxTab[]).map((id) => ({
+    id,
+    label: TAB_LABELS[id],
+    count:
+      id === "all"
+        ? metrics.totalConversations
+        : id === "unread"
+        ? metrics.unreadConversations
+        : id === "conversations"
+        ? metrics.clientSupplierConversations
+        : metrics.internalNoteConversations,
+    badge: id === "unread" ? ("danger" as const) : undefined,
+  }));
 
   const visible = useMemo(() => {
-    let list = threads;
-    if (tab === "unread") list = list.filter((t) => t.unreadCount > 0);
-    else if (tab === "client") list = list.filter((t) => t.category === "client");
-    else if (tab === "internal") list = list.filter((t) => t.category === "internal");
-
     const q = search.trim().toLowerCase();
-    if (q) {
-      list = list.filter(
-        (t) =>
-          t.participantName.toLowerCase().includes(q) ||
-          (t.subject ?? "").toLowerCase().includes(q) ||
-          (t.eventName ?? "").toLowerCase().includes(q) ||
-          t.lastMessagePreview.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [threads, tab, search]);
+    if (!q) return liveConversations;
+    return liveConversations.filter(
+      (c) =>
+        c.title.toLowerCase().includes(q) ||
+        (c.lastMessagePreview ?? "").toLowerCase().includes(q) ||
+        (c.externalOrgName ?? "").toLowerCase().includes(q) ||
+        c.participants.some((p) => p.displayName.toLowerCase().includes(q)),
+    );
+  }, [liveConversations, search]);
+
+  function changeTab(nextTab: string) {
+    router.push(`/event-manager/inbox?tab=${nextTab}`);
+  }
+
+  function selectConversation(id: string) {
+    router.push(`/event-manager/inbox?tab=${tab}&conversation=${id}`);
+  }
+
+  function clearConversation() {
+    router.push(`/event-manager/inbox?tab=${tab}`);
+  }
 
   return (
     <div className="flex flex-col min-h-full bg-surface-50">
       <PageHeader
         title="Inbox"
-        description="An in-app log of every client, supplier, and internal communication. Logging records activity — it does not send live messages in V1."
+        description="Manage client, supplier and internal conversations in one connected workspace."
         actions={
           <button
             onClick={() => setComposeOpen(true)}
@@ -86,20 +97,24 @@ export function InboxClient({
             New Message
           </button>
         }
-        tabs={<TabNav tabs={TABS} active={tab} onChange={(id) => setTab(id as FilterTab)} />}
+        tabs={<TabNav tabs={TABS} active={tab} onChange={changeTab} />}
       />
 
       <div className="flex-1 p-6 space-y-6">
-        <KPIGrid>
-          <MetricCard label="Conversations" value={metrics.conversations} icon={MessageSquare} iconBg="bg-brand-50" iconColor="text-brand-600" />
-          <MetricCard label="Unread" value={metrics.unread} icon={MailOpen} iconBg="bg-danger-50" iconColor="text-danger-600" />
-          <MetricCard label="Client / Supplier" value={metrics.clientThreads} icon={Users} iconBg="bg-info-50" iconColor="text-info-600" />
-          <MetricCard label="Internal Notes" value={metrics.internalThreads} icon={StickyNote} iconBg="bg-warning-50" iconColor="text-warning-600" />
-        </KPIGrid>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCard label="Conversations" value={metrics.totalConversations} icon={MessageSquare} iconBg="bg-brand-50" iconColor="text-brand-600" />
+          <MetricCard label="Unread" value={metrics.unreadConversations} icon={MailOpen} iconBg="bg-danger-50" iconColor="text-danger-600" />
+          <MetricCard label="Client / Supplier" value={metrics.clientSupplierConversations} icon={Users} iconBg="bg-info-50" iconColor="text-info-600" />
+          <MetricCard label="Internal Notes" value={metrics.internalNoteConversations} icon={StickyNote} iconBg="bg-warning-50" iconColor="text-warning-600" />
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left — conversation list */}
-          <div className="lg:col-span-1 bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-19rem)] min-h-[520px]">
+          <div
+            className={cn(
+              "lg:col-span-1 bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden flex-col",
+              selectedConversation ? "hidden lg:flex" : "flex",
+            )}
+          >
             <div className="p-3 border-b border-surface-200">
               <div className="flex items-center gap-2 px-3 py-2 border border-surface-200 rounded-lg bg-white">
                 <Search className="w-4 h-4 text-surface-400 shrink-0" strokeWidth={1.8} />
@@ -107,7 +122,9 @@ export function InboxClient({
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search conversations…"
+                  placeholder={
+                    tab === "all" || tab === "conversations" ? "Search conversations…" : `Search ${tab} conversations…`
+                  }
                   className="text-sm text-surface-800 placeholder:text-surface-400 bg-transparent focus:outline-none w-full"
                 />
               </div>
@@ -115,15 +132,27 @@ export function InboxClient({
 
             {visible.length === 0 ? (
               <EmptyState
-                icon={InboxIcon}
-                title="No conversations"
+                icon={metrics.totalConversations === 0 ? InboxIcon : tab === "unread" ? MailOpen : Search}
+                title={
+                  metrics.totalConversations === 0
+                    ? "No conversations yet"
+                    : search
+                    ? "No matches"
+                    : tab === "unread"
+                    ? "You're all caught up"
+                    : `No ${TAB_LABELS[tab].toLowerCase()} conversations`
+                }
                 description={
-                  threads.length === 0
-                    ? "Log your first communication to start building the activity history."
-                    : "No conversations match this filter."
+                  metrics.totalConversations === 0
+                    ? "Start a new conversation to begin messaging clients, suppliers or your team."
+                    : search
+                    ? "Try a different search term."
+                    : tab === "unread"
+                    ? "Nothing needs your attention right now."
+                    : "Conversations you start or receive here will show up in this tab."
                 }
                 action={
-                  threads.length === 0 ? (
+                  metrics.totalConversations === 0 ? (
                     <button
                       onClick={() => setComposeOpen(true)}
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors"
@@ -136,78 +165,46 @@ export function InboxClient({
                 compact
               />
             ) : (
-              <ul className="divide-y divide-surface-100 overflow-y-auto">
-                {visible.map((t) => (
-                  <ThreadListItem key={t.threadId} thread={t} />
+              <ul className="divide-y divide-surface-100 overflow-y-auto flex-1">
+                {visible.map((c) => (
+                  <ConversationListItem
+                    key={c.id}
+                    conversation={c}
+                    active={c.id === selectedConversation?.id}
+                    onClick={() => selectConversation(c.id)}
+                  />
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Right — default placeholder (thread opens on its own route) */}
-          <div className="hidden lg:flex lg:col-span-2 bg-white rounded-xl border border-surface-200 shadow-card items-center justify-center">
-            <EmptyState
-              icon={MessageSquare}
-              title="Select a conversation"
-              description="Choose a conversation from the list to view its full message history and reply."
-            />
+          <div
+            className={cn(
+              "lg:col-span-2 bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden",
+              selectedConversation ? "flex" : "hidden lg:flex",
+            )}
+          >
+            {selectedConversation ? (
+              <ConversationThread
+                workspaceId={workspaceId}
+                conversation={selectedConversation}
+                messages={messages}
+                onBack={clearConversation}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <EmptyState
+                  icon={MessageSquare}
+                  title="Select a conversation"
+                  description="Choose a conversation from the list to view its full message history and reply."
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <ComposeDialog
-        open={composeOpen}
-        onClose={() => setComposeOpen(false)}
-        events={events}
-      />
+      <NewMessageDialog open={composeOpen} onClose={() => setComposeOpen(false)} events={events} />
     </div>
-  );
-}
-
-function ThreadListItem({ thread }: { thread: ThreadSummary }) {
-  const TypeIcon = COMM_TYPE_META[thread.lastMessageType].icon;
-  const unread = thread.unreadCount > 0;
-
-  return (
-    <li>
-      <Link
-        href={`/event-manager/inbox/${thread.threadId}`}
-        className="flex items-start gap-3 px-4 py-3.5 hover:bg-surface-50 transition-colors group"
-      >
-        <div
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
-            thread.category === "internal"
-              ? "bg-warning-50 text-warning-600"
-              : "bg-brand-50 text-brand-600"
-          )}
-        >
-          <TypeIcon className="w-4 h-4" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className={cn("text-sm truncate", unread ? "font-semibold text-surface-900" : "font-medium text-surface-700")}>
-              {thread.participantName}
-            </p>
-            {unread && <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" />}
-            <span className="ml-auto text-xs text-surface-400 shrink-0">{formatRelative(thread.lastMessageAt)}</span>
-          </div>
-          {thread.subject && (
-            <p className="text-xs font-medium text-surface-600 truncate mt-0.5">{thread.subject}</p>
-          )}
-          <p className="text-xs text-surface-500 truncate mt-0.5">{thread.lastMessagePreview}</p>
-          <div className="flex items-center gap-2 mt-1.5">
-            {thread.eventName && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-surface-500 bg-surface-100 px-1.5 py-0.5 rounded">
-                <CalendarDays className="w-3 h-3" />
-                {thread.eventName}
-              </span>
-            )}
-            <span className="text-[11px] text-surface-400">{thread.messageCount} message{thread.messageCount !== 1 ? "s" : ""}</span>
-          </div>
-        </div>
-        <ChevronRight className="w-4 h-4 text-surface-300 group-hover:text-surface-500 self-center shrink-0" />
-      </Link>
-    </li>
   );
 }

@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { createCheckoutSession, stripeConfigured } from "@/lib/stripe";
 
 // V1.5 15-4: ticket checkout. Validates the ticket type (on-sale, published event), creates a
@@ -37,6 +38,15 @@ export async function createTicketCheckout(input: {
     return { ok: false, error: "Not enough tickets remaining." };
   }
 
+  // Link to the buyer's customer account if they're logged in — optional, guest checkout unaffected.
+  let customerId: string | null = null;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: customer } = await supabase.from("customers").select("id").eq("user_id", user.id).maybeSingle();
+    customerId = customer?.id ?? null;
+  }
+
   const amount = tt.price_cents * qty;
   const { data: order } = await admin
     .from("ticket_orders")
@@ -45,6 +55,7 @@ export async function createTicketCheckout(input: {
       event_id: tt.event_id,
       ticket_type_id: tt.id,
       buyer_email: input.email.trim() || null,
+      customer_id: customerId,
       quantity: qty,
       amount_cents: amount,
       currency: tt.currency || "GBP",

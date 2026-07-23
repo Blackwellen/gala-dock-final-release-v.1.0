@@ -19,6 +19,10 @@ interface KanbanBoardProps<T> {
   onMoveItem?: (itemId: string, toColumnId: string) => void;
   emptyColumnLabel?: string;
   className?: string;
+  /** Optional extra line rendered under the column label (e.g. a pipeline value total). */
+  renderColumnMeta?: (columnId: string) => React.ReactNode;
+  /** Optional footer rendered below the card list in each column (e.g. an "Add" affordance). */
+  renderColumnFooter?: (columnId: string) => React.ReactNode;
 }
 
 /**
@@ -34,6 +38,8 @@ export function KanbanBoard<T>({
   onMoveItem,
   emptyColumnLabel = "No items in this stage",
   className,
+  renderColumnMeta,
+  renderColumnFooter,
 }: KanbanBoardProps<T>) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overColumn, setOverColumn] = useState<string | null>(null);
@@ -63,9 +69,14 @@ export function KanbanBoard<T>({
             )}
           >
             <div className="flex items-center gap-2 px-3.5 py-3 border-b border-surface-200">
-              <span className={cn("w-2 h-2 rounded-full", col.color ?? "bg-surface-400")} />
-              <span className="text-sm font-semibold text-surface-800">{col.label}</span>
-              <span className="ml-auto text-xs font-medium text-surface-400 bg-surface-100 rounded-full px-2 py-0.5">
+              <span className={cn("w-2 h-2 rounded-full shrink-0", col.color ?? "bg-surface-400")} />
+              <div className="min-w-0">
+                <span className="text-sm font-semibold text-surface-800">{col.label}</span>
+                {renderColumnMeta && (
+                  <div className="text-[11px] text-surface-400 leading-tight">{renderColumnMeta(col.id)}</div>
+                )}
+              </div>
+              <span className="ml-auto shrink-0 text-xs font-medium text-surface-400 bg-surface-100 rounded-full px-2 py-0.5">
                 {colItems.length}
               </span>
             </div>
@@ -94,6 +105,10 @@ export function KanbanBoard<T>({
                 })
               )}
             </div>
+
+            {renderColumnFooter && (
+              <div className="border-t border-surface-200 p-2">{renderColumnFooter(col.id)}</div>
+            )}
           </div>
         );
       })}

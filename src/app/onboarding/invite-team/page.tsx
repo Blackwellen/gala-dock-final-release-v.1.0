@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Plus, X, Users, ChevronRight, ChevronLeft } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
+import {
+  getOrStartOnboardingSession,
+  saveOnboardingStep,
+  createOnboardingTeamInvite,
+} from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -22,6 +27,19 @@ export default function OnboardingInviteTeamPage() {
   const [email, setEmail] = useState("");
   const [invites, setInvites] = useState<string[]>([]);
   const [error, setError] = useState("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "invite-team");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      setWorkspaceId(result.data.workspace_draft_id);
+      const saved = result.data.draft?.["invite-team"] as { invites?: string[] } | undefined;
+      if (saved?.invites) setInvites(saved.invites);
+    })();
+  }, []);
 
   function addInvite() {
     const trimmed = email.trim().toLowerCase();
@@ -53,7 +71,23 @@ export default function OnboardingInviteTeamPage() {
 
   async function handleNext() {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    setError("");
+
+    if (sessionId && workspaceId && invites.length > 0) {
+      for (const inviteEmail of invites) {
+        const result = await createOnboardingTeamInvite(sessionId, workspaceId, inviteEmail, "member");
+        if (!result.ok) {
+          setError(`Couldn't invite ${inviteEmail}: ${result.error}`);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "invite-team", { invites }, "complete");
+    }
+
     router.push("/onboarding/complete");
   }
 

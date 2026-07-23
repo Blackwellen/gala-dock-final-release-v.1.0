@@ -7,9 +7,8 @@ import {
   ChevronRight,
   CalendarDays,
   LayoutList,
-  Plus,
-  Filter,
   SlidersHorizontal,
+  CalendarRange,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -39,12 +38,14 @@ import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
 import { WeekView } from "./WeekView";
 import { DayView } from "./DayView";
+import { GanttView, type GanttGroup } from "./GanttView";
 
 interface CalendarClientProps {
   view: ViewMode;
   dateISO: string;
   liveItems: CalendarItem[];
   hasWorkspace: boolean;
+  ganttGroups?: GanttGroup[];
 }
 
 export function CalendarClient({
@@ -52,6 +53,7 @@ export function CalendarClient({
   dateISO,
   liveItems,
   hasWorkspace,
+  ganttGroups = [],
 }: CalendarClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,15 +61,16 @@ export function CalendarClient({
 
   const today = todayISODate();
   const useDemoData = !hasWorkspace || liveItems.length === 0;
+  const summary = DEMO_SUMMARY;
 
-  // The day grid positions blocks from precomputed hour/minute/duration fields.
-  // Live items only carry ISO timestamps, so derive those fields here.
   const liveDayItems = useMemo<DayLaneItem[]>(
     () =>
       liveItems.map((it) => {
         const start = new Date(it.startsAt);
         const end = it.endsAt ? new Date(it.endsAt) : null;
-        const durationMinutes = end ? Math.max(15, Math.round((end.getTime() - start.getTime()) / 60000)) : 60;
+        const durationMinutes = end
+          ? Math.max(15, Math.round((end.getTime() - start.getTime()) / 60000))
+          : 60;
         return {
           ...it,
           startHour: start.getUTCHours(),
@@ -125,16 +128,9 @@ export function CalendarClient({
   }, [view, dateISO, navigate]);
 
   const periodLabel = useMemo(() => {
-    if (view === "month") {
-      return monthGrid(dateISO.slice(0, 7)).monthLabel;
-    }
-    if (view === "week") {
-      return weekGrid(dateISO).weekLabel;
-    }
-    if (view === "day") {
-      return dayLabel(dateISO);
-    }
-    // agenda
+    if (view === "month") return monthGrid(dateISO.slice(0, 7)).monthLabel;
+    if (view === "week") return weekGrid(dateISO).weekLabel;
+    if (view === "day") return dayLabel(dateISO);
     const end = new Date(dateISO + "T00:00:00Z");
     end.setUTCDate(end.getUTCDate() + 27);
     const toISO = end.toISOString().slice(0, 10);
@@ -151,30 +147,49 @@ export function CalendarClient({
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-surface-50">
-      {/* ── Toolbar ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-5 py-3 bg-white border-b border-surface-200 shrink-0 overflow-x-auto">
-        {/* Period nav */}
-        <div className="flex items-center gap-0.5 shrink-0">
-          <button
-            onClick={navPrev}
-            className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-surface-900 transition-colors"
-            aria-label="Previous"
-          >
-            <ChevronLeft className="w-4 h-4" strokeWidth={2} />
-          </button>
-          <button
-            onClick={navNext}
-            className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-surface-900 transition-colors"
-            aria-label="Next"
-          >
-            <ChevronRight className="w-4 h-4" strokeWidth={2} />
-          </button>
-        </div>
 
-        {/* Period label */}
-        <span className="text-[13px] font-semibold text-surface-900 shrink-0 min-w-[180px]">
-          {periodLabel}
-        </span>
+      {/* ── Page header ──────────────────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-4 bg-white border-b border-surface-200 shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-surface-900 leading-tight">Calendar</h1>
+          <p className="text-sm text-surface-500 mt-0.5">
+            Events, tasks, run sheets, supplier bookings and due dates on one timeline.
+          </p>
+        </div>
+        <div className="shrink-0 text-right">
+          <div className="flex items-center gap-2 justify-end">
+            <CalendarRange className="w-4 h-4 text-brand-500" />
+            <span className="text-sm font-semibold text-surface-900">
+              {summary.totalItems} items this month
+            </span>
+          </div>
+          <p className="text-[11px] text-surface-400 mt-1">
+            {summary.eventCount} events&nbsp;•&nbsp;
+            {summary.taskCount} tasks&nbsp;•&nbsp;
+            {summary.bookingCount} bookings&nbsp;•&nbsp;
+            {summary.runSheetCount} run sheets
+          </p>
+        </div>
+      </div>
+
+      {/* ── Toolbar ─────────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-white border-b border-surface-200 shrink-0 overflow-x-auto">
+
+        {/* Nav arrows */}
+        <button
+          onClick={navPrev}
+          className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-surface-900 transition-colors shrink-0"
+          aria-label="Previous"
+        >
+          <ChevronLeft className="w-4 h-4" strokeWidth={2} />
+        </button>
+        <button
+          onClick={navNext}
+          className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-surface-900 transition-colors shrink-0"
+          aria-label="Next"
+        >
+          <ChevronRight className="w-4 h-4" strokeWidth={2} />
+        </button>
 
         {/* Today */}
         <button
@@ -189,33 +204,41 @@ export function CalendarClient({
           Today
         </button>
 
-        <div className="flex-1 min-w-4" />
+        {/* Period label */}
+        <span className="text-[13px] font-semibold text-surface-900 shrink-0 px-1 min-w-[140px]">
+          {periodLabel}
+        </span>
 
-        {/* Filter chips */}
-        <button className="hidden md:flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-surface-600 border border-surface-200 rounded-md hover:bg-surface-50 transition-colors shrink-0">
-          <Filter className="w-3 h-3" />
+        <div className="flex-1 min-w-3" />
+
+        {/* Filter: All Items */}
+        <button className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-surface-700 border border-surface-200 rounded-md hover:bg-surface-50 transition-colors shrink-0 bg-white">
           All Items
+          <ChevronLeft className="w-3 h-3 rotate-[-90deg] text-surface-400" />
         </button>
 
         {/* Layer dots */}
-        <div className="hidden xl:flex items-center gap-2 text-[11px] text-surface-500 shrink-0">
-          <LayerDot color="bg-blue-500" label="Event" />
-          <LayerDot color="bg-brand-500" label="Run Sheet" />
-          <LayerDot color="bg-green-500" label="Booking" />
-          <LayerDot color="bg-amber-500" label="Task" />
+        <div className="hidden xl:flex items-center gap-2 text-[11px] text-surface-600 shrink-0">
+          <LayerPill color="bg-blue-500" label="Event" />
+          <LayerPill color="bg-brand-500" label="Run Sheet" />
+          <LayerPill color="bg-green-500" label="Booking" />
+          <LayerPill color="bg-amber-500" label="Task" />
         </div>
 
+        {/* More Filters */}
         <button className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-surface-600 border border-surface-200 rounded-md hover:bg-surface-50 transition-colors shrink-0">
           <SlidersHorizontal className="w-3 h-3" />
           More Filters
         </button>
 
-        {/* View mode: Calendar / Agenda */}
+        <div className="w-px h-5 bg-surface-200 shrink-0 mx-0.5 hidden sm:block" />
+
+        {/* View mode: Calendar / Agenda / Gantt */}
         <div className="flex items-center border border-surface-200 rounded-lg overflow-hidden shrink-0">
           <ViewToggle
             label="Calendar"
             icon={<CalendarDays className="w-3.5 h-3.5" />}
-            active={view !== "agenda"}
+            active={view !== "agenda" && view !== "gantt"}
             onClick={() => goToView("month")}
           />
           <ViewToggle
@@ -224,22 +247,22 @@ export function CalendarClient({
             active={view === "agenda"}
             onClick={() => goToView("agenda")}
           />
+          <ViewToggle
+            label="Gantt"
+            icon={<CalendarRange className="w-3.5 h-3.5" />}
+            active={view === "gantt"}
+            onClick={() => goToView("gantt")}
+          />
         </div>
 
         {/* Sub-view: Month / Week / Day */}
-        {view !== "agenda" && (
+        {view !== "agenda" && view !== "gantt" && (
           <div className="flex items-center border border-surface-200 rounded-lg overflow-hidden shrink-0">
             <SubViewToggle label="Month" active={view === "month"} onClick={() => goToView("month")} />
             <SubViewToggle label="Week" active={view === "week"} onClick={() => goToView("week")} />
             <SubViewToggle label="Day" active={view === "day"} onClick={() => goToView("day")} />
           </div>
         )}
-
-        {/* Quick add */}
-        <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-brand-600 rounded-md hover:bg-brand-700 transition-colors shrink-0">
-          <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
-          Add
-        </button>
       </div>
 
       {/* ── View body ────────────────────────────────────────────────────── */}
@@ -248,7 +271,7 @@ export function CalendarClient({
           <MonthView
             dateISO={dateISO}
             items={useDemoData ? DEMO_MONTH_ITEMS : liveItems}
-            summary={DEMO_SUMMARY}
+            summary={summary}
             team={DEMO_TEAM}
             highlights={DEMO_HIGHLIGHTS}
             todayISO={today}
@@ -259,7 +282,7 @@ export function CalendarClient({
           <AgendaView
             dateISO={dateISO}
             items={useDemoData ? DEMO_MONTH_ITEMS : liveItems}
-            summary={DEMO_SUMMARY}
+            summary={summary}
             team={DEMO_TEAM}
             highlights={DEMO_HIGHLIGHTS}
             overdue={DEMO_OVERDUE}
@@ -289,17 +312,18 @@ export function CalendarClient({
             onNavigate={navigate}
           />
         )}
+        {view === "gantt" && <GanttView groups={ganttGroups} />}
       </div>
     </div>
   );
 }
 
-function LayerDot({ color, label }: { color: string; label: string }) {
+function LayerPill({ color, label }: { color: string; label: string }) {
   return (
-    <span className="flex items-center gap-1">
+    <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-surface-200 bg-white hover:bg-surface-50 transition-colors text-[11px] font-medium text-surface-600">
       <span className={cn("w-2 h-2 rounded-full shrink-0", color)} />
-      <span>{label}</span>
-    </span>
+      {label}
+    </button>
   );
 }
 

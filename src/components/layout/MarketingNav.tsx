@@ -4,19 +4,30 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
-  { label: "Events",   href: "/discover" },
-  { label: "Tickets",  href: "/discover" },
-  { label: "Product",  href: "/product" },
-  { label: "Features", href: "/features" },
-  { label: "Pricing",  href: "/pricing" },
-  { label: "Affiliate",href: "/affiliate" },
+// Ticketing/discovery ON — consumer-facing nav (public events directory is live).
+const TICKETING_NAV_LINKS = [
+  { label: "Events",    href: "/discover" },
+  { label: "Product",   href: "/product" },
+  { label: "Pricing",   href: "/pricing" },
+  { label: "Affiliate", href: "/affiliate" },
 ];
 
-export function MarketingNav() {
+// Ticketing/discovery OFF (default V1) — B2B "Event Delivery OS" nav. No Events/Tickets
+// links since /discover renders its own gated empty state when the flag is off; routes for
+// Solutions/Customers/Resources/Company don't exist yet, so we point at real pages that
+// cover the same ground rather than shipping dead links.
+const OS_NAV_LINKS = [
+  { label: "Product",   href: "/product" },
+  { label: "Features",  href: "/features" },
+  { label: "Pricing",   href: "/pricing" },
+  { label: "Affiliate", href: "/affiliate" },
+  { label: "Company",   href: "/contact" },
+];
+
+export function MarketingNav({ ticketingEnabled = false }: { ticketingEnabled?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const NAV_LINKS = ticketingEnabled ? TICKETING_NAV_LINKS : OS_NAV_LINKS;
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-200">

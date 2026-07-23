@@ -13,6 +13,8 @@ export default async function WorkspaceSettingsPage() {
         initialName={workspace.name}
         slug={workspace.slug}
         initialTimezone={workspace.timezone}
+        workspaceType={workspace.workspace_type}
+        initialSupplierType={workspace.supplier_type === "agency" ? "agency" : "solo"}
       />
     </SettingsShell>
   );

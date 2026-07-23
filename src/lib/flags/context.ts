@@ -16,6 +16,10 @@ import { type ReleaseStage, type WorkspaceType } from "./registry";
 const VALID_TYPES: readonly WorkspaceType[] = ["organizer", "venue", "supplier"];
 const VALID_STAGES: readonly ReleaseStage[] = ["v1", "v1_5", "v2"];
 
+/** Supplier persona depth: solo (no roster) or agency (manages an internal team/roster). */
+export type SupplierType = "solo" | "agency";
+const VALID_SUPPLIER_TYPES: readonly SupplierType[] = ["solo", "agency"];
+
 /** Global rollout stage from env; defaults to v1. */
 export function globalReleaseStage(env: Record<string, string | undefined> = process.env): ReleaseStage {
   const v = env.RELEASE_STAGE ?? env.NEXT_PUBLIC_RELEASE_STAGE;
@@ -29,6 +33,8 @@ export interface PersonaContext {
   plan: string;
   flags: FlagMap;
   workspaceName: string | null;
+  /** Only meaningful when workspaceType === "supplier"; defaults to "solo" otherwise. */
+  supplierType: SupplierType;
 }
 
 function personaFromRow(workspaceId: string | null, row: Record<string, unknown> | null): PersonaContext {
@@ -40,12 +46,16 @@ function personaFromRow(workspaceId: string | null, row: Record<string, unknown>
     : globalReleaseStage();
   const plan = typeof row?.plan === "string" ? (row.plan as string) : "free";
   const workspaceName = typeof row?.name === "string" ? (row.name as string) : null;
+  const supplierType: SupplierType = VALID_SUPPLIER_TYPES.includes(row?.supplier_type as SupplierType)
+    ? (row!.supplier_type as SupplierType)
+    : "solo";
   return {
     workspaceId,
     workspaceType,
     releaseStage,
     plan,
     workspaceName,
+    supplierType,
     flags: resolveFlags({ workspaceType, releaseStage, plan }),
   };
 }

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User, Phone, Clock, Upload, ChevronRight, AlertCircle } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { createClient } from "@/lib/supabase/client";
+import { getOrStartOnboardingSession, saveOnboardingStep } from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -30,11 +31,33 @@ export default function OnboardingAccountPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
     timezone: "Europe/London",
   });
+
+  // Resume: find or start the active onboarding session and prefill from any
+  // previously-autosaved draft so refreshing/returning later picks up where
+  // the user left off.
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "account");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      const saved = result.data.draft?.account as
+        | { fullName?: string; phone?: string; timezone?: string }
+        | undefined;
+      if (saved) {
+        setForm((prev) => ({
+          fullName: saved.fullName ?? prev.fullName,
+          phone: saved.phone ?? prev.phone,
+          timezone: saved.timezone ?? prev.timezone,
+        }));
+      }
+    })();
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -85,6 +108,10 @@ export default function OnboardingAccountPage() {
     // Carry the timezone forward so the workspace step can reuse it.
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("onboarding_timezone", form.timezone);
+    }
+
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "account", form, "workspace");
     }
 
     router.push("/onboarding/workspace");

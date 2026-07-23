@@ -10,6 +10,7 @@ import { runSlashCommand, type RunResult } from "@/app/event-manager/copilot/run
 import { searchCommands } from "@/lib/copilot/commands";
 import { parseSlash } from "@/lib/copilot/parse";
 import { onOpenCopilot } from "@/lib/shell/copilot-bus";
+import { CopilotInboxPanel } from "./CopilotInboxPanel";
 
 interface MsgLink {
   label: string;
@@ -56,8 +57,18 @@ export function GalaCopilot() {
     if (open) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
-  // Open from the top-bar Copilot button (sibling component, event bus).
-  useEffect(() => onOpenCopilot(() => setOpen(true)), []);
+  // Open from the top-bar Copilot button, or a quick action, via the event bus
+  // (sibling components, no shared parent state). A prefill seeds the chat input
+  // so callers like "Send Briefing" hand the user a ready-to-send prompt.
+  useEffect(
+    () =>
+      onOpenCopilot((prefill) => {
+        setOpen(true);
+        setTab("copilot");
+        if (prefill) setInput(prefill);
+      }),
+    []
+  );
 
   useEffect(() => {
     if (open && tab === "copilot") setTimeout(() => inputRef.current?.focus(), 120);
@@ -142,7 +153,7 @@ export function GalaCopilot() {
   return (
     <>
       {open && (
-        <div className="fixed bottom-24 right-6 w-[380px] max-h-[560px] bg-white rounded-2xl shadow-2xl border border-surface-200 flex flex-col overflow-hidden z-50 animate-fade-in">
+        <div className="fixed bottom-24 right-6 w-[380px] h-[560px] max-h-[calc(100vh-7rem)] bg-white rounded-2xl shadow-2xl border border-surface-200 flex flex-col overflow-hidden z-50 animate-fade-in">
           {/* Header + tabs */}
           <div className="shrink-0" style={{ background: "#0e0c27" }}>
             <div className="flex items-center justify-between px-4 py-3">
@@ -326,20 +337,7 @@ export function GalaCopilot() {
               </div>
             </>
           ) : (
-            /* Inbox tab */
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-              <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center">
-                <Inbox className="w-5 h-5 text-brand-600" />
-              </div>
-              <p className="text-sm text-surface-600">Your client &amp; supplier conversations live in the Inbox.</p>
-              <Link
-                href="/event-manager/inbox"
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700"
-              >
-                Open Inbox
-              </Link>
-            </div>
+            <CopilotInboxPanel onClose={() => setOpen(false)} />
           )}
         </div>
       )}

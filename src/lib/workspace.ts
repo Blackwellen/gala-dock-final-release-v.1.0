@@ -63,7 +63,7 @@ export async function requireWorkspace(): Promise<WorkspaceContext> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/operator/login");
 
   const workspaceId = await getActiveWorkspaceId();
   if (!workspaceId) redirect("/onboarding");
@@ -120,4 +120,26 @@ export async function requireWorkspaceManager(): Promise<WorkspaceContext> {
   const ctx = await requireWorkspace();
   if (!(await canManageWorkspace())) redirect("/event-manager/settings/account");
   return ctx;
+}
+
+/**
+ * Require the active workspace to be a given persona (workspace_type). Redirects
+ * to /event-manager/home when the logged-in workspace is the wrong persona — e.g.
+ * an organizer hitting a venue-persona-only page. Composes on top of requireWorkspace()
+ * the same way requireWorkspaceManager() does, rather than a separate auth model.
+ */
+async function requireWorkspaceType(type: "venue" | "supplier"): Promise<WorkspaceContext> {
+  const ctx = await requireWorkspace();
+  if (ctx.workspace.workspace_type !== type) redirect("/event-manager/home");
+  return ctx;
+}
+
+/** Require the active workspace to be a venue-persona workspace. */
+export async function requireVenueAccount(): Promise<WorkspaceContext> {
+  return requireWorkspaceType("venue");
+}
+
+/** Require the active workspace to be a supplier-persona workspace. */
+export async function requireSupplierAccount(): Promise<WorkspaceContext> {
+  return requireWorkspaceType("supplier");
 }

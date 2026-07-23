@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Building2, CalendarRange, TrendingUp, Layers } from "lucide-react";
-import { requireWorkspace } from "@/lib/workspace";
+import { requireVenueAccount } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
@@ -11,7 +11,7 @@ import { VenueManagementDashboard, type DashboardBooking, type DashboardVenue } 
 export const dynamic = "force-dynamic";
 
 export default async function VenueManagementPage() {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const [{ data: venues }, { data: spaces }, { data: bookings }] = await Promise.all([

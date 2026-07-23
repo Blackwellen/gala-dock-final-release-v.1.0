@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireWorkspace } from "@/lib/workspace";
+import { requireVenueAccount } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { BookingDetailClient } from "./BookingDetailClient";
 import type {
@@ -18,7 +18,7 @@ export default async function BookingDetailPage({
   params: Promise<{ bookingId: string }>;
 }) {
   const { bookingId } = await params;
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const { data: booking } = await supabase

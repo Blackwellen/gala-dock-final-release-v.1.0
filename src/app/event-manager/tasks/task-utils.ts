@@ -30,7 +30,7 @@ export const PRIORITY_OPTIONS: { value: TaskPriority; label: string; description
 ];
 
 // ── Status ───────────────────────────────────────────────────────────────────
-// Real enum: backlog | todo | in_progress | blocked | done | cancelled
+// Real enum: backlog | todo | in_progress | blocked | done | cancelled | review
 export const STATUS_LABEL: Record<TaskStatus, string> = {
   backlog: "Backlog",
   todo: "To Do",
@@ -38,14 +38,15 @@ export const STATUS_LABEL: Record<TaskStatus, string> = {
   blocked: "Blocked",
   done: "Done",
   cancelled: "Cancelled",
+  review: "Review",
 };
 
 export const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = (
-  ["backlog", "todo", "in_progress", "blocked", "done", "cancelled"] as TaskStatus[]
+  ["backlog", "todo", "in_progress", "review", "blocked", "done", "cancelled"] as TaskStatus[]
 ).map((value) => ({ value, label: STATUS_LABEL[value] }));
 
 // StatusBadge supported variants: in-progress | pending | completed | cancelled.
-// Map: done -> completed, todo/backlog -> pending, in_progress -> in-progress,
+// Map: done -> completed, todo/backlog -> pending, in_progress/review -> in-progress,
 // blocked -> overdue (closest danger variant), cancelled -> cancelled.
 type BadgeStatus = "in-progress" | "pending" | "completed" | "cancelled" | "overdue";
 
@@ -54,6 +55,7 @@ export function statusToBadge(status: TaskStatus): BadgeStatus {
     case "done":
       return "completed";
     case "in_progress":
+    case "review":
       return "in-progress";
     case "cancelled":
       return "cancelled";
@@ -66,13 +68,75 @@ export function statusToBadge(status: TaskStatus): BadgeStatus {
   }
 }
 
-// Board columns derived from status.
+// All Tasks Kanban columns (4): To Do | In Progress | Review | Done
+export type AllBoardColumnId = "todo" | "inprogress" | "review" | "done";
+
+export function statusToAllBoardColumn(status: TaskStatus): AllBoardColumnId {
+  if (status === "done" || status === "cancelled") return "done";
+  if (status === "review") return "review";
+  if (status === "in_progress") return "inprogress";
+  return "todo";
+}
+
+// Overdue Kanban columns (3): To Do | In Progress | Awaiting Resolution
+export type OverdueBoardColumnId = "todo" | "inprogress" | "awaiting";
+
+export function statusToOverdueColumn(status: TaskStatus): OverdueBoardColumnId {
+  if (status === "review" || status === "blocked") return "awaiting";
+  if (status === "in_progress") return "inprogress";
+  return "todo";
+}
+
+// Board columns derived from status (legacy 3-col board, still used by task-utils consumers).
 export type BoardColumnId = "todo" | "inprogress" | "done";
 
 export function statusToColumn(status: TaskStatus): BoardColumnId {
   if (status === "done") return "done";
-  if (status === "in_progress") return "inprogress";
+  if (status === "in_progress" || status === "review") return "inprogress";
   return "todo";
+}
+
+// ── Category ─────────────────────────────────────────────────────────────────
+export const CATEGORY_LABEL: Record<string, string> = {
+  production: "Production",
+  operations: "Operations",
+  marketing: "Marketing",
+  logistics: "Logistics",
+  talent: "Talent",
+  access: "Access",
+  planning: "Planning",
+  compliance: "Compliance",
+  onboarding: "Onboarding",
+  procurement: "Procurement",
+  finance: "Finance",
+  "follow-up": "Follow-up",
+  general: "General",
+};
+
+export function categoryLabel(category: string | null): string {
+  if (!category) return "General";
+  return CATEGORY_LABEL[category] ?? category;
+}
+
+// ── Days overdue / relative due formatting ────────────────────────────────────
+export function daysOverdue(dueAt: string | null): number {
+  if (!dueAt) return 0;
+  const ms = Date.now() - new Date(dueAt).getTime();
+  return Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));
+}
+
+export function relativeDueLabel(dueAt: string | null): string {
+  if (!dueAt) return "No due date";
+  const due = new Date(dueAt);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfDue = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+  const diffDays = Math.round((startOfDue.getTime() - startOfToday.getTime()) / (24 * 60 * 60 * 1000));
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "Yesterday";
+  if (diffDays < 0) return `${Math.abs(diffDays)}d ago`;
+  return `In ${diffDays}d`;
 }
 
 export function initials(name: string | null | undefined): string {

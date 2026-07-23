@@ -1,7 +1,7 @@
 // Gala Dock — Calendar hub extended types (V1-2).
 // Covers all 4 views: Month, Agenda, Week, Day.
 
-export type ViewMode = "month" | "week" | "day" | "agenda";
+export type ViewMode = "month" | "week" | "day" | "agenda" | "gantt";
 export type SectionMode = "calendar" | "agenda";
 
 export type SourceType =

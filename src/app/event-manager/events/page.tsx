@@ -5,9 +5,17 @@ import { toUiStatus, clientLabel, venueLabel, formatEventDate } from "./_lib";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventsPage() {
+const VALID_VIEWS = new Set(["list", "cards", "board", "map"]);
+
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   const { workspaceId } = await requireWorkspace();
   const supabase = await createClient();
+  const sp = await searchParams;
+  const initialView = VALID_VIEWS.has(sp.view ?? "") ? (sp.view as "list" | "cards" | "board" | "map") : "list";
 
   /* ── Fetch all active events ─────────────────────────────────────────────── */
   const { data: raw } = await supabase
@@ -20,7 +28,7 @@ export default async function EventsPage() {
        budget_cents,
        client_name, client_company,
        owner_user_id, risk_level,
-       cover_path, flagged,
+       cover_image_url, flagged,
        created_at, updated_at`
     )
     .eq("workspace_id", workspaceId)
@@ -72,8 +80,7 @@ export default async function EventsPage() {
     const taskReadiness = tc.total > 0 ? Math.round((tc.done / tc.total) * 100) : 0;
     const readinessScore = taskReadiness;
 
-    // Cover image from cover_path (stores both Unsplash URLs and R2 keys)
-    const coverImageUrl = (r.cover_path as string) ?? null;
+    const coverImageUrl = (r.cover_image_url as string) ?? null;
 
     const ownerName = e.owner_user_id
       ? (ownerNames.get(e.owner_user_id) ?? "Unassigned")
@@ -119,5 +126,5 @@ export default async function EventsPage() {
     };
   });
 
-  return <EventsPipelineClient events={events} />;
+  return <EventsPipelineClient initialEvents={events} initialView={initialView} />;
 }

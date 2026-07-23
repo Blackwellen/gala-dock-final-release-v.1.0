@@ -9,6 +9,7 @@ export interface EditVenueData {
   id: string;
   name: string;
   status: string;
+  isPreferred: boolean;
   website: string;
   addressLine1: string;
   addressLine2: string;
@@ -21,10 +22,10 @@ export interface EditVenueData {
   notes: string;
 }
 
+// Matches the DB's venues_status_chk constraint. "Preferred" is the separate
+// is_preferred boolean below, not a status value.
 const STATUSES = [
-  { value: "preferred", label: "Preferred" },
   { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
   { value: "archived", label: "Archived" },
 ];
 
@@ -77,6 +78,7 @@ export function EditVenueForm({ venue }: { venue: EditVenueData }) {
 
   const [name, setName] = useState(venue.name);
   const [status, setStatus] = useState(venue.status);
+  const [isPreferred, setIsPreferred] = useState(venue.isPreferred);
   const [website, setWebsite] = useState(venue.website);
   const [addr1, setAddr1] = useState(venue.addressLine1);
   const [addr2, setAddr2] = useState(venue.addressLine2);
@@ -97,6 +99,7 @@ export function EditVenueForm({ venue }: { venue: EditVenueData }) {
     const fd = new FormData();
     fd.set("name", name);
     fd.set("status", status);
+    if (isPreferred) fd.set("is_preferred", "on");
     fd.set("website", website);
     fd.set("address_line1", addr1);
     fd.set("address_line2", addr2);
@@ -175,6 +178,17 @@ export function EditVenueForm({ venue }: { venue: EditVenueData }) {
             </Field>
             <Field label="Website">
               <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Preferred">
+              <label className="flex items-center gap-2 text-sm text-surface-600">
+                <input
+                  type="checkbox"
+                  checked={isPreferred}
+                  onChange={(e) => setIsPreferred(e.target.checked)}
+                  className="rounded border-surface-300"
+                />
+                Mark as a preferred venue for this workspace
+              </label>
             </Field>
           </SectionCard>
 

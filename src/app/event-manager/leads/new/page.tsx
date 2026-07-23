@@ -1,6 +1,6 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
-import { NewLeadForm, type MemberOption } from "./NewLeadForm";
+import { NewLeadWizard, type MemberOption } from "./NewLeadWizard";
 
 export const dynamic = "force-dynamic";
 
@@ -31,5 +31,5 @@ export default async function NewLeadPage() {
     name: nameById.get(id) ?? "Team member",
   }));
 
-  return <NewLeadForm teamMembers={teamMembers} />;
+  return <NewLeadWizard teamMembers={teamMembers} />;
 }

@@ -111,8 +111,13 @@ export default async function VenuePortalPage({
   const meta = BOOKING_STATUS_META[coerceBookingStatus(booking.status)];
 
   return (
-    <main className="min-h-screen bg-surface-50 py-10 px-6">
+    <main className="min-h-screen bg-surface-100 py-10 px-6">
       <div className="max-w-2xl mx-auto space-y-6">
+        {/* Minimal floating portal chrome — brand mark only, no nav/switcher/create */}
+        <div className="w-full flex items-center justify-center gap-2 bg-white border border-surface-200 rounded-[var(--shell-radius)] shadow-shell-topbar h-14">
+          <span className="text-sm font-semibold text-surface-900">Gala Dock</span>
+        </div>
+
         {/* Header */}
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">

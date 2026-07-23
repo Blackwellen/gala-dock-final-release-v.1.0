@@ -41,28 +41,39 @@
   --color-surface-900: #141828;
   --color-surface-950: #0b0d1a;
 
-  /* ── Sidebar ── */
-  --color-sidebar:         #0e0c27;
-  --color-sidebar-hover:   #1a183d;
-  --color-sidebar-active:  #2d2b6b;
-  --color-sidebar-border:  #1f1d45;
-  --color-sidebar-text:    #c8cae0;
-  --color-sidebar-muted:   #7275a0;
+  /* ── Sidebar (rich purple/indigo — floating shell) ── */
+  --color-sidebar:         #211556;
+  --color-sidebar-hover:   rgba(109, 91, 255, 0.16);
+  --color-sidebar-active:  #6d45ff;
+  --color-sidebar-border:  rgba(109, 91, 255, 0.22);
+  --color-sidebar-text:    #d6d1f5;
+  --color-sidebar-muted:   #9089c2;
 
   /* ── Status / semantic ── */
   --color-success-50:  #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
   --color-success-700: #15803d;
   --color-warning-50:  #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
   --color-danger-50:   #fff1f2;
+  --color-danger-100:  #fee2e2;
+  --color-danger-200:  #fecaca;
   --color-danger-500:  #ef4444;
   --color-danger-600:  #dc2626;
+  --color-danger-700:  #b91c1c;
   --color-info-50:     #eff6ff;
+  --color-info-100:    #dbeafe;
+  --color-info-200:    #bfdbfe;
   --color-info-500:    #3b82f6;
   --color-info-600:    #2563eb;
+  --color-info-700:    #1d4ed8;
 
   /* ── Typography ── */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -82,6 +93,18 @@
   --shadow-modal: 0 20px 60px -10px rgb(0 0 0 / 0.25);
   --shadow-dropdown: 0 4px 20px -2px rgb(0 0 0 / 0.12);
   --shadow-brand: 0 4px 16px -2px rgb(79 70 229 / 0.35);
+  --shadow-shell-sidebar: 0 18px 50px -10px rgb(32 24 84 / 0.32), 0 4px 14px -4px rgb(32 24 84 / 0.22);
+  --shadow-shell-topbar: 0 18px 40px -14px rgb(32 24 84 / 0.16), 0 2px 8px -2px rgb(32 24 84 / 0.08);
+}
+
+/* ── Floating shell geometry ── */
+:root {
+  --shell-viewport-padding: 18px;
+  --shell-gap: 16px;
+  --sidebar-expanded-width: 236px;
+  --sidebar-collapsed-width: 68px;
+  --topbar-height: 62px;
+  --shell-radius: 18px;
 }
 
 /* ── Base resets ── */
@@ -147,3 +170,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ── Utility: hide scrollbar ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

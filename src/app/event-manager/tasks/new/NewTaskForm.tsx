@@ -174,6 +174,29 @@ export function NewTaskForm({
                   className="w-full px-3 py-2.5 rounded-lg border border-surface-300 text-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-medium text-surface-500 uppercase tracking-wider mb-1.5">Category</label>
+                <select
+                  name="category"
+                  defaultValue=""
+                  className="w-full px-3 py-2.5 rounded-lg border border-surface-300 text-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white transition-colors"
+                >
+                  <option value="">General</option>
+                  <option value="production">Production</option>
+                  <option value="operations">Operations</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="logistics">Logistics</option>
+                  <option value="talent">Talent</option>
+                  <option value="access">Access</option>
+                  <option value="planning">Planning</option>
+                  <option value="compliance">Compliance</option>
+                  <option value="onboarding">Onboarding</option>
+                  <option value="procurement">Procurement</option>
+                  <option value="finance">Finance</option>
+                  <option value="follow-up">Follow-up</option>
+                </select>
+              </div>
             </div>
           </div>
 

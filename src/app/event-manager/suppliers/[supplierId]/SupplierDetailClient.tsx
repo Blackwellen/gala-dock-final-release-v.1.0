@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Edit2, Send, Users2, Archive, Mail, Phone, Globe,
   Plus, Upload, FileText, Download,
@@ -11,6 +12,7 @@ import { TabNav } from "@/components/ui/TabNav";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { recordSupplierDocumentUpload } from "../actions";
 
 export interface SupplierDetail {
   id: string;
@@ -352,22 +354,102 @@ function EventsTab({ events }: { events: LinkedEvent[] }) {
 
 // ── Tab: Documents ─────────────────────────────────────────────────────────
 
-function DocumentsTab({ files }: { files: FileRow[] }) {
+function DocumentsTab({
+  supplierId,
+  workspaceId,
+  r2Ready,
+  files,
+}: {
+  supplierId: string;
+  workspaceId: string;
+  r2Ready: boolean;
+  files: FileRow[];
+}) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function handleFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError(null);
+
+    if (!r2Ready) {
+      setError("Document storage is not configured for this environment.");
+      return;
+    }
+
+    const documentType = window.prompt("Document type (e.g. Public Liability Insurance)", "");
+    if (!documentType || !documentType.trim()) return;
+
+    startTransition(async () => {
+      try {
+        const presignRes = await fetch("/api/r2/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            workspaceId,
+            recordId: supplierId,
+            kind: "supplier-document",
+            filename: file.name,
+            contentType: file.type || "application/pdf",
+          }),
+        });
+        const presignData = await presignRes.json();
+        if (!presignRes.ok) throw new Error(presignData.error ?? "Could not get an upload URL");
+
+        const putRes = await fetch(presignData.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/pdf" },
+          body: file,
+        });
+        if (!putRes.ok) throw new Error("Upload to storage failed");
+
+        const result = await recordSupplierDocumentUpload(
+          supplierId,
+          documentType.trim(),
+          presignData.objectKey,
+          file.name,
+          file.type || "application/pdf",
+          file.size
+        );
+        if (result.error) throw new Error(result.error);
+
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Upload failed");
+      }
+    });
+  }
 
   return (
     <div className="p-6 space-y-5 max-w-[1000px]">
       <div className="flex items-center gap-2 flex-wrap">
-        <label className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand cursor-pointer">
+        <label className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-brand cursor-pointer aria-disabled:opacity-60">
           <Upload className="w-4 h-4" strokeWidth={2} />
-          Upload Document
-          <input type="file" className="hidden" ref={fileInputRef} accept=".pdf,.doc,.docx,.jpg,.png" />
+          {pending ? "Uploading…" : "Upload Document"}
+          <input
+            type="file"
+            className="hidden"
+            ref={fileInputRef}
+            accept=".pdf,.jpg,.jpeg,.png,.webp"
+            disabled={pending}
+            onChange={handleFilePicked}
+          />
         </label>
         <button className="flex items-center gap-2 px-3 py-2 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors">
           <Send className="w-4 h-4" strokeWidth={1.8} />
           Request Document
         </button>
       </div>
+      {!r2Ready && (
+        <p className="text-xs text-warning-600 bg-warning-50 border border-warning-200 rounded-lg px-3 py-2">
+          Document storage is not configured for this environment — uploads are disabled.
+        </p>
+      )}
+      {error && <p className="text-xs text-danger-600 bg-danger-50 border border-danger-200 rounded-lg px-3 py-2">{error}</p>}
 
       {files.length === 0 ? (
         <EmptyState icon={FileText} title="No documents uploaded" description="Upload insurance, contracts and certificates here." compact />
@@ -422,11 +504,15 @@ export function SupplierDetailClient({
   contacts,
   files,
   events,
+  workspaceId,
+  r2Ready,
 }: {
   supplier: SupplierDetail;
   contacts: ContactRow[];
   files: FileRow[];
   events: LinkedEvent[];
+  workspaceId: string;
+  r2Ready: boolean;
 }) {
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -441,7 +527,7 @@ export function SupplierDetailClient({
     overview: <OverviewTab supplier={supplier} contacts={contacts} files={files} eventCount={events.length} />,
     contacts: <ContactsTab contacts={contacts} />,
     events: <EventsTab events={events} />,
-    documents: <DocumentsTab files={files} />,
+    documents: <DocumentsTab supplierId={supplier.id} workspaceId={workspaceId} r2Ready={r2Ready} files={files} />,
   };
 
   return (

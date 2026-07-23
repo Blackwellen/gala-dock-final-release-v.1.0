@@ -24,19 +24,20 @@ export default async function CheckoutSuccessPage({
     const session = await retrieveSession(sessionId);
     if (session && session.paymentStatus === "paid") {
       const admin = createAdminClient();
-      const { data: order } = await admin
+      // A basket can span several ticket tiers (one ticket_orders row per tier), all sharing this
+      // Stripe session — fulfil every pending row idempotently, not just the first.
+      const { data: orders } = await admin
         .from("ticket_orders")
         .select("id, status, ticket_type_id, quantity")
-        .eq("stripe_session_id", sessionId)
-        .maybeSingle();
-      if (order?.status === "pending") {
-        await admin.from("ticket_orders").update({ status: "paid", updated_at: new Date().toISOString() }).eq("id", order.id);
-        const { data: tt } = await admin.from("ticket_types").select("sold").eq("id", order.ticket_type_id).maybeSingle();
-        if (tt) await admin.from("ticket_types").update({ sold: (tt.sold ?? 0) + order.quantity }).eq("id", order.ticket_type_id);
-        confirmed = true;
-      } else if (order?.status === "paid") {
-        confirmed = true;
+        .eq("stripe_session_id", sessionId);
+      for (const order of orders ?? []) {
+        if (order.status === "pending") {
+          await admin.from("ticket_orders").update({ status: "paid", updated_at: new Date().toISOString() }).eq("id", order.id);
+          const { data: tt } = await admin.from("ticket_types").select("sold").eq("id", order.ticket_type_id).maybeSingle();
+          if (tt) await admin.from("ticket_types").update({ sold: (tt.sold ?? 0) + order.quantity }).eq("id", order.ticket_type_id);
+        }
       }
+      confirmed = (orders ?? []).length > 0;
     }
   }
 

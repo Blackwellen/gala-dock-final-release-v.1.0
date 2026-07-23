@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWorkspace } from "@/lib/workspace";
+import { requireVenueAccount } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { BOOKING_STATUSES, STAFF_ROLES } from "./lib";
 
@@ -78,7 +78,7 @@ async function loadBooking(
 // ── Venue Spaces (CRUD) ────────────────────────────────────────────────────────
 
 export async function createSpace(venueId: string, formData: FormData) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   await assertVenue(supabase, workspaceId, venueId);
 
@@ -106,7 +106,7 @@ export async function updateSpace(
   spaceId: string,
   formData: FormData
 ) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const name = str(formData.get("name"));
@@ -132,7 +132,7 @@ export async function updateSpace(
 }
 
 export async function deleteSpace(venueId: string, spaceId: string) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -149,7 +149,7 @@ export async function deleteSpace(venueId: string, spaceId: string) {
 // ── F&B Packages (CRUD) ─────────────────────────────────────────────────────────
 
 export async function createFbPackage(venueId: string, formData: FormData) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   await assertVenue(supabase, workspaceId, venueId);
 
@@ -175,7 +175,7 @@ export async function updateFbPackage(
   packageId: string,
   formData: FormData
 ) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const name = str(formData.get("name"));
@@ -199,7 +199,7 @@ export async function updateFbPackage(
 }
 
 export async function deleteFbPackage(venueId: string, packageId: string) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -228,7 +228,7 @@ function composeTimestamp(
 }
 
 export async function createBooking(venueId: string, formData: FormData) {
-  const { workspaceId, user } = await requireWorkspace();
+  const { workspaceId, user } = await requireVenueAccount();
   const supabase = await createClient();
   await assertVenue(supabase, workspaceId, venueId);
 
@@ -276,7 +276,7 @@ export async function createBooking(venueId: string, formData: FormData) {
 }
 
 export async function updateBookingStatus(bookingId: string, status: string) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   const booking = await loadBooking(supabase, workspaceId, bookingId);
 
@@ -297,7 +297,7 @@ export async function updateBookingStatus(bookingId: string, status: string) {
 }
 
 export async function updateBookingDetails(bookingId: string, formData: FormData) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   const booking = await loadBooking(supabase, workspaceId, bookingId);
 
@@ -334,7 +334,7 @@ export async function updateBookingDetails(bookingId: string, formData: FormData
 }
 
 export async function deleteBooking(bookingId: string) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   const booking = await loadBooking(supabase, workspaceId, bookingId);
 
@@ -353,7 +353,7 @@ export async function deleteBooking(bookingId: string) {
 // ── Booking F&B selections ────────────────────────────────────────────────────────
 
 export async function addFbSelection(bookingId: string, formData: FormData) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   const booking = await loadBooking(supabase, workspaceId, bookingId);
 
@@ -384,7 +384,7 @@ export async function addFbSelection(bookingId: string, formData: FormData) {
 }
 
 export async function removeFbSelection(bookingId: string, selectionId: string) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -405,7 +405,7 @@ export async function addStaffAssignment(
   formData: FormData,
   bookingId?: string
 ) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
   await assertVenue(supabase, workspaceId, venueId);
 
@@ -442,7 +442,7 @@ export async function removeStaffAssignment(
   venueId: string,
   bookingId?: string
 ) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId } = await requireVenueAccount();
   const supabase = await createClient();
 
   const { error } = await supabase

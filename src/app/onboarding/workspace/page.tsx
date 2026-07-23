@@ -15,6 +15,11 @@ import {
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { slugify } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import {
+  getOrStartOnboardingSession,
+  saveOnboardingStep,
+  setSessionWorkspaceDraft,
+} from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -30,10 +35,19 @@ const STEPS = [
 const BUSINESS_TYPES = [
   { value: "agency", label: "Agency" },
   { value: "venue", label: "Venue" },
+  { value: "supplier", label: "Supplier / Vendor" },
   { value: "freelance", label: "Freelance Planner" },
   { value: "in-house", label: "In-house Team" },
   { value: "other", label: "Other" },
 ];
+
+// Business types that map to a marketplace persona workspace_type. Everything else
+// (agency, freelance, in-house, other) stays the default "organizer" persona — no
+// call to set_workspace_type needed since that's the workspaces.workspace_type default.
+const PERSONA_WORKSPACE_TYPE: Record<string, "venue" | "supplier"> = {
+  venue: "venue",
+  supplier: "supplier",
+};
 
 export default function OnboardingWorkspacePage() {
   const router = useRouter();
@@ -44,11 +58,44 @@ export default function OnboardingWorkspacePage() {
   const [slugStatus, setSlugStatus] = useState<
     "idle" | "checking" | "available" | "taken"
   >("idle");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [checkingResume, setCheckingResume] = useState(true);
   const [form, setForm] = useState({
     workspaceName: "",
     slug: "",
     businessType: "agency",
   });
+
+  // Resume: if this session already created a workspace (e.g. the user hit
+  // Back after completing this step, or refreshed mid-flow), never re-create
+  // one — just move on. Otherwise prefill any previously-autosaved draft.
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "workspace");
+      if (!result.ok) {
+        setCheckingResume(false);
+        return;
+      }
+      setSessionId(result.data.id);
+      if (result.data.workspace_draft_id) {
+        router.replace("/onboarding/role");
+        return;
+      }
+      const saved = result.data.draft?.workspace as
+        | { workspaceName?: string; slug?: string; businessType?: string }
+        | undefined;
+      if (saved) {
+        setForm((prev) => ({
+          workspaceName: saved.workspaceName ?? prev.workspaceName,
+          slug: saved.slug ?? prev.slug,
+          businessType: saved.businessType ?? prev.businessType,
+        }));
+        if (saved.slug) setSlugEdited(true);
+      }
+      setCheckingResume(false);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!slugEdited) {
@@ -130,7 +177,7 @@ export default function OnboardingWorkspacePage() {
         window.sessionStorage.getItem("onboarding_timezone")) ||
       "Europe/London";
 
-    const { error: createError } = await supabase.rpc(
+    const { data: createdRows, error: createError } = await supabase.rpc(
       "create_workspace_for_current_user",
       {
         _name: form.workspaceName,
@@ -145,6 +192,24 @@ export default function OnboardingWorkspacePage() {
       setError(createError.message);
       setLoading(false);
       return;
+    }
+
+    const workspaceId = createdRows?.[0]?.id;
+
+    // Persona workspaces (venue/supplier): set_workspace_type() is a separate, owner-only RPC
+    // rather than a param on create_workspace_for_current_user, since that RPC isn't tracked in
+    // migrations (lives only in the deployed project) — see 20260715_marketplace_foundation.sql.
+    const personaType = PERSONA_WORKSPACE_TYPE[form.businessType];
+    if (personaType && workspaceId) {
+      await supabase.rpc("set_workspace_type", {
+        _workspace_id: workspaceId,
+        _workspace_type: personaType,
+      });
+    }
+
+    if (sessionId && workspaceId) {
+      await setSessionWorkspaceDraft(sessionId, workspaceId);
+      await saveOnboardingStep(sessionId, "workspace", form, "role");
     }
 
     router.push("/onboarding/role");
@@ -308,7 +373,7 @@ export default function OnboardingWorkspacePage() {
             </button>
             <button
               type="submit"
-              disabled={loading || slugStatus === "taken" || slugStatus === "checking" || !form.slug}
+              disabled={loading || checkingResume || slugStatus === "taken" || slugStatus === "checking" || !form.slug}
               className="inline-flex items-center gap-2 py-2.5 px-6 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-brand"
             >
               {loading ? (

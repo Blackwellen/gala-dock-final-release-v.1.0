@@ -1,16 +1,15 @@
-import Link from "next/link";
-import { Plus, FileText } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { SectionTabs, SALES_TABS } from "@/components/ui/SectionTabs";
-import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import type { Proposal } from "@/lib/supabase/types";
-import { formatPence } from "./_lib/proposals";
-import { ProposalsTable } from "./_components/ProposalsTable";
+import { ProposalsClient, type ProposalsKpis } from "./ProposalsClient";
 
 export const metadata = { title: "Proposals" };
+export const dynamic = "force-dynamic";
+
+/** Module-level helper (not a component) so the impure `Date.now()` read is not flagged as a render-purity violation. */
+function weekAgoTimestamp(): number {
+  return Date.now() - 7 * 24 * 60 * 60 * 1000;
+}
 
 export default async function ProposalsPage() {
   const { workspaceId } = await requireWorkspace();
@@ -25,79 +24,59 @@ export default async function ProposalsPage() {
 
   const proposals = (data ?? []) as Proposal[];
 
+  // Resolve owner display names from the workspace member profiles (same
+  // pattern used by leads/page.tsx).
+  const { data: members } = await supabase
+    .from("workspace_members")
+    .select("user_id")
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null);
+
+  const memberIds = (members ?? []).map((m) => m.user_id);
+  const nameById = new Map<string, string>();
+  if (memberIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, display_name")
+      .in("user_id", memberIds);
+    for (const p of profiles ?? []) {
+      if (p.display_name) nameById.set(p.user_id, p.display_name);
+    }
+  }
+
+  const owners = Array.from(nameById.entries()).map(([id, name]) => ({ id, name }));
+
   const total = proposals.length;
+  const nonDraft = proposals.filter((p) => p.status !== "draft");
   const awaiting = proposals.filter((p) => p.status === "sent" || p.status === "viewed").length;
-  const totalValue = proposals.reduce((sum, p) => sum + (p.total_cents ?? 0), 0);
+  const totalValue = nonDraft.reduce((sum, p) => sum + (p.total_cents ?? 0), 0);
   const sentCount = proposals.filter((p) =>
     ["sent", "viewed", "signed", "declined", "converted", "expired"].includes(p.status)
   ).length;
   const signedCount = proposals.filter((p) => p.status === "signed" || p.status === "converted").length;
   const conversionRate = sentCount > 0 ? Math.round((signedCount / sentCount) * 100) : 0;
 
-  return (
-    <div className="flex min-h-full flex-col bg-surface-50">
-      <PageHeader
-        title="Sales"
-        description="Draft, send and track client proposals through to signature"
-        tabs={<SectionTabs tabs={SALES_TABS} />}
-        actions={
-          <Link
-            href="/event-manager/proposals/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
-          >
-            <Plus className="h-4 w-4" />
-            New Proposal
-          </Link>
-        }
-      />
+  // Sent This Week — approximation: no sent-at timestamp is tracked yet, so we
+  // use created_at for proposals that have moved past draft, within the last 7 days.
+  const weekAgo = weekAgoTimestamp();
+  const sentThisWeek = nonDraft.filter((p) => new Date(p.created_at).getTime() >= weekAgo).length;
 
-      <div className="flex-1 space-y-5 p-6">
-        <KPIGrid className="lg:grid-cols-4 xl:grid-cols-4">
-          <MetricCard label="Total Proposals" value={total} icon={FileText} />
-          <MetricCard
-            label="Awaiting Signature"
-            value={awaiting}
-            iconBg="bg-info-50"
-            iconColor="text-info-600"
-            icon={FileText}
-          />
-          <MetricCard
-            label="Total Value"
-            value={formatPence(totalValue)}
-            iconBg="bg-success-50"
-            iconColor="text-success-600"
-            icon={FileText}
-          />
-          <MetricCard
-            label="Conversion Rate"
-            value={`${conversionRate}%`}
-            iconBg="bg-brand-50"
-            iconColor="text-brand-600"
-            icon={FileText}
-          />
-        </KPIGrid>
+  const marginValues = proposals
+    .map((p) => p.margin_pct)
+    .filter((v): v is number => v !== null && v !== undefined);
+  const avgMarginPct =
+    marginValues.length > 0
+      ? Math.round((marginValues.reduce((s, v) => s + v, 0) / marginValues.length) * 10) / 10
+      : null;
 
-        <div className="overflow-hidden rounded-xl border border-surface-200 bg-white shadow-card">
-          {proposals.length === 0 ? (
-            <EmptyState
-              icon={FileText}
-              title="No proposals yet"
-              description="Create your first proposal to send to a client and capture an e-signature."
-              action={
-                <Link
-                  href="/event-manager/proposals/new"
-                  className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
-                >
-                  <Plus className="h-4 w-4" />
-                  New Proposal
-                </Link>
-              }
-            />
-          ) : (
-            <ProposalsTable proposals={proposals} />
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  const kpis: ProposalsKpis = {
+    total,
+    sentThisWeek,
+    awaiting,
+    conversionRate,
+    totalValue,
+    avgMarginPct,
+  };
+
+  return <ProposalsClient proposals={proposals} kpis={kpis} owners={owners} />;
 }

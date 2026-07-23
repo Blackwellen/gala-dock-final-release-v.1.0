@@ -22,16 +22,17 @@ export default async function SuppliersPage({ params }: { params: Promise<{ even
 
   const { data: supplierData } = await supabase
     .from("event_suppliers")
-    .select("id, role_on_event, status, notes, suppliers(id, name, primary_email, primary_phone, category)")
+    .select("id, role, supplier_name, status, notes, contact_name, contact_email, contact_phone, contract_value_cents")
     .eq("workspace_id", workspaceId)
     .eq("event_id", eventId)
+    .is("deleted_at", null)
     .order("created_at", { ascending: true });
 
   const rows = (supplierData ?? []) as unknown as SupplierRow[];
 
-  const confirmed  = rows.filter((r) => r.status === "confirmed").length;
-  const pending    = rows.filter((r) => !r.status || r.status === "shortlisted" || r.status === "contacted").length;
-  const declined   = rows.filter((r) => r.status === "declined" || r.status === "cancelled").length;
+  const confirmed = rows.filter((r) => r.status === "confirmed").length;
+  const pending   = rows.filter((r) => !r.status || r.status === "shortlisted" || r.status === "contacted").length;
+  const declined  = rows.filter((r) => r.status === "declined" || r.status === "cancelled").length;
 
   return (
     <div className="space-y-6 p-6 pb-12 animate-fade-in">

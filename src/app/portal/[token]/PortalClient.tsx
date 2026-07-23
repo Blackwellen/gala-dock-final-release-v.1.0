@@ -91,10 +91,10 @@ export function PortalClient({ data }: { data: PortalData }) {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-50">
-      {/* Top bar */}
-      <header className="bg-white border-b border-surface-200">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <div className="min-h-screen bg-surface-100 p-[var(--shell-viewport-padding)] space-y-[var(--shell-gap)]">
+      {/* Floating top bar — portal chrome is intentionally minimal: no sidebar, no switcher, no create menu */}
+      <header className="max-w-4xl mx-auto w-full bg-white border border-surface-200 rounded-[var(--shell-radius)] shadow-shell-topbar">
+        <div className="px-6 h-16 flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-surface-900 truncate">
               {data.workspaceName}
@@ -106,8 +106,8 @@ export function PortalClient({ data }: { data: PortalData }) {
       </header>
 
       {/* Tabs */}
-      <nav className="bg-white border-b border-surface-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 flex gap-0 overflow-x-auto">
+      <nav className="max-w-4xl mx-auto w-full bg-white border border-surface-200 rounded-[var(--shell-radius)] shadow-shell-topbar sticky top-[var(--shell-viewport-padding)] z-10">
+        <div className="px-6 flex gap-0 overflow-x-auto">
           {tabs.map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;

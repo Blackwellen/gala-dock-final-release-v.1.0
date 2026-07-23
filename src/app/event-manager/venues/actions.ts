@@ -17,7 +17,11 @@ function int(value: FormDataEntryValue | null): number | null {
   return Number.isFinite(n) ? Math.round(n) : null;
 }
 
-const VALID_VENUE_STATUS = ["preferred", "active", "inactive", "archived"];
+// Matches the DB's venues_status_chk constraint exactly. "preferred" is NOT a
+// status — it's the separate `is_preferred` boolean (see setVenuePreferred).
+// The old code offered "preferred" as a status option here and in the
+// create/edit forms, which the DB check constraint has always rejected.
+const VALID_VENUE_STATUS = ["active", "archived", "merged"];
 function coerceStatus(raw: FormDataEntryValue | null): string {
   const v = String(raw ?? "active");
   return VALID_VENUE_STATUS.includes(v) ? v : "active";
@@ -80,6 +84,9 @@ export async function createVenue(formData: FormData) {
       contact_email: str(formData.get("contact_email")),
       contact_phone: str(formData.get("contact_phone")),
       notes: str(formData.get("notes")),
+      is_preferred: formData.get("is_preferred") === "on",
+      preferred_since: formData.get("is_preferred") === "on" ? new Date().toISOString().slice(0, 10) : null,
+      preferred_by: formData.get("is_preferred") === "on" ? user.id : null,
     })
     .select("id")
     .single();
@@ -94,11 +101,13 @@ export async function createVenue(formData: FormData) {
 
 /** Update an existing venue scoped to the active workspace. */
 export async function updateVenue(venueId: string, formData: FormData) {
-  const { workspaceId } = await requireWorkspace();
+  const { workspaceId, user } = await requireWorkspace();
   const supabase = await createClient();
 
   const name = str(formData.get("name"));
   if (!name) throw new Error("Venue name is required");
+
+  const isPreferred = formData.get("is_preferred") === "on";
 
   const { error } = await supabase
     .from("venues")
@@ -115,6 +124,9 @@ export async function updateVenue(venueId: string, formData: FormData) {
       contact_email: str(formData.get("contact_email")),
       contact_phone: str(formData.get("contact_phone")),
       notes: str(formData.get("notes")),
+      is_preferred: isPreferred,
+      preferred_since: isPreferred ? new Date().toISOString().slice(0, 10) : null,
+      preferred_by: isPreferred ? user.id : null,
     })
     .eq("id", venueId)
     .eq("workspace_id", workspaceId)
@@ -278,12 +290,21 @@ export async function addVenueNote(venueId: string, formData: FormData) {
     workspace_id: workspaceId,
     venue_id: venueId,
     body,
+    note_type: str(formData.get("note_type")) ?? "general",
     is_pinned: formData.get("is_pinned") === "on",
     created_by: user.id,
   });
   if (error) throw new Error(error.message);
 
-  revalidatePath(`/event-manager/venues/${venueId}`);
+  await logVenueActivity(workspaceId, venueId, {
+    activityType: "note_added",
+    title: "Note added",
+    description: body.slice(0, 140),
+    actorId: user.id,
+  });
+
+  revalidatePath(`/event-manager/venues/${venueId}/notes`);
+  revalidatePath(`/event-manager/venues/${venueId}/activity`);
 }
 
 /** Toggle the pinned state of a venue note. */
@@ -319,5 +340,241 @@ export async function deleteVenueNote(venueId: string, noteId: string) {
     .eq("workspace_id", workspaceId);
   if (error) throw new Error(error.message);
 
+  revalidatePath(`/event-manager/venues/${venueId}/notes`);
+}
+
+// ── Activity log ─────────────────────────────────────────────────────────────
+
+/** Insert a venue_activity_log row. Best-effort — never throws to the caller. */
+export async function logVenueActivity(
+  workspaceId: string,
+  venueId: string,
+  entry: {
+    activityType: string;
+    title: string;
+    description?: string | null;
+    actorId?: string | null;
+    outcome?: string | null;
+    isInternal?: boolean;
+  }
+) {
+  try {
+    const supabase = await createClient();
+    await supabase.from("venue_activity_log").insert({
+      workspace_id: workspaceId,
+      venue_id: venueId,
+      activity_type: entry.activityType,
+      title: entry.title,
+      description: entry.description ?? null,
+      actor_id: entry.actorId ?? null,
+      outcome: entry.outcome ?? null,
+      is_internal: entry.isInternal ?? true,
+      source: "app",
+    });
+  } catch (err) {
+    console.error("[venues] logVenueActivity failed:", err);
+  }
+}
+
+// ── Preferred status ─────────────────────────────────────────────────────────
+
+/** Mark or unmark a venue as preferred for this workspace, with an optional reason. */
+export async function setVenuePreferred(
+  venueId: string,
+  preferred: boolean,
+  reason?: string | null
+) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("venues")
+    .update({
+      is_preferred: preferred,
+      preferred_since: preferred ? new Date().toISOString().slice(0, 10) : null,
+      preferred_reason: preferred ? (reason ?? null) : null,
+      preferred_by: preferred ? user.id : null,
+    })
+    .eq("id", venueId)
+    .eq("workspace_id", workspaceId);
+  if (error) throw new Error(error.message);
+
+  await logVenueActivity(workspaceId, venueId, {
+    activityType: "preferred_status_changed",
+    title: preferred ? "Marked as preferred" : "Removed from preferred",
+    actorId: user.id,
+  });
+
+  revalidatePath("/event-manager/venues");
   revalidatePath(`/event-manager/venues/${venueId}`);
+}
+
+// ── Contacts ─────────────────────────────────────────────────────────────────
+
+export async function addVenueContact(venueId: string, formData: FormData) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const name = str(formData.get("name"));
+  if (!name) throw new Error("Contact name is required");
+
+  const isPrimary = formData.get("is_primary") === "on";
+  if (isPrimary) {
+    await supabase
+      .from("venue_contacts")
+      .update({ is_primary: false })
+      .eq("venue_id", venueId)
+      .eq("workspace_id", workspaceId);
+  }
+
+  const { error } = await supabase.from("venue_contacts").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    name,
+    role: str(formData.get("role")),
+    email: str(formData.get("email")),
+    phone: str(formData.get("phone")),
+    is_primary: isPrimary,
+    created_by: user.id,
+  });
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/event-manager/venues/${venueId}/overview`);
+}
+
+// ── Spaces & media ───────────────────────────────────────────────────────────
+
+export async function addVenueSpace(venueId: string, formData: FormData) {
+  const { workspaceId } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const name = str(formData.get("name"));
+  if (!name) throw new Error("Space name is required");
+
+  const { error } = await supabase.from("venue_spaces").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    name,
+    space_type: str(formData.get("space_type")),
+    capacity_seated: int(formData.get("capacity_seated")),
+    capacity_standing: int(formData.get("capacity_standing")),
+    dimensions: str(formData.get("dimensions")),
+  });
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/event-manager/venues/${venueId}/gallery-spaces`);
+}
+
+/** Record a venue_media row after the file has already been PUT to R2 via the presign flow. */
+export async function addVenueMedia(
+  venueId: string,
+  input: { r2Key: string; category: string; altText?: string; spaceId?: string | null }
+) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("venue_media").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    space_id: input.spaceId ?? null,
+    category: input.category,
+    r2_key: input.r2Key,
+    alt_text: input.altText ?? null,
+    created_by: user.id,
+  });
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/event-manager/venues/${venueId}/gallery-spaces`);
+}
+
+// ── Commercial terms & transactions ──────────────────────────────────────────
+
+export async function addVenueCommercialTransaction(venueId: string, formData: FormData) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const transactionType = str(formData.get("transaction_type"));
+  const amount = int(formData.get("amount"));
+  if (!transactionType || amount === null) {
+    throw new Error("Transaction type and amount are required");
+  }
+
+  const { error } = await supabase.from("venue_commercial_transactions").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    transaction_type: transactionType,
+    amount_cents: Math.round(amount * 100),
+    due_date: str(formData.get("due_date")),
+    paid_status: str(formData.get("paid_status")) ?? "open",
+    notes: str(formData.get("notes")),
+    created_by: user.id,
+  });
+  if (error) throw new Error(error.message);
+
+  await logVenueActivity(workspaceId, venueId, {
+    activityType: "commercial_transaction_recorded",
+    title: `${transactionType.replace(/_/g, " ")} recorded`,
+    actorId: user.id,
+  });
+
+  revalidatePath(`/event-manager/venues/${venueId}/commercials-records`);
+  revalidatePath(`/event-manager/venues/${venueId}/activity`);
+}
+
+// ── Holds & room blocks ──────────────────────────────────────────────────────
+
+export async function createVenueHold(venueId: string, formData: FormData) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("venue_holds").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    hold_type: str(formData.get("hold_type")) ?? "first_option",
+    status: "requested",
+    start_at: str(formData.get("start_at")),
+    end_at: str(formData.get("end_at")),
+    expiry_date: str(formData.get("expiry_date")),
+    notes: str(formData.get("notes")),
+    created_by: user.id,
+  });
+  if (error) throw new Error(error.message);
+
+  await logVenueActivity(workspaceId, venueId, {
+    activityType: "hold_created",
+    title: "Venue hold created",
+    actorId: user.id,
+  });
+
+  revalidatePath(`/event-manager/venues/${venueId}/holds`);
+  revalidatePath(`/event-manager/venues/${venueId}/activity`);
+}
+
+export async function createVenueRoomBlock(venueId: string, formData: FormData) {
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("venue_room_blocks").insert({
+    workspace_id: workspaceId,
+    venue_id: venueId,
+    room_type: str(formData.get("room_type")),
+    num_rooms: int(formData.get("num_rooms")) ?? 0,
+    nightly_rate_cents: int(formData.get("nightly_rate")) ? Math.round(Number(str(formData.get("nightly_rate"))) * 100) : null,
+    start_date: str(formData.get("start_date")),
+    end_date: str(formData.get("end_date")),
+    release_date: str(formData.get("release_date")),
+    status: "requested",
+    notes: str(formData.get("notes")),
+    created_by: user.id,
+  });
+  if (error) throw new Error(error.message);
+
+  await logVenueActivity(workspaceId, venueId, {
+    activityType: "room_block_created",
+    title: "Room block created",
+    actorId: user.id,
+  });
+
+  revalidatePath(`/event-manager/venues/${venueId}/rooms`);
+  revalidatePath(`/event-manager/venues/${venueId}/activity`);
 }

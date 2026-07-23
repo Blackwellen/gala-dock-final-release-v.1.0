@@ -2,11 +2,79 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import { getPersonaContext } from "@/lib/flags/context";
 import { upgradeMessage } from "@/lib/billing/entitlements";
+import { createClient } from "@/lib/supabase/server";
 import { getCalendarRange } from "./data";
 import type { CalendarItem as RpcCalendarItem } from "./data";
 import { monthGrid, weekGrid, todayISODate } from "./grid";
 import { CalendarClient } from "./CalendarClient";
 import type { CalendarItem, BadgeType, ViewMode } from "./types";
+import type { GanttGroup } from "./GanttView";
+
+/** Load canonical `tasks` rows with a due date, grouped by event, for the Gantt view. */
+async function getGanttGroups(workspaceId: string): Promise<GanttGroup[]> {
+  const supabase = await createClient();
+
+  const { data: tasks } = await supabase
+    .from("tasks")
+    .select("id, title, status, priority, due_at, started_at, is_milestone, event_id")
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null)
+    .not("event_id", "is", null)
+    .not("due_at", "is", null)
+    .order("due_at", { ascending: true })
+    .limit(300);
+
+  const rows = tasks ?? [];
+  if (rows.length === 0) return [];
+
+  const eventIds = Array.from(new Set(rows.map((t) => t.event_id).filter(Boolean))) as string[];
+  const { data: events } = await supabase
+    .from("events")
+    .select("id, name, start_at, end_at")
+    .eq("workspace_id", workspaceId)
+    .in("id", eventIds);
+
+  const taskIds = rows.map((t) => t.id);
+  const { data: deps } = await supabase
+    .from("task_dependencies")
+    .select("task_id, depends_on_task_id")
+    .in("task_id", taskIds);
+  const depsByTask = new Map<string, string[]>();
+  for (const d of deps ?? []) {
+    const list = depsByTask.get(d.task_id) ?? [];
+    list.push(d.depends_on_task_id);
+    depsByTask.set(d.task_id, list);
+  }
+
+  const now = Date.now();
+  const groupsByEvent = new Map<string, GanttGroup>();
+  for (const ev of events ?? []) {
+    groupsByEvent.set(ev.id, {
+      eventId: ev.id,
+      eventName: ev.name,
+      eventStartAt: ev.start_at,
+      eventEndAt: ev.end_at,
+      tasks: [],
+    });
+  }
+  for (const t of rows) {
+    const group = t.event_id ? groupsByEvent.get(t.event_id) : undefined;
+    if (!group) continue;
+    group.tasks.push({
+      id: t.id,
+      title: t.title,
+      status: t.status,
+      priority: t.priority,
+      dueAt: t.due_at,
+      startsAt: t.started_at,
+      isMilestone: t.is_milestone ?? false,
+      overdue: !!t.due_at && t.status !== "done" && t.status !== "cancelled" && new Date(t.due_at).getTime() < now,
+      dependsOnIds: depsByTask.get(t.id) ?? [],
+    });
+  }
+
+  return Array.from(groupsByEvent.values()).filter((g) => g.tasks.length > 0);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -85,7 +153,7 @@ export default async function CalendarPage({
 
   // Parse view param — default to month
   const rawView = typeof sp.view === "string" ? sp.view : "month";
-  const view: ViewMode = (["month", "week", "day", "agenda"] as const).includes(
+  const view: ViewMode = (["month", "week", "day", "agenda", "gantt"] as const).includes(
     rawView as ViewMode
   )
     ? (rawView as ViewMode)
@@ -123,11 +191,13 @@ export default async function CalendarPage({
   }
 
   // Load live Supabase data — adapt to rich CalendarItem shape
-  const rpcItems = workspaceId
+  const rpcItems = workspaceId && view !== "gantt"
     ? await getCalendarRange(workspaceId, fromISO, toISO)
     : [];
 
   const liveItems: CalendarItem[] = rpcItems.map(adaptRpcItem);
+
+  const ganttGroups = workspaceId && view === "gantt" ? await getGanttGroups(workspaceId) : [];
 
   return (
     <CalendarClient
@@ -135,6 +205,7 @@ export default async function CalendarPage({
       dateISO={dateISO}
       liveItems={liveItems}
       hasWorkspace={!!workspaceId}
+      ganttGroups={ganttGroups}
     />
   );
 }

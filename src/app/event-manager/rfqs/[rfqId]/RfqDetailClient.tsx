@@ -7,8 +7,11 @@ import {
   ArrowLeft,
   Award,
   CalendarClock,
+  CheckCircle2,
   Columns3,
+  FileSignature,
   Pencil,
+  Plus,
   Sparkles,
   Trash2,
   X,
@@ -26,19 +29,32 @@ import {
 } from "../lib";
 import {
   updateRecipientResponse,
+  submitRfqResponse,
   awardRfq,
+  convertAwardToBooking,
   deleteRfq,
 } from "../actions";
+
+export interface RfqAward {
+  id: string;
+  supplierId: string;
+  rfqResponseId: string | null;
+  bookingCommittedAt: string | null;
+}
 
 export interface RfqDetail {
   id: string;
   title: string;
   scope: string | null;
+  category: string | null;
   status: string;
   dueDate: string | null;
+  budgetLowCents: number | null;
+  budgetHighCents: number | null;
   createdAt: string;
   eventId: string | null;
   eventName: string | null;
+  award: RfqAward | null;
 }
 
 export interface RecipientRow {
@@ -59,8 +75,9 @@ export function RfqDetailClient({
   recipients: RecipientRow[];
 }) {
   const router = useRouter();
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<RecipientRow | null>(null);
+  const [responding, setResponding] = useState<RecipientRow | null>(null);
 
   const responded = recipients.filter(
     (r) => r.quoteCents !== null && (r.status === "responded" || r.status === "accepted")
@@ -78,16 +95,28 @@ export function RfqDetailClient({
     ).id;
   }, [recipients]);
 
-  function handleAward(recipientId: string) {
+  function handleAward(supplierId: string) {
     if (!confirm("Award this RFQ to this supplier? All other recipients will be marked rejected.")) {
       return;
     }
     startTransition(async () => {
       try {
-        await awardRfq(rfq.id, recipientId);
+        await awardRfq(rfq.id, supplierId);
         router.refresh();
       } catch (e) {
         alert(e instanceof Error ? e.message : "Could not award RFQ");
+      }
+    });
+  }
+
+  function handleConvertToBooking() {
+    startTransition(async () => {
+      const result = await convertAwardToBooking(rfq.id);
+      if (result.error) {
+        alert(result.error);
+      } else if (result.message) {
+        alert(result.message);
+        router.refresh();
       }
     });
   }
@@ -104,6 +133,8 @@ export function RfqDetailClient({
   }
 
   const isAwarded = rfq.status === "awarded";
+  const canConvertToBooking = isAwarded && !!rfq.eventId && rfq.award && !rfq.award.bookingCommittedAt;
+  const alreadyConverted = isAwarded && rfq.award?.bookingCommittedAt;
 
   const tabs = [
     { id: "responses", label: "Responses", count: recipients.length },
@@ -124,6 +155,30 @@ export function RfqDetailClient({
               <ArrowLeft className="w-4 h-4" strokeWidth={1.8} />
               Back
             </Link>
+            <Link
+              href={`/event-manager/rfqs/${rfq.id}/compare`}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
+            >
+              <Columns3 className="w-4 h-4" strokeWidth={1.8} />
+              Compare Responses
+            </Link>
+            {canConvertToBooking && (
+              <button
+                type="button"
+                onClick={handleConvertToBooking}
+                disabled={pending}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white bg-success-600 rounded-lg hover:bg-success-700 transition-colors disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4" strokeWidth={1.8} />
+                Convert to Booking
+              </button>
+            )}
+            {alreadyConverted && (
+              <span className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-success-700 bg-success-50 border border-success-200 rounded-lg">
+                <CheckCircle2 className="w-4 h-4" strokeWidth={1.8} />
+                Booked
+              </span>
+            )}
             <button
               type="button"
               onClick={handleDelete}
@@ -151,6 +206,18 @@ export function RfqDetailClient({
                 {rfq.scope ?? "—"}
               </p>
             </Field>
+            {rfq.category && (
+              <Field label="Category">
+                <span className="text-sm text-surface-700">{rfq.category}</span>
+              </Field>
+            )}
+            {(rfq.budgetLowCents !== null || rfq.budgetHighCents !== null) && (
+              <Field label="Budget">
+                <span className="text-sm text-surface-700 tabular-nums">
+                  {formatMoney(rfq.budgetLowCents)} – {formatMoney(rfq.budgetHighCents)}
+                </span>
+              </Field>
+            )}
             <Field label="Deadline">
               <span className="inline-flex items-center gap-1.5 text-sm text-surface-700">
                 <CalendarClock className="w-4 h-4 text-surface-400" strokeWidth={1.8} />
@@ -221,18 +288,29 @@ export function RfqDetailClient({
                             <div className="flex items-center justify-end gap-1">
                               <button
                                 type="button"
+                                onClick={() => setResponding(r)}
+                                className="p-1.5 text-surface-400 hover:text-brand-600 rounded-md hover:bg-surface-100 transition-colors"
+                                aria-label="Submit formal response"
+                                title="Submit formal response"
+                              >
+                                <FileSignature className="w-4 h-4" strokeWidth={1.8} />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => setEditing(r)}
                                 className="p-1.5 text-surface-400 hover:text-brand-600 rounded-md hover:bg-surface-100 transition-colors"
                                 aria-label="Log response"
+                                title="Log a quick response"
                               >
                                 <Pencil className="w-4 h-4" strokeWidth={1.8} />
                               </button>
                               {!isAwarded && (
                                 <button
                                   type="button"
-                                  onClick={() => handleAward(r.id)}
+                                  onClick={() => handleAward(r.supplierId)}
                                   className="p-1.5 text-surface-400 hover:text-success-600 rounded-md hover:bg-surface-100 transition-colors"
                                   aria-label="Award"
+                                  title="Award"
                                 >
                                   <Award className="w-4 h-4" strokeWidth={1.8} />
                                 </button>
@@ -264,6 +342,18 @@ export function RfqDetailClient({
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
+            router.refresh();
+          }}
+        />
+      )}
+
+      {responding && (
+        <FormalResponseModal
+          rfqId={rfq.id}
+          recipient={responding}
+          onClose={() => setResponding(null)}
+          onSaved={() => {
+            setResponding(null);
             router.refresh();
           }}
         />
@@ -347,7 +437,7 @@ function ComparisonMatrix({
                 ) : (
                   <button
                     type="button"
-                    onClick={() => onAward(r.id)}
+                    onClick={() => onAward(r.supplierId)}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-white bg-brand-600 rounded-md hover:bg-brand-700 transition-colors"
                   >
                     <Award className="w-3.5 h-3.5" strokeWidth={2} />
@@ -488,6 +578,211 @@ function ResponseModal({
               className="px-4 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
             >
               {pending ? "Saving…" : "Save Response"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+interface LineItemRow {
+  key: number;
+  description: string;
+  quantity: string;
+  unitPrice: string;
+}
+
+function FormalResponseModal({
+  rfqId,
+  recipient,
+  onClose,
+  onSaved,
+}: {
+  rfqId: string;
+  recipient: RecipientRow;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [lineItems, setLineItems] = useState<LineItemRow[]>([]);
+
+  const inputCls =
+    "w-full px-3 py-2 text-sm text-surface-900 border border-surface-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-surface-400";
+
+  function addLineItem() {
+    const key = lineItems.length > 0 ? Math.max(...lineItems.map((l) => l.key)) + 1 : 0;
+    setLineItems((prev) => [...prev, { key, description: "", quantity: "1", unitPrice: "" }]);
+  }
+
+  function updateLineItem(key: number, field: keyof Omit<LineItemRow, "key">, value: string) {
+    setLineItems((prev) => prev.map((l) => (l.key === key ? { ...l, [field]: value } : l)));
+  }
+
+  function removeLineItem(key: number) {
+    setLineItems((prev) => prev.filter((l) => l.key !== key));
+  }
+
+  const lineItemsTotal = lineItems.reduce((sum, l) => {
+    const qty = Number(l.quantity) || 0;
+    const price = Number(l.unitPrice) || 0;
+    return sum + qty * price;
+  }, 0);
+
+  function onSubmit(formData: FormData) {
+    setError(null);
+    startTransition(async () => {
+      try {
+        await submitRfqResponse(rfqId, recipient.supplierId, formData);
+        onSaved();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not save response");
+      }
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-900/40">
+      <div className="bg-white rounded-xl shadow-xl border border-surface-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200 sticky top-0 bg-white">
+          <h2 className="text-sm font-semibold text-surface-900">
+            Submit formal response — {recipient.supplierName}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 text-surface-400 hover:text-surface-700 rounded-md hover:bg-surface-100"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" strokeWidth={1.8} />
+          </button>
+        </div>
+        <form action={onSubmit} className="p-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="total_amount">
+                Total Amount (£)
+              </label>
+              <input
+                id="total_amount"
+                name="total_amount"
+                type="text"
+                inputMode="decimal"
+                defaultValue={recipient.quoteCents !== null ? (recipient.quoteCents / 100).toString() : ""}
+                placeholder="0.00"
+                disabled={lineItems.length > 0}
+                className={inputCls + (lineItems.length > 0 ? " opacity-50" : "")}
+              />
+              {lineItems.length > 0 && (
+                <p className="text-xs text-surface-400 mt-1">
+                  Using line-item total: £{lineItemsTotal.toFixed(2)}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="lead_time_days">
+                Lead Time (days)
+              </label>
+              <input id="lead_time_days" name="lead_time_days" type="number" min={0} className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="valid_until">
+                Valid Until
+              </label>
+              <input id="valid_until" name="valid_until" type="date" className={inputCls} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-surface-700">Line Items (optional)</label>
+              <button
+                type="button"
+                onClick={addLineItem}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-brand-600 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+                Add Line
+              </button>
+            </div>
+            {lineItems.map((li) => (
+              <div key={li.key} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  name="line_description"
+                  value={li.description}
+                  onChange={(e) => updateLineItem(li.key, "description", e.target.value)}
+                  placeholder="Description"
+                  className={inputCls + " flex-1"}
+                />
+                <input
+                  type="number"
+                  name="line_quantity"
+                  min={0}
+                  step="any"
+                  value={li.quantity}
+                  onChange={(e) => updateLineItem(li.key, "quantity", e.target.value)}
+                  placeholder="Qty"
+                  className={inputCls + " w-20"}
+                />
+                <input
+                  type="text"
+                  name="line_unit_price"
+                  inputMode="decimal"
+                  value={li.unitPrice}
+                  onChange={(e) => updateLineItem(li.key, "unitPrice", e.target.value)}
+                  placeholder="Unit £"
+                  className={inputCls + " w-24"}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeLineItem(li.key)}
+                  aria-label="Remove line item"
+                  className="p-2 text-surface-400 hover:text-danger-600 rounded-md hover:bg-danger-50 transition-colors"
+                >
+                  <X className="w-4 h-4" strokeWidth={1.8} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="notes">
+              Notes
+            </label>
+            <textarea id="notes" name="notes" rows={2} placeholder="Inclusions, terms…" className={inputCls} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="exclusions">
+                Exclusions
+              </label>
+              <textarea id="exclusions" name="exclusions" rows={2} className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1.5" htmlFor="assumptions">
+                Assumptions
+              </label>
+              <textarea id="assumptions" name="assumptions" rows={2} className={inputCls} />
+            </div>
+          </div>
+
+          {error && <p className="text-sm text-danger-600">{error}</p>}
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={pending}
+              className="px-4 py-2 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
+            >
+              {pending ? "Submitting…" : "Submit Response"}
             </button>
             <button
               type="button"

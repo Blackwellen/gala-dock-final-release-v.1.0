@@ -11,7 +11,18 @@ type Status =
   | "expired" | "partial" | "void" | "accepted"
   // Lead stages / proposal / RSVP / forms
   | "contacted" | "proposal-sent" | "negotiating" | "won" | "lost"
-  | "viewed" | "signed" | "declined" | "converted" | "maybe" | "published";
+  | "viewed" | "signed" | "declined" | "converted" | "maybe" | "published"
+  // Finance section: supplier bills, payments, timesheets, tickets, deposits
+  | "pending-review" | "awaiting-finance" | "disputed" | "on-hold"
+  | "scheduled" | "processing" | "part-paid" | "failed" | "refunded"
+  | "reconciled" | "unreconciled" | "exception"
+  | "submitted" | "exported" | "due-soon" | "waived" | "forfeited"
+  | "healthy" | "monitor" | "at-risk-cashflow"
+  // Automations section: run/approval/error/integration statuses
+  | "queued" | "running" | "waiting-approval" | "skipped"
+  | "review-requested" | "invalid" | "changes-requested" | "escalated"
+  | "connected" | "disconnected" | "critical" | "warning" | "info-severity"
+  | "investigating" | "paused" | "delivered" | "rate-limited";
 
 const STATUS_MAP: Record<Status, { label: string; classes: string }> = {
   "new-enquiry":       { label: "New Enquiry",      classes: "bg-info-50     text-info-600     border-info-200" },
@@ -62,6 +73,43 @@ const STATUS_MAP: Record<Status, { label: string; classes: string }> = {
   "converted":         { label: "Converted",         classes: "bg-brand-50    text-brand-700    border-brand-200" },
   "maybe":             { label: "Maybe",             classes: "bg-warning-50  text-warning-600  border-warning-200" },
   "published":         { label: "Published",         classes: "bg-success-50  text-success-700  border-success-200" },
+  "pending-review":    { label: "Pending Review",     classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "awaiting-finance":  { label: "Awaiting Finance",   classes: "bg-brand-50    text-brand-600    border-brand-200" },
+  "disputed":          { label: "Disputed",           classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "on-hold":           { label: "On Hold",            classes: "bg-surface-100 text-surface-600  border-surface-200" },
+  "scheduled":         { label: "Scheduled",          classes: "bg-info-50     text-info-600     border-info-200" },
+  "processing":        { label: "Processing",         classes: "bg-info-50     text-info-600     border-info-200" },
+  "part-paid":         { label: "Part Paid",          classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "failed":            { label: "Failed",             classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "refunded":          { label: "Refunded",           classes: "bg-violet-50   text-violet-600   border-violet-200" },
+  "reconciled":        { label: "Reconciled",         classes: "bg-success-50  text-success-700  border-success-200" },
+  "unreconciled":      { label: "Unreconciled",       classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "exception":         { label: "Exception",          classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "submitted":         { label: "Submitted",          classes: "bg-info-50     text-info-600     border-info-200" },
+  "exported":          { label: "Exported",           classes: "bg-brand-50    text-brand-700    border-brand-200" },
+  "due-soon":          { label: "Due Soon",           classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "waived":            { label: "Waived",             classes: "bg-surface-100 text-surface-500  border-surface-200" },
+  "forfeited":         { label: "Forfeited",          classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "healthy":           { label: "Healthy",            classes: "bg-success-50  text-success-700  border-success-200" },
+  "monitor":           { label: "Monitor",            classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "at-risk-cashflow":  { label: "At Risk",            classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "queued":            { label: "Queued",             classes: "bg-surface-100 text-surface-600  border-surface-200" },
+  "running":           { label: "Running",             classes: "bg-info-50     text-info-600     border-info-200" },
+  "waiting-approval":  { label: "Waiting Approval",    classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "skipped":           { label: "Skipped",             classes: "bg-surface-100 text-surface-400  border-surface-200" },
+  "review-requested":  { label: "Review Requested",    classes: "bg-brand-50    text-brand-600    border-brand-200" },
+  "invalid":           { label: "Invalid",             classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "changes-requested": { label: "Changes Requested",   classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "escalated":         { label: "Escalated",           classes: "bg-danger-50   text-danger-600   border-danger-200" },
+  "connected":         { label: "Connected",           classes: "bg-success-50  text-success-700  border-success-200" },
+  "disconnected":      { label: "Disconnected",        classes: "bg-surface-100 text-surface-500  border-surface-200" },
+  "critical":          { label: "Critical",            classes: "bg-danger-50   text-danger-700   border-danger-200" },
+  "warning":           { label: "Warning",             classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "info-severity":     { label: "Info",                classes: "bg-info-50     text-info-600     border-info-200" },
+  "investigating":     { label: "Investigating",       classes: "bg-brand-50    text-brand-600    border-brand-200" },
+  "paused":            { label: "Paused",              classes: "bg-warning-50  text-warning-600  border-warning-200" },
+  "delivered":         { label: "Delivered",           classes: "bg-success-50  text-success-700  border-success-200" },
+  "rate-limited":      { label: "Rate Limited",        classes: "bg-warning-50  text-warning-600  border-warning-200" },
 };
 
 interface StatusBadgeProps {

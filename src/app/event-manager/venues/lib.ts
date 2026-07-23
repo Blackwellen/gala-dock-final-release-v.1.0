@@ -68,6 +68,30 @@ export const DOC_TYPE_LABEL: Record<string, string> = {
   other: "Other",
 };
 
+/** True when `value` is a date in the future (used for "upcoming" splits in server components). */
+export function isFutureDate(value: string | null | undefined): boolean {
+  if (!value) return false;
+  const t = new Date(value).getTime();
+  return !Number.isNaN(t) && t >= Date.now();
+}
+
+/** True when `value` is within `days` days from now (inclusive), and not already past. */
+export function isWithinDays(value: string | null | undefined, days: number): boolean {
+  if (!value) return false;
+  const t = new Date(value).getTime();
+  if (Number.isNaN(t)) return false;
+  const diffDays = (t - Date.now()) / (1000 * 60 * 60 * 24);
+  return diffDays >= 0 && diffDays <= days;
+}
+
+/** True when `value` is within the last `days` days (used for "this month" activity splits). */
+export function isWithinPastDays(value: string | null | undefined, days: number): boolean {
+  if (!value) return false;
+  const t = new Date(value).getTime();
+  if (Number.isNaN(t)) return false;
+  return Date.now() - t < 1000 * 60 * 60 * 24 * days;
+}
+
 /** Format a byte count as a compact size string. */
 export function formatBytes(bytes: number | null | undefined): string {
   if (!bytes || bytes <= 0) return "—";

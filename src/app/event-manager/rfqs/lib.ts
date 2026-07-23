@@ -3,8 +3,23 @@ import { formatCurrency } from "@/lib/utils";
 /**
  * RFQ status values stored on `rfqs.status` (text column).
  * Recipient status values stored on `rfq_recipients.status` (text column).
+ *
+ * Canonical vocabulary (matches the migration comment in
+ * `supabase/migrations/20260711_supplier_rfq_depth.sql`): underscored, e.g.
+ * `responses_received` / `under_review`. The suppliers-module read layer
+ * (`suppliers/_data/queries.ts`'s `normalizeRfqStatus`) converts this onto a
+ * hyphenated *display* union for that module's chips — that's a UI-only
+ * transform and does not need to match the DB vocabulary written here.
  */
-export const RFQ_STATUSES = ["draft", "sent", "responses-received", "closed", "awarded"] as const;
+export const RFQ_STATUSES = [
+  "draft",
+  "sent",
+  "responses_received",
+  "under_review",
+  "awarded",
+  "closed",
+  "cancelled",
+] as const;
 export type RfqStatus = (typeof RFQ_STATUSES)[number];
 
 export const RECIPIENT_STATUSES = [
@@ -20,9 +35,11 @@ export type RecipientStatus = (typeof RECIPIENT_STATUSES)[number];
 export const RFQ_STATUS_LABELS: Record<string, string> = {
   draft: "Draft",
   sent: "Sent",
-  "responses-received": "Responses In",
-  closed: "Closed",
+  responses_received: "Responses In",
+  under_review: "Under Review",
   awarded: "Awarded",
+  closed: "Closed",
+  cancelled: "Cancelled",
 };
 
 export const RECIPIENT_STATUS_LABELS: Record<string, string> = {
@@ -44,12 +61,16 @@ export function rfqBadgeStatus(status: string): string {
       return "draft";
     case "sent":
       return "sent";
-    case "responses-received":
+    case "responses_received":
       return "in-progress";
+    case "under_review":
+      return "pending";
     case "awarded":
       return "won";
     case "closed":
       return "closed";
+    case "cancelled":
+      return "cancelled";
     default:
       return status;
   }

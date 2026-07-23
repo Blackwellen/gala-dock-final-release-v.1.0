@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Search, Users2, ArrowLeft } from "lucide-react";
+import { Search, Users2, ArrowLeft, X } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { createRfq } from "../actions";
@@ -18,6 +18,12 @@ export interface EventOption {
   name: string;
 }
 
+interface CriterionRow {
+  key: number;
+  criterion: string;
+  weight: string;
+}
+
 export function NewRfqForm({
   suppliers,
   events,
@@ -27,6 +33,26 @@ export function NewRfqForm({
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
+  const [criteria, setCriteria] = useState<CriterionRow[]>([]);
+  const criterionKeyRef = useRef(0);
+
+  const categoryOptions = useMemo(
+    () => [...new Set(suppliers.map((s) => s.category).filter((c): c is string => !!c))].sort(),
+    [suppliers]
+  );
+
+  function addCriterion() {
+    const key = criterionKeyRef.current++;
+    setCriteria((prev) => [...prev, { key, criterion: "", weight: "" }]);
+  }
+
+  function updateCriterion(key: number, field: "criterion" | "weight", value: string) {
+    setCriteria((prev) => prev.map((c) => (c.key === key ? { ...c, [field]: value } : c)));
+  }
+
+  function removeCriterion(key: number) {
+    setCriteria((prev) => prev.filter((c) => c.key !== key));
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -129,6 +155,105 @@ export function NewRfqForm({
               />
             </div>
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls} htmlFor="category">
+                Category
+              </label>
+              <input
+                id="category"
+                name="category"
+                type="text"
+                list="rfq-category-options"
+                placeholder="e.g. Catering"
+                className={inputCls}
+              />
+              <datalist id="rfq-category-options">
+                {categoryOptions.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="budget_low">
+                Budget Low (£)
+              </label>
+              <input
+                id="budget_low"
+                name="budget_low"
+                type="text"
+                inputMode="decimal"
+                placeholder="0.00"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="budget_high">
+                Budget High (£)
+              </label>
+              <input
+                id="budget_high"
+                name="budget_high"
+                type="text"
+                inputMode="decimal"
+                placeholder="0.00"
+                className={inputCls}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Evaluation criteria (optional) */}
+        <section className="bg-white rounded-xl border border-surface-200 shadow-card p-5 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-surface-900">Evaluation Criteria</h2>
+              <p className="text-xs text-surface-400 mt-0.5">
+                Optional — how you&apos;ll weigh responses when comparing quotes.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addCriterion}
+              className="px-3 py-1.5 text-xs font-semibold text-brand-600 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors"
+            >
+              + Add Criterion
+            </button>
+          </div>
+          {criteria.length > 0 && (
+            <div className="space-y-2">
+              {criteria.map((c) => (
+                <div key={c.key} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    name="criterion"
+                    value={c.criterion}
+                    onChange={(e) => updateCriterion(c.key, "criterion", e.target.value)}
+                    placeholder="e.g. Price"
+                    className={inputCls + " flex-1"}
+                  />
+                  <input
+                    type="number"
+                    name="weight"
+                    min={0}
+                    max={100}
+                    value={c.weight}
+                    onChange={(e) => updateCriterion(c.key, "weight", e.target.value)}
+                    placeholder="Weight %"
+                    className={inputCls + " w-28"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeCriterion(c.key)}
+                    aria-label="Remove criterion"
+                    className="p-2 text-surface-400 hover:text-danger-600 rounded-md hover:bg-danger-50 transition-colors"
+                  >
+                    <X className="w-4 h-4" strokeWidth={1.8} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Suppliers */}

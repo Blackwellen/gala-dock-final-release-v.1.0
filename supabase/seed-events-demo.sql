@@ -58,7 +58,7 @@ BEGIN
     guest_count_day, guest_count_evening,
     budget_cents, client_name, client_company,
     owner_user_id, risk_level, cover_path,
-    flagged, created_by, updated_by, notes
+    flagged, created_by, internal_notes
   ) VALUES
 
   -- Stage: new_enquiry ───────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ BEGIN
    850, 0, 24000000, 'James Whitfield', 'TechVenture UK Ltd',
    v_user, 'low',
    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Annual tech summit. Client keen on hybrid streaming option. Needs AV quote by week 3.'),
 
   (e2, v_ws, 'The Robertson Wedding', 'new_enquiry', 'wedding',
@@ -77,7 +77,7 @@ BEGIN
    180, 320, 8500000, 'Sarah & Tom Robertson', NULL,
    v_user, 'low',
    'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Marquee wedding in palace grounds. Awaiting site visit confirmation.'),
 
   -- Stage: briefing ──────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ BEGIN
    0, 500, 15000000, 'Priya Sharma', 'Meridian Financial Group',
    v_user, 'medium',
    'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Black-tie annual gala. Client wants sustainability theme. Brief call booked for Thursday.'),
 
   (e4, v_ws, 'Latitude Festival Brand Activation', 'briefing', 'festival',
@@ -96,7 +96,7 @@ BEGIN
    0, 12000, 38000000, 'Oliver Grant', 'Nova Brands Agency',
    v_user, 'high',
    'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80',
-   true, v_user, v_user,
+   true, v_user,
    'Brand activation across 3 stages. Flagged: tight turnaround, complex logistics.'),
 
   -- Stage: quoting ───────────────────────────────────────────────────────────
@@ -106,7 +106,7 @@ BEGIN
    0, 2200, 42000000, 'Marcus Bell', 'Nationwide Property Group',
    v_user, 'medium',
    'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Major industry awards. Quote due Friday. AV and catering still outstanding.'),
 
   (e6, v_ws, 'Future Leaders Summit', 'quoting', 'conference',
@@ -115,7 +115,7 @@ BEGIN
    600, 0, 9500000, 'Dr Amelia Hughes', 'The Bloom Foundation',
    v_user, 'low',
    'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Two-day leadership conference for 18–30 cohort. Quote v2 in progress.'),
 
   -- Stage: awaiting_approval ─────────────────────────────────────────────────
@@ -125,7 +125,7 @@ BEGIN
    120, 0, 22000000, 'Charlotte Davies', 'Apex Capital Partners',
    v_user, 'medium',
    'https://images.unsplash.com/photo-1565302240832-9d6543a0ebc3?w=800&q=80',
-   true, v_user, v_user,
+   true, v_user,
    'VIP retreat. Quote submitted. Awaiting board sign-off. High value — handle personally.'),
 
   (e8, v_ws, 'Covent Garden Christmas Markets', 'awaiting_approval', 'pop_up',
@@ -134,7 +134,7 @@ BEGIN
    0, 50000, 7800000, 'Gemma Thornton', 'LDN Markets Ltd',
    v_user, 'low',
    'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Seasonal market. 15-night run. Awaiting venue licence approval from GLA.'),
 
   -- Stage: confirmed ─────────────────────────────────────────────────────────
@@ -144,7 +144,7 @@ BEGIN
    0, 3500, 18500000, 'Lord & Lady Kincaid', 'Kincaid Estate Trust',
    v_user, 'medium',
    'https://images.unsplash.com/photo-1445264457965-5e7b0878e239?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Traditional games + evening ceilidh. All suppliers locked. Focus on logistics now.'),
 
   (e10, v_ws, 'Hartley & Young Centenary Gala', 'confirmed', 'gala_dinner',
@@ -153,7 +153,7 @@ BEGIN
    0, 420, 28000000, 'Eleanor Hartley', 'Hartley & Young LLP',
    v_user, 'high',
    'https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=800&q=80',
-   true, v_user, v_user,
+   true, v_user,
    'Centenary black-tie. VIP event. T-18 days. Final walk-through tomorrow morning.'),
 
   -- Stage: in_delivery ───────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ BEGIN
    0, 8000, 35000000, 'Rashida Okonkwo', 'Soho House Group',
    v_user, 'high',
    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80',
-   true, v_user, v_user,
+   true, v_user,
    'LIVE NOW — multi-stage members festival. Ops on site. Check-in desk operational.'),
 
   (e12, v_ws, 'KPMG Innovation Summit', 'in_delivery', 'conference',
@@ -172,7 +172,7 @@ BEGIN
    1200, 0, 16000000, 'David Nguyen', 'KPMG UK',
    v_user, 'medium',
    'https://images.unsplash.com/photo-1559523161-0fc0d8b814f4?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'LIVE NOW. Day 1 of 2. Morning keynote complete. Afternoon breakouts on schedule.'),
 
   -- Stage: completed ─────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ BEGIN
    0, 600, 32000000, 'Helena Cross', 'Burberry Group plc',
    v_user, 'low',
    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Completed. Final settlement being prepared. Post-event report due next week.'),
 
   (e14, v_ws, 'Oxford Union Annual Debate 2025', 'completed', 'conference',
@@ -191,7 +191,7 @@ BEGIN
    800, 0, 4200000, 'The Oxford Union Society', NULL,
    v_user, 'low',
    'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Completed. Post-event feedback outstanding. Final invoice issued.'),
 
   -- Stage: cancelled ─────────────────────────────────────────────────────────
@@ -201,7 +201,7 @@ BEGIN
    0, 1800, 19000000, 'Iain Murray', 'Fintech Global Ltd',
    v_user, 'low',
    'https://images.unsplash.com/photo-1560523160-754a9e25c68f?w=800&q=80',
-   false, v_user, v_user,
+   false, v_user,
    'Cancelled by client due to sponsor withdrawal. Clause invoked. Final invoice sent.');
 
   -- ==========================================================================
@@ -364,60 +364,58 @@ BEGIN
     event_id, workspace_id, name, price_cents, quantity, sold, currency, status, created_by
   ) VALUES
   -- Highland Games (e9)
-  (e9,  v_ws, 'General Admission',   4500,  3000, 2618, 'GBP', 'active', v_user),
-  (e9,  v_ws, 'VIP Enclosure',      12000,   500,  412, 'GBP', 'active', v_user),
-  (e9,  v_ws, 'Corporate Table',    60000,    50,   42, 'GBP', 'active', v_user),
+  (e9,  v_ws, 'General Admission',   4500,  3000, 2618, 'GBP', 'on_sale', v_user),
+  (e9,  v_ws, 'VIP Enclosure',      12000,   500,  412, 'GBP', 'on_sale', v_user),
+  (e9,  v_ws, 'Corporate Table',    60000,    50,   42, 'GBP', 'on_sale', v_user),
   -- Savoy Gala (e10)
-  (e10, v_ws, 'Black Tie Gala',     25000,   420,  406, 'GBP', 'active', v_user),
-  (e10, v_ws, 'VIP Table of 10',   150000,    20,   18, 'GBP', 'active', v_user),
+  (e10, v_ws, 'Black Tie Gala',     25000,   420,  406, 'GBP', 'on_sale', v_user),
+  (e10, v_ws, 'VIP Table of 10',   150000,    20,   18, 'GBP', 'on_sale', v_user),
   -- Soho Festival (e11)
-  (e11, v_ws, 'Members Day Pass',    7500,  6000, 5840, 'GBP', 'active', v_user),
-  (e11, v_ws, 'Members Evening',    12500,  2000, 1990, 'GBP', 'active', v_user),
-  (e11, v_ws, 'Overnight Pass',     28000,   500,  388, 'GBP', 'active', v_user),
+  (e11, v_ws, 'Members Day Pass',    7500,  6000, 5840, 'GBP', 'on_sale', v_user),
+  (e11, v_ws, 'Members Evening',    12500,  2000, 1990, 'GBP', 'on_sale', v_user),
+  (e11, v_ws, 'Overnight Pass',     28000,   500,  388, 'GBP', 'on_sale', v_user),
   -- Property Awards (e5)
-  (e5,  v_ws, 'Individual Ticket',  15000,  1800,  943, 'GBP', 'active', v_user),
-  (e5,  v_ws, 'Table of 10',       130000,    40,   18, 'GBP', 'active', v_user),
+  (e5,  v_ws, 'Individual Ticket',  15000,  1800,  943, 'GBP', 'on_sale', v_user),
+  (e5,  v_ws, 'Table of 10',       130000,    40,   18, 'GBP', 'on_sale', v_user),
   -- KPMG Summit (e12)
-  (e12, v_ws, 'Delegate Pass',      35000,  1200, 1078, 'GBP', 'active', v_user),
-  (e12, v_ws, 'VIP Delegate',       75000,    50,   38, 'GBP', 'active', v_user),
+  (e12, v_ws, 'Delegate Pass',      35000,  1200, 1078, 'GBP', 'on_sale', v_user),
+  (e12, v_ws, 'VIP Delegate',       75000,    50,   38, 'GBP', 'on_sale', v_user),
   -- Burberry (e13 — completed, free event)
   (e13, v_ws, 'Guest Invitation',       0,   600,  594, 'GBP', 'closed', v_user);
 
   -- ==========================================================================
   -- 8. RUN-SHEET ITEMS
-  -- lane values from enum: 'ops', 'stage_a', 'stage_b', 'arena', 'foyer',
-  --                        'ballroom', 'lobby', 'main_hall', 'breakouts', 'atrium'
-  -- (use whatever your run_sheet_lane enum contains — fallback NULL if not in enum)
+  -- lane enum valid values: tech, foh, talent, comms, security, catering, other
   -- ==========================================================================
 
   INSERT INTO public.event_run_sheet_items (
     event_id, workspace_id, title, starts_at, duration_minutes, section, lane, position, notes
   ) VALUES
   -- Highland Games (e9)
-  (e9,  v_ws, 'Site open — crew access',       NOW() + INTERVAL '27 days 7 hours',   120, 'Morning',   'ops',    1, 'All crew sign in at gate'),
-  (e9,  v_ws, 'Opening ceremony — pipe band',  NOW() + INTERVAL '27 days 10 hours',   60, 'Morning',   'ops',    2, 'Pipe band leads in'),
-  (e9,  v_ws, 'Hammer throw competition',      NOW() + INTERVAL '27 days 11 hours',   90, 'Afternoon', 'ops',    3, NULL),
-  (e9,  v_ws, 'Tug of War — grand final',      NOW() + INTERVAL '27 days 14 hours',   45, 'Afternoon', 'ops',    4, NULL),
-  (e9,  v_ws, 'Ceilidh doors open',            NOW() + INTERVAL '27 days 18 hours',   30, 'Evening',   'ops',    5, 'Bar opens simultaneously'),
-  (e9,  v_ws, 'Ceilidh band — first set',      NOW() + INTERVAL '27 days 19 hours',  120, 'Evening',   'stage_a',6, NULL),
+  (e9,  v_ws, 'Site open — crew access',       NOW() + INTERVAL '27 days 7 hours',   120, 'Morning',   'comms',   1, 'All crew sign in at gate'),
+  (e9,  v_ws, 'Opening ceremony — pipe band',  NOW() + INTERVAL '27 days 10 hours',   60, 'Morning',   'talent',  2, 'Pipe band leads in'),
+  (e9,  v_ws, 'Hammer throw competition',      NOW() + INTERVAL '27 days 11 hours',   90, 'Afternoon', 'foh',     3, NULL),
+  (e9,  v_ws, 'Tug of War — grand final',      NOW() + INTERVAL '27 days 14 hours',   45, 'Afternoon', 'foh',     4, NULL),
+  (e9,  v_ws, 'Ceilidh doors open',            NOW() + INTERVAL '27 days 18 hours',   30, 'Evening',   'comms',   5, 'Bar opens simultaneously'),
+  (e9,  v_ws, 'Ceilidh band — first set',      NOW() + INTERVAL '27 days 19 hours',  120, 'Evening',   'talent',  6, NULL),
   -- Savoy Gala (e10)
-  (e10, v_ws, 'Arrival drinks reception',      NOW() + INTERVAL '17 days 18 hours 30 minutes', 60,  'Evening', 'foyer',    1, 'Champagne sabrage at 18:45'),
-  (e10, v_ws, 'Welcome address',               NOW() + INTERVAL '17 days 19 hours 30 minutes', 15,  'Evening', 'ballroom', 2, 'Eleanor Hartley opening speech'),
-  (e10, v_ws, 'Three-course dinner',           NOW() + INTERVAL '17 days 19 hours 45 minutes', 90,  'Evening', 'ballroom', 3, 'Maestro quartet plays throughout'),
-  (e10, v_ws, 'Awards presentation — 6 awards',NOW() + INTERVAL '17 days 21 hours 15 minutes', 45,  'Evening', 'ballroom', 4, NULL),
-  (e10, v_ws, 'Dancing and entertainment',     NOW() + INTERVAL '17 days 22 hours',              120, 'Evening', 'ballroom', 5, 'DJ takes over from quartet at 22:30'),
+  (e10, v_ws, 'Arrival drinks reception',      NOW() + INTERVAL '17 days 18 hours 30 minutes', 60,  'Evening', 'comms',    1, 'Champagne sabrage at 18:45'),
+  (e10, v_ws, 'Welcome address',               NOW() + INTERVAL '17 days 19 hours 30 minutes', 15,  'Evening', 'talent',   2, 'Eleanor Hartley opening speech'),
+  (e10, v_ws, 'Three-course dinner',           NOW() + INTERVAL '17 days 19 hours 45 minutes', 90,  'Evening', 'catering', 3, 'Maestro quartet plays throughout'),
+  (e10, v_ws, 'Awards presentation — 6 awards',NOW() + INTERVAL '17 days 21 hours 15 minutes', 45,  'Evening', 'foh',      4, NULL),
+  (e10, v_ws, 'Dancing and entertainment',     NOW() + INTERVAL '17 days 22 hours',              120, 'Evening', 'talent',   5, 'DJ takes over from quartet at 22:30'),
   -- Soho Festival (e11)
-  (e11, v_ws, 'Gates open',                    NOW() - INTERVAL '16 hours',            30, 'Morning',   'ops',    1, NULL),
-  (e11, v_ws, 'Stage A — opening acts',        NOW() - INTERVAL '14 hours',            60, 'Morning',   'stage_a',2, NULL),
-  (e11, v_ws, 'Stage B — acoustic sessions',   NOW() - INTERVAL '13 hours',            90, 'Afternoon', 'stage_b',3, NULL),
-  (e11, v_ws, 'Headliner sound check',         NOW() + INTERVAL '5 hours',             60, 'Evening',   'stage_a',4, 'Must complete before 20:00'),
-  (e11, v_ws, 'Headliner set',                 NOW() + INTERVAL '8 hours',             90, 'Evening',   'stage_a',5, NULL),
+  (e11, v_ws, 'Gates open',                    NOW() - INTERVAL '16 hours',            30, 'Morning',   'comms',   1, NULL),
+  (e11, v_ws, 'Stage A — opening acts',        NOW() - INTERVAL '14 hours',            60, 'Morning',   'talent',  2, NULL),
+  (e11, v_ws, 'Stage B — acoustic sessions',   NOW() - INTERVAL '13 hours',            90, 'Afternoon', 'talent',  3, NULL),
+  (e11, v_ws, 'Headliner sound check',         NOW() + INTERVAL '5 hours',             60, 'Evening',   'tech',    4, 'Must complete before 20:00'),
+  (e11, v_ws, 'Headliner set',                 NOW() + INTERVAL '8 hours',             90, 'Evening',   'talent',  5, NULL),
   -- KPMG Summit (e12)
-  (e12, v_ws, 'Registration and coffee',       NOW(),                                  60, 'Morning',   'lobby',      1, NULL),
-  (e12, v_ws, 'Opening keynote: Future of AI', NOW() + INTERVAL '1 hour',              60, 'Morning',   'main_hall',  2, 'David Nguyen presenting'),
-  (e12, v_ws, 'Morning break',                 NOW() + INTERVAL '2 hours',             30, 'Morning',   'lobby',      3, NULL),
-  (e12, v_ws, 'Breakout sessions — 4 tracks',  NOW() + INTERVAL '2 hours 30 minutes',  90, 'Afternoon', 'breakouts',  4, NULL),
-  (e12, v_ws, 'Networking lunch — atrium',     NOW() + INTERVAL '4 hours',             60, 'Afternoon', 'atrium',     5, NULL);
+  (e12, v_ws, 'Registration and coffee',       NOW(),                                  60, 'Morning',   'comms',    1, NULL),
+  (e12, v_ws, 'Opening keynote: Future of AI', NOW() + INTERVAL '1 hour',              60, 'Morning',   'talent',   2, 'David Nguyen presenting'),
+  (e12, v_ws, 'Morning break',                 NOW() + INTERVAL '2 hours',             30, 'Morning',   'comms',    3, NULL),
+  (e12, v_ws, 'Breakout sessions — 4 tracks',  NOW() + INTERVAL '2 hours 30 minutes',  90, 'Afternoon', 'other',    4, NULL),
+  (e12, v_ws, 'Networking lunch — atrium',     NOW() + INTERVAL '4 hours',             60, 'Afternoon', 'catering', 5, NULL);
 
   -- ==========================================================================
   -- 9. EVENT ACTIVITY LOG

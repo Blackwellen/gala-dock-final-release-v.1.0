@@ -26,6 +26,7 @@ const BASE_TABS: Omit<TabItem, "badge">[] = [
   { id: "mood-board",       label: "Mood-board",          href: "mood-board" },
   { id: "staffing",         label: "Staffing",            href: "staffing" },
   { id: "logistics",        label: "Logistics",           href: "logistics" },
+  { id: "extensions",       label: "Extensions",          href: "extensions" },
   { id: "documents-media",  label: "Documents/Media",     href: "documents-media" },
   { id: "comms",            label: "Comms",               href: "comms" },
   { id: "expenses",         label: "Expenses",            href: "expenses" },
@@ -113,16 +114,21 @@ function inferTags(event: Record<string, any>): EventTag[] {
   // VIP flag
   if (event.is_vip || event.vip === true) tags.push({ label: "VIP", color: "amber" });
 
-  // event category / type
-  const cat = (event.event_category ?? event.category ?? "").toLowerCase();
-  if (cat.includes("corporate"))  tags.push({ label: "Corporate", color: "gray" });
-  else if (cat.includes("festival"))  tags.push({ label: "Festival", color: "amber" });
-  else if (cat.includes("conference")) tags.push({ label: "Conference", color: "blue" });
-  else if (cat.includes("wedding"))   tags.push({ label: "Wedding", color: "violet" });
-  else if (cat.includes("gala"))      tags.push({ label: "Gala", color: "amber" });
+  // also check the tags text-array column stored in Supabase
+  const tagsArr: string[] = Array.isArray(event.tags)
+    ? event.tags.map((t: unknown) => String(t).toLowerCase())
+    : [];
 
-  // livestream / live status
-  if (event.is_livestream || event.has_livestream || event.is_live) {
+  // event category / type — also check tags array
+  const cat = (event.event_category ?? event.category ?? "").toLowerCase();
+  if (cat.includes("corporate") || tagsArr.includes("corporate"))  tags.push({ label: "Corporate", color: "gray" });
+  else if (cat.includes("festival") || tagsArr.includes("festival"))  tags.push({ label: "Festival", color: "amber" });
+  else if (cat.includes("conference") || tagsArr.includes("conference")) tags.push({ label: "Conference", color: "blue" });
+  else if (cat.includes("wedding") || tagsArr.includes("wedding"))   tags.push({ label: "Wedding", color: "violet" });
+  else if (cat.includes("gala") || tagsArr.includes("gala"))      tags.push({ label: "Gala", color: "amber" });
+
+  // livestream / live status — also check tags array
+  if (event.is_livestream || event.has_livestream || event.is_live || tagsArr.includes("live")) {
     tags.push({ label: "Live", color: "red" });
   }
 
@@ -146,7 +152,10 @@ function buildDateLabel(event: { start_at?: string | null; end_at?: string | nul
 
   if (!end || end.getTime() === start.getTime()) return fmt.format(start);
 
-  const days = Math.ceil((end.getTime() - start.getTime()) / 86_400_000) + 1;
+  // Compare date-only (strip time) so hours in start/end don't inflate the day count
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDay   = new Date(end.getFullYear(),   end.getMonth(),   end.getDate());
+  const days = Math.round((endDay.getTime() - startDay.getTime()) / 86_400_000) + 1;
 
   // Same month/year
   if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
@@ -161,10 +170,11 @@ function buildCapacityLabel(event: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [k: string]: any;
 }): string | undefined {
-  const total = event.capacity_total ?? event.guest_count_day ?? null;
-  if (!total) return undefined;
   const onsite = event.capacity_onsite ?? event.guest_count_day ?? null;
   const online = event.capacity_online ?? event.guest_count_evening ?? null;
+  // Compute total as explicit field OR sum of onsite+online so it's always accurate
+  const total = event.capacity_total ?? ((onsite && online) ? onsite + online : onsite) ?? null;
+  if (!total) return undefined;
   if (onsite && online) {
     return `${total.toLocaleString("en-GB")} (${onsite.toLocaleString("en-GB")} onsite / ${online.toLocaleString("en-GB")} online)`;
   }
@@ -194,13 +204,14 @@ export default async function EventProfileLayout({
 
   if (!event) notFound();
 
-  // Owner name
+  // Owner name — prefer owner_user_id, fall back to created_by
   let ownerName: string | null = null;
-  if (event.owner_user_id) {
+  const ownerUserId = (event.owner_user_id ?? event.created_by) as string | null;
+  if (ownerUserId) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("display_name")
-      .eq("user_id", event.owner_user_id)
+      .eq("user_id", ownerUserId)
       .maybeSingle();
     ownerName = profile?.display_name ?? null;
   }
@@ -231,32 +242,40 @@ export default async function EventProfileLayout({
   const capacityLabel = buildCapacityLabel(event as Record<string, unknown>);
   const dateLabel     = buildDateLabel(event);
 
-  // Progress % — derive from stage completion (can be refined later)
+  // Progress % — use readiness_score if available, otherwise fall back to stage position
   const stageIdx = STAGE_IDS.indexOf((event.status ?? "new_enquiry").toLowerCase() as typeof STAGE_IDS[number]);
-  const progressPct = stageIdx < 0 ? 5 : Math.round(((stageIdx + 1) / STAGE_IDS.length) * 100);
+  const stagePct = stageIdx < 0 ? 5 : Math.round(((stageIdx + 1) / STAGE_IDS.length) * 100);
+  const progressPct = (event as { readiness_score?: number | null }).readiness_score ?? stagePct;
 
   const coverImageUrl = (event as { cover_image_url?: string | null }).cover_image_url ?? null;
 
   return (
-    <EventProfileShell
-      eventId={eventId}
-      name={event.name}
-      tags={tags}
-      dateLabel={dateLabel}
-      venueLabel={venueLabel}
-      capacityLabel={capacityLabel}
-      ownerName={ownerName}
-      clientName={(event as { client_name?: string | null }).client_name ?? (event as { client_company?: string | null }).client_company}
-      clientEmail={(event as { client_email?: string | null }).client_email}
-      clientPhone={(event as { client_phone?: string | null }).client_phone}
-      progressPct={progressPct}
-      progressLabel="On track"
-      stages={stages}
-      tabs={tabs}
-      heroImageUrl={coverImageUrl}
-      posterImageUrl={coverImageUrl}
-    >
-      {children}
-    </EventProfileShell>
+    /* Outer frame — creates breathing room from sidebar & top nav on all sides */
+    <div className="p-4 lg:p-5">
+      {/* Card shell — ring border + shadow give premium "card within page" look.
+          No overflow-hidden so sticky tab nav still works. */}
+      <div className="rounded-2xl shadow-xl ring-1 ring-surface-200/80">
+        <EventProfileShell
+          eventId={eventId}
+          name={event.name}
+          tags={tags}
+          dateLabel={dateLabel}
+          venueLabel={venueLabel}
+          capacityLabel={capacityLabel}
+          ownerName={ownerName}
+          clientName={(event as { client_name?: string | null }).client_name ?? (event as { client_company?: string | null }).client_company}
+          clientEmail={(event as { client_email?: string | null }).client_email}
+          clientPhone={(event as { client_phone?: string | null }).client_phone}
+          progressPct={progressPct}
+          progressLabel="On track"
+          stages={stages}
+          tabs={tabs}
+          heroImageUrl={coverImageUrl}
+          posterImageUrl={coverImageUrl}
+        >
+          {children}
+        </EventProfileShell>
+      </div>
+    </div>
   );
 }

@@ -1,132 +1,131 @@
-"use client";
+import { notFound } from "next/navigation";
+import { requireWorkspace } from "@/lib/workspace";
+import { createClient } from "@/lib/supabase/server";
+import { TEMPLATE_BUCKET } from "../actions";
+import { asTemplateMetadata, templateCategory, formatLabel } from "../template-helpers";
+import { TemplateDetailClient, type TemplateDetail, type VersionRow, type LinkedEventUsage } from "./TemplateDetailClient";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Edit2, Save, Copy } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
+export const metadata = { title: "Template" };
 
-const TEMPLATE = {
-  id: "1",
-  name: "Standard Wedding Run Sheet",
-  type: "run-sheet",
-  typeLabel: "Run Sheet",
-  typeColor: "bg-brand-50 text-brand-700 border-brand-100",
-  description: "A comprehensive run sheet for full-day wedding events, covering arrival through to final send-off.",
-  content: `08:00 — Venue access & setup begins
-09:00 — Florist arrives
-10:00 — Catering team arrives, kitchen walkthrough
-11:00 — AV technician sound check
-12:30 — Bridal party hair & makeup complete
-13:00 — Wedding ceremony rehearsal (if applicable)
-14:00 — Photography team arrive, pre-ceremony shots
-14:30 — Ceremony begins
-15:30 — Ceremony concludes, cocktail hour begins
-16:30 — Guests transition to reception room
-17:00 — Reception doors open
-17:15 — Bridal party entrance
-17:30 — Wedding breakfast service begins
-19:00 — Speeches
-20:00 — First dance
-20:15 — Evening buffet opens
-22:00 — Last orders at bar
-23:30 — Venue close, guests depart
-00:00 — Supplier breakdown begins`,
-  eventsUsing: [
-    { name: "Hartley Wedding",     href: "/event-manager/events/1" },
-    { name: "Carter Wedding",      href: "/event-manager/events/2" },
-  ],
-};
+export default async function TemplateDetailPage({
+  params,
+}: {
+  params: Promise<{ templateId: string }>;
+}) {
+  const { templateId } = await params;
+  const { workspaceId, user } = await requireWorkspace();
+  const supabase = await createClient();
 
-export default function TemplateDetailPage() {
-  const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
-  const [content, setContent] = useState(TEMPLATE.content);
+  const { data: asset } = await supabase
+    .from("library_assets")
+    .select(
+      "id, title, description, kind, mime, size_bytes, storage_path, cover_storage_path, tags, metadata, entity_type, entity_id, owner_user_id, visibility, use_count, last_used_at, locked_at, locked_by_user_id, created_at, updated_at"
+    )
+    .eq("id", templateId)
+    .eq("workspace_id", workspaceId)
+    .is("deleted_at", null)
+    .maybeSingle();
 
-  return (
-    <div className="flex flex-col min-h-full bg-surface-50">
-      <PageHeader
-        title={TEMPLATE.name}
-        description={TEMPLATE.description}
-        actions={
-          <>
-            <button
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-200 bg-white text-surface-700 text-sm font-medium hover:bg-surface-50 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${TEMPLATE.typeColor}`}>
-              {TEMPLATE.typeLabel}
-            </span>
-            {isEditing ? (
-              <button
-                onClick={() => setIsEditing(false)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
-              >
-                <Save className="w-4 h-4" />
-                Save
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-surface-200 bg-white text-surface-700 text-sm font-medium hover:bg-surface-50 transition-colors"
-              >
-                <Edit2 className="w-4 h-4" />
-                Edit
-              </button>
-            )}
-            <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-surface-200 bg-white text-surface-700 text-sm font-medium hover:bg-surface-50 transition-colors">
-              <Copy className="w-4 h-4" />
-              Duplicate
-            </button>
-          </>
-        }
-      />
+  if (!asset) notFound();
 
-      <div className="flex-1 p-6 max-w-4xl space-y-6">
-        {/* Content */}
-        <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
-          <div className="px-6 py-4 flex items-center justify-between border-b border-surface-200">
-            <h3 className="text-sm font-semibold text-surface-900">Content</h3>
-            {isEditing && (
-              <span className="text-xs text-brand-600 font-medium">Editing…</span>
-            )}
-          </div>
-          <div className="p-6">
-            {isEditing ? (
-              <textarea
-                rows={20}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-surface-200 text-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none font-mono leading-relaxed"
-              />
-            ) : (
-              <pre className="text-sm text-surface-700 whitespace-pre-wrap leading-relaxed font-mono">
-                {content}
-              </pre>
-            )}
-          </div>
-        </div>
+  const [{ data: versions }, { data: usageRows }] = await Promise.all([
+    supabase
+      .from("library_versions")
+      .select("id, version, note, author_user_id, size_bytes, storage_path, created_at")
+      .eq("asset_id", templateId)
+      .order("version", { ascending: false }),
+    supabase
+      .from("library_assets")
+      .select("id, title, entity_id, created_at")
+      .eq("workspace_id", workspaceId)
+      .is("deleted_at", null)
+      .filter("metadata->>source_template_id", "eq", templateId),
+  ]);
 
-        {/* Events using this template */}
-        <div className="bg-white rounded-xl border border-surface-200 shadow-card p-6">
-          <h3 className="text-sm font-semibold text-surface-900 mb-4">Events Using This Template</h3>
-          <div className="space-y-2">
-            {TEMPLATE.eventsUsing.map((event, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-surface-50 border border-surface-100 hover:bg-surface-100 transition-colors">
-                <span className="text-sm font-medium text-surface-900">{event.name}</span>
-                <button
-                  onClick={() => router.push(event.href)}
-                  className="text-xs text-brand-600 hover:text-brand-700 font-medium"
-                >
-                  View Event
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+  const ownerIds = Array.from(
+    new Set(
+      [asset.owner_user_id, asset.locked_by_user_id, ...(versions ?? []).map((v) => v.author_user_id)].filter(
+        (v): v is string => Boolean(v)
+      )
+    )
   );
+  const { data: owners } = ownerIds.length > 0
+    ? await supabase.from("profiles").select("user_id, display_name").in("user_id", ownerIds)
+    : { data: [] as { user_id: string; display_name: string | null }[] };
+  const nameById = new Map((owners ?? []).map((o) => [o.user_id, o.display_name ?? "Team member"]));
+
+  // Resolve linked events for "used for" (this template's own entity_id) and downstream copies.
+  const eventIds = Array.from(
+    new Set(
+      [asset.entity_id, ...(usageRows ?? []).map((r) => r.entity_id)].filter((v): v is string => Boolean(v))
+    )
+  );
+  const { data: linkedEvents } = eventIds.length > 0
+    ? await supabase.from("events").select("id, name").in("id", eventIds)
+    : { data: [] as { id: string; name: string }[] };
+  const eventNameById = new Map((linkedEvents ?? []).map((e) => [e.id, e.name]));
+
+  let coverUrl: string | null = null;
+  let fileUrl: string | null = null;
+  if (asset.cover_storage_path) {
+    coverUrl = /^https?:\/\//i.test(asset.cover_storage_path)
+      ? asset.cover_storage_path
+      : (await supabase.storage.from(TEMPLATE_BUCKET).createSignedUrl(asset.cover_storage_path, 3600)).data?.signedUrl ?? null;
+  }
+  if (asset.storage_path) {
+    fileUrl = /^https?:\/\//i.test(asset.storage_path)
+      ? asset.storage_path
+      : (await supabase.storage.from(TEMPLATE_BUCKET).createSignedUrl(asset.storage_path, 3600)).data?.signedUrl ?? null;
+  }
+
+  const meta = asTemplateMetadata(asset.metadata);
+
+  const detail: TemplateDetail = {
+    id: asset.id,
+    title: asset.title,
+    description: asset.description,
+    kind: asset.kind,
+    category: templateCategory(asset.kind, meta),
+    eventType: meta.event_type ?? null,
+    variables: meta.variables ?? [],
+    status: meta.status ?? "approved",
+    content: meta.content ?? "",
+    mime: asset.mime,
+    sizeBytes: asset.size_bytes,
+    storagePath: asset.storage_path,
+    fileUrl,
+    coverUrl,
+    format: formatLabel(asset.mime, asset.storage_path, asset.title),
+    ownerId: asset.owner_user_id,
+    ownerName: asset.owner_user_id ? nameById.get(asset.owner_user_id) ?? "Team member" : "Unassigned",
+    visibility: asset.visibility,
+    sharedTeam: null,
+    useCount: asset.use_count,
+    lastUsedAt: asset.last_used_at,
+    lockedAt: asset.locked_at,
+    lockedByName: asset.locked_by_user_id ? nameById.get(asset.locked_by_user_id) ?? null : null,
+    tags: asset.tags ?? [],
+    createdAt: asset.created_at,
+    updatedAt: asset.updated_at,
+    linkedEventName: asset.entity_type === "event" && asset.entity_id ? eventNameById.get(asset.entity_id) ?? null : null,
+    isMine: asset.owner_user_id === user.id,
+  };
+
+  const versionRows: VersionRow[] = (versions ?? []).map((v) => ({
+    id: v.id,
+    version: v.version,
+    note: v.note,
+    authorName: v.author_user_id ? nameById.get(v.author_user_id) ?? "Team member" : "Unknown",
+    sizeBytes: v.size_bytes,
+    createdAt: v.created_at,
+  }));
+
+  const usage: LinkedEventUsage[] = (usageRows ?? []).map((r) => ({
+    id: r.id,
+    title: r.title,
+    eventName: r.entity_id ? eventNameById.get(r.entity_id) ?? null : null,
+    createdAt: r.created_at,
+  }));
+
+  return <TemplateDetailClient template={detail} versions={versionRows} usage={usage} />;
 }

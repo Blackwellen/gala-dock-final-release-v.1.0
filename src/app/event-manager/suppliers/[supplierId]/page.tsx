@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { r2Configured } from "@/lib/storage/r2";
 import {
   SupplierDetailClient,
   type ContactRow,
@@ -119,6 +120,8 @@ export default async function SupplierDetailPage({
       contacts={contactRows}
       files={fileRows}
       events={events}
+      workspaceId={workspaceId}
+      r2Ready={r2Configured()}
     />
   );
 }

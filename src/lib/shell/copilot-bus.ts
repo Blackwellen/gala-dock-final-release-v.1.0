@@ -3,14 +3,18 @@
 
 const EVENT = "gala:copilot:open";
 
-export function openCopilot() {
+/** Opens the Copilot bubble. Pass `prefill` to seed the chat input — e.g. a
+ *  "send briefing" quick action that hands the user a ready-to-send prompt
+ *  instead of a decorative dead end. */
+export function openCopilot(prefill?: string) {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent(EVENT));
+    window.dispatchEvent(new CustomEvent<{ prefill?: string }>(EVENT, { detail: { prefill } }));
   }
 }
 
-export function onOpenCopilot(handler: () => void): () => void {
+export function onOpenCopilot(handler: (prefill?: string) => void): () => void {
   if (typeof window === "undefined") return () => {};
-  window.addEventListener(EVENT, handler);
-  return () => window.removeEventListener(EVENT, handler);
+  const listener = (e: Event) => handler((e as CustomEvent<{ prefill?: string }>).detail?.prefill);
+  window.addEventListener(EVENT, listener);
+  return () => window.removeEventListener(EVENT, listener);
 }

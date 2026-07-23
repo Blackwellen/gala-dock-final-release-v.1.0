@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CalendarCheck,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { cn } from "@/lib/utils";
+import { getOrStartOnboardingSession, saveOnboardingStep } from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -62,11 +63,24 @@ export default function OnboardingRolePage() {
   const router = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "role");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      const saved = result.data.draft?.role as { roleId?: string } | undefined;
+      if (saved?.roleId) setSelected(saved.roleId);
+    })();
+  }, []);
 
   async function handleNext() {
     if (!selected) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "role", { roleId: selected }, "plan");
+    }
     router.push("/onboarding/plan");
   }
 

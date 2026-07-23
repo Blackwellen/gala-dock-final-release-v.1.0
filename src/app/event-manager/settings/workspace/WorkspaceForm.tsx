@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
-import { updateWorkspace } from "./actions";
+import { updateWorkspace, updateSupplierType } from "./actions";
 
 const INPUT_CLS = "px-3 py-2 rounded-lg border border-surface-200 text-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 w-full";
 const LABEL_CLS = "block text-sm font-medium text-surface-700 mb-1.5";
@@ -16,9 +16,18 @@ interface WorkspaceFormProps {
   initialName: string;
   slug: string;
   initialTimezone: string;
+  /** Persona of the active workspace; the business-type control only shows for suppliers. */
+  workspaceType?: string;
+  initialSupplierType?: "solo" | "agency";
 }
 
-export function WorkspaceForm({ initialName, slug, initialTimezone }: WorkspaceFormProps) {
+export function WorkspaceForm({
+  initialName,
+  slug,
+  initialTimezone,
+  workspaceType,
+  initialSupplierType = "solo",
+}: WorkspaceFormProps) {
   const [name, setName] = useState(initialName);
   const [timezone, setTimezone] = useState(
     TIMEZONES.includes(initialTimezone) ? initialTimezone : TIMEZONES[0]
@@ -28,6 +37,27 @@ export function WorkspaceForm({ initialName, slug, initialTimezone }: WorkspaceF
   const [isPending, startTransition] = useTransition();
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [supplierType, setSupplierType] = useState(initialSupplierType);
+  const [supplierTypeSaving, setSupplierTypeSaving] = useState(false);
+  const [supplierTypeSaved, setSupplierTypeSaved] = useState(false);
+
+  function handleSupplierTypeChange(next: "solo" | "agency") {
+    if (next === supplierType) return;
+    setSupplierType(next);
+    setSupplierTypeSaving(true);
+    startTransition(async () => {
+      const res = await updateSupplierType(next);
+      setSupplierTypeSaving(false);
+      if (res?.ok) {
+        setSupplierTypeSaved(true);
+        setTimeout(() => setSupplierTypeSaved(false), 2500);
+      } else {
+        setSupplierType(initialSupplierType);
+        setError(res?.error ?? "Could not update business type.");
+      }
+    });
+  }
 
   function handleSave() {
     setError(null);
@@ -81,6 +111,46 @@ export function WorkspaceForm({ initialName, slug, initialTimezone }: WorkspaceF
             ))}
           </select>
         </div>
+
+        {workspaceType === "supplier" && (
+          <div>
+            <label className={LABEL_CLS}>Business type</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleSupplierTypeChange("solo")}
+                disabled={supplierTypeSaving}
+                className={`text-left px-4 py-3 rounded-lg border text-sm transition-colors disabled:opacity-50 ${
+                  supplierType === "solo"
+                    ? "border-brand-500 bg-brand-50 text-brand-900"
+                    : "border-surface-200 hover:border-surface-300 text-surface-700"
+                }`}
+              >
+                <span className="block font-medium">Solo supplier</span>
+                <span className="block text-xs text-surface-500 mt-0.5">Just me — no roster to manage.</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSupplierTypeChange("agency")}
+                disabled={supplierTypeSaving}
+                className={`text-left px-4 py-3 rounded-lg border text-sm transition-colors disabled:opacity-50 ${
+                  supplierType === "agency"
+                    ? "border-brand-500 bg-brand-50 text-brand-900"
+                    : "border-surface-200 hover:border-surface-300 text-surface-700"
+                }`}
+              >
+                <span className="block font-medium">Agency</span>
+                <span className="block text-xs text-surface-500 mt-0.5">
+                  I manage a team/roster and assign jobs internally.
+                </span>
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-surface-400">
+              Agencies get a Team/Roster area in the sidebar for managing staff and assigning jobs.
+              {supplierTypeSaved && <span className="text-success-600 font-medium ml-2">Saved!</span>}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-3">

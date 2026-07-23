@@ -33,6 +33,7 @@ const NAV_SECTIONS: { label: string; scope: SettingsScope; links: { href: string
       { href: "/event-manager/settings/event-defaults", label: "Event Defaults" },
       { href: "/event-manager/settings/supplier-defaults", label: "Supplier Defaults" },
       { href: "/event-manager/settings/finance-defaults", label: "Finance Defaults" },
+      { href: "/event-manager/settings/payouts", label: "Payouts" },
       { href: "/event-manager/settings/smart-rules", label: "Smart Rules" },
       { href: "/event-manager/settings/ai", label: "AI" },
       { href: "/event-manager/settings/affiliate", label: "Affiliate" },

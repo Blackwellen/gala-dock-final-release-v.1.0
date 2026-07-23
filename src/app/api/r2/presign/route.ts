@@ -6,23 +6,73 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { r2Configured, r2Key, r2PresignedPut } from "@/lib/storage/r2";
 
-const ALLOWED_KINDS = ["event-cover", "event-media", "venue-cover", "supplier-logo", "profile-avatar"] as const;
+const ALLOWED_KINDS = [
+  "event-cover",
+  "event-media",
+  "venue-cover",
+  "venue-document",
+  "venue-gallery",
+  "venue-site-map",
+  "supplier-logo",
+  "profile-avatar",
+  "supplier-document",
+  "rfq-attachment",
+  "message-attachment",
+  "library-asset",
+] as const;
 type UploadKind = (typeof ALLOWED_KINDS)[number];
 
 const ALLOWED_CONTENT_TYPES: Record<UploadKind, readonly string[]> = {
   "event-cover":     ["image/jpeg", "image/png", "image/webp"],
   "event-media":     ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/webm"],
   "venue-cover":     ["image/jpeg", "image/png", "image/webp"],
+  "venue-gallery":   ["image/jpeg", "image/png", "image/webp"],
+  "venue-site-map":  ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+  "venue-document":  [
+    "application/pdf", "image/jpeg", "image/png", "image/webp",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv", "text/plain",
+  ],
   "supplier-logo":   ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
   "profile-avatar":  ["image/jpeg", "image/png", "image/webp"],
+  "supplier-document": ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+  "rfq-attachment":    ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+  "message-attachment": [
+    "application/pdf",
+    "image/jpeg", "image/png", "image/webp", "image/gif",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "text/csv", "text/plain",
+  ],
+  "library-asset": [
+    "application/pdf",
+    "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
+    "video/mp4", "video/webm", "video/quicktime",
+    "audio/mpeg", "audio/wav", "audio/ogg",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/msword", "application/vnd.ms-excel",
+    "application/zip", "application/x-zip-compressed",
+    "text/csv", "text/plain",
+  ],
 };
 
 const MAX_BYTES: Record<UploadKind, number> = {
   "event-cover":    10 * 1024 * 1024, // 10 MB
   "event-media":    50 * 1024 * 1024, // 50 MB
   "venue-cover":    10 * 1024 * 1024,
+  "venue-gallery":  20 * 1024 * 1024,
+  "venue-site-map": 20 * 1024 * 1024,
+  "venue-document": 100 * 1024 * 1024,
   "supplier-logo":   5 * 1024 * 1024,
   "profile-avatar":  5 * 1024 * 1024,
+  "supplier-document": 10 * 1024 * 1024, // 10 MB
+  "rfq-attachment":    10 * 1024 * 1024, // 10 MB
+  "message-attachment": 25 * 1024 * 1024, // 25 MB
+  "library-asset": 100 * 1024 * 1024, // 100 MB
 };
 
 export async function POST(request: NextRequest) {

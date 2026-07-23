@@ -118,21 +118,28 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- SUPPLIERS (event_suppliers join table — columns: supplier_id, role_on_event, status, notes)
--- supplier_name/contract_value/contact info lives on the suppliers table, not here
+-- SUPPLIERS (event_suppliers join table)
+-- Idempotent: delete this event's rows first so re-runs don't duplicate entries.
+-- Actual schema columns: supplier_name (NOT NULL), role, status, contact_name,
+--   contact_email, contact_phone. Valid statuses: pending / confirmed /
+--   contracted / invoiced / paid / cancelled.
 -- ─────────────────────────────────────────────────────────────────────────────
-INSERT INTO event_suppliers (id, workspace_id, event_id, supplier_id, role_on_event, status, notes)
+DELETE FROM public.event_suppliers WHERE event_id = ev_id AND workspace_id = ws_id;
+
+INSERT INTO public.event_suppliers
+  (id, workspace_id, event_id, supplier_id, supplier_name, role, status,
+   contract_value_cents, contact_name, contact_email, notes)
 VALUES
-  (gen_random_uuid(), ws_id, ev_id, sup_apex,     'AV & Technical Production',   'confirmed',  'Full rig, IMAG, LED, streaming. Contact: Liam Carter liam@apexav.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_green,    'Catering',                    'confirmed',  'Vegan-first. 3 meals + 4 breaks per day. Contact: Sarah Patel sarah@greenleaf.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_lens,     'Photography',                 'confirmed',  'Full event coverage + edited pack 72h. Contact: Nia Brown nia@lenswork.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_guard,    'Security & Crowd Management', 'confirmed',  '45 staff + 4 supervisors per day. Contact: Dave Moss dave@eventguard.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_floral,   'Décor & Floral',              'confirmed',  'Stage, VIP lounge, gala tables. Contact: Amara Diallo amara@fedral.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_stream,   'Online Streaming Platform',   'confirmed',  'Up to 2,500 concurrent viewers. Contact: Tom Hayes tom@streampulse.io'),
-  (gen_random_uuid(), ws_id, ev_id, sup_print,    'Print & Signage',             'confirmed',  'Banners, lanyards, programmes, badges. Contact: Beth Yates beth@printcraft.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_horizon,  'Venue Cleaning',              'shortlisted','Pre-event + post-event deep clean. Contact: Mark Lee mark@horizoncs.co.uk'),
-  (gen_random_uuid(), ws_id, ev_id, sup_roomlink, 'AV Equipment Hire',           'shortlisted','Breakout room AV — 6 rooms. Contact: Jake Osei jake@roomlink.co.uk')
-ON CONFLICT DO NOTHING;
+  (gen_random_uuid(), ws_id, ev_id, sup_apex,     'Apex AV Productions',       'AV & Technical Production',   'confirmed',  1850000, 'Liam Carter',  'liam@apexav.co.uk',      'Full rig, IMAG, LED, streaming.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_green,    'Greenleaf Catering',         'Catering',                    'confirmed',  1200000, 'Sarah Patel',  'sarah@greenleaf.co.uk',  'Vegan-first. 3 meals + 4 breaks per day.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_lens,     'LensWork Photography',       'Photography',                 'confirmed',   180000, 'Nia Brown',    'nia@lenswork.co.uk',     'Full event coverage + edited pack 72h.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_guard,    'EventGuard Security',        'Security & Crowd Management', 'confirmed',   320000, 'Dave Moss',    'dave@eventguard.co.uk',  '45 staff + 4 supervisors per day.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_floral,   'Floral & Event Design Co.', 'Décor & Floral',              'confirmed',   280000, 'Amara Diallo', 'amara@fedral.co.uk',     'Stage, VIP lounge, gala tables.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_stream,   'StreamPulse Live',           'Online Streaming Platform',   'confirmed',   145000, 'Tom Hayes',    'tom@streampulse.io',     'Up to 2,500 concurrent viewers.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_print,    'Printcraft UK',              'Print & Signage',             'confirmed',    62000, 'Beth Yates',   'beth@printcraft.co.uk',  'Banners, lanyards, programmes, badges.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_horizon,  'Horizon Cleaning Services',  'Venue Cleaning',              'shortlisted',  48000, 'Mark Lee',     'mark@horizoncs.co.uk',   'Pre-event + post-event deep clean.'),
+  (gen_random_uuid(), ws_id, ev_id, sup_roomlink, 'RoomLink AV Hire',           'AV Equipment Hire',           'shortlisted',  74000, 'Jake Osei',    'jake@roomlink.co.uk',    'Breakout room AV — 6 rooms.')
+;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- TASKS

@@ -15,6 +15,7 @@ import {
   Eye,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { SectionTabs, SALES_TABS } from "@/components/ui/SectionTabs";
 import { MetricCard, KPIGrid } from "@/components/ui/MetricCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -83,6 +84,7 @@ export function FormsClient({ forms, kpis }: { forms: FormCard[]; kpis: FormsKpi
       <PageHeader
         title="Forms"
         description="Build enquiry, RSVP and feedback forms to share with clients and guests."
+        tabs={<SectionTabs tabs={SALES_TABS} />}
         actions={
           <Link
             href="/event-manager/forms/new"

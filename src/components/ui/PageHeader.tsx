@@ -12,9 +12,9 @@ export function PageHeader({ title, description, actions, tabs, className }: Pag
   return (
     <div className={cn("bg-white border-b border-surface-200", className)}>
       <div className="px-6 pt-6 pb-0">
-        <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
           <div className="min-w-0">
-            <h1 className="text-xl font-semibold text-surface-900 tracking-tight truncate">
+            <h1 className="text-xl font-semibold text-surface-900 tracking-tight sm:truncate">
               {title}
             </h1>
             {description && (
@@ -22,7 +22,7 @@ export function PageHeader({ title, description, actions, tabs, className }: Pag
             )}
           </div>
           {actions && (
-            <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+            <div className="flex items-center gap-2 flex-wrap sm:shrink-0 sm:justify-end">
               {actions}
             </div>
           )}

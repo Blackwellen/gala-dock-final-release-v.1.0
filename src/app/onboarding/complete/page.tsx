@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, Clock, LayoutDashboard, MessageCircle, ArrowRight } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { createClient } from "@/lib/supabase/client";
+import { getOrStartOnboardingSession, completeOnboarding } from "@/lib/onboarding/actions";
+
+const PLAN_LABELS: Record<string, string> = {
+  starter: "Starter Trial",
+  growth: "Growth Trial",
+  enterprise: "Enterprise",
+};
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -38,21 +45,45 @@ const NEXT_STEPS = [
 export default function OnboardingCompletePage() {
   const router = useRouter();
   const [finishing, setFinishing] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [summary, setSummary] = useState({
+    workspaceName: "Your workspace",
+    planLabel: "Growth Trial",
+    teamCount: 1,
+  });
 
-  // Persist real onboarding completion as soon as the user reaches this step.
+  // Resolve the real session + workspace/plan/team data and mark completion.
+  // Idempotent: completeOnboarding() is a safe no-op if already completed, so
+  // remounts/refreshes on this page never duplicate side effects.
   useEffect(() => {
-    const supabase = createClient();
     (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-      await supabase
-        .from("profiles")
-        .update({
-          onboarding_state: { completed: true, completed_at: new Date().toISOString() },
-        })
-        .eq("user_id", user.id);
+      const supabase = createClient();
+      const result = await getOrStartOnboardingSession("event_manager", "complete");
+      if (!result.ok) return;
+
+      setSessionId(result.data.id);
+      const planId = (result.data.draft?.plan as { planId?: string } | undefined)?.planId;
+      const invites = (result.data.draft?.["invite-team"] as { invites?: string[] } | undefined)?.invites ?? [];
+
+      if (result.data.workspace_draft_id) {
+        const { data: workspace } = await supabase
+          .from("workspaces")
+          .select("name")
+          .eq("id", result.data.workspace_draft_id)
+          .maybeSingle();
+        const { count: memberCount } = await supabase
+          .from("workspace_members")
+          .select("id", { count: "exact", head: true })
+          .eq("workspace_id", result.data.workspace_draft_id)
+          .is("deleted_at", null);
+        setSummary({
+          workspaceName: workspace?.name ?? "Your workspace",
+          planLabel: (planId && PLAN_LABELS[planId]) || "Growth Trial",
+          teamCount: (memberCount ?? 1) + invites.length,
+        });
+      }
+
+      await completeOnboarding(result.data.id);
     })();
     // Clean up any onboarding scratch state.
     if (typeof window !== "undefined") {
@@ -62,17 +93,8 @@ export default function OnboardingCompletePage() {
 
   async function goToDashboard() {
     setFinishing(true);
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({
-          onboarding_state: { completed: true, completed_at: new Date().toISOString() },
-        })
-        .eq("user_id", user.id);
+    if (sessionId) {
+      await completeOnboarding(sessionId);
     }
     router.push("/event-manager/home");
     router.refresh();
@@ -104,15 +126,17 @@ export default function OnboardingCompletePage() {
         <div className="mt-7 grid grid-cols-3 divide-x divide-surface-200 rounded-xl border border-surface-200 bg-surface-50 overflow-hidden">
           <div className="px-4 py-4 text-center">
             <p className="text-xs font-medium text-surface-500 uppercase tracking-wide">Workspace</p>
-            <p className="mt-1 text-sm font-bold text-surface-900 truncate">Luxe Events Co.</p>
+            <p className="mt-1 text-sm font-bold text-surface-900 truncate">{summary.workspaceName}</p>
           </div>
           <div className="px-4 py-4 text-center">
             <p className="text-xs font-medium text-surface-500 uppercase tracking-wide">Plan</p>
-            <p className="mt-1 text-sm font-bold text-brand-700">Growth Trial</p>
+            <p className="mt-1 text-sm font-bold text-brand-700">{summary.planLabel}</p>
           </div>
           <div className="px-4 py-4 text-center">
             <p className="text-xs font-medium text-surface-500 uppercase tracking-wide">Team</p>
-            <p className="mt-1 text-sm font-bold text-surface-900">1 member</p>
+            <p className="mt-1 text-sm font-bold text-surface-900">
+              {summary.teamCount} member{summary.teamCount === 1 ? "" : "s"}
+            </p>
           </div>
         </div>
 

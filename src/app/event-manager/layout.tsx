@@ -14,6 +14,7 @@ export default async function EventManagerLayout({ children }: { children: React
     <AppShellClient
       workspaceType={ctx.workspaceType}
       flags={ctx.flags}
+      supplierType={ctx.supplierType}
       workspaceName={ctx.workspaceName ?? "My Workspace"}
       planLabel={planLabel}
       workspaces={shell.workspaces}
@@ -22,6 +23,7 @@ export default async function EventManagerLayout({ children }: { children: React
       unreadCount={shell.unreadCount}
       userInitials={shell.userInitials}
       userEmail={shell.userEmail}
+      initialSidebarCollapsed={shell.sidebarCollapsed}
     >
       {children}
     </AppShellClient>

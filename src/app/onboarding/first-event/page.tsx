@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Tag, Users, ChevronRight, ChevronLeft } from "lucide-react";
+import { CalendarDays, Tag, Users, ChevronRight, ChevronLeft, AlertCircle } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
+import { createClient } from "@/lib/supabase/client";
+import { getOrStartOnboardingSession, saveOnboardingStep } from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -26,12 +28,35 @@ const EVENT_TYPES = [
 export default function OnboardingFirstEventPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [form, setForm] = useState({
     eventName: "",
     eventType: "corporate",
     date: "",
     guestCount: "",
   });
+
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "first-event");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      setWorkspaceId(result.data.workspace_draft_id);
+      const saved = result.data.draft?.["first-event"] as
+        | { eventName?: string; eventType?: string; date?: string; guestCount?: string }
+        | undefined;
+      if (saved) {
+        setForm((prev) => ({
+          eventName: saved.eventName ?? prev.eventName,
+          eventType: saved.eventType ?? prev.eventType,
+          date: saved.date ?? prev.date,
+          guestCount: saved.guestCount ?? prev.guestCount,
+        }));
+      }
+    })();
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -42,7 +67,32 @@ export default function OnboardingFirstEventPage() {
   async function handleNext(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    setError(null);
+
+    if (workspaceId) {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { error: insertError } = await supabase.from("events").insert({
+        workspace_id: workspaceId,
+        name: form.eventName,
+        event_type: form.eventType,
+        start_at: form.date ? new Date(form.date).toISOString() : null,
+        guest_count_day: form.guestCount ? Number(form.guestCount) : null,
+        created_by: user?.id ?? null,
+      });
+      if (insertError) {
+        setError(insertError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "first-event", form, "invite-team");
+    }
+
     router.push("/onboarding/invite-team");
   }
 
@@ -63,6 +113,13 @@ export default function OnboardingFirstEventPage() {
             Add a real or placeholder event to get started. You can always edit it later.
           </p>
         </div>
+
+        {error && (
+          <div className="mb-5 flex items-center gap-2.5 px-4 py-3 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+            <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleNext} className="space-y-5">
           {/* Event name */}

@@ -16,7 +16,9 @@ export default async function RfqDetailPage({
 
   const { data: rfq } = await supabase
     .from("rfqs")
-    .select("id, title, scope, status, due_date, created_at, event:events ( id, name )")
+    .select(
+      "id, title, scope, category, status, due_date, response_deadline, budget_low_cents, budget_high_cents, created_at, awarded_supplier_id, event:events ( id, name )"
+    )
     .eq("id", rfqId)
     .eq("workspace_id", workspaceId)
     .is("deleted_at", null)
@@ -24,14 +26,22 @@ export default async function RfqDetailPage({
 
   if (!rfq) notFound();
 
-  const { data: recipients } = await supabase
-    .from("rfq_recipients")
-    .select(
-      "id, supplier_id, status, quote_amount_cents, notes, responded_at, created_at, supplier:suppliers ( id, name )"
-    )
-    .eq("rfq_id", rfqId)
-    .eq("workspace_id", workspaceId)
-    .order("created_at", { ascending: true });
+  const [{ data: recipients }, { data: award }] = await Promise.all([
+    supabase
+      .from("rfq_recipients")
+      .select(
+        "id, supplier_id, status, quote_amount_cents, notes, responded_at, created_at, supplier:suppliers ( id, name )"
+      )
+      .eq("rfq_id", rfqId)
+      .eq("workspace_id", workspaceId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("rfq_awards")
+      .select("id, supplier_id, rfq_response_id, event_supplier_id, booking_committed_at")
+      .eq("rfq_id", rfqId)
+      .eq("workspace_id", workspaceId)
+      .maybeSingle(),
+  ]);
 
   const recipientRows: RecipientRow[] = (recipients ?? []).map((r) => {
     const supplier = r.supplier as { id: string; name: string } | null;
@@ -51,11 +61,22 @@ export default async function RfqDetailPage({
     id: rfq.id,
     title: rfq.title,
     scope: rfq.scope,
+    category: rfq.category,
     status: rfq.status,
-    dueDate: rfq.due_date,
+    dueDate: rfq.due_date ?? rfq.response_deadline,
+    budgetLowCents: rfq.budget_low_cents,
+    budgetHighCents: rfq.budget_high_cents,
     createdAt: rfq.created_at,
     eventId: ev?.id ?? null,
     eventName: ev?.name ?? null,
+    award: award
+      ? {
+          id: award.id,
+          supplierId: award.supplier_id,
+          rfqResponseId: award.rfq_response_id,
+          bookingCommittedAt: award.booking_committed_at,
+        }
+      : null,
   };
 
   return <RfqDetailClient rfq={detail} recipients={recipientRows} />;

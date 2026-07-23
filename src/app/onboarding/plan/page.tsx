@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Zap, TrendingUp, Building2, ChevronRight, ChevronLeft } from "lucide-react";
 import { WizardStepper } from "@/components/ui/WizardStepper";
 import { cn } from "@/lib/utils";
+import { getOrStartOnboardingSession, saveOnboardingStep } from "@/lib/onboarding/actions";
 
 const STEPS = [
   { id: 1, label: "Account" },
@@ -75,10 +76,23 @@ export default function OnboardingPlanPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<string>("growth");
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getOrStartOnboardingSession("event_manager", "plan");
+      if (!result.ok) return;
+      setSessionId(result.data.id);
+      const saved = result.data.draft?.plan as { planId?: string } | undefined;
+      if (saved?.planId) setSelected(saved.planId);
+    })();
+  }, []);
 
   async function handleNext() {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
+    if (sessionId) {
+      await saveOnboardingStep(sessionId, "plan", { planId: selected }, "demo-data");
+    }
     router.push("/onboarding/demo-data");
   }
 

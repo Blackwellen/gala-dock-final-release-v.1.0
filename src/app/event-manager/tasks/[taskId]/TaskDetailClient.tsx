@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import {
   ArrowLeft, CheckCircle2, RotateCcw, MessageSquare,
   Calendar, Link2, Send, Clock, User, AlertCircle, Plus,
+  Paperclip, Upload, FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -14,7 +15,10 @@ import type { TaskStatus, TaskPriority } from "@/lib/supabase/types";
 import {
   PRIORITY_META, STATUS_LABEL, statusToBadge, formatDate, formatDateTime, initials,
 } from "../task-utils";
-import { completeTask, reopenTask, addTaskComment } from "../actions";
+import {
+  completeTask, reopenTask, addTaskComment, addChecklistItem, toggleChecklistItem,
+  getTaskAttachmentUploadUrl, attachTaskFile,
+} from "../actions";
 
 export interface TaskAssignee {
   userId: string;
@@ -42,28 +46,40 @@ export interface TaskDetail {
   eventName: string | null;
   supplierId: string | null;
   supplierName: string | null;
+  category: string | null;
+  phase: string | null;
+  nextAction: string | null;
+  overdue: boolean;
 }
 
+export interface TaskChecklistRow { id: string; title: string; isDone: boolean; }
+export interface TaskAttachmentRow { id: string; fileName: string; sizeBytes: number; mimeType: string; createdAt: string; }
+export interface TaskDependencyRow { id: string; title: string; status: TaskStatus; }
+
 export function TaskDetailClient({
-  task, assignees, comments,
+  task, assignees, comments, checklist, attachments, dependencies,
 }: {
   task: TaskDetail;
   assignees: TaskAssignee[];
   comments: TaskComment[];
+  checklist: TaskChecklistRow[];
+  attachments: TaskAttachmentRow[];
+  dependencies: TaskDependencyRow[];
 }) {
   const [activeTab, setActiveTab] = useState("details");
   const [pending, startTransition] = useTransition();
 
   const TABS = [
     { id: "details", label: "Details" },
+    { id: "checklist", label: "Checklist", count: checklist.length },
+    { id: "files", label: "Files", count: attachments.length },
     { id: "comments", label: "Comments", count: comments.length },
     { id: "activity", label: "Activity" },
   ];
 
   const pMeta = PRIORITY_META[task.priority];
   const isDone = task.status === "done";
-  const overdue =
-    !!task.dueAt && !isDone && task.status !== "cancelled" && new Date(task.dueAt).getTime() < Date.now();
+  const overdue = task.overdue;
   const primaryAssignee = assignees[0];
 
   function toggleComplete() {
@@ -141,8 +157,10 @@ export function TaskDetailClient({
 
       <div className="flex-1 p-6 max-w-4xl mx-auto w-full" key={activeTab}>
         {activeTab === "details" && (
-          <DetailsTab task={task} assignees={assignees} overdue={overdue} />
+          <DetailsTab task={task} assignees={assignees} overdue={overdue} dependencies={dependencies} />
         )}
+        {activeTab === "checklist" && <ChecklistTab taskId={task.id} items={checklist} />}
+        {activeTab === "files" && <FilesTab taskId={task.id} attachments={attachments} />}
         {activeTab === "comments" && <CommentsTab taskId={task.id} comments={comments} />}
         {activeTab === "activity" && <ActivityTab task={task} />}
       </div>
@@ -153,11 +171,12 @@ export function TaskDetailClient({
 // ── Details ────────────────────────────────────────────────────────────────
 
 function DetailsTab({
-  task, assignees, overdue,
+  task, assignees, overdue, dependencies,
 }: {
   task: TaskDetail;
   assignees: TaskAssignee[];
   overdue: boolean;
+  dependencies: TaskDependencyRow[];
 }) {
   const pMeta = PRIORITY_META[task.priority];
   return (
@@ -251,8 +270,40 @@ function DetailsTab({
               {formatDate(task.createdAt)}
             </div>
           </MetaRow>
+
+          {task.category && (
+            <MetaRow label="Category">
+              <span className="text-sm text-surface-800">{task.category}</span>
+            </MetaRow>
+          )}
+          {task.phase && (
+            <MetaRow label="Phase / Stage">
+              <span className="text-sm text-surface-800">{task.phase}</span>
+            </MetaRow>
+          )}
+          {task.nextAction && (
+            <MetaRow label="Next Action">
+              <span className="text-sm text-surface-800">{task.nextAction}</span>
+            </MetaRow>
+          )}
         </div>
       </div>
+
+      {dependencies.length > 0 && (
+        <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-surface-200">
+            <h3 className="text-sm font-semibold text-surface-800">Depends On</h3>
+          </div>
+          <ul className="divide-y divide-surface-100">
+            {dependencies.map((d) => (
+              <li key={d.id} className="flex items-center justify-between px-5 py-3">
+                <Link href={`/event-manager/tasks/${d.id}`} className="text-sm text-brand-600 hover:underline">{d.title}</Link>
+                <StatusBadge status={statusToBadge(d.status)} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -383,6 +434,136 @@ function ActivityTab({ task }: { task: TaskDetail }) {
           );
         })}
       </ol>
+    </div>
+  );
+}
+
+// ── Checklist ──────────────────────────────────────────────────────────────
+
+function ChecklistTab({ taskId, items }: { taskId: string; items: TaskChecklistRow[] }) {
+  const [draft, setDraft] = useState("");
+  const [pending, startTransition] = useTransition();
+  const done = items.filter((i) => i.isDone).length;
+  const pct = items.length > 0 ? Math.round((done / items.length) * 100) : 0;
+
+  function add() {
+    const title = draft.trim();
+    if (!title) return;
+    startTransition(async () => {
+      await addChecklistItem(taskId, title);
+      setDraft("");
+    });
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
+      <div className="px-5 py-4 border-b border-surface-200">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-surface-800">Checklist</h3>
+          <span className="text-xs text-surface-400">{done}/{items.length} complete</span>
+        </div>
+        <div className="h-1.5 rounded-full bg-surface-100 overflow-hidden">
+          <div className="h-full bg-success-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      {items.length === 0 ? (
+        <EmptyState icon={CheckCircle2} title="No checklist items" description="Break this task down into smaller steps." compact />
+      ) : (
+        <ul className="divide-y divide-surface-100">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center gap-3 px-5 py-3">
+              <input
+                type="checkbox"
+                checked={item.isDone}
+                onChange={(e) => startTransition(async () => { await toggleChecklistItem(item.id, taskId, e.target.checked); })}
+                className="rounded border-surface-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span className={cn("text-sm text-surface-800", item.isDone && "line-through text-surface-400")}>{item.title}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="px-5 py-4 border-t border-surface-200 bg-surface-50/50 flex gap-2">
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && add()}
+          placeholder="Add a checklist item…"
+          className="flex-1 px-3 py-2 rounded-lg border border-surface-300 text-sm"
+        />
+        <button onClick={add} disabled={pending} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium">
+          <Plus className="w-4 h-4" /> Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Files ──────────────────────────────────────────────────────────────────
+
+function FilesTab({ taskId, attachments }: { taskId: string; attachments: TaskAttachmentRow[] }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleFile(file: File) {
+    setError(null);
+    startTransition(async () => {
+      const presign = await getTaskAttachmentUploadUrl(taskId, file.name, file.type || "application/octet-stream");
+      if (!presign.configured) {
+        setError("File storage isn't configured for this environment yet. Ask an admin to set the R2 credentials.");
+        return;
+      }
+      const res = await fetch(presign.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "application/octet-stream" } });
+      if (!res.ok) {
+        setError("Upload failed. Please try again.");
+        return;
+      }
+      await attachTaskFile(taskId, {
+        objectKey: presign.objectKey,
+        originalFileName: file.name,
+        mimeType: file.type || "application/octet-stream",
+        sizeBytes: file.size,
+      });
+    });
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-surface-200 shadow-card overflow-hidden">
+      <div className="px-5 py-4 border-b border-surface-200">
+        <h3 className="text-sm font-semibold text-surface-800">Attachments</h3>
+      </div>
+      {error && <div className="mx-5 mt-4 px-3 py-2 rounded-lg bg-warning-50 border border-warning-200 text-xs text-warning-700">{error}</div>}
+      {attachments.length === 0 ? (
+        <EmptyState icon={Paperclip} title="No files attached" description="Upload documents, photos or evidence for this task." compact />
+      ) : (
+        <ul className="divide-y divide-surface-100">
+          {attachments.map((a) => (
+            <li key={a.id} className="flex items-center gap-3 px-5 py-3">
+              <FileText className="w-4 h-4 text-surface-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-surface-800 truncate">{a.fileName}</p>
+                <p className="text-xs text-surface-400">{(a.sizeBytes / 1024).toFixed(0)} KB · {formatDate(a.createdAt)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="px-5 py-4 border-t border-surface-200 bg-surface-50/50">
+        <input
+          ref={inputRef}
+          type="file"
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+        />
+        <button
+          onClick={() => inputRef.current?.click()}
+          disabled={pending}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-dashed border-surface-300 text-surface-600 hover:border-brand-400 hover:text-brand-600 text-sm font-medium transition-colors disabled:opacity-50"
+        >
+          <Upload className="w-4 h-4" /> {pending ? "Uploading…" : "Upload file"}
+        </button>
+      </div>
     </div>
   );
 }

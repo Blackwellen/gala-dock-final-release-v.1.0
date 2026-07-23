@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import type { Task } from "@/lib/supabase/types";
-import { TaskDetailClient, type TaskDetail, type TaskComment, type TaskAssignee } from "./TaskDetailClient";
+import { categoryLabel, isOverdue } from "../task-utils";
+import {
+  TaskDetailClient, type TaskDetail, type TaskComment, type TaskAssignee,
+  type TaskChecklistRow, type TaskAttachmentRow, type TaskDependencyRow,
+} from "./TaskDetailClient";
 
 export const metadata = { title: "Task" };
 
@@ -98,6 +102,45 @@ export default async function TaskDetailPage({
     createdAt: c.created_at,
   }));
 
+  // Checklist items.
+  const { data: checklistRows } = await supabase
+    .from("task_checklist_items")
+    .select("id, title, is_done, sort")
+    .eq("task_id", task.id)
+    .order("sort", { ascending: true });
+  const checklist: TaskChecklistRow[] = (checklistRows ?? []).map((c) => ({
+    id: c.id, title: c.title, isDone: c.is_done,
+  }));
+
+  // Attachments. `storage_path` is the R2 object key, which embeds the
+  // original filename via r2Key()'s `{timestamp}-{safe_filename}` suffix.
+  const { data: attachmentRows } = await supabase
+    .from("task_attachments")
+    .select("id, storage_path, size_bytes, mime, created_at")
+    .eq("task_id", task.id)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+  const attachments: TaskAttachmentRow[] = (attachmentRows ?? []).map((a) => {
+    const lastSegment = a.storage_path.split("/").pop() ?? a.storage_path;
+    const fileName = lastSegment.replace(/^\d+-/, "");
+    return { id: a.id, fileName, sizeBytes: a.size_bytes, mimeType: a.mime, createdAt: a.created_at };
+  });
+
+  // Dependencies ("depends on" other tasks).
+  const { data: depRows } = await supabase
+    .from("task_dependencies")
+    .select("depends_on_task_id")
+    .eq("task_id", task.id);
+  const depIds = (depRows ?? []).map((d) => d.depends_on_task_id);
+  let dependencies: TaskDependencyRow[] = [];
+  if (depIds.length > 0) {
+    const { data: depTasks } = await supabase
+      .from("tasks")
+      .select("id, title, status")
+      .in("id", depIds);
+    dependencies = (depTasks ?? []).map((d) => ({ id: d.id, title: d.title, status: d.status }));
+  }
+
   const detail: TaskDetail = {
     id: task.id,
     title: task.title,
@@ -112,7 +155,20 @@ export default async function TaskDetailPage({
     eventName,
     supplierId: task.supplier_id,
     supplierName,
+    category: task.category ? categoryLabel(task.category) : null,
+    phase: task.phase,
+    nextAction: task.next_action,
+    overdue: isOverdue(task),
   };
 
-  return <TaskDetailClient task={detail} assignees={assignees} comments={comments} />;
+  return (
+    <TaskDetailClient
+      task={detail}
+      assignees={assignees}
+      comments={comments}
+      checklist={checklist}
+      attachments={attachments}
+      dependencies={dependencies}
+    />
+  );
 }

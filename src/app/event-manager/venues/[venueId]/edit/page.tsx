@@ -17,7 +17,7 @@ export default async function EditVenuePage({
   const { data: venue } = await supabase
     .from("venues")
     .select(
-      `id, name, status, website, capacity,
+      `id, name, status, is_preferred, website, capacity,
        address_line1, address_line2, city, region, postal_code,
        contact_email, contact_phone, notes`
     )
@@ -31,7 +31,8 @@ export default async function EditVenuePage({
   const data: EditVenueData = {
     id: venue.id,
     name: venue.name,
-    status: venue.status,
+    status: venue.status === "active" || venue.status === "archived" ? venue.status : "active",
+    isPreferred: venue.is_preferred ?? false,
     website: venue.website ?? "",
     addressLine1: venue.address_line1 ?? "",
     addressLine2: venue.address_line2 ?? "",
