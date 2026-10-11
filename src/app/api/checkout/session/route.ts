@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
-import { randomBytes } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
   // gd_ref = "CODE:event-slug" from /r/[code]; it only counts for the event it was issued for.
   const [rc, rslug] = ref.split(":"), refCode = /^[A-Za-z0-9_-]{2,32}$/.test(rc ?? "") && rslug === ev.slug ? rc : null;
   const db = untyped(createAdminClient() as never);
+  // Waiting room (§52): an order needs an admitted, unexpired, unused admission; creating the order uses it up.
+  const qTok = jar.get(`gd_q_${eventId.replace(/-/g, "").slice(0, 12)}`)?.value ?? "";
+  const { data: admittedOk } = await db.rpc("queue_admit_check", { p_event: eventId, p_token_hash: qTok ? createHash("sha256").update(qTok).digest("hex") : "", p_consume: true });
+  if (admittedOk === false) return json({ error: "Your waiting-room slot has expired or hasn’t opened yet — please rejoin the queue.", queue: true }, 409);
   const orderRef = `GD-${randomBytes(5).toString("hex").toUpperCase()}`;
   await db.from("checkout_orders").update({ status: "expired", updated_at: new Date().toISOString() }).eq("token", token).eq("status", "pending");
   const { error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode });

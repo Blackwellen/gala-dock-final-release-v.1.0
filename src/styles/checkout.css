@@ -84,3 +84,8 @@
 .co-resale li.sel{background:#f6f8ff}
 .co-pick{height:36px;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #c9d4fb;border-radius:9px;background:#fff;color:var(--blue2);font-weight:650;cursor:pointer}
 .co-pick.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.co-queue{display:flex;gap:12px;align-items:flex-start}
+.co-queue>svg{width:22px;height:22px;color:var(--blue2);flex-shrink:0;margin-top:2px}
+.co-queue div{display:grid;gap:3px}.co-queue b{color:var(--ink);font-size:14px}.co-queue small{color:var(--muted);font-size:12.5px}
+.co-queue.ok{background:#e9f9f1;color:#0f7a43;border-radius:10px;padding:10px 14px;align-items:center;font-size:13px}.co-queue.ok svg{color:#16a46c;width:18px;height:18px}
+.co-offer p{font-size:13px;margin:0 0 4px}.co-offer .co-cta{max-width:320px}

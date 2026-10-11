@@ -20,13 +20,14 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
   const isId = /^[0-9a-f-]{36}$/i.test(key);
   const { data: ev } = await sb.from("events").select("id,name,slug,starts_at,ends_at,venue_name,city,location,cover_image,status,visibility,currency,settings").eq(isId ? "id" : "slug", key).maybeSingle();
   if (!ev || ev.visibility !== "public" || !["published", "on_sale", "live"].includes(ev.status)) notFound();
-  const [{ data: tiers }, { data: seats }, { data: plan }, { data: fee }, { data: { user } }, { data: resale }] = await Promise.all([
+  const [{ data: tiers }, { data: seats }, { data: plan }, { data: fee }, { data: { user } }, { data: resale }, { data: launch }] = await Promise.all([
     sb.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,order_limit,status,sale_start,sale_end,color,badge,sort").eq("event_id", ev.id).neq("status", "hidden").order("sort"),
     sb.from("event_seats").select("seat_key,tier_id,accessible,status").eq("event_id", ev.id),
     sb.rpc("public_event_plan", { p_event: ev.id }),
     sb.rpc("ticket_fee_config"),
     sb.auth.getUser(),
     sb.rpc("resale_listings", { p_event: ev.id }),
+    sb.rpc("event_launch_state", { p_event: ev.id }),
   ]);
   const seatedTiers = new Set((seats ?? []).map((s: { tier_id: string | null }) => s.tier_id).filter(Boolean));
   const now = requestTime();
@@ -45,5 +46,6 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
     overlay={Array.isArray(p.overlay) ? p.overlay : []} base={Array.isArray(p.base) ? p.base : []} fee={(fee ?? { fixed: 0, pct_bps: 0 }) as { fixed: number; pct_bps: number }}
     user={user ? { email: user.email ?? "" } : null} preset={presetTier ? { tier: presetTier, qty: presetQty } : null}
     resale={((resale ?? []) as { id: string; tier: string; tier_id: string; seat: string | null; price: number }[]).map(r => ({ ...r, price: Number(r.price) }))} startResale={sp.resale === "1"}
-    existing={existing && existing.lines.length && existing.expiresAt && new Date(existing.expiresAt).getTime() > now ? existing : null} cancelled={!!sp.cancelled} />;
+    existing={existing && existing.lines.length && existing.expiresAt && new Date(existing.expiresAt).getTime() > now ? existing : null} cancelled={!!sp.cancelled}
+    launch={typeof launch === "string" ? launch : "on_sale"} offerId={typeof sp.waitlist_offer === "string" && /^[0-9a-f-]{36}$/i.test(sp.waitlist_offer) ? sp.waitlist_offer : null} />;
 }

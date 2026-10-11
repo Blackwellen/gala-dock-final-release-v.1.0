@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CalendarDays, MapPin, Minus, Plus, Lock, ShieldCheck, Clock3, Ticket, Armchair, CircleAlert, CreditCard, RefreshCw, Check, Repeat } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Minus, Plus, Lock, ShieldCheck, Clock3, Ticket, Armchair, CircleAlert, CreditCard, RefreshCw, Check, Repeat, Gift } from "lucide-react";
 import { SeatPicker } from "@/components/venue-plan/seat-picker";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import type { Summary } from "@/lib/checkout";
-import { reserve, reserveResale, releaseHold } from "./actions";
+import { reserve, reserveResale, releaseHold, claimOffer } from "./actions";
+import { WaitingRoom } from "./waiting-room";
 
 type Tier = { id: string; name: string; description: string; price: number; remaining: number; limit: number; seated: boolean; color: string; onSale: boolean; note: string | null; badge: string | null };
 type Seat = { key: string; tier_id: string | null; accessible: boolean; status: "available" | "held" | "sold" | "blocked" };
@@ -15,11 +16,12 @@ const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", c
 const when = (s: string | null, e: string | null) => { if (!s) return "Date to be announced"; const d = new Date(s), f = (o: Intl.DateTimeFormatOptions) => d.toLocaleString("en-GB", { timeZone: "Europe/London", ...o });
   return `${f({ weekday: "short", day: "numeric", month: "long", year: "numeric" })} · ${f({ hour: "2-digit", minute: "2-digit" })}${e ? ` – ${new Date(e).toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" })}` : ""}`; };
 
-export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale }: {
+export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale, launch, offerId }: {
   event: { id: string; name: string; slug: string; startsAt: string | null; endsAt: string | null; venue: string; city: string; cover: string };
   tiers: Tier[]; seats: Seat[]; overlay: MapEl[]; base: MapEl[]; fee: { fixed: number; pct_bps: number }; user: { email: string } | null;
   preset: { tier: string; qty: number } | null; existing: Summary | null; cancelled: boolean;
   resale: { id: string; tier: string; tier_id: string; seat: string | null; price: number }[]; startResale: boolean;
+  /** event_launch_state (§50) */ launch: string; /** ?waitlist_offer= from the waitlist notification (§52) */ offerId: string | null;
 }) {
   const [mode, setMode] = useState<"new" | "resale">(startResale && resale.length ? "resale" : "new");
   const [rsel, setRsel] = useState<string[]>([]);
@@ -59,14 +61,21 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
   const pay = async () => {
     setErr(null); setPaying(true);
     const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: event.id }) });
-    const j = await res.json().catch(() => ({})) as { url?: string; error?: string; login?: boolean; expired?: boolean };
+    const j = await res.json().catch(() => ({})) as { url?: string; error?: string; login?: boolean; expired?: boolean; queue?: boolean };
     if (j.url) { window.location.assign(j.url); return; }
     setPaying(false);
     if (j.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}`)}`); return; }
-    if (j.expired) { setStep(1); setSummary(null); }
+    if (j.expired || j.queue) { setStep(1); setSummary(null); }
     setErr(j.error ?? "Something went wrong. Please try again.");
   };
   const change = () => start(async () => { await releaseHold(event.id); setSummary(null); setStep(1); });
+  const [inQueue, setInQueue] = useState(false);
+  const buyable = ["presale", "on_sale", "final_release", "low_availability"].includes(launch);
+  const LAUNCH_MSG: Record<string, string> = { coming_soon: "Tickets aren’t on sale yet.", countdown: "Tickets go on sale soon.", sold_out: "This event is sold out.", waitlist: "This event is sold out. Join the waitlist on the event page and we’ll hold tickets for you if any come back.",
+    postponed: "This event has been postponed. Ticket sales are paused.", cancelled: "This event has been cancelled.", ended: "This event has ended.", draft: "Tickets aren’t available." };
+  const useOffer = () => start(async () => { setErr(null); const r = await claimOffer(event.id, offerId!);
+    if (!r.ok) { if ("login" in r && r.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}?waitlist_offer=${offerId}`)}`); return; } setErr(r.error); return; }
+    setSummary(r.summary); setStep(2); setNow(null); });
   const mm = Math.floor(left / 60000), ss = Math.floor((left % 60000) / 1000);
   const shown = step === 2 && summary ? { lines: summary.lines.map(l => ({ name: l.name, q: l.qty, unit: l.unit, seats: l.seats, color: tierById.get(l.tier_id)?.color })), sub: summary.subtotal, fee: summary.fee, total: summary.total }
     : { lines: est.lines.map(l => ({ name: l.t.name, q: l.q, unit: l.t.price, seats: [] as string[], color: l.t.color })), sub: est.sub, fee: est.fee, total: est.total };
@@ -83,6 +92,11 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
           <div><h1>{event.name}</h1><p><CalendarDays aria-hidden="true" />{when(event.startsAt, event.endsAt)}</p><p><MapPin aria-hidden="true" />{[event.venue, event.city].filter(Boolean).join(", ")}</p></div></section>
         {err && <p className="co-err" role="alert"><CircleAlert aria-hidden="true" />{err}</p>}
 
+        {step === 1 && offerId && <section className="co-card co-offer"><div className="co-h"><h2><Gift aria-hidden="true" />Tickets reserved for you</h2></div>
+          <p>Tickets came back for an event you were waiting for, and we’re holding them for you for a limited time.</p>
+          <button type="button" className="co-cta" disabled={pending} onClick={useOffer}>{pending ? "Getting your tickets…" : "Use my reserved tickets"}</button></section>}
+        {step === 1 && !offerId && !buyable && <p className="co-err" role="status"><CircleAlert aria-hidden="true" />{LAUNCH_MSG[launch] ?? "Tickets aren’t available right now."}{launch === "waitlist" && <> <Link className="co-link" href={`/events/${event.slug}`}>Go to event</Link></>}</p>}
+        {step === 1 && !offerId && (buyable || launch === "countdown") && <WaitingRoom eventId={event.id} onWaiting={setInQueue} />}
         {step === 1 && resale.length > 0 && <nav className="co-mode" aria-label="Ticket source"><button type="button" className={mode === "new" ? "on" : ""} onClick={() => setMode("new")}><Ticket aria-hidden="true" />New tickets</button>
           <button type="button" className={mode === "resale" ? "on" : ""} onClick={() => setMode("resale")}><Repeat aria-hidden="true" />Fan resale <em>{resale.length}</em></button></nav>}
         {step === 1 && mode === "resale" && <section className="co-card"><div className="co-h"><h2><Repeat aria-hidden="true" />Fan-to-fan resale</h2><small>Face value or less · fresh ticket issued to you</small></div>
@@ -113,7 +127,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
       <aside className="co-side"><section className="co-card co-sum"><h2>Order summary</h2>
         {shown.lines.length ? <ul>{shown.lines.map((l, i) => <li key={i}><i style={{ background: l.color }} /><span>{l.q} × {l.name}</span><b>{gbp(l.unit * l.q)}</b></li>)}</ul> : <p className="co-empty">No tickets selected yet.</p>}
         <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div><div><dt>Booking fee</dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
-        {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
+        {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0 || inQueue || !buyable} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
           : <button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button>}
         <p className="co-trust"><ShieldCheck aria-hidden="true" />Payments by Stripe. Gala Dock never sees your card details.</p></section></aside>
     </div>

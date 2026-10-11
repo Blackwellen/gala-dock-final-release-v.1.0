@@ -58,5 +58,7 @@ export async function finalise(orderRef: string) {
     return { ok: false as const, error: error.message };
   }
   await db.rpc("attribute_referral", { p_order_ref: orderRef }); // promoter credit (no-op without a valid referral)
+  // A claimed waitlist offer becomes "purchased" once its order is issued (§52).
+  await db.from("ticket_waitlist").update({ status: "purchased" }).eq("event_id", o.event_id).eq("user_id", o.buyer_id).eq("status", "converted");
   return { ok: true as const, order: { ...o, status: "issued" } };
 }
