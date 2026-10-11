@@ -25,10 +25,11 @@ export default async function GrantPage(props: PageProps<"/admin/conversations/[
   const admin = await getAdmin();
   if (!admin.permissions.has(PERM) && !admin.permissions.has("audit")) return <Restricted area="Break-glass conversation access" />;
   const db = untyped(admin.db as never);
-  await db.rpc("bg_expire").then(() => null, () => null);
   const { data: g } = await db.from("break_glass_grants").select("*").eq("id", grant).maybeSingle();
   if (!g) notFound();
-  const G = g as Grant;
+  // Expiry is applied by the break-glass-expire cron and inside the admin_* RPCs; show overdue grants as expired meanwhile.
+  const raw = g as Grant;
+  const G = raw.status === "active" && raw.expires_at && new Date(raw.expires_at).getTime() <= requestTime() ? { ...raw, status: "expired" } : raw;
   const [{ data: convs }, { data: log }, { data: people }] = await Promise.all([
     db.rpc("admin_grant_conversations", { p_grant: G.id }),
     db.from("break_glass_access_log").select("id,conversation_id,admin_id,opened_at,closed_at,last_seen_at").eq("grant_id", G.id).order("opened_at", { ascending: false }),

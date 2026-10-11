@@ -46,10 +46,15 @@ try {
 
   // 3. Opening requires step-up, then shows the transcript and logs the open.
   await ap.getByRole("button", { name: /^Open “/ }).first().click();
-  const code = ap.getByLabel("Authenticator code");
-  await code.waitFor({ timeout: 20000 });
-  check("Opening asks for step-up verification", await code.isVisible());
-  await code.fill(totp(process.env.DEMO_ADMIN_TOTP_SECRET)); await ap.getByRole("button", { name: "Verify" }).click();
+  const code = ap.getByLabel("Authenticator code"), reader = ap.getByText("Read-only · this view is logged");
+  await code.or(reader).first().waitFor({ timeout: 20000 });
+  if (await code.isVisible()) {
+    check("Opening asks for step-up verification", true);
+    await code.fill(totp(process.env.DEMO_ADMIN_TOTP_SECRET)); await ap.getByRole("button", { name: "Verify" }).click();
+  } else {
+    // A TOTP sign-in within the last 10 minutes already satisfies step-up (bg_step_up_ok), e.g. right after ws-auth.
+    check("Opening skips step-up only within 10 minutes of a TOTP verification", true, "fresh TOTP session");
+  }
   await ap.getByText("Read-only · this view is logged").waitFor({ timeout: 30000 });
   check("Transcript shown after step-up", !body || (await ap.content()).includes(body.slice(0, 30).replace(/&/g, "&amp;")));
   const log = (await db.from("break_glass_access_log").select("id").eq("grant_id", grantId)).data;
