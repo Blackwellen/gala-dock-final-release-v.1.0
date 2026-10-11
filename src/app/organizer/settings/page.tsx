@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StorageUsage } from "@/components/storage-usage";
 import { DemoCard } from "@/components/demo/demo-card";
 import { DevelopersPanel } from "@/components/developer/panel";
 import { AgentCredits } from "@/components/agent/credits";
@@ -90,6 +91,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     {tab === "notifications" && <section className="k-card st-c st-narrow"><h2>Notification channels</h2><NotifToggles can={can} prefs={notif} /></section>}
     {tab === "agent" && <AgentCredits db={ctx.supabase} workspaceId={ctx.workspace.id} canEdit={["owner", "manager"].includes(ctx.role)} canSeeUsage={ctx.canMoney} />}
     {tab === "agent" && <section className="k-card st-c st-narrow"><div className="k-between"><h2>Gala Agent behaviour</h2><EditCard can={can} title="Agent settings" fields={[{ key: "agent.approval_policy", label: "Approval policy", value: agent.approval_policy, options: ["Require approval for high-impact actions", "Require approval for all actions"] }, { key: "agent.autopilot", label: "Autopilot", value: agent.autopilot, options: ["Off", "Limited (suggest & draft only)", "Standard (low-risk actions)"] }, { key: "agent.access_scope", label: "Access scope", value: agent.access_scope, options: ["All events and workspace data", "Assigned events only"] }]} /></div><dl className="st-ag">{Object.entries(agent).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{v}</dd></div>)}</dl></section>}
+    {tab === "billing" && <div style={{ maxWidth: 760 }}><StorageUsage db={ctx.supabase} workspaceId={ctx.workspace.id} /></div>}
     {["brand", "billing", "communications", "integrations"].includes(tab) && <section className="k-card st-c st-narrow"><h2>{tab === "integrations" ? "Integrations" : tab === "billing" ? "Payments & Billing" : tab === "brand" ? "Brand" : "Communications"}</h2>
       {tab === "integrations" ? <ul className="st-int lg">{integrations.map(i => <li key={i.n}><span className="st-ib">{i.b.map(x => <BrandLogo key={x} brand={x} size={34} tile />)}</span><span className="k-grow"><b>{i.n}</b><small>{i.d}</small></span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? "Connected" : "Not connected"}</span>{i.href !== "#" && <Link className="k-link" href={i.href}>Open</Link>}</li>)}</ul>
         : tab === "billing" ? <><p className="k-small">Current plan: <b>{plan}</b>{price ? ` · £${price}/month` : ""}. Plan changes are handled by Gala Dock support during the beta.</p><Link className="k-btn outline" href="/help?topic=billing">Contact billing support</Link></>

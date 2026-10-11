@@ -127,7 +127,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| §92 Cloudflare R2 | PASS | Dependency-free SigV4 client (`src/lib/r2.ts`) and storage→R2 replication every 15 min (`storage-backup` job: change detection, keys `storage/<bucket>/<path>`, deleted objects kept 35 days). The `galadock` bucket is in Cloudflare's **EU jurisdiction**, so it is served from `<account>.eu.r2.cloudflarestorage.com`; the client honours `CLOUDFLARE_R2_JURISDICTION` or auto-detects it. Verified 11 Oct 2026: write/read/delete round trip, health `ready`, and an end-to-end replication probe (upload → worker copied 1 → copy present in R2 → cleaned up). Per-plan storage metering is still to do. Ensure the `CLOUDFLARE_R2_*`/`R2_*` variables are also set in Vercel production. |
+| §92 Cloudflare R2 | PASS | Dependency-free SigV4 client (`src/lib/r2.ts`) and storage→R2 replication every 15 min (`storage-backup` job: change detection, keys `storage/<bucket>/<path>`, deleted objects kept 35 days). The `galadock` bucket is in Cloudflare's **EU jurisdiction**, so it is served from `<account>.eu.r2.cloudflarestorage.com`; the client honours `CLOUDFLARE_R2_JURISDICTION` or auto-detects it. Verified 11 Oct 2026: write/read/delete round trip, health `ready`, and an end-to-end replication probe (upload → worker copied 1 → copy present in R2 → cleaned up). Vercel production verified 12 Oct 2026: all R2 variables present (`scripts/vercel-env-check.mjs`), production health reports R2 `ready` and the `storage-backup` job succeeding. |
 | §93 Stripe | PASS_WITH_NOTE | Payments orchestration, webhooks (authoritative), reconciliation, refunds, disputes, Connect transfers. **Local `.env` holds a LIVE secret key** — confirm intended environments; production uses the configured key. |
 | §94 MapTiler | PASS | Configured; maps and geocoding in listings/search. |
 | §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
@@ -154,6 +154,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
+| §115 Storage limits | FIXED | Every stored object is attributed to a workspace (by path: `event-media`/`listing-media` → workspace folder; `workspace-files/<user>/events/<event>` → event's workspace; other `workspace-files` → the uploader's current workspace; avatars → personal). A trigger on `storage.objects` refuses uploads past the plan's `storage.gb` + 10% grace for every upload path (API routes and direct client uploads alike); upload routes return a clear 413. Owners/managers are notified at 80% and 100%. Usage card in Settings → Payments & Billing. Test: `tests/release/storage-quota.spec.ts`. Note: signed-in users can't delete their own `event-media` objects (no select policy on that public bucket) — pre-existing; deletion happens via the owning features. |
 | §109–116 Economics | PASS_WITH_NOTE | `docs/commercial/economics.md`: dated cost inputs, credit burn P50/P90/P99, proposed tiers, margin per plan (expected / heavy / abuse-capped), packs, marketplace & ticket unit economics, competitor review (Eventbrite, Tagvenue; Hire Space pending). Entitlements are server-side capabilities (`plan_entitlements`, `entitlement()`, `has_capability()`). Prices **not** published — finance sign-off required. |
 | §117–121 Ads / promotion | PASS_WITH_NOTE | Organizer promotions and sponsored placement exist; owned ad inventory targeting/charging/analytics as specified are partial — post-beta. |
 
@@ -191,7 +192,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Additional tour and help content; CAPTCHA (needs key); AV scanning (needs service); storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Additional tour and help content; CAPTCHA (needs key); AV scanning (needs service); virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -218,6 +219,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270017 | Virtual sessions, ticket-gated join, `virtual` check-ins |
 | 202610270018 | Guided tour progress (`user_tours`) |
 | 202610270019 | Demo workspaces: create / reset / delete |
+| 202610270020 | Storage attribution, quota enforcement trigger, usage + warnings |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)

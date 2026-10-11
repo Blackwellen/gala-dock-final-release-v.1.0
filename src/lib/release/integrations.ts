@@ -28,7 +28,7 @@ export const INTEGRATIONS: Integration[] = [
     check: async () => { const { r2Ping } = await import("@/lib/r2"); const r = await r2Ping(); return { ok: r.ok, detail: r.status === 404 ? `Bucket "${process.env.CLOUDFLARE_R2_BUCKET}" does not exist — create it in Cloudflare R2 (credentials are valid)` : r.status === 403 ? "Credentials rejected or not scoped to the bucket" : `bucket ${r.status} in ${r.ms}ms · storage replication every 15 min` }; } },
   { key: "google_oauth", name: "Google sign-in", purpose: "Sign in with Google (Supabase Auth provider)", env: ["GOOGLE_OAUTH_CLIENT_ID"], critical: false, docs: "Supabase Auth → Providers → Google" },
   { key: "calendar", name: "Calendar sync (Google / Microsoft)", purpose: "Two-way calendar sync (ICS subscription works without it)", env: ["GOOGLE_CALENDAR_CLIENT_ID", "MICROSOFT_CLIENT_ID"], critical: false, docs: "docs/release/RELEASE_READINESS_REPORT.md", implemented: false },
-  { key: "virtual", name: "Virtual event provider", purpose: "Webinar/stream access links", env: ["VIRTUAL_PROVIDER", "VIRTUAL_PROVIDER_API_KEY"], critical: false, docs: "docs/release/RELEASE_READINESS_REPORT.md", implemented: false },
+  { key: "virtual", name: "Virtual event provider", purpose: "Ticket-gated online sessions (manual links work now; Zoom/Teams API adapters need their own credentials)", env: [], critical: false, docs: "src/lib/virtual/providers.ts" },
 ];
 
 export async function readiness(live = false) {

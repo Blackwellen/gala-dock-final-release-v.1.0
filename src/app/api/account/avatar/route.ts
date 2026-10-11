@@ -18,6 +18,7 @@ export async function POST(request: Request) {
   if (!ext) return json({ error: "Upload a PNG, JPG or WebP image." }, 415);
   const path = `${user.id}/${randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("avatars").upload(path, b, { contentType: ext === "jpg" ? "image/jpeg" : `image/${ext}`, upsert: false });
+  if (error && /quota|P0001/i.test(error.message)) return json({ error: "Storage is full for this workspace. Delete files or upgrade your plan in Settings → Payments & Billing." }, 413);
   if (error) return json({ error: "Upload failed." }, 500);
   const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
   const { error: e2 } = await supabase.rpc("set_my_avatar", { p_url: url });

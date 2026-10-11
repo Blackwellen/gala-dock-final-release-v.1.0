@@ -35,6 +35,7 @@ export async function POST(request: Request) {
   if (!kind || (purpose === "image" && kind.type === "application/pdf")) return json({ error: purpose === "image" ? "Upload a PNG, JPG or WebP image." : "Upload a PDF, PNG or JPG document." }, 415);
   const path = `${user.id}/${randomUUID()}.${kind.ext}`;
   const { error } = await supabase.storage.from("workspace-files").upload(path, bytes, { contentType: kind.type, upsert: false });
+  if (error && /quota|P0001/i.test(error.message)) return json({ error: "Storage is full for this workspace. Delete files or upgrade your plan in Settings → Payments & Billing." }, 413);
   if (error) return json({ error: "Upload failed. Please try again." }, 500);
   const { data } = kind.type.startsWith("image/") ? await supabase.storage.from("workspace-files").createSignedUrl(path, 3600) : { data: null };
   return json({ path, name: file.name.slice(0, 120), url: data?.signedUrl ?? null });

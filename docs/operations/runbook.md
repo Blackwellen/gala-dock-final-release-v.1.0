@@ -14,7 +14,7 @@
 | Email | Resend (outbox worker) | — | **BLOCKED_EXTERNAL**: no key configured |
 | Object storage backups | Cloudflare R2 (`galadock`, EU jurisdiction) | EU | Storage replication every 15 min |
 
-Scheduled jobs (pg_cron → `dispatch_worker` → HTTPS with `CRON_SECRET`):
+Scheduled jobs — **all run in Supabase `pg_cron`** (no Vercel cron); HTTP workers are called via `dispatch_worker` → HTTPS with `CRON_SECRET`:
 
 | Job | Schedule | Target |
 |---|---|---|
