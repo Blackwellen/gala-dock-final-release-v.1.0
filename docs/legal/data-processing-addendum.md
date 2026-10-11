@@ -2,7 +2,7 @@
 
 > **Draft for specialist UK legal review before production publication.** Version 2026-10.
 
-This Addendum forms part of the Organizer Terms (and, where relevant, the Provider Marketplace Terms) between the business customer ("**Controller**") and Blackwellen Ltd, trading as Gala Dock ("**Processor**"). It applies where Gala Dock processes personal data on the Controller's behalf.
+This Addendum forms part of the Organizer Terms (and, where relevant, the Provider Marketplace Terms) between the business customer ("**Controller**") and Blackwellen Limited, trading as Gala Dock ("**Processor**"). It applies where Gala Dock processes personal data on the Controller's behalf.
 
 ## 1. Scope and roles
 

@@ -4,7 +4,7 @@
 
 These terms apply to businesses and individuals acting in the course of business who use Gala Dock's **Organizer** workspace to plan events, sell tickets, source venues and suppliers, manage teams and run event operations ("**you**", the "**Organizer**"). They incorporate the Platform Terms of Service, the Acceptable Use Policy, the Community & Marketplace Standards, the Marketplace Payment Protection Terms, the AI / Gala Agent Terms, and, where you process attendee data through Gala Dock, the Data Processing Addendum.
 
-The contracting entity is Blackwellen Ltd (company number [COMPANY NUMBER]), registered office [REGISTERED ADDRESS] ("**Gala Dock**", "**we**").
+The contracting entity is Blackwellen Limited (company number 16482166), registered office 61 Bridge Street, Kington, HR5 3DJ ("**Gala Dock**", "**we**").
 
 ## 1. Your workspace
 

@@ -6,7 +6,7 @@ Gala Dock hosts content uploaded by users: event pages, listings, images, design
 
 ## 1. Reporting infringement
 
-Send a notice to ip@galadock.com, or use **Report → Intellectual property** on the content. Include:
+Send a notice to legal@galadock.com, or use **Report → Intellectual property** on the content. Include:
 1. your name and contact details, and the rights holder's if you act for them;
 2. the work or right you say is infringed: copyright work, registered or unregistered trade mark, or design;
 3. the exact location of the content (URL or template link);

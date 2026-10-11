@@ -25,9 +25,18 @@ export async function GET(request: Request, ctx: RouteContext<"/r/[code]">) {
   if (!hit?.slug) return fallback;
   const target = new URL(`/events/${encodeURIComponent(hit.slug)}`, url);
   target.searchParams.set("ref", hit.code);
+  // PECR: the referral cookie is not strictly necessary, so it is only set with the visitor's consent (remembered in gd_consent).
+  const consent = request.headers.get("cookie")?.match(/(?:^|;\s*)gd_consent=([^;]+)/)?.[1] ?? "";
+  if (!/referral:(yes|no)/.test(decodeURIComponent(consent))) {
+    const ask = new URL(`/r/${encodeURIComponent(hit.code)}/consent`, url);
+    ask.searchParams.set("event", hit.slug);
+    const r = NextResponse.redirect(ask, 307);
+    r.headers.set("Cache-Control", "private, no-store"); r.headers.set("Referrer-Policy", "no-referrer");
+    return r;
+  }
   const res = NextResponse.redirect(target, 307);
-  // First-party attribution for checkout (30 days, readable by the server only).
-  res.cookies.set("gd_ref", `${hit.code}:${hit.slug}`, { httpOnly: true, sameSite: "lax", secure: url.protocol === "https:", maxAge: 30 * 86400, path: "/" });
+  // First-party attribution for checkout (30 days, readable by the server only) — only after consent.
+  if (decodeURIComponent(consent).includes("referral:yes")) res.cookies.set("gd_ref", `${hit.code}:${hit.slug}`, { httpOnly: true, sameSite: "lax", secure: url.protocol === "https:", maxAge: 30 * 86400, path: "/" });
   res.headers.set("Cache-Control", "private, no-store");
   res.headers.set("Referrer-Policy", "no-referrer");
   return res;

@@ -2,7 +2,7 @@
 
 > **Draft for specialist UK legal review before production publication.** Version 2026-10. **The conformance status below must be updated from a full WCAG 2.2 AA audit before publication.**
 
-Blackwellen Ltd wants as many people as possible to be able to use Gala Dock: the website, the installable app (PWA), digital tickets, and the tools organisers and providers use. This statement covers galadock.com and its sub-pages.
+Blackwellen Limited wants as many people as possible to be able to use Gala Dock: the website, the installable app (PWA), digital tickets, and the tools organisers and providers use. This statement covers galadock.com and its sub-pages.
 
 ## What you should be able to do
 
@@ -29,7 +29,7 @@ We test against **WCAG 2.2 level AA**. Testing during the October 2026 release i
 
 ## Feedback and alternative formats
 
-If you need information in a different format, find a barrier, or need help buying a ticket or booking, contact accessibility@galadock.com or use Help in the app. We aim to reply within 5 working days. Organisers are responsible for the accessibility of their events and venues, and event pages show the access information they provide.
+If you need information in a different format, find a barrier, or need help buying a ticket or booking, contact support@galadock.com or use Help in the app. We aim to reply within 5 working days. Organisers are responsible for the accessibility of their events and venues, and event pages show the access information they provide.
 
 ## Enforcement
 

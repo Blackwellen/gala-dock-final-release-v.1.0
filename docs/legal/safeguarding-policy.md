@@ -4,7 +4,7 @@
 
 ## 1. Purpose and scope
 
-Gala Dock is used to plan events that children and adults at risk may attend, such as children's parties, school events and community festivals, and to message between customers, organisers and providers. This policy sets out how Blackwellen Ltd prevents, recognises and responds to abuse, exploitation and harm connected with the platform. It applies to our staff, contractors and administrators, and sets expectations for every user.
+Gala Dock is used to plan events that children and adults at risk may attend, such as children's parties, school events and community festivals, and to message between customers, organisers and providers. This policy sets out how Blackwellen Limited prevents, recognises and responds to abuse, exploitation and harm connected with the platform. It applies to our staff, contractors and administrators, and sets expectations for every user.
 
 Gala Dock does not run events, employ event staff for organisers, or carry out regulated activity with children or adults at risk. Organisers and providers remain responsible for safeguarding at their events, including DBS checks where the law requires them.
 
@@ -18,7 +18,7 @@ Gala Dock does not run events, employ event staff for organisers, or carry out r
 
 * Organisers and providers working with children or adults at risk must follow their own safeguarding policies and legal duties, including safer recruitment and DBS checks where applicable.
 * Don't use Gala Dock messaging to contact children directly. Customer accounts are for adults (18+).
-* Report concerns immediately: use **Report** in the app or email safeguarding@galadock.com. **If someone is in immediate danger, call 999.**
+* Report concerns immediately: use **Report** in the app or email support@galadock.com. **If someone is in immediate danger, call 999.**
 
 ## 4. How we respond to a concern
 

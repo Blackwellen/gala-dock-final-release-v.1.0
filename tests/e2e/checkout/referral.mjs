@@ -9,8 +9,12 @@ const browser = await chromium.launch({ executablePath: "C:/Program Files/Google
 const ctx = await browser.newContext({ storageState: "artifacts/auth/organizer.json", viewport: { width: 1440, height: 1000 } });
 const page = await ctx.newPage();
 try {
+  await ctx.clearCookies({ name: "gd_consent" }).catch(() => {});
   await page.goto(`${BASE}/r/${pr.code}`);
-  check("Referral link sets the gd_ref cookie", (await ctx.cookies()).some(c => c.name === "gd_ref" && c.value.startsWith(pr.code)));
+  check("Referral link asks for consent first (no cookie yet)", page.url().includes(`/r/${pr.code}/consent`) && !(await ctx.cookies()).some(c => c.name === "gd_ref"));
+  await page.getByRole("button", { name: "Continue and credit the promoter" }).click();
+  await page.waitForURL(/\/events\//);
+  check("Consent sets the gd_ref cookie", (await ctx.cookies()).some(c => c.name === "gd_ref" && c.value.startsWith(pr.code)));
   await page.goto(`${BASE}/checkout/${pr.events.slug}`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: /^More / }).first().click();
   await page.getByRole("button", { name: /Reserve 1 ticket/ }).click();

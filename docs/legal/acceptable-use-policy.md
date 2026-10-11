@@ -35,7 +35,7 @@ You must not:
 
 You must not:
 * access accounts, data or systems without authorisation, or try to;
-* probe, scan or test vulnerabilities, except under our responsible disclosure process (security@galadock.com);
+* probe, scan or test vulnerabilities, except under our responsible disclosure process (support@galadock.com);
 * bypass or interfere with security features, rate limits, permissions, maintenance controls, AI credit limits or Agent approval steps, including through prompt injection;
 * upload malware or content designed to exploit software;
 * overload the service, or scrape it beyond what our API and robots rules permit;
@@ -56,4 +56,4 @@ We act proportionately: warnings, content removal, feature restrictions (for exa
 
 ## 8. Reporting
 
-Report content or behaviour using the Report option in the app, or email trust@galadock.com. Safeguarding concerns: see the Safeguarding & Abuse Policy. Emergencies: call 999.
+Report content or behaviour using the Report option in the app, or email support@galadock.com. Safeguarding concerns: see the Safeguarding & Abuse Policy. Emergencies: call 999.

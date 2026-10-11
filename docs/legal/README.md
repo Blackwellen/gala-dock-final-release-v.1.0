@@ -2,7 +2,7 @@
 
 > **Draft for specialist UK legal review before production publication.** None of these documents has been approved by a solicitor or barrister. They are working drafts that describe how the product actually behaves, written so counsel can review them efficiently.
 
-**Operator:** Blackwellen Ltd, trading as Gala Dock · Company number **[COMPANY NUMBER]** · Registered office **[REGISTERED ADDRESS]** · VAT number **[VAT NUMBER — if registered]** · ICO registration **[ICO REGISTRATION NUMBER]**
+**Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, HR5 3DJ** · VAT number **[VAT NUMBER — if registered]** · ICO registration **[ICO REGISTRATION NUMBER]**
 
 These placeholders must be completed from verified company records. `src/lib/legal.ts` holds the same fields for the published pages and currently leaves them empty.
 
@@ -42,6 +42,6 @@ These placeholders must be completed from verified company records. `src/lib/leg
 
 ## Drafting conventions
 
-* Plain English, second person. "We" means Blackwellen Ltd.
+* Plain English, second person. "We" means Blackwellen Limited.
 * Every statement about how the product works must match the code. Where a document describes a mechanism (payment protection, refunds, resale caps, break-glass access, AI approvals), the controlling implementation is named in the source register so counsel and engineering can check them together.
 * Consumer documents must not exclude liability that cannot lawfully be excluded under the Consumer Rights Act 2015 and must keep statutory rights intact.

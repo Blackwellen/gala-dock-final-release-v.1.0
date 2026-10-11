@@ -10,7 +10,7 @@ We want to put things right when something goes wrong. This policy explains how 
 
 * In the app: Help → Contact support → Complaint
 * Email: support@galadock.com (subject "Complaint")
-* Post: Blackwellen Ltd, [REGISTERED ADDRESS]
+* Post: Blackwellen Limited, 61 Bridge Street, Kington, HR5 3DJ
 
 Tell us what happened, when, the booking, order or ticket reference, and what you'd like us to do.
 
@@ -31,7 +31,7 @@ If we removed content, restricted or suspended your account, hid a listing or te
 
 ## Data protection complaints
 
-You can complain to our Data Protection Officer at privacy@galadock.com. You also have the right to complain to the Information Commissioner's Office (ico.org.uk, 0303 123 1113), although we'd appreciate the chance to resolve it first.
+You can complain to our Data Protection Officer at legal@galadock.com. You also have the right to complain to the Information Commissioner's Office (ico.org.uk, 0303 123 1113), although we'd appreciate the chance to resolve it first.
 
 ## Alternative dispute resolution and courts
 
