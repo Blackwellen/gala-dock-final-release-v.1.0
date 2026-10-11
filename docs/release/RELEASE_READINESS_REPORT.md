@@ -110,7 +110,8 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | Area | Status | Notes |
 |---|---|---|
 | §84 Help centre | PASS_WITH_NOTE | Help routes exist; content depth not audited. |
-| §85–86 Screenshot annotation / guided tours | FAIL → **non-blocking for beta** | Not implemented. Recommended post-beta. |
+| §86 Guided tours | FIXED | Tour engine (`src/components/guided-tour.tsx`, mounted once in the root layout): the Gala Dock mark travels to each anchored element with spotlight, arrow, progress, Back / Next / Skip / Finish, keyboard Esc, reduced-motion support; per-user progress in `user_tours` (resume, no repeat once finished or skipped); `?tour=1` restarts. Tours: Organizer home, Provider home, Customer discover, Organizer events, Media Studio, Gala Agent (`src/lib/tours.ts`). Automated browsers never auto-start tours (E2E/visual safety). Test: `tests/release/tours.spec.ts`. More section tours (Team, Money, Listings, Map) are content additions. |
+| §85 Screenshot annotation | Not started (post-beta) | Help-centre screenshot generation with annotated overlays and staleness flags. |
 | §87 Demo data | PASS_WITH_NOTE | Demo accounts/seed scripts exist (`scripts/seed-*.mjs`, `refresh-demo-deadlines.mjs`); `demo_copy_of` rows preserved. A switchable "demo mode" is not implemented. |
 
 ## 8. Privacy (§88–91)
@@ -190,7 +191,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Guided tours & screenshot annotation; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Help-centre screenshot annotation; additional tour content; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -215,6 +216,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270015 | Price book aligned to gpt-5.4-mini / gpt-5.4-nano |
 | 202610270016 | Storage → R2 replication bookkeeping + `storage-backup` job |
 | 202610270017 | Virtual sessions, ticket-gated join, `virtual` check-ins |
+| 202610270018 | Guided tour progress (`user_tours`) |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)
