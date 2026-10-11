@@ -9,11 +9,11 @@ import { requestAccess, decideAccess, openConversation, touchConversation, close
 const stamp = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
 
 /** Request form, launched from a support/trust case. High-risk reasons go to a second administrator for approval. */
-export function RequestForm({ caseType, caseId, conversations }: { caseType: "support" | "trust"; caseId: string; conversations: { id: string; subject: string; kind: string; messages: number; last_message_at: string }[] }) {
+export function RequestForm({ caseType, caseId, conversations, approvers }: { caseType: "support" | "trust"; caseId: string; approvers: number; conversations: { id: string; subject: string; kind: string; messages: number; last_message_at: string }[] }) {
   const router = useRouter();
   const [reason, setReason] = useState(""), [why, setWhy] = useState(""), [mins, setMins] = useState(120), [sel, setSel] = useState<string[]>([]), [err, setErr] = useState("");
   const [pending, start] = useTransition();
-  const high = REASONS.find(r => r[0] === reason)?.[2];
+  const high = !!REASONS.find(r => r[0] === reason)?.[2] && approvers > 0;
   return <form className="adb-panel acv-gate" onSubmit={e => { e.preventDefault(); setErr(""); start(async () => {
     const r = await requestAccess({ caseType, caseId, reason, justification: why, conversations: sel, minutes: mins });
     if (r.ok && r.data) router.push(`/admin/conversations/${r.data.id}`); else if (!r.ok) setErr(r.error); }); }}>
@@ -23,7 +23,7 @@ export function RequestForm({ caseType, caseId, conversations }: { caseType: "su
       {conversations.length ? conversations.map(c => <label key={c.id}><input type="checkbox" checked={sel.includes(c.id)} onChange={e => setSel(s => e.target.checked ? [...s, c.id] : s.filter(x => x !== c.id))} />
         <span><b>{c.subject || "Untitled conversation"}</b><small>{c.kind} · {c.messages} messages · last {stamp(c.last_message_at)}</small></span></label>)
         : <p className="adb-none">No conversations involve this case’s people.</p>}</fieldset>
-    <label>Reason<select className="adb-select" required value={reason} onChange={e => setReason(e.target.value)}><option value="">Choose a reason…</option>{REASONS.map(([k, l, h]) => <option key={k} value={k}>{l}{h ? " (needs approval)" : ""}</option>)}</select></label>
+    <label>Reason<select className="adb-select" required value={reason} onChange={e => setReason(e.target.value)}><option value="">Choose a reason…</option>{REASONS.map(([k, l, h]) => <option key={k} value={k}>{l}{h && approvers > 0 ? " (needs approval)" : ""}</option>)}</select></label>
     <label>Justification <small>(20+ characters; what you need to establish and why)</small><textarea rows={3} maxLength={2000} required value={why} onChange={e => setWhy(e.target.value)} /></label>
     <label>Access window<select className="adb-select" value={mins} onChange={e => setMins(Number(e.target.value))}>{[30, 60, 120, 240].map(m => <option key={m} value={m}>{m < 60 ? `${m} minutes` : `${m / 60} hour${m > 60 ? "s" : ""}`}</option>)}</select></label>
     {high && <p className="acv-note"><ShieldAlert aria-hidden="true" />This reason is high-risk: another administrator with break-glass permission must approve before you can read anything.</p>}

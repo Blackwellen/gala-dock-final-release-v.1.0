@@ -21,9 +21,11 @@ export default async function RequestAccessPage(props: PageProps<"/admin/convers
   const back = caseType === "trust" ? `/admin/trust?case=${caseId ?? ""}` : `/admin/support/${caseId ?? ""}`;
   if (!caseId) return <div className="adb acv"><Head title="Request conversation access" subtitle="Open a support or trust case first, then choose Request conversation access." /></div>;
   const db = untyped(admin.db as never);
-  const [{ data: scope, error }, { data: kase }] = await Promise.all([
+  const [{ data: scope, error }, { data: kase }, { data: holders }] = await Promise.all([
     db.rpc("admin_case_conversations", { p_case_type: caseType, p_case: caseId }),
     caseType === "trust" ? db.from("trust_cases").select("reference,category,subject_name,status").eq("id", caseId).maybeSingle() : db.from("support_cases").select("reference,subject,requester_name,status").eq("id", caseId).maybeSingle(),
+    // Four-eyes approval applies only when another administrator holds the permission (DPO policy, migration 202610270001).
+    db.from("platform_admins").select("user_id").contains("permissions", [PERM]).neq("user_id", admin.userId),
   ]);
   if (error || !kase) return <div className="adb acv"><Head title="Request conversation access" subtitle="That case wasn’t found." /></div>;
   const k = kase as { reference: string; subject?: string; category?: string; requester_name?: string; subject_name?: string; status: string };
@@ -31,6 +33,6 @@ export default async function RequestAccessPage(props: PageProps<"/admin/convers
   return <div className="adb acv">
     <Link className="adb-back" href={back}><ArrowLeft aria-hidden="true" />Back to case {k.reference}</Link>
     <Head title="Request conversation access" subtitle={`${caseType === "trust" ? "Trust & Safety" : "Support"} case ${k.reference} · ${k.subject ?? k.category ?? ""} · people on the case: ${s.affected_users.map(u => u.name).join(", ") || "none"}`} />
-    <RequestForm caseType={caseType} caseId={caseId} conversations={s.conversations} />
+    <RequestForm caseType={caseType} caseId={caseId} conversations={s.conversations} approvers={(holders ?? []).length} />
   </div>;
 }

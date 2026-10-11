@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings, Clock3, FileText, UsersRound, CircleCheck, ArrowRight, Eye, RotateCcw, Download, MoreHorizontal, Info, History, FileDown, FlaskConical, RefreshCcw, X, Plus } from "lucide-react";
+import { Settings, Clock3, FileText, UsersRound, CircleCheck, ArrowRight, Eye, RotateCcw, Download, MoreHorizontal, Info, History, FileDown, FlaskConical, RefreshCcw, X, Plus, Wrench } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-settings.css";
 import { Restricted } from "@/components/workspace/kit";
@@ -53,6 +53,7 @@ export default async function SettingsPage(props: PageProps<"/admin/settings">) 
   return <div className="adb adst">
     <Head title="Platform Settings" subtitle="Configure governed platform defaults and feature policy."
       actions={<>
+        <Link className="adb-btn" href="/admin/maintenance"><Wrench aria-hidden="true" />Maintenance</Link>
         <Link className="adb-btn blue" href={`/admin/settings?tab=${tab}&preview=1`}><Eye aria-hidden="true" />Preview changes</Link>
         <ActionButton action={rollbackSetting} args={[tab, prevVersion?.version ?? 0]} reason variant="outline" className="adst-hb" disabled={!prevVersion}
           title={!prevVersion ? "No earlier version of this section" : undefined}

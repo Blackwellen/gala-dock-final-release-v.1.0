@@ -1,7 +1,7 @@
 # DPIA — Break-glass access to member conversations
 
-Status: **Draft for DPO review** · Owner: Platform Admin · Spec: release-readiness part 1 §5 (access), §7 (step-up MFA)
-Implementation: `supabase/migrations/202610250002_break_glass.sql`, `202610250003_break_glass_grant_meta.sql`, `/admin/conversations`
+Status: **Approved** — signed off by Jamahl Thomas, Data Protection Officer, 11 October 2026 · Owner: Platform Admin · Spec: release-readiness part 1 §5 (access), §7 (step-up MFA)
+Implementation: `supabase/migrations/202610250002_break_glass.sql`, `202610250003_break_glass_grant_meta.sql`, `202610270001_break_glass_policy.sql`, `/admin/conversations`
 
 ## 1. What the processing is
 
@@ -17,7 +17,7 @@ There is no general "read anyone's messages" capability. Default support staff c
 | Case-linked | A request must reference an **open** support case or a Trust & Safety case. |
 | Minimum scope | Only conversations in which a person on that case participates can be requested, at most 20 per grant. The list before access shows metadata only (subject, type, message count, date) and never message text. |
 | Justification | A reason category plus a written justification of at least 20 characters. |
-| Four-eyes for high risk | Safeguarding, abuse and legal requests stay *pending* until a **different** administrator approves with a note. Self-approval is blocked in the database. |
+| Four-eyes for high risk | Safeguarding, abuse and legal requests stay *pending* until a **different** administrator approves with a note, whenever another administrator holds the permission. Self-approval is blocked in the database. While only one administrator holds it (current position), requests are granted on submission and recorded as `sole_holder` in the audit trail; approval switches on automatically when a second holder is added (DPO decision, 11 October 2026). |
 | Time-limited | Grants last 30 minutes to 8 hours (default 2 hours) and expire automatically. |
 | Step-up authentication | Message text is returned only if the administrator verified their authenticator (TOTP/WebAuthn) within the last 10 minutes (`amr` timestamp in the session token). |
 | Read-only | The admin UI and functions have no send, edit, delete or impersonate path. Members' own RLS policies are unchanged. |
@@ -46,11 +46,15 @@ Requester, approver (where required), reason, justification, case type and refer
 | Compromised admin account | Low / High | Admin MFA at login plus step-up within 10 minutes; short grants; four-eyes on high-risk reasons |
 | Over-collection | Medium / Medium | Per-conversation selection; metadata-only listing; no export from the reader |
 | Chilling effect on members | Medium / Low | Privacy notice; notification after closure by default |
-| Retention of access logs | Retained with audit logs. *Action: confirm the retention period in the retention schedule.* |
+| Retention of access logs | Low / Medium | Grants, access logs and their audit rows are kept for **6 years** after the grant ends (Limitation Act 1980 s.5; UK GDPR Art. 5(1)(e) and 5(2)), then deleted by a monthly scheduled job (`bg_purge`). See the Data Retention Schedule. |
 
-## 7. Open actions
+## 7. Decisions and sign-off
 
-1. DPO to review and sign off this assessment.
-2. Public Pages owner to add the privacy-notice paragraph (section 4).
-3. Confirm the retention period for `break_glass_*` tables and audit rows.
-4. Decide who holds `support.break_glass_conversation.read` in production. At least two people are needed so high-risk requests can be approved.
+| Item | Decision |
+|---|---|
+| Approver model | Four-eyes approval for high-risk reasons applies whenever a second administrator holds the permission; a sole holder's requests are granted and flagged for review. |
+| Retention | 6 years after the grant ends, then deleted automatically (monthly). |
+| Privacy notice | Disclosure published in the Privacy Policy (section "Access to your messages by Gala Dock staff"). |
+| Permission holders | Currently one: the Data Protection Officer's Platform Admin account. |
+
+Signed off: **Jamahl Thomas, Data Protection Officer** — 11 October 2026. Next review: 11 October 2027, or earlier if the processing changes.

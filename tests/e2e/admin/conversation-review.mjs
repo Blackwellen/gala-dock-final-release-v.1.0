@@ -65,7 +65,18 @@ try {
   const note = (await db.from("notifications").select("id").eq("user_id", member).ilike("body", `%${ref}%`)).data;
   check("Closing ends access and notifies the affected user", closed.status === "closed" && closed.notify_affected === true && note.length >= 1);
 
-  // 5. High-risk: pending, can't self-approve, a second admin approves.
+  // 4b. Sole holder (DPO policy): a high-risk reason is granted immediately and flagged sole_holder.
+  await ap.goto(`${BASE}/admin/conversations/request?type=support&case=${kase.id}`, { waitUntil: "networkidle" });
+  await ap.locator(".acv-pick label").first().click();
+  await ap.getByLabel("Reason").selectOption("safeguarding");
+  await ap.getByLabel(/Justification/).fill(`Sole-holder safeguarding check for ${ref} under DPO policy.`);
+  await ap.getByRole("button", { name: "Request access" }).click();
+  await ap.waitForURL(/\/admin\/conversations\/[0-9a-f-]{36}$/, { timeout: 30000 });
+  const sole = (await db.from("break_glass_grants").select("status,requires_approval,decision_note").eq("id", ap.url().split("/").pop()).single()).data;
+  check("Sole holder: high-risk request granted immediately", sole.status === "active" && !sole.requires_approval && /Sole break-glass holder/.test(sole.decision_note ?? ""));
+
+  // 5. Once a second holder exists, high-risk requests wait for that other administrator.
+
   await db.from("platform_admins").update({ permissions: [...supportPerms, PERM] }).eq("user_id", supportId);
   await ap.goto(`${BASE}/admin/conversations/request?type=support&case=${kase.id}`, { waitUntil: "networkidle" });
   await ap.locator(".acv-pick label").first().click();
