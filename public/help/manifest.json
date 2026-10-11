@@ -1,0 +1,161 @@
+{
+  "getting-started-organizers": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:16:55.424Z",
+    "route": "/organizer",
+    "width": 1280,
+    "height": 800,
+    "signature": "afe42ae9a1cbeddb",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "All your events",
+        "found": true,
+        "x": 6,
+        "y": 94,
+        "w": 151,
+        "h": 34
+      },
+      {
+        "n": 2,
+        "caption": "Venues and suppliers",
+        "found": true,
+        "x": 6,
+        "y": 200,
+        "w": 151,
+        "h": 34
+      },
+      {
+        "n": 3,
+        "caption": "Tickets & promotion",
+        "found": true,
+        "x": 6,
+        "y": 235,
+        "w": 151,
+        "h": 34
+      },
+      {
+        "n": 4,
+        "caption": "Gala Agent",
+        "found": true,
+        "x": 6,
+        "y": 376,
+        "w": 151,
+        "h": 34
+      }
+    ]
+  },
+  "events": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:16:59.653Z",
+    "route": "/organizer/events",
+    "width": 1280,
+    "height": 800,
+    "signature": "7f07746ef481305e",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Create an event",
+        "found": true,
+        "x": 701,
+        "y": 9,
+        "w": 79,
+        "h": 30
+      }
+    ]
+  },
+  "tickets": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:17:05.097Z",
+    "route": "/organizer/tickets",
+    "width": 1280,
+    "height": 800,
+    "signature": "5a3803c1692e9638",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Ticket sales across events",
+        "found": true,
+        "x": 177,
+        "y": 81,
+        "w": 280,
+        "h": 24
+      }
+    ]
+  },
+  "media-studio": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:17:09.069Z",
+    "route": "/organizer/media",
+    "width": 1280,
+    "height": 800,
+    "signature": "07916e34a60fb17f",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Designs, templates, community",
+        "found": true,
+        "x": 177,
+        "y": 96,
+        "w": 1090,
+        "h": 24
+      }
+    ]
+  },
+  "gala-agent": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:17:13.407Z",
+    "route": "/organizer/agent",
+    "width": 1280,
+    "height": 800,
+    "signature": "fe587292bd4dc1e2",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Runs, approvals and routines",
+        "found": true,
+        "x": 177,
+        "y": 81,
+        "w": 108,
+        "h": 29
+      }
+    ]
+  },
+  "provider-getting-started": {
+    "version": 2,
+    "captured_at": "2026-10-11T17:17:19.449Z",
+    "route": "/provider",
+    "width": 1280,
+    "height": 800,
+    "signature": "4ca2939b0512f1bb",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "New requests",
+        "found": true,
+        "x": 13,
+        "y": 173,
+        "w": 172,
+        "h": 37
+      },
+      {
+        "n": 2,
+        "caption": "Confirmed work",
+        "found": true,
+        "x": 13,
+        "y": 212,
+        "w": 172,
+        "h": 37
+      },
+      {
+        "n": 3,
+        "caption": "What customers see",
+        "found": true,
+        "x": 13,
+        "y": 290,
+        "w": 144,
+        "h": 37
+      }
+    ]
+  }
+}
