@@ -12,8 +12,8 @@ This models what Gala Dock earns, what it costs to serve each plan, and whether 
 
 | Input | Value used | Source / date | Confidence |
 |---|---|---|---|
-| Azure OpenAI GPT-4.1 mini ("standard" tier) | $0.40 / 1M input, $0.10 cached, $1.60 / 1M output | Aggregators of Azure list price, retrieved 11 Oct 2026 (official page to be confirmed) | Medium — **deprecation reported for 4 Nov 2026**; see §9 |
-| Azure OpenAI GPT-4.1 nano ("fast") | $0.10 / 1M input, $0.40 / 1M output | same | Medium |
+| Azure OpenAI **gpt-5.4-mini** ("standard" tier, `AGENT_MODEL_MINI`) | $0.75 / 1M input, $0.075 cached (assumed 10%), $4.50 / 1M output | Third-party list-price trackers, 11 Oct 2026 (Azure's page showed no figures) | Medium — confirm against the Azure contract |
+| Azure OpenAI **gpt-5.4-nano** ("fast", `AGENT_MODEL_NANO`) | $0.20 / 1M input, $0.02 cached, $1.25 / 1M output | same | Medium |
 | "Deep" tier (no deployment configured) | $2.00 / 1M input, $8.00 / 1M output (pessimistic placeholder) | Internal assumption | Low — replace when a deep deployment is chosen |
 | USD→GBP | 0.79 | Internal, reviewed with the price book | Medium |
 | Stripe UK card processing | 1.5% + 20p (standard UK cards); 1.9% + 20p premium; 3.25% + 20p international (+2% FX) | Stripe UK pricing via third-party summaries, Aug–Oct 2026 | Medium — confirm on stripe.com/gb/pricing |
@@ -34,10 +34,10 @@ The price book lives in `public.ai_model_prices` (source column = `estimate` unt
 
 | Workload | Calls | Typical tokens | P50 credits | P90 | P99 |
 |---|---|---|---|---|---|
-| Simple question (Ask) | fast tool-pick + standard answer | 2k/150 + 6k/500 | 0.27 | 0.6 | 1.5 (16k context cap) |
-| Medium task (one-time / short mission) | standard plan + fast summary | 4k/800 + 8k/300 | 0.3 | 0.8 | 2 (retries) |
+| Simple question (Ask) | fast tool-pick + standard answer | 2k/150 + 6k/500 | 0.58 | 1.3 | 3 (16k context cap) |
+| Medium task (one-time / short mission) | standard plan + fast summary | 4k/800 + 8k/300 | 0.68 | 1.6 | 4 (retries) |
 | Complex mission | deep plan + re-plan + summary | 2 × (8k/1.6k) deep + summary | 4.6 | 8 | 15 (per-task limit stops at 50) |
-| Long mission (wakes over days) | ~10 wakes × summary/plan | 10 × medium | 3–5 | 10 | 25 |
+| Long mission (wakes over days) | ~10 wakes × summary/plan | 10 × medium | 6–7 | 15 | 35 |
 
 Routing rule: fast for picking tools and summaries, standard for answers and plans, deep only when the plan includes `agent.deep` **and** the owner opted in. Simple questions never touch the deep tier.
 
@@ -53,7 +53,7 @@ Entitlements are capabilities (`events.active.max`, `team.max`, `storage.gb`, `a
 | Active events | 3 | 25 | 100 | Unlimited |
 | Team | 2 | 10 | 50 | Unlimited |
 | Storage (R2) | 2 GB | 25 GB | 100 GB | 500 GB |
-| AI credits / month | 50 (≈180 questions) | 1,000 | 4,000 | 15,000 |
+| AI credits / month | 50 (≈85 questions) | 1,000 | 4,000 | 15,000 |
 | Long-running missions | — | ✓ | ✓ | ✓ |
 | Deep mode | — | — | ✓ | ✓ |
 | API, MCP & webhooks | — | ✓ | ✓ | ✓ |
@@ -124,7 +124,7 @@ Before prices are finalised, add: Ticket Tailor, Skiddle, Dice (ticketing); Hire
 
 ## 9. Risks and actions
 
-1. **Model deprecation:** GPT-4.1 mini is reportedly scheduled for retirement on 4 Nov 2026. Before launch, deploy the successor model, update `AGENT_MODEL_MINI` and its `ai_model_prices` row, and re-run this table. **Release blocker for Gala Agent only.**
+1. **Model pricing:** the configured deployments are gpt-5.4-mini / gpt-5.4-nano (an earlier draft assumed GPT-4.1). Because 1 credit is pegged to 1p of provider cost, plan margins in §4 are unchanged by model price; what changes is how much work a credit buys (roughly 2× fewer tasks than the GPT-4.1 estimate). Confirm Vercel production uses the same deployments and enter contract prices.
 2. **Price book is estimates:** replace with Azure contract prices; the admin credits page shows a warning while any row is `estimate`.
 3. **Live AI QA ceiling (spec §16):** no paid model calls were made during this release run. All agent tests use deterministic tool paths and recorded usage, well inside the £0.50 per-agent ceiling.
 4. **Support and infra allocations** are assumptions. Measure them for one quarter and update this model.

@@ -27,6 +27,8 @@ Scheduled jobs (pg_cron → `dispatch_worker` → HTTPS with `CRON_SECRET`):
 | break-glass-expire | every 15 min | SQL |
 | privacy-deletions | daily 02:17 UTC | `/api/cron/privacy` |
 | break-glass-retention | monthly | SQL |
+| agent-retention | monthly (2nd, 04:15 UTC) | SQL |
+| retention-security-logs | monthly | SQL |
 
 ## 2. Backups (§132)
 

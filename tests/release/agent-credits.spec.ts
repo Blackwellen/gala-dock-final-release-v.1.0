@@ -19,11 +19,13 @@ test.describe("agent credits and caps", () => {
   test.afterAll(async () => { await db.from("workspaces").delete().eq("id", ws); await cleanup(); });
 
   test("usage draws the allowance, then purchased credits, and the hard cap stops further calls", async () => {
-    // 1M input + 1M output on 'standard' = (0.40 + 1.60) USD × 0.79 × 100 = 158p = 158 credits.
+    // 1M input + 1M output on 'standard', priced from the live price book: (in + out) USD × fx × 100 pence = credits.
+    const { data: pr } = await db.from("ai_model_prices").select("input_per_mtok,output_per_mtok,fx_to_gbp").eq("model", "standard").single();
+    const expected = (Number(pr!.input_per_mtok) + Number(pr!.output_per_mtok)) * Number(pr!.fx_to_gbp) * 100;
     const r1 = (await db.rpc("record_ai_usage", { p_workspace: ws, p_user: owner.id, p_run: null, p_purpose: "test", p_model: "standard", p_input: 1_000_000, p_cached: 0, p_output: 1_000_000 })).data as { credits: number; from_allowance: number; overage: number };
-    expect(Number(r1.credits)).toBeCloseTo(158, 0);
+    expect(Number(r1.credits)).toBeCloseTo(expected, 0);
     expect(Number(r1.from_allowance)).toBe(10);
-    expect(Number(r1.overage)).toBeCloseTo(148, 0);   // no purchased balance: recorded openly, never hidden
+    expect(Number(r1.overage)).toBeCloseTo(expected - 10, 0);   // no purchased balance: recorded openly, never hidden
     const st = (await db.rpc("ai_credit_status", { p_workspace: ws })).data as { allowance_left: number; available: number; pct: number };
     expect(Number(st.allowance_left)).toBe(0); expect(Number(st.available)).toBe(0); expect(Number(st.pct)).toBe(100);
     expect((await db.rpc("ai_preflight", { p_workspace: ws, p_run: null, p_tier: "standard", p_estimate: 0.5 })).error?.message).toMatch(/ai_hard_cap/);
