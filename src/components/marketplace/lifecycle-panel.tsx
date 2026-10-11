@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CalendarClock, CreditCard, LifeBuoy, ShieldAlert, Undo2 } from "lucide-react";
+import { CalendarClock, CreditCard, LifeBuoy, MapPin, ShieldAlert, Undo2 } from "lucide-react";
+import { ProviderSelfCheckin } from "@/components/live/live-client";
 import { createClient } from "@/lib/supabase/server";
 import { loadLifecycle, STATUS_LABEL, DISPUTE_REASONS, DISPUTE_STATUS } from "@/lib/marketplace/lifecycle";
 import { requestTime } from "@/lib/workspace/format";
@@ -39,7 +40,9 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
   const emergency = (item.terms_snapshot as { source?: string } | null)?.source === "emergency";
   const payable = ["quoted", "available", "held", "conditionally_held"].includes(item.status) && item.amount != null;
   const venue = await venueBlocks(supabase, { itemId: item.id, listingId: item.listing_id, status: item.status, eventId: event.id, viewer, starts: event.starts_at, ends: event.ends_at });
-  if (quiet && !activity && !venue.active) return null;
+  const eventDay = viewer === "provider" && ["confirmed", "active"].includes(item.status) && !!event.starts_at && Date.parse(event.starts_at) - requestTime() < 12 * 36e5 && requestTime() < Date.parse(event.ends_at ?? event.starts_at) + 6 * 36e5;
+  const { data: checkin } = eventDay ? await supabase.from("provider_checkins" as never).select("status").eq("build_item_id", item.id).maybeSingle() : { data: null };
+  if (quiet && !activity && !venue.active && !eventDay) return null;
   const [label, tone] = STATUS_LABEL[item.status] ?? [item.status, "grey"];
   const responding = ["sent", "awaiting", "awaiting_provider"].includes(item.status) || item.response_status === "expired";
   const holdable = ["available", "quoted", "quote_received", "quote_revised", "customer_reviewing"].includes(item.status);
@@ -119,6 +122,7 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       {cancellations.filter(c => c !== openCancel).slice(0, 2).map(c => <p key={c.id} className="mk-history">{c.party} {c.kind.replace("_", " ")} · {c.status.replace("_", " ")}{c.calculation.refund_amount != null ? ` · refund ${money(c.calculation.refund_amount)}` : ""}</p>)}
     </div>}
 
+    {eventDay && <div className="mk-block"><h3><MapPin size={15} aria-hidden="true" />Event day</h3><ProviderSelfCheckin itemId={item.id} status={(checkin as { status: string } | null)?.status ?? null} /></div>}
     {venue.node}
 
     {(openDispute || disputable || disputes.length > 0) && <div className="mk-block">

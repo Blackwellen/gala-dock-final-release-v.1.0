@@ -3,6 +3,7 @@ import { ClipboardList, CheckCircle2, ExternalLink, Users, CreditCard, Mail, Plu
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs } from "@/components/kit";
 import { EditCard, NotifToggles, RoleSelect } from "@/components/organizer/settings-client";
+import { BrandLogo } from "@/components/kit/brand-logo";
 
 export const metadata = { title: "Settings" };
 type S = Record<string, unknown>;
@@ -27,10 +28,10 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const notif = { in_app: true, email: true, sms: false, agent: true, marketing: false, ...((s.notifications ?? {}) as Record<string, boolean>) };
   const agent = { approval_policy: "Require approval for high-impact actions", autopilot: "Limited (suggest & draft only)", access_scope: "All events and workspace data", ...((s.agent ?? {}) as Record<string, string>) };
   const integrations = [
-    { n: "Stripe payouts", ok: w?.payout_status === "active", d: w?.payout_status === "active" ? "Payouts active" : "Finish payout setup", href: "/organizer/money?tab=settlements" },
-    { n: "Calendar subscription", ok: true, d: "Subscribe from My Account", href: "/account?tab=profile" },
-    { n: "Transactional email", ok: !!process.env.RESEND_API_KEY, d: process.env.RESEND_API_KEY ? "Resend (production)" : "Not configured", href: "#" },
-    { n: "Gala Agent (Azure OpenAI)", ok: !!(process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY), d: "AI model access", href: "/organizer/agent" },
+    { b: ["stripe"], n: "Stripe payouts", ok: w?.payout_status === "active", d: w?.payout_status === "active" ? "Payouts active" : "Finish payout setup", href: "/organizer/money?tab=settlements" },
+    { b: ["google-calendar", "outlook", "apple"], n: "Calendar subscription", ok: true, d: "Subscribe from My Account", href: "/account?tab=profile" },
+    { b: ["resend"], n: "Transactional email", ok: !!process.env.RESEND_API_KEY, d: process.env.RESEND_API_KEY ? "Resend (production)" : "Not configured", href: "#" },
+    { b: ["microsoft"], n: "Gala Agent (Azure OpenAI)", ok: !!(process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY), d: "AI model access", href: "/organizer/agent" },
   ];
   const plan = String(s.plan ?? (w?.plan === "starter" ? "Starter" : "Pro Plan")); const price = Number(s.plan_price ?? 0);
   const limits = [[CalendarDays, "Events", events ?? 0, 100], [Users, "Team members", (members ?? []).length + crewN, 25], [Gauge, "AI runs (30d)", (runs ?? []).length, 2000]] as const;
@@ -68,7 +69,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Mail size={18} /></span><span className="k-grow"><b>Communications</b><small>{String(s.contact_email ?? "No sender email")}</small></span></div>
           <ul className="st-chk">{integrations.slice(2, 3).map(i => <li key={i.n}>{i.ok ? <CheckCircle2 size={16} className="ok" /> : <CircleSlash size={16} className="no" />}{i.n} — {i.d}</li>)}<li><MessageSquare size={16} className="ok" />In-app messaging with clients and providers</li></ul></section>
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Plug size={18} /></span><span className="k-grow"><b>Integrations</b><small>{integrations.filter(i => i.ok).length} connected</small></span><Link className="k-btn outline sm" href="/organizer/settings?tab=integrations">Manage</Link></div>
-          <ul className="st-int">{integrations.map(i => <li key={i.n}><span>{i.n}</span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? <CheckCircle2 size={12} /> : <CircleSlash size={12} />}{i.ok ? "Connected" : "Not connected"}</span></li>)}</ul></section>
+          <ul className="st-int">{integrations.map(i => <li key={i.n}><span className="st-ib">{i.b.map(x => <BrandLogo key={x} brand={x} size={22} tile />)}</span><span className="k-grow">{i.n}</span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? <CheckCircle2 size={12} /> : <CircleSlash size={12} />}{i.ok ? "Connected" : "Not connected"}</span></li>)}</ul></section>
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Sparkles size={18} /></span><span className="k-grow"><b>Gala Agent</b><small>Configure behaviour and approvals.</small></span><Link className="k-btn outline sm" href="/organizer/settings?tab=agent">Manage</Link></div>
           <dl className="st-ag">{([[ShieldCheck, "Approval policy", agent.approval_policy], [Gauge, "Autopilot", agent.autopilot], [KeyRound, "Access scope", agent.access_scope], [ClipboardList, "Usage (30 days)", `${(runs ?? []).length} runs${spend ? ` · £${spend.toFixed(2)}` : ""}`]] as const).map(([I, k, v]) => <div key={k}><dt><I size={15} />{k}</dt><dd>{v}</dd></div>)}</dl></section>
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Bell size={18} /></span><span className="k-grow"><b>Notifications</b><small>5 channels</small></span></div><NotifToggles can={can} prefs={notif} /></section>
@@ -80,7 +81,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     {tab === "notifications" && <section className="k-card st-c st-narrow"><h2>Notification channels</h2><NotifToggles can={can} prefs={notif} /></section>}
     {tab === "agent" && <section className="k-card st-c st-narrow"><div className="k-between"><h2>Gala Agent behaviour</h2><EditCard can={can} title="Agent settings" fields={[{ key: "agent.approval_policy", label: "Approval policy", value: agent.approval_policy, options: ["Require approval for high-impact actions", "Require approval for all actions"] }, { key: "agent.autopilot", label: "Autopilot", value: agent.autopilot, options: ["Off", "Limited (suggest & draft only)", "Standard (low-risk actions)"] }, { key: "agent.access_scope", label: "Access scope", value: agent.access_scope, options: ["All events and workspace data", "Assigned events only"] }]} /></div><dl className="st-ag">{Object.entries(agent).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{v}</dd></div>)}</dl></section>}
     {["brand", "billing", "communications", "integrations"].includes(tab) && <section className="k-card st-c st-narrow"><h2>{tab === "integrations" ? "Integrations" : tab === "billing" ? "Payments & Billing" : tab === "brand" ? "Brand" : "Communications"}</h2>
-      {tab === "integrations" ? <ul className="st-int lg">{integrations.map(i => <li key={i.n}><span><b>{i.n}</b><small>{i.d}</small></span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? "Connected" : "Not connected"}</span>{i.href !== "#" && <Link className="k-link" href={i.href}>Open</Link>}</li>)}</ul>
+      {tab === "integrations" ? <ul className="st-int lg">{integrations.map(i => <li key={i.n}><span className="st-ib">{i.b.map(x => <BrandLogo key={x} brand={x} size={34} tile />)}</span><span className="k-grow"><b>{i.n}</b><small>{i.d}</small></span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? "Connected" : "Not connected"}</span>{i.href !== "#" && <Link className="k-link" href={i.href}>Open</Link>}</li>)}</ul>
         : tab === "billing" ? <><p className="k-small">Current plan: <b>{plan}</b>{price ? ` · £${price}/month` : ""}. Plan changes are handled by Gala Dock support during the beta.</p><Link className="k-btn outline" href="/help?topic=billing">Contact billing support</Link></>
         : <p className="k-small">Manage these from the Workspace tab cards. <Link href="/organizer/settings">Back to workspace</Link>.</p>}</section>}
   </div>;

@@ -68,7 +68,7 @@ try {
     applyMask(a, row.mask); applyMask(shot, row.mask);
     // Layout diff: same comparison with every photo / map canvas box greyed out in both images. Real listing photos and
     // venue plans never match the designs' stock imagery, so this isolates what the UI controls (placement, type, colour, edges).
-    const media = await page.evaluate(() => [...document.querySelectorAll("img,canvas,video,svg.vm,[data-visual-media]")].map(e => e.getBoundingClientRect())
+    const media = await page.evaluate(() => [...document.querySelectorAll("img,canvas,video,iframe,svg.vm,[data-visual-media]")].map(e => e.getBoundingClientRect())
       .filter(r => r.width >= 12 && r.height >= 12 && r.bottom > 0 && r.top < innerHeight).map(r => [Math.max(0, Math.floor(r.x)), Math.max(0, Math.floor(r.y)), Math.ceil(r.width), Math.ceil(r.height)]));
     const la = new PNG({ width, height }), ls = new PNG({ width, height }); a.data.copy(la.data); shot.data.copy(ls.data);
     applyMask(la, media); applyMask(ls, media);

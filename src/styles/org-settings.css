@@ -22,3 +22,10 @@
 .st-narrow { max-width: 760px; } .st-role { height: 32px !important; width: 140px; font-size: 12.5px !important; }
 @media (max-width: 1300px) { .st-r1, .st-r2 { grid-template-columns: minmax(0, 1fr); } .st-r3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .st-r3, .st-plan, .st-g, .st-limits { grid-template-columns: minmax(0, 1fr); } }
+.st-ib { display: inline-flex; gap: 4px; flex-shrink: 0; } .st-int li { gap: 10px; }
+/* Calendar sync (organizer calendar): same rows as My Account › Calendar. */
+.oc-sync { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--k-line); display: flex; flex-direction: column; gap: 4px; } .oc-sync > b { font-size: 13px; color: var(--k-ink); } .oc-sync > small { font-size: 11.5px; color: var(--k-muted); margin-bottom: 6px; }
+.o-root .ac-cals { list-style: none; margin: 0; padding: 0; border: 1px solid var(--k-line); border-radius: 8px; }
+.o-root .ac-cals li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; } .o-root .ac-cals li:not(:last-child) { border-bottom: 1px solid var(--k-line-2); }
+.o-root .ac-cals b { display: block; font-size: 12.5px; font-weight: 500; color: var(--k-ink); } .o-root .ac-cals small { display: block; font-size: 11px; color: var(--k-muted); }
+.o-root .ac-connect { height: 30px !important; padding: 0 12px !important; font-size: 12px !important; color: var(--k-blue) !important; }

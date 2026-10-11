@@ -153,7 +153,7 @@ export function MapView({ pins, center, zoom: z0 = 11, height = 220, mapKey, sel
   const initialCenter = useMemo(() => center ?? (pins.length ? { lat: pins.reduce((s, p) => s + p.lat, 0) / pins.length, lng: pins.reduce((s, p) => s + p.lng, 0) / pins.length } : { lat: 51.5072, lng: -0.1276 }), [center, pins]);
   const [c, setC] = useState(initialCenter); const drag = useRef<{ x: number; y: number; c: { lat: number; lng: number } } | null>(null);
   useEffect(() => { const el = ref.current; if (!el) return; const ro = new ResizeObserver(([e]) => setSize({ w: e!.contentRect.width, h: e!.contentRect.height })); ro.observe(el); return () => ro.disconnect(); }, []);
-  const cp = project(c.lat, c.lng, zoom), ox = cp.x - size.w / 2, oy = cp.y - size.h / 2;
+  const cp = project(c.lat, c.lng, zoom), ox = Math.round(cp.x - size.w / 2), oy = Math.round(cp.y - size.h / 2); // whole pixels: identical SSR + client style values
   const tiles: { x: number; y: number; key: string }[] = [];
   const max = 2 ** zoom;
   for (let tx = Math.floor(ox / TILE); tx <= Math.floor((ox + size.w) / TILE); tx++) for (let ty = Math.floor(oy / TILE); ty <= Math.floor((oy + size.h) / TILE); ty++) if (ty >= 0 && ty < max) tiles.push({ x: tx, y: ty, key: `${zoom}/${tx}/${ty}` });
@@ -166,7 +166,7 @@ export function MapView({ pins, center, zoom: z0 = 11, height = 220, mapKey, sel
       // eslint-disable-next-line @next/next/no-img-element
       return <img key={t.key} alt="" draggable={false} src={`https://api.maptiler.com/maps/${style}/256/${zoom}/${wx}/${t.y}.png?key=${mapKey}`} style={{ left: t.x * TILE - ox, top: t.y * TILE - oy }} />; })}</div>
     {!mapKey && <div className="k-empty" style={{ position: "absolute", inset: 0 }}><small>Map tiles unavailable — MAP_TILER_API_KEY is not configured.</small></div>}
-    {pins.map(p => { const pp = project(p.lat, p.lng, zoom); const left = pp.x - ox, top = pp.y - oy; if (left < -40 || top < -40 || left > size.w + 40 || top > size.h + 40) return null;
+    {pins.map(p => { const pp = project(p.lat, p.lng, zoom); const left = Math.round(pp.x - ox), top = Math.round(pp.y - oy); if (left < -40 || top < -40 || left > size.w + 40 || top > size.h + 40) return null;
       return <button key={p.id} type="button" className="pin" style={{ left, top }} aria-pressed={selected === p.id} aria-label={p.label ?? "Location"} onPointerDown={e => e.stopPropagation()} onClick={() => onSelect?.(p.id)}>{showPrices && p.price ? <span className="price">{p.price}</span> : <span className="dot"><span style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} /></span>}</button>; })}
     <div className="zoom"><button type="button" aria-label="Zoom in" onPointerDown={e => e.stopPropagation()} onClick={() => setZoom(zz => Math.min(17, zz + 1))}><Plus size={14} /></button><button type="button" aria-label="Zoom out" onPointerDown={e => e.stopPropagation()} onClick={() => setZoom(zz => Math.max(3, zz - 1))}><Minus size={14} /></button></div>
     <span className="attr">© MapTiler © OpenStreetMap contributors</span>

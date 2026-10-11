@@ -7,6 +7,7 @@ import { saveProfile, saveNotifications, changePassword, accountDeletion, calend
 import { passwordChecks, passwordStrength } from "@/lib/password";
 import { createClient } from "@/lib/supabase/client";
 import type { SavedCard } from "@/lib/payments";
+import { BrandLogo } from "@/components/kit/brand-logo";
 
 /** Small inline flag (emoji flags don't render on Windows). */
 function Flag({ cc }: { cc: string }) {
@@ -98,7 +99,7 @@ export function CalendarConnect() {
   const open = async (w: string) => { setWhich(w); if (!url) { const r = await run(() => calendarFeed(), { refresh: false }); if (r.ok && r.data) setUrl(`${location.origin}${(r.data as { url: string }).url}`); } };
   const webcal = url?.replace(/^https?:/, "webcal:");
   const go: Record<string, string> = { google: `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal ?? "")}`, outlook: `https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(url ?? "")}&name=Gala%20Dock`, apple: webcal ?? "" };
-  return <><ul className="ac-cals">{([["google", "Google Calendar", "gcal"], ["outlook", "Outlook Calendar", "ocal"], ["apple", "Apple Calendar", "acal"]] as const).map(([k, l, c]) => <li key={k}><span className={`ac-cal ${c}`}>{k === "apple" ? <><small>CAL</small><b>{new Date().getDate()}</b></> : k === "google" ? "31" : "O"}</span><span className="k-grow"><b>{l}</b><small>Sync your events and bookings</small></span><button className="k-btn outline ac-connect" onClick={() => void open(k)}>Connect</button></li>)}</ul>
+  return <><ul className="ac-cals">{([["google", "Google Calendar", "gcal"], ["outlook", "Outlook Calendar", "ocal"], ["apple", "Apple Calendar", "acal"]] as const).map(([k, l]) => <li key={k}><BrandLogo brand={k === "google" ? "google-calendar" : k} size={40} tile /><span className="k-grow"><b>{l}</b><small>Sync your events and bookings</small></span><button className="k-btn outline ac-connect" onClick={() => void open(k)}>Connect</button></li>)}</ul>
     <Dialog open={!!which} onClose={() => setWhich(null)} title={`Subscribe in ${which === "google" ? "Google Calendar" : which === "outlook" ? "Outlook" : "Apple Calendar"}`} sub="Your events and tickets stay in sync automatically. This private link is your key — don't share it.">
       {pending || !url ? <p className="k-small"><Loader2 size={14} className="k-spin" /> Creating your private link…</p> : <div className="k-col" style={{ gap: 10 }}>
         <a className="k-btn primary" href={go[which ?? "google"]} target="_blank" rel="noopener noreferrer">Open {which === "google" ? "Google Calendar" : which === "outlook" ? "Outlook" : "Calendar app"}</a>

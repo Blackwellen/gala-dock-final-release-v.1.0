@@ -9,6 +9,7 @@ import { Kpi, Ring, Donut, Avatar, Thumb, Tabs, Empty } from "@/components/works
 import { ActionForm } from "@/components/workspace/actions";
 import { day, time, requestTime, titleCase } from "@/lib/workspace/format";
 import { dailySeries, startOfDay } from "@/lib/provider/queries";
+import { TeamGantt } from "./gantt";
 import { MenuButton } from "../_components/menu-button";
 import { RowMenu } from "../_components/row-menu";
 import { SearchParam } from "../_components/search-param";
@@ -82,14 +83,7 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
             <nav className="ws-tabs segment pt-views"><Link href={`/provider/calendar?view=day&layers=crew`}>Day</Link><span className="active">Week</span><Link href={`/provider/calendar?view=month&layers=crew`}>Month</Link></nav>
             <Link href={`${base}?tab=availability`} className="ws-btn outline sm"><SlidersHorizontal aria-hidden="true" />Filters</Link></div>
           <p className="pt-range">{day(new Date(days[0] + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })} – {day(new Date(days[6] + 12 * 36e5).toISOString(), { day: "numeric", month: "short", year: "numeric" })}</p>
-          <div className="pt-grid" style={{ ["--rows" as string]: gridCrew.length }}>
-            <span />{days.map(d => <b key={d}>{day(new Date(d + 12 * 36e5).toISOString(), { weekday: "short", day: "numeric", month: "short" })}</b>)}
-            {gridCrew.map(c => [<Link key={`n${c.id}`} href={`${base}/${c.id}`} className="pt-who"><Avatar src={c.avatar} name={c.name} size={30} /><span><b>{c.name}</b><small>{c.role}</small></span></Link>,
-              ...days.map(d => { const sh = shifts.filter(s => s.crew_id === c.id && inDay(s.starts_at, s.ends_at, d)); const bl = blocks.find(b => b.crew_id === c.id && inDay(b.starts_at, b.ends_at, d));
-                return <div key={`${c.id}${d}`} className="pt-cell">{bl ? <span className={`pt-chip ${/holiday/i.test(bl.note) ? "hol" : "off"}`}>{bl.note || "Unavailable"}</span>
-                  : sh.length ? sh.slice(0, 2).map(s => <Link key={s.id} href={s.job_id ? `/provider/bookings/${s.job_id}` : `${base}/${c.id}?tab=assignments`} className={`pt-chip ${/setup|breakdown/i.test(s.title) ? "setup" : /site|meeting/i.test(s.title) ? "meet" : "event"}`}><b>{s.title}</b><small>{s.location}</small></Link>)
-                  : <span className="pt-chip free" aria-label="Available">Available</span>}</div>; })])}
-          </div>
+          <TeamGantt crew={gridCrew} shifts={shifts} blocks={blocks} days={days} base={base} />
           {!gridCrew.length && <Empty icon={Users} title="No team members match" text="Clear filters or add your first team member." />}
         </section>}
 

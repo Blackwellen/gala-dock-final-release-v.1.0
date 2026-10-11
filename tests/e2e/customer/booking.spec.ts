@@ -51,22 +51,23 @@ test("requirements → booking request sends to provider without charging", asyn
   expect(count).toBe(0);
 });
 
-test("accept quote → deposit paid, balance scheduled, booking confirmed", async ({ page }) => {
+test("accept quote → deposit payment order + Stripe Checkout (booking confirms on webhook)", async ({ page }) => {
   await admin().from("build_items").update({ status: "quoted", amount: 1000, deposit: 300, price_basis: "quote" }).eq("id", item);
   await login(page, "customer", `/account/events/${ev}/book?item=${item}&step=2`);
   await page.goto(`/account/events/${ev}/book?item=${item}&step=2`, { waitUntil: "networkidle" });
   await expect(page.getByRole("radio", { name: /Accept quote & book/ })).toHaveAttribute("aria-checked", "true");
   await page.locator(".bk-agree input").check();
   await page.getByRole("button", { name: /Book & pay £300 deposit/ }).click();
-  await page.waitForURL(/step=3/, { timeout: 60_000 });
-  await expect(page.getByRole("heading", { name: /is booked/ })).toBeVisible();
+  await page.waitForURL(/checkout\.stripe\.com/, { timeout: 60_000 });
   const db = admin();
-  const { data: b } = await db.from("build_items").select("status,terms_snapshot").eq("id", item).single();
-  expect(b!.status).toBe("confirmed");
-  const { data: pays } = await db.from("payments").select("kind,amount,status,stripe_payment_intent").eq("build_item_id", item).order("kind");
-  expect(pays).toEqual([expect.objectContaining({ kind: "balance", amount: 700, status: "scheduled" }), expect.objectContaining({ kind: "deposit", amount: 300, status: "paid", stripe_payment_intent: expect.stringMatching(/^pi_/) })]);
-  const { data: job } = await db.from("provider_jobs").select("payment_status,paid_amount").eq("build_item_id", item).single();
-  expect(job).toMatchObject({ payment_status: "deposit_paid", paid_amount: 300 });
+  const { data: po } = await db.from("payment_orders").select("kind,status,amount_minor,currency,stripe_checkout_session,commission").eq("build_item_id", item).order("created_at", { ascending: false }).limit(1).single();
+  expect(po).toMatchObject({ kind: "deposit", amount_minor: 30000, currency: "GBP" });
+  expect(po!.stripe_checkout_session).toMatch(/^cs_/);
+  // Nothing is confirmed or recorded as paid until Stripe confirms the payment.
+  const { data: b } = await db.from("build_items").select("status").eq("id", item).single();
+  expect(b!.status).toBe("quoted");
+  const { count } = await db.from("payments").select("id", { count: "exact", head: true }).eq("build_item_id", item).eq("status", "paid");
+  expect(count).toBe(0);
 });
 
 test("only the event owner can submit or accept bookings", async () => {

@@ -55,3 +55,5 @@
 .pe-previewbar { margin-bottom: 10px; }
 @media (max-width: 1400px) { .pe2-grid { grid-template-columns: 280px minmax(0, 1fr); } .pe2-panel { grid-column: 1 / -1; } }
 @media (max-width: 900px) { .pe2-grid { grid-template-columns: minmax(0, 1fr); } .pe2-head { flex-direction: column; } .pe2-frame { height: 520px; } }
+/* ORG-014 reference density: the dashboard rows are drawn ~14% tighter than the shared card scale. */ @media (min-width: 1400px) { .pr-r1, .pr-r2, .pr-r3 { zoom: .86; } }
+.pr-head h1 { font-size: 26px; } .pr-meta { margin-top: 3px; font-size: 12px; } .pr-head .k-btn { height: 36px; font-size: 12.5px; }

@@ -18,6 +18,7 @@ import { saveVenueInfo, saveCommercial } from "./actions";
 import { ShareVenue, LiveToggle, OverviewMap } from "./interactive";
 import { SpacesEditor } from "../_components/spaces-editor";
 import type { MapEl } from "../_components/venue-map";
+import { VenueCommercialEngine } from "@/components/venue/commercial-engine";
 
 export const metadata: Metadata = { title: "Venue" };
 type Info = { event_types?: string[]; accessibility?: string; parking?: string; licences?: string[]; curfew?: string; staffing?: string };
@@ -207,6 +208,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
             <label>Hold length (hours)<input name="hold_hours" type="number" min={1} max={168} defaultValue={commercial.holds?.hours ?? 48} /></label>
             <div className="wide pv-form-foot"><button type="submit" className="ws-btn primary">Save commercial terms</button></div>
           </ActionForm></section>}
+        {tab === "commercial" && <VenueCommercialEngine venueId={v.id} workspaceId={ctx.workspace.id} canManage={ctx.can.manage} />}
       </div>
 
       <aside className="pv-rail">

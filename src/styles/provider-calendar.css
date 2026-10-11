@@ -113,3 +113,17 @@
 @media (max-width:1280px){.pcal-layout{grid-template-columns:minmax(0,1fr)}.pcal-rail{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 @media (max-width:1024px){.pcal-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.pcal-bottom{grid-template-columns:minmax(0,1fr)}.pcal-toolbar{flex-wrap:wrap}}
 @media (max-width:767px){.pcal-grid{overflow-x:auto;grid-template-columns:100px repeat(var(--cols),minmax(120px,1fr))}.pcal-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.pcal-upcoming>div{grid-template-columns:minmax(0,1fr)}.pc-dt{grid-template-columns:1fr}}
+/* PROV-007 — "Gala Dock Calendar Dashboard": the rail runs from the top of the page; header actions sit at the end of the main column. */
+@media (min-width:1281px){
+  .pcal{grid-template-columns:minmax(0,1040fr) 226fr;column-gap:12px;align-items:start}
+  .pcal>.pcal-head{grid-column:1;grid-row:1}
+  .pcal>.pcal-layout{display:contents}
+  .pcal-main{grid-column:1;grid-row:2}
+  .pcal-rail{grid-column:2;grid-row:1/span 2;margin-top:6px}
+  .pcal-kpis .ws-kpi{min-height:86px}
+}
+@media (min-width:1281px){
+  .pcal-toolbar{padding:4px 10px}
+  .pcal-dayhead{padding:3px 4px}
+  .pcal-group{padding:4px 10px 2px}
+}

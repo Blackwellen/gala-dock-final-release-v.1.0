@@ -297,3 +297,24 @@
 .sb-switch input:checked::after{left:15px}
 .sb-switch input:focus-visible{outline:3px solid #9aa8ff;outline-offset:2px}
 .sb-switch svg{width:14px!important;height:14px!important;color:var(--ws-blue-2)}
+/* W02 step 1 type — "Add Space Dashboard": indigo 16px heads with the subtitle tight beneath, 12px labels, counter inside the textarea. */
+.sb>.ws-panel{padding-top:8px}
+.sb h2{font-size:16px;color:#03035f;line-height:1.3}
+.sb h2+p,.sb-head p{margin:0 0 10px;font-size:11px;color:#5a64c8}
+.sb label{font-size:11.5px;row-gap:6px}
+.sb-basic{display:grid;gap:0;align-content:start}
+.sb-basic>label{margin-top:13px}
+.sb .sb-basic>h2+p{margin:1px 0 0}
+.sb-basic label:has(textarea){position:relative}
+.sb-basic textarea{min-height:100px;padding-bottom:22px}
+.sb-basic label:has(textarea)>small:last-child{position:absolute;right:10px;bottom:8px;width:auto;flex:none;font-size:11px;color:#7a80bb}
+/* Option cards: radio on the left of the text (the generic `.sr label>input{flex:1 0 100%}` was wrapping it onto its own centred row). */
+.sr-radios label{flex-wrap:nowrap!important;align-items:flex-start!important}
+.sr-radios label>input{flex:none!important;width:16px!important;height:16px!important;margin:2px 0 0}
+.sr-radios label>span{flex:1 1 auto!important;min-width:0}
+:is(.sr,.sb) label:has(>input:is([type=radio],[type=checkbox])){flex-wrap:nowrap!important;align-items:flex-start!important;gap:10px}
+:is(.sr,.sb) label>input:is([type=radio],[type=checkbox]){flex:none!important}
+.sr-toggle{flex-wrap:nowrap!important}
+.sr-toggle>span{flex:1 1 auto!important;min-width:0}
+/* Form switches are blue in the designs; green stays for live/active status switches elsewhere. */
+.sr-toggle .pv-switch.on,.sb .pv-switch.on{background:var(--ws-blue)}

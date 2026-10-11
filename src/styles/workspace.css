@@ -364,3 +364,10 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 /* Listings open while another section is active (Team, Money, Agent, Settings designs): tinted row, tighter sub-list. */
 .ws-app.provider .group.expanded>.ws-nav-item:not(.active){background:#f3f6fe}
 .ws-app.provider .group.expanded:has(>.ws-nav-item:not(.active)) .ws-subnav{margin:-2px 0 0}
+/* Admin nav rhythm from the AD designs: first row centred at y≈92, 45.3px pitch. */
+.ws-app.admin .ws-sidebar{padding-top:6px}
+.ws-app.admin .ws-nav-item svg{stroke-width:2.3}
+.ws-app.admin .ws-nav{gap:0}
+.ws-app.admin .ws-nav-item>a{min-height:45.3px}
+/* Status chips with a dot are pills in the PROV designs (plain tag chips stay squarer). */
+.ws-app.provider .ws-chip.dot{border-radius:999px;padding:0 10px}

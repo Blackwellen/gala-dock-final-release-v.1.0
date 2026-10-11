@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Pencil, Send, Download, ChevronDown, ChevronLeft, ChevronRight, Printer, Copy, ExternalLink, Bell, FileX, Wallet, Loader2, Link2 } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
 import { issueInvoice, remindInvoice, creditInvoice, paymentLink, saveInvoiceNotes } from "@/lib/actions/money";
@@ -20,9 +20,12 @@ export function InvoiceHeaderActions({ id, status, prev, next }: { id: string; s
   </div>;
 }
 
+const noop = () => () => {};
 export function PayLinkBox({ id, token, payable }: { id: string; token: string | null; payable: boolean }) {
   const [url, setUrl] = useState(token ? `/pay/${token}` : ""); const { run, pending } = useAction(); const toast = useKitToast();
-  const full = url && typeof window !== "undefined" ? `${location.origin}${url}` : url;
+  // Origin only after hydration (server snapshot is empty) so SSR and the first client render match.
+  const origin = useSyncExternalStore(noop, () => location.origin, () => "");
+  const full = url ? `${origin}${url}` : url;
   return <section className="k-card iv-c"><h2>Payment link</h2><p className="k-small">Share this secure link for online payment.</p>
     {url ? <div className="iv-link"><code>{full}</code><button className="k-icon-btn" aria-label="Copy payment link" onClick={async () => { try { await navigator.clipboard.writeText(full); toast("Payment link copied"); } catch { toast("Couldn't copy", "error"); } }}><Copy size={14} /></button><Link className="k-btn outline sm" href={url} target="_blank"><ExternalLink size={13} />View payment page</Link></div>
       : <button className="k-btn outline" disabled={!payable || pending} title={!payable ? "Send the invoice first" : undefined} onClick={async () => { const r = await run(() => paymentLink(id), { refresh: false }); if (r.ok && r.data) setUrl((r.data as { url: string }).url); }}><Link2 size={14} />Create payment link</button>}</section>;

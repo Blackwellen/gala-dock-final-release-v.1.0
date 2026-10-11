@@ -5,6 +5,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs, Spark } from "@/components/kit";
 import { DistToggle, PromoterButton, PromoMenu } from "@/components/organizer/promotion-client";
 import { money } from "@/lib/format";
+import { BrandLogo } from "@/components/kit/brand-logo";
 
 export const metadata = { title: "Promotion" };
 const TZ = "Europe/London";
@@ -49,7 +50,7 @@ export default async function PromotionPage({ params, searchParams }: { params: 
     </div>
     <div className="pr-r2">
       <section className="k-card pr-c"><h2>Directory distribution</h2><p className="pr-sub">List your event across Gala Dock and partner directories.</p><ul className="pr-dl">{dirs.map(([k, n, d, on]) => <li key={k}><DistToggle eventId={id} k={k} on={on} disabled={k === "gala"} label={n} />{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-grow"><b>{n}</b><small>{d}</small></span><span className={`mn-st ${on ? "green" : "red"}`}>{on ? "Active" : "Not listed"}</span></li>)}</ul></section>
-      <section className="k-card pr-c"><h2>Calendar distribution</h2><p className="pr-sub">Sync to major calendars and create embeddable widgets.</p><ul className="pr-dl">{cals.map(([k, n, d, on, can]) => <li key={k}><DistToggle eventId={id} k={k} on={on} disabled={!can} label={n} /><span className="pr-ci">{n.slice(0, 1)}</span><span className="k-grow"><b>{n}</b><small>{d}</small></span><span className={`mn-st ${on ? "green" : "gray"}`}>{on ? "Active" : "Not connected"}</span></li>)}</ul></section>
+      <section className="k-card pr-c"><h2>Calendar distribution</h2><p className="pr-sub">Sync to major calendars and create embeddable widgets.</p><ul className="pr-dl">{cals.map(([k, n, d, on, can]) => <li key={k}><DistToggle eventId={id} k={k} on={on} disabled={!can} label={n} /><BrandLogo brand={{ galacal: "gala", google: "google-calendar", apple: "apple", outlook: "outlook", ics: "ics" }[k]} size={30} tile /><span className="k-grow"><b>{n}</b><small>{d}</small></span><span className={`mn-st ${on ? "green" : "gray"}`}>{on ? "Active" : "Not connected"}</span></li>)}</ul></section>
       <section className="k-card pr-c"><div className="k-between"><div><h2>Promoters</h2><p className="pr-sub">Manage promoter links, media packs and commissions.</p></div><PromoterButton eventId={id} /></div>
         <table className="mn-t"><thead><tr><th>Promoter</th><th>Link / Code</th><th>Tickets</th><th>Commission</th><th>Status</th></tr></thead><tbody>{(promoters ?? []).slice(0, tab === "promoters" ? 50 : 5).map(p => <tr key={p.id}><td><span className="k-row" style={{ gap: 8 }}><span className="pr-pav">{p.name.split(" ").map(w => w[0]).slice(0, 2).join("")}</span>{p.name}</span></td><td><code>{p.code}</code></td><td>{p.tickets_sold}</td><td>{Number(p.commission_pct)}%</td><td><span className={`mn-st ${p.status === "active" ? "green" : "amber"}`}>{p.status}</span></td></tr>)}{!(promoters ?? []).length && <tr><td colSpan={5} className="k-small">No promoters yet.</td></tr>}</tbody></table></section>
     </div>

@@ -271,3 +271,5 @@
 .vw-acc .vw-switch{gap:7px!important}
 .vw-acc .vw-switch b{font-size:10.5px;font-weight:500}
 .vw-prev-nm{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vw label:has(>input:is([type=radio],[type=checkbox])):not(.vw-switch){flex-wrap:nowrap!important}
+.vw label>input:is([type=radio],[type=checkbox]){flex:none!important}

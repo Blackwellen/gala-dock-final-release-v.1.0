@@ -13,6 +13,8 @@ import { buildCategoryOf } from "@/lib/build-categories";
 import { listingHref } from "@/lib/links";
 import { SortableBuild } from "@/components/customer/build-sortable";
 import { PackageMenu } from "@/components/customer/build-menu";
+import { Countdown } from "@/components/marketplace/lifecycle-client";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Build" };
 type Cat = { key: string; label: string; sub: string; icon: React.ComponentType<{ size?: number }>; color: string; need: "Foundation" | "Required" | "Optional" };
@@ -39,7 +41,7 @@ function categoriesFor(type: string): Cat[] {
 }
 
 export default async function BuildCanvas({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
-  const [{ id }, sp] = await Promise.all([params, searchParams]); const ctx = await getCustomer(); const d = await getMyEvent(ctx, id); const e = d.e;
+  const [{ id }, sp] = await Promise.all([params, searchParams]); const ctx = await getCustomer(); const d = await getMyEvent(ctx, id); const e = d.e; const now = requestTime();
   const cats = categoriesFor(e.event_type); const active = sp.cat ?? null; const q = (sp.q ?? "").toLowerCase();
   const filtered = d.items.filter(i => i.status !== "cancelled").filter(i => !active || i.category === active).filter(i => !q || i.title.toLowerCase().includes(q));
   // Backups sit directly under the main choice for the same category.
@@ -51,8 +53,13 @@ export default async function BuildCanvas({ params, searchParams }: { params: Pr
   const { data: info } = await ctx.supabase.from("listings").select("id,rating,review_count,location,capacity_max,details,slug,kind,response_hours").in("id", d.items.map(i => i.listing_id).filter(Boolean) as string[]);
   const L = new Map((info ?? []).map(r => [r.id, r]));
   const sum = (st: string[]) => d.items.filter(i => st.includes(i.status) && i.role !== "backup").reduce((s, i) => s + Number(i.amount ?? 0), 0);
-  const budget = Number(e.budget_total ?? 0), confirmed = sum(["confirmed", "fulfilled"]), held = sum(["held"]), pending = sum(["quoted", "sent", "awaiting", "available"]), suggested = sum(["suggested"]);
-  const est = confirmed + held + pending; const pct = budget ? Math.min(100, Math.round((est / budget) * 100)) : 0;
+  // §70 budget buckets come from event_build_budget (payment orders + bookings) so estimates never mix with committed spend.
+  const { data: bud } = await ctx.supabase.rpc("event_build_budget" as never, { p_event: e.id } as never);
+  const B = bud as { target: number | null; estimated: number; requested: number; held: number; confirmed: number; paid: number; due: number; standby_fees: number; committed: number; remaining: number | null } | null;
+  const budget = Number(B?.target ?? e.budget_total ?? 0);
+  const confirmed = B ? Number(B.confirmed) + Number(B.standby_fees) : sum(["confirmed", "fulfilled"]), held = B ? Number(B.held) : sum(["held"]), pending = B ? Number(B.requested) : sum(["quoted", "sent", "awaiting", "available"]), suggested = B ? Number(B.estimated) : sum(["suggested"]);
+  const est = B ? Number(B.committed) : confirmed; const paid = Number(B?.paid ?? 0), due = Number(B?.due ?? 0);
+  const pct = budget ? Math.min(100, Math.round(((confirmed + held + pending) / budget) * 100)) : 0;
   const { count: tiers } = await ctx.supabase.from("ticket_tiers").select("id", { count: "exact", head: true }).eq("event_id", e.id);
   const { count: guests } = await ctx.supabase.from("guests").select("id", { count: "exact", head: true }).eq("event_id", e.id);
   const checks = [["Venue confirmed", d.s.venueOk], ["Date and time set", !!e.starts_at], [`${d.s.confirmed} of ${d.s.providers} key providers confirmed`, d.s.providers > 0 && d.s.confirmed === d.s.providers], [tiers || guests ? "Guest list or tickets set up" : "Guest list or tickets not set up", !!tiers || !!guests], [budget ? (est <= budget ? "Spend within budget" : "Spend is over budget") : "Set a budget", !!budget && est <= budget]] as [string, boolean][];
@@ -86,7 +93,7 @@ export default async function BuildCanvas({ params, searchParams }: { params: Pr
               <div className="cb-card-body"><div className="k-row" style={{ gap: 8 }}><b className="cb-name">{it.title}</b>{r && <span className="ce-rate"><Star size={13} fill="#f59e0b" color="#f59e0b" /><b>{Number(r.rating).toFixed(1)}</b> ({r.review_count})</span>}</div>
                 {it.category === "venue" ? <div className="cb-lines"><span><MapPin size={12} />{r?.location ?? e.location}</span><span><Users size={12} />Up to {r?.capacity_max ?? "—"} guests</span></div> : <div className="cb-lines inline"><span>{it.package}</span></div>}
                 <div className="ce-tags">{it.scope.split("•").map(x => x.trim()).filter(Boolean).slice(0, 4).map(x => <span key={x}>{x}</span>)}</div></div>
-              <div className="cb-price"><span className={`cb-st ${st}`}><Icon size={12} />{sl}</span><b>{perGuest ? <>{money(perGuest)} <small>per guest</small></> : money(it.amount)}</b>{perGuest ? <small>Est. {money(Number(it.amount ?? perGuest * e.guest_count) > perGuest ? Number(it.amount) : perGuest * e.guest_count)}</small> : it.status === "held" ? <small>Deposit {money(it.deposit)}</small> : null}{due != null && <small className={`cb-due ${due < 12 ? "red" : ""}`}><Clock4 size={11} />{due > 0 ? `Reply due in ${fmtLeft(due)}` : "Awaiting reply"}</small>}{holdLeft != null && <small className={`cb-due ${holdLeft < 12 ? "red" : ""}`}><Lock size={11} />{holdLeft > 0 ? `Hold ends in ${fmtLeft(holdLeft)}` : "Hold expired"}</small>}
+              <div className="cb-price"><span className={`cb-st ${st}`}><Icon size={12} />{sl}</span><b>{perGuest ? <>{money(perGuest)} <small>per guest</small></> : money(it.amount)}</b>{perGuest ? <small>Est. {money(Number(it.amount ?? perGuest * e.guest_count) > perGuest ? Number(it.amount) : perGuest * e.guest_count)}</small> : it.status === "held" ? <small>Deposit {money(it.deposit)}</small> : null}{due != null && <Countdown deadline={it.response_deadline} sentAt={(it as { sent_at?: string | null }).sent_at ?? null} status={(it as { response_status?: string | null }).response_status ?? null} serverNow={now} />}{holdLeft != null && <small className={`cb-due ${holdLeft < 12 ? "red" : ""}`}><Lock size={11} />{holdLeft > 0 ? `Hold ends in ${fmtLeft(holdLeft)}` : "Hold expired"}</small>}
                 <ItemCta eventId={e.id} it={it} label={it.status === "quoted" ? "Review quote" : it.status === "suggested" ? "Request quote" : it.status === "held" ? "Confirm" : "View details"} variant={it.status === "quoted" ? "primary" : "soft"} />{it.listing_id && ["held", "confirmed", "conditional_hold_requested", "standby", "cancellation_requested", "replacement_required", "disputed", "cancelled_by_provider", "cancelled_by_customer"].includes(it.status) && <Link className="k-link" href={`/account/events/${e.id}/bookings/${it.id}`}>Manage booking</Link>}</div>
               <ItemMenu eventId={e.id} it={it} href={r ? listingHref(r.kind, r.slug, r.id) : undefined} />
             </div>
@@ -98,9 +105,10 @@ export default async function BuildCanvas({ params, searchParams }: { params: Pr
       <div className="k-col" style={{ gap: 12 }}>
         <section className="ce-card"><div className="k-between"><h2 className="ce-h2 sm" style={{ margin: 0 }}>Budget &amp; spend</h2><Link className="k-link" href={`/account/events/${e.id}/money`}>Edit budget</Link></div>
           {budget > 0 && est > budget && <div className="k-notice red cb-over"><AlertCircle size={14} className="k-red" />Over budget by {money(est - budget)} — compare options or adjust your budget.</div>}
-          <div className="cb-bud"><span><b>{money(budget)}</b><small>Total budget</small></span><span><b>{money(est)}</b><small>Estimated spend</small></span><span><b className={budget - est < 0 ? "k-red" : "k-green"}>{budget - est < 0 ? `−${money(est - budget)}` : money(budget - est)}</b><small>{budget - est < 0 ? "Over budget" : "Remaining"}</small></span></div>
+          <div className="cb-bud"><span><b>{money(budget)}</b><small>Total budget</small></span><span><b>{money(est)}</b><small>Committed</small></span><span><b className={budget - est < 0 ? "k-red" : "k-green"}>{budget - est < 0 ? `−${money(est - budget)}` : money(budget - est)}</b><small>{budget - est < 0 ? "Over budget" : "Remaining"}</small></span></div>
           <div className="k-row" style={{ gap: 10 }}><div className="cb-bar"><i style={{ width: `${budget ? (confirmed / budget) * 100 : 0}%`, background: "#10b981" }} /><i style={{ width: `${budget ? (held / budget) * 100 : 0}%`, background: "#2563eb" }} /><i style={{ width: `${budget ? (pending / budget) * 100 : 0}%`, background: "#f59e0b" }} /></div><b className="k-small">{pct}%</b></div>
-          <div className="cb-legend">{([["Confirmed", confirmed, "#10b981"], ["Pending", pending, "#f59e0b"], ["Held", held, "#2563eb"], ["Suggested", suggested, "#8b5cf6"]] as const).map(([l, v, c]) => <span key={l}><i style={{ background: c }} />{l}<b>{money(v)}</b></span>)}</div></section>
+          <div className="cb-legend">{([["Confirmed", confirmed, "#10b981"], ["Requested", pending, "#f59e0b"], ["Held", held, "#2563eb"], ["Estimated", suggested, "#8b5cf6"]] as const).map(([l, v, c]) => <span key={l}><i style={{ background: c }} />{l}<b>{money(v)}</b></span>)}</div>
+          {B && <p className="cb-paid"><span>Paid <b>{money(paid)}</b></span><span>Still due <b>{money(due)}</b></span></p>}</section>
         <section className="ce-card"><h2 className="ce-h2 sm">Event readiness</h2><div className="cb-ready"><span className="ce-ring" style={{ ["--v" as string]: score, width: 86, height: 86 }}><b style={{ fontSize: 18 }}>{score}%</b></span><div><b className="k-small" style={{ color: "var(--k-ink)" }}>{score >= 60 ? "You're making great progress!" : "Let's get the essentials in place"}</b><ul>{checks.map(([l, ok]) => <li key={l}>{ok ? <CheckCircle2 size={15} className="k-green" fill="#10b981" color="#fff" /> : <Circle size={15} className="k-muted" />}{l}</li>)}</ul></div></div></section>
         <section className="ce-card"><div className="k-between" style={{ marginBottom: 6 }}><h2 className="ce-h2 sm k-row" style={{ margin: 0, gap: 8 }}><span className="cb-miss-ic"><AlertCircle size={14} /></span>Missing essentials <span className="cb-badge">{missing.length}</span></h2><Link className="k-link" href={`/account/events/${e.id}/plan?tab=checklist`}>View all</Link></div>
           <div className="k-list">{missing.slice(0, 3).map(m => <Link key={m.title} href={m.href} className="k-li"><span className="cb-miss-ic soft"><AlertCircle size={13} /></span><span className="k-grow"><b className="k-small" style={{ color: "var(--k-ink)", fontWeight: 550 }}>{m.title}</b><div className="k-xs k-muted">{m.sub}</div></span><ChevronRight size={14} className="k-muted" /></Link>)}{!missing.length && <p className="k-small">All essentials are covered.</p>}</div></section>

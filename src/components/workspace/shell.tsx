@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { promoFor } from "./promo-copy";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Search, Bell, MessageSquareText, Plus,
@@ -79,12 +80,19 @@ function NavList({ items, pathname }: { items: NavItem[]; pathname: string }) {
   })}</ul>;
 }
 
-function PromoCard({ title, text, href }: { title: ReactNode; text: string; href: string }) {
+function PromoCard({ title, text, href, cta = "Open" }: { title: ReactNode; text: string; href: string; cta?: "Open" | "Use" | "Upgrade" }) {
   return <aside className="ws-promo" aria-label="Gala Agent">
     <span className="ws-promo-icon"><Sparkles aria-hidden="true" /></span>
     <h2>{title}</h2><p>{text}</p>
-    <Link className="ws-btn primary block" href={href}>Open Gala Agent <ArrowRight aria-hidden="true" /></Link>
+    <Link className="ws-btn primary block" href={href}>{cta === "Upgrade" ? "Upgrade Agent" : `${cta} Gala Agent`} <ArrowRight aria-hidden="true" /></Link>
   </aside>;
+}
+
+/** Provider card copy follows the section the user is in (see promo-copy.ts). */
+function ProviderPromo({ pathname }: { pathname: string }) {
+  const q = useSearchParams();
+  const c = promoFor(pathname, new URLSearchParams(q.toString()));
+  return <PromoCard title={<>Let Gala Agent<br />{c.title}</>} text={c.text} cta={c.cta} href={c.href ?? "/provider/agent"} />;
 }
 
 function Avatar({ src, name, size = 36 }: { src?: string; name: string; size?: number }) {
@@ -164,7 +172,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/opportunities", label: "Opportunities", icon: Trophy, badge: counts.opportunities, badgeTone: "red" },
     { href: "/provider/bookings", label: "Bookings", icon: CalendarCheck, badge: counts.bookings, badgeTone: "grey" },
     { href: "/provider/calendar", label: "Calendar", icon: Calendar },
-    { href: "/provider/listings", label: "Listings", icon: Store, children: listingChildren, defaultOpen: true, collapseOn: /^\/provider\/(opportunities(?!\/[^/]+\/quote)|quotes|bookings|calendar)(\/|$)/ },
+    { href: "/provider/listings", label: "Listings", icon: Store, children: listingChildren, defaultOpen: true, collapseOn: /^\/provider(\/(opportunities(?!\/[^/]+\/quote)|quotes|bookings|calendar)(\/|$)|\/?$)/ },
     { href: "/provider/team", label: "Team", icon: Users },
     { href: "/provider/money", label: "Money", icon: Wallet },
     { href: "/provider/agent", label: "Gala Agent", icon: Sparkles },
@@ -210,7 +218,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
         <Link href="/onboarding" role="menuitem">Add another workspace</Link>
       </Popover>
       <NavList items={nav} pathname={pathname} />
-      <PromoCard title={<>Let Gala Agent<br />handle the admin</>} text="Get AI-powered confirmations, reminders, team assignments and more." href="/provider/agent" />
+      <Suspense fallback={<PromoCard title={<>Let Gala Agent<br />handle the admin</>} text="Get AI-powered confirmations, reminders, team assignments and more." href="/provider/agent" />}><ProviderPromo pathname={pathname} /></Suspense>
     </nav>
     <div className="ws-scrim" onClick={() => setMobileOpen(false)} aria-hidden="true" />
     <main className="ws-main" id="main">{children}</main>
@@ -233,7 +241,7 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
   const [openOn, setOpenOn] = useState<string | null>(null);
   const mobileOpen = openOn === pathname;
   const setMobileOpen = (v: boolean) => setOpenOn(v ? pathname : null);
-  const all: (NavItem & { perm?: string })[] = [
+  const all: (NavItem & { perm?: string | string[] })[] = [
     { href: "/admin", label: "Overview", icon: House, exact: true },
     { href: "/admin/users", label: "Users", icon: Users, perm: "users" },
     { href: "/admin/workspaces", label: "Workspaces", icon: PanelsTopLeft, perm: "workspaces" },
@@ -242,17 +250,17 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
     { href: "/admin/tickets", label: "Tickets", icon: Ticket, perm: "tickets" },
     { href: "/admin/commerce", label: "Commerce", icon: Landmark, perm: "commerce" },
     { href: "/admin/commerce/payouts", label: "Payouts", icon: Mail, perm: "commerce" },
-    { href: "/admin/trust/disputes", label: "Disputes", icon: Headset, perm: "trust" },
+    // One "Disputes" entry as in the AD designs: booking disputes, cancellation reviews and card chargebacks (tabs on /admin/disputes); trust chargeback cases highlight it too.
+    { href: "/admin/disputes", label: "Disputes", icon: Headset, perm: ["support", "marketplace", "commerce", "trust"], match: /^\/admin\/(disputes|trust\/disputes)(\/|$)/ },
     { href: "/admin/trust", label: "Trust & Safety", icon: Shield, perm: "trust" },
     { href: "/admin/support", label: "Support", icon: Headphones, perm: "support" },
-    { href: "/admin/disputes", label: "Booking disputes", icon: Scale, perm: "support" },
     { href: "/admin/partners", label: "Partners", icon: Mail, perm: "partners" },
     { href: "/admin/agent-integrations", label: "Agent & Integrations", icon: Network, perm: "agent_ops" },
     { href: "/admin/analytics", label: "Analytics", icon: ChartColumn, perm: "analytics" },
     { href: "/admin/settings", label: "Settings", icon: Settings, perm: "settings" },
   ];
   // Every destination stays visible so the console reads the same for everyone; restricted ones show a locked state.
-  const nav = all.map(({ perm, ...item }) => ({ ...item, label: item.label, locked: perm ? !permissions.includes(perm) : false }));
+  const nav = all.map(({ perm, ...item }) => ({ ...item, label: item.label, locked: perm ? ![perm].flat().some(p => permissions.includes(p)) : false }));
   const activeHref = [...nav].sort((a, b) => b.href.length - a.href.length).find(i => isActive(pathname, i))?.href;
   return <div className={`ws-app admin ${mobileOpen ? "nav-open" : ""}`}>
     <ShellTools />

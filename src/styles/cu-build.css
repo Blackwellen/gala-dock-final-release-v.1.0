@@ -72,3 +72,5 @@ button.cb-grip:focus-visible { outline: 2px solid var(--k-blue); color: var(--k-
 .cb-compare-t td, .cb-compare-t th { font-size: 12px; vertical-align: top; }
 @media print { .c-top, .ce-hero, .ce-tabs, .cb-rail, .cb-grid > :last-child, .cb-more, .cb-dots, .cb-cta, .cb-grip { display: none !important; } .cb-grid { display: block !important; } }
 .cb-bud { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .cb-bud small { white-space: nowrap; font-size: 11px !important; }
+/* Keep the price column to the reference height: secondary booking link sits compact under the CTA. */ .cb-price { gap: 1px; } .cb-price > .k-link { font-size: 11px; line-height: 1.3; margin-top: 1px; } .cb-card { min-height: 100px; padding: 6px 8px; }
+.cb-paid { display: flex; gap: 16px; margin: 8px 0 0; font-size: 11.5px; color: var(--k-muted); } .cb-paid b { color: var(--k-ink); font-weight: 600; margin-left: 4px; }

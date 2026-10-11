@@ -96,4 +96,4 @@
 .c-initials { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #e7efff; color: var(--k-blue); font-weight: 700; font-size: 15px; }
 
 /* Design palette for the customer top bar. */
-.c-nav a { color: var(--k-ink); } .c-icon { color: var(--k-nav); }
+.c-nav a { color: #4f5598; font-weight: 450; } .c-icon { color: var(--k-nav); }

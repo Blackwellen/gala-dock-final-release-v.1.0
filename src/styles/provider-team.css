@@ -194,3 +194,24 @@
   .pt:not(.ptm) .pt-main>.pt-top{grid-column:1/-1;grid-template-columns:minmax(0,1fr) 377px}
   .pt:not(.ptm) .pt-body:has(.pt-top)>.pt-rail{grid-column:2;grid-row:2/span 3}
 }
+/* Team availability gantt — "Gala Dock Team Dashboard": 132px people column, 7 day columns (08:00–24:00 each), 38px bars spanning real times. */
+.pt-gantt{border:1px solid var(--ws-border);border-radius:8px;overflow:hidden;--pt-name:132px}
+.pt-g-head,.pt-g-row{display:grid;grid-template-columns:var(--pt-name) minmax(0,1fr)}
+.pt-g-head{grid-template-columns:var(--pt-name) repeat(7,minmax(0,1fr));border-bottom:1px solid var(--ws-border)}
+.pt-g-head b{font-size:10.5px;font-weight:500;color:#3f4596;text-align:center;padding:8px 4px}
+.pt-g-row{border-bottom:1px solid #f1f4fa}
+.pt-g-row:last-child{border-bottom:0}
+.pt-g-row .pt-who{padding:6px 8px;align-self:center}
+.pt-g-track{position:relative;min-height:50px;background:repeating-linear-gradient(to right,transparent 0,transparent calc(100%/7 - 1px),#f3f6fb calc(100%/7 - 1px),#f3f6fb calc(100%/7))}
+.pt-bar{position:absolute;height:38px;margin-left:3px;display:grid;align-content:center;gap:1px;padding:0 10px;border-radius:6px;font-size:10.5px;line-height:1.25;overflow:hidden;color:inherit;min-width:0}
+.pt-bar b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-bar small{font-size:10px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-bar.event{background:#dcf5e3;color:#167a3e}
+.pt-bar.meet{background:#dce8fd;color:#1a4fe0}
+.pt-bar.setup{background:#feecd3;color:#c2570c}
+.pt-bar.special{background:#ece0fd;color:#6d28d9}
+.pt-bar.off,.pt-bar.hol{background:#fde2e6;color:#d22d48;text-align:center;justify-items:center}
+.pt-bar.free{background:#dcf5e3;color:#16a34a;text-align:center;justify-items:center}
+a.pt-bar:hover{filter:brightness(.97);box-shadow:0 0 0 1px currentColor inset}
+a.pt-bar:focus-visible{outline:3px solid #9aa8ff;outline-offset:1px}
+@media (max-width:860px){.pt-gantt{overflow-x:auto}.pt-g-head,.pt-g-row{min-width:760px}}

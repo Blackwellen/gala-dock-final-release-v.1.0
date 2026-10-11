@@ -53,12 +53,12 @@
 svg.ok{color:#0f8a4e!important}svg.warn{color:#e27a00!important}
 .pk-team ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .pk-team li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center}
-.pk-team li span{display:grid;min-width:0}.pk-team b{font-size:11px}.pk-team small{font-size:10px;color:var(--ws-muted)}
+.pk-team li>span:not(.ws-chip){display:grid;min-width:0}.pk-team b{font-size:11px}.pk-team small{font-size:10px;color:var(--ws-muted)}
 .pk-team .ws-chip{height:22px;font-size:9.5px}
 .pk-more>svg{width:22px!important;height:22px!important;color:#4b55a8;justify-self:center}
 .pk-resource{display:grid;grid-template-columns:50px minmax(0,1fr) auto;gap:10px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--ws-border-2)}
 .pk-resource .ws-thumb{border-radius:6px}
-.pk-resource span{display:grid}.pk-resource b{font-size:10.5px}.pk-resource small{font-size:10px;color:var(--ws-muted)}
+.pk-resource>span:not(.ws-chip){display:grid}.pk-resource b{font-size:10.5px}.pk-resource small{font-size:10px;color:var(--ws-muted)}
 .pk-resource .ws-chip{height:22px;font-size:9.5px}
 .pk-timeline .ws-panel-head{margin-bottom:6px}
 .pk-timeline .ws-panel-head h2{margin:0}
@@ -132,3 +132,8 @@ svg.ok{color:#0f8a4e!important}svg.warn{color:#e27a00!important}
 .pk-row1>*,.pk-row2>*,.pk-mid>*{min-width:0}
 .pk-team li b,.pk-team li small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pk-team .ws-panel-head .ws-link{flex-shrink:0}
+/* PROV-006 — "Wedding Booking Dashboard": header 11px higher, single-line card titles, chips never collapse. */
+.pk-back{margin:-5px 0 4px;color:#100e78}
+.pk>.ws-tabs.underline{margin:10px 0 12px}
+.pk-card h2{font-size:12.5px;white-space:nowrap;letter-spacing:-.02em}
+.pk-team .ws-chip,.pk-resource .ws-chip{min-width:max-content;flex-shrink:0;display:inline-flex}

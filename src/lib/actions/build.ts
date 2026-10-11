@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { ActionResult } from "./shell";
 
 const Id = z.string().uuid();
-export const BUILD_CATEGORIES = ["venue", "food", "drinks", "entertainment", "media", "styling", "staff", "production", "hire", "transport", "extras"] as const;
+const BUILD_CATEGORIES = ["venue", "food", "drinks", "entertainment", "media", "styling", "staff", "production", "hire", "transport", "extras"] as const;
 async function ownEvent(eventId: string) {
   const id = Id.safeParse(eventId); if (!id.success) return null;
   const ctx = await getCustomer();

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LayoutGrid, CircleCheck, FileText, CirclePause, Eye, MessageSquare, CalendarCheck, Users, Box, MapPin, Plus, Upload, ChevronDown, SlidersHorizontal, Map as MapIcon,
-  Sparkles, ArrowRight, Clock, ArrowUp, Building2, Wrench, Package as PackageIcon, CircleAlert, TrendingUp } from "lucide-react";
+  Sparkles, UtensilsCrossed, ArrowRight, Clock, ArrowUp, Building2, Wrench, Package as PackageIcon, CircleAlert, TrendingUp } from "lucide-react";
 import "@/styles/provider-opps.css";
 import "@/styles/provider-listings.css";
 import { Kpi, Ring, Empty } from "@/components/workspace/kit";
@@ -116,6 +116,7 @@ export default async function ListingsPage(props: PageProps<"/provider/listings/
     <header className="ws-page-head pl-head">
       <div><h1>Listings</h1><p>Manage your venues, spaces, services and packages from one catalogue.</p></div>
       <div className="ws-page-actions">
+        {only === "package" && <Link className="ws-btn outline" href="/provider/menus"><UtensilsCrossed aria-hidden="true" />Food &amp; drink</Link>}
         <span className="ws-btn outline pl-import" aria-disabled="true" title="Bulk import from CSV isn’t available yet — add listings individually"><Upload aria-hidden="true" />Import listings</span>
         <MenuButton label="Add listing" className="ws-btn primary pl-add-btn" trigger={<><Plus aria-hidden="true" />Add listing<ChevronDown aria-hidden="true" /></>} entries={[
           ...(caps.includes("venue") ? [{ kind: "link" as const, label: "Add venue", href: "/provider/venues/new?step=1" }, ...(primary?.kind === "venue" ? [{ kind: "link" as const, label: "Add space", href: `/provider/venues/${primary.id}/spaces/new?step=1` }] : [])] : []),

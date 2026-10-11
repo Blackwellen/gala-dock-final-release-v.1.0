@@ -1,10 +1,10 @@
 "use server";
 import { z } from "zod";
+import { payBooking, requestHold } from "@/lib/marketplace/actions";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
-import { stripe, stripeKey } from "@/lib/stripe";
-import { stripeCustomer, savedCards } from "@/lib/payments";
 import type { ActionResult } from "./shell";
+import type { Json } from "@/types/database";
 
 const Id = z.string().uuid();
 const Time = z.string().regex(/^([01][0-9]|2[0-3]):[0-5][0-9]$/);
@@ -37,7 +37,8 @@ export async function saveBookingDraft(eventId: string, itemId: string, req: Boo
   bump(eventId); return { ok: true, message: "Saved — you can finish this later." };
 }
 
-/** Submit the request to the provider. A conditional hold places a refundable card authorisation (sandbox). */
+/** Submit the request to the provider. A conditional hold on a quoted/available line goes through the hold engine
+ *  (request_conditional_hold) — no long card authorisations; otherwise the request is sent flagged as a hold request. */
 export async function submitBooking(eventId: string, itemId: string, option: "request" | "hold" | "standby", agreed: boolean): Promise<ActionResult> {
   const o = await own(eventId, itemId); if (!o) return { ok: false, error: "Booking not found." };
   if (!agreed) return { ok: false, error: "Please agree to the provider's terms to continue." };
@@ -45,47 +46,29 @@ export async function submitBooking(eventId: string, itemId: string, option: "re
   const { data: pr } = o.it.request_id ? await o.ctx.supabase.from("provider_requests").select("requirements").eq("id", o.it.request_id).maybeSingle() : { data: null };
   const reqs = (pr?.requirements ?? null) as Record<string, unknown> | null;
   if (!reqs?.date) return { ok: false, error: "Complete your requirements first." };
-  let auth: string | null = null;
-  if (option === "hold") {
-    const amount = Math.max(50, Math.min(500, Math.round(Number(o.it.deposit || Number(o.it.amount ?? 0) * 0.1))));
-    const pay = await authorise(amount, `Hold — ${o.it.title}`, o.it.id, false); if (!pay.ok) return pay; auth = pay.ref;
+  if (option === "hold" && HOLDABLE.includes(o.it.status)) {
+    const r = await requestHold(o.it.id, 48, null, "Requested from the booking flow");
+    if (!r.ok) return { ok: false, error: ("error" in r && r.error) || "Could not request a hold." };
+    bump(eventId); return { ok: true, message: `Hold requested from ${o.it.title}. Nothing is charged until you confirm.` };
   }
-  const { error } = await o.ctx.supabase.rpc("customer_save_booking", { p_item: o.it.id, p_requirements: { ...reqs, ...(auth ? { authorisation_ref: auth } : {}) }, p_option: option, p_submit: true });
-  if (error) { if (auth) await stripe(`payment_intents/${auth}/cancel`, {}).catch(() => null); return { ok: false, error: errText(error.message) }; }
+  const { error } = await o.ctx.supabase.rpc("customer_save_booking", { p_item: o.it.id, p_requirements: reqs as Json, p_option: option, p_submit: true });
+  if (error) return { ok: false, error: errText(error.message) };
   bump(eventId);
-  return { ok: true, message: option === "standby" ? `You're on ${o.it.title}'s standby list.` : option === "hold" ? `Hold requested from ${o.it.title}. Your card is authorised, not charged.` : `Request sent to ${o.it.title}. They have 48 hours to respond.` };
+  return { ok: true, message: option === "standby" ? `You're on ${o.it.title}'s standby list.` : option === "hold" ? `Hold request sent to ${o.it.title}. Nothing is charged until you confirm.` : `Request sent to ${o.it.title}. They have 48 hours to respond.` };
 }
 
-/** Accept the quote: charge the deposit (sandbox test card) and confirm the booking atomically on the server. */
-export async function acceptQuote(eventId: string, itemId: string, agreed: boolean): Promise<ActionResult> {
+/** Accept the quote: starts a deposit payment order and returns the Stripe Checkout URL. The webhook confirms the booking
+ *  (payment order → ledger → booking confirmed, provider notified); funds are protected until delivery. */
+export async function acceptQuote(eventId: string, itemId: string, agreed: boolean): Promise<ActionResult<string>> {
   const o = await own(eventId, itemId); if (!o) return { ok: false, error: "Booking not found." };
   if (!agreed) return { ok: false, error: "Please agree to the provider's terms to continue." };
-  if (!["quoted", "available", "held"].includes(o.it.status) || o.it.amount == null) return { ok: false, error: "There's no quote to accept yet." };
-  const deposit = Math.min(Number(o.it.amount), Number(o.it.deposit) || Math.round(Number(o.it.amount) * 0.3));
-  const pay = await authorise(deposit, `Deposit — ${o.it.title}`, o.it.id, true); if (!pay.ok) return pay;
-  const { error } = await o.ctx.supabase.rpc("customer_accept_quote", { p_item: o.it.id, p_payment_ref: pay.ref });
-  if (error) {
-    await stripe("refunds", { payment_intent: pay.ref }).catch(() => null);
-    return { ok: false, error: error.message.includes("quote_expired") ? "This quote has expired — ask the provider to refresh it." : error.message.includes("hold_expired") ? "Your hold has expired. Request a new hold or quote." : error.message.includes("venue_required") ? "Confirm your venue before booking suppliers." : error.message.includes("hard_conflict") ? "The provider is no longer available on this date." : "Could not confirm the booking. You have not been charged." };
-  }
-  bump(eventId); return { ok: true, message: `${o.it.title} is booked. Deposit of £${deposit.toLocaleString("en-GB")} paid.` };
+  if (!["quoted", "available", "held", "quote_received", "quote_revised", "customer_reviewing"].includes(o.it.status) || o.it.amount == null) return { ok: false, error: "There's no quote to accept yet." };
+  const r = await payBooking("deposit", { itemId: o.it.id }, `/account/events/${eventId}/book?item=${o.it.id}&step=3`);
+  if (!r.ok || !r.data) return { ok: false, error: ("error" in r && r.error) || "Couldn't start the payment. You haven't been charged." };
+  return { ok: true, data: r.data, message: "Taking you to secure payment…" };
 }
 
-/** Charges (or authorises) the customer's default saved card. In Stripe test mode with no saved card, the test card is used. */
-async function authorise(amount: number, description: string, itemId: string, capture: boolean): Promise<{ ok: true; ref: string } | { ok: false; error: string }> {
-  const key = stripeKey();
-  if (!key) return { ok: false, error: "Payments aren't configured yet." };
-  const ctx = await getCustomer();
-  const card = (await savedCards(ctx)).find(c => c.isDefault);
-  if (!card && !key.startsWith("sk_test_")) return { ok: false, error: "Add a card in My Account → Payments to continue." };
-  try {
-    const cid = card ? await stripeCustomer(ctx) : null;
-    const pi = await stripe<{ id: string; status: string }>("payment_intents", { amount: String(Math.round(amount * 100)), currency: "gbp", payment_method: card?.id ?? "pm_card_visa", ...(cid ? { customer: cid } : {}), confirm: "true", capture_method: capture ? "automatic" : "manual", description, "metadata[build_item_id]": itemId, "metadata[user_id]": ctx.user.id, "automatic_payment_methods[enabled]": "true", "automatic_payment_methods[allow_redirects]": "never" });
-    if (pi.status === "requires_action") { await stripe(`payment_intents/${pi.id}/cancel`, {}).catch(() => null); return { ok: false, error: "Your bank needs to verify this payment. Please use a different card." }; }
-    if (!["succeeded", "requires_capture"].includes(pi.status)) return { ok: false, error: "Your card was declined." };
-    return { ok: true, ref: pi.id };
-  } catch { return { ok: false, error: "Payment couldn't be processed. You have not been charged." }; }
-}
+const HOLDABLE = ["available", "quoted", "quote_received", "quote_revised", "customer_reviewing"];
 
 export type Availability = "available" | "limited" | "unavailable" | "unknown";
 export async function checkAvailability(listingId: string, date: string, start: string, end: string): Promise<ActionResult<Availability>> {

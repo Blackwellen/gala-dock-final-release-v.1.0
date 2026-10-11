@@ -61,7 +61,13 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
   };
   const submit = async () => {
     if (!agree) { toast("Please agree to the terms to continue"); return; }
-    const res = await run(() => opt === "accept" ? acceptQuote(data.event.id, data.item.id, agree) : submitBooking(data.event.id, data.item.id, opt, agree));
+    if (opt === "accept") {
+      // Deposit is taken on Stripe Checkout; the booking confirms when the payment does (webhook), then Stripe returns here.
+      const res = await run(() => acceptQuote(data.event.id, data.item.id, agree), { refresh: false });
+      if (res.ok && typeof res.data === "string") window.location.assign(res.data);
+      return;
+    }
+    const res = await run(() => submitBooking(data.event.id, data.item.id, opt, agree));
     if (res.ok) router.push(`${base}&step=3`);
   };
 

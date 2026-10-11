@@ -21,7 +21,8 @@ test.describe("venue hire, BEO, food & drink", () => {
     const sp = async (name: string) => ((await db.from("spaces").insert({ workspace_id: ws, venue_id: venue, name, capacity_seated: 120, rate_hourly: 200, turnaround_minutes: 60,
       details: { setup_minutes: 120, cleardown_minutes: 60 } }).select("id").single()).data as { id: string }).id;
     hall = await sp("Hall"); terrace = await sp("Terrace");
-    await db.from("space_links").insert({ workspace_id: ws, space_a: hall, space_b: terrace, kind: "linked" });
+    const { error: le } = await db.from("space_links").insert({ workspace_id: ws, space_a: hall < terrace ? hall : terrace, space_b: hall < terrace ? terrace : hall, kind: "linked" }); // pairs are stored ordered
+    if (le) throw new Error(`space_links: ${le.message}`);
     event = ((await db.from("events").insert({ owner_id: org.id, name: "FnB test", starts_at: at(day, 18), ends_at: at(day, 23) }).select("id").single()).data as { id: string }).id;
     item = ((await db.from("build_items").insert({ event_id: event, listing_id: venue, category: "venue", title: "FnB Test Venue", status: "sent", amount: 3000 }).select("id").single()).data as { id: string }).id;
     [orgC, provC, outC] = await Promise.all([signedIn(org.email), signedIn(prov.email), signedIn(out.email)]) as unknown as SupabaseClient[];
@@ -47,8 +48,9 @@ test.describe("venue hire, BEO, food & drink", () => {
   });
 
   test("§59 conflicts honour setup/cleardown buffers, linked spaces and blackouts", async () => {
-    await db.from("provider_jobs").insert({ reference: "BK-TEST1", workspace_id: ws, listing_id: venue, space_id: terrace, mode: "venue", client_name: "Other", event_name: "Other party",
+    const { error: je } = await db.from("provider_jobs").insert({ reference: "BK-TEST1", workspace_id: ws, listing_id: venue, space_id: terrace, mode: "venue", client_name: "Other", event_name: "Other party",
       starts_at: at(day, 9), ends_at: at(day, 15), status: "confirmed" });
+    expect(je).toBeNull();
     // Terrace ends 15:00; Hall starts 18:00 but needs 2h setup + 1h turnaround → 15:00 window touches; a 17:00 start overlaps.
     const { data: c1 } = await orgC.rpc("space_conflicts", { p_space: hall, p_starts: at(day, 17), p_ends: at(day, 22) });
     expect((c1 as { level: string; reason: string }[]).map(c => c.reason)).toContain("Booked: linked space");

@@ -1,6 +1,6 @@
 /* Marketplace lifecycle (holds, standby, emergency, cancellation, disputes) — shared by Organizer, Provider and Customer.
    Uses the workspace tokens when present and the same values as fallbacks elsewhere. */
-.mk-panel,.mk-page{--mk-ink:var(--ws-ink,#090a52);--mk-sub:var(--ws-sub,#4a50a6);--mk-muted:var(--ws-muted,#5157a4);--mk-border:var(--ws-border,#eef4fc);
+.mk-panel,.mk-page,.lv,.op-ready,.mk-form,.mk-inline,.mk-btn,.mk-pay,.mk-card,.mk-budget{--mk-ink:var(--ws-ink,#090a52);--mk-sub:var(--ws-sub,#4a50a6);--mk-muted:var(--ws-muted,#5157a4);--mk-border:var(--ws-border,#eef4fc);
   --mk-blue:var(--ws-blue,#0038fd);--mk-blue-soft:var(--ws-blue-soft,#e8f1fe);--mk-green:var(--ws-green,#0f8a4e);--mk-green-soft:var(--ws-green-soft,#dffaec);
   --mk-red:var(--ws-red,#e8233c);--mk-red-soft:var(--ws-red-soft,#feeaee);--mk-amber:var(--ws-amber,#e27a00);--mk-amber-soft:var(--ws-amber-soft,#fff2df);
   --mk-purple:var(--ws-purple,#6a1ff0);--mk-purple-soft:var(--ws-purple-soft,#f2eafe);color:var(--mk-ink);font-size:12.5px}

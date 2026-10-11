@@ -56,7 +56,7 @@ export function MarketMap({ pins, mapKey, total, label, center }: { pins: Pin[];
   return <div className="mk-map">
     <MapView pins={pins.map(x => ({ id: x.id, lat: x.lat, lng: x.lng, label: x.name, price: x.price }))} center={center} zoom={11} height="100%" mapKey={mapKey} selected={sel} onSelect={setSel} showPrices ariaLabel={`Map of ${label}`} />
     <label className="mk-map-move"><input type="checkbox" defaultChecked />Search as I move the map</label>
-    {p && <button className="mk-map-card" onClick={() => router.push(p.href)}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p.image} alt="" /><b>{p.name}</b><span className="k-row k-xs" style={{ gap: 6 }}><Star size={11} fill="#f59e0b" color="#f59e0b" />{p.rating.toFixed(1)} ({p.reviews})<b style={{ marginLeft: "auto" }}>{p.price}</b></span>{p.capacity && <small><MapPin size={10} /> {p.capacity.toLocaleString()} capacity</small>}</button>}
+    {p && <button className="mk-map-card" onClick={() => router.push(p.href)}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p.image || "/assets/gd/covers/summer-sessions.webp"} alt="" /><b>{p.name}</b><span className="k-row k-xs" style={{ gap: 6 }}><Star size={11} fill="#f59e0b" color="#f59e0b" />{p.rating.toFixed(1)} ({p.reviews})<b style={{ marginLeft: "auto" }}>{p.price}</b></span>{p.capacity && <small><MapPin size={10} /> {p.capacity.toLocaleString()} capacity</small>}</button>}
     <Link className="mk-map-all" href="?view=map">View {total} {label} in this area <ChevronRight size={14} /></Link>
   </div>;
 }
