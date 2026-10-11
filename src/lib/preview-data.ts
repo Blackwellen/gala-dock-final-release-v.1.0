@@ -44,8 +44,8 @@ export function previewOnboardingProps(flow: Flow, step: number): OnboardingProp
     context: {
       capabilities: flow === "provider" && step === 2 ? ["venue", "service"] : ["venue"], categories: [], country: "United Kingdom", currency: "GBP", bookingMode: "Request to Book",
       payoutStatus: "not_connected", verificationStatus: "unverified", workspaceName: flow === "provider" ? "Riverside Events" : "Thomas Events",
-      listing: step >= 2 && flow === "provider" ? { name: "Riverside Events Venue", kind: "venue", location: "London, UK", description: "", detail: "Up to 500 guests", photoUrl: step === 4 ? "/assets/design-samples/sample-publish-preview.png" : "/assets/design-samples/sample-listing-preview.png" } : undefined,
-      readiness: { eligible: false, missing: ["listing_photo", "verification", "payouts"] }, existing: [], invites: [],
+      listing: step >= 2 && flow === "provider" ? { name: "Riverside Events Venue", kind: "venue", location: "London, UK", description: "", detail: "Up to 500 guests", photoUrl: step === 4 ? "/assets/design-samples/sample-publish-preview.png" : "/assets/design-samples/sample-listing-preview.png", tags: ["Event hall", "Outdoor space", "Up to 500", "In-house catering", "On-site parking"] } : undefined,
+      readiness: { eligible: false, missing: ["verification", "payouts"] }, existing: [], invites: [],
       summary: { name: "Thomas Events", businessType: "Event Management Company", location: "United Kingdom ((GMT+0/+1) London)", currency: "GBP (£)" },
     },
   };

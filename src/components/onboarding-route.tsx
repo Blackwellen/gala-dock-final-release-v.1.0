@@ -98,6 +98,7 @@ export async function OnboardingRoute({ flow, searchParams, preview = false }: {
       name: listing.name, kind: listing.kind, location: listing.location, description: listing.description,
       detail: listing.kind === "venue" ? `Up to ${details.capacity ?? "—"} guests` : String(details.category ?? "Service"),
       photoUrl: await signed((details.photos as string[] | undefined)?.[0]),
+      tags: [listing.kind === "venue" ? String(details.venue_type ?? "Venue") : String(details.category ?? "Service"), ...((details.amenities as string[] | undefined) ?? []).slice(0, 3), ...(listing.kind === "venue" && details.capacity ? [`Up to ${details.capacity}`] : [])],
     } : null;
     if (listing && key === "trust") {
       const { data } = await supabase.rpc("listing_readiness", { p_listing: listing.id });

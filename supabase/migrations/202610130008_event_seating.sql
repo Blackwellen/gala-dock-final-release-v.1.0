@@ -146,4 +146,7 @@ end $$;
 
 revoke all on function public.can_edit_event(uuid), public.organizer_save_event_plan(uuid, jsonb, jsonb, jsonb, boolean), public.expire_seat_holds(uuid), public.hold_seats(uuid, text[], text),
   public.release_seat_holds(text), public.issue_seated_tickets(text, text, text, uuid) from public, anon, authenticated;
-grant execute on function public.can_edit_event(uuid), public.organizer_save_event_plan(uuid, jsonb, jsonb, jso
+grant execute on function public.can_edit_event(uuid), public.organizer_save_event_plan(uuid, jsonb, jsonb, jsonb, boolean) to authenticated;
+grant execute on function public.hold_seats(uuid, text[], text), public.release_seat_holds(text) to anon, authenticated;
+grant execute on function public.expire_seat_holds(uuid), public.issue_seated_tickets(text, text, text, uuid) to service_role;
+commit;

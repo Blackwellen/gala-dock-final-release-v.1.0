@@ -5,10 +5,10 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-publish",
-    "mismatchPercent": 18.375,
-    "interfaceMismatchPercent": 17.54,
-    "ssimFull": 0.5871,
-    "ssimInterface": 0.5619,
+    "mismatchPercent": 15.884,
+    "interfaceMismatchPercent": 17.667,
+    "ssimFull": 0.6203,
+    "ssimInterface": 0.5722,
     "geometry": {
       "scrollHeight": 1157,
       "overflow": false

@@ -860,3 +860,25 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
  .onboarding-page .setup-story .setup-photo-strip{display:none}
  .onboarding-page .setup-story{background-color:#fff}
 }
+
+/* Trust aside: checklist + preview card per the design */
+.readiness .readiness-list{gap:10px!important;margin:16px 0 14px!important}
+.readiness .readiness-list li{font-size:12.6px!important;gap:10px;color:#2a3058!important}
+.readiness .readiness-list li svg{color:#c3cbe0;stroke-width:1.6}
+.readiness .readiness-list li.met svg.tick{color:#fff;fill:#26b09a;stroke-width:2.4}
+.setup-provider-publish .listing-preview h3{font-size:14.5px}
+.setup-provider-publish .listing-preview h4{font-size:13.5px;font-weight:650}
+.setup-provider-publish .listing-preview p{font-size:12px}
+.setup-provider-publish .listing-preview .tags{gap:5px;margin-top:8px}
+.setup-provider-publish .listing-preview .tags span{font-size:10.5px;padding:3px 9px;background:#eef2fa;color:#2a3058}
+.setup-provider-publish .preview-actions .button:not(.outline){background:#1664fe;color:#fff}
+.setup-provider-publish .setup-assistant>.setup-panel:last-child .icon-tile{background:none;color:#fff;width:24px;height:24px}
+.setup-provider-publish .setup-assistant>.setup-panel:last-child .icon-tile svg{fill:#1664fe;width:24px;height:24px}
+.setup-provider-publish .setup-assistant>.setup-panel:last-child .assistant-feature b{font-size:12.5px}
+.setup-provider-publish .setup-assistant>.setup-panel:last-child .assistant-feature p{font-size:11.8px;line-height:17px;margin-top:4px}
+.setup-provider-publish .setup-assistant{margin-top:-30px}
+.onboarding-page.setup-provider-publish .setup-assistant{margin-top:-48px}
+.readiness .readiness-list{gap:7px!important;margin:12px 0 12px!important}
+.readiness .readiness-list li{font-size:12.3px!important}
+.readiness.agent-panel .button{min-height:36px;margin-top:8px}
+.setup-provider-publish .listing-preview img.photo{height:112px!important}

@@ -710,6 +710,73 @@ export type Database = {
           },
         ]
       }
+      event_seats: {
+        Row: {
+          accessible: boolean
+          event_id: string
+          hold_expires_at: string | null
+          hold_token: string | null
+          kind: string
+          label: string
+          seat_key: string
+          section: string
+          status: string
+          ticket_id: string | null
+          tier_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          accessible?: boolean
+          event_id: string
+          hold_expires_at?: string | null
+          hold_token?: string | null
+          kind?: string
+          label?: string
+          seat_key: string
+          section?: string
+          status?: string
+          ticket_id?: string | null
+          tier_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accessible?: boolean
+          event_id?: string
+          hold_expires_at?: string | null
+          hold_token?: string | null
+          kind?: string
+          label?: string
+          seat_key?: string
+          section?: string
+          status?: string
+          ticket_id?: string | null
+          tier_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_seats_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_seats_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_seats_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_templates: {
         Row: {
           created_at: string
@@ -2671,6 +2738,52 @@ export type Database = {
           },
         ]
       }
+      space_links: {
+        Row: {
+          created_at: string
+          kind: string
+          space_a: string
+          space_b: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: string
+          space_a: string
+          space_b: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: string
+          space_a?: string
+          space_b?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_links_space_a_fkey"
+            columns: ["space_a"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_links_space_b_fkey"
+            columns: ["space_b"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_links_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spaces: {
         Row: {
           amenities: string[]
@@ -3628,7 +3741,12 @@ export type Database = {
         Returns: undefined
       }
       can_access_event: { Args: { target: string }; Returns: boolean }
+      can_edit_event: { Args: { target: string }; Returns: boolean }
       can_see_event_money: { Args: { target: string }; Returns: boolean }
+      can_write_listing_media: {
+        Args: { object_name: string }
+        Returns: boolean
+      }
       check_in_ticket: {
         Args: { p_code: string; p_event: string; p_nonce?: string }
         Returns: Json
@@ -3639,6 +3757,19 @@ export type Database = {
         Returns: undefined
       }
       credit_invoice: { Args: { p_invoice: string }; Returns: undefined }
+      customer_accept_quote: {
+        Args: { p_item: string; p_payment_ref: string }
+        Returns: undefined
+      }
+      customer_save_booking: {
+        Args: {
+          p_item: string
+          p_option: string
+          p_requirements: Json
+          p_submit: boolean
+        }
+        Returns: string
+      }
       decide_agent_approval: {
         Args: { p_approval: string; p_approve: boolean }
         Returns: {
@@ -3676,6 +3807,7 @@ export type Database = {
         }[]
       }
       event_readiness: { Args: { p_event: string }; Returns: Json }
+      expire_seat_holds: { Args: { p_event?: string }; Returns: number }
       expire_stale_items: { Args: never; Returns: number }
       has_admin_permission: { Args: { p: string }; Returns: boolean }
       has_workspace_role: {
@@ -3685,6 +3817,10 @@ export type Database = {
       hit_rate_limit: {
         Args: { p_key: string; p_max: number; p_window_seconds: number }
         Returns: boolean
+      }
+      hold_seats: {
+        Args: { p_event: string; p_keys: string[]; p_token: string }
+        Returns: Json
       }
       invite_preview: {
         Args: { p_token_hash: string }
@@ -3704,6 +3840,37 @@ export type Database = {
       is_workspace_owner: { Args: { target: string }; Returns: boolean }
       issue_invoice: { Args: { p_invoice: string }; Returns: undefined }
       issue_proposal: { Args: { p_proposal: string }; Returns: number }
+      issue_seated_tickets: {
+        Args: {
+          p_attendee: string
+          p_holder: string
+          p_order_ref: string
+          p_token: string
+        }
+        Returns: {
+          attendee_email: string
+          attendee_name: string
+          checked_in_at: string | null
+          code: string
+          created_at: string
+          event_id: string
+          holder_id: string | null
+          id: string
+          order_ref: string
+          price_paid: number
+          qr_nonce: string
+          replaced_by: string | null
+          seat: string | null
+          status: string
+          tier_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "tickets"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       issue_tickets: {
         Args: {
           p_attendee: string
@@ -3740,6 +3907,10 @@ export type Database = {
         Args: { p_cancel?: boolean; p_ticket: string }
         Returns: string
       }
+      listing_availability: {
+        Args: { p_end: string; p_listing: string; p_start: string }
+        Returns: string
+      }
       listing_readiness: { Args: { p_listing: string }; Returns: Json }
       log_auth_event: { Args: { p_event: string }; Returns: undefined }
       mark_proposal_converted: {
@@ -3768,6 +3939,16 @@ export type Database = {
           role: string
           workspace_status: string
         }[]
+      }
+      organizer_save_event_plan: {
+        Args: {
+          p_event: string
+          p_overlay: Json
+          p_publish: boolean
+          p_seats: Json
+          p_structure: Json
+        }
+        Returns: number
       }
       proposal_by_token: { Args: { p_token: string }; Returns: Json }
       provider_assign_crew: {
@@ -3857,6 +4038,15 @@ export type Database = {
         }
         Returns: string
       }
+      provider_set_space_links: {
+        Args: {
+          p_exclusive: string[]
+          p_linked: string[]
+          p_space: string
+          p_ws: string
+        }
+        Returns: undefined
+      }
       provider_withdraw_quote: { Args: { p_quote: string }; Returns: undefined }
       publish_listing: { Args: { p_listing: string }; Returns: Json }
       quote_totals: {
@@ -3867,6 +4057,7 @@ export type Database = {
           total: number
         }[]
       }
+      release_seat_holds: { Args: { p_token: string }; Returns: number }
       remember_workspace: { Args: { p_workspace: string }; Returns: undefined }
       require_provider_role: {
         Args: { p_roles: string[]; p_ws: string }

@@ -1,17 +1,17 @@
 ▲ Next.js 16.4.0 (Turbopack)
 - Environments: .env.local, .env
-✓ Running next.config.ts took 77ms
+✓ Running next.config.ts took 121ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 3.9s
+✓ Compiled successfully in 8.2s
   Running TypeScript ...
-  Finished TypeScript in 25.6s ...
+  Finished TypeScript in 36.3s ...
   Collecting page data using 27 workers ...
-  Generating static pages using 27 workers (0/38) ...
-  Generating static pages using 27 workers (9/38) 
-  Generating static pages using 27 workers (18/38) 
-  Generating static pages using 27 workers (28/38) 
-✓ Generating static pages using 27 workers (38/38) in 1224ms
+  Generating static pages using 27 workers (0/46) ...
+  Generating static pages using 27 workers (11/46) 
+  Generating static pages using 27 workers (22/46) 
+  Generating static pages using 27 workers (34/46) 
+✓ Generating static pages using 27 workers (46/46) in 1523ms
   Finalizing page optimization ...
 
 Route (app)
@@ -19,6 +19,14 @@ Route (app)
 ├ ○ /_not-found
 ├ ƒ /[...slug]
 ├ ƒ /access
+├ ƒ /account/events
+├ ƒ /account/events/[id]
+├ ƒ /account/events/[id]/book
+├ ƒ /account/events/[id]/build
+├ ƒ /account/events/[id]/guests-tickets
+├ ƒ /account/events/[id]/messages
+├ ƒ /account/events/[id]/money
+├ ƒ /account/events/[id]/plan
 ├ ƒ /admin
 ├ ƒ /admin/login
 ├ ƒ /api/agent/ask
@@ -29,6 +37,7 @@ Route (app)
 ├ ƒ /api/export/[kind]
 ├ ƒ /api/files/[id]
 ├ ƒ /api/invites
+├ ƒ /api/listing-media
 ├ ƒ /api/onboarding
 ├ ƒ /api/payouts
 ├ ƒ /api/saved
@@ -38,6 +47,7 @@ Route (app)
 ├ ƒ /auth/continue
 ├ ƒ /auth/signout
 ├ ƒ /continue
+├ ƒ /discover
 ├ ƒ /forgot-password
 ├ ƒ /invite/[token]
 ├ ƒ /login
@@ -48,6 +58,11 @@ Route (app)
 ├ ƒ /organizer/calendar
 ├ ƒ /organizer/events
 ├ ƒ /organizer/events/[id]
+├ ƒ /organizer/events/[id]/map
+├ ƒ /organizer/marketplace
+├ ƒ /organizer/marketplace/[type]/[id]
+├ ƒ /organizer/marketplace/requests/[id]
+├ ƒ /organizer/marketplace/requests/new
 ├ ƒ /organizer/proposals/new
 ├ ƒ /organizer/sales
 ├ ƒ /organizer/sales/leads/[id]
@@ -57,6 +72,9 @@ Route (app)
 ├ ƒ /provider/bookings
 ├ ƒ /provider/bookings/[id]
 ├ ƒ /provider/bookings/export
+├ ƒ /provider/bookings/new
+├ ƒ /provider/calendar
+├ ƒ /provider/listings/[[...type]]
 ├ ƒ /provider/messages/[id]
 ├ ƒ /provider/opportunities
 ├ ƒ /provider/opportunities/[id]
@@ -64,6 +82,10 @@ Route (app)
 ├ ƒ /provider/quotes/[id]
 ├ ƒ /provider/quotes/[id]/print
 ├ ƒ /provider/search
+├ ƒ /provider/venues/[id]
+├ ƒ /provider/venues/[id]/spaces/[spaceId]
+├ ƒ /provider/venues/[id]/spaces/new
+├ ƒ /provider/venues/new
 ├ ƒ /register
 ├ ƒ /reset-password
 └ ƒ /verify-email

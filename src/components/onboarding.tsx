@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
-import { CalendarDays, Users, BarChart3, Sparkles, Ticket, MapPin, Check, ArrowRight, ArrowLeft, Upload, ShieldCheck, CreditCard, Mail, Lightbulb, Building2, Store, Layers, Globe, CircleHelp, X, Search, Clock, AlertTriangle, Copy, LockKeyhole, Link2, Loader2, CircleCheck, CircleDashed, FileText, UserRound, CircleDollarSign, Tag, Bell, Scissors, Music, Utensils, Martini, Palette, Trophy, Briefcase, Heart, Baby, PartyPopper, Ellipsis } from "lucide-react";
+import { CalendarDays, Users, BarChart3, Sparkles, Ticket, MapPin, Check, ArrowRight, ArrowLeft, Upload, ShieldCheck, CreditCard, Mail, Lightbulb, Building2, Store, Layers, Globe, CircleHelp, X, Search, Clock, AlertTriangle, Copy, LockKeyhole, Link2, Loader2, CircleCheck, CircleDashed, FileText, UserRound, CircleDollarSign, Tag, Bell, Scissors, Circle, CircleCheckBig, Info, Music, Utensils, Martini, Palette, Trophy, Briefcase, Heart, Baby, PartyPopper, Ellipsis } from "lucide-react";
 import { Button, Logo, IconTile, Photo, CheckList, Modal } from "./ui";
 import { TextField, TextArea, SelectField, ChoiceGroup, Toggle } from "./form";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
@@ -13,7 +13,7 @@ export type Flow = "experience" | "customer" | "organizer" | "provider";
 export type OnboardingContext = {
   capabilities?: string[]; categories?: string[]; country?: string; bookingMode?: string; currency?: string;
   payoutStatus?: string; verificationStatus?: string; logoUrl?: string | null; workspaceName?: string;
-  listing?: { name: string; kind: string; location: string; description: string; detail: string; photoUrl: string | null } | null;
+  listing?: { name: string; kind: string; location: string; description: string; detail: string; photoUrl: string | null; tags?: string[] } | null;
   readiness?: { eligible: boolean; missing: string[] } | null;
   existing?: { id: string; name: string; kind: string }[];
   invites?: { id: string; workspace_name: string; workspace_kind: string; role: string }[];
@@ -525,14 +525,14 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           const docsDone = requirements.filter(r => r.kind === "document" && r.required).every(r => documents[r.key]);
           const items: [string, boolean, string][] = [
             ["Business details completed", true, ""], ["First offer added", !!context.listing && !missing.some(m => m.startsWith("listing_")), ""], ["Booking rules configured", true, ""],
-            [`Required documents ${docsDone ? "submitted" : "(required)"}`, docsDone, "trust-documents"], ["Business verification (Gala Dock review)", context.verificationStatus === "verified", "trust-documents"],
+            [`Insurance & licences ${docsDone ? "submitted" : "(required)"}`, docsDone, "trust-documents"], ["Gala Dock verification", context.verificationStatus === "verified", "trust-documents"],
             ["Connect payouts (required)", context.payoutStatus === "active", "trust-payouts"],
             ["Team invited (optional)", ((values.members as unknown[]) ?? []).length > 0, ""], ["Publish listing", !!context.readiness?.eligible, ""],
           ];
           const firstGap = items.find(([, met, target]) => !met && target)?.[2];
           return <section className="setup-panel agent-panel readiness"><h3><IconTile icon={Sparkles} />Gala Agent<span className="badge purple">BETA</span></h3>
             <h4>Your readiness checklist</h4><p>I’ve checked your setup and here’s what’s left to go live. I can help you complete any missing items.</p>
-            <ul className="readiness-list">{items.map(([label, met]) => <li key={label} className={met ? "met" : ""}>{met ? <CircleCheck size={17} aria-hidden="true" /> : <CircleDashed size={17} aria-hidden="true" />}{label}</li>)}</ul>
+            <ul className="readiness-list">{items.map(([label, met]) => <li key={label} className={met ? "met" : ""}>{met ? <CircleCheckBig className="tick" size={20} aria-hidden="true" /> : <Circle size={20} aria-hidden="true" />}{label}<span className="sr-only">{met ? " (done)" : " (to do)"}</span></li>)}</ul>
             <Button variant="outline" disabled={!firstGap} onClick={() => firstGap && document.getElementById(firstGap)?.scrollIntoView({ behavior: "smooth", block: "start" })} arrow>{firstGap ? "Help me complete setup" : "All set"}</Button></section>;
         })()}
         {key === "preferences" && <section className="setup-panel why-panel"><h3><IconTile icon={Lightbulb} />Why we ask this</h3><p>Your preferences help us:</p>
@@ -544,9 +544,9 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           text={key === "offer" ? "The Gala Agent can write your venue description and suggest the best event types and category based on the details you’ve entered." : key === "rules" ? "The Gala Agent can explain these policies and suggest safer alternatives when settings conflict." : key === "operating" ? "The Gala Agent can recommend settings based on your event types, including ticketing, risk management and useful tools for your dashboard." : key === "team" ? "I can suggest the best team structure, permissions and even a first event template based on your goals." : "The Gala Agent can suggest the best settings for your location and event type, and even recommend a starting event template."}
           action={key === "operating" ? "Suggest best setup for me" : key === "team" ? "Suggest a first event for me" : key === "offer" ? "Generate description for me" : "Suggest settings for me"} />}
         {(key === "offer" || key === "trust") && context.listing !== undefined && <section className="setup-panel listing-preview"><h3>Listing preview<span className="status-pill warning">Draft</span></h3>
-          {context.listing ? <>{context.listing.photoUrl ? <img src={context.listing.photoUrl} alt="" className="photo" /> : <Photo name="venue-2" />}<h4>{context.listing.name}</h4><p><MapPin size={14} aria-hidden="true" />{context.listing.location}</p><div className="tags"><span>{context.listing.kind === "service" ? "Service" : "Venue"}</span><span>{context.listing.detail}</span></div></>
+          {context.listing ? <>{context.listing.photoUrl ? <img src={context.listing.photoUrl} alt="" className="photo" /> : <Photo name="venue-2" />}<h4>{context.listing.name}</h4><p><MapPin size={14} aria-hidden="true" />{context.listing.location}</p><div className="tags">{(context.listing.tags ?? [context.listing.kind === "service" ? "Service" : "Venue", context.listing.detail]).map(t => <span key={t}>{t}</span>)}</div></>
             : <><Photo name="venue-2" /><h4>{str("listing_name") || "Your listing"}</h4><p><MapPin size={14} aria-hidden="true" />{str("location") || "Location"}</p><div className="tags"><span>{str("kind") === "service" ? str("category") || "Service" : str("venue_type")}</span>{str("capacity") && <span>Up to {str("capacity")}</span>}</div>{arr("amenities").length > 0 && <div className="tags">{arr("amenities").slice(0, 3).map(a => <span key={a}>{a}</span>)}{arr("amenities").length > 3 && <span>+{arr("amenities").length - 3} more</span>}</div>}</>}
-          {key === "trust" ? <div className="preview-actions"><Button variant="outline" disabled title="Available once the listing is published">View listing</Button><Button disabled={busy || !context.readiness?.eligible} onClick={() => post("publish")} title={context.readiness?.eligible ? undefined : "Complete the readiness checklist to publish"}>Publish now</Button></div>
+          {key === "trust" ? <div className="preview-actions"><Button variant="outline" onClick={() => setError("Your public listing page goes live once the listing is published.")}>View listing</Button><Button disabled={busy} onClick={() => context.readiness?.eligible ? post("publish") : setError(`Publishing unlocks once these are done: ${(context.readiness?.missing ?? []).map(m => missingLabels[m] ?? m).join("; ")}.`)}>Publish now</Button></div>
             : <p className="setup-note small"><LockKeyhole size={16} aria-hidden="true" /><span>This listing is saved as a draft and isn’t visible to organisers yet.</span></p>}
         </section>}
         {key === "offer" && <section className="setup-panel tips-panel"><h4><Lightbulb size={18} aria-hidden="true" /> Tips for a great listing</h4>
@@ -557,7 +557,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
             <div className="assistant-feature" key={title}><IconTile icon={Icon} /><span><b>{title}</b><small>{text}</small></span></div>)}</div>
           <Link href="/onboarding/organizer?step=1" className="link-button">Edit details</Link></section>}
         {key === "organisation" && <section className="setup-panel"><h4>Popular organizer types</h4>{["Event Management Company", "Venue Operator", "Promoter", "Community Organisation"].map((name, i) => <button type="button" className="organizer-type" key={name} onClick={() => set("business_type", name)} aria-pressed={str("business_type") === name}><Photo name={`organizer-type-${i}`} /><span><b>{name}</b><small>{["Weddings, corporate, festivals", "Run your own venue(s)", "Concerts, nightlife, live shows", "Local events, fundraisers"][i]}</small></span></button>)}</section>}
-        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={Lightbulb} /><span><b>{key === "organisation" ? "You can always change this later" : key === "operating" ? "You can change this anytime" : key === "trust" ? "You can edit this later" : "You can change this later"}</b><p>{key === "operating" ? "These settings only set your defaults. You can update them at any time in your workspace settings." : key === "trust" ? "You can update your documents, team members and listing details at any time from your workspace." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
+        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={key === "trust" ? Info : Lightbulb} /><span><b>{key === "organisation" ? "You can always change this later" : key === "operating" ? "You can change this anytime" : key === "trust" ? "You can edit this later" : "You can change this later"}</b><p>{key === "operating" ? "These settings only set your defaults. You can update them at any time in your workspace settings." : key === "trust" ? "You can update your documents, team members and listing details at any time from your workspace." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
       </aside>}
     </div>
   </OnboardingShell>;
