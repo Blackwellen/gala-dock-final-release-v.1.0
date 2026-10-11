@@ -127,10 +127,10 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| §92 Cloudflare R2 | BLOCKED_EXTERNAL_CONFIGURATION | **Implemented:** dependency-free SigV4 client (`src/lib/r2.ts`), storage→R2 replication every 15 min with change detection and 35-day keep of deleted objects (`storage-backup` job), health check. Credentials verified (signed requests succeed), but **the configured bucket `galadock` does not exist** in the Cloudflare account (only other projects' buckets are present). Create the bucket (or set `CLOUDFLARE_R2_BUCKET`) and replication starts automatically. Per-plan storage metering is still to do. |
+| §92 Cloudflare R2 | PASS | Dependency-free SigV4 client (`src/lib/r2.ts`) and storage→R2 replication every 15 min (`storage-backup` job: change detection, keys `storage/<bucket>/<path>`, deleted objects kept 35 days). The `galadock` bucket is in Cloudflare's **EU jurisdiction**, so it is served from `<account>.eu.r2.cloudflarestorage.com`; the client honours `CLOUDFLARE_R2_JURISDICTION` or auto-detects it. Verified 11 Oct 2026: write/read/delete round trip, health `ready`, and an end-to-end replication probe (upload → worker copied 1 → copy present in R2 → cleaned up). Per-plan storage metering is still to do. Ensure the `CLOUDFLARE_R2_*`/`R2_*` variables are also set in Vercel production. |
 | §93 Stripe | PASS_WITH_NOTE | Payments orchestration, webhooks (authoritative), reconciliation, refunds, disputes, Connect transfers. **Local `.env` holds a LIVE secret key** — confirm intended environments; production uses the configured key. |
 | §94 MapTiler | PASS | Configured; maps and geocoding in listings/search. |
-| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects: replication to R2 is implemented and starts once the R2 bucket exists (see §92). |
+| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
 | §133 Restore test | BLOCKED_EXTERNAL_CONFIGURATION | Needs a staging project; procedure in `docs/operations/runbook.md`. |
 | §134–135 DR / IR | PASS | Runbook with RTO/RPO table, secret-rotation steps, ICO 72-hour process. |
 | §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` (public liveness; authenticated readiness, cron freshness, backlogs) and `/admin/health`. External uptime monitor and error tracking not configured (BLOCKED_EXTERNAL). |
@@ -191,7 +191,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Additional tour and help content; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Additional tour and help content; CAPTCHA (needs key); AV scanning (needs service); storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
