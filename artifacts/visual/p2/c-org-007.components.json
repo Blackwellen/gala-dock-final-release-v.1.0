@@ -1,0 +1,124 @@
+{
+ "name": "c-org-007",
+ "path": "/organizer/sales/proposals/1ea59c66-d40f-435f-a139-9674ee47edec",
+ "page": 14.69,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Proposal overview",
+   "x": 240,
+   "y": 295,
+   "w": 984,
+   "h": 217,
+   "mismatch": 32.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Proposal status",
+   "x": 1238,
+   "y": 295,
+   "w": 278,
+   "h": 443,
+   "mismatch": 20.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Key terms",
+   "x": 573,
+   "y": 875,
+   "w": 319,
+   "h": 149,
+   "mismatch": 14.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Financial summary",
+   "x": 240,
+   "y": 875,
+   "w": 319,
+   "h": 149,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 1238,
+   "y": 920,
+   "w": 278,
+   "h": 104,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Options / Add-ons",
+   "x": 836,
+   "y": 525,
+   "w": 388,
+   "h": 336,
+   "mismatch": 13.3
+  },
+  {
+   "sel": ".k-table",
+   "label": "k-table",
+   "x": 257,
+   "y": 578,
+   "w": 548,
+   "h": 266,
+   "mismatch": 12.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Acceptance & payment",
+   "x": 1238,
+   "y": 751,
+   "w": 278,
+   "h": 155,
+   "mismatch": 11.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Line items",
+   "x": 240,
+   "y": 525,
+   "w": 582,
+   "h": 336,
+   "mismatch": 11.5
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 9.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Files & attachments",
+   "x": 905,
+   "y": 875,
+   "w": 319,
+   "h": 149,
+   "mismatch": 8.8
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 240,
+   "y": 242,
+   "w": 1276,
+   "h": 39,
+   "mismatch": 4.8
+  }
+ ]
+}

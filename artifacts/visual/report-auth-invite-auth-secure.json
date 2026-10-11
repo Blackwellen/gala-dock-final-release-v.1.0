@@ -1,0 +1,34 @@
+[
+  {
+    "url": "/preview/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 18.578,
+    "interfaceMismatchPercent": 8.737,
+    "ssimFull": 0.7575,
+    "ssimInterface": 0.7429,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 18.538,
+    "interfaceMismatchPercent": 10.216,
+    "ssimFull": 0.7316,
+    "ssimInterface": 0.7113,
+    "geometry": {
+      "scrollHeight": 1134,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

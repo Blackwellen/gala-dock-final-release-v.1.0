@@ -1,0 +1,169 @@
+{
+ "name": "c-org-003-money",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=money",
+ "page": 18.98,
+ "components": [
+  {
+   "sel": ".eh-hero",
+   "label": "Neon Nights Festival",
+   "x": 240,
+   "y": 113,
+   "w": 1276,
+   "h": 134,
+   "mismatch": 64.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Payment progress",
+   "x": 1248,
+   "y": 800,
+   "w": 268,
+   "h": 185,
+   "mismatch": 24.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Budget breakdown",
+   "x": 240,
+   "y": 507,
+   "w": 521,
+   "h": 233,
+   "mismatch": 24
+  },
+  {
+   "sel": ".k-card",
+   "label": "Revenue vs costs vs profit",
+   "x": 775,
+   "y": 507,
+   "w": 459,
+   "h": 279,
+   "mismatch": 20.9
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Total budget",
+   "x": 240,
+   "y": 384,
+   "w": 246,
+   "h": 109,
+   "mismatch": 18.2
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Break-even",
+   "x": 1270,
+   "y": 384,
+   "w": 246,
+   "h": 109,
+   "mismatch": 16.5
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Total costs (committed)",
+   "x": 755,
+   "y": 384,
+   "w": 246,
+   "h": 109,
+   "mismatch": 16
+  },
+  {
+   "sel": ".eh-tabs",
+   "label": "eh-tabs",
+   "x": 240,
+   "y": 261,
+   "w": 1276,
+   "h": 47,
+   "mismatch": 15.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "Financial summary",
+   "x": 1248,
+   "y": 507,
+   "w": 268,
+   "h": 245,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-table",
+   "label": "k-table",
+   "x": 257,
+   "y": 842,
+   "w": 510,
+   "h": 182,
+   "mismatch": 13.6
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Total revenue",
+   "x": 498,
+   "y": 384,
+   "w": 246,
+   "h": 109,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 240,
+   "y": 261,
+   "w": 513,
+   "h": 46,
+   "mismatch": 13.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recent transactions",
+   "x": 240,
+   "y": 800,
+   "w": 544,
+   "h": 224,
+   "mismatch": 12.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "Outstanding amounts",
+   "x": 798,
+   "y": 800,
+   "w": 436,
+   "h": 126,
+   "mismatch": 10.3
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10
+  },
+  {
+   "sel": ".eh-sub",
+   "label": "eh-sub",
+   "x": 240,
+   "y": 322,
+   "w": 1276,
+   "h": 48,
+   "mismatch": 9.8
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Forecast profit",
+   "x": 1013,
+   "y": 384,
+   "w": 246,
+   "h": 109,
+   "mismatch": 5.7
+  }
+ ]
+}

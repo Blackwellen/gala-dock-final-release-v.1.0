@@ -13,10 +13,11 @@ export function previewAuthProps(screen: AuthScreen, search: Record<string, stri
   const state = typeof search.state === "string" ? search.state : undefined;
   const base: AuthProps = { screen, preview: true, next: "/checkout?event=neon-nights", intent: checkout, providers: ["google", "azure"], signedInEmail: null };
   switch (screen) {
+    case "register": return { ...base, next: "/onboarding/customer?step=1", intent: { kind: "plan", title: "You started from Plan an Event", detail: "Your original intent will continue after registration.", href: "/onboarding/customer?step=1" } };
     case "verify-email": return { ...base, state: state ?? "waiting", email: "you@company.com", maskedEmail: "you@company.com" };
     case "reset-password": return { ...base, intent: null, state: state ?? "valid" };
     case "mfa": return { ...base, state: "challenge", factors: [{ id: "preview", name: "Authenticator app" }] };
-    case "invite": return { ...base, intent: null, next: "/invite/preview", token: "preview", state: state ?? "valid", invite: {
+    case "invite": return { ...base, intent: null, next: "/invite/preview", token: "preview", signedInEmail: "you@company.com", state: state ?? "valid", invite: {
       workspace_name: "Neon Nights Festival", workspace_kind: "organizer", role: "manager", invited_by_name: "Sarah Chen",
       expires_at: "2025-04-28T12:00:00Z", days_remaining: 6, state: state ?? "valid" } };
     case "access": return { ...base, intent: null, state: state ?? "denied", signedInEmail: "you@company.com", workspaces: [{ id: "a", name: "Thomas Events", kind: "organizer" }, { id: "b", name: "Riverside Events", kind: "provider" }] };

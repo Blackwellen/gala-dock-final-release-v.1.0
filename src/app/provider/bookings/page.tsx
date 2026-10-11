@@ -44,6 +44,7 @@ export default async function BookingsPage(props: PageProps<"/provider/bookings"
   const win = (t: string, a: number, b: number) => new Date(t).getTime() >= a && new Date(t).getTime() < b;
   const d30 = now - 30 * 864e5, d60 = now - 60 * 864e5;
   const completedMonth = jobs.filter(j => j.status === "completed" && win(j.ends_at, startOfMonth(0, now), now)).length;
+  const completedPrevMonth = jobs.filter(j => j.status === "completed" && win(j.ends_at, startOfMonth(-1, now), startOfMonth(0, now))).length;
 
   // Filters
   const q = str("q").toLowerCase(), type = str("type"), status = str("status"), range = str("range"), sort = str("sort") || "date";
@@ -76,9 +77,9 @@ export default async function BookingsPage(props: PageProps<"/provider/bookings"
       <div className="pb-main">
         <section className="ws-kpis pb-kpis" aria-label="Booking figures">
           <Kpi icon={CalendarDays} tone="blue" label="Upcoming Bookings" value={groups.upcoming.length} delta={delta(jobs.filter(j => win(j.created_at, d30, now)).length, jobs.filter(j => win(j.created_at, d60, d30)).length)} deltaSuffix="vs last 30 days" series={dailySeries(groups.upcoming, j => j.starts_at, () => 1, 21, now + 21 * 864e5)} href={qs({ tab: null })} />
-          <Kpi icon={CirclePlay} tone="purple" label="Active Bookings" value={groups.active.length} series={dailySeries(jobs, j => j.status === "active" ? j.starts_at : null, () => 1, 14, now)} href={qs({ tab: "active" })} />
-          <Kpi icon={CircleCheck} tone="green" label="Completed (This Month)" value={completedMonth} series={dailySeries(groups.past, j => j.ends_at, () => 1, 30, now)} href={qs({ tab: "past" })} />
-          <Kpi icon={CircleX} tone="red" label="Cancelled" value={groups.cancelled.length} series={dailySeries(groups.cancelled, j => j.created_at, () => 1, 30, now)} href={qs({ tab: "cancelled" })} />
+          <Kpi icon={CirclePlay} tone="purple" label="Active Bookings" value={groups.active.length} delta={delta(groups.active.length, jobs.filter(j => j.status === "completed" && win(j.starts_at, d60, d30)).length)} deltaSuffix="vs last 30 days" series={dailySeries(jobs, j => j.status === "active" ? j.starts_at : null, () => 1, 14, now)} href={qs({ tab: "active" })} />
+          <Kpi icon={CircleCheck} tone="green" label="Completed (This Month)" value={completedMonth} delta={delta(completedMonth, completedPrevMonth)} deltaSuffix="vs last month" series={dailySeries(groups.past, j => j.ends_at, () => 1, 30, now)} href={qs({ tab: "past" })} />
+          <Kpi icon={CircleX} tone="red" label="Cancelled" value={groups.cancelled.length} invert delta={delta(groups.cancelled.filter(j => win(j.created_at, d30, now)).length, groups.cancelled.filter(j => win(j.created_at, d60, d30)).length)} deltaSuffix="vs last 30 days" series={dailySeries(groups.cancelled, j => j.created_at, () => 1, 30, now)} href={qs({ tab: "cancelled" })} />
         </section>
         <section className="ws-table-wrap pb-table">
           <Tabs base="/provider/bookings" active={tab} tabs={[{ key: "upcoming", label: "Upcoming", count: groups.upcoming.length }, { key: "active", label: "Active", count: groups.active.length }, { key: "past", label: "Past", count: groups.past.length }, { key: "cancelled", label: "Cancelled", count: groups.cancelled.length }]} />

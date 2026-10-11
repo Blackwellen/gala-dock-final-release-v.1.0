@@ -108,10 +108,14 @@ must(await sb.from("listings").delete().eq("workspace_id", WS).in("slug", ["rive
 let venue = must(await sb.from("listings").select("*").eq("slug", "riverside-arena").maybeSingle(), "venue?");
 const venueFields = { workspace_id: WS, name: "Riverside Arena", kind: "venue", slug: "riverside-arena", category: "Arena", city: "London", location: "Riverside, London SE1 9PP",
   description: "Multi-space riverside venue with a 250-capacity Main Hall, conference suite, rooftop terrace, production studio and landscaped gardens — in-house catering and AV.",
-  image: img("v-riverside-events-centre"), gallery: [img("v-riverside-park"), img("v-skyline-rooftop"), img("v-riverside-conference"), img("v-oakwood")],
+  image: img("v-riverside-events-centre"), gallery: ["v-riverside-park", "v-skyline-rooftop", "v-riverside-conference", "v-oakwood", "v-grand-hall", "hero-wedding", "ev-rooftop", "v-east-london-warehouse", "v-harper", "v-loft-sm", "hero-wedding-b", "ev-tastetango"].map(img),
   price_from: 250, price_unit: "per hour", capacity_min: 20, capacity_max: 400, rating: 4.9, review_count: 128, response_hours: 4, verified: true, instant_book: false,
   emergency_supply: true, booking_mode: "request", review_status: "approved", views: 892, enquiry_count: 46, tags: ["Riverside", "Multi-space", "Catering", "AV"],
   lat: 51.5052, lng: -0.0909, published: true, details: { photos: [img("v-riverside-events-centre")], timezone: "Europe/London", type: "Event venue",
+    contact: { phone: "+44 7700 900123", email: "events@riversidearena.co.uk", website: "www.riversidearena.co.uk" },
+    features: ["Riverside location", "Indoor & outdoor spaces", "In-house catering", "Licensed bar", "Disabled access", "On-site parking", "Live music", "Production & AV"],
+    info: { event_types: ["Weddings", "Corporate", "Private parties", "Live events", "Conferences"], accessibility: "Fully accessible — step-free routes and accessible toilets", parking: "On-site (120 spaces)",
+      licences: ["Live music", "Alcohol", "Late hours"], curfew: "00:30", staffing: "In-house & external suppliers" },
     commercial: { pricing: "hourly", rate_from: 250, rate_to: 450, minimum_spend: 1000, deposit_pct: 30, balance_days: 14, security_deposit: 500, lead_days: 7, short_notice: true,
       cancellation: [{ window: "7+ days", refund: 100 }, { window: "3–7 days", refund: 50 }, { window: "<3 days", refund: 0 }], holds: { enabled: true, hours: 48 }, standby: { enabled: true, fee: 250 }, emergency: { enabled: true, multiplier: 1.5 } } } };
 venue = venue ? must(await sb.from("listings").update(venueFields).eq("id", venue.id).select().single(), "venue upd") : must(await sb.from("listings").insert(venueFields).select().single(), "venue ins");
@@ -129,16 +133,20 @@ const spaceRows = [
   { name: "Grounds & Gardens", indoor: false, area_sqm: 1200, capacity_standing: 400, capacity_seated: 200, layouts: { standing: 400, banquet: 200 }, amenities: ["Marquee pitch", "Lawn", "Parking"], turnaround_minutes: 180, min_hours: 4, exclusive_group: "outdoor", rate_hourly: 380, image: img("v-oakwood") },
 ];
 const spaces = {};
-for (const s of spaceRows) spaces[s.name] = must(await sb.from("spaces").insert({ ...s, workspace_id: WS, venue_id: venue.id, status: "published" }).select().single(), `space ${s.name}`);
+for (const [i, s] of spaceRows.entries()) spaces[s.name] = must(await sb.from("spaces").insert({ ...s, workspace_id: WS, venue_id: venue.id, status: "published", created_at: at(-2 - i * 3, 10) }).select().single(), `space ${s.name}`);
 must(await sb.from("venue_structures").insert({ workspace_id: WS, venue_id: venue.id, version: 1, status: "published", published_at: iso(NOW - 30 * D), elements: [
-  { type: "room", id: "main-hall", label: "Main Hall", x: 40, y: 40, w: 420, h: 260, space: spaces["Main Hall"].id },
-  { type: "room", id: "suite", label: "Riverside Suite", x: 480, y: 40, w: 220, h: 160, space: spaces["Riverside Suite"].id },
-  { type: "room", id: "studio", label: "Studio Space", x: 480, y: 220, w: 220, h: 140, space: spaces["Studio Space"].id },
-  { type: "stage", label: "Fixed stage", x: 60, y: 60, w: 160, h: 50, locked: true },
-  { type: "bar", label: "Main bar", x: 360, y: 250, w: 90, h: 36, locked: true },
-  { type: "exit", label: "Fire exit A", x: 40, y: 290, w: 30, h: 10, protected: true }, { type: "exit", label: "Fire exit B", x: 690, y: 300, w: 10, h: 30, protected: true },
-  { type: "entrance", label: "Main entrance", x: 250, y: 300, w: 60, h: 10 }, { type: "toilets", label: "Toilets", x: 720, y: 40, w: 60, h: 80, locked: true },
-  { type: "accessible_route", label: "Step-free route", points: [[280, 305], [280, 380], [520, 380]] },
+  { type: "room", id: "main-hall", label: "Main Hall", x: 40, y: 40, w: 400, h: 240, space: spaces["Main Hall"].id },
+  { type: "room", id: "suite", label: "Riverside Suite", x: 460, y: 40, w: 200, h: 130, space: spaces["Riverside Suite"].id },
+  { type: "room", id: "studio", label: "Studio Space", x: 460, y: 190, w: 200, h: 130, space: spaces["Studio Space"].id },
+  { type: "room", id: "rooftop", label: "Rooftop Terrace", x: 680, y: 40, w: 180, h: 130, space: spaces["Rooftop Terrace"].id },
+  { type: "room", id: "gardens", label: "Grounds & Gardens", x: 680, y: 190, w: 180, h: 180, space: spaces["Grounds & Gardens"].id },
+  { type: "stage", label: "Fixed stage", x: 60, y: 56, w: 150, h: 40, locked: true },
+  { type: "bar", label: "Main bar", x: 330, y: 232, w: 96, h: 34, locked: true },
+  { type: "exit", label: "Fire exit A", x: 40, y: 262, w: 10, h: 30, protected: true }, { type: "exit", label: "Fire exit B", x: 650, y: 290, w: 10, h: 30, protected: true },
+  { type: "entrance", label: "Main entrance", x: 210, y: 280, w: 60, h: 10 }, { type: "loading", label: "Loading bay", x: 460, y: 330, w: 90, h: 34, locked: true },
+  { type: "toilets", label: "Toilets", x: 560, y: 330, w: 90, h: 34, locked: true },
+  { type: "accessible_route", label: "Step-free route", points: [[240, 290], [240, 380], [610, 380], [610, 364]] },
+  { type: "water", label: "River Thames", x: 0, y: 400, w: 900, h: 56 },
 ] }), "structure");
 
 const pkgs = [
@@ -150,7 +158,7 @@ const pkgs = [
     { listing_id: dj.id, name: "Corporate Sound Package", status: "paused", description: "Speech PA, playlists and wireless mics.", base_price: 650, price_basis: "fixed", duration_hours: 6, deposit_pct: 25, inclusions: ["PA", "2 wireless mics", "Background playlists"], image: img("s-sound-lighting"), details: { bookings: 7, revenue: 4550 } }] : []),
   ...(catering ? [{ listing_id: catering.id, name: "Gala Dinner Menu", status: "published", description: "Three-course seated dinner with canapé reception.", base_price: 58, price_basis: "per_person", min_guests: 40, max_guests: 300, deposit_pct: 30, inclusions: ["Canapés", "3 courses", "Service staff"], image: img("s-gourmet"), details: { bookings: 15, revenue: 52200, rating: 4.9 } }] : []),
 ];
-for (const p of pkgs) must(await sb.from("packages").insert({ ...p, workspace_id: WS }), `pkg ${p.name}`);
+for (const [i, p] of pkgs.entries()) must(await sb.from("packages").insert({ ...p, workspace_id: WS, created_at: at(-20 - i * 6, 11) }), `pkg ${p.name}`);
 
 // ── Team (Phase 2 crew_members) ─────────────────────────────────────────
 const crewRows = [
@@ -202,7 +210,8 @@ for (const o of opp) {
     title: `${o.scope} — ${o.event}`, scope: `${o.scope}. ${o.detail}.`, requirements: { space: o.space ?? null, space_id: o.space ? spaces[o.space].id : null, guests: o.guests, layout: o.type === "corporate" ? "theatre" : "banquet", quote_requested: !!o.quoteRequested, setup: "2 hours before doors", access: "Loading bay via Riverside Walk" },
     budget_min: o.min, budget_max: o.max, response_hours: o.emergency ? 2 : 8, response_deadline: iso(NOW + o.due * H), hold_strategy: o.status === "held" ? "conditional" : "none", hold_hours: o.holdHours ?? null, emergency: !!o.emergency, status: "sent" }).select().single(), `req ${o.event}`);
   const bi = must(await sb.from("build_items").insert({ event_id: ev.id, request_id: req.id, listing_id: L.id, category: req.category, title: L.name, package: o.space ?? o.scope, scope: req.scope, image: o.cover,
-    status: "sent", role: o.role ?? "primary", response_deadline: iso(NOW + o.due * H), notes: "" }).select().single(), `item ${o.event}`);
+    status: "sent", role: o.role ?? "primary", response_deadline: iso(NOW + o.due * H), notes: "",
+    created_at: o.due > 0 && o.due < 30 ? iso(NOW - (Object.keys(items).length % 5 + 0.5) * H - (o.due < 3 ? 0 : (Object.keys(items).length % 4) * D)) : iso(NOW - (6 + Object.keys(items).length * 3) * D) }).select().single(), `item ${o.event}`);
   items[o.event] = { ...bi, event: ev, request: req, o, L };
 }
 // Quotes (versioned) and holds — written as the provider would via provider_issue_quote.
@@ -270,6 +279,7 @@ for (const b of bk) {
     location: b.loc, layout: b.space ? (b.type === "corporate" ? "Theatre" : "Banquet") : "", status: b.status ?? "confirmed", role: "primary", value: b.value, platform_fee: fee, net_payout: b.value - fee, paid_amount: paidAmount,
     payment_status: b.status === "cancelled" ? "refunded" : b.paid >= 1 ? "paid" : b.paid > 0 ? (b.deposit ? "deposit_paid" : "part_paid") : "unpaid", source: b.source ?? (ref % 3 ? "marketplace" : "direct"),
     next_action: b.next ?? "", next_action_due: b.nextDays !== undefined ? at(b.nextDays, 17) : null, image: b.cover,
+    created_at: iso(NOW - ((ref * 37) % 58 + 1) * D - ((ref * 13) % 20) * H),
     commercial_snapshot: { value: b.value, commission_bps: 1500, platform_fee: fee, deposit_pct: 30, cancellation: [{ window: "7+ days", refund: 100 }, { window: "3–7 days", refund: 50 }, { window: "<3 days", refund: 0 }], captured_at: iso(NOW - 20 * D) },
     details: b.service ? { deliverables: ["Setup 2h before doors", "Service delivery", "Breakdown"], equipment: b.service === "dj" ? ["CDJ-3000 x2", "PA 4kW", "Wireless mics x2", "Dance-floor lighting"] : ["Hot boxes", "Crockery for " + b.guests, "Service staff"], milestones: [{ label: "Deposit", done: b.paid > 0 }, { label: "Final numbers", done: false }, { label: "Delivery", done: b.status === "completed" }] }
       : { beo: { arrival: "Doors 30 mins before start", setup: "2 hours before doors", breakdown: "60 minutes after close", fnb: b.type === "wedding" ? "3-course dinner + evening buffet" : "Refreshments + lunch", bar: b.type === "corporate" ? "Soft drinks" : "Cash bar + welcome drink", access: "Loading bay via Riverside Walk", compliance: ["Licence until 00:00", "Noise limit 85dB after 23:00"] }, cancellation_reason: b.reason } }).select().single(), `job ${b.event}`);

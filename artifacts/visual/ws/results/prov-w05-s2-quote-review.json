@@ -1,16 +1,16 @@
 {
   "key": "prov-w05-s2-quote-review",
-  "url": "/provider/opportunities/4fe37aa9-27eb-43fe-b9ed-bc2ff909a4a6/quote?step=2&quote=b9e09080-3003-4d74-92b1-dc6c10e7bd1c",
+  "url": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
   "file": "Designs/Provider Workspace/Gala·Dock Quote Review Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.84,
-  "ssim": 0.5947,
+  "mismatchPercent": 12.35,
+  "ssim": 0.6239,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1114
+    "scrollHeight": 1071
   },
   "errors": [],
-  "at": "2026-10-10T23:57:59.145Z"
+  "at": "2026-10-11T00:33:34.372Z"
 }

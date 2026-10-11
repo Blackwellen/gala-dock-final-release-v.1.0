@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/verify-email",
+    "file": "Designs\\auth & onboarding\\image-gen-3(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-verify-email",
+    "mismatchPercent": 15.422,
+    "interfaceMismatchPercent": 7.244,
+    "ssimFull": 0.7895,
+    "ssimInterface": 0.7998,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

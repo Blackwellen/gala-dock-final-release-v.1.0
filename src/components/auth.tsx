@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, CalendarDays, Users, Sparkles, Mail, LockKeyhole, Eye, EyeOff, ShieldCheck, CircleHelp, Globe, Check, Send, KeyRound, QrCode, RefreshCw, AlertCircle, Clock, UserRound, Ban, Pencil, X, LogIn } from "lucide-react";
+import { ArrowRight, CalendarDays, Users, Sparkles, Mail, LockKeyhole, Eye, EyeOff, ShieldCheck, CircleHelp, Globe, Check, Send, KeyRound, QrCode, RefreshCw, AlertCircle, Clock, UserRound, Ban, Pencil, X, LogIn, FileText, Building2, ChevronDown, Headset } from "lucide-react";
 import { Logo, Button, IconTile } from "./ui";
 import { createClient, setRememberDevice } from "@/lib/supabase/client";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
@@ -32,7 +32,7 @@ const descriptions: Record<AuthScreen, string> = {
   access: "Your current account doesn’t have access to this workspace. Choose a different workspace, reauthenticate, or contact support if you believe this is a mistake.",
 };
 const accessCopy: Record<string, [string, string]> = {
-  denied: ["Access denied", "You don’t have permission to open this workspace with your current account or role. If you believe you should have access, try a different workspace or contact your organization’s administrator."],
+  denied: ["Access denied", "You don’t have permission to access this workspace with your current account or role. If you believe you should have access, try a different workspace or contact your organization’s administrator."],
   insufficient: ["Insufficient permission", "Your role doesn’t include this area. Ask a workspace owner to review your permissions."],
   suspended: ["Access suspended", "Access to this workspace is currently suspended. Your other workspaces and your personal account are unaffected."],
   revoked: ["Access revoked", "Your access to this workspace has been removed. Contact the workspace owner if you think this is a mistake."],
@@ -319,7 +319,7 @@ export function AuthPage(props: AuthProps) {
             {screen === "forgot-password" && <div className="auth-note"><IconTile icon={Send} color="purple" /><span><b>If an account exists for this email,</b><small>we’ll send a reset link with further instructions.</small></span></div>}
 
             {screen === "verify-email" && state !== "expired" && <>
-              <div className="auth-note"><Mail aria-hidden="true" /><span><b>{state === "verified" ? "Email verified" : "Verification email sent"}</b><small>{state === "verified" ? "You can continue to where you left off." : "Check your inbox and spam folder for a message from Gala Dock with a confirmation link."}</small></span></div>
+              <div className="auth-note"><Mail aria-hidden="true" /><span><b>{state === "verified" ? "Email verified" : "Verification email sent"}</b><small>{state === "verified" ? "You can continue to where you left off." : "Check your inbox (and spam folder) for a message from Gala Dock with a verification link."}</small></span></div>
               {state === "waiting" && <div className="resend-row"><RefreshCw size={20} aria-hidden="true" /><span aria-live="polite">{cooldown ? `Resend available in 00:${String(cooldown).padStart(2, "0")}` : "Haven’t received your email?"}<small>To prevent spam, you can request a new email shortly.</small></span><Button variant="soft" disabled={cooldown > 0} onClick={resend}>Resend email</Button></div>}
               {state === "waiting" && <Button variant="outline" href={withNext(`/register${props.email ? `?email=${encodeURIComponent(props.email)}` : ""}`)} className="full-width"><Pencil size={18} aria-hidden="true" />Change email address</Button>}
             </>}
@@ -327,7 +327,7 @@ export function AuthPage(props: AuthProps) {
             {screen === "mfa" && <>
               <div className="segmented" role="tablist" aria-label="Verification method">
                 <button type="button" role="tab" aria-selected={method === "authenticator"} className={method === "authenticator" ? "active" : ""} onClick={() => setMethod("authenticator")}><QrCode size={20} aria-hidden="true" /> Authenticator</button>
-                <button type="button" role="tab" aria-selected={method === "recovery"} className={method === "recovery" ? "active" : ""} onClick={() => setMethod("recovery")}><KeyRound size={20} aria-hidden="true" /> Recovery code</button>
+                <button type="button" role="tab" aria-selected={method === "recovery"} className={method === "recovery" ? "active" : ""} onClick={() => setMethod("recovery")}><FileText size={20} aria-hidden="true" /> Recovery code</button>
               </div>
               {method === "authenticator" && <>
                 {props.state === "required" && !props.factors?.length && !enrolment && <p className="auth-note"><ShieldCheck aria-hidden="true" /><span><b>Two-step verification is required</b><small>This area requires an authenticator app. Set one up to continue.</small></span></p>}
@@ -336,6 +336,7 @@ export function AuthPage(props: AuthProps) {
                 <p className="auth-description">{enrolment ? "Scan this QR code with Google Authenticator, Microsoft Authenticator or 1Password, then enter the 6-digit code it shows." : "Open your authenticator app (e.g. Google Authenticator, Microsoft Authenticator) and enter the 6-digit code."}</p>
                 {enrolment && <div className="qr-block">{/* QR SVG comes from Supabase Auth, not user input. */}<img src={enrolment.qr} alt="Authenticator setup QR code" width={164} height={164} /><small>Can’t scan? Enter this key: <code>{enrolment.secret}</code></small></div>}
                 <OtpInput value={code} onChange={setCode} invalid={!!error} />
+                <p className="check-row otp-hint"><Clock size={18} aria-hidden="true" /><span>Codes refresh every 30 seconds in your app</span></p>
                 {!props.factors?.length && !enrolment && <Button variant="outline" onClick={enroll} className="full-width">Set up an authenticator app</Button>}
               </>}
               {method === "recovery" && <div className="auth-note"><KeyRound aria-hidden="true" /><span><b>Recovery codes aren’t available yet</b><small>Gala Dock doesn’t issue recovery codes. If you’ve lost access to your authenticator, contact support — we’ll verify your identity before restoring access.</small></span></div>}
@@ -343,10 +344,10 @@ export function AuthPage(props: AuthProps) {
 
             {screen === "invite" && <><InvitationSummary invite={props.invite ?? null} />
               {state === "valid" && <div className="auth-security invitation-security"><ShieldCheck aria-hidden="true" /><span><b>This invite is single-use.</b><small>Accepting will add you to this workspace with the {props.invite?.role ?? "assigned"} role. It won’t remove or replace your existing workspace access.</small></span><Link href="/help">Learn more <ArrowRight size={13} /></Link></div>}
-              {props.signedInEmail && state === "valid" && <p className="signed-in-as">Signed in as <b>{props.signedInEmail}</b></p>}</>}
+</>}
 
             {screen === "access" && <><div className="auth-note danger"><IconTile icon={Ban} color="red" /><span><b>{accessTitle}</b><small>{accessText}</small></span></div>
-              {state !== "expired" && !!props.workspaces?.length && <label className="field"><span>Workspace</span><select name="workspace" defaultValue=""><option value="" disabled>Select a workspace</option>{props.workspaces.map(w => <option value={w.id} key={w.id}>{w.name} · {w.kind === "provider" ? "Provider" : "Organizer"}</option>)}</select></label>}</>}
+              {state !== "expired" && !!props.workspaces?.length && <label className="field workspace-select"><span>Workspace</span><span className="select-wrap with-icon"><Building2 size={20} aria-hidden="true" /><select name="workspace" defaultValue=""><option value="" disabled>Select a workspace</option>{props.workspaces.map(w => <option value={w.id} key={w.id}>{w.name} · {w.kind === "provider" ? "Provider" : "Organizer"}</option>)}</select><ChevronDown size={20} aria-hidden="true" /></span></label>}</>}
 
             <p className="form-error" role="alert" tabIndex={-1} ref={errorRef} hidden={!error}><AlertCircle size={18} aria-hidden="true" />{error}</p>
             {notice && <p className="form-success" role="status"><Check size={18} aria-hidden="true" />{notice}</p>}
@@ -363,22 +364,21 @@ export function AuthPage(props: AuthProps) {
           {screen === "reset-password" && state !== "complete" && <><div className="auth-divider">or</div><Link className="request-new-link" href="/forgot-password">Request new link</Link></>}
           {screen === "forgot-password" && <Link className="auth-back" href="/login">← Back to Log in</Link>}
           {screen === "mfa" && <><div className="auth-divider">Or try a different method</div><Button variant="outline" className="full-width" onClick={() => setMethod(method === "authenticator" ? "recovery" : "authenticator")}><RefreshCw size={20} aria-hidden="true" />Switch method</Button>
-            <form action={`/auth/signout${next ? `?next=${encodeURIComponent(next)}` : ""}`} method="post"><button className="text-link" type="submit">Sign out and use another account</button></form></>}
+</>}
           {screen === "invite" && state === "valid" && <div className="social-buttons">
             {props.signedInEmail ? <Button variant="outline" onClick={() => respondToInvite(false)} disabled={busy}><X size={18} aria-hidden="true" />Decline</Button> : <Button variant="outline" href={`/register?next=${encodeURIComponent(next)}`}><UserRound size={18} aria-hidden="true" />Create account</Button>}
             <Button variant="outline" onClick={switchAccount}><UserRound size={18} aria-hidden="true" />Use another account</Button>
           </div>}
           {screen === "invite" && state !== "valid" && <div className="invitation-expired" role="status"><Clock size={26} aria-hidden="true" /><span><b>{({ expired: "This invite has expired", used: "This invite has already been used", declined: "This invite was declined", revoked: "This invite is no longer valid", mismatch: "This invite belongs to another account" } as Record<string, string>)[state] ?? "This invite is unavailable"}</b>
-            <small>{state === "expired" && props.invite ? `This invitation expired on ${new Date(props.invite.expires_at).toLocaleDateString("en-GB", { month: "short", day: "numeric", year: "numeric" })} and can no longer be used.` : state === "mismatch" ? "Switch to the email address the invitation was sent to." : "Ask the workspace owner to send you a new invitation."}</small></span>
+            <small>{state === "expired" && props.invite ? `This invitation expired on ${new Date(props.invite.expires_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} and can no longer be used.` : state === "mismatch" ? "Switch to the email address the invitation was sent to." : "Ask the workspace owner to send you a new invitation."}</small></span>
             {state === "mismatch" && <Button variant="outline" onClick={switchAccount}>Switch account</Button>}</div>}
           {screen === "access" && <div className="social-buttons">
             <form action={`/auth/signout${next ? `?next=${encodeURIComponent(next)}` : ""}`} method="post"><Button variant="outline" type="submit" className="full-width"><RefreshCw size={18} aria-hidden="true" />Reauthenticate</Button></form>
-            <Button variant="outline" href="/help"><CircleHelp size={18} aria-hidden="true" />Contact support</Button>
+            <Button variant="outline" href="/help"><Headset size={20} aria-hidden="true" />Contact support</Button>
           </div>}
-          {screen === "access" && <Link className="auth-back" href={props.signedInEmail ? "/discover" : "/login"}>← Return to {props.signedInEmail ? "Discover" : "Log in"}</Link>}
 
-          {!["reset-password", "verify-email", "invite"].includes(screen) && <div className="auth-security"><ShieldCheck aria-hidden="true" /><span><b>{screen === "register" ? "You’ll verify your email once." : screen === "access" ? "Your data stays protected." : "Secure, always."}</b><small>{screen === "register" ? "Then you can continue to your original destination and pick up right where you left off." : screen === "access" ? "To protect the privacy and security of our customers, we don’t reveal whether a specific workspace or record exists." : "Your data is protected with enterprise-grade security, including optional multi-factor authentication (MFA)."}</small></span>{screen !== "register" && <Link href="/help">Learn more <ArrowRight size={13} /></Link>}</div>}
-          {!["register", "reset-password", "invite"].includes(screen) && <div className="auth-help"><CircleHelp size={17} aria-hidden="true" /><span>Need help?</span><Link href="/help">Visit our Help Center</Link><i /> <Link href="/help">Contact Support</Link></div>}
+          {!["reset-password", "verify-email", "invite"].includes(screen) && <div className="auth-security"><ShieldCheck aria-hidden="true" /><span><b>{screen === "register" ? "You’ll verify your email once." : screen === "access" ? "Your data stays protected." : "Secure, always."}</b><small>{screen === "register" ? "Then you can continue to your original destination and pick up right where you left off." : screen === "access" ? "You may see this message if you have insufficient access. To protect the privacy and security of our customers, we don’t reveal whether a specific workspace or record exists." : "Your data is protected with enterprise-grade security, including optional multi-factor authentication (MFA)."}</small></span>{screen !== "register" && <Link href="/help">Learn more <ArrowRight size={13} /></Link>}</div>}
+          {!["register", "reset-password", "invite"].includes(screen) && <div className="auth-help"><CircleHelp size={17} aria-hidden="true" /><span>Need help?</span><Link href="/help">Visit our Help Center</Link><i /> <Link href="/help">Contact Support</Link>{screen === "access" && <><i /> <Link href={props.signedInEmail ? "/discover" : "/login"}>Return to {props.signedInEmail ? "Discover" : "Log in"}</Link></>}{screen === "mfa" && <><i /> <form action={`/auth/signout${next ? `?next=${encodeURIComponent(next)}` : ""}`} method="post"><button className="text-link" type="submit">Use another account</button></form></>}</div>}
         </section>
       </main>
     </div>

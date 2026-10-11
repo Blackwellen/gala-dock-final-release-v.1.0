@@ -1,0 +1,115 @@
+{
+ "name": "c-org-002",
+ "path": "/organizer/events",
+ "page": 10.12,
+ "components": [
+  {
+   "sel": ".k-table",
+   "label": "Neon Nights Festival",
+   "x": 241,
+   "y": 384,
+   "w": 1274,
+   "h": 545,
+   "mismatch": 14.6
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Events",
+   "x": 240,
+   "y": 109,
+   "w": 1276,
+   "h": 59,
+   "mismatch": 14.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Neon Nights Festival",
+   "x": 240,
+   "y": 383,
+   "w": 1276,
+   "h": 606,
+   "mismatch": 13.6
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 12.5
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 240,
+   "y": 186,
+   "w": 509,
+   "h": 44,
+   "mismatch": 11.5
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "£185,070",
+   "x": 1097,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 11.3
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "£235,000",
+   "x": 1312,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 10.6
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "13",
+   "x": 240,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 6.8
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "11",
+   "x": 454,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 6.2
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "2",
+   "x": 883,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 6.2
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "0",
+   "x": 669,
+   "y": 297,
+   "w": 204,
+   "h": 72,
+   "mismatch": 4.7
+  }
+ ]
+}

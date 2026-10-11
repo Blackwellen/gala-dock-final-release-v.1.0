@@ -24,8 +24,10 @@ export function IconTile({ icon: Icon, tone = "blue", size = 44 }: { icon: Lucid
 }
 
 /** Smooth sparkline with soft area fill, drawn from real series values. */
-export function Sparkline({ values, tone = "blue", width = 92, height = 40 }: { values: number[]; tone?: Tone; width?: number; height?: number }) {
-  const series = values.length > 1 ? values : [0, 0];
+export function Sparkline({ values, tone = "blue", width = 72, height = 38 }: { values: number[]; tone?: Tone; width?: number; height?: number }) {
+  // Rendered as a smoothed trend (3-point moving average) — the underlying values are unchanged.
+  const raw = values.length > 1 ? values : [0, 0];
+  const series = raw.map((_, i) => { const w = raw.slice(Math.max(0, i - 1), i + 2); return w.reduce((a, b) => a + b, 0) / w.length; });
   const max = Math.max(...series), min = Math.min(...series), span = max - min || 1;
   const pts = series.map((v, i) => [(i / (series.length - 1)) * width, height - 3 - ((v - min) / span) * (height - 8)] as const);
   const d = pts.map(([x, y], i) => {
@@ -52,7 +54,7 @@ export function Kpi({ icon, tone = "blue", label, value, delta, deltaSuffix, ser
   icon: LucideIcon; tone?: Tone; label: string; value: ReactNode; delta?: number | null; deltaSuffix?: string; series?: number[]; invert?: boolean; href?: string;
 }) {
   const body = <>
-    <IconTile icon={icon} tone={tone} />
+    <IconTile icon={icon} tone={tone} size={36} />
     <div className="ws-kpi-text"><span>{label}</span><strong>{value}</strong>{delta !== undefined && <Delta value={delta} suffix={deltaSuffix} invert={invert} />}</div>
     {series && <Sparkline values={series} tone={tone} />}
   </>;

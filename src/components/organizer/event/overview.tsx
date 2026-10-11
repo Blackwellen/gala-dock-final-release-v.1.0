@@ -21,19 +21,17 @@ export function Overview({ e, d, me, canMoney }: { e: ProEvent; d: EventData; me
   const paceLabels = d.series.map((x, i) => (i % 7 === 0 || i === d.series.length - 1) ? new Date(`${x.day}T12:00:00Z`).toLocaleString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }) : "");
   const budget = Number(e.budget_total ?? 0), committed = d.committed, actual = d.costsActual, forecastCost = Math.max(committed, d.estimated);
   const milestones = [
-    ...d.tasks.filter(t => t.status !== "done" && (t.milestone || t.priority === "high")).slice(0, 4).map(t => ({ at: t.due_at, title: t.title, sub: t.status === "in_progress" ? "In progress" : t.assignee_name ? `Owner: ${t.assignee_name}` : "Not started", tag: t.priority === "high" ? ["High", "red"] : ["Medium", "blue"] })),
+    ...d.tasks.filter(t => t.milestone).map(t => ({ at: t.due_at, title: t.title, sub: t.detail || (t.status === "in_progress" ? "In progress" : "Not started"), tag: t.status === "done" ? ["On track", "green"] : t.priority === "high" || t.priority === "critical" ? ["High", "red"] : ["Medium", "blue"] })),
     ...(e.starts_at ? [{ at: e.starts_at, title: "Event day", sub: "Live Mode ready", tag: ["On track", "green"] }] : []),
-  ].sort((a, b) => (a.at ?? "9").localeCompare(b.at ?? "9")).slice(0, 5);
-  const activity = [
-    ...d.items.filter(b => b.status !== "suggested").map(b => ({ at: b.updated_at, text: `${itemStatus(b.status).label} – ${b.title}`, tone: ["confirmed", "fulfilled"].includes(b.status) ? "green" : "blue" })),
-    ...d.incidents.map(i => ({ at: i.created_at, text: `Incident ${i.status === "resolved" ? "resolved" : "reported"} – ${i.title}`, tone: i.status === "resolved" ? "green" : "red" })),
-    ...d.media.map(m => ({ at: m.created_at, text: `Media asset ${m.status} – ${m.title}`, tone: "purple" })),
-    ...(d.series.length ? [{ at: new Date().toISOString(), text: `${num(d.series.at(-1)!.tickets)} tickets sold today`, tone: "blue" }] : []),
-  ].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 5);
+  ].sort((a, b) => (a.at ?? "9").localeCompare(b.at ?? "9")).slice(-5);
+  // Activity = the event's audit trail (bookings, orders, crew, media, contracts, status changes).
+  const activity = d.activity.length ? d.activity.slice(0, 5).map(a => ({ at: a.created_at, text: a.text, tone: a.event.startsWith("booking") || a.event.startsWith("contract") ? "green" : a.event.startsWith("crew") || a.event.startsWith("media") ? "purple" : "blue" }))
+    : d.items.filter(b => b.status !== "suggested").slice(0, 5).map(b => ({ at: b.updated_at, text: `${itemStatus(b.status).label} – ${b.title}`, tone: "blue" }));
+  const pendingSup = d.primary.filter(b => !["confirmed", "fulfilled"].includes(b.status));
   const risks = [
-    ...r.checks.filter(c => !c.ok).map(c => ({ title: c.label + " — not complete", sub: c.key === "providers" ? `${d.primary.filter(b => !["confirmed", "fulfilled"].includes(b.status)).map(b => b.title).slice(0, 2).join(", ")}` : "Required for readiness", sev: c.severity === "critical" ? "High" : c.severity === "high" ? "High" : "Medium" })),
-    ...d.incidents.filter(i => i.status === "open").map(i => ({ title: i.title, sub: i.detail || "Open incident", sev: ["high", "critical"].includes(i.severity) ? "High" : "Medium" })),
-    ...d.tasks.filter(t => t.category === "risk" && t.status !== "done").map(t => ({ title: t.title, sub: "Risk task outstanding", sev: "Medium" })),
+    ...(pendingSup.length ? [{ title: `${pendingSup.length} supplier${pendingSup.length === 1 ? "" : "s"} pending confirmation`, sub: pendingSup.map(b => b.title).slice(0, 2).join(", "), sev: "High" }] : []),
+    ...d.tasks.filter(t => t.category === "risk" && t.detail && t.status !== "done").map(t => ({ title: t.title, sub: t.detail, sev: t.priority === "high" || t.priority === "critical" ? "High" : "Medium" })),
+    ...d.incidents.filter(i => i.status === "open" && ["high", "critical"].includes(i.severity)).map(i => ({ title: i.title, sub: i.detail || "Open incident", sev: "High" })),
   ].slice(0, 4);
 
   return <div className="ov">

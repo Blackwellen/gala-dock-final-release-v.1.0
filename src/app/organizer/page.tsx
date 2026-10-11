@@ -71,7 +71,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
 
     <div className="oh-row2">
       <Card aria-label="Upcoming events">
-        <div className="k-between" style={{ marginBottom: 10 }}><div className="k-row" style={{ gap: 12 }}><Tile icon={CalendarDays} /><div><h2 style={{ fontSize: 16 }}>Upcoming events</h2><p className="k-small">Your next events and key milestones.</p></div></div><Link className="k-link" href="/organizer/calendar">View Calendar <ArrowRight size={13} /></Link></div>
+        <div className="k-between" style={{ marginBottom: 10 }}><div className="k-row" style={{ gap: 12 }}><Tile icon={CalendarDays} /><div><h2 style={{ fontSize: 15.5 }}>Upcoming events</h2><p className="k-small">Your next events and key milestones.</p></div></div><Link className="k-link" href="/organizer/calendar">View Calendar <ArrowRight size={13} /></Link></div>
         {upcoming.length === 0 ? <div className="k-empty"><h3>No upcoming events</h3><p>Create your first professional event to start planning.</p><Link className="k-btn primary" href="/organizer/events/new?step=1">Create event</Link></div> :
           <div className="oh-upcoming">{upcoming.map(e => { const d = dateBadge(e.starts_at); const pctSold = e.ticketCap ? Math.round((100 * e.sold) / e.ticketCap) : e.readiness; const [label, tone] = statusOf(e.readiness); return <div key={e.id} className="oh-up-row">
             <DateBox mon={d.mon} day={d.day} />
@@ -92,7 +92,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
     </div>
 
     <Card aria-label="Commercial summary">
-      <div className="k-between" style={{ marginBottom: 12 }}><div className="k-row" style={{ gap: 12 }}><Tile icon={BarChart3} /><div><h2 style={{ fontSize: 16 }}>Commercial summary</h2><p className="k-small">Performance across all events and revenue streams.</p></div></div>
+      <div className="k-between" style={{ marginBottom: 12 }}><div className="k-row" style={{ gap: 12 }}><Tile icon={BarChart3} /><div><h2 style={{ fontSize: 15.5 }}>Commercial summary</h2><p className="k-small">Performance across all events and revenue streams.</p></div></div>
         <div className="k-row" style={{ gap: 14 }}><Link className="k-link" href="/organizer/money?tab=reports">View detailed reports <ArrowRight size={13} /></Link><span className="k-btn ghost sm"><CalendarRange size={14} />Last 30 days</span></div></div>
       <div className="k-grid k-g5">
         <SumKpi icon={Users} tone="blue" label="Leads & Proposals" value={num(leadCount)} sub={`${leads30} new in last 30 days`} spark={series.income.map((v, i) => v / 1000 + i)} color="#3b82f6" href="/organizer/sales" />

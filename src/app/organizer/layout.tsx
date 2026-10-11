@@ -6,6 +6,7 @@ import "@/styles/org-event.css";
 import "@/styles/org-calendar.css";
 import "@/styles/org-sales.css";
 import "@/styles/org-wizard.css";
+import "@/styles/org-market.css";
 import { KitProviders } from "@/components/kit/client";
 import { OrganizerShell } from "@/components/organizer/shell";
 import { getOrganizer } from "@/lib/data/context";

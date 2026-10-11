@@ -1,0 +1,115 @@
+{
+ "name": "c-org-010",
+ "path": "/organizer/marketplace/requests/6c44d895-083e-49e8-bb25-10a01b040d21",
+ "page": 17.01,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Request status",
+   "x": 1290,
+   "y": 283,
+   "w": 228,
+   "h": 302,
+   "mismatch": 28.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Quote comparison",
+   "x": 236,
+   "y": 443,
+   "w": 1040,
+   "h": 581,
+   "mismatch": 25.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event context",
+   "x": 236,
+   "y": 283,
+   "w": 325,
+   "h": 146,
+   "mismatch": 24.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recent activity",
+   "x": 1290,
+   "y": 910,
+   "w": 228,
+   "h": 114,
+   "mismatch": 20.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Requirement summary",
+   "x": 571,
+   "y": 283,
+   "w": 311,
+   "h": 146,
+   "mismatch": 19.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recommended: StagePro UK",
+   "x": 1305,
+   "y": 660,
+   "w": 198,
+   "h": 177,
+   "mismatch": 18.8
+  },
+  {
+   "sel": ".k-agent",
+   "label": "AI recommendations",
+   "x": 1290,
+   "y": 600,
+   "w": 228,
+   "h": 296,
+   "mismatch": 17.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Key details",
+   "x": 892,
+   "y": 283,
+   "w": 271,
+   "h": 146,
+   "mismatch": 15.8
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Attachments",
+   "x": 1173,
+   "y": 283,
+   "w": 103,
+   "h": 146,
+   "mismatch": 6.7
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 5.8
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 230,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 4.5
+  }
+ ]
+}

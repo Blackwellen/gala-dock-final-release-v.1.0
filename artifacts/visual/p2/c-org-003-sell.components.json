@@ -1,0 +1,160 @@
+{
+ "name": "c-org-003-sell",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell",
+ "page": 25.22,
+ "components": [
+  {
+   "sel": ".eh-hero",
+   "label": "Neon Nights Festival",
+   "x": 240,
+   "y": 113,
+   "w": 1276,
+   "h": 134,
+   "mismatch": 71
+  },
+  {
+   "sel": ".k-card",
+   "label": "Posters & media",
+   "x": 745,
+   "y": 934,
+   "w": 491,
+   "h": 90,
+   "mismatch": 45.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "Venue map & ticketing",
+   "x": 745,
+   "y": 487,
+   "w": 491,
+   "h": 433,
+   "mismatch": 41.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Public event page",
+   "x": 240,
+   "y": 934,
+   "w": 491,
+   "h": 90,
+   "mismatch": 32.6
+  },
+  {
+   "sel": ".k-table",
+   "label": "Early Bird - General Admission",
+   "x": 257,
+   "y": 540,
+   "w": 497,
+   "h": 336,
+   "mismatch": 23
+  },
+  {
+   "sel": ".k-card",
+   "label": "Ticket tiers",
+   "x": 240,
+   "y": 487,
+   "w": 491,
+   "h": 433,
+   "mismatch": 19.7
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 1250,
+   "y": 384,
+   "w": 266,
+   "h": 303,
+   "mismatch": 18.3
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Views",
+   "x": 744,
+   "y": 384,
+   "w": 240,
+   "h": 89,
+   "mismatch": 17.7
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Revenue",
+   "x": 492,
+   "y": 384,
+   "w": 240,
+   "h": 89,
+   "mismatch": 17.1
+  },
+  {
+   "sel": ".eh-tabs",
+   "label": "eh-tabs",
+   "x": 240,
+   "y": 261,
+   "w": 1276,
+   "h": 47,
+   "mismatch": 14.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Promotion channels",
+   "x": 1250,
+   "y": 700,
+   "w": 266,
+   "h": 324,
+   "mismatch": 14.7
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Conversion rate",
+   "x": 996,
+   "y": 384,
+   "w": 240,
+   "h": 89,
+   "mismatch": 14.5
+  },
+  {
+   "sel": ".eh-sub",
+   "label": "eh-sub",
+   "x": 240,
+   "y": 322,
+   "w": 1276,
+   "h": 48,
+   "mismatch": 14.4
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 240,
+   "y": 261,
+   "w": 513,
+   "h": 46,
+   "mismatch": 13.1
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.1
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Tickets sold",
+   "x": 240,
+   "y": 384,
+   "w": 240,
+   "h": 89,
+   "mismatch": 10.1
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

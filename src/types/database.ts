@@ -3665,6 +3665,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      event_activity: {
+        Args: { p_event: string; p_limit?: number }
+        Returns: {
+          actor: string
+          created_at: string
+          event: string
+          id: number
+          text: string
+        }[]
+      }
       event_readiness: { Args: { p_event: string }; Returns: Json }
       expire_stale_items: { Args: never; Returns: number }
       has_admin_permission: { Args: { p: string }; Returns: boolean }
@@ -3785,6 +3795,7 @@ export type Database = {
         Args: { p_job: string; p_reason?: string; p_to: string }
         Returns: undefined
       }
+      provider_mark_thread_read: { Args: { p_thread: string }; Returns: number }
       provider_pause_listing: {
         Args: { p_listing: string; p_pause: boolean }
         Returns: undefined
@@ -3827,6 +3838,10 @@ export type Database = {
           p_ws: string
         }
         Returns: number
+      }
+      provider_send_message: {
+        Args: { p_body: string; p_thread: string }
+        Returns: string
       }
       provider_send_quote: { Args: { p_quote: string }; Returns: string }
       provider_set_availability: {

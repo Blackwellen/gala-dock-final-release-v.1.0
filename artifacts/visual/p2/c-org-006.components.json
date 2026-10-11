@@ -1,0 +1,160 @@
+{
+ "name": "c-org-006",
+ "path": "/organizer/sales/leads/a7cdf606-292e-4523-8015-9c25886ceb61",
+ "page": 15.17,
+ "components": [
+  {
+   "sel": ".k-kpi",
+   "label": "Weighted value",
+   "x": 257,
+   "y": 774,
+   "w": 163,
+   "h": 59,
+   "mismatch": 66.4
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Potential profit",
+   "x": 428,
+   "y": 774,
+   "w": 163,
+   "h": 59,
+   "mismatch": 59.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Suggested venues",
+   "x": 240,
+   "y": 883,
+   "w": 539,
+   "h": 141,
+   "mismatch": 48.5
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Next best action",
+   "x": 1238,
+   "y": 289,
+   "w": 278,
+   "h": 213,
+   "mismatch": 34.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Key information",
+   "x": 240,
+   "y": 656,
+   "w": 539,
+   "h": 213,
+   "mismatch": 25.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recent activity",
+   "x": 1238,
+   "y": 784,
+   "w": 278,
+   "h": 240,
+   "mismatch": 20.6
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 1238,
+   "y": 516,
+   "w": 278,
+   "h": 255,
+   "mismatch": 18.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Location & area",
+   "x": 793,
+   "y": 656,
+   "w": 431,
+   "h": 213,
+   "mismatch": 15.6
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Expected value",
+   "x": 257,
+   "y": 702,
+   "w": 163,
+   "h": 65,
+   "mismatch": 14.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Suggested suppliers",
+   "x": 793,
+   "y": 883,
+   "w": 431,
+   "h": 141,
+   "mismatch": 13
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event requirement",
+   "x": 240,
+   "y": 289,
+   "w": 539,
+   "h": 353,
+   "mismatch": 10.9
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10
+  },
+  {
+   "sel": ".k-card",
+   "label": "Client / Contact",
+   "x": 793,
+   "y": 289,
+   "w": 431,
+   "h": 353,
+   "mismatch": 7.9
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Probability",
+   "x": 428,
+   "y": 702,
+   "w": 163,
+   "h": 65,
+   "mismatch": 7.1
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.2
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 240,
+   "y": 236,
+   "w": 1276,
+   "h": 39,
+   "mismatch": 4.1
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Sales cycle",
+   "x": 599,
+   "y": 702,
+   "w": 163,
+   "h": 65,
+   "mismatch": 4
+  }
+ ]
+}

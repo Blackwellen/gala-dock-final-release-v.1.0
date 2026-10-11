@@ -1,0 +1,133 @@
+[
+  {
+    "url": "/preview/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 15.381,
+    "interfaceMismatchPercent": 6.332,
+    "ssimFull": 0.7945,
+    "ssimInterface": 0.8055,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/register",
+    "file": "Designs\\auth & onboarding\\image-gen-2(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-register",
+    "check": [
+      "input[name=\"terms\"]"
+    ],
+    "mismatchPercent": 16.513,
+    "interfaceMismatchPercent": 8.7,
+    "ssimFull": 0.7195,
+    "ssimInterface": 0.7355,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/verify-email",
+    "file": "Designs\\auth & onboarding\\image-gen-3(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-verify-email",
+    "mismatchPercent": 16.38,
+    "interfaceMismatchPercent": 9.221,
+    "ssimFull": 0.7667,
+    "ssimInterface": 0.7522,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/forgot-password",
+    "file": "Designs\\auth & onboarding\\image-gen-4(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-forgot-password",
+    "mismatchPercent": 14.589,
+    "interfaceMismatchPercent": 5.491,
+    "ssimFull": 0.8187,
+    "ssimInterface": 0.8543,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/reset-password",
+    "file": "Designs\\auth & onboarding\\image-gen-5(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-reset-password",
+    "mismatchPercent": 17.412,
+    "interfaceMismatchPercent": 7.522,
+    "ssimFull": 0.7761,
+    "ssimInterface": 0.7756,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/mfa",
+    "file": "Designs\\auth & onboarding\\image-gen-6(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-mfa",
+    "mismatchPercent": 15.811,
+    "interfaceMismatchPercent": 10.18,
+    "ssimFull": 0.7651,
+    "ssimInterface": 0.7554,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 19.834,
+    "interfaceMismatchPercent": 11.328,
+    "ssimFull": 0.735,
+    "ssimInterface": 0.6962,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 18.538,
+    "interfaceMismatchPercent": 10.216,
+    "ssimFull": 0.7316,
+    "ssimInterface": 0.7113,
+    "geometry": {
+      "scrollHeight": 1134,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

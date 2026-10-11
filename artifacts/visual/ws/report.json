@@ -20,129 +20,191 @@
     "url": "/provider",
     "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
     "status": 200,
-    "mismatchPercent": 15.14,
-    "ssim": 0.5875,
+    "mismatchPercent": 15.76,
+    "ssim": 0.5994,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1139
+      "scrollHeight": 1116
     },
     "errors": [],
-    "at": "2026-10-10T23:33:36.592Z"
+    "at": "2026-10-11T00:33:08.909Z"
   },
   {
     "key": "prov-002-opportunities",
     "url": "/provider/opportunities",
     "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
     "status": 200,
-    "mismatchPercent": 15.39,
-    "ssim": 0.5358,
-    "masks": [],
-    "maskReason": null,
-    "geometry": {
-      "overflowX": false,
-      "scrollHeight": 1026
-    },
-    "errors": [],
-    "at": "2026-10-10T23:39:01.615Z"
-  },
-  {
-    "key": "prov-003-opportunity",
-    "url": "/provider/opportunities/8f6a32fa-18f3-41a2-bb07-d76d80805ed0",
-    "file": "Designs/Provider Workspace/Gala·Dock Wedding Opportunity Dashboard.png",
-    "status": 200,
-    "mismatchPercent": 16.43,
-    "ssim": 0.5935,
-    "masks": [],
-    "maskReason": null,
-    "geometry": {
-      "overflowX": false,
-      "scrollHeight": 1378
-    },
-    "errors": [],
-    "at": "2026-10-10T23:44:06.472Z"
-  },
-  {
-    "key": "prov-004-quote",
-    "url": "/provider/quotes/099ca71f-c113-4ed0-81d4-7e11f75bb617",
-    "file": "Designs/Provider Workspace/Gala·Dock Wedding Quote Dashboard.png",
-    "status": 200,
-    "mismatchPercent": 14.36,
-    "ssim": 0.6101,
-    "masks": [],
-    "maskReason": null,
-    "geometry": {
-      "overflowX": false,
-      "scrollHeight": 1415
-    },
-    "errors": [],
-    "at": "2026-10-10T23:57:55.561Z"
-  },
-  {
-    "key": "prov-005-bookings",
-    "url": "/provider/bookings",
-    "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
-    "status": 200,
-    "mismatchPercent": 12.84,
-    "ssim": 0.601,
-    "masks": [],
-    "maskReason": null,
-    "geometry": {
-      "overflowX": true,
-      "scrollHeight": 1035
-    },
-    "errors": [],
-    "at": "2026-10-11T00:03:25.377Z"
-  },
-  {
-    "key": "prov-006-booking",
-    "url": "/provider/bookings/2bc63852-b708-4669-9c37-41325b9dcf40",
-    "file": "Designs/Provider Workspace/Gala·Dock Wedding Booking Dashboard.png",
-    "status": 500,
-    "mismatchPercent": 11.5,
-    "ssim": 0.7127,
+    "mismatchPercent": 15.02,
+    "ssim": 0.5622,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
       "scrollHeight": 1024
     },
-    "errors": [
-      "./src/app/page.tsx:14:1\nError: Module not found: Can't resolve '@/styles/landing.css'\n  12 | import { AgentDemo } from \"@/components/landing/agent-demo\";\n  13 | import { Faq, type FaqItem } from \"@/components/landing/faq\";\n> 14 | import \"@/styles/landing.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  15 |\n  16 | export const metadata: Metadata = {\n  17 |   title: \"Gala Dock — Plan, run and book extraordinary events\",\n\nImport map: aliased to relative './src/styles/landing.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ],
-    "at": "2026-10-11T00:08:00.188Z"
+    "errors": [],
+    "at": "2026-10-11T00:33:14.359Z"
+  },
+  {
+    "key": "prov-003-opportunity",
+    "url": "/provider/opportunities/{item:Summer Wedding Reception}",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Opportunity Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 16.31,
+    "ssim": 0.6056,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1279
+    },
+    "errors": [],
+    "at": "2026-10-11T00:33:19.686Z"
+  },
+  {
+    "key": "prov-004-quote",
+    "url": "/provider/quotes/{quote:Charity Gala Dinner}",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Quote Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 14.29,
+    "ssim": 0.6229,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1353
+    },
+    "errors": [],
+    "at": "2026-10-11T00:33:29.533Z"
+  },
+  {
+    "key": "prov-005-bookings",
+    "url": "/provider/bookings",
+    "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.16,
+    "ssim": 0.6047,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1037
+    },
+    "errors": [],
+    "at": "2026-10-11T00:33:39.537Z"
+  },
+  {
+    "key": "prov-006-booking",
+    "url": "/provider/bookings/{job:Summer Wedding Reception}",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Booking Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 14.98,
+    "ssim": 0.589,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1091
+    },
+    "errors": [],
+    "at": "2026-10-11T00:33:44.083Z"
+  },
+  {
+    "key": "prov-007-calendar",
+    "url": "/provider/calendar",
+    "file": "Designs/Provider Workspace/Gala Dock Calendar Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.32,
+    "ssim": 0.5893,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": true,
+      "scrollHeight": 1531
+    },
+    "errors": [],
+    "at": "2026-10-11T00:33:49.932Z"
+  },
+  {
+    "key": "prov-008-listings",
+    "url": "/provider/listings",
+    "file": "Designs/Provider Workspace/Gala·Dock Listings Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 24.37,
+    "ssim": 0.5342,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1039
+    },
+    "errors": [],
+    "at": "2026-10-11T00:54:23.191Z"
+  },
+  {
+    "key": "prov-009-venue",
+    "url": "/provider/venues/{listing:Riverside Arena}",
+    "file": "Designs/Provider Workspace/Riverside Arena Venue Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 24.29,
+    "ssim": 0.5261,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1168
+    },
+    "errors": [],
+    "at": "2026-10-11T01:07:21.277Z"
+  },
+  {
+    "key": "prov-009-venue-spaces",
+    "url": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+    "file": "Designs/Provider Workspace/Gala Dock Venue Spaces Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 20.38,
+    "ssim": 0.5841,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1221
+    },
+    "errors": [],
+    "at": "2026-10-11T01:07:27.431Z"
   },
   {
     "key": "prov-w05-s1-quote-builder",
-    "url": "/provider/opportunities/9acfd02c-c19e-4e28-bd4e-a3adb5596d03/quote?step=1",
+    "url": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
     "file": "Designs/Provider Workspace/SaaS Quote Builder Dashboard.png",
     "status": 200,
-    "mismatchPercent": 13.36,
-    "ssim": 0.5952,
+    "mismatchPercent": 12.67,
+    "ssim": 0.6138,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1082
+      "scrollHeight": 1049
     },
     "errors": [],
-    "at": "2026-10-10T23:53:36.713Z"
+    "at": "2026-10-11T00:33:24.524Z"
   },
   {
     "key": "prov-w05-s2-quote-review",
-    "url": "/provider/opportunities/4fe37aa9-27eb-43fe-b9ed-bc2ff909a4a6/quote?step=2&quote=b9e09080-3003-4d74-92b1-dc6c10e7bd1c",
+    "url": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
     "file": "Designs/Provider Workspace/Gala·Dock Quote Review Dashboard.png",
     "status": 200,
-    "mismatchPercent": 12.84,
-    "ssim": 0.5947,
+    "mismatchPercent": 12.35,
+    "ssim": 0.6239,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1114
+      "scrollHeight": 1071
     },
     "errors": [],
-    "at": "2026-10-10T23:57:59.145Z"
+    "at": "2026-10-11T00:33:34.372Z"
   }
 ]

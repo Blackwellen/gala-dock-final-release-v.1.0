@@ -88,7 +88,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           {notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} aria-hidden className={n.read_at ? "k-muted" : "k-blue"} /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}
         </>}
       </Menu>
-      <Link href="/help" className="o-top-btn"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
+      <Link href="/help" className="o-top-btn o-top-help"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
       <Menu label="Account" width={240} trigger={({ open, toggle, id }) => <button className="o-avatar" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Account menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={user.avatar || "/assets/gd/av-alex-organizer.webp"} alt="" /><ChevronDown size={16} aria-hidden /></button>}>

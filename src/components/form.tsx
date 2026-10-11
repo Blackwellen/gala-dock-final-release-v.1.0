@@ -57,7 +57,7 @@ export function ChoiceGroup({ legend, question, variant, name, items, value, onC
         return <label key={item.value} className={`choice ${checked ? "selected" : ""}`}>
           <input type={multi ? "checkbox" : "radio"} name={name} value={item.value} checked={checked}
             onChange={() => onChange(multi ? (checked ? value.filter(v => v !== item.value) : [...value, item.value]) : [item.value])} />
-          {images?.[i] && <Photo name={images[i]} alt="" />}
+          {images ? images[i] ? <Photo name={images[i]} alt="" /> : <span className="choice-art" aria-hidden="true">{icons?.[i]}</span> : null}
           <span>{icons?.[i]}<b>{item.label}{descriptions?.[i] && <small>{descriptions[i]}</small>}</b>{multi && images ? <i className="box" aria-hidden="true">{checked && <Check size={12} />}</i> : checked && <Check size={17} aria-hidden="true" />}</span>
         </label>;
       })}

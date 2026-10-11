@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 15.22,
+    "interfaceMismatchPercent": 5.782,
+    "ssimFull": 0.8109,
+    "ssimInterface": 0.8438,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

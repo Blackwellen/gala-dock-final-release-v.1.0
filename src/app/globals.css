@@ -476,3 +476,213 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .auth-security{display:flex!important;align-items:flex-start;gap:12px}
 .auth-security>span{flex:1;min-width:0}
 .auth-security>a{position:static!important;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+
+/* ===== Fidelity pass: auth card (login) ===== */
+.auth-login .auth-card{padding-top:28px}
+.auth-login .auth-card>h2{font-size:41px;line-height:1;margin-bottom:6px}
+.auth-login .auth-card>.auth-description{margin-bottom:17px}
+
+/* ===== Fidelity pass: auth card (register) ===== */
+.auth-register .auth-top{margin-top:-3px}
+.auth-register .auth-card{padding-top:29px}
+.auth-register .auth-card>.auth-description{font-size:18px;line-height:24px;margin-bottom:15px}
+.auth-register .return-banner{margin:0 0 22px}
+.auth-register .auth-field{margin-top:12px}
+.auth-register .auth-field:first-child{margin-top:0}
+.auth-register .auth-field>div{height:45px}
+.auth-register .password-hint{font-size:14px;margin:12px 0 0}
+.auth-register .check-row{font-size:15px}
+.auth-register .auth-card form>.button{font-size:18px;font-weight:450;min-height:50px}
+.auth-register .social-buttons .button{font-size:15.5px;font-weight:560}
+.auth-register .auth-security>span{max-width:285px}
+.auth-register .auth-card>.auth-description{font-size:17.5px;letter-spacing:-.15px;text-wrap:balance}
+.auth-register .auth-card>.auth-description{max-width:none;text-wrap:wrap;font-size:17.6px;letter-spacing:-.2px}
+.auth-register .auth-card>.auth-description{font-size:17.3px;letter-spacing:-.38px}
+.auth-register .auth-card{padding-top:27px}
+.auth-register .auth-card>h2{margin-bottom:4px}
+.auth-register .auth-field{gap:3px}
+.auth-register .auth-field{gap:5px;margin-top:15px}
+.auth-register .auth-field:first-child{margin-top:0}
+
+/* Trimmed logo files have no transparent padding: size by visible height (matches the previous visual size). */
+.logo .logo-img{height:1.69em}
+.logo.mark-only .logo-img{height:1.38em}
+.logo.small .logo-img{height:1.56em}
+.logo .logo-img{margin:.118em 0 .088em}
+.logo .logo-img{margin:0}
+.auth-login .auth-card>.logo .logo-img,.auth-register .auth-card>.logo .logo-img{margin:.118em 0 .088em}
+
+/* ===== Fidelity pass: verify email ===== */
+.auth-verify-email .verify-address{margin-bottom:5px}
+.auth-verify-email .status-steps{min-height:58px}
+.auth-verify-email .resend-row{padding-top:8px;margin-bottom:14px}
+.auth-verify-email .auth-card form>.button.outline{margin-bottom:4px}
+.auth-verify-email .auth-note b{display:block}
+.auth-verify-email .auth-note small{max-width:300px;display:block}
+
+/* ===== Fidelity pass: MFA ===== */
+.auth-mfa .auth-card>.auth-description{font-size:18px;letter-spacing:-.1px}
+.auth-mfa .segmented button{background:#fff}
+.auth-mfa .segmented button.active{background:linear-gradient(110deg,#175bff,#4b3bff);color:#fff}
+.auth-mfa .otp-hint{color:#626595;font-size:14px;margin:22px 0 18px;align-items:center}
+.auth-mfa .otp-hint svg{color:#3b3f9f}
+.auth-help form{display:inline}
+.auth-help .text-link{margin:0;font-size:inherit;text-decoration:none;color:var(--blue)}
+.auth-mfa .otp-hint{margin:14px 0 12px}
+.auth-mfa .auth-card>h3{margin-top:14px}
+.auth-mfa .auth-card>.auth-description{margin-bottom:15px}
+.auth-mfa .return-banner{margin-bottom:11px}
+.auth-mfa form .segmented{margin-bottom:16px}
+.auth-mfa .otp-inputs{margin-bottom:16px}
+.auth-mfa .otp-hint{margin:14px 0 18px}
+
+/* ===== Fidelity pass: invite ===== */
+.auth-invite .auth-card>.auth-description{max-width:425px;font-size:17.5px;margin-bottom:12px}
+.auth-invite .auth-card>.auth-description{max-width:440px;font-size:17px;letter-spacing:-.15px}
+.auth-invite .auth-card>h2{margin-bottom:0}
+.auth-invite .auth-card>.auth-description{margin-top:-6px}
+
+/* ===== Fidelity pass: secure access ===== */
+.auth-secure-access .auth-card>.auth-description{max-width:none;font-size:17.4px;letter-spacing:-.25px}
+.auth-secure-access .auth-note.danger small{font-size:15px;line-height:20.5px}
+.auth-secure-access .workspace-select{display:grid;gap:8px;margin-top:22px}
+.auth-secure-access .workspace-select>span:first-child{font-size:15px;font-weight:600}
+.auth-secure-access .workspace-select .select-wrap{display:flex;align-items:center;position:relative}
+.auth-secure-access .workspace-select select{width:100%;height:46px;appearance:none;-webkit-appearance:none;padding:0 44px 0 68px!important;font-size:15.5px;color:#6b7299;background:#fff;border:1px solid #d9e1f5;border-radius:8px}
+.auth-secure-access .workspace-select .select-wrap>svg:first-child{left:18px;color:#3b3f6e}
+.auth-secure-access .workspace-select .select-wrap:before{content:"";position:absolute;left:54px;top:1px;bottom:1px;width:1px;background:#e8edf9}
+.auth-secure-access .workspace-select .select-wrap>svg:last-child{position:absolute;right:16px;color:#1b2348;pointer-events:none}
+.auth-secure-access .social-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.auth-secure-access .social-buttons .button{font-size:16px;font-weight:520;color:var(--blue);min-height:48px;width:100%}
+.auth-secure-access .auth-security>span{max-width:400px}
+.auth-secure-access .auth-card>.auth-description{font-size:17px;letter-spacing:-.3px}
+.auth-secure-access .auth-note.danger small{font-size:14.6px;letter-spacing:-.15px;line-height:20.5px}
+.auth-secure-access .auth-note.danger b{font-size:18px}
+.auth-secure-access .social-buttons .button{margin:0;align-self:stretch}
+.auth-secure-access .workspace-select{margin-top:18px}
+
+/* ===== Fidelity pass: onboarding shared assistant ===== */
+.setup-assistant .agent-panel>h3 .icon-tile svg{fill:currentColor;stroke-width:1.5}
+.setup-assistant .agent-panel>p{font-size:14.5px;line-height:21px;color:#626e9e}
+.setup-assistant .agent-panel>h4{font-size:15px;font-weight:500;letter-spacing:-.2px;color:#1b2348;margin:16px 0 6px}
+.setup-assistant .agent-panel .button{border:1.5px solid var(--blue);color:var(--blue);font-size:13.5px;font-weight:600;min-height:44px;border-radius:8px;margin-top:18px}
+.setup-assistant .agent-panel .button svg{fill:currentColor}
+.organizer-type{padding:0;border-radius:0}
+.organizer-type[aria-pressed=true]{background:none;outline:0}
+.organizer-type[aria-pressed=true] b{color:var(--blue)}
+.organizer-type .photo{width:56px;height:56px;border-radius:6px;flex-shrink:0}
+.organizer-type b{font-size:13px;font-weight:600;line-height:17px}
+.organizer-type small{font-size:11px}
+
+/* Organizer step 1: one assistant card with dividers, as in the design */
+.setup-organizer-business .setup-assistant{background:#f8fbff;border:1px solid #e3e9f7;border-radius:12px;padding:20px 22px 14px;align-self:start;margin-top:-34px}
+.setup-organizer-business .setup-assistant>.setup-panel{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;border-radius:0}
+.setup-organizer-business .setup-assistant>.setup-panel+.setup-panel{border-top:1px solid #e3e9f7!important;padding-top:20px!important;margin-top:22px!important}
+.setup-organizer-business .setup-assistant>.setup-panel>h4{font-size:14px;font-weight:600;margin:0 0 14px}
+.setup-organizer-business .setup-assistant .organizer-type+.organizer-type{margin-top:14px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child{background:#fff!important;border:0!important;border-radius:10px;padding:14px!important;margin-top:16px!important}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .assistant-feature b{font-size:13px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .assistant-feature p{font-size:13px;line-height:19px}
+@media(min-width:1101px){
+ .onboarding-page:not(.experience-page) .setup-main>.setup-progress-row{max-width:calc(1130px - 320px);margin-left:max(4px,calc((100% - 1130px) / 2));margin-right:auto}
+}
+.organizer-type>span{flex:1;min-width:0}
+.setup-organizer-business .setup-assistant .agent-panel>p{font-size:14px}
+.setup-organizer-business .setup-assistant{margin-top:-28px}
+.setup-organizer-business .setup-assistant{margin-top:-45px}
+.setup-organizer-business .setup-assistant>.setup-panel>h4{margin-bottom:8px}
+@media(min-width:1101px){.onboarding-page:not(.experience-page) .setup-main>.setup-progress-row{max-width:calc(min(100%, 1130px) - 316px)}}
+.setup-organizer-business .setup-assistant .agent-panel>p{font-size:13.6px;line-height:21px}
+.setup-organizer-business .setup-assistant .agent-panel>h4{font-weight:500;margin:12px 0 2px}
+.setup-organizer-business .organizer-type small{font-size:10.6px}
+.setup-organizer-business .organizer-type{gap:15px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .icon-tile{width:32px;height:32px;border-radius:50%}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .icon-tile svg{width:18px;height:18px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .assistant-feature b{font-size:12.5px;line-height:17px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .assistant-feature p{font-size:12.2px;line-height:18px;margin-top:6px}
+.setup-organizer-business .setup-assistant>.setup-panel:last-child .assistant-feature{gap:10px;align-items:flex-start}
+
+/* Story panels: never stretch the artwork. Sticky, viewport-tall, cover-fitted from the top (exact at the design size). */
+@media(min-width:1001px){
+ .onboarding-page .setup-story{position:sticky;top:64px;align-self:flex-start;height:calc(100vh / var(--gd-fit-setup,1) - 64px);min-height:0!important;background-size:cover!important;background-position:top center!important}
+}
+/* Step 2 artwork aligns best at 104% scale, 8px left (measured against the reference). */
+@media(min-width:1001px){.setup-organizer-events .setup-story{background-size:104% auto!important;background-position:-8px 0!important}}
+.setup-organizer-events .setup-story h1{font-size:47.5px;line-height:1.02}
+.setup-organizer-events .setup-features{gap:14px}
+.onboarding-page:is(.setup-organizer-business,.setup-organizer-events) .setup-story .setup-steps{margin-bottom:12px}
+.onboarding-page:is(.setup-organizer-business,.setup-organizer-events) .setup-story h1{margin-bottom:14px}
+.onboarding-page:is(.setup-organizer-business,.setup-organizer-events) .setup-story .setup-story-description{margin-bottom:20px}
+.setup-organizer-events .setup-features{gap:16px}
+
+/* Header: nav positions as in the design; help icon sits where the design's bell is. */
+.onboarding-page:not(.experience-page) .setup-header nav{margin-right:auto}
+.setup-header .header-icon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;color:#1b2348;margin-right:12px}
+.setup-header .header-icon:hover{background:#f0f4fd}
+.onboarding-page:not(.experience-page) .setup-header nav{gap:26px;font-size:11.6px}
+.setup-header .header-icon{margin-right:-12px}
+.onboarding-page:not(.experience-page) .setup-header nav{margin-left:auto!important;margin-right:95px}
+.setup-header .header-icon{margin-right:10px}
+.onboarding-page:not(.experience-page) .setup-header nav{margin-right:63px}
+.setup-header .header-icon{margin-right:-22px}
+.onboarding-page:not(.experience-page) .setup-header nav{margin-right:73px}
+.setup-header .header-icon{margin-right:-12px}
+/* ===== Fidelity pass: customer preferences ===== */
+.setup-preferences .setup-actions .button[type=submit]{color:#fff!important;background:var(--blue)!important;font-size:14px;font-weight:600;min-height:41px}
+.interests-group .choice .box{display:none}
+.setup-preferences .interests-group .choice>span{font-size:12px!important;font-weight:600;padding:9px 8px!important;min-height:40px!important}
+.setup-preferences .interests-group .choice-group.with-images .photo{height:57px}
+.setup-preferences .interests-group .choice-group{gap:12px 13px}
+.setup-preferences .notification-grid label{padding:11px 16px!important}
+.setup-preferences .notification-grid b{font-size:14px}
+.setup-preferences .notification-grid small{font-size:13px;margin-top:3px}
+.setup-preferences .form-main>h2{margin-top:-6px}
+.setup-preferences .form-main>h2{margin-top:8px}
+.setup-preferences .field.hint-above .hint{margin:-4px 0 4px}
+.setup-preferences .interests-group .choice>span{font-size:11.6px!important;letter-spacing:-.2px;white-space:nowrap}
+.setup-preferences .interests-group{margin-bottom:-14px}
+.setup-preferences .field>label{margin-bottom:-2px}
+.setup-preferences .field.hint-above .hint{margin:-3px 0 2px!important}
+.setup-preferences .two-columns{margin-bottom:12px!important}
+.setup-preferences .interests-group .group-heading{margin-bottom:0}
+.setup-preferences .interests-group .choice-group{margin-top:-4px!important}
+.setup-preferences .interests-group .choice-group{margin-top:3px!important;row-gap:14px!important}
+.setup-preferences .interests-group{margin-bottom:-2px}
+.setup-preferences .form-wide{padding-top:14px}
+.setup-preferences fieldset.notification-grid>legend{margin-bottom:8px}
+
+/* ===== Fidelity pass: organizer operating model ===== */
+.choice-art{display:flex;align-items:center;justify-content:center;height:60px;margin:6px 6px 0;border-radius:6px;background:#e8f0ff;color:var(--blue)}
+.choice-art svg{width:26px!important;height:26px!important;display:block!important}
+.setup-organizer-events .choice-group.with-images{row-gap:16px}
+.setup-organizer-events .choice-group.with-images .choice>span{min-height:44px!important;font-size:11px}
+.setup-organizer-events .setup-option-grid{margin-top:26px}
+.setup-organizer-events .setup-option-grid .choice>span{white-space:normal!important;align-items:center}
+.setup-organizer-events .setup-option-grid .choice>span>b{white-space:normal!important;font-size:12.5px;font-weight:600;line-height:15px}
+.setup-organizer-events .setup-option-grid .choice>span>b>small{font-size:10px!important;line-height:13px;white-space:normal}
+.setup-organizer-events .setup-option-grid .choice.selected>span>b{color:var(--blue)}
+.setup-organizer-events .setup-option-grid>fieldset{padding-top:14px!important;padding-bottom:10px}
+
+/* Legends in normal flow so the question line sits directly beneath (cross-browser fieldset fix). */
+.choice-fieldset>legend{float:left;width:100%}
+.choice-fieldset>legend+*{clear:both}
+.choice-fieldset>.question{clear:both;padding-top:2px}
+.setup-organizer-events .setup-option-grid .choice>span{padding:6px 9px!important;gap:7px!important;min-height:46px!important}
+.setup-organizer-events .setup-option-grid .choice>span>b>small{font-size:9.6px!important;white-space:nowrap}
+.setup-organizer-events .setup-option-grid .choice>span:before{width:13px;height:13px}
+.setup-organizer-events .setup-option-grid{margin-top:0!important}
+.setup-organizer-events .setup-option-grid fieldset[class*=choice-fieldset]:nth-child(odd){border-right:1px solid var(--border);padding-right:14px}
+
+/* Organizer step 2: agent + recommendations share one card; note card separate (as designed). */
+.setup-organizer-events .setup-assistant{margin-top:-34px}
+.setup-organizer-events .setup-assistant>.agent-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom:0;margin-bottom:0;padding-bottom:22px}
+.setup-organizer-events .setup-assistant>.operating-preview{border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid #e3e9f7;margin-top:0;padding-top:20px}
+.setup-organizer-events .operating-preview h4{font-size:14px;font-weight:600;margin:0 0 4px}
+.setup-organizer-events .recommend-list{gap:22px}
+.setup-organizer-events .recommend-list .icon-tile{width:40px;height:40px;border-radius:10px}
+.setup-organizer-events .recommend-list b{font-size:13px}
+.setup-organizer-events .recommend-list small{font-size:12px;line-height:17px}
+.setup-organizer-events .setup-option-grid>fieldset{padding-top:10px!important;padding-bottom:4px!important}
+.setup-organizer-events .setup-assistant>.setup-panel:last-child .assistant-feature b{font-size:12.5px}
+.setup-organizer-events .setup-assistant>.setup-panel:last-child .assistant-feature p{font-size:12.2px;line-height:18px}
+.setup-organizer-events .setup-assistant>.setup-panel:last-child .icon-tile{width:32px;height:32px;border-radius:50%}

@@ -1,0 +1,214 @@
+{
+ "name": "c-org-005",
+ "path": "/organizer/sales",
+ "page": 12.93,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Conversion funnel",
+   "x": 1264,
+   "y": 815,
+   "w": 252,
+   "h": 168,
+   "mismatch": 27.6
+  },
+  {
+   "sel": ".sa-col",
+   "label": "New",
+   "x": 253,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 21.6
+  },
+  {
+   "sel": ".sa-col",
+   "label": "Proposal",
+   "x": 584,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 21.4
+  },
+  {
+   "sel": ".sa-col",
+   "label": "Lost",
+   "x": 1080,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 21.3
+  },
+  {
+   "sel": ".sa-col",
+   "label": "Won",
+   "x": 914,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 20.1
+  },
+  {
+   "sel": ".sa-col",
+   "label": "Qualified",
+   "x": 418,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 19.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Upcoming actions",
+   "x": 1264,
+   "y": 534,
+   "w": 252,
+   "h": 267,
+   "mismatch": 18.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "New",
+   "x": 240,
+   "y": 260,
+   "w": 1010,
+   "h": 584,
+   "mismatch": 17
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Sales",
+   "x": 240,
+   "y": 107,
+   "w": 1276,
+   "h": 53,
+   "mismatch": 16.5
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 1264,
+   "y": 260,
+   "w": 252,
+   "h": 261,
+   "mismatch": 16.3
+  },
+  {
+   "sel": ".sa-col",
+   "label": "Negotiating",
+   "x": 749,
+   "y": 318,
+   "w": 157,
+   "h": 513,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "£324,500",
+   "x": 454,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 13.7
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 255,
+   "y": 267,
+   "w": 129,
+   "h": 38,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Proposals",
+   "x": 240,
+   "y": 858,
+   "w": 1010,
+   "h": 166,
+   "mismatch": 11.7
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "£96,000",
+   "x": 1097,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 10.7
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "28 days",
+   "x": 1312,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 10.4
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.3
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "5",
+   "x": 669,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 8.3
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "50%",
+   "x": 883,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 8
+  },
+  {
+   "sel": ".ev-kpi",
+   "label": "18",
+   "x": 240,
+   "y": 174,
+   "w": 204,
+   "h": 72,
+   "mismatch": 7.2
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  },
+  {
+   "sel": ".k-table",
+   "label": "k-table",
+   "x": 257,
+   "y": 967,
+   "w": 976,
+   "h": 57,
+   "mismatch": 4.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Top event types (won)",
+   "x": 1264,
+   "y": 997,
+   "w": 252,
+   "h": 27,
+   "mismatch": 4
+  }
+ ]
+}

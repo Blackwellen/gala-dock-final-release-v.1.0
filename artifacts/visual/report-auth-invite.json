@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 19.876,
+    "interfaceMismatchPercent": 11.414,
+    "ssimFull": 0.7415,
+    "ssimInterface": 0.7096,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

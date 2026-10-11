@@ -3,14 +3,14 @@
   "url": "/provider/bookings",
   "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.84,
-  "ssim": 0.601,
+  "mismatchPercent": 13.16,
+  "ssim": 0.6047,
   "masks": [],
   "maskReason": null,
   "geometry": {
-    "overflowX": true,
-    "scrollHeight": 1035
+    "overflowX": false,
+    "scrollHeight": 1037
   },
   "errors": [],
-  "at": "2026-10-11T00:03:25.377Z"
+  "at": "2026-10-11T00:33:39.537Z"
 }

@@ -1,0 +1,178 @@
+{
+ "name": "c-org-001",
+ "path": "/organizer",
+ "page": 13.46,
+ "components": [
+  {
+   "sel": ".oh-attn-card",
+   "label": "Supplier response overdue",
+   "x": 1130,
+   "y": 218,
+   "w": 281,
+   "h": 128,
+   "mismatch": 31.1
+  },
+  {
+   "sel": ".oh-attn-card",
+   "label": "Invoice overdue",
+   "x": 257,
+   "y": 218,
+   "w": 281,
+   "h": 128,
+   "mismatch": 30.4
+  },
+  {
+   "sel": ".oh-attn-card",
+   "label": "Supplier response overdue",
+   "x": 839,
+   "y": 218,
+   "w": 281,
+   "h": 128,
+   "mismatch": 30.1
+  },
+  {
+   "sel": ".oh-attn-card",
+   "label": "Invoice overdue",
+   "x": 548,
+   "y": 218,
+   "w": 281,
+   "h": 128,
+   "mismatch": 28.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recent communications",
+   "x": 689,
+   "y": 887,
+   "w": 363,
+   "h": 78,
+   "mismatch": 24.4
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1448,
+   "h": 66,
+   "mismatch": 20.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Attention queue",
+   "x": 240,
+   "y": 152,
+   "w": 1188,
+   "h": 211,
+   "mismatch": 19.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Upcoming events",
+   "x": 240,
+   "y": 377,
+   "w": 848,
+   "h": 319,
+   "mismatch": 17.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Team & assignments",
+   "x": 1066,
+   "y": 887,
+   "w": 363,
+   "h": 199,
+   "mismatch": 16.8
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Command Centre",
+   "x": 240,
+   "y": 84,
+   "w": 1188,
+   "h": 54,
+   "mismatch": 16.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Gala Agent morning briefing",
+   "x": 240,
+   "y": 887,
+   "w": 435,
+   "h": 199,
+   "mismatch": 15.3
+  },
+  {
+   "sel": ".oh-sum",
+   "label": "oh-sum",
+   "x": 958,
+   "y": 775,
+   "w": 220,
+   "h": 81,
+   "mismatch": 13.2
+  },
+  {
+   "sel": ".oh-sum",
+   "label": "oh-sum",
+   "x": 257,
+   "y": 775,
+   "w": 220,
+   "h": 81,
+   "mismatch": 13.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Commercial summary",
+   "x": 240,
+   "y": 710,
+   "w": 1188,
+   "h": 163,
+   "mismatch": 12.1
+  },
+  {
+   "sel": ".oh-sum",
+   "label": "oh-sum",
+   "x": 724,
+   "y": 775,
+   "w": 220,
+   "h": 81,
+   "mismatch": 12.1
+  },
+  {
+   "sel": ".oh-sum",
+   "label": "oh-sum",
+   "x": 491,
+   "y": 775,
+   "w": 220,
+   "h": 81,
+   "mismatch": 11.5
+  },
+  {
+   "sel": ".oh-sum",
+   "label": "oh-sum",
+   "x": 1191,
+   "y": 775,
+   "w": 220,
+   "h": 81,
+   "mismatch": 11.2
+  },
+  {
+   "sel": ".oh-quick",
+   "label": "Quick create",
+   "x": 1102,
+   "y": 377,
+   "w": 326,
+   "h": 248,
+   "mismatch": 9.1
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 1020,
+   "mismatch": 5
+  }
+ ]
+}

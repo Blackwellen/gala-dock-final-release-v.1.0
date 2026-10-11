@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 17.867,
+    "interfaceMismatchPercent": 8.725,
+    "ssimFull": 0.7432,
+    "ssimInterface": 0.7349,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

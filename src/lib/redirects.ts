@@ -27,6 +27,7 @@ export function describeIntent(next: string | null | undefined, titles: Record<s
   }
   if (pathname.startsWith("/events/")) return { kind: "event", title: "Returning to your event", detail: titles[pathname] ?? "Continue where you left off", href: path };
   if (pathname.startsWith("/invite/")) return { kind: "invite", title: "Accepting a workspace invite", detail: "You’ll return to your invitation after signing in", href: path };
+  if (pathname.startsWith("/onboarding/customer")) return { kind: "plan", title: "You started from Plan an Event", detail: "Your original intent will continue after registration.", href: path };
   if (pathname.startsWith("/onboarding")) return { kind: "onboarding", title: "Continuing your setup", detail: "Your progress is saved and will resume", href: path };
   if (pathname.startsWith("/venues/") || pathname.startsWith("/services/")) return { kind: "booking", title: "Returning to your booking", detail: titles[pathname] ?? "Continue your enquiry", href: path };
   return null;

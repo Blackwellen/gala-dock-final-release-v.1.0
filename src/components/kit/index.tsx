@@ -60,7 +60,7 @@ export function Donut({ parts, size = 120, stroke = 16, label, sub }: { parts: {
   </span>;
 }
 export function Legend({ items }: { items: { color: string; label: ReactNode; value?: ReactNode; extra?: ReactNode }[] }) {
-  return <ul className="k-col" style={{ gap: 7, listStyle: "none", margin: 0, padding: 0, fontSize: 11.5 }}>{items.map((it, i) => <li key={i} className="k-between"><span className="k-row" style={{ gap: 7 }}><i className="k-dot" style={{ background: it.color }} />{it.label}</span><span className="k-row" style={{ gap: 14 }}>{it.extra && <span className="k-muted">{it.extra}</span>}{it.value != null && <b className="k-tnum" style={{ fontWeight: 600 }}>{it.value}</b>}</span></li>)}</ul>;
+  return <ul className="k-col" style={{ gap: 7, listStyle: "none", margin: 0, padding: 0, fontSize: 11 }}>{items.map((it, i) => <li key={i} className="k-between"><span className="k-row" style={{ gap: 7 }}><i className="k-dot" style={{ background: it.color }} />{it.label}</span><span className="k-row" style={{ gap: 14 }}>{it.extra && <span className="k-muted">{it.extra}</span>}{it.value != null && <b className="k-tnum" style={{ fontWeight: 600 }}>{it.value}</b>}</span></li>)}</ul>;
 }
 /** Sparkline / area line chart from numeric series. */
 export function Spark({ data, width = 90, height = 34, color = "var(--k-blue)", fill = true, strokeWidth = 2 }: { data: number[]; width?: number; height?: number; color?: string; fill?: boolean; strokeWidth?: number }) {

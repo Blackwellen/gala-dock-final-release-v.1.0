@@ -1,0 +1,21 @@
+[
+  {
+    "url": "/preview/register",
+    "file": "Designs\\auth & onboarding\\image-gen-2(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-register",
+    "check": [
+      "input[name=\"terms\"]"
+    ],
+    "mismatchPercent": 16.204,
+    "interfaceMismatchPercent": 7.851,
+    "ssimFull": 0.7371,
+    "ssimInterface": 0.7758,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

@@ -93,3 +93,6 @@ console.log(JSON.stringify({ tickets_created: created, ok: true }));
     }
   }
 }
+
+// Align demo data with the design references.
+await import("./seed-align.mjs");

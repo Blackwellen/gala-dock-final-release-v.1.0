@@ -1,0 +1,16 @@
+{
+  "key": "prov-008-listings",
+  "url": "/provider/listings",
+  "file": "Designs/Provider Workspace/Gala·Dock Listings Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 24.37,
+  "ssim": 0.5342,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1039
+  },
+  "errors": [],
+  "at": "2026-10-11T00:54:23.191Z"
+}

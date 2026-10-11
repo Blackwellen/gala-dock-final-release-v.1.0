@@ -50,7 +50,7 @@ const story: Record<string, { eyebrow?: string; title: ReactNode; description: s
   "provider-4": { title: <>Complete your<br />setup and <em>go live</em></>, description: "Add your verification documents, connect payouts, invite your team and publish when every requirement is met.", features: [["Build trust with organisers", "Add insurance, licences and credentials"], ["Get paid securely", "Stripe-hosted payout onboarding"], ["Invite your team", "Bring collaborators and set permissions"], ["Preview and publish", "See how your listing will appear"]] },
 };
 const storyIcons = [CalendarDays, Users, BarChart3, Sparkles, ShieldCheck];
-const eventTypeIcons = [Heart, Briefcase, PartyPopper, Users, Martini, Music, Music, Globe, Users, Layers];
+const eventTypeIcons = [Heart, Briefcase, PartyPopper, Users, Martini, Music, Music, Globe, Users, CalendarDays];
 const interestIcons = [Music, Utensils, Martini, Palette, Trophy, Briefcase, Heart, Baby, PartyPopper, Ellipsis];
 
 /* ---------- Gala Agent panel: suggestions only, applied explicitly by the user ---------- */
@@ -87,15 +87,15 @@ function AgentResults({ agent, onApply }: { agent: ReturnType<typeof useAgent>; 
     <small className="muted">Suggestions only change this form. Nothing is saved until you continue.</small>
   </div>;
 }
-function AgentPanel({ step, context, onApply, preview, heading, text }: {
-  step: string; context: () => Values; onApply: (s: Suggestion) => void; preview?: boolean; heading: string; text: string;
+function AgentPanel({ step, context, onApply, preview, heading, text, action = "Suggest settings for me" }: {
+  step: string; context: () => Values; onApply: (s: Suggestion) => void; preview?: boolean; heading: string; text: string; action?: string;
 }) {
   const agent = useAgent(step, context, preview);
   return <section className="setup-panel agent-panel" aria-live="polite">
     <h3><IconTile icon={Sparkles} />Gala Agent<span className="badge purple">BETA</span></h3>
     <h4>{heading}</h4>
     <p>{text}</p>
-    <Button variant="outline" onClick={agent.ask} disabled={agent.status === "loading"}>{agent.status === "loading" ? <><Loader2 size={18} className="spin" aria-hidden="true" />Thinking…</> : <><Sparkles size={18} aria-hidden="true" />{agent.status === "done" ? "Suggest again" : "Suggest settings for me"}</>}</Button>
+    <Button variant="outline" onClick={agent.ask} disabled={agent.status === "loading"}>{agent.status === "loading" ? <><Loader2 size={18} className="spin" aria-hidden="true" />Thinking…</> : <><Sparkles size={18} aria-hidden="true" />{agent.status === "done" ? "Suggest again" : action}{action !== "Suggest settings for me" && agent.status !== "done" && <ArrowRight size={16} aria-hidden="true" />}</>}</Button>
     <AgentResults agent={agent} onApply={onApply} />
   </section>;
 }
@@ -378,14 +378,14 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         </section>}
 
         {key === "operating" && <>
-          <ChoiceGroup legend="Event types" question="Select all that apply. At least one, or Mixed / Custom." name="event_types" items={organizerEventTypes} images={organizerEventTypes.map((_, i) => `type-${i % 9}`)} icons={eventTypeIcons.map((Icon, i) => <Icon key={i} size={17} aria-hidden="true" />)} multi value={arr("event_types")} onChange={v => set("event_types", v)} error={errors.event_types} columns={5} />
+          <ChoiceGroup legend="Event types" question="Select all that apply. At least one, or Mixed / Custom." name="event_types" items={organizerEventTypes} images={organizerEventTypes.map((t, i) => t === "Mixed / Custom" ? "" : `type-${i % 9}`)} icons={eventTypeIcons.map((Icon, i) => <Icon key={i} size={17} aria-hidden="true" />)} multi value={arr("event_types")} onChange={v => set("event_types", v)} error={errors.event_types} columns={5} />
           <div className="setup-option-grid">
-            <ChoiceGroup legend="Event access" question="Do you typically run public, private or both?" name="event_access" items={["Public", "Private", "Both"]} descriptions={["Open to all", "By invitation", "Choose per event"]} value={[str("event_access")]} onChange={v => set("event_access", v[0])} />
-            <ChoiceGroup legend="Ticketing" question="Do you sell tickets for your events?" name="ticketing" items={["Yes", "No"]} descriptions={["Use Gala Dock ticketing", "Registrations or invite only"]} {...yesNo("ticketing")} />
-            <ChoiceGroup legend="Client work" question="Do you take on client events and manage them?" name="client_work" items={["Yes", "No"]} descriptions={["Client projects & proposals", "Only our own events"]} {...yesNo("client_work")} />
-            <ChoiceGroup legend="Multi-venue operations" question="Do you run events across multiple venues?" name="multi_venue" items={["Yes", "No"]} descriptions={["Multiple venues/locations", "Single venue focus"]} {...yesNo("multi_venue")} />
+            <ChoiceGroup legend="Event access" question="Do you typically run public, private or both?" name="event_access" items={["Public", "Private", "Both"]} descriptions={["(Open to all)", "(By invitation)", "(Choose per event)"]} value={[str("event_access")]} onChange={v => set("event_access", v[0])} />
+            <ChoiceGroup legend="Ticketing" question="Do you sell tickets for your events?" name="ticketing" items={["Yes", "No"]} descriptions={["(Use Gala Dock ticketing)", "(Registrations or invite only)"]} {...yesNo("ticketing")} />
+            <ChoiceGroup legend="Client work" question="Do you take on client events and manage them?" name="client_work" items={["Yes", "No"]} descriptions={["(Client projects & proposals)", "(Only our own events)"]} {...yesNo("client_work")} />
+            <ChoiceGroup legend="Multi-venue operations" question="Do you run events across multiple venues?" name="multi_venue" items={["Yes", "No"]} descriptions={["(Multiple venues/locations)", "(Single venue focus)"]} {...yesNo("multi_venue")} />
             <ChoiceGroup legend="Typical capacity band" question="What is the usual size of your events?" name="capacity" items={capacityBands} value={[str("capacity")]} onChange={v => set("capacity", v[0])} />
-            <ChoiceGroup legend="Supplier procurement" question="Where will you source suppliers by default?" name="procurement" items={["Marketplace suppliers", "My own suppliers", "Both"]} descriptions={["Gala Dock marketplace", "We use our own", "Mix of both"]} value={[str("procurement")]} onChange={v => set("procurement", v[0])} />
+            <ChoiceGroup legend="Supplier procurement" question="Where will you source suppliers by default?" name="procurement" items={[{ value: "Marketplace suppliers", label: "Marketplace" }, { value: "My own suppliers", label: "My own" }, { value: "Both", label: "Both" }]} descriptions={["(Gala Dock suppliers)", "(We use our own)", "(Mix of both)"]} value={[str("procurement")]} onChange={v => set("procurement", v[0])} />
           </div>
         </>}
 
@@ -526,7 +526,8 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           <Button variant="outline" onClick={() => post("skip")} arrow>Skip for now</Button></section>}
         {key !== "trust" && key !== "preferences" && <AgentPanel step={key} context={agentContext} onApply={applySuggestion} preview={preview}
           heading={key === "offer" ? "I can help you write this listing" : key === "rules" ? "Check my booking rules" : key === "operating" ? "Get a head start" : key === "team" ? "Need help getting started?" : "Need a hand setting up?"}
-          text={key === "offer" ? "The Gala Agent can write your description and suggest the best event types and category from the details you’ve entered. Review every suggestion before applying it." : key === "rules" ? "The Gala Agent can explain these policies and suggest safer alternatives when settings conflict." : "The Gala Agent can suggest settings for your location and event types. You decide what to apply."} />}
+          text={key === "offer" ? "The Gala Agent can write your description and suggest the best event types and category from the details you’ve entered. Review every suggestion before applying it." : key === "rules" ? "The Gala Agent can explain these policies and suggest safer alternatives when settings conflict." : key === "operating" ? "The Gala Agent can recommend settings based on your event types, including ticketing, risk management and useful tools for your dashboard." : key === "team" ? "I can suggest the best team structure, permissions and even a first event template based on your goals." : "The Gala Agent can suggest the best settings for your location and event type, and even recommend a starting event template."}
+          action={key === "operating" ? "Suggest best setup for me" : key === "team" ? "Suggest a first event for me" : key === "offer" ? "Generate description for me" : "Suggest settings for me"} />}
         {(key === "offer" || key === "trust") && context.listing !== undefined && <section className="setup-panel listing-preview"><h3>Listing preview<span className="status-pill warning">Draft</span></h3>
           {context.listing ? <>{context.listing.photoUrl ? <img src={context.listing.photoUrl} alt="" className="photo" /> : <Photo name="venue-2" />}<h4>{context.listing.name}</h4><p><MapPin size={14} aria-hidden="true" />{context.listing.location}</p><div className="tags"><span>{context.listing.kind === "service" ? "Service" : "Venue"}</span><span>{context.listing.detail}</span></div></>
             : <><Photo name="venue-2" /><h4>{str("listing_name") || "Your listing"}</h4><p><MapPin size={14} aria-hidden="true" />{str("location") || "Location"}</p><div className="tags"><span>{str("kind") === "service" ? str("category") || "Service" : str("venue_type")}</span>{str("capacity") && <span>Up to {str("capacity")}</span>}</div>{arr("amenities").length > 0 && <div className="tags">{arr("amenities").slice(0, 3).map(a => <span key={a}>{a}</span>)}{arr("amenities").length > 3 && <span>+{arr("amenities").length - 3} more</span>}</div>}</>}
@@ -540,7 +541,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
             <div className="assistant-feature" key={title}><IconTile icon={Icon} /><span><b>{title}</b><small>{text}</small></span></div>)}</div>
           <Link href="/onboarding/organizer?step=1" className="link-button">Edit details</Link></section>}
         {key === "organisation" && <section className="setup-panel"><h4>Popular organizer types</h4>{["Event Management Company", "Venue Operator", "Promoter", "Community Organisation"].map((name, i) => <button type="button" className="organizer-type" key={name} onClick={() => set("business_type", name)} aria-pressed={str("business_type") === name}><Photo name={`organizer-type-${i}`} /><span><b>{name}</b><small>{["Weddings, corporate, festivals", "Run your own venue(s)", "Concerts, nightlife, live shows", "Local events, fundraisers"][i]}</small></span></button>)}</section>}
-        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={Lightbulb} /><span><b>You can change this later</b><p>{flow === "customer" ? "Your preferences never block ticket purchases — skip anytime." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
+        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={Lightbulb} /><span><b>{key === "organisation" ? "You can always change this later" : key === "operating" ? "You can change this anytime" : "You can change this later"}</b><p>{key === "operating" ? "These settings only set your defaults. You can update them at any time in your workspace settings." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
       </aside>}
     </div>
   </OnboardingShell>;
@@ -629,7 +630,7 @@ function OnboardingShell({ flow, pageClass, storyAsset, s, steps, step, user, pr
       {flow !== "experience" && <><form className="setup-search" role="search" onSubmit={e => { e.preventDefault(); const q = new FormData(e.currentTarget).get("q"); router.push(`/discover${q ? `?q=${encodeURIComponent(String(q))}` : ""}`); }}>
         <Search size={17} aria-hidden="true" /><input name="q" aria-label="Search events, venues and suppliers" placeholder="Search events, venues, suppliers and more..." /></form>
         <nav aria-label="Marketplace"><Link href="/events/london">Explore Events</Link><Link href="/venues/riverside-arena">Find Venues</Link><Link href="/onboarding/organizer?step=1">For Organizers</Link><Link href="/onboarding/provider?step=1">For Providers</Link></nav></>}
-      {flow === "experience" && <Link href="/help" className="setup-help"><CircleHelp size={18} aria-hidden="true" />Need help?</Link>}
+      {flow === "experience" ? <Link href="/help" className="setup-help"><CircleHelp size={18} aria-hidden="true" />Need help?</Link> : <Link href="/help" className="header-icon" aria-label="Help centre"><CircleHelp size={22} aria-hidden="true" /></Link>}
       <div className="account-menu"><button type="button" className="initial-avatar" aria-haspopup="menu" aria-expanded={menu} aria-label="Account menu" onClick={() => setMenu(!menu)}>{user.initials}</button>
         {menu && <div role="menu" className="account-dropdown"><span><b>{user.name || "Your account"}</b><small>{user.email}</small></span>
           <Link role="menuitem" href="/discover">Discover events</Link>

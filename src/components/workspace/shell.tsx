@@ -27,7 +27,7 @@ function ShellTools() {
 
 /* ───────────────────────── shared primitives ───────────────────────── */
 
-type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number; badgeTone?: "red" | "grey"; exact?: boolean; children?: NavItem[] };
+type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number; badgeTone?: "red" | "grey"; exact?: boolean; children?: NavItem[]; match?: RegExp };
 
 function useOutside<T extends HTMLElement>(open: boolean, close: () => void) {
   const ref = useRef<T>(null);
@@ -51,6 +51,7 @@ function Popover({ label, trigger, children, className = "", align = "right" }: 
 }
 
 function isActive(pathname: string, item: NavItem) {
+  if (item.match?.test(pathname)) return true;
   return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + "/");
 }
 
@@ -152,9 +153,9 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
   const setMobileOpen = (v: boolean) => setOpenOn(v ? pathname : null);
   const venue = workspace.capabilities.includes("venue"), service = workspace.capabilities.includes("service");
   const listingChildren: NavItem[] = [
-    ...(venue ? [{ href: "/provider/listings/venues", label: "Venues", icon: Building2 }, { href: "/provider/listings/spaces", label: "Spaces", icon: LayoutGrid }] : []),
-    ...(service ? [{ href: "/provider/listings/services", label: "Services", icon: Wrench }] : []),
-    { href: "/provider/listings/packages", label: "Packages", icon: Package },
+    ...(venue ? [{ href: "/provider/listings/venues", label: "Venues", icon: Building2, match: /^\/provider\/venues(?!\/[^/]+\/spaces)(\/|$)/ }, { href: "/provider/listings/spaces", label: "Spaces", icon: LayoutGrid, match: /^\/provider\/venues\/[^/]+\/spaces(\/|$)/ }] : []),
+    ...(service ? [{ href: "/provider/listings/services", label: "Services", icon: Wrench, match: /^\/provider\/services(\/|$)/ }] : []),
+    { href: "/provider/listings/packages", label: "Packages", icon: Package, match: /^\/provider\/packages(\/|$)/ },
   ];
   const nav: NavItem[] = [
     { href: "/provider", label: "Home", icon: House, exact: true },

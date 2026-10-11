@@ -7,6 +7,7 @@ import { chromium } from "@playwright/test";
 import fs from "node:fs/promises";
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
+import { resolveUrl } from "./ws-resolve.mjs";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 // One manifest file per screen group (artifacts/visual/ws-manifest/*.json) so groups can be edited independently.
@@ -54,7 +55,7 @@ try {
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", e => errors.push(e.message));
-    const res = await page.goto(BASE + row.url, { waitUntil: "domcontentloaded", timeout: 180000 });
+    const res = await page.goto(BASE + await resolveUrl(row.url), { waitUntil: "domcontentloaded", timeout: 180000 });
     await page.waitForLoadState("load").catch(() => {});
     await page.evaluate(() => document.fonts.ready);
     await page.waitForFunction(() => [...document.images].every(i => i.complete), null, { timeout: 30000 }).catch(() => {});

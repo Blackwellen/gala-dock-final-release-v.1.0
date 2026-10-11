@@ -26,6 +26,8 @@ try { for(const row of manifest.filter(r=>!selected.length||selected.some(s=>r.k
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://localhost:3107'+row.url,{waitUntil:'networkidle',timeout:90000});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(300);
  await page.addStyleTag({content:'nextjs-portal{display:none!important}*{animation:none!important;transition:none!important}'});
+ for(const sel of row.check??[])await page.locator(sel).check({force:true});
+ if(row.check?.length)await page.mouse.move(0,0);
  const source=PNG.sync.read(await fs.readFile(row.file));
  const shot=PNG.sync.read(await page.screenshot({path:`artifacts/visual/screens/${row.key}.png`,animations:'disabled'}));
  const diff=new PNG({width:row.width,height:row.height});const overlay=new PNG({width:row.width,height:row.height});

@@ -1,0 +1,169 @@
+{
+ "name": "c-org-003-ov",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228",
+ "page": 11.62,
+ "components": [
+  {
+   "sel": ".eh-hero",
+   "label": "Neon Nights Festival",
+   "x": 238,
+   "y": 110,
+   "w": 1280,
+   "h": 134,
+   "mismatch": 22.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Budget vs forecast",
+   "x": 923,
+   "y": 455,
+   "w": 300,
+   "h": 270,
+   "mismatch": 18.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Provider status",
+   "x": 236,
+   "y": 739,
+   "w": 315,
+   "h": 273,
+   "mismatch": 17.3
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 1251,
+   "y": 739,
+   "w": 267,
+   "h": 273,
+   "mismatch": 15.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Suppliers",
+   "x": 1020,
+   "y": 308,
+   "w": 241,
+   "h": 136,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Team & Crew",
+   "x": 1271,
+   "y": 308,
+   "w": 247,
+   "h": 136,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 230,
+   "y": 254,
+   "w": 438,
+   "h": 42,
+   "mismatch": 13.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Next key milestones",
+   "x": 1233,
+   "y": 455,
+   "w": 285,
+   "h": 270,
+   "mismatch": 12.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Recent activity",
+   "x": 562,
+   "y": 739,
+   "w": 353,
+   "h": 273,
+   "mismatch": 12.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Risks & blockers",
+   "x": 925,
+   "y": 739,
+   "w": 315,
+   "h": 273,
+   "mismatch": 12.2
+  },
+  {
+   "sel": ".eh-tabs",
+   "label": "eh-tabs",
+   "x": 236,
+   "y": 254,
+   "w": 1282,
+   "h": 43,
+   "mismatch": 12
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event readiness",
+   "x": 236,
+   "y": 308,
+   "w": 242,
+   "h": 136,
+   "mismatch": 11.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Tickets",
+   "x": 488,
+   "y": 308,
+   "w": 257,
+   "h": 136,
+   "mismatch": 11.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event details",
+   "x": 236,
+   "y": 455,
+   "w": 342,
+   "h": 270,
+   "mismatch": 11.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Financials",
+   "x": 755,
+   "y": 308,
+   "w": 255,
+   "h": 136,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Ticket sales pace",
+   "x": 589,
+   "y": 455,
+   "w": 323,
+   "h": 270,
+   "mismatch": 8.1
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 5.9
+  }
+ ]
+}

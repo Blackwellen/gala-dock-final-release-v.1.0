@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 
 /**
- * Workspace display scale, shared with the Customer/Organizer kit (same "gd-density" key and html[data-density] values):
- * default .8 (.75 on short screens), compact .72, comfortable .9, reference 1 (= the 1536×1024 design canvas, for 1:1 checks).
+ * Workspace display scale (same "gd-density" key and html[data-density] values as the Customer/Organizer kit).
+ * Workspace type is calibrated to the reference designs, so "default" renders at design size; compact .86, comfortable 1.08,
+ * reference 1 (the 1536×1024 design canvas exactly, for 1:1 checks).
  * On desktop windows narrower than the design canvas the layout additionally scales to fit it. Mobile/tablet layouts run at 1:1.
  * The inline script applies the scale before first paint; the effect keeps it in sync and clears it when leaving the workspace.
  */
 export const DENSITIES = [{ key: "compact", label: "Compact" }, { key: "default", label: "Default" }, { key: "comfortable", label: "Comfortable" }, { key: "reference", label: "Design size" }] as const;
 const KEY = "gd-density";
 const compute = `(function(){var k="default";try{k=localStorage.getItem("${KEY}")||"default"}catch(e){}
-var w=innerWidth,h=innerHeight,s=1;if(w>=1181){var d=k==="compact"?.72:k==="comfortable"?.9:k==="reference"?1:(h<=820?.75:.8);s=Math.max(.7,Math.min(w/1536,1)*d);}
+var w=innerWidth,h=innerHeight,s=1;if(w>=1181){var d=k==="compact"?.86:k==="comfortable"?1.08:k==="reference"?1:1;s=k==="reference"?1:Math.max(.78,Math.min(w/1536,1)*d);}
 var r=document.documentElement;r.style.zoom=s===1?"":String(s);var eh=h/s;r.style.setProperty("--ws-vh",eh+"px");
 r.dataset.wsH=eh<700?"tiny":eh<860?"short":"tall";r.dataset.wsScale=String(Math.round(s*100));r.dataset.density=k;})()`;
 const apply = () => new Function(compute)();

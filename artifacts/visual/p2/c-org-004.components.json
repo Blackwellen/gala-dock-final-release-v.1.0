@@ -1,0 +1,79 @@
+{
+ "name": "c-org-004",
+ "path": "/organizer/calendar?date=2026-10-22",
+ "page": 14.26,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Upcoming",
+   "x": 1238,
+   "y": 883,
+   "w": 278,
+   "h": 141,
+   "mismatch": 21.7
+  },
+  {
+   "sel": ".tg",
+   "label": "19 Oct",
+   "x": 241,
+   "y": 223,
+   "w": 982,
+   "h": 699,
+   "mismatch": 20.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "19 Oct",
+   "x": 240,
+   "y": 222,
+   "w": 984,
+   "h": 701,
+   "mismatch": 20.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Calendar layers",
+   "x": 1238,
+   "y": 525,
+   "w": 278,
+   "h": 344,
+   "mismatch": 18.4
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Calendar",
+   "x": 240,
+   "y": 107,
+   "w": 1276,
+   "h": 53,
+   "mismatch": 14.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "October 2026",
+   "x": 1238,
+   "y": 222,
+   "w": 278,
+   "h": 289,
+   "mismatch": 10.5
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.3
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

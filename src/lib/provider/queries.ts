@@ -4,9 +4,9 @@ import { rows } from "@/lib/workspace/db";
 import { getProvider } from "./context";
 
 export type Listing = {
-  id: string; name: string; kind: "venue" | "service"; slug: string | null; image: string; gallery: string[]; category: string; city: string; location: string;
+  id: string; name: string; kind: "venue" | "service"; slug: string | null; description: string; image: string; gallery: string[]; tags: string[]; category: string; city: string; location: string;
   published: boolean; paused_at: string | null; review_status: string; booking_mode: string; response_hours: number; price_from: number | null;
-  price_unit: string; capacity_max: number | null; rating: number; review_count: number; views: number; enquiry_count: number;
+  price_unit: string; capacity_min: number | null; capacity_max: number | null; rating: number; review_count: number; views: number; enquiry_count: number;
   verified: boolean; instant_book: boolean; emergency_supply: boolean; details: Record<string, unknown>; created_at: string;
 };
 export type Item = {
@@ -22,7 +22,7 @@ export type Job = {
   status: string; role: string; value: number; platform_fee: number; net_payout: number; paid_amount: number; payment_status: string; source: string;
   next_action: string; next_action_due: string | null; image: string; created_at: string; details: Record<string, unknown>; commercial_snapshot: Record<string, unknown>;
 };
-export type Space = { id: string; venue_id: string; name: string; status: string; indoor: boolean; capacity_seated: number | null; capacity_standing: number | null; image: string; rate_hourly: number | null };
+export type Space = { id: string; venue_id: string; name: string; status: string; indoor: boolean; capacity_seated: number | null; capacity_standing: number | null; image: string; rate_hourly: number | null; created_at: string };
 export type Crew = { id: string; name: string; role: string; member_type: string; status: string; avatar: string; skills: string[]; day_rate: number | null; location: string };
 
 const ITEM_SELECT = "id,status,role,listing_id,package,scope,image,amount,deposit,response_deadline,hold_expires_at,created_at,updated_at,notes,quote,terms_snapshot," +
@@ -36,7 +36,7 @@ export const workspaceListings = cache(async () => {
 });
 export const workspaceSpaces = cache(async () => {
   const { db, workspace } = await getProvider();
-  return rows<Space>(db.from("spaces").select("id,venue_id,name,status,indoor,capacity_seated,capacity_standing,image,rate_hourly").eq("workspace_id", workspace.id).order("created_at"));
+  return rows<Space>(db.from("spaces").select("id,venue_id,name,status,indoor,capacity_seated,capacity_standing,image,rate_hourly,created_at").eq("workspace_id", workspace.id).order("created_at"));
 });
 export const workspaceItems = cache(async () => {
   const { db } = await getProvider();

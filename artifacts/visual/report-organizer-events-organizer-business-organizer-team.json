@@ -1,0 +1,50 @@
+[
+  {
+    "url": "/preview/onboarding/organizer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 13.149,
+    "interfaceMismatchPercent": 11.058,
+    "ssimFull": 0.6927,
+    "ssimInterface": 0.6828,
+    "geometry": {
+      "scrollHeight": 1039,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-events",
+    "mismatchPercent": 18.699,
+    "interfaceMismatchPercent": 16.465,
+    "ssimFull": 0.5898,
+    "ssimInterface": 0.5941,
+    "geometry": {
+      "scrollHeight": 1044,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=4",
+    "file": "Designs\\auth & onboarding\\GalaDock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-team",
+    "mismatchPercent": 16.44,
+    "interfaceMismatchPercent": 15.204,
+    "ssimFull": 0.5982,
+    "ssimInterface": 0.5769,
+    "geometry": {
+      "scrollHeight": 1270,
+      "overflow": true
+    },
+    "errors": []
+  }
+]

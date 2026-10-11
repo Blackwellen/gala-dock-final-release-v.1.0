@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/onboarding/organizer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 13.412,
+    "interfaceMismatchPercent": 11.038,
+    "ssimFull": 0.6773,
+    "ssimInterface": 0.6805,
+    "geometry": {
+      "scrollHeight": 1039,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

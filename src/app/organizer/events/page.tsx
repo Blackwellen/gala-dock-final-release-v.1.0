@@ -49,7 +49,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events" }]} />
     <div className="k-page-head" style={{ marginTop: -4 }}>
-      <div><h1 style={{ fontSize: 34 }}>Events</h1><p className="sub" style={{ fontSize: 15.5 }}>Manage your full event portfolio. Plan, track and deliver unforgettable experiences.</p></div>
+      <div><h1 style={{ fontSize: 34.5 }}>Events</h1><p className="sub" style={{ fontSize: 15.5 }}>Manage your full event portfolio. Plan, track and deliver unforgettable experiences.</p></div>
       <div className="k-row" style={{ gap: 10 }}><ImportExport rows={exportRows} />
         <CreateEventSplit />
       </div>
@@ -141,7 +141,7 @@ async function CalendarView({ events, sp, qs, supabase, workspaceId, counts, tot
       <MonthCalendar year={year} month={month} items={items} maxPerDay={1} />
     </Card>
     <div className="k-col" style={{ gap: 14 }}>
-      <Card><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 16 }}>{label}</h2><div className="k-row"><Link className="k-icon-btn plain" href={qs({ month: prev })} aria-label="Previous month"><ChevronLeft size={15} /></Link><Link className="k-icon-btn plain" href={qs({ month: next })} aria-label="Next month"><ChevronRight size={15} /></Link></div></div>
+      <Card><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 15.5 }}>{label}</h2><div className="k-row"><Link className="k-icon-btn plain" href={qs({ month: prev })} aria-label="Previous month"><ChevronLeft size={15} /></Link><Link className="k-icon-btn plain" href={qs({ month: next })} aria-label="Next month"><ChevronRight size={15} /></Link></div></div>
         <MiniMonth year={year} month={month} marked={items.map(i => londonYmd(new Date(i.start)))} selected={sel} hrefFor={d => qs({ day: d })} /></Card>
       <Card><div className="k-between" style={{ marginBottom: 10 }}><h2 style={{ fontSize: 15 }}>Agenda – {new Date(`${sel}T12:00:00Z`).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}</h2><span className="k-small k-muted">{dayItems.length} event{dayItems.length === 1 ? "" : "s"}</span></div>
         {dayItems.length ? <div className="k-col" style={{ gap: 10 }}>{dayItems.map(i => <Link key={i.id} href={i.href} className="k-li"><i className={`k-dot tone-dot-${i.tone}`} />{/* eslint-disable-next-line @next/next/no-img-element */}{i.image ? <img src={i.image} alt="" className="k-thumb" /> : <span className="k-thumb" />}<span className="k-grow"><b className="k-small k-strong">{i.title}</b><span className="k-xs k-muted k-row" style={{ gap: 4 }}><Clock size={11} />{time(i.start)}</span></span></Link>)}</div> : <p className="k-small">Nothing scheduled on this day.</p>}

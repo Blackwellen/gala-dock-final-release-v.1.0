@@ -1,0 +1,43 @@
+{
+ "name": "c-org-008",
+ "path": "/organizer/marketplace?event=392fdf17-4e5c-4473-987c-251dc0a97228",
+ "page": 31.26,
+ "components": [
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 178,
+   "w": 131,
+   "h": 42,
+   "mismatch": 19.8
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Venues",
+   "x": 236,
+   "y": 110,
+   "w": 1282,
+   "h": 58,
+   "mismatch": 14
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.7
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 5.7
+  }
+ ]
+}

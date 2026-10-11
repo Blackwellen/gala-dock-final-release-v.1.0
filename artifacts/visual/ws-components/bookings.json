@@ -1,0 +1,7 @@
+{ "url": "/provider/bookings", "who": "provider", "design": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
+  "components": [
+    { "name": "kpi-1", "selector": ".pb-kpis .ws-kpi", "index": 0, "box": [249, 152, 246, 108] },
+    { "name": "kpi-2", "selector": ".pb-kpis .ws-kpi", "index": 1, "box": [506, 152, 245, 108] },
+    { "name": "kpi-3", "selector": ".pb-kpis .ws-kpi", "index": 2, "box": [761, 152, 231, 108] },
+    { "name": "kpi-4", "selector": ".pb-kpis .ws-kpi", "index": 3, "box": [1003, 152, 224, 108] }
+  ] }

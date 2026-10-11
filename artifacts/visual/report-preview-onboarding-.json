@@ -1,0 +1,162 @@
+[
+  {
+    "url": "/preview/onboarding",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Onboarding Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-experience",
+    "mismatchPercent": 17.474,
+    "interfaceMismatchPercent": 13.754,
+    "ssimFull": 0.6603,
+    "ssimInterface": 0.6582,
+    "geometry": {
+      "scrollHeight": 1055,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 13.103,
+    "interfaceMismatchPercent": 10.992,
+    "ssimFull": 0.6936,
+    "ssimInterface": 0.6841,
+    "geometry": {
+      "scrollHeight": 1039,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-events",
+    "mismatchPercent": 19.518,
+    "interfaceMismatchPercent": 17.642,
+    "ssimFull": 0.5615,
+    "ssimInterface": 0.553,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=3",
+    "file": "Designs\\auth & onboarding\\Gala·Dock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-brand",
+    "mismatchPercent": 16.617,
+    "interfaceMismatchPercent": 14.726,
+    "ssimFull": 0.6162,
+    "ssimInterface": 0.6306,
+    "geometry": {
+      "scrollHeight": 1224,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=4",
+    "file": "Designs\\auth & onboarding\\GalaDock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-team",
+    "mismatchPercent": 16.438,
+    "interfaceMismatchPercent": 15.203,
+    "ssimFull": 0.5985,
+    "ssimInterface": 0.5775,
+    "geometry": {
+      "scrollHeight": 1270,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/customer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Preferences Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-preferences",
+    "mismatchPercent": 15.214,
+    "interfaceMismatchPercent": 13.913,
+    "ssimFull": 0.6893,
+    "ssimInterface": 0.6944,
+    "geometry": {
+      "scrollHeight": 1034,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-business",
+    "mismatchPercent": 17.144,
+    "interfaceMismatchPercent": 16.312,
+    "ssimFull": 0.6309,
+    "ssimInterface": 0.6184,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 20.003,
+    "interfaceMismatchPercent": 20.969,
+    "ssimFull": 0.587,
+    "ssimInterface": 0.5395,
+    "geometry": {
+      "scrollHeight": 1226,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=3",
+    "file": "Designs\\auth & onboarding\\Gala-Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-rules",
+    "mismatchPercent": 15.959,
+    "interfaceMismatchPercent": 13.566,
+    "ssimFull": 0.5946,
+    "ssimInterface": 0.581,
+    "geometry": {
+      "scrollHeight": 1313,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=4",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard(1).png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-publish",
+    "mismatchPercent": 18.419,
+    "interfaceMismatchPercent": 17.603,
+    "ssimFull": 0.6008,
+    "ssimInterface": 0.5814,
+    "geometry": {
+      "scrollHeight": 1355,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

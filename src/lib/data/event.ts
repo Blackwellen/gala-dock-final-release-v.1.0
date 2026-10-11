@@ -40,6 +40,7 @@ export async function loadEventData(ctx: OrganizerCtx, eventId: string) {
     sb.from("discount_codes").select("*").eq("event_id", eventId),
     sb.from("provider_requests").select("id,reference,title,category,status,response_deadline,created_at").eq("event_id", eventId).order("created_at", { ascending: false }),
   ]);
+  const { data: activity } = await sb.rpc("event_activity", { p_event: eventId, p_limit: 12 });
   const { data: vmap } = await sb.from("venue_maps").select("id,version,status,structure,overlay,created_at").eq("event_id", eventId).order("version", { ascending: false }).limit(1).maybeSingle();
   const { count: validTickets } = await sb.from("tickets").select("id", { count: "exact", head: true }).eq("event_id", eventId).in("status", ["valid", "used"]).is("replaced_by", null);
   const { count: usedTickets } = await sb.from("tickets").select("id", { count: "exact", head: true }).eq("event_id", eventId).eq("status", "used");
@@ -65,7 +66,7 @@ export async function loadEventData(ctx: OrganizerCtx, eventId: string) {
     media: media.data ?? [], metrics: metrics.data ?? [], series: (series.data ?? []) as { day: string; tickets: number; gross: number }[],
     checkins: checkins.data ?? [], invoices: invoices.data ?? [], codes: codes.data ?? [], requests: requests.data ?? [],
     sold, cap, ticketRevenue, potential, committed, estimated, costsActual, otherIncome, assigned, crewNeeded,
-    vmap: vmap ?? null,
+    vmap: vmap ?? null, activity: (activity ?? []) as { id: number; event: string; text: string; actor: string; created_at: string }[],
     validTickets: validTickets ?? 0, usedTickets: usedTickets ?? 0,
   };
 }

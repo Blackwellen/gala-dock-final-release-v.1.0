@@ -35,7 +35,7 @@ export function ProposalClientForm({ id, initial, leads }: { id: string | null; 
     </div>
     <div className="k-col" style={{ gap: 14 }}>
       <section className="k-card"><h2 className="wz-h" style={{ marginBottom: 10 }}>Quick summary</h2>{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/assets/gd/pw-wedding-side.webp" alt="" style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 10 }} />
-        <h3 style={{ fontSize: 16, margin: "10px 0" }}>{String(v.title || "Untitled proposal")}</h3>
+        <h3 style={{ fontSize: 15.5, margin: "10px 0" }}>{String(v.title || "Untitled proposal")}</h3>
         <dl className="ov-dl">{[["Client", v.client_name], ["Contact", v.contact_name], ["Date", v.date], ["Location", v.location], ["Attendance", v.attendance], ["Event type", v.event_type]].map(([k, val]) => <div key={String(k)}><dt>{String(k)}</dt><dd>{String(val || "—")}</dd></div>)}</dl></section>
       <section className="k-card"><div className="k-between"><h2 className="wz-h">Event brief</h2><span className="k-xs k-muted">{String(v.summary ?? "").length}/1000</span></div><textarea className="k-textarea" style={{ minHeight: 140, marginTop: 8 }} maxLength={1000} value={String(v.summary ?? "")} onChange={e => set("summary", e.target.value)} placeholder="Describe the event, your client's goals and any specific requirements." /></section>
     </div>

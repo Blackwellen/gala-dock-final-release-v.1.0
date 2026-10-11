@@ -23,7 +23,7 @@ export function Providers({ children }: { children: ReactNode }) {
 /** Official Gala·Dock wordmark (public/brand). `light` renders it white for dark backgrounds; `mark` shows the symbol only. */
 export function Logo({ light = false, small = false, mark = false, href = "/" }: { light?: boolean; small?: boolean; mark?: boolean; href?: string }) {
   return <Link href={href} className={`logo ${light ? "light" : ""} ${small ? "small" : ""} ${mark ? "mark-only" : ""}`} aria-label="Gala Dock home">
-    <Image className="logo-img" src={mark ? "/brand/gala-dock-mark.png" : "/brand/gala-dock-logo.png"} alt="Gala·Dock" width={mark ? 137 : 500} height={129} sizes={mark ? "64px" : "260px"} priority />
+    <Image className="logo-img" src={mark ? "/brand/gala-dock-mark-trim.png" : "/brand/gala-dock-logo-trim.png"} alt="Gala·Dock" width={mark ? 116 : 431} height={115} sizes={mark ? "64px" : "260px"} priority />
   </Link>;
 }
 

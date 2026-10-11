@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/mfa",
+    "file": "Designs\\auth & onboarding\\image-gen-6(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-mfa",
+    "mismatchPercent": 14.454,
+    "interfaceMismatchPercent": 7.38,
+    "ssimFull": 0.7739,
+    "ssimInterface": 0.7742,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]
