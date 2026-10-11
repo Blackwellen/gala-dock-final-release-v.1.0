@@ -1,0 +1,16 @@
+{
+  "key": "prov-001-home",
+  "url": "/provider",
+  "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
+  "status": 200,
+  "mismatchPercent": 17.52,
+  "ssim": 0.5246,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1086
+  },
+  "errors": [],
+  "at": "2026-10-11T00:19:54.223Z"
+}

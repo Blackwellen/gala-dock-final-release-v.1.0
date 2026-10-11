@@ -1,0 +1,34 @@
+[
+  {
+    "url": "/preview/onboarding/organizer?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-events",
+    "mismatchPercent": 23.73,
+    "interfaceMismatchPercent": 19.182,
+    "ssimFull": 0.517,
+    "ssimInterface": 0.5486,
+    "geometry": {
+      "scrollHeight": 1134,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/customer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Preferences Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-preferences",
+    "mismatchPercent": 20.04,
+    "interfaceMismatchPercent": 20.896,
+    "ssimFull": 0.632,
+    "ssimInterface": 0.6127,
+    "geometry": {
+      "scrollHeight": 1058,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

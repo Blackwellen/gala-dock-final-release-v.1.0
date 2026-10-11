@@ -1,0 +1,99 @@
+
+Running 15 tests using 1 worker
+
+  ok  1 [desktop] › tests\phase1\e2e\journeys.spec.ts:10:5 › login: wrong password and unknown email get the same generic error (2.9s)
+  ok  2 [desktop] › tests\phase1\e2e\journeys.spec.ts:21:5 › login: client validation blocks empty submit; forgot password is neutral (2.7s)
+  ok  3 [desktop] › tests\phase1\e2e\journeys.spec.ts:32:5 › register: terms must be explicitly accepted and marketing is opt-in (2.2s)
+  ok  4 [desktop] › tests\phase1\e2e\journeys.spec.ts:44:5 › protected routes redirect to login and preserve the destination (5.7s)
+  ok  5 [desktop] › tests\phase1\e2e\journeys.spec.ts:51:5 › Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover (6.2s)
+  ok  6 [desktop] › tests\phase1\e2e\journeys.spec.ts:67:5 › Journey B: ticket purchaser keeps checkout intent through sign-in, no business setup (3.2s)
+  ok  7 [desktop] › tests\phase1\e2e\journeys.spec.ts:76:5 › Journey C + M + P: organizer onboarding — refresh-safe drafts, single workspace, owner, invites after commit (13.0s)
+  x   8 [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating (1.1m)
+  x   9 [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage (6.4s)
+  ok 10 [desktop] › tests\phase1\e2e\journeys.spec.ts:185:5 › Journey F: mixed provider uses one workspace for venue and services (10.3s)
+  ok 11 [desktop] › tests\phase1\e2e\journeys.spec.ts:198:5 › Journey H: an organizer can add a provider workspace without permission crossover (4.9s)
+  ok 12 [desktop] › tests\phase1\e2e\journeys.spec.ts:208:5 › Journey I: invitation opened while signed out, accepted after sign-in (6.6s)
+  ok 13 [desktop] › tests\phase1\e2e\journeys.spec.ts:233:5 › Journey J: password recovery link resets once, signs out everywhere, and cannot be reused (4.7s)
+  ok 14 [desktop] › tests\phase1\e2e\journeys.spec.ts:251:5 › Journey K: MFA challenge is required, rejects bad codes and resumes the original page (36.9s)
+  ok 15 [desktop] › tests\phase1\e2e\journeys.spec.ts:275:5 › Journey L: suspended member sees the access state; owned workspaces stay available (6.0s)
+
+
+  1) [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /step=4/
+    Received string:  "http://localhost:3107/onboarding/provider?step=3"
+    Timeout: 60000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 60000ms
+        5 × locator resolved to <html lang="en">…</html>
+          - unexpected value "http://localhost:3107/onboarding/provider?step=3"
+        - waiting for "http://localhost:3107/onboarding/provider?step=3" navigation to finish...
+        - navigated to "http://localhost:3107/onboarding/provider?step=4"
+        - waiting for "http://localhost:3107/onboarding/provider?step=3" navigation to finish...
+        - navigated to "http://localhost:3107/onboarding/provider?step=3"
+        113 × locator resolved to <html lang="en">…</html>
+            - unexpected value "http://localhost:3107/onboarding/provider?step=3"
+
+
+       at phase1\helpers.ts:68
+
+      66 |
+      67 | export async function expectPath(page: Page, path: RegExp) {
+    > 68 |   await expect(page).toHaveURL(path, { timeout: 60_000 });
+         |                      ^
+      69 | }
+      70 |
+        at expectPath (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\helpers.ts:68:22)
+        at providerFinish (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\e2e\journeys.spec.ts:146:19)
+        at C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\e2e\journeys.spec.ts:170:14
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-bb978--booking-rules-trust-gating-desktop\error-context.md
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-bb978--booking-rules-trust-gating-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\phase1-e2e-journeys-Journe-bb978--booking-rules-trust-gating-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\phase1-e2e-journeys-Journe-bb978--booking-rules-trust-gating-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage 
+
+    Error: locator.selectOption: Error: strict mode violation: getByLabel('Category') resolved to 2 elements:
+        1) <select id="_r_a_" aria-invalid="false" aria-required="true">…</select> aka getByLabel('Category *')
+        2) <input value="" id="_r_c_" type="text" aria-invalid="false" placeholder="e.g. Wedding photography"/> aka getByRole('textbox', { name: 'Subcategory (optional)' })
+
+    Call log:
+      - waiting for getByLabel('Category')
+
+
+      177 |   await providerStepOne(page, "Services");
+      178 |   await page.getByLabel("Service name").fill("Riverside Catering");
+    > 179 |   await page.getByLabel("Category").selectOption("Catering");
+          |                                     ^
+      180 |   await page.getByLabel("Description").fill("Seasonal catering for weddings, conferences and private events across London.");
+      181 |   const ws = await providerFinish(page, user.id, "service");
+      182 |   expect(ws.capabilities).toEqual(["service"]);
+        at C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\e2e\journeys.spec.ts:179:37
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\error-context.md
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating 
+    [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage 
+  13 passed (3.2m)

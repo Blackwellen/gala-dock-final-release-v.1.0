@@ -1,0 +1,16 @@
+[
+  {
+    "url": "/preview/onboarding/customer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Preferences Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-preferences",
+    "mismatchPercent": 20.005,
+    "interfaceMismatchPercent": 20.846,
+    "geometry": {
+      "scrollHeight": 1058,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

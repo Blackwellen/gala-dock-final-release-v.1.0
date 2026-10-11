@@ -1,0 +1,34 @@
+[
+  {
+    "url": "/",
+    "file": "Designs\\Public Pages\\Gala Dock Event Marketplace Homepage.png",
+    "public": true,
+    "width": 724,
+    "height": 2172,
+    "key": "home",
+    "mismatchPercent": 33.744,
+    "geometry": {
+      "scrollHeight": 2254,
+      "overflow": true,
+      "header": 34,
+      "footerTop": 2078
+    },
+    "errors": []
+  },
+  {
+    "url": "/events/neon-nights",
+    "file": "Designs\\Public Pages\\Gala·Dock Neon Nights Festival 2026.png",
+    "public": true,
+    "width": 809,
+    "height": 1942,
+    "key": "events-neon-nights",
+    "mismatchPercent": 38.898,
+    "geometry": {
+      "scrollHeight": 2233,
+      "overflow": false,
+      "header": 43,
+      "footerTop": 2045.078125
+    },
+    "errors": []
+  }
+]

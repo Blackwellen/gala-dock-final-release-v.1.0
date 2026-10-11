@@ -1,0 +1,44 @@
+[
+  {
+    "url": "/auth/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 19.766,
+    "interfaceMismatchPercent": 11.324,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/secure-access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 18.711,
+    "interfaceMismatchPercent": 10.606,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider/listing",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 19.521,
+    "interfaceMismatchPercent": 20.712,
+    "geometry": {
+      "scrollHeight": 1140,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

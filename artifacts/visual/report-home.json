@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/",
+    "file": "Designs\\Public Pages\\Gala Dock Event Marketplace Homepage.png",
+    "public": true,
+    "width": 724,
+    "height": 2172,
+    "key": "home",
+    "mismatchPercent": 40.366,
+    "geometry": {
+      "scrollHeight": 2254,
+      "overflow": false,
+      "header": 34,
+      "footerTop": 2078
+    },
+    "errors": []
+  }
+]

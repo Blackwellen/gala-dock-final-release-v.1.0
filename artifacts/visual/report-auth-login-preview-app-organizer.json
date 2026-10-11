@@ -1,0 +1,28 @@
+[
+  {
+    "url": "/auth/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 2.966,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/app/organizer",
+    "file": "Designs\\platform shell\\organizer team shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-organizer",
+    "mismatchPercent": 14.631,
+    "geometry": {
+      "scrollHeight": 1193,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

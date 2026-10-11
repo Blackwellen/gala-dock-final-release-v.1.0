@@ -1,0 +1,40 @@
+
+Running 2 tests using 1 worker
+
+  ok 1 [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating (10.5s)
+  x  2 [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage (3.1m)
+
+
+  1) [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Category', { exact: true })
+
+
+      177 |   await providerStepOne(page, "Services");
+      178 |   await page.getByLabel("Service name").fill("Riverside Catering");
+    > 179 |   await page.getByLabel("Category", { exact: true }).selectOption("Catering");
+          |                                                      ^
+      180 |   await page.getByLabel("Description").fill("Seasonal catering for weddings, conferences and private events across London.");
+      181 |   const ws = await providerFinish(page, user.id, "service");
+      182 |   expect(ws.capabilities).toEqual(["service"]);
+        at C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\e2e\journeys.spec.ts:179:54
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\error-context.md
+
+    Error Context: test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\phase1-e2e-journeys-Journe-e1548-ces-—-category-and-coverage-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage 
+  1 passed (3.3m)

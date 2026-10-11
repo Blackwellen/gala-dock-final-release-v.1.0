@@ -1,0 +1,28 @@
+export type EventItem = { key:string;name:string;image:string;location:string;date:string;month:string;day:string;price:number;tags:string[];rating?:string };
+export const londonEvents:EventItem[] = [
+ {key:"summer-sound",name:"Summer Sound Festival",image:"london-3",location:"Victoria Park, London",date:"26 September 2026",month:"SEP",day:"26",price:40,tags:["Music","Outdoor"],rating:"4.5 (312)"},
+ {key:"urban-food",name:"Urban Food Market",image:"london-4",location:"Southbank, London",date:"27 September 2026",month:"SEP",day:"27",price:0,tags:["Food & Drink","Family"],rating:"4.3 (96)"},
+ {key:"comedy-club",name:"Comedy Club Night",image:"london-5",location:"Leicester Square, London",date:"1 October 2026",month:"OCT",day:"01",price:22,tags:["Comedy","Nightlife"],rating:"4.6 (188)"},
+ {key:"rooftop-party",name:"Rooftop Day Party",image:"london-6",location:"Shoreditch, London",date:"18 October 2026",month:"OCT",day:"18",price:25,tags:["Day Party","Music"],rating:"4.4 (120)"},
+ {key:"art-design",name:"Art & Design Exhibition",image:"london-7",location:"Tate Modern, London",date:"4 October 2026",month:"OCT",day:"04",price:18,tags:["Arts & Culture","Exhibition"],rating:"4.7 (98)"},
+ {key:"wellness",name:"Wellness & Mindfulness",image:"london-8",location:"Hyde Park, London",date:"7 October 2026",month:"OCT",day:"07",price:0,tags:["Wellness","Outdoor"],rating:"4.2 (76)"},
+ {key:"tech-meetup",name:"Tech Innovators Meetup",image:"london-9",location:"King’s Cross, London",date:"10 October 2026",month:"OCT",day:"10",price:20,tags:["Business","Networking"],rating:"4.5 (84)"},
+ {key:"classical",name:"Classical Evening",image:"london-10",location:"Royal Albert Hall, London",date:"10 October 2026",month:"OCT",day:"10",price:45,tags:["Classical","Concert"],rating:"4.8 (210)"},
+];
+export const featuredEvents:EventItem[] = [
+ {key:"city-beats",name:"City Beats Weekender",image:"london-0",location:"Docklands Expo, London",date:"3 October 2026",month:"OCT",day:"03",price:28,tags:["Music","Festival"],rating:"4.8 (320)"},
+ {key:"business-summit",name:"London Business Leaders Summit",image:"london-1",location:"The Shard, London",date:"12 October 2026",month:"OCT",day:"12",price:35,tags:["Business","Networking"],rating:"4.6 (128)"},
+ {key:"neon-nights",name:"Neon Nights at Riverside",image:"london-2",location:"Riverside Arena, London",date:"18 October 2026",month:"OCT",day:"18",price:35,tags:["Nightlife","DJ"],rating:"4.7 (210)"},
+];
+export const organizerEvents:EventItem[] = [
+ {key:"neon-nights",name:"Neon Nights Festival 2026",image:"organizer-0",location:"Riverside Arena, London",date:"12 September 2026",month:"SEP",day:"12",price:35,tags:["Music","Festival"]},
+ {key:"city-beats",name:"City Beats Weekender",image:"organizer-1",location:"Docklands Expo, London",date:"3 October 2026",month:"OCT",day:"03",price:28,tags:["Club Night","Electronic"]},
+ {key:"sunset-sessions",name:"Sunset Sessions",image:"organizer-2",location:"The Loft, London",date:"18 October 2026",month:"OCT",day:"18",price:20,tags:["House","Day Party"]},
+ {key:"neon-awards",name:"Neon Awards 2026",image:"organizer-3",location:"Shoreditch Hall, London",date:"7 November 2026",month:"NOV",day:"07",price:75,tags:["Corporate","Awards"]},
+];
+export const homeEvents:EventItem[] = [
+ {key:"sunset-music",name:"Sunset Music Festival",image:"home-0",location:"Cape Town, South Africa",date:"15 December 2026",month:"DEC",day:"15",price:250,tags:["MUSIC","FESTIVAL"]},
+ {key:"wine-dine",name:"Wine & Dine Festival",image:"home-1",location:"Stellenbosch",date:"20 December 2026",month:"DEC",day:"20",price:180,tags:["FOOD","EXPERIENCE"]},
+ {key:"tech-leaders",name:"Tech Leaders Summit",image:"home-2",location:"Johannesburg",date:"12 January 2027",month:"JAN",day:"12",price:650,tags:["BUSINESS","NETWORKING"]},
+ {key:"urban-art",name:"Urban Art Collective",image:"home-3",location:"Cape Town",date:"25 January 2027",month:"JAN",day:"25",price:120,tags:["ARTS","CREATIVE"]},
+];

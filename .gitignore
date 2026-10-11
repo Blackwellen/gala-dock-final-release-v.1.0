@@ -41,4 +41,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# session states from automated sign-in (contain auth tokens)
+/artifacts/auth/
+
+# Playwright output (traces can contain session tokens)
+/test-results/
+/playwright-report/
+/blob-report/
+/artifacts/debug/

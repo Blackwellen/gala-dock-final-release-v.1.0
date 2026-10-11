@@ -1,0 +1,30 @@
+[
+  {
+    "url": "/auth/secure-access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 18.712,
+    "interfaceMismatchPercent": 10.606,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider/listing",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 19.104,
+    "interfaceMismatchPercent": 20.114,
+    "geometry": {
+      "scrollHeight": 1175,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "url": "/auth/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 3.223,
+    "geometry": {
+      "scrollHeight": 1088,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer/business",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 17.643,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

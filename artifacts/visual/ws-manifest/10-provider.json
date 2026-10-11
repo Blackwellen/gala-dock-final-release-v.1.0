@@ -1,0 +1,44 @@
+[
+  {
+    "key": "prov-002-opportunities",
+    "url": "/provider/opportunities",
+    "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-003-opportunity",
+    "url": "/provider/opportunities/3c09a41c-83f4-4a7c-abd5-bf577f16a02e",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Opportunity Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w05-s1-quote-builder",
+    "url": "/provider/opportunities/9acfd02c-c19e-4e28-bd4e-a3adb5596d03/quote?step=1",
+    "file": "Designs/Provider Workspace/SaaS Quote Builder Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-004-quote",
+    "url": "/provider/quotes/099ca71f-c113-4ed0-81d4-7e11f75bb617",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Quote Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w05-s2-quote-review",
+    "url": "/provider/opportunities/4fe37aa9-27eb-43fe-b9ed-bc2ff909a4a6/quote?step=2&quote=b9e09080-3003-4d74-92b1-dc6c10e7bd1c",
+    "file": "Designs/Provider Workspace/Gala·Dock Quote Review Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-005-bookings",
+    "url": "/provider/bookings",
+    "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-006-booking",
+    "url": "/provider/bookings/2bc63852-b708-4669-9c37-41325b9dcf40",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Booking Dashboard.png",
+    "who": "provider"
+  }
+]

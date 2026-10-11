@@ -1,0 +1,18 @@
+{
+  "key": "prov-006-booking",
+  "url": "/provider/bookings/2bc63852-b708-4669-9c37-41325b9dcf40",
+  "file": "Designs/Provider Workspace/Gala·Dock Wedding Booking Dashboard.png",
+  "status": 500,
+  "mismatchPercent": 11.5,
+  "ssim": 0.7127,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [
+    "./src/app/page.tsx:14:1\nError: Module not found: Can't resolve '@/styles/landing.css'\n  12 | import { AgentDemo } from \"@/components/landing/agent-demo\";\n  13 | import { Faq, type FaqItem } from \"@/components/landing/faq\";\n> 14 | import \"@/styles/landing.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  15 |\n  16 | export const metadata: Metadata = {\n  17 |   title: \"Gala Dock — Plan, run and book extraordinary events\",\n\nImport map: aliased to relative './src/styles/landing.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
+  ],
+  "at": "2026-10-11T00:08:00.188Z"
+}

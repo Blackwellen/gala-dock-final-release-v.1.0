@@ -1,0 +1,10 @@
+from pathlib import Path
+p=Path('src/components/auth.tsx')
+s=p.read_text(encoding='utf-8').replace('Building2, ', '').replace(', Bell, BarChart3 }', ' }').replace('© 2026 Gala Dock.', '© 2025 Gala Dock.')
+p.write_text(s,encoding='utf-8')
+p=Path('src/components/onboarding.tsx')
+s=p.read_text(encoding='utf-8').replace(', FileCheck2 }', ' }')
+p.write_text(s,encoding='utf-8')
+p=Path('src/components/public.tsx')
+s=p.read_text(encoding='utf-8').replace('export function HomePage(){const toast=useToast();', 'export function HomePage(){')
+p.write_text(s,encoding='utf-8')

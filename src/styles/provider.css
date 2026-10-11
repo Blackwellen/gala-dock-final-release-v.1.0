@@ -1,0 +1,9 @@
+/* Provider-wide pieces shared across screens (imported by the Provider layout). */
+.pv-menu{position:relative;flex-shrink:0}
+.pv-menu-btn{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--ws-border);border-radius:7px;background:#fff;color:#1a1d5e}
+.pv-menu-btn:hover{background:#f6f8fe}
+.pv-menu-btn svg{width:17px!important;height:17px!important}
+.pv-menu-panel{position:absolute;right:0;top:calc(100% + 6px);min-width:200px;background:#fff;border:1px solid var(--ws-border);border-radius:10px;box-shadow:0 16px 44px #18205a22;padding:5px;z-index:30;display:grid}
+.pv-menu-panel a,.pv-menu-panel button{display:block;text-align:left;width:100%;padding:9px 11px;border-radius:7px;font-size:13.5px;color:var(--ws-ink)}
+.pv-menu-panel a:hover,.pv-menu-panel button:hover{background:#f3f6fd}
+.pv-menu-panel .danger{color:var(--ws-red)}

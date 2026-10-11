@@ -1,0 +1,16 @@
+{
+  "key": "prov-003-opportunity",
+  "url": "/provider/opportunities/8f6a32fa-18f3-41a2-bb07-d76d80805ed0",
+  "file": "Designs/Provider Workspace/Gala·Dock Wedding Opportunity Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 16.43,
+  "ssim": 0.5935,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1378
+  },
+  "errors": [],
+  "at": "2026-10-10T23:44:06.472Z"
+}

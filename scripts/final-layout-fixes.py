@@ -1,0 +1,11 @@
+from pathlib import Path
+p=Path('src/app/globals.css')
+s=p.read_text(encoding='utf-8')
+s=s.replace('.onboarding-page:not(.setup-organizer-business):not(.experience-page)', '.onboarding-page:where(:not(.setup-organizer-business):not(.experience-page))')
+s=s.replace('.onboarding-page:not(.setup-organizer-business)', '.onboarding-page:where(:not(.setup-organizer-business))')
+p.write_text(s,encoding='utf-8')
+p=Path('src/components/public.tsx')
+s=p.read_text(encoding='utf-8')
+start=s.index('export function HomePage()')
+s=s[:start]+s[start:].replace('const toast=useToast();','',1)
+p.write_text(s,encoding='utf-8')

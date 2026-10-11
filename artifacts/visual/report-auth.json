@@ -1,0 +1,106 @@
+[
+  {
+    "url": "/auth/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 15.409,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/register",
+    "file": "Designs\\auth & onboarding\\image-gen-2(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-register",
+    "mismatchPercent": 16.365,
+    "geometry": {
+      "scrollHeight": 1096,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/verify-email",
+    "file": "Designs\\auth & onboarding\\image-gen-3(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-verify-email",
+    "mismatchPercent": 16.596,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/forgot-password",
+    "file": "Designs\\auth & onboarding\\image-gen-4(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-forgot-password",
+    "mismatchPercent": 14.847,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/reset-password",
+    "file": "Designs\\auth & onboarding\\image-gen-5(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-reset-password",
+    "mismatchPercent": 18.393,
+    "geometry": {
+      "scrollHeight": 1093,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/mfa",
+    "file": "Designs\\auth & onboarding\\image-gen-6(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-mfa",
+    "mismatchPercent": 15.506,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 21.12,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/secure-access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 20.128,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "key": "prov-005-bookings",
+  "url": "/provider/bookings",
+  "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.84,
+  "ssim": 0.601,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": true,
+    "scrollHeight": 1035
+  },
+  "errors": [],
+  "at": "2026-10-11T00:03:25.377Z"
+}

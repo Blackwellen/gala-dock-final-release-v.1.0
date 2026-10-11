@@ -1,0 +1,76 @@
+▲ Next.js 16.4.0 (Turbopack)
+- Environments: .env.local, .env
+✓ Running next.config.ts took 77ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.9s
+  Running TypeScript ...
+  Finished TypeScript in 25.6s ...
+  Collecting page data using 27 workers ...
+  Generating static pages using 27 workers (0/38) ...
+  Generating static pages using 27 workers (9/38) 
+  Generating static pages using 27 workers (18/38) 
+  Generating static pages using 27 workers (28/38) 
+✓ Generating static pages using 27 workers (38/38) in 1224ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /[...slug]
+├ ƒ /access
+├ ƒ /admin
+├ ƒ /admin/login
+├ ƒ /api/agent/ask
+├ ƒ /api/agent/onboarding
+├ ƒ /api/dev/design
+├ ƒ /api/dev/designs
+├ ƒ /api/enquiries
+├ ƒ /api/export/[kind]
+├ ƒ /api/files/[id]
+├ ƒ /api/invites
+├ ƒ /api/onboarding
+├ ƒ /api/payouts
+├ ƒ /api/saved
+├ ƒ /api/uploads
+├ ƒ /auth/callback
+├ ƒ /auth/confirm
+├ ƒ /auth/continue
+├ ƒ /auth/signout
+├ ƒ /continue
+├ ƒ /forgot-password
+├ ƒ /invite/[token]
+├ ƒ /login
+├ ƒ /mfa
+├ ƒ /onboarding
+├ ƒ /onboarding/[flow]
+├ ƒ /organizer
+├ ƒ /organizer/calendar
+├ ƒ /organizer/events
+├ ƒ /organizer/events/[id]
+├ ƒ /organizer/proposals/new
+├ ƒ /organizer/sales
+├ ƒ /organizer/sales/leads/[id]
+├ ƒ /organizer/sales/proposals/[id]
+├ ƒ /proposal/[token]
+├ ƒ /provider
+├ ƒ /provider/bookings
+├ ƒ /provider/bookings/[id]
+├ ƒ /provider/bookings/export
+├ ƒ /provider/messages/[id]
+├ ƒ /provider/opportunities
+├ ƒ /provider/opportunities/[id]
+├ ƒ /provider/opportunities/[id]/quote
+├ ƒ /provider/quotes/[id]
+├ ƒ /provider/quotes/[id]/print
+├ ƒ /provider/search
+├ ƒ /register
+├ ƒ /reset-password
+└ ƒ /verify-email
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

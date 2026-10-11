@@ -1,0 +1,28 @@
+[
+  {
+    "url": "/preview/onboarding/organizer/business",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 19.604,
+    "geometry": {
+      "scrollHeight": 1056,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/app/organizer",
+    "file": "Designs\\platform shell\\organizer team shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-organizer",
+    "mismatchPercent": 13.43,
+    "geometry": {
+      "scrollHeight": 1144,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

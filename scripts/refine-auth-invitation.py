@@ -1,0 +1,26 @@
+from pathlib import Path
+p=Path('src/components/auth.tsx')
+s=p.read_text(encoding='utf-8')
+s=s.replace('Clock, UserRound }', 'Clock, UserRound, Ban, Bell, BarChart3 }')
+s=s.replace('import type { AuthScreen }', 'import { InvitationSummary, sampleInvitation, type InvitationDetails } from "./invitation-details";\nimport type { AuthScreen }')
+s=s.replace('const [workspaces,setWorkspaces]', 'const [inviteDetails,setInviteDetails]=useState<InvitationDetails|null>(preview?sampleInvitation:null);\n const [workspaces,setWorkspaces]')
+s=s.replace('useEffect(()=>{\n  if(screen===', 'useEffect(()=>{\n  if(screen==="invite"&&!preview&&params.get("token")){fetch(`/api/invites?token=${encodeURIComponent(params.get("token")!)}`).then(async response=>{const data=await response.json();if(!response.ok)throw new Error(data.error);setInviteDetails(data);}).catch(err=>setError(err.message));}\n  if(screen===')
+s=s.replace('},[screen]);', '},[screen,preview,params]);')
+start=s.index(' {screen==="invite"&&<><div className="invite-summary">')
+end=s.index('\n {screen==="secure-access"',start)
+s=s[:start]+' {screen==="invite"&&<><InvitationSummary invite={inviteDetails} preview={preview}/><div className="auth-security invitation-security"><ShieldCheck/><span><b>This invite is single-use.</b><small>Accepting will add you to this workspace with the {inviteDetails?.role??"assigned"} role. It won’t remove or replace your existing workspace access.</small></span><Link href="/help">Learn more <ArrowRight size={13}/></Link></div></>}'+s[end:]
+s=s.replace('{value}</button>)}</div><div className="auth-note danger"><AlertCircle/><span><b>Access denied</b><small>This account doesn’t have permission to access this workspace. Select another workspace or contact your administrator.</small>', '{value==="Denied"?<Ban size={22}/>:value==="Suspended"?<Clock size={22}/>:<LockKeyhole size={22}/>} {value}</button>)}</div><div className="auth-note danger"><IconTile icon={Ban} color="red"/><span><b>{status==="Suspended"?"Access suspended":status==="Revoked"?"Access revoked":"Access denied"}</b><small>You don’t have permission to access this workspace with your current account or role. If you believe you should have access, try a different workspace or contact your organization’s administrator.</small>')
+s=s.replace('!["reset-password","verify-email"].includes(screen)', '!["reset-password","verify-email","invite"].includes(screen)')
+s=s.replace('screen==="register"?"You’ll verify your email once.":screen==="invite"?"This invite is single-use.":"Secure, always."', 'screen==="register"?"You’ll verify your email once.":screen==="secure-access"?"Your data stays protected.":"Secure, always."')
+s=s.replace('Then you can continue to your original destination and pick up right where you left off.":"Your data', 'Then you can continue to your original destination and pick up right where you left off.":screen==="secure-access"?"You may see this message if you have insufficient access. To protect the privacy and security of our customers, we don’t reveal whether a specific workspace or record exists.":"Your data')
+s=s.replace('screen!=="register"&&screen!=="reset-password"&&<div className="auth-help"', 'screen!=="register"&&screen!=="reset-password"&&screen!=="invite"&&<div className="auth-help"')
+needle=' {screen==="secure-access"&&<div className="social-buttons">'
+at=s.index(needle)
+s=s[:at]+' {screen==="invite"&&inviteDetails?.expired&&<div className="invitation-expired"><Clock size={26}/><span><b>This invite has expired</b><small>This invitation expired on {new Date(inviteDetails.expiresAt).toLocaleDateString("en-GB",{month:"short",day:"numeric",year:"numeric"})} and can no longer be used.</small></span></div>}\n'+s[at:]
+p.write_text(s,encoding='utf-8')
+p=Path('src/app/[...slug]/page.tsx')
+s=p.read_text(encoding='utf-8')
+s=s.replace('if (parts[0] === "onboarding")', 'if (preview && parts[0] === "auth" && authScreens.includes(parts[1] as AuthScreen)) return <Suspense><AuthPage screen={parts[1] as AuthScreen} preview/></Suspense>;\n if (parts[0] === "onboarding")')
+s=s.replace('href={`/auth/${r}`}>{r}', 'href={`/preview/auth/${r}`}>{r}')
+p.write_text(s,encoding='utf-8')
+print('Invitation metadata and reference-specific auth panels integrated.')

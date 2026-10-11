@@ -1,0 +1,16 @@
+{
+  "key": "prov-004-quote",
+  "url": "/provider/quotes/099ca71f-c113-4ed0-81d4-7e11f75bb617",
+  "file": "Designs/Provider Workspace/Gala·Dock Wedding Quote Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 14.36,
+  "ssim": 0.6101,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1415
+  },
+  "errors": [],
+  "at": "2026-10-10T23:57:55.561Z"
+}

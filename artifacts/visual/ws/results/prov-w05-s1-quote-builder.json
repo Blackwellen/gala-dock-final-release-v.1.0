@@ -1,0 +1,16 @@
+{
+  "key": "prov-w05-s1-quote-builder",
+  "url": "/provider/opportunities/9acfd02c-c19e-4e28-bd4e-a3adb5596d03/quote?step=1",
+  "file": "Designs/Provider Workspace/SaaS Quote Builder Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 13.36,
+  "ssim": 0.5952,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1082
+  },
+  "errors": [],
+  "at": "2026-10-10T23:53:36.713Z"
+}

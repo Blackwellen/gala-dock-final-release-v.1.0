@@ -1,0 +1,16 @@
+{
+  "key": "ad-001-overview",
+  "url": "/admin",
+  "file": "Designs/platform shell/platform admin shell.png",
+  "status": 200,
+  "mismatchPercent": 10.71,
+  "ssim": 0.7062,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1194
+  },
+  "errors": [],
+  "at": "2026-10-10T23:33:03.618Z"
+}

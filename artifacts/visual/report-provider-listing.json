@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/onboarding/provider?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 19.737,
+    "interfaceMismatchPercent": 20.908,
+    "ssimFull": 0.5887,
+    "ssimInterface": 0.5374,
+    "geometry": {
+      "scrollHeight": 1226,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

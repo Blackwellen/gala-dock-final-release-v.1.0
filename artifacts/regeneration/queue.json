@@ -1,0 +1,1365 @@
+[
+  {
+    "key": "auth-art-forgot-password",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-forgot-password.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-forgot-password.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-invite",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-invite.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-invite.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-login",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-login.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-login.png",
+    "generated_size": [
+      1069,
+      1471
+    ]
+  },
+  {
+    "key": "auth-art-mfa",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-mfa.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-mfa.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-register",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-register.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-register.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-reset-password",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-reset-password.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-reset-password.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-secure-access",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-secure-access.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-secure-access.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "auth-art-verify-email",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-art-verify-email.png",
+    "width": 746,
+    "height": 1026,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-art-verify-email.png",
+    "generated_size": [
+      1070,
+      1470
+    ]
+  },
+  {
+    "key": "story-experience",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-experience.png",
+    "width": 581,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-experience.png",
+    "generated_size": [
+      975,
+      1614
+    ]
+  },
+  {
+    "key": "story-organizer-brand",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-organizer-brand.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-organizer-brand.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-organizer-business",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-organizer-business.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-organizer-business.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-organizer-events",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-organizer-events.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-organizer-events.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-organizer-team",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-organizer-team.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-organizer-team.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-preferences",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-preferences.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-preferences.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-provider-business",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-provider-business.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-provider-business.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-provider-listing",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-provider-listing.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-provider-listing.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-provider-publish",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-provider-publish.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-provider-publish.png",
+    "generated_size": [
+      874,
+      1800
+    ]
+  },
+  {
+    "key": "story-provider-rules",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\story-provider-rules.png",
+    "width": 466,
+    "height": 960,
+    "status": "complete",
+    "kind": "marketing-background",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\story-provider-rules.png",
+    "generated_size": [
+      874,
+      1799
+    ]
+  },
+  {
+    "key": "home-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-hero.webp",
+    "width": 394,
+    "height": 216,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-hero.png",
+    "generated_size": [
+      1693,
+      929
+    ]
+  },
+  {
+    "key": "home-action-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-action-0.webp",
+    "width": 123,
+    "height": 71,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-action-0.png",
+    "generated_size": [
+      1651,
+      953
+    ]
+  },
+  {
+    "key": "home-action-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-action-1.webp",
+    "width": 123,
+    "height": 71,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-action-1.png",
+    "generated_size": [
+      1651,
+      953
+    ]
+  },
+  {
+    "key": "home-action-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-action-2.webp",
+    "width": 122,
+    "height": 71,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-action-2.png",
+    "generated_size": [
+      1645,
+      956
+    ]
+  },
+  {
+    "key": "home-action-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-action-3.webp",
+    "width": 123,
+    "height": 71,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-action-3.png",
+    "generated_size": [
+      1650,
+      953
+    ]
+  },
+  {
+    "key": "home-action-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-action-4.webp",
+    "width": 123,
+    "height": 71,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-action-4.png",
+    "generated_size": [
+      1650,
+      953
+    ]
+  },
+  {
+    "key": "organizer-illustration",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-illustration.png",
+    "width": 184,
+    "height": 215,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\organizer-illustration.png",
+    "generated_size": [
+      1160,
+      1356
+    ]
+  },
+  {
+    "key": "provider-illustration",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\provider-illustration.png",
+    "width": 123,
+    "height": 215,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\provider-illustration.png",
+    "generated_size": [
+      949,
+      1658
+    ]
+  },
+  {
+    "key": "planning-illustration",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\planning-illustration.png",
+    "width": 483,
+    "height": 234,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\planning-illustration.png",
+    "generated_size": [
+      1802,
+      873
+    ]
+  },
+  {
+    "key": "agent-character",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\agent-character.png",
+    "width": 127,
+    "height": 136,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\agent-character.png",
+    "generated_size": [
+      1212,
+      1298
+    ]
+  },
+  {
+    "key": "service-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-hero.webp",
+    "width": 809,
+    "height": 238,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\service-hero.png",
+    "generated_size": [
+      2172,
+      724
+    ]
+  },
+  {
+    "key": "venue-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-hero.webp",
+    "width": 809,
+    "height": 238,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\venue-hero.png",
+    "generated_size": [
+      2172,
+      724
+    ]
+  },
+  {
+    "key": "organizer-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-hero.webp",
+    "width": 809,
+    "height": 311,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\organizer-hero.png",
+    "generated_size": [
+      2022,
+      778
+    ]
+  },
+  {
+    "key": "london-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-hero.webp",
+    "width": 809,
+    "height": 286,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\london-hero.png",
+    "generated_size": [
+      2108,
+      746
+    ]
+  },
+  {
+    "key": "london-skyline",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-skyline.webp",
+    "width": 809,
+    "height": 121,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\london-skyline.png",
+    "generated_size": [
+      2172,
+      724
+    ]
+  },
+  {
+    "key": "neon-aftermovie",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\neon-aftermovie.webp",
+    "width": 476,
+    "height": 126,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\neon-aftermovie.png",
+    "generated_size": [
+      2048,
+      768
+    ]
+  },
+  {
+    "key": "auth-party",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\auth-party.webp",
+    "width": 745,
+    "height": 212,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\auth-party.png",
+    "generated_size": [
+      2108,
+      746
+    ]
+  },
+  {
+    "key": "avatar-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\avatar-0.webp",
+    "width": 26,
+    "height": 31,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\avatar-0.png",
+    "generated_size": [
+      1149,
+      1369
+    ]
+  },
+  {
+    "key": "avatar-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\avatar-1.webp",
+    "width": 26,
+    "height": 30,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\avatar-1.png",
+    "generated_size": [
+      1167,
+      1347
+    ]
+  },
+  {
+    "key": "avatar-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\avatar-2.webp",
+    "width": 26,
+    "height": 30,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\avatar-2.png",
+    "generated_size": [
+      1167,
+      1347
+    ]
+  },
+  {
+    "key": "avatar-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\avatar-3.webp",
+    "width": 26,
+    "height": 31,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\avatar-3.png",
+    "generated_size": [
+      1149,
+      1369
+    ]
+  },
+  {
+    "key": "customer-banner",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\customer-banner.webp",
+    "width": 1391,
+    "height": 206,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\customer-banner.png",
+    "generated_size": [
+      2171,
+      724
+    ]
+  },
+  {
+    "key": "dash-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\dash-0.webp",
+    "width": 229,
+    "height": 97,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\dash-0.png",
+    "generated_size": [
+      1926,
+      816
+    ]
+  },
+  {
+    "key": "dash-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\dash-1.webp",
+    "width": 228,
+    "height": 97,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\dash-1.png",
+    "generated_size": [
+      1923,
+      818
+    ]
+  },
+  {
+    "key": "dash-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\dash-2.webp",
+    "width": 225,
+    "height": 97,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\dash-2.png",
+    "generated_size": [
+      1909,
+      824
+    ]
+  },
+  {
+    "key": "event-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-0.webp",
+    "width": 112,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-0.png",
+    "generated_size": [
+      1659,
+      948
+    ]
+  },
+  {
+    "key": "event-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-1.webp",
+    "width": 112,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-1.png",
+    "generated_size": [
+      1659,
+      948
+    ]
+  },
+  {
+    "key": "event-10",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-10.webp",
+    "width": 173,
+    "height": 61,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-10.png",
+    "generated_size": [
+      2112,
+      745
+    ]
+  },
+  {
+    "key": "event-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-2.webp",
+    "width": 111,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-2.png",
+    "generated_size": [
+      1652,
+      952
+    ]
+  },
+  {
+    "key": "event-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-3.webp",
+    "width": 111,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-3.png",
+    "generated_size": [
+      1651,
+      953
+    ]
+  },
+  {
+    "key": "event-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-4.webp",
+    "width": 112,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-4.png",
+    "generated_size": [
+      1659,
+      948
+    ]
+  },
+  {
+    "key": "event-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-5.webp",
+    "width": 113,
+    "height": 64,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-5.png",
+    "generated_size": [
+      1669,
+      942
+    ]
+  },
+  {
+    "key": "event-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-6.webp",
+    "width": 301,
+    "height": 150,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-6.png",
+    "generated_size": [
+      1778,
+      885
+    ]
+  },
+  {
+    "key": "event-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-7.webp",
+    "width": 172,
+    "height": 61,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-7.png",
+    "generated_size": [
+      2104,
+      747
+    ]
+  },
+  {
+    "key": "event-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-8.webp",
+    "width": 167,
+    "height": 61,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-8.png",
+    "generated_size": [
+      2075,
+      758
+    ]
+  },
+  {
+    "key": "event-9",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-9.webp",
+    "width": 171,
+    "height": 61,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-9.png",
+    "generated_size": [
+      2100,
+      749
+    ]
+  },
+  {
+    "key": "event-hero",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\event-hero.webp",
+    "width": 809,
+    "height": 214,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\event-hero.png",
+    "generated_size": [
+      2172,
+      724
+    ]
+  },
+  {
+    "key": "experience-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\experience-0.webp",
+    "width": 261,
+    "height": 122,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\experience-0.png",
+    "generated_size": [
+      1834,
+      858
+    ]
+  },
+  {
+    "key": "experience-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\experience-1.webp",
+    "width": 260,
+    "height": 122,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\experience-1.png",
+    "generated_size": [
+      1829,
+      860
+    ]
+  },
+  {
+    "key": "experience-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\experience-2.webp",
+    "width": 263,
+    "height": 122,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\experience-2.png",
+    "generated_size": [
+      1840,
+      854
+    ]
+  },
+  {
+    "key": "home-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-0.webp",
+    "width": 158,
+    "height": 74,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-0.png",
+    "generated_size": [
+      1832,
+      858
+    ]
+  },
+  {
+    "key": "home-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-1.webp",
+    "width": 158,
+    "height": 74,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-1.png",
+    "generated_size": [
+      1832,
+      858
+    ]
+  },
+  {
+    "key": "home-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-2.webp",
+    "width": 158,
+    "height": 74,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-2.png",
+    "generated_size": [
+      1832,
+      858
+    ]
+  },
+  {
+    "key": "home-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-3.webp",
+    "width": 158,
+    "height": 74,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-3.png",
+    "generated_size": [
+      1832,
+      859
+    ]
+  },
+  {
+    "key": "home-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-4.webp",
+    "width": 198,
+    "height": 77,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-4.png",
+    "generated_size": [
+      2011,
+      782
+    ]
+  },
+  {
+    "key": "home-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-5.webp",
+    "width": 166,
+    "height": 77,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-5.png",
+    "generated_size": [
+      1842,
+      854
+    ]
+  },
+  {
+    "key": "home-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-6.webp",
+    "width": 158,
+    "height": 77,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-6.png",
+    "generated_size": [
+      1796,
+      876
+    ]
+  },
+  {
+    "key": "home-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-7.webp",
+    "width": 106,
+    "height": 77,
+    "status": "complete",
+    "output": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\regenerated\\home-7.png",
+    "generated_size": [
+      1472,
+      1069
+    ]
+  },
+  {
+    "key": "home-category-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-0.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-1.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-2.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-3.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-4.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-5.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-6.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-7.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "home-category-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\home-category-8.webp",
+    "width": 65,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "interest-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-0.webp",
+    "width": 126,
+    "height": 52,
+    "status": "pending"
+  },
+  {
+    "key": "interest-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-1.webp",
+    "width": 126,
+    "height": 52,
+    "status": "pending"
+  },
+  {
+    "key": "interest-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-2.webp",
+    "width": 125,
+    "height": 52,
+    "status": "pending"
+  },
+  {
+    "key": "interest-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-3.webp",
+    "width": 124,
+    "height": 52,
+    "status": "pending"
+  },
+  {
+    "key": "interest-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-4.webp",
+    "width": 124,
+    "height": 52,
+    "status": "pending"
+  },
+  {
+    "key": "interest-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-5.webp",
+    "width": 126,
+    "height": 55,
+    "status": "pending"
+  },
+  {
+    "key": "interest-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-6.webp",
+    "width": 126,
+    "height": 55,
+    "status": "pending"
+  },
+  {
+    "key": "interest-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-7.webp",
+    "width": 125,
+    "height": 55,
+    "status": "pending"
+  },
+  {
+    "key": "interest-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-8.webp",
+    "width": 124,
+    "height": 55,
+    "status": "pending"
+  },
+  {
+    "key": "interest-9",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\interest-9.webp",
+    "width": 124,
+    "height": 55,
+    "status": "pending"
+  },
+  {
+    "key": "london-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-0.webp",
+    "width": 174,
+    "height": 91,
+    "status": "pending"
+  },
+  {
+    "key": "london-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-1.webp",
+    "width": 169,
+    "height": 91,
+    "status": "pending"
+  },
+  {
+    "key": "london-10",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-10.webp",
+    "width": 121,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "london-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-2.webp",
+    "width": 172,
+    "height": 91,
+    "status": "pending"
+  },
+  {
+    "key": "london-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-3.webp",
+    "width": 132,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "london-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-4.webp",
+    "width": 126,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "london-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-5.webp",
+    "width": 125,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "london-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-6.webp",
+    "width": 126,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "london-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-7.webp",
+    "width": 132,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "london-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-8.webp",
+    "width": 121,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "london-9",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\london-9.webp",
+    "width": 125,
+    "height": 45,
+    "status": "pending"
+  },
+  {
+    "key": "onboard-party",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\onboard-party.webp",
+    "width": 462,
+    "height": 149,
+    "status": "pending"
+  },
+  {
+    "key": "onboard-venue",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\onboard-venue.webp",
+    "width": 462,
+    "height": 143,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-0.webp",
+    "width": 176,
+    "height": 114,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-1.webp",
+    "width": 175,
+    "height": 114,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-10",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-10.webp",
+    "width": 145,
+    "height": 106,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-11",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-11.webp",
+    "width": 143,
+    "height": 106,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-12",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-12.webp",
+    "width": 141,
+    "height": 106,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-2.webp",
+    "width": 173,
+    "height": 114,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-3.webp",
+    "width": 175,
+    "height": 114,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-4.webp",
+    "width": 173,
+    "height": 83,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-5.webp",
+    "width": 175,
+    "height": 83,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-6.webp",
+    "width": 174,
+    "height": 83,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-7.webp",
+    "width": 173,
+    "height": 83,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-8.webp",
+    "width": 138,
+    "height": 106,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-9",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-9.webp",
+    "width": 140,
+    "height": 106,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-cta-photo",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-cta-photo.webp",
+    "width": 169,
+    "height": 92,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-type-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-type-0.webp",
+    "width": 56,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-type-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-type-1.webp",
+    "width": 56,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-type-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-type-2.webp",
+    "width": 56,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "organizer-type-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\organizer-type-3.webp",
+    "width": 56,
+    "height": 54,
+    "status": "pending"
+  },
+  {
+    "key": "preferences-party",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\preferences-party.webp",
+    "width": 463,
+    "height": 346,
+    "status": "pending"
+  },
+  {
+    "key": "provider-cta-photo",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\provider-cta-photo.webp",
+    "width": 113,
+    "height": 92,
+    "status": "pending"
+  },
+  {
+    "key": "service-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-0.webp",
+    "width": 170,
+    "height": 71,
+    "status": "pending"
+  },
+  {
+    "key": "service-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-1.webp",
+    "width": 166,
+    "height": 71,
+    "status": "pending"
+  },
+  {
+    "key": "service-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-2.webp",
+    "width": 169,
+    "height": 71,
+    "status": "pending"
+  },
+  {
+    "key": "service-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-3.webp",
+    "width": 91,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "service-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-4.webp",
+    "width": 91,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "service-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-5.webp",
+    "width": 89,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "service-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-6.webp",
+    "width": 91,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "service-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\service-7.webp",
+    "width": 89,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "type-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-0.webp",
+    "width": 128,
+    "height": 63,
+    "status": "pending"
+  },
+  {
+    "key": "type-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-1.webp",
+    "width": 127,
+    "height": 63,
+    "status": "pending"
+  },
+  {
+    "key": "type-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-2.webp",
+    "width": 127,
+    "height": 63,
+    "status": "pending"
+  },
+  {
+    "key": "type-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-3.webp",
+    "width": 125,
+    "height": 63,
+    "status": "pending"
+  },
+  {
+    "key": "type-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-4.webp",
+    "width": 125,
+    "height": 63,
+    "status": "pending"
+  },
+  {
+    "key": "type-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-5.webp",
+    "width": 128,
+    "height": 61,
+    "status": "pending"
+  },
+  {
+    "key": "type-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-6.webp",
+    "width": 126,
+    "height": 61,
+    "status": "pending"
+  },
+  {
+    "key": "type-7",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-7.webp",
+    "width": 125,
+    "height": 61,
+    "status": "pending"
+  },
+  {
+    "key": "type-8",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\type-8.webp",
+    "width": 125,
+    "height": 61,
+    "status": "pending"
+  },
+  {
+    "key": "uk-map",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\uk-map.webp",
+    "width": 152,
+    "height": 162,
+    "status": "pending"
+  },
+  {
+    "key": "venue-0",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-0.webp",
+    "width": 177,
+    "height": 95,
+    "status": "pending"
+  },
+  {
+    "key": "venue-1",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-1.webp",
+    "width": 175,
+    "height": 95,
+    "status": "pending"
+  },
+  {
+    "key": "venue-2",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-2.webp",
+    "width": 174,
+    "height": 95,
+    "status": "pending"
+  },
+  {
+    "key": "venue-3",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-3.webp",
+    "width": 175,
+    "height": 95,
+    "status": "pending"
+  },
+  {
+    "key": "venue-4",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-4.webp",
+    "width": 114,
+    "height": 111,
+    "status": "pending"
+  },
+  {
+    "key": "venue-5",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-5.webp",
+    "width": 117,
+    "height": 111,
+    "status": "pending"
+  },
+  {
+    "key": "venue-6",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-6.webp",
+    "width": 113,
+    "height": 111,
+    "status": "pending"
+  },
+  {
+    "key": "venue-exterior",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-exterior.webp",
+    "width": 468,
+    "height": 81,
+    "status": "pending"
+  },
+  {
+    "key": "venue-map",
+    "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\public\\assets\\venue-map.webp",
+    "width": 317,
+    "height": 157,
+    "status": "pending"
+  }
+]

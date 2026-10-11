@@ -1,0 +1,57 @@
+[
+  {
+    "url": "/",
+    "file": "Designs\\Public Pages\\Gala Dock Event Marketplace Homepage.png",
+    "public": true,
+    "width": 724,
+    "height": 2172,
+    "key": "home",
+    "mismatchPercent": 50.869,
+    "geometry": {
+      "scrollHeight": 2540,
+      "overflow": false,
+      "header": 30.953125,
+      "footerTop": 2363.390625
+    },
+    "errors": []
+  },
+  {
+    "url": "/auth/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 35.314,
+    "geometry": {
+      "scrollHeight": 1102,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer/business",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 20.817,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/app/organizer",
+    "file": "Designs\\platform shell\\organizer team shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-organizer",
+    "mismatchPercent": 14.182,
+    "geometry": {
+      "scrollHeight": 1189,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "name": "Gala Dock",
+  "short_name": "Gala Dock",
+  "description": "Discover events, buy tickets and plan your own celebrations.",
+  "id": "/discover",
+  "start_url": "/discover",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f9fd",
+  "theme_color": "#1b64f5",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "My Tickets", "url": "/account/tickets" },
+    { "name": "My Events", "url": "/account/events" },
+    { "name": "Plan an Event", "url": "/plan" }
+  ]
+}

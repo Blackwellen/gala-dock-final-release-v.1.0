@@ -1,0 +1,582 @@
+{
+  "auth-art-forgot-password": [
+    1070,
+    1470
+  ],
+  "auth-art-invite": [
+    1070,
+    1470
+  ],
+  "auth-art-login": [
+    1069,
+    1471
+  ],
+  "auth-art-mfa": [
+    1070,
+    1470
+  ],
+  "auth-art-register": [
+    1070,
+    1470
+  ],
+  "auth-art-reset-password": [
+    1070,
+    1470
+  ],
+  "auth-art-secure-access": [
+    1070,
+    1470
+  ],
+  "auth-art-verify-email": [
+    1070,
+    1470
+  ],
+  "story-experience": [
+    975,
+    1614
+  ],
+  "story-organizer-brand": [
+    874,
+    1800
+  ],
+  "story-organizer-business": [
+    874,
+    1800
+  ],
+  "story-organizer-events": [
+    874,
+    1800
+  ],
+  "story-organizer-team": [
+    874,
+    1800
+  ],
+  "story-preferences": [
+    874,
+    1800
+  ],
+  "story-provider-business": [
+    874,
+    1800
+  ],
+  "story-provider-listing": [
+    874,
+    1800
+  ],
+  "story-provider-publish": [
+    874,
+    1800
+  ],
+  "story-provider-rules": [
+    874,
+    1799
+  ],
+  "home-hero": [
+    1693,
+    929
+  ],
+  "home-action-0": [
+    1651,
+    953
+  ],
+  "home-action-1": [
+    1651,
+    953
+  ],
+  "home-action-2": [
+    1645,
+    956
+  ],
+  "home-action-3": [
+    1650,
+    953
+  ],
+  "home-action-4": [
+    1650,
+    953
+  ],
+  "organizer-illustration": [
+    1160,
+    1356
+  ],
+  "provider-illustration": [
+    949,
+    1658
+  ],
+  "planning-illustration": [
+    1802,
+    873
+  ],
+  "agent-character": [
+    1212,
+    1298
+  ],
+  "service-hero": [
+    2172,
+    724
+  ],
+  "venue-hero": [
+    2172,
+    724
+  ],
+  "organizer-hero": [
+    2022,
+    778
+  ],
+  "london-hero": [
+    2108,
+    746
+  ],
+  "london-skyline": [
+    2172,
+    724
+  ],
+  "neon-aftermovie": [
+    2048,
+    768
+  ],
+  "auth-party": [
+    2108,
+    746
+  ],
+  "avatar-0": [
+    1149,
+    1369
+  ],
+  "avatar-1": [
+    1167,
+    1347
+  ],
+  "avatar-2": [
+    1167,
+    1347
+  ],
+  "avatar-3": [
+    1149,
+    1369
+  ],
+  "customer-banner": [
+    2171,
+    724
+  ],
+  "dash-0": [
+    1926,
+    816
+  ],
+  "dash-1": [
+    1923,
+    818
+  ],
+  "dash-2": [
+    1909,
+    824
+  ],
+  "event-0": [
+    1659,
+    948
+  ],
+  "event-1": [
+    1659,
+    948
+  ],
+  "event-10": [
+    2112,
+    745
+  ],
+  "event-2": [
+    1652,
+    952
+  ],
+  "event-3": [
+    1651,
+    953
+  ],
+  "event-4": [
+    1659,
+    948
+  ],
+  "event-5": [
+    1669,
+    942
+  ],
+  "event-6": [
+    1778,
+    885
+  ],
+  "event-7": [
+    2104,
+    747
+  ],
+  "event-8": [
+    2075,
+    758
+  ],
+  "event-9": [
+    2100,
+    749
+  ],
+  "event-hero": [
+    2172,
+    724
+  ],
+  "experience-0": [
+    1834,
+    858
+  ],
+  "experience-1": [
+    1829,
+    860
+  ],
+  "experience-2": [
+    1840,
+    854
+  ],
+  "home-0": [
+    1832,
+    858
+  ],
+  "home-1": [
+    1832,
+    858
+  ],
+  "home-2": [
+    1832,
+    858
+  ],
+  "home-3": [
+    1832,
+    859
+  ],
+  "home-4": [
+    2011,
+    782
+  ],
+  "home-5": [
+    1842,
+    854
+  ],
+  "home-6": [
+    1796,
+    876
+  ],
+  "home-7": [
+    1472,
+    1069
+  ],
+  "home-category-0": [
+    65,
+    45
+  ],
+  "home-category-1": [
+    65,
+    45
+  ],
+  "home-category-2": [
+    65,
+    45
+  ],
+  "home-category-3": [
+    65,
+    45
+  ],
+  "home-category-4": [
+    65,
+    45
+  ],
+  "home-category-5": [
+    65,
+    45
+  ],
+  "home-category-6": [
+    65,
+    45
+  ],
+  "home-category-7": [
+    65,
+    45
+  ],
+  "home-category-8": [
+    65,
+    45
+  ],
+  "interest-0": [
+    126,
+    52
+  ],
+  "interest-1": [
+    126,
+    52
+  ],
+  "interest-2": [
+    125,
+    52
+  ],
+  "interest-3": [
+    124,
+    52
+  ],
+  "interest-4": [
+    124,
+    52
+  ],
+  "interest-5": [
+    126,
+    55
+  ],
+  "interest-6": [
+    126,
+    55
+  ],
+  "interest-7": [
+    125,
+    55
+  ],
+  "interest-8": [
+    124,
+    55
+  ],
+  "interest-9": [
+    124,
+    55
+  ],
+  "london-0": [
+    174,
+    91
+  ],
+  "london-1": [
+    169,
+    91
+  ],
+  "london-10": [
+    121,
+    45
+  ],
+  "london-2": [
+    172,
+    91
+  ],
+  "london-3": [
+    132,
+    54
+  ],
+  "london-4": [
+    126,
+    54
+  ],
+  "london-5": [
+    125,
+    54
+  ],
+  "london-6": [
+    126,
+    54
+  ],
+  "london-7": [
+    132,
+    45
+  ],
+  "london-8": [
+    121,
+    45
+  ],
+  "london-9": [
+    125,
+    45
+  ],
+  "onboard-party": [
+    462,
+    149
+  ],
+  "onboard-venue": [
+    462,
+    143
+  ],
+  "organizer-0": [
+    176,
+    114
+  ],
+  "organizer-1": [
+    175,
+    114
+  ],
+  "organizer-10": [
+    145,
+    106
+  ],
+  "organizer-11": [
+    143,
+    106
+  ],
+  "organizer-12": [
+    141,
+    106
+  ],
+  "organizer-2": [
+    173,
+    114
+  ],
+  "organizer-3": [
+    175,
+    114
+  ],
+  "organizer-4": [
+    173,
+    83
+  ],
+  "organizer-5": [
+    175,
+    83
+  ],
+  "organizer-6": [
+    174,
+    83
+  ],
+  "organizer-7": [
+    173,
+    83
+  ],
+  "organizer-8": [
+    138,
+    106
+  ],
+  "organizer-9": [
+    140,
+    106
+  ],
+  "organizer-cta-photo": [
+    169,
+    92
+  ],
+  "organizer-type-0": [
+    56,
+    54
+  ],
+  "organizer-type-1": [
+    56,
+    54
+  ],
+  "organizer-type-2": [
+    56,
+    54
+  ],
+  "organizer-type-3": [
+    56,
+    54
+  ],
+  "preferences-party": [
+    463,
+    346
+  ],
+  "provider-cta-photo": [
+    113,
+    92
+  ],
+  "service-0": [
+    170,
+    71
+  ],
+  "service-1": [
+    166,
+    71
+  ],
+  "service-2": [
+    169,
+    71
+  ],
+  "service-3": [
+    91,
+    81
+  ],
+  "service-4": [
+    91,
+    81
+  ],
+  "service-5": [
+    89,
+    81
+  ],
+  "service-6": [
+    91,
+    81
+  ],
+  "service-7": [
+    89,
+    81
+  ],
+  "type-0": [
+    128,
+    63
+  ],
+  "type-1": [
+    127,
+    63
+  ],
+  "type-2": [
+    127,
+    63
+  ],
+  "type-3": [
+    125,
+    63
+  ],
+  "type-4": [
+    125,
+    63
+  ],
+  "type-5": [
+    128,
+    61
+  ],
+  "type-6": [
+    126,
+    61
+  ],
+  "type-7": [
+    125,
+    61
+  ],
+  "type-8": [
+    125,
+    61
+  ],
+  "uk-map": [
+    152,
+    162
+  ],
+  "venue-0": [
+    177,
+    95
+  ],
+  "venue-1": [
+    175,
+    95
+  ],
+  "venue-2": [
+    174,
+    95
+  ],
+  "venue-3": [
+    175,
+    95
+  ],
+  "venue-4": [
+    114,
+    111
+  ],
+  "venue-5": [
+    117,
+    111
+  ],
+  "venue-6": [
+    113,
+    111
+  ],
+  "venue-exterior": [
+    468,
+    81
+  ],
+  "venue-map": [
+    317,
+    157
+  ]
+}

@@ -1,43 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# Gala Dock
 
-## Getting Started
+A blank Next.js app with TypeScript, App Router, and ESLint.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-This app is Vercel-ready as a standard Next.js project. Vercel should detect the framework automatically and use:
+## Development
 
 ```bash
 npm install
-npm run build
+npm run dev
 ```
 
-Before deploying, add the variables from `.env.example` to the Vercel project environment settings. Do not commit real `.env` or `.env.local` values.
+Open http://localhost:3000. Edit `src/app/page.tsx` to build your home page.
+The existing `Designs/` directory contains project design assets.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Checks and production
+
+```bash
+npm run lint
+npm run build
+npm start
+```
+
+## Supabase
+
+Connected project: **Gala Dock** (`sgonzfolwjlcaiggrbbj`, London).
+Local credentials are in `.env.local`, which Git ignores. The management PAT
+stays in `.env`. `.env.example` documents the required variable names.
+
+- Browser components: `createClient` from `@/lib/supabase/client`.
+- Server Components, Server Actions, and Route Handlers: await `createClient`
+  from `@/lib/supabase/server` for the signed-in user's permissions.
+- Trusted server operations: `createAdminClient` from `@/lib/supabase/admin`.
+  This uses the service role, bypasses RLS, and is blocked from browser imports.
+  Authenticate and authorize callers before performing admin operations.
+
+The proxy refreshes and verifies cookie-based sessions. Clients support database
+queries, Auth, Storage, Realtime, and Edge Functions through the Supabase SDK.
+Database types in `src/types/database.ts` come from the project's public schema.
+The public schema currently has no application tables.
+
+```bash
+npm run supabase:check
+npm run supabase:types
+```
+
+The connection check verifies the Database API, Auth admin, Storage admin, and
+public key without modifying records. Regenerate types after schema changes.
+For deployment, configure the variables from `.env.local` on your host; the
+management PAT is needed only for regenerating types locally.
+
+Client setup follows the [Supabase Next.js SSR guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client).

@@ -1,0 +1,204 @@
+[
+  {
+    "url": "/",
+    "file": "Designs\\Public Pages\\Gala Dock Event Marketplace Homepage.png",
+    "public": true,
+    "width": 724,
+    "height": 2172,
+    "key": "home"
+  },
+  {
+    "url": "/services/elite-sound",
+    "file": "Designs\\Public Pages\\Gala·Dock Elite Sound Events Page.png",
+    "public": true,
+    "width": 809,
+    "height": 1944,
+    "key": "services-elite-sound"
+  },
+  {
+    "url": "/events/neon-nights",
+    "file": "Designs\\Public Pages\\Gala·Dock Neon Nights Festival 2026.png",
+    "public": true,
+    "width": 809,
+    "height": 1942,
+    "key": "events-neon-nights"
+  },
+  {
+    "url": "/venues/riverside-arena",
+    "file": "Designs\\Public Pages\\Gala·Dock Riverside Arena Venue Page.png",
+    "public": true,
+    "width": 809,
+    "height": 1944,
+    "key": "venues-riverside-arena"
+  },
+  {
+    "url": "/events/london",
+    "file": "Designs\\Public Pages\\London Events Discovery Marketplace.png",
+    "public": true,
+    "width": 809,
+    "height": 1944,
+    "key": "events-london"
+  },
+  {
+    "url": "/organizers/neon-events",
+    "file": "Designs\\Public Pages\\Neon Events Organizer Profile.png",
+    "public": true,
+    "width": 809,
+    "height": 1944,
+    "key": "organizers-neon-events"
+  },
+  {
+    "url": "/preview/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login"
+  },
+  {
+    "url": "/preview/register",
+    "file": "Designs\\auth & onboarding\\image-gen-2(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-register"
+  },
+  {
+    "url": "/preview/verify-email",
+    "file": "Designs\\auth & onboarding\\image-gen-3(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-verify-email"
+  },
+  {
+    "url": "/preview/forgot-password",
+    "file": "Designs\\auth & onboarding\\image-gen-4(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-forgot-password"
+  },
+  {
+    "url": "/preview/reset-password",
+    "file": "Designs\\auth & onboarding\\image-gen-5(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-reset-password"
+  },
+  {
+    "url": "/preview/mfa",
+    "file": "Designs\\auth & onboarding\\image-gen-6(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-mfa"
+  },
+  {
+    "url": "/preview/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite"
+  },
+  {
+    "url": "/preview/access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access"
+  },
+  {
+    "url": "/preview/onboarding",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Onboarding Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-experience"
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business"
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-events"
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=3",
+    "file": "Designs\\auth & onboarding\\Gala·Dock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-brand"
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=4",
+    "file": "Designs\\auth & onboarding\\GalaDock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-team"
+  },
+  {
+    "url": "/preview/onboarding/customer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Preferences Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-preferences"
+  },
+  {
+    "url": "/preview/onboarding/provider?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-business"
+  },
+  {
+    "url": "/preview/onboarding/provider?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing"
+  },
+  {
+    "url": "/preview/onboarding/provider?step=3",
+    "file": "Designs\\auth & onboarding\\Gala-Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-rules"
+  },
+  {
+    "url": "/preview/onboarding/provider?step=4",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard(1).png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-publish"
+  },
+  {
+    "url": "/preview/app/customer",
+    "file": "Designs\\platform shell\\customer shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-customer"
+  },
+  {
+    "url": "/preview/app/organizer",
+    "file": "Designs\\platform shell\\organizer team shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-organizer"
+  },
+  {
+    "url": "/preview/app/provider",
+    "file": "Designs\\platform shell\\provider shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-provider"
+  },
+  {
+    "url": "/preview/app/admin",
+    "file": "Designs\\platform shell\\platform admin shell.png",
+    "width": 1448,
+    "height": 1086,
+    "key": "preview-app-admin"
+  }
+]

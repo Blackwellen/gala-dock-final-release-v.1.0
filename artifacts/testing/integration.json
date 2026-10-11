@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "Create disposable account 1",
+    "Password authentication 1",
+    "Create disposable account 2",
+    "Password authentication 2",
+    "Profiles are isolated by RLS",
+    "Owner can create workspace",
+    "Owner can create membership",
+    "Owner can create invitation",
+    "Invitation metadata rejects malformed tokens",
+    "Invitation metadata rejects unknown tokens",
+    "Invitation metadata resolves workspace without exposing recipient email",
+    "Invitation metadata cannot be cached",
+    "Other account cannot read private workspace",
+    "Other account cannot add itself to workspace",
+    "Account cannot grant itself platform admin",
+    "Save favourite",
+    "Saved items are isolated",
+    "Owner can upload private workspace file",
+    "Other account cannot download private file",
+    "Browser login establishes server session and routes to onboarding",
+    "Preferences save and customer dashboard opens",
+    "Browser preferences persisted in Supabase",
+    "Session-authenticated favourite API",
+    "Matching signed-in recipient can accept invitation",
+    "Accepted invitation persists membership",
+    "Server blocks unauthorized admin dashboard",
+    "Sign out clears protected access"
+  ],
+  "disposableAccountsRemoved": 2
+}

@@ -1,0 +1,16 @@
+{
+  "key": "prov-002-opportunities",
+  "url": "/provider/opportunities",
+  "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 15.39,
+  "ssim": 0.5358,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1026
+  },
+  "errors": [],
+  "at": "2026-10-10T23:39:01.615Z"
+}
