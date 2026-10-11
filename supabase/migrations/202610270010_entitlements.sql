@@ -25,7 +25,7 @@ select k, p, c, v::jsonb from (values
   ('provider','starter','listings.max','3'),        ('provider','pro','listings.max','20'),        ('provider','business','listings.max','100'),       ('provider','enterprise','listings.max','null'),
   ('provider','starter','team.max','3'),            ('provider','pro','team.max','15'),            ('provider','business','team.max','50'),            ('provider','enterprise','team.max','null'),
   ('provider','starter','storage.gb','5'),          ('provider','pro','storage.gb','50'),          ('provider','business','storage.gb','200'),         ('provider','enterprise','storage.gb','1000'),
-  ('provider','starter','ai.credits.monthly','50'), ('provider','pro','ai.credits.monthly','1000'),('provider','business','ai.credits.monthly','4000'),('provider','enterprise','ai.credits.monthly','15000'),
+  ('provider','starter','ai.credits.monthly','50'), ('provider','pro','ai.credits.monthly','500'), ('provider','business','ai.credits.monthly','2000'),('provider','enterprise','ai.credits.monthly','10000'),
   ('provider','starter','agent.long_runs','false'), ('provider','pro','agent.long_runs','true'),   ('provider','business','agent.long_runs','true'),   ('provider','enterprise','agent.long_runs','true'),
   ('provider','starter','agent.deep','false'),      ('provider','pro','agent.deep','false'),       ('provider','business','agent.deep','true'),        ('provider','enterprise','agent.deep','true'),
   ('provider','starter','api.access','false'),      ('provider','pro','api.access','true'),        ('provider','business','api.access','true'),        ('provider','enterprise','api.access','true'),
@@ -108,3 +108,9 @@ begin
     insert into public.audit_events(actor_type, workspace_id, event, metadata) values ('system', e.workspace_id, 'webhook.endpoint_disabled', jsonb_build_object('endpoint_id', e.id));
   end if;
 end $$;
+
+-- Proposed credit packs (docs/commercial/economics.md §5). Created INACTIVE: finance activates after sign-off.
+insert into public.credit_packs(name, credits, price_minor, currency, vat_treatment, worst_case_cost_minor, target_margin_bps, expiry_days, active)
+select * from (values ('Top-up S', 500::numeric, 2000, 'GBP', 'standard_rated', 500, 7500, 365, false), ('Top-up M', 2000::numeric, 8000, 'GBP', 'standard_rated', 2000, 7500, 365, false),
+  ('Top-up L', 5000::numeric, 20000, 'GBP', 'standard_rated', 5000, 7500, 365, false)) v(name, credits, price_minor, currency, vat_treatment, worst_case_cost_minor, target_margin_bps, expiry_days, active)
+where not exists (select 1 from public.credit_packs p where p.name = v.name);
