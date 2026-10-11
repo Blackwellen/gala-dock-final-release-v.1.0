@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Search, Plus, ChevronDown, MessageSquare, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Plus, ChevronDown, MessageSquare, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon, Palette } from "lucide-react";
 import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { switchWorkspace, markNotificationsRead } from "@/lib/actions/shell";
 import { relative } from "@/lib/format";
+import { MobileNav } from "@/components/pwa/mobile-nav";
+import { GlobalSearch } from "@/components/search/global-search";
 
 export type ShellWorkspace = { id: string; name: string; kind: string; role: string; cover_image?: string | null };
 export type ShellNote = { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string };
@@ -19,6 +21,7 @@ export const ORG_NAV = [
   { href: "/organizer/sales", label: "Sales", icon: ChartNoAxesColumnIncreasing, also: ["/organizer/proposals"] },
   { href: "/organizer/marketplace", label: "Marketplace", icon: Store },
   { href: "/organizer/tickets", label: "Tickets & Promotion", icon: Ticket },
+  { href: "/organizer/media", label: "Media Studio", icon: Palette },
   { href: "/organizer/team", label: "Team", icon: Users },
   { href: "/organizer/money", label: "Money", icon: Wallet },
   { href: "/organizer/agent", label: "Gala Agent", icon: Sparkles, beta: true },
@@ -42,11 +45,9 @@ export function isActive(pathname: string, item: { href: string; exact?: boolean
 export function OrganizerShell({ children, user, workspace, workspaces, unread, notifications, threads }: Props) {
   const pathname = usePathname(); const router = useRouter(); const { run } = useAction();
   const [navOpen, setNavOpen] = useState(false); const [q, setQ] = useState("");
-  useEffect(() => setNavOpen(false), [pathname]);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); document.getElementById("org-search")?.focus(); } };
-    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  // Close the mobile menu on navigation (reset-on-change during render, not in an effect).
+  const [navPath, setNavPath] = useState(pathname);
+  if (navPath !== pathname) { setNavPath(pathname); setNavOpen(false); }
   const nav = <nav aria-label="Organizer" className="o-nav">{ORG_NAV.map(item => { const active = isActive(pathname, item); const Icon = item.icon; return <Link key={item.href} href={item.href} className="o-nav-item" aria-current={active ? "page" : undefined}><Icon size={21} aria-hidden strokeWidth={1.9} className={item.label === "Gala Agent" ? "o-agent-icon" : undefined} /><span>{item.label}</span>{"beta" in item && item.beta && <span className="k-beta">BETA</span>}</Link>; })}</nav>;
   const agentCard = <form className="o-side-agent" onSubmit={e => { e.preventDefault(); router.push(`/organizer/agent${q ? `?goal=${encodeURIComponent(q)}` : ""}`); }}>
     <div className="k-row" style={{ gap: 8 }}><Sparkles size={22} className="o-agent-icon" aria-hidden /><b>Gala Agent</b><span className="k-beta">BETA</span></div>
@@ -56,7 +57,8 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
 
   return <div className="k-root o-root">
     <a href="#main" className="k-sr" style={{ position: "absolute" }}>Skip to content</a>
-    <header className="o-top">
+    <MobileNav home="/organizer" title={workspace.name} menu={ORG_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href }))} tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Money", "Gala Agent"].includes(n.label)).map(n => ({ href: n.href, label: n.label === "Gala Agent" ? "Agent" : n.label, icon: n.icon, match: n.href }))} />
+    <header className="o-top pwa-hide-desktop-nav">
       <button className="o-burger k-icon-btn plain" aria-label="Open navigation" aria-expanded={navOpen} onClick={() => setNavOpen(true)}><MenuIcon size={20} /></button>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={170} height={44} /></Link>
@@ -72,9 +74,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <Link role="menuitem" className="k-menu-item" href="/onboarding" onClick={close}><Plus size={16} aria-hidden />Create a workspace</Link>
         </>}
       </Menu>
-      <form className="o-search" role="search" onSubmit={e => { e.preventDefault(); const v = (e.currentTarget.elements.namedItem("q") as HTMLInputElement).value.trim(); if (v) router.push(`/organizer/search?q=${encodeURIComponent(v)}`); }}>
-        <Search size={17} aria-hidden /><input id="org-search" name="q" placeholder="Search events, venues, suppliers, clients, or anything..." aria-label="Search the workspace" /><kbd>⌘ K</kbd>
-      </form>
+      <div className="o-search o-gs"><GlobalSearch seat={workspace.id} placeholder="Search events, venues, suppliers, clients, or anything..." /></div>
       <Menu label="Create" width={260} trigger={({ open, toggle, id }) => <div className="k-split o-create"><Link href="/organizer/events/new?step=1" className="k-btn primary"><Plus size={17} aria-hidden />Create</Link><button className="k-btn primary" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu" aria-label="More create options"><ChevronDown size={16} /></button></div>}>
         {close => CREATE.map(c => <Link key={c.href} role="menuitem" href={c.href} className="k-menu-item" onClick={close}><c.icon size={16} className="k-blue" aria-hidden /><span>{c.label}<small>{c.sub}</small></span></Link>)}
       </Menu>
@@ -100,13 +100,13 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <form action="/auth/signout" method="post"><button role="menuitem" className="k-menu-item" type="submit"><LogOut size={15} aria-hidden />Sign out</button></form></>}
       </Menu>
     </header>
-    <aside className={`o-side ${navOpen ? "open" : ""}`} aria-label="Workspace navigation">
+    <aside className={`o-side pwa-hide-desktop-nav ${navOpen ? "open" : ""}`} aria-label="Workspace navigation">
       <div className="o-side-mobile-head"><b>{workspace.name}</b><button className="k-icon-btn plain" aria-label="Close navigation" onClick={() => setNavOpen(false)}><X size={18} /></button></div>
       {nav}{agentCard}
     </aside>
     {navOpen && <div className="o-scrim" onClick={() => setNavOpen(false)} aria-hidden />}
     <main id="main" className="o-main">{children}</main>
-    <nav className="o-tabbar" aria-label="Quick navigation">
+    <nav className="o-tabbar pwa-hide-desktop-nav" aria-label="Quick navigation">
       {ORG_NAV.filter(i => ["Home", "Events", "Calendar", "Gala Agent"].includes(i.label)).map(i => <Link key={i.href} href={i.href} aria-current={isActive(pathname, i) ? "page" : undefined}><i.icon size={20} aria-hidden /><span>{i.label === "Gala Agent" ? "Agent" : i.label}</span></Link>)}
       <button onClick={() => setNavOpen(true)} aria-label="More navigation"><MenuIcon size={20} aria-hidden /><span>More</span></button>
     </nav>

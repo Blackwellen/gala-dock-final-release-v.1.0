@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { chat, agentConfigured, SAFETY } from "./llm";
+import { PRESETS, posterFromEvent } from "@/lib/media/document";
 import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, type Tool } from "./registry";
 
 /**
@@ -34,7 +35,14 @@ export async function invoke(actor: string, workspaceId: string, tool: Tool, inp
   const parsed = tool.input.safeParse(input);
   if (!parsed.success) throw new Error(`invalid_input: ${parsed.error.issues.map(i => `${i.path.join(".")} ${i.message}`).join("; ").slice(0, 300)}`);
   if (tool.id === "draft.note") return { draft: parsed.data };
-  const { data, error } = await svc().rpc("agent_invoke", { p_actor: actor, p_workspace: workspaceId, p_tool: tool.id, p_args: parsed.data });
+  let args = parsed.data as Record<string, unknown>;
+  if (tool.id === "media.event_poster") {
+    // The layout is built here from the canonical poster template; agent_invoke stores it as an agent-sourced draft as the human.
+    const p = PRESETS.find(x => x.id === (args.preset ?? "a3")) ?? PRESETS[0]!;
+    const { data: ev } = await svc().from("events").select("cover_image").eq("id", String(args.event_id)).eq("workspace_id", workspaceId).maybeSingle();
+    args = { ...args, document: posterFromEvent(p.w, p.h, { imageSrc: ev?.cover_image ?? null }), title: args.title ?? `${p.label} — agent draft` };
+  }
+  const { data, error } = await svc().rpc("agent_invoke", { p_actor: actor, p_workspace: workspaceId, p_tool: tool.id, p_args: args as never });
   if (error) throw new Error(error.message);
   return data as unknown;
 }

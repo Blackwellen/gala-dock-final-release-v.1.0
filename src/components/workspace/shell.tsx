@@ -10,6 +10,7 @@ import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Bell, MessageSquareText, Plus,
   ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network,
   ChartColumn, ArrowRight, Building2, LayoutGrid, Wrench, Package, Menu, X, LogOut, Check, type LucideIcon,
+  Palette,
 } from "lucide-react";
 import { Suspense } from "react";
 import { DesignScale, DensityPicker } from "./design-scale";
@@ -162,6 +163,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/bookings", label: "Bookings", icon: CalendarCheck, badge: counts.bookings, badgeTone: "grey" },
     { href: "/provider/calendar", label: "Calendar", icon: Calendar },
     { href: "/provider/listings", label: "Listings", icon: Store, children: listingChildren, defaultOpen: true, collapseOn: /^\/provider(\/(opportunities(?!\/[^/]+\/quote)|quotes|bookings|calendar)(\/|$)|\/?$)/ },
+    { href: "/provider/media", label: "Media Studio", icon: Palette },
     { href: "/provider/team", label: "Team", icon: Users },
     { href: "/provider/money", label: "Money", icon: Wallet },
     { href: "/provider/agent", label: "Gala Agent", icon: Sparkles },

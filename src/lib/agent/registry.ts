@@ -35,6 +35,11 @@ export const TOOLS: Tool[] = [
     input: z.object({ title: z.string().min(2).max(140), body: z.string().min(1).max(6000) }) }),
   t({ id: "task.create", title: "Create task", description: "Internal task on an event.", surface: "organizer", risk: 2, permission: "events.write",
     input: z.object({ event_id: id, title: z.string().min(3).max(200), detail: z.string().max(2000).optional(), due_at: iso.optional(), priority: z.enum(["low", "medium", "high", "critical"]).optional() }) }),
+  // ── Media Studio (drafts only — the agent never publishes, prints or posts artwork)
+  t({ id: "media.list_designs", title: "List designs", description: "Designs in this workspace's Media Studio, newest first, optionally for one event.", surface: "both", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id.optional() }) }),
+  t({ id: "media.event_poster", title: "Draft event poster", description: "Create a draft poster in Media Studio from an event's live details (name, date, venue, ticket QR) for a human to edit.", surface: "organizer", risk: 1, permission: "events.write",
+    input: z.object({ event_id: id, preset: z.enum(["a3", "a4", "sq", "portrait", "story", "wide", "banner", "screen"]).optional(), title: z.string().min(2).max(140).optional() }) }),
   // ── R3 external, non-binding
   t({ id: "message.party", title: "Send message", description: "Message a supplier, client or teammate you already work with.", surface: "both", risk: 3, permission: "events.read", idempotent: true,
     input: z.object({ to_type: z.enum(["user", "workspace"]), to: id, subject: z.string().max(140).optional(), body: z.string().min(2).max(4000), event_id: id.optional(), item_id: id.optional(), kind: z.enum(["direct", "event", "booking", "enquiry"]).optional() }),
