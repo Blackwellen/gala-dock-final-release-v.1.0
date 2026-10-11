@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { enforceWorkspaceMfa } from "@/lib/mfa/policy";
 import { requireUser, listWorkspaceAccess, type WorkspaceAccess } from "@/lib/auth";
 
 export type Db = Awaited<ReturnType<typeof requireUser>>["supabase"];
@@ -21,7 +22,7 @@ const usable = (w: WorkspaceAccess) => w.kind === "organizer" && w.member_status
 
 /** Organizer surface: requires an active organizer workspace membership. Prefers the last opened workspace. */
 export const getOrganizer = cache(async (next = "/organizer") => {
-  const { supabase, user } = await requireUser(next);
+  const { supabase, user, aal } = await requireUser(next);
   const access = await listWorkspaceAccess(supabase);
   const { data: profile } = await supabase.from("profiles").select("full_name,last_workspace_id,avatar_url").eq("id", user.id).maybeSingle();
   const organizerWs = access.filter(usable);
@@ -37,6 +38,7 @@ export const getOrganizer = cache(async (next = "/organizer") => {
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
     supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).order("created_at", { ascending: false }).limit(8),
   ]);
+  enforceWorkspaceMfa({ settings: workspace?.settings, role: ws.role, aal, workspaceName: ws.name, next });
   const name = profile?.full_name || user.email?.split("@")[0] || "Organizer";
   const canMoney = ["owner", "manager", "finance"].includes(ws.role);
   return { supabase, user, name, role: ws.role, canMoney, workspace: { ...ws, ...(workspace ?? {}) }, workspaces: access.filter(w => w.member_status === "active"), unread: unread ?? 0, notifications: notes ?? [] };

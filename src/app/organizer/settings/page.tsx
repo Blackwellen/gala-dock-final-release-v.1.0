@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
+import { mfaRequired, policyOf } from "@/lib/mfa/policy";
 import { ClipboardList, CheckCircle2, ExternalLink, Users, CreditCard, Mail, Plug, Sparkles, Bell, CalendarDays, CircleSlash, ShieldCheck, Gauge, KeyRound, Globe2, Clock, ArrowRight, MessageSquare } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs } from "@/components/kit";
@@ -10,7 +12,7 @@ type S = Record<string, unknown>;
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase; const ws = ctx.workspace.id;
-  const tab = ["team", "brand", "billing", "communications", "integrations", "agent", "notifications"].includes(sp.tab ?? "") ? sp.tab! : "workspace";
+  const tab = ["team", "security", "brand", "billing", "communications", "integrations", "agent", "notifications"].includes(sp.tab ?? "") ? sp.tab! : "workspace";
   const [{ data: w }, { data: members }, { data: crew }, { count: events }, { data: runs }, { data: audit }] = await Promise.all([
     sb.from("workspaces").select("id,name,kind,settings,status,verification_status,payout_status,plan,cover_image,created_at").eq("id", ws).single(),
     sb.from("workspace_members").select("user_id,role,status,created_at").eq("workspace_id", ws),
@@ -40,7 +42,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   return <div className="st">
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Settings" }]} />
     <div className="k-page-head"><div className="k-grow"><h1>Settings</h1><p className="sub">Manage your workspace, team, billing, integrations and more.</p></div><Link className="k-btn outline" href="/organizer/settings?tab=team#audit"><ClipboardList size={16} />View audit logs</Link></div>
-    <LinkTabs current={tab} tabs={[["workspace", "Workspace"], ["team", "Team & Access"], ["brand", "Brand"], ["billing", "Payments & Billing"], ["communications", "Communications"], ["integrations", "Integrations"], ["agent", "Agent"], ["notifications", "Notifications"]].map(([k, l]) => ({ key: k, label: l, href: k === "workspace" ? "/organizer/settings" : `/organizer/settings?tab=${k}` }))} />
+    <LinkTabs current={tab} tabs={[["workspace", "Workspace"], ["team", "Team & Access"], ["security", "Security"], ["brand", "Brand"], ["billing", "Payments & Billing"], ["communications", "Communications"], ["integrations", "Integrations"], ["agent", "Agent"], ["notifications", "Notifications"]].map(([k, l]) => ({ key: k, label: l, href: k === "workspace" ? "/organizer/settings" : `/organizer/settings?tab=${k}` }))} />
     {!can && <div className="k-notice amber">You can view settings. Ask an owner or manager to make changes.</div>}
     {tab === "workspace" && <>
       <div className="st-r1">
@@ -78,6 +80,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     {tab === "team" && <section className="k-card st-c"><h2>Workspace members</h2><table className="mn-t"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead><tbody>{(members ?? []).map(m => <tr key={m.user_id}><td><b>{name(m.user_id)}</b></td><td>{owner && m.role !== "owner" ? <RoleSelect userId={m.user_id} role={m.role} /> : m.role}</td><td>{m.status}</td><td>{new Date(m.created_at).toLocaleDateString("en-GB")}</td></tr>)}</tbody></table>
       <p className="k-small" style={{ marginTop: 10 }}>External crew are managed in <Link href="/organizer/team">Team</Link>.</p>
       <h2 id="audit" style={{ marginTop: 20 }}>Audit log</h2><ul className="iv-comm">{(audit ?? []).map((a, i) => <li key={i}><span className="tm-ci green"><ClipboardList size={15} /></span><span className="k-grow"><b>{a.event}</b></span><small>{new Date(a.created_at).toLocaleString("en-GB")}</small></li>)}</ul></section>}
+    {tab === "security" && <div className="st-sec" style={{ display: "grid", gap: 16, maxWidth: 720 }}><MfaCard required={mfaRequired(policyOf(ctx.workspace.settings), ctx.role) ? ctx.workspace.name : null} /><WorkspaceMfaPolicy workspaceId={ctx.workspace.id} policy={policyOf(ctx.workspace.settings)} owner={ctx.role === "owner"} /></div>}
     {tab === "notifications" && <section className="k-card st-c st-narrow"><h2>Notification channels</h2><NotifToggles can={can} prefs={notif} /></section>}
     {tab === "agent" && <section className="k-card st-c st-narrow"><div className="k-between"><h2>Gala Agent behaviour</h2><EditCard can={can} title="Agent settings" fields={[{ key: "agent.approval_policy", label: "Approval policy", value: agent.approval_policy, options: ["Require approval for high-impact actions", "Require approval for all actions"] }, { key: "agent.autopilot", label: "Autopilot", value: agent.autopilot, options: ["Off", "Limited (suggest & draft only)", "Standard (low-risk actions)"] }, { key: "agent.access_scope", label: "Access scope", value: agent.access_scope, options: ["All events and workspace data", "Assigned events only"] }]} /></div><dl className="st-ag">{Object.entries(agent).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{v}</dd></div>)}</dl></section>}
     {["brand", "billing", "communications", "integrations"].includes(tab) && <section className="k-card st-c st-narrow"><h2>{tab === "integrations" ? "Integrations" : tab === "billing" ? "Payments & Billing" : tab === "brand" ? "Brand" : "Communications"}</h2>

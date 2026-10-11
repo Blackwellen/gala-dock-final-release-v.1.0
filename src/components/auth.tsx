@@ -340,7 +340,7 @@ export function AuthPage(props: AuthProps) {
                 <p className="check-row otp-hint"><Clock size={18} aria-hidden="true" /><span>Codes refresh every 30 seconds in your app</span></p>
                 {!props.factors?.length && !enrolment && <Button variant="outline" onClick={enroll} className="full-width">Set up an authenticator app</Button>}
               </>}
-              {method === "recovery" && <div className="auth-note"><KeyRound aria-hidden="true" /><span><b>Recovery codes aren’t available yet</b><small>Gala Dock doesn’t issue recovery codes. If you’ve lost access to your authenticator, contact support — we’ll verify your identity before restoring access.</small></span></div>}
+              {method === "recovery" && <RecoveryCode />}
             </>}
 
             {screen === "invite" && <><InvitationSummary invite={props.invite ?? null} />
@@ -406,4 +406,26 @@ function OtpInput({ value, onChange, invalid }: { value: string; onChange: (valu
       }}
       onPaste={e => { const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6); if (digits) { e.preventDefault(); onChange(digits); refs.current[Math.min(digits.length, 5)]?.focus(); } }} />)}
   </fieldset>;
+}
+
+/** Recovery-code sign-in (release spec §7–8): consumes one code, removes the lost authenticator and sends the user to set up a new one. */
+function RecoveryCode() {
+  const [value, setValue] = useState(""), [err, setErr] = useState(""), [busy, setBusy] = useState(false);
+  const submit = async () => {
+    setErr(""); setBusy(true);
+    try {
+      const r = await fetch("/api/auth/mfa-recover", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: value }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setErr(j.error ?? "That recovery code didn’t work."); return; }
+      await createClient().auth.refreshSession();
+      location.assign(j.next ?? "/account?tab=security");
+    } finally { setBusy(false); }
+  };
+  return <div className="auth-note" style={{ display: "grid", gap: 10 }}><KeyRound aria-hidden="true" /><span style={{ display: "grid", gap: 8 }}>
+    <b>Use a recovery code</b><small>Enter one of the codes you saved when you set up two-step verification. Your old authenticator will be removed and you’ll set up a new one.</small>
+    <input className="input" value={value} onChange={e => setValue(e.target.value.toUpperCase())} placeholder="XXXXX-XXXXX" autoComplete="one-time-code" aria-label="Recovery code" maxLength={14}
+      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); if (value.length >= 8) void submit(); } }} />
+    <Button type="button" onClick={submit} disabled={busy || value.length < 8} className="full-width">{busy ? "Checking…" : "Use recovery code"}</Button>
+    {err && <small role="alert" style={{ color: "#c4142b" }}>{err}</small>}
+    <small>No codes? Contact support — we’ll verify your identity before restoring access.</small></span></div>;
 }

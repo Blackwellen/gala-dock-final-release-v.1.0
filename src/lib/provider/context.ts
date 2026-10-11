@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { requireRole, listWorkspaceAccess } from "@/lib/auth";
 import { untyped, one, type Db } from "@/lib/workspace/db";
+import { enforceWorkspaceMfa } from "@/lib/mfa/policy";
 
 export type ProviderWorkspace = {
   id: string; name: string; capabilities: ("venue" | "service")[]; plan: string; commission_bps: number;
@@ -22,7 +23,7 @@ export type ProviderContext = {
 export const PROVIDER_WS_COOKIE = "gd_provider_ws";
 
 export const getProvider = cache(async (): Promise<ProviderContext> => {
-  const { supabase, user, workspace: fallback } = await requireRole("provider");
+  const { supabase, user, aal, workspace: fallback } = await requireRole("provider");
   if (!fallback) redirect("/onboarding/provider?step=1");
   const db = untyped(supabase);
   // Selection order: switcher cookie → last used → requireRole default. Every candidate is validated against
@@ -37,6 +38,7 @@ export const getProvider = cache(async (): Promise<ProviderContext> => {
   const workspace = usable.find(w => w.id === wanted) ?? usable.find(w => w.id === profile?.last_workspace_id) ?? fallback;
   const ws = await one<ProviderWorkspace>(db.from("workspaces").select("id,name,capabilities,plan,commission_bps,verification_status,payout_status,cover_image,settings").eq("id", workspace.id).maybeSingle());
   if (!ws) redirect("/access?reason=denied");
+  enforceWorkspaceMfa({ settings: ws.settings, role: workspace.role, aal, workspaceName: ws.name, next: "/provider" });
   return {
     db, userId: user.id, role: workspace.role, workspaces: usable.map(w => ({ id: w.id, name: w.name })),
     userName: profile?.full_name || user.email?.split("@")[0] || "there",
