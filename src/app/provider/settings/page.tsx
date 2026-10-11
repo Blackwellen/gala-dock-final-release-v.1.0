@@ -11,6 +11,7 @@ import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
 import { AgentCredits } from "@/components/agent/credits";
 import { DevelopersPanel } from "@/components/developer/panel";
 import { DemoCard } from "@/components/demo/demo-card";
+import { StorageUsage } from "@/components/storage-usage";
 import { policyOf, mfaRequired } from "@/lib/mfa/policy";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money, relative, titleCase, requestTime } from "@/lib/workspace/format";
@@ -127,6 +128,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
       {tab === "billing" && <><h2>Payments &amp; billing</h2>
         <ul className="ps-rows"><li className="ps-li"><span>Payout account</span><b>{ws.payout_status === "active" ? "Connected (Stripe Express)" : "Not connected"}</b>{ws.payout_status !== "active" && <Link className="ws-btn primary sm" href="/onboarding/provider?step=4">Connect payouts</Link>}</li>
           <li className="ps-li"><span>Plan</span><b>{titleCase(ws.plan)} · {(bps / 100).toFixed(0)}% commission</b></li><li className="ps-li"><span>Statements</span><b><Link href="/provider/money?tab=statements">Monthly statements</Link></b></li></ul>
+        <StorageUsage db={ctx.db} workspaceId={ws.id} />
         <h3>Plans</h3><ul className="ps-plans">{Object.entries(plans).sort((x, y) => x[1].monthly - y[1].monthly).map(([k, x]) => <li key={k} className={k === ws.plan ? "on" : ""}><b>{titleCase(k)}</b><strong>{x.monthly ? `£${x.monthly}/mo` : "Free"}</strong><small>{(x.commission_bps / 100).toFixed(0)}% commission</small>{k === ws.plan ? <Chip tone="blue">Current</Chip> : <span className="ps-contact">Contact us to switch</span>}</li>)}</ul>
         <h3>Tax</h3><ActionForm action={saveTax} className="pt-form ps-form"><Toggle name="vat_registered" label="VAT registered (UK)" on={tax.vat_registered} /><label>VAT number<input name="vat_number" defaultValue={tax.number ?? ""} placeholder="GB 123 4567 89" /></label>
           {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save tax settings</button></div>}</ActionForm></>}

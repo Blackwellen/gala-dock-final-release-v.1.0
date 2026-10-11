@@ -10,6 +10,7 @@ import "@/styles/admin-a-workspace.css";
 import { Avatar, Thumb, Restricted, Sparkline } from "@/components/workspace/kit";
 import { ActionButton, ActionForm } from "@/components/workspace/actions";
 import { requireAdminPermission } from "@/lib/admin/context";
+import { untyped } from "@/lib/workspace/db";
 import { rows, one, count, isUuid } from "@/lib/workspace/db";
 import { money, day, relative, requestTime, delta, titleCase } from "@/lib/workspace/format";
 import { AdminMenu } from "../../_a/client";
@@ -55,6 +56,9 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
 
   const w = await one<Ws>(db.from("workspaces").select(WS_COLS).eq("id", id).maybeSingle());
   if (!w) notFound();
+  // Storage use against the plan (§115); the page itself is gated on the workspaces permission.
+  const storage = await untyped(db as never).rpc("storage_usage", { p_workspace: id, p_user: null }).then(r => r.data as { bytes: number; files: number; limit_bytes: number; pct: number } | null, () => null);
+  const gb = (b: number) => b >= 1073741824 ? `${(b / 1073741824).toFixed(1)} GB` : `${Math.round(b / 1048576)} MB`;
   const [metrics, { plans, payoutSchedule }, daily, members, events, eventCount, upcomingCount, listings, tickets, cases, trust, audit, notes, payouts] = await Promise.all([
     loadMetrics(db, 30), loadPlans(db),
     rpc<Daily[]>(db, "admin_workspace_daily", { p_ws: id, p_days: 30 }),
@@ -129,6 +133,7 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
       ["Subscription status", <Status key="s" value={w.status === "suspended" ? "suspended" : "active"} label={w.status === "suspended" ? "Suspended" : "Active"} />],
       ["Payout account", <Status key="pa" value={w.payout_status === "active" ? "active" : w.payout_status === "restricted" ? "restricted" : "pending"} label={titleCase(w.payout_status)} />],
       ["Members", `${members.filter(x => x.status === "active").length} active`],
+      ["Storage", storage ? <span key="st">{gb(Number(storage.bytes))} of {gb(Number(storage.limit_bytes))} · {Number(storage.files).toLocaleString("en-GB")} files {Number(storage.pct) >= 90 ? <Status value={Number(storage.pct) >= 100 ? "suspended" : "pending"} label={`${storage.pct}%`} /> : <small>({storage.pct}%)</small>}</span> : "—"],
     ]} />
   </section>;
   const commissionPanel = <section className="aa-panel awd-commission">
