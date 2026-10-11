@@ -3,8 +3,8 @@
   "url": "/admin/agent-integrations",
   "file": "Designs/Admin Workspace/Gala·Dock Agent Integrations Dashboard.png",
   "status": 200,
-  "mismatchPercent": 11.82,
-  "ssim": 0.6291,
+  "mismatchPercent": 11.83,
+  "ssim": 0.6288,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1053
   },
   "errors": [],
-  "at": "2026-10-11T09:06:46.437Z"
+  "at": "2026-10-11T09:18:15.755Z"
 }

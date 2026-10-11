@@ -1,17 +1,17 @@
 ▲ Next.js 16.4.0 (Turbopack)
 - Environments: .env.local, .env
-✓ Running next.config.ts took 158ms
+✓ Running next.config.ts took 207ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 14.8s
+✓ Compiled successfully in 11.5s
   Running TypeScript ...
-  Finished TypeScript in 73s ...
+  Finished TypeScript in 74s ...
   Collecting page data using 27 workers ...
-  Generating static pages using 27 workers (0/102) ...
-  Generating static pages using 27 workers (25/102) 
-  Generating static pages using 27 workers (50/102) 
-  Generating static pages using 27 workers (76/102) 
-✓ Generating static pages using 27 workers (102/102) in 1234ms
+  Generating static pages using 27 workers (0/105) ...
+  Generating static pages using 27 workers (26/105) 
+  Generating static pages using 27 workers (52/105) 
+  Generating static pages using 27 workers (78/105) 
+✓ Generating static pages using 27 workers (105/105) in 2.2s
   Finalizing page optimization ...
 
 Route (app)
@@ -107,11 +107,15 @@ Route (app)
 ├ ƒ /onboarding
 ├ ƒ /onboarding/[flow]
 ├ ƒ /organizer
+├ ƒ /organizer/agent
 ├ ƒ /organizer/calendar
 ├ ƒ /organizer/events
 ├ ƒ /organizer/events/[id]
 ├ ƒ /organizer/events/[id]/map
+├ ƒ /organizer/events/[id]/promotion
+├ ƒ /organizer/events/[id]/template
 ├ ƒ /organizer/events/[id]/tickets/setup
+├ ƒ /organizer/events/new
 ├ ƒ /organizer/marketplace
 ├ ƒ /organizer/marketplace/[type]/[id]
 ├ ƒ /organizer/marketplace/requests/[id]
@@ -119,6 +123,7 @@ Route (app)
 ├ ƒ /organizer/money
 ├ ƒ /organizer/money/invoices/[id]
 ├ ƒ /organizer/money/invoices/new
+├ ƒ /organizer/promotions/new
 ├ ƒ /organizer/proposals/new
 ├ ƒ /organizer/sales
 ├ ƒ /organizer/sales/leads/[id]

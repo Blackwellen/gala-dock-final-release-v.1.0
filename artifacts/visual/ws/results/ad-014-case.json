@@ -3,8 +3,8 @@
   "url": "/admin/support/c0000000-0000-4000-8000-000000004421",
   "file": "Designs/Admin Workspace/Support Case Refund Dashboard.png",
   "status": 200,
-  "mismatchPercent": 13.11,
-  "ssim": 0.6019,
+  "mismatchPercent": 13.12,
+  "ssim": 0.6015,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1071
   },
   "errors": [],
-  "at": "2026-10-11T09:06:36.239Z"
+  "at": "2026-10-11T09:18:04.577Z"
 }

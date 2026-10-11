@@ -3,14 +3,14 @@
   "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=layouts",
   "file": "Designs/Provider Workspace/Gala·Dock Add Space Dashboard.png",
   "status": 200,
-  "mismatchPercent": 14.43,
-  "ssim": 0.6183,
+  "mismatchPercent": 14.24,
+  "ssim": 0.6382,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1184
+    "scrollHeight": 1317
   },
   "errors": [],
-  "at": "2026-10-11T01:21:08.945Z"
+  "at": "2026-10-11T09:15:10.264Z"
 }

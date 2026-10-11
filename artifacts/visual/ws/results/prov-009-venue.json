@@ -4,7 +4,7 @@
   "file": "Designs/Provider Workspace/Riverside Arena Venue Dashboard.png",
   "status": 200,
   "mismatchPercent": 24.47,
-  "ssim": 0.5296,
+  "ssim": 0.5297,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1167
   },
   "errors": [],
-  "at": "2026-10-11T02:37:09.179Z"
+  "at": "2026-10-11T09:14:47.267Z"
 }

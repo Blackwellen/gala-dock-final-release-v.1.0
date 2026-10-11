@@ -4,7 +4,7 @@
   "file": "Designs/platform shell/platform admin shell.png",
   "status": 200,
   "mismatchPercent": 14.14,
-  "ssim": 0.6126,
+  "ssim": 0.6124,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1086
   },
   "errors": [],
-  "at": "2026-10-11T09:05:16.694Z"
+  "at": "2026-10-11T09:13:51.671Z"
 }

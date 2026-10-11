@@ -41,7 +41,7 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | ORG-011 Tickets & Promotion hub | Gala Dock Event Promotion Dashboard | /organizer/tickets | ✅ |
 | ORG-012 Public page editor | Neon Nights Festival Page Editor | /organizer/events/[id]/page | ⬜ |
 | ORG-013 Venue map builder | Neon Nights Festival Venue Map Builder | /organizer/events/[id]/map (session -22) | ✅ |
-| ORG-014 Promotion | Neon Nights Promotion Dashboard | /organizer/events/[id]/promotion | ⬜ |
+| ORG-014 Promotion | Neon Nights Promotion Dashboard | /organizer/events/[id]/promotion | ✅ |
 | ORG-015 Poster / media builder | Neon Nights Festival Poster Builder | /organizer/events/[id]/media | ⬜ |
 | ORG-016 Team | Gala Dock Team Dashboard | /organizer/team | ✅ |
 | ORG-017 Team profile | Gala·Dock Team Profile Dashboard | /organizer/team/[id] | ✅ |
@@ -53,6 +53,6 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | W02 Proposal (3) | Gala Dock Proposal · SaaS Proposal Builder · Proposal Review | /organizer/proposals/new | ✅ |
 | W03 Ticket setup (3) | GalaDock/Neon Ticket Setup (tiers) · Gala·Dock Ticket Setup (venue & capacity) · Gala Dock Ticket Setup / Neon (1) (rules & publish) | /organizer/events/[id]/tickets/setup | 🔨 functional (shared wizard); pro 5-step table layout pending |
 | W04 Marketplace request (2) | Create Marketplace Request (×2), Neon Supplier Marketplace (×2) | /organizer/marketplace/requests/new | ✅ |
-| W05 Promotion (3) | Neon Nights Promotion Dashboard2 · Neon Nights Festival Promotion · Gala Dock Promotion Review | /organizer/promotions/new | ⬜ |
+| W05 Promotion (3) | Neon Nights Promotion Dashboard2 · Neon Nights Festival Promotion · Gala Dock Promotion Review | /organizer/promotions/new | ✅ |
 | W06 Invoice (2) | Gala·Dock Invoice Creation · Gala·Dock Invoice Scheduling | /organizer/money/invoices/new | ✅ |
-| W07 Template (2) | Save Event as Template · Gala-Dock Festival Template | /organizer/events/[id]/template | ⬜ |
+| W07 Template (2) | Save Event as Template · Gala-Dock Festival Template | /organizer/events/[id]/template | ✅ |

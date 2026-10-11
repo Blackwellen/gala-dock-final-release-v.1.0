@@ -3,14 +3,14 @@
   "url": "/provider/quotes/{quote:Charity Gala Dinner}",
   "file": "Designs/Provider Workspace/Gala·Dock Wedding Quote Dashboard.png",
   "status": 200,
-  "mismatchPercent": 14.29,
-  "ssim": 0.6229,
+  "mismatchPercent": 14.36,
+  "ssim": 0.6298,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1353
+    "scrollHeight": 1320
   },
   "errors": [],
-  "at": "2026-10-11T00:33:29.533Z"
+  "at": "2026-10-11T09:14:13.751Z"
 }

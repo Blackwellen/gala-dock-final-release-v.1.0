@@ -4,7 +4,7 @@
   "file": "Designs/Portals/Neon Nights Promoter Dashboard.png",
   "status": 200,
   "mismatchPercent": 12.91,
-  "ssim": 0.683,
+  "ssim": 0.6829,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1056
   },
   "errors": [],
-  "at": "2026-10-11T08:49:38.705Z"
+  "at": "2026-10-11T09:18:52.174Z"
 }

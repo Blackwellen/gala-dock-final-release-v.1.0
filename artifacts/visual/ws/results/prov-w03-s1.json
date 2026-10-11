@@ -3,14 +3,14 @@
   "url": "/provider/services/new?service={listing:DJ & Sound}&step=1",
   "file": "Designs/Provider Workspace/Gala Dock Service Setup Dashboard.png",
   "status": 200,
-  "mismatchPercent": 15.32,
-  "ssim": 0.6312,
+  "mismatchPercent": 15.78,
+  "ssim": 0.6167,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1534
+    "scrollHeight": 1525
   },
   "errors": [],
-  "at": "2026-10-11T02:07:26.440Z"
+  "at": "2026-10-11T09:15:43.090Z"
 }

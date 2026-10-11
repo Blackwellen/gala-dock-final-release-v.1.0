@@ -3,14 +3,14 @@
   "url": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
   "file": "Designs/Provider Workspace/SaaS Quote Builder Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.67,
-  "ssim": 0.6138,
+  "mismatchPercent": 12.66,
+  "ssim": 0.6202,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1049
+    "scrollHeight": 1046
   },
   "errors": [],
-  "at": "2026-10-11T00:33:24.524Z"
+  "at": "2026-10-11T09:14:08.142Z"
 }

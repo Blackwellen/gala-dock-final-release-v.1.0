@@ -4,13 +4,13 @@
   "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
   "status": 200,
   "mismatchPercent": 11.06,
-  "ssim": 0.6309,
+  "ssim": 0.6305,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1040
+    "scrollHeight": 1041
   },
   "errors": [],
-  "at": "2026-10-11T09:05:21.837Z"
+  "at": "2026-10-11T09:16:42.114Z"
 }

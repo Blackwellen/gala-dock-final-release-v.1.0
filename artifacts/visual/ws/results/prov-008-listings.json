@@ -3,14 +3,14 @@
   "url": "/provider/listings",
   "file": "Designs/Provider Workspace/Gala·Dock Listings Dashboard.png",
   "status": 200,
-  "mismatchPercent": 24.54,
-  "ssim": 0.5328,
+  "mismatchPercent": 24.43,
+  "ssim": 0.5413,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1037
+    "scrollHeight": 1039
   },
   "errors": [],
-  "at": "2026-10-11T02:35:53.690Z"
+  "at": "2026-10-11T09:14:41.702Z"
 }

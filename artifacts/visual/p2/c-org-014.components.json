@@ -1,0 +1,106 @@
+{
+ "name": "c-org-014",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion",
+ "page": 22.85,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Promotion assets",
+   "x": 1073,
+   "y": 892,
+   "w": 445,
+   "h": 132,
+   "mismatch": 73.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Boosts & paid placements",
+   "x": 655,
+   "y": 892,
+   "w": 405,
+   "h": 132,
+   "mismatch": 25
+  },
+  {
+   "sel": ".k-card",
+   "label": "Promoters",
+   "x": 1073,
+   "y": 509,
+   "w": 445,
+   "h": 372,
+   "mismatch": 22.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Directory distribution",
+   "x": 236,
+   "y": 509,
+   "w": 405,
+   "h": 347,
+   "mismatch": 18.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Promotion checklist",
+   "x": 755,
+   "y": 236,
+   "w": 348,
+   "h": 261,
+   "mismatch": 17.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Ticket sales pace",
+   "x": 1117,
+   "y": 236,
+   "w": 401,
+   "h": 261,
+   "mismatch": 17.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Calendar distribution",
+   "x": 655,
+   "y": 509,
+   "w": 405,
+   "h": 347,
+   "mismatch": 15.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Audience campaigns",
+   "x": 236,
+   "y": 892,
+   "w": 405,
+   "h": 132,
+   "mismatch": 15.1
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 185,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 8.2
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

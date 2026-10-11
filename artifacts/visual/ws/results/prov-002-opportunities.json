@@ -3,8 +3,8 @@
   "url": "/provider/opportunities",
   "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
   "status": 200,
-  "mismatchPercent": 14.91,
-  "ssim": 0.5697,
+  "mismatchPercent": 14.66,
+  "ssim": 0.573,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1024
   },
   "errors": [],
-  "at": "2026-10-11T02:36:57.326Z"
+  "at": "2026-10-11T09:13:57.292Z"
 }

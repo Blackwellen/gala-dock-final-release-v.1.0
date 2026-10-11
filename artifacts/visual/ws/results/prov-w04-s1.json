@@ -3,8 +3,8 @@
   "url": "/provider/packages/new?package={package:Wedding Package}&step=1",
   "file": "Designs/Provider Workspace/Create Package Dashboard UI.png",
   "status": 200,
-  "mismatchPercent": 15.19,
-  "ssim": 0.6057,
+  "mismatchPercent": 15.21,
+  "ssim": 0.6061,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1196
   },
   "errors": [],
-  "at": "2026-10-11T02:17:28.566Z"
+  "at": "2026-10-11T09:16:03.860Z"
 }

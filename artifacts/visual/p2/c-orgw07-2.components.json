@@ -1,0 +1,70 @@
+{
+ "name": "c-orgw07-2",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template?step=2",
+ "page": 16.13,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "3. Template preview",
+   "x": 727,
+   "y": 243,
+   "w": 477,
+   "h": 700,
+   "mismatch": 31.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Neon Nights Festival",
+   "x": 1218,
+   "y": 243,
+   "w": 300,
+   "h": 126,
+   "mismatch": 25.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "Template preview",
+   "x": 1218,
+   "y": 383,
+   "w": 300,
+   "h": 388,
+   "mismatch": 16.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "2. Included modules",
+   "x": 236,
+   "y": 632,
+   "w": 477,
+   "h": 392,
+   "mismatch": 14.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "1. Template details",
+   "x": 236,
+   "y": 243,
+   "w": 477,
+   "h": 375,
+   "mismatch": 13.1
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 12
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 7.3
+  }
+ ]
+}
