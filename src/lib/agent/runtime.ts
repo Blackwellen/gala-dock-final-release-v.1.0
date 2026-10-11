@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError } from "./llm";
 import { PRESETS, posterFromEvent } from "@/lib/media/document";
+import { watchHolds } from "./watch";
 import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, type Tool } from "./registry";
 
 /**
@@ -225,17 +226,26 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
 }
 
 // ───────────────────────── routines (§13): natural language → compiled, validated structure ─────────────────────────
+/** Domain events an event-driven routine can react to (release spec §12 F). Fired from the audit stream, debounced 5 minutes. */
+export const ROUTINE_EVENTS = ["booking.cancelled", "booking.confirmed", "booking.requested", "quote.sent", "quote.accepted", "payment.succeeded", "payment.amount_mismatch",
+  "cancellation.requested", "dispute.opened", "ticket.purchased", "event.cancelled", "review.published", "request.responded"] as const;
+export const FAR_FUTURE = "2999-01-01T00:00:00Z";
 export async function compileRoutine(surface: "organizer" | "provider", text: string, meter?: { workspaceId: string; userId: string }) {
   if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
   const catalog = catalogFor(surface, DEFAULT_POLICY);
   const r = await chat([{ role: "system", content: `${SAFETY}\nCompile the routine into JSON {"title":string,"trigger":{"type":"cron","cron":"m h dom mon dow","tz":"Europe/London"},"goal":string,"actions":[{"tool":string,"input":object,"why":string}],"limits":{"max_steps":number}}.
-Use 5-field cron. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900, meter: meter ? { ...meter, purpose: "compile" } : undefined }).catch(e => { if (e instanceof AgentBudgetError) return { text: "", tokens: 0, budget: e.message }; throw e; });
+Use 5-field cron for schedules. If the routine should run when something happens instead, use {"type":"event","event":<one of ${JSON.stringify(ROUTINE_EVENTS)}>}. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900, meter: meter ? { ...meter, purpose: "compile" } : undefined }).catch(e => { if (e instanceof AgentBudgetError) return { text: "", tokens: 0, budget: e.message }; throw e; });
   if ("budget" in r) return { ok: false as const, error: String(r.budget) };
-  let c: { title?: string; trigger?: { type: string; cron: string; tz?: string }; goal?: string; actions?: { tool: string; input: Record<string, unknown>; why?: string }[]; limits?: Record<string, unknown> };
+  let c: { title?: string; trigger?: { type: string; cron?: string; tz?: string; event?: string }; goal?: string; actions?: { tool: string; input: Record<string, unknown>; why?: string }[]; limits?: Record<string, unknown> };
   try { c = JSON.parse(r.text); } catch { return { ok: false as const, error: "Couldn’t understand that routine — try rephrasing." }; }
-  if (!c.trigger?.cron || !/^(\S+\s+){4}\S+$/.test(c.trigger.cron) || !nextCron(c.trigger.cron, new Date())) return { ok: false as const, error: "Couldn’t work out when this should run." };
   const actions = (c.actions ?? []).filter(a => catalog.some(x => x.id === a.tool)).slice(0, 8);
-  return { ok: true as const, compiled: { title: (c.title ?? text).slice(0, 120), trigger: { type: "cron", cron: c.trigger.cron, tz: c.trigger.tz ?? "Europe/London" }, goal: (c.goal ?? text).slice(0, 2000), actions, limits: c.limits ?? {} } };
+  const base = { title: (c.title ?? text).slice(0, 120), goal: (c.goal ?? text).slice(0, 2000), actions, limits: c.limits ?? {} };
+  if (c.trigger?.type === "event") {
+    if (!c.trigger.event || !(ROUTINE_EVENTS as readonly string[]).includes(c.trigger.event)) return { ok: false as const, error: "Couldn’t work out which event should trigger this." };
+    return { ok: true as const, compiled: { ...base, trigger: { type: "event" as const, event: c.trigger.event } } };
+  }
+  if (!c.trigger?.cron || !/^(\S+\s+){4}\S+$/.test(c.trigger.cron) || !nextCron(c.trigger.cron, new Date())) return { ok: false as const, error: "Couldn’t work out when this should run." };
+  return { ok: true as const, compiled: { ...base, trigger: { type: "cron" as const, cron: c.trigger.cron, tz: c.trigger.tz ?? "Europe/London" } } };
 }
 
 /** Minimal 5-field cron evaluator (minute hour day-of-month month day-of-week; supports *, lists, ranges, steps). UTC-based. */
@@ -267,7 +277,7 @@ export async function workerTick() {
   // Maintenance (release spec §9): M2+ on the agent module (or any platform-wide M4/M5) suspends the worker; runs resume afterwards.
   const { data: lvl } = await db.rpc("maintenance_level" as never, { p_module: "agent" } as never);
   if (Number(lvl ?? 0) >= 2) return { routines: 0, planned: 0, executed: 0, expired: 0, errors: [] as string[], paused: `maintenance M${lvl}` };
-  const out = { routines: 0, planned: 0, executed: 0, expired: 0, errors: [] as string[] };
+  const out = { routines: 0, planned: 0, executed: 0, expired: 0, watches: 0, errors: [] as string[] };
   // Expire stale approvals → their steps are skipped and the run resumes.
   const { data: stale } = await db.from("agent_approvals").update({ status: "expired" }).eq("status", "pending").lt("expires_at", new Date().toISOString()).select("id");
   for (const a of stale ?? []) { await applyApproval(a.id, ""); out.expired++; }
@@ -283,16 +293,18 @@ export async function workerTick() {
   for (const r of due ?? []) {
     const key = `routine:${r.id}:${r.next_run_at}`;
     const { data: ws } = await db.from("workspaces").select("kind,owner_id").eq("id", r.workspace_id).maybeSingle();
-    const { data: run } = await db.from("agent_runs").insert({ workspace_id: r.workspace_id, user_id: r.owner_id ?? ws?.owner_id, surface: ws?.kind ?? "organizer", mode: "routine", goal: `${r.title}: ${r.detail}`.slice(0, 2000),
+    const { data: run } = await db.from("agent_runs").insert({ workspace_id: r.workspace_id, user_id: r.owner_id ?? ws?.owner_id, surface: ws?.kind ?? "organizer", mode: "routine", goal: `${r.title}: ${r.detail}${r.last_event ? ` (triggered by ${(r.last_event as { event: string }).event})` : ""}`.slice(0, 2000),
       status: "queued", routine_id: r.id, idempotency_key: key, plan: r.actions ?? [] }).select("id").maybeSingle();
     if (run && Array.isArray(r.actions) && r.actions.length) {
       await db.from("agent_run_steps").insert((r.actions as { tool: string; input: Record<string, unknown>; why?: string }[]).filter(a => TOOL.has(a.tool)).map((a, i) => ({ run_id: run.id, seq: i + 1, tool_id: a.tool, input: a.input ?? {}, reason: a.why ?? "", idempotency_key: `${run.id}:${i + 1}` })));
       await db.from("agent_runs").update({ status: "running" }).eq("id", run.id);
     }
-    const next = r.trigger?.cron ? nextCron(r.trigger.cron, new Date()) : null;
-    await db.from("agent_routines").update({ last_run_at: new Date().toISOString(), next_run_at: (next ?? new Date(Date.now() + 864e5)).toISOString() }).eq("id", r.id);
+    const next = r.trigger?.type === "event" ? new Date(FAR_FUTURE) : r.trigger?.cron ? nextCron(r.trigger.cron, new Date()) : null;
+    await db.from("agent_routines").update({ last_run_at: new Date().toISOString(), next_run_at: (next ?? new Date(Date.now() + 864e5)).toISOString(), last_event: null }).eq("id", r.id);
     out.routines++;
   }
+  // Watches (§12 E): poll read-only tools as the human; fire on condition; exponential backoff; expire. No model calls.
+  out.watches = await tickWatches(db);
   // Claim and advance runs.
   const { data: runs } = await db.rpc("claim_agent_runs", { p_limit: 5, p_lease_seconds: 120 });
   for (const run of (runs ?? []) as Run[]) {
@@ -314,4 +326,38 @@ export async function workerTick() {
       out.errors.push(`${run.id}: ${(e as Error).message}`); await db.from("agent_runs").update({ lease_until: null, errors: [{ error: (e as Error).message.slice(0, 300), at: new Date().toISOString() }] }).eq("id", run.id); }
   }
   return out;
+}
+
+// ───────────────────────── watches ─────────────────────────
+type Watch = { id: string; workspace_id: string; user_id: string; title: string; tool_id: string; input: Record<string, unknown>; condition: { path: string; op: string; value?: unknown };
+  check_every_minutes: number; backoff_factor: number; max_checks: number; checks: number; expires_at: string; last_value: unknown; status: string };
+const at = (o: unknown, path: string) => path.split(".").filter(Boolean).reduce<unknown>((v, k) => (v == null ? undefined : Array.isArray(v) && /^\d+$/.test(k) ? v[Number(k)] : (v as Record<string, unknown>)[k]), o);
+async function tickWatches(db: Db) {
+  const now = new Date();
+  await db.from("agent_watches").update({ status: "expired" }).eq("status", "active").lt("expires_at", now.toISOString());
+  const { data } = await db.from("agent_watches").select("*").eq("status", "active").lte("next_check_at", now.toISOString()).order("next_check_at").limit(25);
+  let n = 0;
+  for (const w of (data ?? []) as Watch[]) {
+    const tool = TOOL.get(w.tool_id);
+    if (!tool || tool.risk !== 0) { await db.from("agent_watches").update({ status: "failed", last_error: "Tool is no longer available as read-only." }).eq("id", w.id); continue; }
+    try {
+      const result = await invoke(w.user_id, w.workspace_id, tool, w.input ?? {});
+      const value = at(result, w.condition.path ?? "");
+      const fired = watchHolds(w.condition, value, w.last_value);
+      const checks = w.checks + 1;
+      const delay = Math.min(w.check_every_minutes * Math.pow(Number(w.backoff_factor), Math.min(checks, 12) - 1), 1440);
+      if (fired) {
+        await db.from("agent_watches").update({ status: "triggered", triggered_at: now.toISOString(), last_value: value ?? null, last_checked_at: now.toISOString(), checks }).eq("id", w.id);
+        await db.from("notifications").insert({ user_id: w.user_id, kind: "agent", title: `Watch triggered: ${w.title}`.slice(0, 160), body: `Condition met (${w.condition.path} ${w.condition.op}${w.condition.value !== undefined ? ` ${JSON.stringify(w.condition.value)}` : ""}). Current value: ${String(JSON.stringify(value) ?? "").slice(0, 200)}`, link: "/organizer/agent" });
+        await db.from("audit_events").insert({ actor_id: w.user_id, actor_type: "agent", workspace_id: w.workspace_id, event: "agent.watch_triggered", metadata: { watch_id: w.id } });
+      } else {
+        await db.from("agent_watches").update({ checks, last_value: value ?? null, last_checked_at: now.toISOString(), last_error: null,
+          status: checks >= w.max_checks ? "expired" : "active", next_check_at: new Date(now.getTime() + delay * 60_000).toISOString() }).eq("id", w.id);
+      }
+      n++;
+    } catch (e) {
+      await db.from("agent_watches").update({ last_error: (e as Error).message.slice(0, 200), next_check_at: new Date(now.getTime() + Math.min(w.check_every_minutes * 4, 1440) * 60_000).toISOString() }).eq("id", w.id);
+    }
+  }
+  return n;
 }

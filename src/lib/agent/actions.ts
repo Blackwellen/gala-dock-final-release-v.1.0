@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { rateLimit } from "@/lib/security";
-import { ask, applyApproval, compileRoutine, nextCron } from "./runtime";
+import { ask, applyApproval, compileRoutine, nextCron, FAR_FUTURE } from "./runtime";
 import { TOOL } from "./registry";
 
 // Gala Agent UI actions (§5, §10–13). Seat = the workspace the person is acting in; membership is re-checked server-side.
@@ -104,9 +104,10 @@ export async function saveRoutine(workspaceId: string, text: string): Promise<R>
   const s = await seat(workspaceId, ["owner", "manager"]); if (!s) return { ok: false, error: "Only owners and managers can create routines." };
   const c = await compileRoutine(s.kind, text, { workspaceId, userId: s.user.id });
   if (!c.ok) return c;
-  const next = nextCron(c.compiled.trigger.cron, new Date());
+  const t = c.compiled.trigger;
+  const next = t.type === "event" ? new Date(FAR_FUTURE) : nextCron(t.cron, new Date());
   const { error } = await untyped(createAdminClient() as never).from("agent_routines").insert({ workspace_id: workspaceId, owner_id: s.user.id, title: c.compiled.title, detail: c.compiled.goal,
-    schedule: c.compiled.trigger.cron, trigger: c.compiled.trigger, actions: c.compiled.actions, limits: c.compiled.limits, compiled_at: new Date().toISOString(), enabled: true, next_run_at: next?.toISOString(), approval_policy: "policy" });
+    schedule: t.type === "event" ? `on ${t.event}` : t.cron, trigger: t, actions: c.compiled.actions, limits: c.compiled.limits, compiled_at: new Date().toISOString(), enabled: true, next_run_at: next?.toISOString(), approval_policy: "policy" });
   if (error) return { ok: false, error: "Couldn’t save the routine." };
   bump(); return { ok: true };
 }
@@ -138,4 +139,34 @@ export async function savePolicy(workspaceId: string, p: { mode: string; allowed
   if (error) return { ok: false, error: "Couldn’t save the policy." };
   await untyped(createAdminClient() as never).from("audit_events").insert({ actor_id: s.user.id, actor_type: "user", workspace_id: workspaceId, event: "agent.policy_changed", metadata: { mode: p.mode } });
   bump(); return { ok: true };
+}
+
+/** Watch (§12 E): fire when a read-only tool's value meets a condition. No model calls while waiting. */
+export async function createWatch(workspaceId: string, w: { title: string; tool: string; input: Record<string, unknown>; path: string; op: string; value?: unknown; everyMinutes: number; expiresInDays: number }): Promise<R<string>> {
+  const s = await seat(workspaceId); if (!s) return { ok: false, error: "You don’t have access to this workspace." };
+  const t = TOOL.get(w.tool); if (!t || t.risk !== 0) return { ok: false, error: "Watches can only use read-only tools." };
+  const parsed = t.input.safeParse(w.input ?? {}); if (!parsed.success) return { ok: false, error: "Those tool inputs aren’t valid." };
+  const sb = await createClient();
+  const { data, error } = await sb.rpc("create_agent_watch" as never, { p_workspace: workspaceId, p_title: w.title, p_tool: w.tool, p_input: parsed.data, p_condition: { path: w.path, op: w.op, value: w.value },
+    p_every: w.everyMinutes, p_expires: new Date(Date.now() + Math.min(Math.max(w.expiresInDays, 1), 90) * 864e5).toISOString() } as never);
+  if (error) return { ok: false, error: /limit_reached/.test(error.message) ? "This workspace already has 50 active watches." : /invalid_condition/.test(error.message) ? "Choose a valid condition." : "Couldn’t create the watch." };
+  bump(); return { ok: true, data: data as unknown as string };
+}
+
+/** Batch mission (§12 H): one read, draft or low-risk tool across many records. Previewed (awaiting confirmation) before anything runs;
+ *  per-record steps then run under the normal approval rules; pause/resume via the run controls; partial success is reported per record. */
+export async function startBatch(workspaceId: string, title: string, tool: string, inputs: Record<string, unknown>[]): Promise<R<string>> {
+  const s = await seat(workspaceId); if (!s) return { ok: false, error: "You don’t have access to this workspace." };
+  const t = TOOL.get(tool); if (!t || t.risk > 2) return { ok: false, error: "Batches can use read, draft or low-risk internal tools only." };
+  if (!inputs.length || inputs.length > 200) return { ok: false, error: "A batch needs between 1 and 200 records." };
+  const bad = inputs.findIndex(i => !t.input.safeParse(i).success); if (bad >= 0) return { ok: false, error: `Record ${bad + 1} has invalid inputs.` };
+  const db = untyped(createAdminClient() as never);
+  const { data: run, error } = await db.from("agent_runs").insert({ workspace_id: workspaceId, user_id: s.user.id, surface: s.kind, mode: "mission", run_type: "batch", goal: title.slice(0, 2000), status: "queued",
+    idempotency_key: createHash("sha256").update(`${s.user.id}:batch:${tool}:${JSON.stringify(inputs)}:${Math.floor(Date.now() / 60000)}`).digest("hex"), plan: [], triggered_by: "user", batch: { tool, count: inputs.length } }).select("id").single();
+  if (error || !run) return { ok: false, error: "Couldn’t start the batch." };
+  const { error: se } = await db.from("agent_run_steps").insert(inputs.map((input, i) => ({ run_id: run.id, seq: i + 1, tool_id: tool, input, reason: `Record ${i + 1} of ${inputs.length}`, idempotency_key: `${run.id}:${i + 1}` })));
+  if (se) return { ok: false, error: "Couldn’t create the batch steps." };
+  await db.from("agent_runs").update({ status: "planning" }).eq("id", run.id);
+  await db.from("agent_runs").update({ status: "awaiting_plan_confirmation", interpretation: { summary: `${t.title} for ${inputs.length} records`, scope: [tool] } }).eq("id", run.id);
+  bump(); return { ok: true, data: run.id };
 }
