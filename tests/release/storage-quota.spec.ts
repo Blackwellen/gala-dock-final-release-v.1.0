@@ -38,6 +38,12 @@ test.describe("storage quotas", () => {
     expect(((await c.rpc("my_storage_usage", { p_workspace: ws })).data as { files: number }).files).toBe(0);
     const p3 = `${ws}/q3-${Date.now()}.png`;
     expect((await c.storage.from("event-media").upload(p3, png(1500), { contentType: "image/png" })).error).toBeNull(); uploaded.push(p3);
+    // Outsiders can't read another workspace's (or person's) usage.
+    const stranger = await signedIn((await createUser("quota-x")).email) as unknown as SupabaseClient;
+    expect((await stranger.rpc("storage_usage", { p_workspace: ws, p_user: null })).error?.message).toMatch(/forbidden/);
+    expect((await stranger.rpc("storage_usage", { p_workspace: null, p_user: u.id })).error?.message).toMatch(/forbidden/);
+    expect((await stranger.rpc("my_storage_usage", { p_workspace: ws })).error).not.toBeNull();
+    expect((await c.rpc("storage_usage", { p_workspace: ws, p_user: null })).error).toBeNull();   // members still can
     // Owners were warned when crossing 80% / 100%.
     const { data: n } = await db.from("notifications").select("title").eq("user_id", u.id).like("title", "Storage %");
     expect((n ?? []).length).toBeGreaterThan(0);

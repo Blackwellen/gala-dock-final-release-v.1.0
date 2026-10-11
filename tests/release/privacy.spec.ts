@@ -25,6 +25,9 @@ test.describe("privacy", () => {
     const ws = await seedWorkspace(owner.id, "organizer", "Del Org");
     await db.from("workspace_members").insert({ workspace_id: ws, user_id: colleague.id, role: "member", status: "active" });
     const blockers = (await db.rpc("deletion_blockers", { p_user: owner.id })).data as { code: string }[];
+    // Another signed-in user can't inspect someone else's blockers (workspace names, dispute refs).
+    const nosy = await signedIn(colleague.email) as unknown as SupabaseClient;
+    expect((await nosy.rpc("deletion_blockers", { p_user: owner.id })).error?.message).toMatch(/forbidden/);
     expect(blockers.map(b => b.code)).toContain("workspace_owner");
     // A plain customer past the grace period is erased.
     await db.from("saved_items").insert({ user_id: member.id, item_key: "listing:x" });

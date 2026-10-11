@@ -87,6 +87,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | §66–69 Viewport, wrap, zoom, touch | PASS_WITH_NOTE | 79/79 routes at 390 px pass; desktop visual regression bands maintained by sessions -22/0b. 200%/400% zoom checks not separately automated. |
 | §70 WCAG | PASS_WITH_NOTE | Keyboard/focus/labels on new UI; accessibility statement drafted with known issues (canvas editors, charts). Full WCAG 2.2 AA audit not yet performed. |
 | §71 Security testing | PASS | RLS on every table; definer functions guard with explicit permission checks. **Two security defects found and fixed this run:** (1) `design_access()` returned NULL for non-members and `NULL NOT IN (...)` let **any signed-in user save over another workspace's design** — fixed with `coalesce` in all three guards and covered by test; (2) personal private design templates were readable by everyone — fixed policy + `template_usable()`. Hash/secret columns (API keys, webhook secrets) are excluded by column grants. Webhook targets are SSRF-guarded at creation and per delivery. |
+| Definer-function grant audit | FIXED | Supabase's default privileges grant EXECUTE on new functions to `authenticated`, so `revoke … from public, anon` isn't enough. Found and fixed: `storage_usage` readable for any workspace/user (reported by session -22), `deletion_blockers(p_user)` revealed another user's workspace names and dispute refs, and internal helpers (`storage_owner_of`, `queue_admit_check`, `entitlement`, `has_capability`) were client-callable. All now guarded or service-only; regression tests in `privacy.spec.ts` and `storage-quota.spec.ts`. |
 | §72 Rate limits | PASS | Per-user/IP limits on auth recovery, uploads, exports, agent, queue, API keys (120/min), MCP. |
 | §73 Bot & abuse | BLOCKED_EXTERNAL_CONFIGURATION | Rate limits + waiting room + purchase limits exist; **no CAPTCHA/Turnstile** (needs a site key) on sign-up/checkout. |
 | §74 File malware | BLOCKED_EXTERNAL_CONFIGURATION | Uploads are magic-byte sniffed (PNG/JPEG/WebP/PDF only), size-capped, private by default, served via short signed URLs. No AV scanning service is configured. |
@@ -220,6 +221,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270018 | Guided tour progress (`user_tours`) |
 | 202610270019 | Demo workspaces: create / reset / delete |
 | 202610270020 | Storage attribution, quota enforcement trigger, usage + warnings |
+| 202610270021–0022 | Security: guarded `storage_usage`, `deletion_blockers`; internal helpers made service-only |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)
