@@ -4,22 +4,22 @@ import { useState } from "react";
 import { ChevronDown, ExternalLink, Share2, MoreHorizontal, Pencil, Copy, Trash2, Radio, LayoutTemplate, Archive, Check, Plus, X } from "lucide-react";
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { setEventStatus, updateEventBasics, addProgrammeItem, deleteProgrammeItem, addTask, toggleTask, reportIncident, resolveIncident, setRunSheetStatus, transitionItem, confirmVenueOffPlatform, savePublicPageSettings } from "@/lib/actions/event-profile";
-import { duplicateEvent, archiveEvent } from "@/lib/actions/events";
+import { duplicateEvent, archiveEvent, cancelEvent } from "@/lib/actions/events";
 
 const LABEL: Record<string, string> = { draft: "Draft", planning: "Planning", ready: "Ready", published: "Published", on_sale: "On sale", live: "Live", completed: "Completed", closed: "Closed", archived: "Archived", cancelled: "Cancelled", postponed: "Postponed", suspended: "Suspended" };
 const NEXT: Record<string, string[]> = { draft: ["planning"], planning: ["ready", "postponed", "cancelled"], ready: ["published", "planning", "postponed", "cancelled"], published: ["on_sale", "postponed", "cancelled"], on_sale: ["live", "published", "postponed", "suspended", "cancelled"], live: ["completed", "suspended"], suspended: ["on_sale", "live", "cancelled"], postponed: ["planning", "cancelled"], completed: ["closed"], closed: ["archived"], cancelled: ["archived"], archived: [] };
 
 export function StatusMenu({ id, status }: { id: string; status: string }) {
-  const { run, pending } = useAction(); const [confirm, setConfirm] = useState<string | null>(null);
+  const { run, pending } = useAction(); const [confirm, setConfirm] = useState<string | null>(null); const [reason, setReason] = useState("");
   const tone = ["live", "on_sale", "published", "ready", "completed"].includes(status) ? "green" : ["cancelled", "suspended"].includes(status) ? "red" : status === "draft" ? "gray" : "blue";
   return <>
     <Menu label="Change event status" width={230} trigger={({ toggle, open, id: mid }) => <div className={`eh-status ${tone}`}><span>{LABEL[status] ?? status}</span><button onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="Change status"><ChevronDown size={16} /></button></div>}>
       {close => <><div className="k-xs k-muted" style={{ padding: "6px 10px" }}>Move event to…</div>
         {(NEXT[status] ?? []).length ? NEXT[status]!.map(s => <button key={s} role="menuitem" className={`k-menu-item ${["cancelled", "suspended"].includes(s) ? "k-red" : ""}`} disabled={pending} onClick={() => { close(); if (["cancelled", "suspended", "postponed", "completed"].includes(s)) setConfirm(s); else void run(() => setEventStatus(id, s)); }}>{LABEL[s]}</button>) : <p className="k-small" style={{ padding: 10 }}>No further status changes.</p>}</>}
     </Menu>
-    <Dialog open={!!confirm} onClose={() => setConfirm(null)} title={`Mark event as ${confirm ? LABEL[confirm]?.toLowerCase() : ""}?`} sub={confirm === "cancelled" ? "Cancellation is permanent. Ticket holders must be refunded first, and confirmed supplier bookings keep their cancellation terms." : confirm === "completed" ? "Completing closes check-in and opens settlement." : "Ticket holders and suppliers will see the updated status."}
-      footer={<><button className="k-btn ghost" onClick={() => setConfirm(null)}>Keep current status</button><button className={`k-btn ${confirm === "completed" ? "primary" : "danger"}`} disabled={pending} onClick={async () => { const r = await run(() => setEventStatus(id, confirm!)); if (r.ok) setConfirm(null); }}>Confirm</button></>}>
-      <span />
+    <Dialog open={!!confirm} onClose={() => setConfirm(null)} title={`Mark event as ${confirm ? LABEL[confirm]?.toLowerCase() : ""}?`} sub={confirm === "cancelled" ? "Cancellation is permanent. Every ticket is voided and each buyer is refunded in full, including fees, automatically. Confirmed supplier bookings keep their own cancellation terms." : confirm === "completed" ? "Completing closes check-in and opens settlement." : "Ticket holders and suppliers will see the updated status."}
+      footer={<><button className="k-btn ghost" onClick={() => setConfirm(null)}>Keep current status</button><button className={`k-btn ${confirm === "completed" ? "primary" : "danger"}`} disabled={pending || (confirm === "cancelled" && reason.trim().length < 10)} onClick={async () => { const r = await run(() => confirm === "cancelled" ? cancelEvent(id, reason) : setEventStatus(id, confirm!), { refresh: true }); if (r.ok) { setConfirm(null); setReason(""); } }}>Confirm</button></>}>
+      {confirm === "cancelled" ? <label className="k-col" style={{ gap: 6 }}><span className="k-small">Message to attendees: why the event is cancelled</span><textarea className="k-input" rows={3} maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} style={{ height: "auto" }} /></label> : <span />}
     </Dialog>
   </>;
 }

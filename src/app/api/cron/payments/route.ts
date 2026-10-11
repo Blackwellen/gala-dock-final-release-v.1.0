@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { processPayments } from "@/lib/commerce/orchestrator";
+import { processTicketRefunds } from "@/lib/commerce/ticket-refunds";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const maxDuration = 60;
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
   const { data: lvl } = await createAdminClient().rpc("maintenance_level" as never, { p_module: "payments" } as never);
   if (Number(lvl ?? 0) >= 4) return NextResponse.json({ paused: `maintenance M${lvl}` }, { headers: { "Cache-Control": "no-store" } });
   const result = await processPayments();
-  return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
+  const tickets = await processTicketRefunds();
+  return NextResponse.json({ ...result, ticket_refunds: tickets }, { headers: { "Cache-Control": "no-store" } });
 }
 export const GET = POST;

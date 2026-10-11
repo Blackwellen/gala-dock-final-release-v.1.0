@@ -44,6 +44,20 @@ export async function archiveEvent(eventId: string): Promise<ActionResult> {
   return { ok: true, message: `${e.name} archived.` };
 }
 
+/** Cancel an event (owners/managers): voids tickets, queues full refunds incl. fees, notifies buyers. Irreversible. */
+export async function cancelEvent(eventId: string, reason: string): Promise<ActionResult> {
+  const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
+  if (reason.trim().length < 10) return { ok: false, error: "Tell attendees why the event is cancelled (at least 10 characters)." };
+  const ctx = await getOrganizer();
+  const { data: e } = await ctx.supabase.from("events").select("id,name").eq("id", id.data).eq("workspace_id", ctx.workspace.id).maybeSingle();
+  if (!e) return { ok: false, error: "Event not found in this workspace." };
+  const { data, error } = await ctx.supabase.rpc("cancel_event_with_refunds" as never, { p_event: e.id, p_reason: reason } as never);
+  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can cancel events." : /already_happened|invalid_state/.test(error.message) ? "This event can’t be cancelled in its current state." : "Could not cancel the event." };
+  const r = data as unknown as { orders_to_refund: number; tickets_voided: number };
+  revalidatePath("/organizer/events"); revalidatePath(`/organizer/events/${e.id}`);
+  return { ok: true, message: `${e.name} cancelled. ${r.tickets_voided} ticket${r.tickets_voided === 1 ? "" : "s"} voided; ${r.orders_to_refund} order${r.orders_to_refund === 1 ? "" : "s"} will be refunded in full and buyers have been told.` };
+}
+
 /** Consumer event duplicate (Customer App). */
 export async function duplicateMyEvent(eventId: string): Promise<ActionResult> {
   const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };

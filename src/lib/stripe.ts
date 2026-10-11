@@ -5,12 +5,12 @@ export function stripeKey() {
   return process.env.STRIPE_CONNECT_SECRET_KEY || (process.env.NODE_ENV !== "production" ? process.env.STRIPE_SECRET_KEY_SANDBOX : undefined);
 }
 
-export async function stripe<T = Record<string, unknown>>(path: string, params?: Record<string, string>) {
+export async function stripe<T = Record<string, unknown>>(path: string, params?: Record<string, string>, opts: { idempotencyKey?: string } = {}) {
   const key = stripeKey();
   if (!key) throw new Error("stripe_not_configured");
   const response = await fetch(`https://api.stripe.com/v1/${path}`, {
     method: params ? "POST" : "GET",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/x-www-form-urlencoded" },
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/x-www-form-urlencoded", ...(opts.idempotencyKey ? { "Idempotency-Key": opts.idempotencyKey } : {}) },
     body: params ? new URLSearchParams(params) : undefined,
     signal: AbortSignal.timeout(20_000),
   });
