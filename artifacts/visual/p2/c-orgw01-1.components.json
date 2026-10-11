@@ -1,0 +1,52 @@
+{
+ "name": "c-orgw01-1",
+ "path": "/organizer/events/new?step=1",
+ "page": 17.11,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Live preview",
+   "x": 1058,
+   "y": 236,
+   "w": 460,
+   "h": 329,
+   "mismatch": 60.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event Basics",
+   "x": 236,
+   "y": 236,
+   "w": 808,
+   "h": 699,
+   "mismatch": 18.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Gala Agent",
+   "x": 1058,
+   "y": 579,
+   "w": 460,
+   "h": 265,
+   "mismatch": 11.5
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

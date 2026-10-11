@@ -15,6 +15,8 @@ import "@/styles/org-team.css";
 import "@/styles/org-money.css";
 import "@/styles/org-invoice-wizard.css";
 import "@/styles/org-settings.css";
+import "@/styles/org-agent.css";
+import "@/styles/org-create-event.css";
 import { KitProviders } from "@/components/kit/client";
 import { OrganizerShell } from "@/components/organizer/shell";
 import { getOrganizer } from "@/lib/data/context";

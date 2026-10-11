@@ -3,8 +3,8 @@
   "url": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
   "file": "Designs/Admin Workspace/Gala Dock User Profile Dashboard.png",
   "status": 200,
-  "mismatchPercent": 11.28,
-  "ssim": 0.6406,
+  "mismatchPercent": 11.27,
+  "ssim": 0.64,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1041
   },
   "errors": [],
-  "at": "2026-10-11T08:59:06.658Z"
+  "at": "2026-10-11T09:05:27.450Z"
 }

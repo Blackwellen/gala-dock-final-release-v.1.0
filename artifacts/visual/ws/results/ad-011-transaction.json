@@ -3,8 +3,8 @@
   "url": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
   "file": "Designs/Admin Workspace/Gala Dock Transaction Overview Dashboard.png",
   "status": 200,
-  "mismatchPercent": 11.5,
-  "ssim": 0.6402,
+  "mismatchPercent": 11.51,
+  "ssim": 0.6401,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1024
   },
   "errors": [],
-  "at": "2026-10-11T08:56:00.719Z"
+  "at": "2026-10-11T09:06:18.546Z"
 }

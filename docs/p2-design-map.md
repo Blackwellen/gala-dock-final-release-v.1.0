@@ -47,9 +47,9 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | ORG-017 Team profile | Gala·Dock Team Profile Dashboard | /organizer/team/[id] | ✅ |
 | ORG-018 Money | Gala Dock Event Finance Dashboard | /organizer/money | ✅ |
 | ORG-019 Invoice | Gala Dock Invoice Dashboard | /organizer/money/invoices/[id] | ✅ (+ public /pay/[token]) |
-| ORG-020 Gala Agent | Gala Agent Event Operations Dashboard | /organizer/agent | ⬜ |
+| ORG-020 Gala Agent | Gala Agent Event Operations Dashboard | /organizer/agent | ✅ |
 | ORG-021 Settings | Gala Dock Workspace Settings Dashboard | /organizer/settings | ✅ |
-| W01 Create event (4) | Modern Event Creation Wizard · GalaDock Event Creation · Gala Dock Event Economics · Gala·Dock Event Setup | /organizer/events/new?step=1..4 | ⬜ |
+| W01 Create event (4) | Modern Event Creation Wizard · GalaDock Event Creation · Gala Dock Event Economics · Gala·Dock Event Setup | /organizer/events/new?step=1..4 | ✅ |
 | W02 Proposal (3) | Gala Dock Proposal · SaaS Proposal Builder · Proposal Review | /organizer/proposals/new | ✅ |
 | W03 Ticket setup (3) | GalaDock/Neon Ticket Setup (tiers) · Gala·Dock Ticket Setup (venue & capacity) · Gala Dock Ticket Setup / Neon (1) (rules & publish) | /organizer/events/[id]/tickets/setup | 🔨 functional (shared wizard); pro 5-step table layout pending |
 | W04 Marketplace request (2) | Create Marketplace Request (×2), Neon Supplier Marketplace (×2) | /organizer/marketplace/requests/new | ✅ |

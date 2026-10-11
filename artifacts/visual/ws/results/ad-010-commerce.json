@@ -3,8 +3,8 @@
   "url": "/admin/commerce",
   "file": "Designs/Admin Workspace/Commerce Operations Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.99,
-  "ssim": 0.6245,
+  "mismatchPercent": 13.02,
+  "ssim": 0.6236,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1054
   },
   "errors": [],
-  "at": "2026-10-11T08:58:34.774Z"
+  "at": "2026-10-11T09:06:13.349Z"
 }

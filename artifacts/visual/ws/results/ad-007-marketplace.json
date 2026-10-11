@@ -3,8 +3,8 @@
   "url": "/admin/marketplace",
   "file": "Designs/Admin Workspace/Gala Dock Marketplace Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.78,
-  "ssim": 0.604,
+  "mismatchPercent": 12.79,
+  "ssim": 0.6013,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1065
   },
   "errors": [],
-  "at": "2026-10-11T08:59:39.534Z"
+  "at": "2026-10-11T09:05:56.430Z"
 }

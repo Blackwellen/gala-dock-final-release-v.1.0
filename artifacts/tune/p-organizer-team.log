@@ -1,0 +1,8 @@
+baseline 11.996%
+  11.989%  .onboarding-page.setup-organizer-team .form-main .setup-panel { padding-left: 12px }
+  11.977%  .onboarding-page.setup-organizer-team .form-main .setup-panel>h3 { margin-bottom: 8px }
+  11.966%  .onboarding-page.setup-organizer-team .form-main .setup-panel>h3 { margin-bottom: 10px }
+  11.937%  .onboarding-page.setup-organizer-team .form-main hr { margin: 6px 0 }
+  11.854%  .onboarding-page.setup-organizer-team .setup-story .setup-steps { margin-bottom: 21px }
+  11.823%  .onboarding-page.setup-organizer-team .setup-story .setup-steps { margin-bottom: 24px }
+final 11.823%

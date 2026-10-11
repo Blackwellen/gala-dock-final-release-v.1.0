@@ -1,0 +1,5 @@
+baseline 12.032%
+  12.013%  .onboarding-page.setup-provider-publish .setup-progress-row { margin-bottom: 20px }
+  11.998%  .onboarding-page.setup-provider-publish .setup-story .setup-steps { margin-bottom: 21px }
+  11.803%  .onboarding-page.setup-provider-publish .setup-assistant>.setup-panel { margin-bottom: 6px }
+final 11.803%

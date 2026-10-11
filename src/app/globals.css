@@ -1176,3 +1176,41 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* tuned onboarding: preferences */
 
+
+/* tuned onboarding r2: provider-business */
+.onboarding-page.setup-provider-business .form-main .setup-panel>h3{font-size:18.0px!important}
+.onboarding-page.setup-provider-business .setup-actions{margin-top:4px!important}
+
+/* tuned onboarding r2: organizer-events */
+.onboarding-page.setup-organizer-events .setup-actions{margin-top:16px!important}
+.onboarding-page.setup-organizer-events .setup-assistant>.setup-panel{margin-bottom:6px!important}
+
+/* tuned onboarding r2: organizer-brand */
+.onboarding-page.setup-organizer-brand .form-main .setup-panel{padding-left:18px!important}
+.onboarding-page.setup-organizer-brand .form-main .setup-panel>h3{font-size:15.5px!important}
+.onboarding-page.setup-organizer-brand .form-main .setup-panel>h3{margin-bottom:2px!important}
+.onboarding-page.setup-organizer-brand .form-main hr{margin:22px 0!important}
+.onboarding-page.setup-organizer-brand .setup-story .setup-steps{margin-bottom:24px!important}
+.onboarding-page.setup-organizer-brand .setup-assistant>.setup-panel{margin-bottom:20px!important}
+
+/* tuned onboarding r2: provider-listing */
+.onboarding-page.setup-provider-listing .form-main .setup-panel{padding-left:24px!important}
+
+/* tuned onboarding r2: provider-publish */
+.onboarding-page.setup-provider-publish .setup-progress-row{margin-bottom:20px!important}
+.onboarding-page.setup-provider-publish .setup-story .setup-steps{margin-bottom:21px!important}
+.onboarding-page.setup-provider-publish .setup-assistant>.setup-panel{margin-bottom:6px!important}
+
+/* tuned onboarding r2: organizer-team */
+.onboarding-page.setup-organizer-team .form-main .setup-panel{padding-left:12px!important}
+.onboarding-page.setup-organizer-team .form-main .setup-panel>h3{margin-bottom:10px!important}
+.onboarding-page.setup-organizer-team .form-main hr{margin:6px 0!important}
+.onboarding-page.setup-organizer-team .setup-story .setup-steps{margin-bottom:24px!important}
+
+/* tuned onboarding r2: provider-rules */
+.onboarding-page.setup-provider-rules .form-main .setup-panel{padding-left:12px!important}
+.onboarding-page.setup-provider-rules .form-main .setup-panel{padding-right:10px!important}
+.onboarding-page.setup-provider-rules .form-main .setup-panel>p.muted{font-size:11.5px!important}
+
+/* tuned onboarding r2: experience */
+

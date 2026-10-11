@@ -1,0 +1,79 @@
+{
+ "name": "c-org-020",
+ "path": "/organizer/agent",
+ "page": 11.89,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Approvals (3)",
+   "x": 884,
+   "y": 611,
+   "w": 634,
+   "h": 344,
+   "mismatch": 21.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Active work (6)",
+   "x": 236,
+   "y": 611,
+   "w": 634,
+   "h": 413,
+   "mismatch": 16.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Tell Gala Agent what you want to achieve",
+   "x": 236,
+   "y": 283,
+   "w": 761,
+   "h": 316,
+   "mismatch": 11.3
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11
+  },
+  {
+   "sel": ".k-card",
+   "label": "Suggested actions",
+   "x": 1011,
+   "y": 283,
+   "w": 507,
+   "h": 316,
+   "mismatch": 10.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "£0.00 / £100",
+   "x": 1078,
+   "y": 158,
+   "w": 440,
+   "h": 62,
+   "mismatch": 8.9
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 232,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 8.5
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

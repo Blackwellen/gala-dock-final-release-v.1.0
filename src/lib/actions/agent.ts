@@ -30,7 +30,7 @@ export async function startRun(input: unknown): Promise<ActionResult<{ id: strin
   }
   if (!plan.length) plan = [{ title: "Review the goal and current records" }, { title: "Draft the plan and owners" }, { title: "Request approval for any external action" }];
   const admin = createAdminClient();
-  const { data, error } = await admin.from("agent_runs").insert({ user_id: ctx.user.id, workspace_id: ctx.workspace.id, event_id: p.data.event_id, goal: p.data.goal, scope: p.data.scope, plan: plan as unknown as Json, status: "waiting", progress: 10, current_step: 1, run_type: "plan", surface: "organizer", triggered_by: "user", agent_name: "Gala Agent", waiting_reason: "Review the proposed plan" }).select("id").single();
+  const { data, error } = await admin.from("agent_runs").insert({ user_id: ctx.user.id, workspace_id: ctx.workspace.id, event_id: p.data.event_id, goal: p.data.goal, scope: p.data.scope, plan: plan as unknown as Json, status: "waiting_approval", progress: 10, current_step: 1, run_type: "plan", surface: "organizer", triggered_by: "user", agent_name: "Gala Agent", waiting_reason: "Review the proposed plan" }).select("id").single();
   if (error || !data) return { ok: false, error: "Could not start the run." };
   revalidatePath("/organizer/agent"); return { ok: true, message: agentConfigured() ? `Plan drafted with ${plan.length} steps.` : "Run created (AI planning isn't configured here).", data: { id: data.id } };
 }

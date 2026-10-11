@@ -67,7 +67,7 @@
 .aa-chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:5px;font-size:10.5px;font-weight:500;white-space:nowrap;background:#eaf1fe;color:#1846e8}
 .aa-chip.purple{background:#f1eafe;color:#6a22e0}.aa-chip.pink{background:#fde8f1;color:#d0246e}.aa-chip.green{background:#e3f8ee;color:#118152}
 .aa-chip.amber{background:#fff3e0;color:#d77400}.aa-chip.red{background:#fdecef;color:#e3213d}.aa-chip.grey{background:#f0f2f8;color:#3f4596}.aa-chip.teal{background:#dff6f2;color:#0d8173}
-.aa-status{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:5px;font-size:10.5px;font-weight:500;white-space:nowrap}
+.aa-status{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:5px;font-size:10.5px;font-weight:500;white-space:nowrap;width:auto}
 .aa-status.dot::before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor;flex-shrink:0;
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='6'/%3E%3C/svg%3E");}
 .aa-status.green{background:#e3f8ee;color:#0f8a4e}

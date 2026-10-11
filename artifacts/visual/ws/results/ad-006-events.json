@@ -4,7 +4,7 @@
   "file": "Designs/Admin Workspace/GalaDock Events Admin Dashboard.png",
   "status": 200,
   "mismatchPercent": 13.62,
-  "ssim": 0.5745,
+  "ssim": 0.5744,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1031
   },
   "errors": [],
-  "at": "2026-10-11T08:59:34.297Z"
+  "at": "2026-10-11T09:05:50.954Z"
 }

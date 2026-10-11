@@ -1,0 +1,249 @@
+{
+ "url": "/preview/onboarding/provider?step=3",
+ "ref": "Designs/auth & onboarding/Gala-Dock Provider Setup Dashboard.png",
+ "width": 1536,
+ "height": 1024,
+ "left": 0,
+ "rounds": 1,
+ "params": [
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel",
+   "prop": "padding-left",
+   "values": [
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel",
+   "prop": "padding-right",
+   "values": [
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel>h3",
+   "prop": "font-size",
+   "values": [
+    "14.0px",
+    "14.5px",
+    "15.0px",
+    "15.5px",
+    "16.0px",
+    "16.5px",
+    "17.0px",
+    "17.5px",
+    "18.0px",
+    "18.5px",
+    "19.0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel>h3",
+   "prop": "margin-bottom",
+   "values": [
+    "0px",
+    "2px",
+    "4px",
+    "6px",
+    "8px",
+    "10px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel>p.muted",
+   "prop": "font-size",
+   "values": [
+    "11.5px",
+    "12.0px",
+    "12.5px",
+    "13.0px",
+    "13.5px",
+    "14.0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .setup-panel>p.muted",
+   "prop": "margin-bottom",
+   "values": [
+    "2px",
+    "4px",
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .input-wrap input, .onboarding-page.setup-provider-rules .form-main .select-wrap select",
+   "prop": "height",
+   "values": [
+    "34px",
+    "36px",
+    "38px",
+    "40px",
+    "42px",
+    "44px",
+    "46px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .choice>span",
+   "prop": "min-height",
+   "values": [
+    "34px",
+    "38px",
+    "42px",
+    "46px",
+    "50px",
+    "54px",
+    "58px",
+    "62px",
+    "66px",
+    "70px",
+    "74px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .choice-group",
+   "prop": "gap",
+   "values": [
+    "4px",
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .two-columns",
+   "prop": "row-gap",
+   "values": [
+    "4px",
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main .two-columns",
+   "prop": "column-gap",
+   "values": [
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .form-main hr",
+   "prop": "margin",
+   "values": [
+    "6px 0",
+    "10px 0",
+    "14px 0",
+    "18px 0",
+    "22px 0"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .setup-actions",
+   "prop": "margin-top",
+   "values": [
+    "4px",
+    "7px",
+    "10px",
+    "13px",
+    "16px",
+    "19px",
+    "22px",
+    "25px",
+    "28px",
+    "31px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .setup-progress-row",
+   "prop": "margin-bottom",
+   "values": [
+    "8px",
+    "11px",
+    "14px",
+    "17px",
+    "20px",
+    "23px",
+    "26px",
+    "29px",
+    "32px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .setup-story .setup-steps",
+   "prop": "margin-bottom",
+   "values": [
+    "6px",
+    "9px",
+    "12px",
+    "15px",
+    "18px",
+    "21px",
+    "24px",
+    "27px",
+    "30px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .setup-assistant>.setup-panel",
+   "prop": "margin-bottom",
+   "values": [
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-provider-rules .setup-assistant>.setup-panel",
+   "prop": "padding",
+   "values": [
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px"
+   ]
+  }
+ ]
+}

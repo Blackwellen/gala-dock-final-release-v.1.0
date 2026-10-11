@@ -1,0 +1,6 @@
+baseline 12.735%
+  12.594%  .onboarding-page.setup-provider-listing .form-main .setup-panel { padding-left: 18px }
+  12.409%  .onboarding-page.setup-provider-listing .form-main .setup-panel { padding-left: 20px }
+  12.211%  .onboarding-page.setup-provider-listing .form-main .setup-panel { padding-left: 22px }
+  12.169%  .onboarding-page.setup-provider-listing .form-main .setup-panel { padding-left: 24px }
+final 12.169%

@@ -1,0 +1,6 @@
+baseline 11.881%
+  11.870%  .onboarding-page.setup-provider-rules .form-main .setup-panel { padding-left: 10px }
+  11.845%  .onboarding-page.setup-provider-rules .form-main .setup-panel { padding-left: 12px }
+  11.806%  .onboarding-page.setup-provider-rules .form-main .setup-panel { padding-right: 10px }
+  11.783%  .onboarding-page.setup-provider-rules .form-main .setup-panel>p.muted { font-size: 11.5px }
+final 11.783%

@@ -1,0 +1,61 @@
+{
+ "name": "c-orgw01-3",
+ "path": "/organizer/events/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=3",
+ "page": 14.13,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Live preview",
+   "x": 1058,
+   "y": 236,
+   "w": 460,
+   "h": 329,
+   "mismatch": 59.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Financial summary",
+   "x": 1058,
+   "y": 579,
+   "w": 460,
+   "h": 144,
+   "mismatch": 11.5
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11
+  },
+  {
+   "sel": ".k-card",
+   "label": "Commercial Model",
+   "x": 236,
+   "y": 236,
+   "w": 808,
+   "h": 788,
+   "mismatch": 10.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Gala Agent",
+   "x": 1058,
+   "y": 736,
+   "w": 460,
+   "h": 194,
+   "mismatch": 9.4
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  }
+ ]
+}

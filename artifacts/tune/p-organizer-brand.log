@@ -1,0 +1,11 @@
+baseline 12.746%
+  12.736%  .onboarding-page.setup-organizer-brand .form-main .setup-panel { padding-left: 18px }
+  12.704%  .onboarding-page.setup-organizer-brand .form-main .setup-panel>h3 { font-size: 14.0px }
+  12.685%  .onboarding-page.setup-organizer-brand .form-main .setup-panel>h3 { font-size: 15.5px }
+  12.669%  .onboarding-page.setup-organizer-brand .form-main .setup-panel>h3 { margin-bottom: 2px }
+  12.620%  .onboarding-page.setup-organizer-brand .form-main hr { margin: 22px 0 }
+  12.549%  .onboarding-page.setup-organizer-brand .setup-story .setup-steps { margin-bottom: 21px }
+  12.492%  .onboarding-page.setup-organizer-brand .setup-story .setup-steps { margin-bottom: 24px }
+  12.484%  .onboarding-page.setup-organizer-brand .setup-assistant>.setup-panel { margin-bottom: 18px }
+  12.479%  .onboarding-page.setup-organizer-brand .setup-assistant>.setup-panel { margin-bottom: 20px }
+final 12.479%

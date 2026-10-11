@@ -5,17 +5,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-experience",
-    "mismatchPercent": 25.705,
-    "interfaceMismatchPercent": 14.974,
-    "ssimFull": 0.649,
-    "ssimInterface": 0.724,
+    "mismatchPercent": 11.766,
+    "interfaceMismatchPercent": 12.653,
+    "ssimFull": 0.7514,
+    "ssimInterface": 0.7141,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/organizer?step=1",
@@ -23,17 +21,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-business",
-    "mismatchPercent": 17.12,
-    "interfaceMismatchPercent": 8.538,
-    "ssimFull": 0.7017,
-    "ssimInterface": 0.7629,
+    "mismatchPercent": 8.069,
+    "interfaceMismatchPercent": 7.408,
+    "ssimFull": 0.7606,
+    "ssimInterface": 0.7439,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/organizer?step=2",
@@ -41,17 +37,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-events",
-    "mismatchPercent": 21.402,
-    "interfaceMismatchPercent": 15.38,
-    "ssimFull": 0.6395,
-    "ssimInterface": 0.6727,
+    "mismatchPercent": 12.736,
+    "interfaceMismatchPercent": 12.261,
+    "ssimFull": 0.6937,
+    "ssimInterface": 0.6635,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/organizer?step=3",
@@ -59,17 +53,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-brand",
-    "mismatchPercent": 18.344,
-    "interfaceMismatchPercent": 10.534,
-    "ssimFull": 0.679,
-    "ssimInterface": 0.7345,
+    "mismatchPercent": 12.485,
+    "interfaceMismatchPercent": 12.597,
+    "ssimFull": 0.6854,
+    "ssimInterface": 0.6649,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1144,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/organizer?step=4",
@@ -77,17 +69,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-team",
-    "mismatchPercent": 19.537,
-    "interfaceMismatchPercent": 11.076,
-    "ssimFull": 0.67,
-    "ssimInterface": 0.7217,
+    "mismatchPercent": 11.861,
+    "interfaceMismatchPercent": 12.79,
+    "ssimFull": 0.6832,
+    "ssimInterface": 0.6437,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1340,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/customer?step=1",
@@ -95,17 +85,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-preferences",
-    "mismatchPercent": 27.052,
-    "interfaceMismatchPercent": 13.854,
-    "ssimFull": 0.6722,
-    "ssimInterface": 0.7368,
+    "mismatchPercent": 10.027,
+    "interfaceMismatchPercent": 9.614,
+    "ssimFull": 0.7642,
+    "ssimInterface": 0.7443,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/provider?step=1",
@@ -113,17 +101,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-business",
-    "mismatchPercent": 21.97,
-    "interfaceMismatchPercent": 11.475,
-    "ssimFull": 0.6673,
-    "ssimInterface": 0.7292,
+    "mismatchPercent": 13.636,
+    "interfaceMismatchPercent": 14.746,
+    "ssimFull": 0.6954,
+    "ssimInterface": 0.6725,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/provider?step=2",
@@ -131,17 +117,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-listing",
-    "mismatchPercent": 22.827,
-    "interfaceMismatchPercent": 15.766,
-    "ssimFull": 0.6419,
-    "ssimInterface": 0.6844,
+    "mismatchPercent": 12.145,
+    "interfaceMismatchPercent": 13.397,
+    "ssimFull": 0.669,
+    "ssimInterface": 0.6184,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1034,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/provider?step=3",
@@ -149,17 +133,15 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-rules",
-    "mismatchPercent": 18.018,
-    "interfaceMismatchPercent": 10.184,
-    "ssimFull": 0.654,
-    "ssimInterface": 0.6999,
+    "mismatchPercent": 11.783,
+    "interfaceMismatchPercent": 11.984,
+    "ssimFull": 0.6679,
+    "ssimInterface": 0.6362,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1194,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   },
   {
     "url": "/preview/onboarding/provider?step=4",
@@ -167,16 +149,14 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-publish",
-    "mismatchPercent": 19.188,
-    "interfaceMismatchPercent": 12.594,
-    "ssimFull": 0.6598,
-    "ssimInterface": 0.7052,
+    "mismatchPercent": 11.986,
+    "interfaceMismatchPercent": 12.451,
+    "ssimFull": 0.6515,
+    "ssimInterface": 0.6064,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1031,
       "overflow": false
     },
-    "errors": [
-      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
-    ]
+    "errors": []
   }
 ]

@@ -28,7 +28,7 @@
 .adsu-table .adb-cell img{width:32px;height:30px}
 .adsu-ico{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;background:#f1e9ff;color:#8429f5;flex-shrink:0}
 .ws-app .adsu-ico svg{width:16px;height:16px}
-.adsu-table .adb-pill{height:22px;min-width:46px;justify-content:center;padding:0 6px}
+.adsu-table .adb-pill{height:22px;min-width:46px;justify-content:center;padding:0 5px;font-size:9.5px;letter-spacing:-.01em}
 .adsu-sla{line-height:1.3}
 .adsu-sla b{display:block;font-weight:500;color:#1d2068}
 .adsu-sla small{font-size:10px;color:#1d2068;white-space:nowrap}
@@ -98,8 +98,8 @@
 .adsu-qa h2{font-size:13.5px;margin-bottom:8px}
 .adsu-qa-g{display:grid;grid-template-columns:142fr 80fr 104fr;gap:8px}
 .adsu-qa-g .adb-btn,.adsu-qa-g .ws-btn{height:30px;font-size:11px;padding:0 8px;color:#1a1af2;border-color:#d6defa;width:100%}
-.adsu-qa-g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;margin-top:8px}
-.adsu-qa-g2 .ws-btn,.adsu-qa-g2 .adb-btn{height:30px;font-size:9.5px;padding:0 5px;gap:4px;width:100%;letter-spacing:-.02em}
+.adsu-qa-g2{display:grid;grid-template-columns:minmax(0,162fr) minmax(0,144fr) 30px;gap:6px;margin-top:8px}
+.adsu-qa-g2 .ws-btn,.adsu-qa-g2 .adb-btn{height:30px;font-size:9px;padding:0 4px;gap:3px;width:100%;min-width:0;letter-spacing:-.03em;overflow:hidden}
 .ws-app .adsu-qa-g2 svg{width:13px!important;height:13px!important}
 .adsu-refund{background:#eef3ff!important;color:#1a1af2!important;border-color:#c9d6fb!important}
 .adsu-find{background:#fff6e8!important;color:#d86d00!important;border-color:#f7d9a8!important}

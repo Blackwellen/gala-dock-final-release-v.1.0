@@ -100,7 +100,7 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
           <Kpi icon={BadgeCheck} tone="green" label="Resolved (7d)" value={resolved7.length} delta={delta(resolved7.length, resolvedPrev.length)} suffix="vs last 7 days" series={series(resolved7, c => c.resolved_at ?? c.created_at)} />
         </section>
         <div className="adb-table-wrap"><table className="adb-table adsu-table">
-          <colgroup>{[34, 62, 100, 62, 128, 150, 52, 54, 64, 56, 72, 36].map((w, i) => <col key={i} style={{ width: `${(w / 880) * 100}%` }} />)}</colgroup>
+          <colgroup>{[34, 62, 100, 68, 128, 150, 52, 54, 64, 56, 66, 36].map((w, i) => <col key={i} style={{ width: `${(w / 880) * 100}%` }} />)}</colgroup>
           <thead><tr><th><RowCheck label="Select all" /></th><th>ID</th><th>Subject</th><th>Type</th><th>Related to</th><th>Customer / Workspace</th><th>Priority</th><th>Status</th><th>SLA</th><th>Assigned</th><th>Updated</th><th aria-label="Actions" /></tr></thead>
           <tbody>{list.slice((page - 1) * per, page * per).map(c => { const t = typeLabel(c), x = sla(c, now), ref = c.related?.subject_ref, req = c.related?.requester;
             return <tr key={c.id} className={sel?.id === c.id ? "sel" : ""}>
