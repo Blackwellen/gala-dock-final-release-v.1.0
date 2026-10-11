@@ -1,5 +1,5 @@
 // Signs in through the real UI (password → MFA where required) and saves Playwright storage states.
-// Usage: node --env-file=.env --env-file=.env.local scripts/ws-auth.mjs [provider|admin|support]...
+// Usage: node --env-file=.env --env-file=.env.local scripts/ws-auth.mjs [provider|admin|support|organizer]...
 // Output: artifacts/auth/<who>.json (git-ignored artifacts). BASE_URL defaults to http://localhost:3107.
 import { chromium } from "@playwright/test";
 import fs from "node:fs/promises";
@@ -7,6 +7,7 @@ import { totp } from "./totp.mjs";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 const WHO = {
+  organizer: { email: "alex.events@example.com", pass: process.env.DEMO_ORGANIZER_PASSWORD, land: "/organizer" },
   provider: { email: "provider.demo@example.com", pass: process.env.DEMO_PROVIDER_PASSWORD, land: "/provider", workspace: "Riverside Arena" },
   admin: { email: "admin.demo@example.com", pass: process.env.DEMO_ADMIN_PASSWORD, secret: process.env.DEMO_ADMIN_TOTP_SECRET, land: "/admin", login: "/admin/login" },
   support: { email: "support.demo@example.com", pass: process.env.DEMO_SUPPORT_ADMIN_PASSWORD, secret: process.env.DEMO_SUPPORT_ADMIN_TOTP_SECRET, land: "/admin", login: "/admin/login" },

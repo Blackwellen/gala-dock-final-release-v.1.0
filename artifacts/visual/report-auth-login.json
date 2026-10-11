@@ -5,10 +5,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-login",
-    "mismatchPercent": 15.22,
-    "interfaceMismatchPercent": 5.782,
-    "ssimFull": 0.8109,
-    "ssimInterface": 0.8438,
+    "mismatchPercent": 13.48,
+    "interfaceMismatchPercent": 6.065,
+    "ssimFull": 0.8126,
+    "ssimInterface": 0.8127,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false

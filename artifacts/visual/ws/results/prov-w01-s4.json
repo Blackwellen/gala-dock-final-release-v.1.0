@@ -1,0 +1,16 @@
+{
+  "key": "prov-w01-s4",
+  "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+  "file": "Designs/Provider Workspace/Riverside Arena Venue Setup Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 16.96,
+  "ssim": 0.5783,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1136
+  },
+  "errors": [],
+  "at": "2026-10-11T01:42:34.592Z"
+}

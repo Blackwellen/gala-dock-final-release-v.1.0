@@ -55,3 +55,16 @@ export async function duplicateSpace(venueId: string, spaceId: string): Promise<
   if (error) return { ok: false, error: friendly(error) };
   return { ok: true, message: "Copied as a new draft space", redirect: `/provider/venues/${venueId}/spaces/${data}` };
 }
+
+const list = (fd: FormData, k: string) => [...fd.getAll(k).map(String), ...String(fd.get(`${k}_custom`) ?? "").split(",")].map(s => s.trim()).filter(Boolean).slice(0, 40);
+const txt = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
+
+/** Add Space steps 2–3 (features & amenities, access & operations) as plain forms. */
+export async function saveSpaceSection(venueId: string, spaceId: string, section: "features" | "access", next: string | null, fd: FormData): Promise<ActionResult> {
+  const patch: SpacePatch = section === "features"
+    ? { amenities: list(fd, "amenities"), details: { av: list(fd, "av"), accessibility: txt(fd, "accessibility") } }
+    : { details: { access: txt(fd, "access"), toilets: txt(fd, "toilets"), bar: txt(fd, "bar"), catering: txt(fd, "catering"), parking: txt(fd, "parking"), curfew: txt(fd, "curfew", 5) } };
+  const r = await saveSpaceFields(venueId, spaceId, patch);
+  if (!r.ok) return r;
+  return { ok: true, message: "Saved", ...(next ? { redirect: next } : {}) };
+}

@@ -20,7 +20,7 @@
 .pb-grid .ws-cell-text b{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .pb-grid .ws-cell-text small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pb-client{color:#22265e!important}
-.pb-date{font-size:10.5px;color:#06073f}
+.pb-date{font-size:10.5px;color:#02032e}
 .pb-value{font-size:11.5px!important;font-weight:700!important}
 .pb-pay{display:inline-flex;align-items:center;gap:4px}
 .pb-pay svg{width:12px!important;height:12px!important}
@@ -44,7 +44,7 @@
 .pb-week li{position:relative;display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px}
 .pb-week li>i{position:absolute;left:-19px;top:4px;width:9px;height:9px;border-radius:50%;border:2px solid #ff9a1f;background:#fff}
 .pb-week li>i.active{border-color:#1a1af2}
-.pb-week time{font-size:11px;color:#4f5785}
+.pb-week time{font-size:11px;color:#3f4596}
 .pb-week a{display:grid;line-height:1.35}
 .pb-week b{font-size:11px;font-weight:650}.pb-week small{font-size:10px;color:var(--ws-muted)}
 .pb-quick ul,.pb-insights ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}

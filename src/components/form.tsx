@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { useId, useState, type ReactNode } from "react";
+import { Check, ChevronDown, CircleX, CirclePlus } from "lucide-react";
 import { Photo } from "./ui";
 
 type Base = { label: ReactNode; error?: string; hint?: string; hintAbove?: boolean; required?: boolean; optional?: boolean; icon?: ReactNode };
@@ -28,8 +28,8 @@ export function TextField({ value, onChange, type = "text", placeholder, maxLeng
 
 export function TextArea({ value, onChange, rows = 4, maxLength, placeholder, ...base }: Base & { value: string; onChange: (value: string) => void; rows?: number; maxLength?: number; placeholder?: string }) {
   const id = useId();
-  return <Shell id={id} {...base}><textarea id={id} rows={rows} value={value} maxLength={maxLength} placeholder={placeholder} onChange={e => onChange(e.target.value)}
-    aria-invalid={!!base.error} aria-required={base.required} aria-describedby={describedBy(id, base.error, base.hint)} /></Shell>;
+  return <Shell id={id} {...base}><div className="textarea-wrap"><textarea id={id} rows={rows} value={value} maxLength={maxLength} placeholder={placeholder} onChange={e => onChange(e.target.value)}
+    aria-invalid={!!base.error} aria-required={base.required} aria-describedby={describedBy(id, base.error, base.hint)} />{maxLength && <span className="counter" aria-hidden="true">{value.length}/{maxLength}</span>}</div></Shell>;
 }
 
 export function SelectField({ value, onChange, options, placeholder, ...base }: Base & { value: string; onChange: (value: string) => void; options: (string | { value: string; label: string })[]; placeholder?: string }) {
@@ -42,12 +42,15 @@ export function SelectField({ value, onChange, options, placeholder, ...base }: 
 }
 
 /** Card/chip choices. Multi-select uses checkboxes, single-select uses radios, so keyboard and screen readers work natively. */
-export function ChoiceGroup({ legend, question, variant, name, items, value, onChange, multi = false, images, descriptions, icons, error, columns, hideLegend = false }: {
-  legend: string; question?: string; variant?: "chips"; name: string; items: (string | { value: string; label: string })[]; value: string[]; onChange: (value: string[]) => void; multi?: boolean;
+export function ChoiceGroup({ legend, question, variant, maxVisible, moreLabel = "Add more", name, items, value, onChange, multi = false, images, descriptions, icons, error, columns, hideLegend = false }: {
+  legend: string; question?: string; variant?: "chips"; maxVisible?: number; moreLabel?: string; name: string; items: (string | { value: string; label: string })[]; value: string[]; onChange: (value: string[]) => void; multi?: boolean;
   images?: string[]; descriptions?: string[]; icons?: ReactNode[]; error?: string; columns?: number; hideLegend?: boolean;
 }) {
   const id = useId();
-  const options = items.map(i => typeof i === "string" ? { value: i, label: i } : i);
+  const [expanded, setExpanded] = useState(false);
+  const all = items.map(i => typeof i === "string" ? { value: i, label: i } : i);
+  // Collapsed lists always keep selected options visible.
+  const options = maxVisible && !expanded ? all.filter((o, i) => i < maxVisible || value.includes(o.value)) : all;
   return <fieldset className={`choice-fieldset ${error ? "has-error" : ""}`} aria-describedby={error ? `${id}-error` : undefined}>
     <legend className={hideLegend ? "sr-only" : undefined}>{legend}</legend>
     {question && <p className="muted question">{question}</p>}
@@ -58,9 +61,10 @@ export function ChoiceGroup({ legend, question, variant, name, items, value, onC
           <input type={multi ? "checkbox" : "radio"} name={name} value={item.value} checked={checked}
             onChange={() => onChange(multi ? (checked ? value.filter(v => v !== item.value) : [...value, item.value]) : [item.value])} />
           {images ? images[i] ? <Photo name={images[i]} alt="" /> : <span className="choice-art" aria-hidden="true">{icons?.[i]}</span> : null}
-          <span>{icons?.[i]}<b>{item.label}{descriptions?.[i] && <small>{descriptions[i]}</small>}</b>{multi && images ? <i className="box" aria-hidden="true">{checked && <Check size={12} />}</i> : checked && <Check size={17} aria-hidden="true" />}</span>
+          <span>{variant === "chips" ? null : icons?.[i]}<b>{item.label}{descriptions?.[i] && <small>{descriptions[i]}</small>}</b>{variant === "chips" ? (checked ? <CircleX className="chip-icon" size={14} aria-hidden="true" /> : <CirclePlus className="chip-icon" size={14} aria-hidden="true" />) : multi && images ? <i className="box" aria-hidden="true">{checked && <Check size={12} />}</i> : checked && <Check size={17} aria-hidden="true" />}</span>
         </label>;
       })}
+      {maxVisible && all.length > options.length && <button type="button" className="chip-more" onClick={() => setExpanded(true)}>+ {moreLabel}</button>}
     </div>
     {error && <small id={`${id}-error`} className="field-error" role="alert">{error}</small>}
   </fieldset>;

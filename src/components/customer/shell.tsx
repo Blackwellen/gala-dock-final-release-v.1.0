@@ -37,7 +37,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
       </form>
       <nav className="c-nav" aria-label="Main">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</Link>)}</nav>
       <div className="c-icons">
-        <Menu label="Messages" width={320} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><MessageSquare size={21} />{threads.some(t => t.unread) && <i className="o-dot" />}</button>}>
+        <Menu label="Messages" width={320} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><MessagePulse />{threads.some(t => t.unread) && <i className="o-dot" />}</button>}>
           {close => <><div style={{ padding: "6px 10px" }}><b>Messages</b></div>{threads.length ? threads.map(t => <Link key={t.id} role="menuitem" href={t.href} className="k-menu-item" onClick={close}><MessageSquare size={15} className={t.unread ? "k-blue" : "k-muted"} aria-hidden /><span className="k-grow" style={{ fontWeight: t.unread ? 650 : 500 }}>{t.title}<small>{relative(t.at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>No conversations yet. Messages with venues and suppliers appear here once you send a request.</p>}</>}
         </Menu>
         <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead()); }} aria-expanded={open} aria-controls={id} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}><Bell size={21} />{unread > 0 && <i className="o-dot" />}</button>}>
@@ -67,4 +67,9 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
     <main id="main" className="c-main">{children}</main>
     <nav className="c-tabbar" aria-label="Quick navigation">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}><n.icon size={20} aria-hidden /><span>{n.label === "Plan an Event" ? "Plan" : n.label}</span></Link>)}</nav>
   </div>;
+}
+
+/** Speech bubble with an activity trace — the messages glyph used in the customer top bar designs. */
+function MessagePulse() {
+  return <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M20 12.5V17a1.5 1.5 0 0 1-1.5 1.5H9l-4 3v-3H5A1.5 1.5 0 0 1 3.5 17V6A1.5 1.5 0 0 1 5 4.5h9" /><path d="M7 13l2.2-2.4 2 2 2.3-3 1.5 1.6" /></svg>;
 }

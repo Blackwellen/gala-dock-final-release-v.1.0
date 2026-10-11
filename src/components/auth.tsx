@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, CalendarDays, Users, Sparkles, Mail, LockKeyhole, Eye, EyeOff, ShieldCheck, CircleHelp, Globe, Check, Send, KeyRound, QrCode, RefreshCw, AlertCircle, Clock, UserRound, Ban, Pencil, X, LogIn, FileText, Building2, ChevronDown, Headset } from "lucide-react";
+import { ArrowRight, Calendar, Lock, CalendarDays, Users, Sparkles, Mail, LockKeyhole, Eye, EyeOff, ShieldCheck, CircleHelp, Globe, Check, Send, KeyRound, QrCode, RefreshCw, AlertCircle, Clock, UserRound, Ban, Pencil, X, LogIn, FileText, Building2, ChevronDown, Headset } from "lucide-react";
 import { Logo, Button, IconTile } from "./ui";
+import { PeopleGroup, SparkleSolid } from "./icons";
 import { createClient, setRememberDevice } from "@/lib/supabase/client";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
 import { InvitationSummary, type InvitePreview } from "./invitation-details";
@@ -56,7 +57,7 @@ function AuthInput({ label, name, type = "text", placeholder, defaultValue, onVa
 }) {
   const [visible, setVisible] = useState(false);
   const id = useId();
-  const Icon = type === "password" ? LockKeyhole : type === "email" ? Mail : UserRound;
+  const Icon = type === "password" ? Lock : type === "email" ? Mail : UserRound;
   return <div className="auth-field">
     <span><label htmlFor={id}>{label}</label>{aside}</span>
     <div className={error ? "invalid" : ""}>
@@ -273,9 +274,9 @@ export function AuthPage(props: AuthProps) {
           <h1>{screen === "register" ? <>Turn your<br />next event<br />into something<br /><em>extraordinary.</em></> : <>Extraordinary<br />events <em>start here.</em></>}</h1>
           <p className="story-description">{screen === "register" ? "Create your Gala Dock account to plan, manage, and be part of unforgettable events — all in one connected platform." : "Gala Dock gives organizers, teams, and creators the tools to plan, manage, and grow unforgettable experiences — all in one place."}</p>
           <div className="story-features">{([
-            [CalendarDays, screen === "register" ? "One account for everything" : "Power every event", screen === "register" ? "Access tools as an organizer, team member, provider, or attendee." : "From intimate gatherings to global experiences."],
-            [Users, screen === "register" ? "More opportunities" : "Built for every role", screen === "register" ? "Plan events, grow your network, and discover amazing experiences." : "Organizers, customers, providers, and admins."],
-            [Sparkles, "A more connected future", "Events create opportunity, community, and growth."],
+            [Calendar, screen === "register" ? "One account for everything" : "Power every event", screen === "register" ? "Access tools as an organizer, team member, provider, or attendee." : "From intimate gatherings to global experiences."],
+            [PeopleGroup, screen === "register" ? "More opportunities" : "Built for every role", screen === "register" ? "Plan events, grow your network, and discover amazing experiences." : "Organizers, customers, providers, and admins."],
+            [SparkleSolid, "A more connected future", "Events create opportunity, community, and growth."],
           ] as const).map(([Icon, title, text]) => <div key={title}><IconTile icon={Icon} color="purple" /><span><b>{title}</b><p>{text}</p></span></div>)}</div>
         </div>
         <div className="story-stats"><div><b>1</b><span>Account, every role</span></div><div><b>3</b><span>Experiences</span></div><div><b>MFA</b><span>Protected sign-in</span></div></div>
@@ -299,7 +300,7 @@ export function AuthPage(props: AuthProps) {
             { key: "denied", label: "Denied", icon: <Ban size={22} /> }, { key: "suspended", label: "Suspended", icon: <Clock size={22} /> }, { key: "revoked", label: "Revoked", icon: <LockKeyhole size={22} /> }]} />}
 
           {intent && ["login", "register", "mfa", "verify-email"].includes(screen) && <Link href={intent.href} className="return-banner">
-            <IconTile icon={CalendarDays} color="purple" /><span><b>{intent.title}</b><small>{intent.detail}</small></span><ArrowRight aria-hidden="true" />
+            <IconTile icon={Calendar} color="purple" /><span><b>{intent.title}</b><small>{intent.detail}</small></span><ArrowRight aria-hidden="true" />
           </Link>}
 
           <form method="post" onSubmit={submit} aria-busy={busy} noValidate>

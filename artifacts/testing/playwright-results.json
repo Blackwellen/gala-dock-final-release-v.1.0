@@ -4,10 +4,10 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/phase1/e2e",
+      "tests/phase1",
       "--project=desktop",
-      "-g",
-      "Journey (D|E|F|H)"
+      "--grep-invert",
+      "WCAG|keyboard|errors are announced"
     ],
     "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
     "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
@@ -134,6 +134,244 @@
       "line": 0,
       "specs": [
         {
+          "title": "login: wrong password and unknown email get the same generic error",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3669,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:55:45.994Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-50601d7f9269c3121ed2",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 10,
+          "column": 5
+        },
+        {
+          "title": "login: client validation blocks empty submit; forgot password is neutral",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3071,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:55:50.290Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-343f3e088b109687e353",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 21,
+          "column": 5
+        },
+        {
+          "title": "register: terms must be explicitly accepted and marketing is opt-in",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1623,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:55:53.378Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-acba2ce056238aeb856a",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 32,
+          "column": 5
+        },
+        {
+          "title": "protected routes redirect to login and preserve the destination",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6267,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:55:55.022Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-4f9101545aa9af95cb43",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 44,
+          "column": 5
+        },
+        {
+          "title": "Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6331,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:56:01.304Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-787ae137119a545f9239",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 51,
+          "column": 5
+        },
+        {
+          "title": "Journey B: ticket purchaser keeps checkout intent through sign-in, no business setup",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3371,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:56:07.655Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-4b00af6e52000fced815",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 67,
+          "column": 5
+        },
+        {
+          "title": "Journey C + M + P: organizer onboarding — refresh-safe drafts, single workspace, owner, invites after commit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13574,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:56:11.046Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-5a71d13da1bd93bad8e6",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 76,
+          "column": 5
+        },
+        {
           "title": "Journey D: provider with a venue — draft listing, booking rules, trust gating",
           "ok": true,
           "tags": [],
@@ -149,12 +387,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 10317,
+                  "duration": 9973,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T01:14:13.163Z",
+                  "startTime": "2026-10-11T01:56:24.636Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -183,12 +421,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9514,
+                  "duration": 11784,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T01:14:23.875Z",
+                  "startTime": "2026-10-11T01:56:34.628Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -217,12 +455,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 10516,
+                  "duration": 9877,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T01:14:33.405Z",
+                  "startTime": "2026-10-11T01:56:46.440Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -251,12 +489,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5481,
+                  "duration": 4925,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T01:14:43.942Z",
+                  "startTime": "2026-10-11T01:56:56.339Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -268,15 +506,678 @@
           "file": "phase1/e2e/journeys.spec.ts",
           "line": 198,
           "column": 5
+        },
+        {
+          "title": "Journey I: invitation opened while signed out, accepted after sign-in",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6687,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:57:01.286Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-04b28040f9428442335b",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 208,
+          "column": 5
+        },
+        {
+          "title": "Journey J: password recovery link resets once, signs out everywhere, and cannot be reused",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4095,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:57:07.989Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-80a05f89e774481c101f",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 233,
+          "column": 5
+        },
+        {
+          "title": "Journey K: MFA challenge is required, rejects bad codes and resumes the original page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 37255,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:57:12.100Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-f86986a25275c85d1d87",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 251,
+          "column": 5
+        },
+        {
+          "title": "Journey L: suspended member sees the access state; owned workspaces stay available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6351,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T01:57:49.371Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c047376f7e34cf3d3eb7-3d833dace0c750cc1277",
+          "file": "phase1/e2e/journeys.spec.ts",
+          "line": 275,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "title": "phase1\\security\\rls.spec.ts",
+      "file": "phase1/security/rls.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Supabase RLS and authorization",
+          "file": "phase1/security/rls.spec.ts",
+          "line": 15,
+          "column": 6,
+          "specs": [
+            {
+              "title": "owner membership is created automatically with the workspace",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 52,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:57.363Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-fe0d47743c859149cffb",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "profiles are isolated between identities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 190,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:58.127Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-875fc42df24f20704469",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 33,
+              "column": 7
+            },
+            {
+              "title": "another account cannot read, update or join a private workspace (IDOR/BOLA)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 349,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:58.331Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-0268ebf90f99e5789c15",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 39,
+              "column": 7
+            },
+            {
+              "title": "owners cannot self-verify, self-connect payouts, unsuspend or force-complete via REST",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 395,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:58.697Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-3c89b826d4a63cf534ad",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 50,
+              "column": 7
+            },
+            {
+              "title": "listings cannot be published by writing the column; publish_listing enforces readiness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 682,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:59.121Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-cfb2dde0e8a4aa46a957",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "platform admin cannot be self-assigned",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 164,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:59.821Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-210f29a50ef611dc2590",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 79,
+              "column": 7
+            },
+            {
+              "title": "anonymous callers cannot use signed-in RPCs; internal tables are closed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 297,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:57:59.998Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-93259efccc6f195932ec",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 84,
+              "column": 7
+            },
+            {
+              "title": "invitations: only the addressed identity can accept; single use; role never replaced",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 685,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:00.320Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-ee78ba74face59caadd4",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 93,
+              "column": 7
+            },
+            {
+              "title": "expired, revoked and declined invitations cannot be accepted",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 742,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:01.018Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-4e0a823a533b84ad403a",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 109,
+              "column": 7
+            },
+            {
+              "title": "invite preview exposes no recipient email and unknown tokens are unavailable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 134,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:01.774Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-7e1abd6c2a22e42da12d",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 124,
+              "column": 7
+            },
+            {
+              "title": "suspended membership loses access immediately; other workspaces unaffected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 457,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:01.921Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-1aa4ec9fde11cbf65f7d",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 132,
+              "column": 7
+            },
+            {
+              "title": "a suspended workspace blocks member access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 272,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:02.393Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-6a9a36fd3247728aaabc",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 142,
+              "column": 7
+            },
+            {
+              "title": "open redirects are rejected by /continue and auth callbacks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 281,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:02.680Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-98c75b5be3dc7a055d3b",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 149,
+              "column": 7
+            },
+            {
+              "title": "state-changing APIs reject cross-origin requests and unauthenticated callers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 576,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:02.979Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-391ba32e8484c1082c67",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 157,
+              "column": 7
+            },
+            {
+              "title": "private pages are not cacheable and security headers are present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 188,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T01:58:03.569Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "469f6c81f52a04b642b4-7b268fa5869754e808e5",
+              "file": "phase1/security/rls.spec.ts",
+              "line": 166,
+              "column": 7
+            }
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-11T01:14:11.844Z",
-    "duration": 38500.373999999996,
-    "expected": 4,
+    "startTime": "2026-10-11T01:55:44.059Z",
+    "duration": 140737.229,
+    "expected": 30,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

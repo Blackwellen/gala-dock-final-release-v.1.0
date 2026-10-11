@@ -12181,3 +12181,897 @@ https://react.dev/link/hydration-mismatch
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Image with src "/assets/organizer-type-0.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-1.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-2.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-3.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ TypeError: {imported module ./nodemodules/lucide-react/dist/esm/icons/map.mjs}.Map is not a constructor
+    at BuildCanvas (src\app\(customer)\account\events\[id]\build\page.tsx:44:13)
+  42 |   const listings = (lst ?? []) as unknown as Listing[];
+  43 |   const { data: info } = await ctx.supabase.from("listings").select("id,rating,review_count,location,capacity_max,details").in("id", d.items.map(i => i.listing_id).filter(Boolean) as string[]);
+> 44 |   const L = new Map((info ?? []).map(r => [r.id, r]));
+     |             ^
+  45 |   const sum = (st: string[]) => d.items.filter(i => st.includes(i.status) && i.role !== "backup").reduce((s, i) => s + Number(i.amount ?? 0), 0);
+  46 |   const budget = Number(e.budget_total ?? 0), confirmed = sum(["confirmed", "fulfilled"]), held = sum(["held"]), pending = sum(["quoted", "sent", "awaiting", "available"]), suggested = sum(["suggested"]);
+  47 |   const est = confirmed + held + pending; const pct = budget ? Math.min(100, Math.round((est / budget) * 100)) : 0; {
+  digest: '406436193'
+}
+[browser] Uncaught TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$map$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__Map$3e$__.Map is not a constructor
+    at BuildCanvas (src\app\(customer)\account\events\[id]\build\page.tsx:44:13)
+  42 |   const listings = (lst ?? []) as unknown as Listing[];
+  43 |   const { data: info } = await ctx.supabase.from("listings").select("id,rating,review_count,location,capacity_max,details").in("id", d.items.map(i => i.listing_id).filter(Boolean) as string[]);
+> 44 |   const L = new Map((info ?? []).map(r => [r.id, r]));
+     |             ^
+  45 |   const sum = (st: string[]) => d.items.filter(i => st.includes(i.status) && i.role !== "backup").reduce((s, i) => s + Number(i.amount ?? 0), 0);
+  46 |   const budget = Number(e.budget_total ?? 0), confirmed = sum(["confirmed", "fulfilled"]), held = sum(["held"]), pending = sum(["quoted", "sent", "awaiting", "available"]), suggested = sum(["suggested"]);
+  47 |   const est = confirmed + held + pending; const pct = budget ? Math.min(100, Math.round((est / budget) * 100)) : 0;
+⨯ TypeError: {imported module ./nodemodules/lucide-react/dist/esm/icons/map.mjs}.Map is not a constructor
+    at BuildCanvas (src\app\(customer)\account\events\[id]\build\page.tsx:44:13)
+  42 |   const listings = (lst ?? []) as unknown as Listing[];
+  43 |   const { data: info } = await ctx.supabase.from("listings").select("id,rating,review_count,location,capacity_max,details").in("id", d.items.map(i => i.listing_id).filter(Boolean) as string[]);
+> 44 |   const L = new Map((info ?? []).map(r => [r.id, r]));
+     |             ^
+  45 |   const sum = (st: string[]) => d.items.filter(i => st.includes(i.status) && i.role !== "backup").reduce((s, i) => s + Number(i.amount ?? 0), 0);
+  46 |   const budget = Number(e.budget_total ?? 0), confirmed = sum(["confirmed", "fulfilled"]), held = sum(["held"]), pending = sum(["quoted", "sent", "awaiting", "available"]), suggested = sum(["suggested"]);
+  47 |   const est = confirmed + held + pending; const pct = budget ? Math.min(100, Math.round((est / budget) * 100)) : 0; {
+  digest: '406436193'
+}
+[browser] Uncaught TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$map$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__Map$3e$__.Map is not a constructor
+    at BuildCanvas (src\app\(customer)\account\events\[id]\build\page.tsx:44:13)
+  42 |   const listings = (lst ?? []) as unknown as Listing[];
+  43 |   const { data: info } = await ctx.supabase.from("listings").select("id,rating,review_count,location,capacity_max,details").in("id", d.items.map(i => i.listing_id).filter(Boolean) as string[]);
+> 44 |   const L = new Map((info ?? []).map(r => [r.id, r]));
+     |             ^
+  45 |   const sum = (st: string[]) => d.items.filter(i => st.includes(i.status) && i.role !== "backup").reduce((s, i) => s + Number(i.amount ?? 0), 0);
+  46 |   const budget = Number(e.budget_total ?? 0), confirmed = sum(["confirmed", "fulfilled"]), held = sum(["held"]), pending = sum(["quoted", "sent", "awaiting", "available"]), suggested = sum(["suggested"]);
+  47 |   const est = confirmed + held + pending; const pct = budget ? Math.min(100, Math.round((est / budget) * 100)) : 0;
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead. 
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <ScrollHandler renderTree={{...}}>
+      <InnerScrollHandler scrollRef={{scrollRef:null, ...}} renderTree={{...}}>
+        <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+          <LoadingBoundary name="preview/on..." loading={null}>
+            <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/preview/o..." tree={[...]} params={{slug:[...]}} renderTree={{...}} ...>
+                    <SegmentViewNode type="page" pagePath="[...slug]/...">
+                      <SegmentTrieNode>
+                      <Page>
+                        <OnboardingRoute>
+                          <OnboardingPage flow="provider" step={2} preview={true} user={{name:"Jami...", ...}} ...>
+                            <OnboardingShell flow="provider" pageClass="provider-l..." storyAsset="story-prov..." ...>
+                              <div
++                               className={"onboarding-page setup-provider-listing "}
+-                               className={null}
+-                               hidden=""
+                              >
++                               <header className="setup-header">
+-                               <Suspense>
+                                ...
+                    ...
+                  ...
+        ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at header (<anonymous>)
+    at OnboardingRoute (src\components\onboarding-route.tsx:44:23)
+    at Page (src\app\[...slug]\page.tsx:33:122)
+  42 |   const steps = flow === "experience" ? null : flowSteps[flow];
+  43 |   const step = steps ? (Number.isInteger(requested) && requested >= 1 && requested <= steps.length ? requested : 1) : 0;
+> 44 |   if (preview) return <OnboardingPage key={`${flow}-${step}`} {...previewOnboardingProps(flow, step)} />;
+     |                       ^
+  45 |
+  46 |   const next = safeNext(one(search.next), "");
+  47 |   const self = `/onboarding${flow === "experience" ? "" : `/${flow}?step=${step}`}`;
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⚠ Fast Refresh had to perform a full reload when ./src/lib/asset-dimensions.json.[json].cjs changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/lib/asset-dimensions.json.[json].cjs changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/lib/asset-dimensions.json.[json].cjs changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/lib/asset-dimensions.json.[json].cjs changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url={"/provide..."} tree={[...]} params={{}} renderTree={{...}} segmentPath={[...]} ...>
+        <SegmentViewNode type="page" pagePath="provider/v...">
+          <SegmentTrieNode>
+          <AddVenue>
+            <div className="wz vwz">
+              <LinkComponent>
+              <header>
+              <ol>
+              <SpacesEditor venueId="327451a6-0..." version={1} elements={[...]} geo={{lat:51.5052, ...}} spaces={[...]} ...>
+                <div className="se">
+                  <section>
+                  <div className="se-right">
+                    <section className="ws-panel s...">
+                      <div>
+                      <MapBuilder venueId="327451a6-0..." initial={[...]} spaces={[...]} version={1} ...>
+                        <div className="mb" style={{--mb-h:"460px"}}>
+                          <div>
+                          <div className="mb-body">
+                            <div className="mb-canvas ...">
+                              <svg ref={{current:null}} viewBox="-20 -20 96..." className="vm mb-svg" ...>
+                                <MapDefs>
+                                <rect>
+                                <rect>
+                                <rect>
+                                <MapContent elements={[...]} spaces={[...]} selectedIndex={null} ...>
+                                  <g className="" onPointerDown={function}>
+                                    <rect>
+                                    <rect>
+                                    <text
+                                      x={450}
++                                     y={433.6804733727811}
+-                                     y="432.3076923076923"
+                                      textAnchor="middle"
+                                      className="vm-water"
++                                     style={{fontSize:15.621301775147929}}
+-                                     style={{font-size:"11.8462px"}}
+                                    >
++                                     RIVER THAMES
+                                  <g className="vm-room" onPointerDown={function}>
+                                    <rect>
+                                    <text
+                                      x={240}
++                                     y={154.31952662721895}
+-                                     y="155.69230769230768"
+                                      textAnchor="middle"
+                                      className="vm-label"
++                                     style={{fontSize:18.46153846153846}}
+-                                     style={{font-size:"14px"}}
+                                    >
++                                     Main Hall
+                                    <g>
+                                      <rect
++                                       x={208.75739644970415}
+-                                       x="216.30769230769232"
++                                       y={165.68047337278105}
+-                                       y="164.30769230769232"
++                                       width={62.485207100591715}
+-                                       width="47.38461538461538"
++                                       height={24.142011834319526}
+-                                       height="18.307692307692307"
++                                       rx={12.071005917159763}
+-                                       rx="9.153846153846153"
+                                        fill="#8b5cf6"
+                                      >
+                                      <text
+                                        x={240}
++                                       y={183.4319526627219}
+-                                       y="177.76923076923077"
+                                        textAnchor="middle"
+                                        className="vm-cap"
++                                       style={{fontSize:14.201183431952662}}
+-                                       style={{font-size:"10.7692px"}}
+                                      >
++                                       400
+                                  <g className="vm-room" onPointerDown={function}>
+                                    <rect>
+                                    <text
+                                      x={560}
++                                     y={99.31952662721893}
+-                                     y="100.6923076923077"
+                                      textAnchor="middle"
+                                      className="vm-label"
++                                     style={{fontSize:18.46153846153846}}
+-                                     style={{font-size:"14px"}}
+                                    >
++                                     Riverside Suite
+                                    <g>
+                                      <rect
++                                       x={528.7573964497042}
+-                                       x="536.3076923076923"
++                                       y={110.68047337278107}
+-                                       y="109.3076923076923"
++                                       width={62.485207100591715}
+-                                       width="47.38461538461538"
++                                       height={24.142011834319526}
+-                                       height="18.307692307692307"
++                                       rx={12.071005917159763}
+-                                       rx="9.153846153846153"
+                                        fill="#2f6bff"
+                                      >
+                                      <text
+                                        x={560}
++                                       y={128.4319526627219}
+-                                       y="122.76923076923077"
+                                        textAnchor="middle"
+                                        className="vm-cap"
++                                       style={{fontSize:14.201183431952662}}
+-                                       style={{font-size:"10.7692px"}}
+                                      >
++                                       180
+                                  <g className="vm-room" onPointerDown={function}>
+                                    <rect>
+                                    <text
+                                      x={560}
++                                     y={249.31952662721895}
+-                                     y="250.69230769230768"
+                                      textAnchor="middle"
+                                      className="vm-label"
++                                     style={{fontSize:18.46153846153846}}
+-                                     style={{font-size:"14px"}}
+                                    >
++                                     Studio Space
+                                    <g>
+                                      <rect
++                                       x={528.7573964497042}
+-                                       x="536.3076923076923"
++                                       y={260.6804733727811}
+-                                       y="259.3076923076923"
++                                       width={62.485207100591715}
+-                                       width="47.38461538461538"
++                                       height={24.142011834319526}
+-                                       height="18.307692307692307"
++                                       rx={12.071005917159763}
+-                                       rx="9.153846153846153"
+                                        fill="#ec3a52"
+                                      >
+                                      <text
+                                        x={560}
++                                       y={278.43195266272187}
+-                                       y="272.7692307692308"
+                                        textAnchor="middle"
+                                        className="vm-cap"
++                                       style={{fontSize:14.201183431952662}}
+-                                       style={{font-size:"10.7692px"}}
+                                      >
++                                       100
+                                  <g className="vm-room" onPointerDown={function}>
+                                    <rect>
+                                    <text
+                                      x={770}
++                                     y={99.31952662721893}
+-                                     y="100.6923076923077"
+                                      textAnchor="middle"
+                                      className="vm-label"
++                                     style={{fontSize:18.46153846153846}}
+-                                     style={{font-size:"14px"}}
+                                    >
++                                     Rooftop Terrace
+                                    <g>
+                                      <rect
++                                       x={738.7573964497042}
+-                                       x="746.3076923076923"
++                                       y={110.68047337278107}
+-                                       y="109.3076923076923"
++                                       width={62.485207100591715}
+-                                       width="47.38461538461538"
++                                       height={24.142011834319526}
+-                                       height="18.307692307692307"
++                                       rx={12.071005917159763}
+-                                       rx="9.153846153846153"
+                                        fill="#16a46c"
+                                      >
+                                      <text
+                                        x={770}
++                                       y={128.4319526627219}
+-                                       y="122.76923076923077"
+                                        textAnchor="middle"
+                                        className="vm-cap"
++                                       style={{fontSize:14.201183431952662}}
+-                                       style={{font-size:"10.7692px"}}
+                                      >
++                                       120
+                                  <g className="vm-room" onPointerDown={function}>
+                                    <rect>
+                                    <text
+                                      x={770}
++                                     y={274.3195266272189}
+-                                     y="275.6923076923077"
+                                      textAnchor="middle"
+                                      className="vm-label"
++                                     style={{fontSize:17.64705882352941}}
+-                                     style={{font-size:"14px"}}
+                                    >
++                                     {"Grounds & Gardens"}
+                                    <g>
+                                      <rect
++                                       x={738.7573964497042}
+-                                       x="746.3076923076923"
++                                       y={285.6804733727811}
+-                                       y="284.3076923076923"
++                                       width={62.485207100591715}
+-                                       width="47.38461538461538"
++                                       height={24.142011834319526}
+-                                       height="18.307692307692307"
++                                       rx={12.071005917159763}
+-                                       rx="9.153846153846153"
+                                        fill="#f39a1e"
+                                      >
+                                      <text
+                                        x={770}
++                                       y={303.43195266272187}
+-                                       y="297.7692307692308"
+                                        textAnchor="middle"
+                                        className="vm-cap"
++                                       style={{fontSize:14.201183431952662}}
+-                                       style={{font-size:"10.7692px"}}
+                                      >
++                                       400
+                                  <g>
+                                  <g className="vm-fix" onPointerDown={function}>
+                                    <title>
+                                    <rect>
+                                    <text
+                                      x={135}
++                                     y={81.68047337278107}
+-                                     y="80.3076923076923"
+                                      textAnchor="middle"
+                                      fill="#fff"
+                                      className="vm-fix-label"
++                                     style={{fontSize:14.201183431952662}}
+-                                     style={{font-size:"10.7692px"}}
+                                    >
++                                     STAGE
+                                  <g className="vm-fix" onPointerDown={function}>
+                                    <title>
+                                    <rect>
+                                    <text
+                                      x={378}
++                                     y={254.68047337278105}
+-                                     y="253.30769230769232"
+                                      textAnchor="middle"
+                                      fill="#9a5b00"
+                                      className="vm-fix-label"
++                                     style={{fontSize:14.201183431952662}}
+-                                     style={{font-size:"10.7692px"}}
+                                    >
++                                     Main bar
+                                  <g>
+                                  <g>
+                                  <g>
+                                  <g className="vm-fix" onPointerDown={function}>
+                                    <title>
+                                    <rect>
+                                    <text
+                                      x={505}
++                                     y={352.6804733727811}
+-                                     y="351.3076923076923"
+                                      textAnchor="middle"
+                                      fill="#3f4596"
+                                      className="vm-fix-label"
++                                     style={{fontSize:14.201183431952662}}
+-                                     style={{font-size:"10.7692px"}}
+                                    >
++                                     Loading bay
+                                  <g className="vm-fix" onPointerDown={function}>
+                                    <title>
+                                    <rect>
+                                    <text
+                                      x={605}
++                                     y={352.6804733727811}
+-                                     y="351.3076923076923"
+                                      textAnchor="middle"
+                                      fill="#3f4596"
+                                      className="vm-fix-label"
++                                     style={{fontSize:14.201183431952662}}
+-                                     style={{font-size:"10.7692px"}}
+                                    >
++                                     Toilets
+                                  ...
+                              <div className="mb-zoom">
+                                <button>
+                                <button>
+                                <button>
+                                <button
+                                  type="button"
++                                 className="mb-side-toggle"
+-                                 className={null}
++                                 aria-label="Layers and properties"
+-                                 aria-label="Full screen"
++                                 aria-pressed={false}
+-                                 aria-pressed={null}
+                                  onClick={function onClick}
+                                >
+                                  <Layers aria-hidden="true">
+                                    <svg
+                                      ref={null}
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width={24}
+                                      height={24}
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth={2}
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
++                                     className="lucide lucide-layers lucide-layers-3"
+-                                     className="lucide lucide-maximize-2"
+                                      aria-hidden="true"
+                                    >
+                                      <path
++                                       d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 ..."
+-                                       d="M15 3h6v6"
+                                      >
+                                      <path
++                                       d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"
+-                                       d="m21 3-7 7"
+                                      >
+                                      <path
++                                       d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"
+-                                       d="m3 21 7-7"
+                                      >
+-                                     <path d="M9 21H3v-6">
+                                ...
+                              ...
+                            ...
+                    ...
+                  ...
+        ...
+      ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at svg (<anonymous>)
+    at MapBuilder (src/app/provider/venues/_components/map-builder.tsx:244:253)
+    at SpacesEditor (src/app/provider/venues/_components/spaces-editor.tsx:94:9)
+    at AddVenue (src\app\provider\venues\new\page.tsx:65:29)
+  242 | ...
+  243 | .../button><button type="button" aria-label="Zoom out" onClick={() => zoomBy(1.25)}><ZoomOut aria-hidden="true" /></button>
+> 244 | ..."mb-side-toggle" aria-label="Layers and properties" aria-pressed={sideOpen} onClick={() => setSideOpen(o => !o)}><Layers aria-hidden="true" /></button><button type="button" aria-label={full ? "Exit full screen" : "Full screen"...
+      |                                                                                                                     ^
+  245 | ...
+  246 | ...
+  247 | ..."wall" || tool === "route" ? "Click to add points · double-click or Enter to finish" : tool === "measure" ? "Drag to measure" : tool === "calibrate" ? "Click two points a known distance apart" : tool === "select" ? "Drag to mo...
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?206:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?208:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\_1ljxykn4ipwg4._.js:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\.next\dev\server\chunks\ssr\[root-of-the-server]__1mx65du-a-9ig._.js:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5' {
+  digest: '272151022'
+}
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] ⨯ unhandledRejection: Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C_1ljxykn4ipwg4._.js?208:417:239)
+    at module evaluation (.next-internal\server\app\(customer)\account\events\[id]\messages\page\actions.js (server actions loader):12:1)
+    at module evaluation (about://React/Server/C:%5CUsers%5CPC%5CDocuments%5CBlackwellen%20-%20Business%20Files%5Cgala-dock-final-release%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1mx65du-a-9ig._.js?210:44:1057)
+  10 | export {scanTicket as '609d459cdb4aaa01b0cb6abcdd6c2997f91238a7c2'} from 'ACTIONS_MODULE3'
+  11 | export {duplicateMyEvent as '40c6ec39207c7f75a999252e4e3eb99a9e12e37d7e'} from 'ACTIONS_MODULE4'
+> 12 | export {changeEventDate as '60f7191f6138ab8be43a6f29e1760456b63db7ec39'} from 'ACTIONS_MODULE5'
+     | ^
+  13 | export {dateChangeImpact as '60cacede038e03f6920bc734ffc1e4fd62eac99828'} from 'ACTIONS_MODULE5'
+  14 | export {setItemRole as '70871e00fe1fbf20d7b0a393d4818f0a07a7bac5dc'} from 'ACTIONS_MODULE5'
+  15 | export {holdItem as '70a9aeadb00b5b6d8687fee40faff268fd9b1aaecf'} from 'ACTIONS_MODULE5'
+[browser] Image with src "/assets/organizer-type-0.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-1.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-2.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-3.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Image with src "/assets/organizer-type-0.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-1.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-2.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-3.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Image with src "/assets/organizer-type-0.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-1.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-2.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-3.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Image with src "/assets/organizer-type-0.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-1.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-2.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "/assets/organizer-type-3.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled

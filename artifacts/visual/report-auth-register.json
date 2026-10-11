@@ -8,10 +8,10 @@
     "check": [
       "input[name=\"terms\"]"
     ],
-    "mismatchPercent": 16.204,
-    "interfaceMismatchPercent": 7.851,
-    "ssimFull": 0.7371,
-    "ssimInterface": 0.7758,
+    "mismatchPercent": 13.261,
+    "interfaceMismatchPercent": 8.361,
+    "ssimFull": 0.763,
+    "ssimInterface": 0.7436,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false

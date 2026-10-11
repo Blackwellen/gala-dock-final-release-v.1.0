@@ -48,6 +48,7 @@ export const customerInterests = ["Music & Concerts", "Food & Drink", "Nightlife
 export const organizerBusinessTypes = ["Event Management Company", "Event Agency", "Promoter", "Wedding Planner", "Corporate Events Team", "Venue Operator", "Community Organisation", "Independent Organiser"];
 export const organizerEventTypes = ["Weddings", "Corporate Events", "Festivals", "Conferences", "Private Events", "Nightclubs", "Concerts & Live Shows", "Remote / Hybrid", "Community Events", "Mixed / Custom"];
 export const capacityBands = ["1–50", "51–250", "251–1,000", "1,000+"];
+export const listingEventTypes = ["Weddings", "Corporate Events", "Private Parties", "Conferences", "Exhibitions", "Other"];
 export const serviceCategories = ["Catering", "Photography & Video", "DJs & Music", "Live Entertainment", "Décor & Florals", "Staffing", "Security", "AV & Production", "Transport", "Planning & Coordination"];
 export const venueTypes = ["Event hall", "Hotel or conference centre", "Outdoor venue", "Bar or nightclub", "Restaurant", "Unique space", "Arena or stadium"];
 export const amenities = ["Step-free access", "On-site parking", "In-house catering", "AV equipment", "Outdoor space", "Licensed bar", "Accommodation", "Wi-Fi"];
@@ -142,7 +143,7 @@ export function validateStep(flow: Flow, step: string, values: Values, context: 
     if (description.length < 40) errors.description = "Write at least 40 characters so organisers understand your offer.";
     const location = text(values.location, 150);
     if (!location) errors.location = kind === "venue" ? "Enter the venue location." : "Enter where you’re based.";
-    clean = { kind, listing_name, description, location, photos: paths(values.photos), event_types: list(values.event_types, organizerEventTypes) };
+    clean = { kind, listing_name, description, location, photos: paths(values.photos), event_types: list(values.event_types, listingEventTypes), add_services_next: bool(values.add_services_next) && kind === "venue" };
     if (kind === "venue") {
       const capacity = Number(values.capacity);
       if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100000) errors.capacity = "Enter an indicative capacity between 1 and 100,000.";

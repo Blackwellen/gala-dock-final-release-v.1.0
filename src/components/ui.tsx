@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, MotionConfig, AnimatePresence, type HTMLMotionProps } from "framer-motion";
-import { useState, createContext, useContext, type ReactNode, type ButtonHTMLAttributes } from "react";
+import { useState, createContext, useContext, type ReactNode, type ButtonHTMLAttributes, type ComponentType } from "react";
 import { ArrowRight, Check, X, Sparkles, ChevronDown, type LucideIcon } from "lucide-react";
 import regeneratedAssets from "@/lib/regenerated-assets.json";
 import assetDimensions from "@/lib/asset-dimensions.json";
@@ -34,7 +34,7 @@ export function Button({ variant = "primary", arrow = false, children, href, cla
   return <motion.button {...props as HTMLMotionProps<"button">} whileHover={{ y: -1 }} whileTap={{ scale: .98 }} className={`button ${variant} ${className}`} type={props.type ?? "button"}>{content}</motion.button>;
 }
 
-export function IconTile({ icon: Icon, color = "blue" }: { icon: LucideIcon; color?: string }) {
+export function IconTile({ icon: Icon, color = "blue" }: { icon: LucideIcon | ComponentType<{ size?: number; "aria-hidden"?: boolean | "true" }>; color?: string }) {
   return <span className={`icon-tile ${color}`}><Icon size={22} aria-hidden="true" /></span>;
 }
 export function Photo({ name, alt = "", className = "" }: { name: string; alt?: string; className?: string }) {

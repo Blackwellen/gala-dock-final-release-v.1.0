@@ -1,7 +1,7 @@
 /* PROV-002 Opportunities — measured from "Gala Dock Opportunities Dashboard" (1536×1024). */
 .po{display:grid;gap:14px}
 .po-head{margin-bottom:0}
-.po-auto{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:8px;background:#f2f4f8;color:#4f5785;font-size:12.5px;font-weight:500}
+.po-auto{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:8px;background:#f2f4f8;color:#3f4596;font-size:12.5px;font-weight:500}
 .po-auto i{width:12px;height:12px;border-radius:50%;background:#98a2c3}
 .po-auto.on{background:#e3f8ee;color:#0f7a3f}.po-auto.on i{background:#16b67a;box-shadow:0 0 0 3px #16b67a33}
 .po-manage{height:40px;font-weight:550;color:#141a5c!important}
@@ -17,11 +17,11 @@
 .po-sel>svg{position:absolute;left:10px;width:16px!important;height:16px!important;color:#22265e;pointer-events:none}
 .po-sel .ws-select{padding-left:30px;padding-right:26px;height:36px;font-size:11.5px;background-position:right 8px center}
 .po-more{height:36px;font-size:11.5px;color:#141a5c!important;font-weight:550}
-.po-sort{display:inline-flex;align-items:center;gap:10px;font-size:11.5px;color:#4f5785}
+.po-sort{display:inline-flex;align-items:center;gap:10px;font-size:11.5px;color:#3f4596}
 .po-sort .ws-select{height:36px;font-size:12px;color:#141a5c}
 .po-sort{white-space:nowrap}
 .po-views{display:inline-flex;gap:6px}
-.po-views a{width:44px;height:36px;display:grid;place-items:center;border:1px solid var(--ws-border);border-radius:7px;color:#4f5785}
+.po-views a{width:44px;height:36px;display:grid;place-items:center;border:1px solid var(--ws-border);border-radius:7px;color:#3f4596}
 .po-views a[aria-current]{border-color:#1a1af2;color:#1a1af2;background:#f4f6ff}
 .po-views svg{width:18px!important;height:18px!important}
 .po-grid th{font-size:11px;padding:10px 10px}
@@ -29,7 +29,7 @@
 .po-grid td{padding:7px 8px;height:65px}
 .po-grid th{padding-left:8px;padding-right:8px}
 .po-grid tr.expired td{background:#fbfbfd}
-.po-grid tr.expired .ws-cell-text b{color:#4f5785}
+.po-grid tr.expired .ws-cell-text b{color:#3f4596}
 .po-grid .ws-cell-text a b{font-size:11px}
 .po-grid .ws-cell-text b{font-size:11px;white-space:nowrap}
 .po-grid .ws-cell-text small{font-size:10px;white-space:nowrap}
@@ -40,13 +40,13 @@
 .po-meta svg{width:13px!important;height:13px!important}
 .po-scope{font-weight:550!important}
 .po-value{font-size:11.5px;font-weight:650;white-space:nowrap}
-.po-due{display:flex;align-items:flex-start;gap:7px;color:#4f5785}
+.po-due{display:flex;align-items:flex-start;gap:7px;color:#3f4596}
 .po-due svg{width:17px!important;height:17px!important;margin-top:1px}
 .po-due span{display:grid;line-height:1.3}
 .po-due b{font-size:11.5px;font-weight:650;white-space:nowrap}
 .po-due small{font-size:10.5px;white-space:nowrap}
 .po-due.urgent,.po-due.soon{color:#e8233c}
-.po-due.expired{color:#8a90b0}
+.po-due.expired{color:#7a80c0}
 .po-grid .ws-chip{font-size:10px;height:26px;padding:0 10px}
 .po-grid .ws-ring b{font-size:9.5px}
 .po-cta{min-width:96px;height:36px;font-size:12px;padding:0 12px}

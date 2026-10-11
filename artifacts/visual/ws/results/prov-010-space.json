@@ -1,0 +1,16 @@
+{
+  "key": "prov-010-space",
+  "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+  "file": "Designs/Provider Workspace/Main Hall Venue Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 22.66,
+  "ssim": 0.5594,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1150
+  },
+  "errors": [],
+  "at": "2026-10-11T01:24:31.828Z"
+}

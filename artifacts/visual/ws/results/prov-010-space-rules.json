@@ -1,0 +1,16 @@
+{
+  "key": "prov-010-space-rules",
+  "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+  "file": "Designs/Provider Workspace/Gala Dock Space Availability Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 15.18,
+  "ssim": 0.6199,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1183
+  },
+  "errors": [],
+  "at": "2026-10-11T01:24:37.287Z"
+}

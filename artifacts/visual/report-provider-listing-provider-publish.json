@@ -1,0 +1,34 @@
+[
+  {
+    "url": "/preview/onboarding/provider?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 18.297,
+    "interfaceMismatchPercent": 18.521,
+    "ssimFull": 0.6247,
+    "ssimInterface": 0.5928,
+    "geometry": {
+      "scrollHeight": 1068,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=4",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard(1).png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-publish",
+    "mismatchPercent": 18.454,
+    "interfaceMismatchPercent": 17.657,
+    "ssimFull": 0.5911,
+    "ssimInterface": 0.5677,
+    "geometry": {
+      "scrollHeight": 1157,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

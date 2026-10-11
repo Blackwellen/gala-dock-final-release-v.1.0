@@ -110,7 +110,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
     </header>
     <Tabs base={`/provider/venues/${v.id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "spaces", label: "Spaces & Map" }, { key: "packages", label: "Packages" }, { key: "operations", label: "Operations" }, { key: "commercial", label: "Commercial" }]} />
 
-    {tab === "spaces" ? <SpacesEditor venueId={v.id} version={structure?.version ?? 0} elements={structure?.elements ?? []}
+    {tab === "spaces" ? <SpacesEditor venueId={v.id} version={structure?.version ?? 0} elements={structure?.elements ?? []} geo={(v.details as { geo?: { lat: number; lng: number } }).geo ?? (v.lat !== null && v.lng !== null ? { lat: Number(v.lat), lng: Number(v.lng) } : null)}
       spaces={spaces.map(s => { const x = spaceDetail.find(r => r.id === s.id); return { id: s.id, name: s.name, status: s.status, indoor: s.indoor, image: s.image, capacity_standing: s.capacity_standing, capacity_seated: s.capacity_seated,
         rate_hourly: s.rate_hourly, area_sqm: x?.area_sqm ?? null, layouts: x?.layouts ?? {}, amenities: x?.amenities ?? [], turnaround_minutes: x?.turnaround_minutes ?? 60, min_hours: x?.min_hours ?? 2, description: String(x?.details?.description ?? "") }; })} />
     : <div className="pv-body">

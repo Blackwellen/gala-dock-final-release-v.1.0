@@ -5,12 +5,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-listing",
-    "mismatchPercent": 19.737,
-    "interfaceMismatchPercent": 20.908,
-    "ssimFull": 0.5887,
-    "ssimInterface": 0.5374,
+    "mismatchPercent": 19.491,
+    "interfaceMismatchPercent": 20.235,
+    "ssimFull": 0.617,
+    "ssimInterface": 0.5821,
     "geometry": {
-      "scrollHeight": 1226,
+      "scrollHeight": 1070,
       "overflow": false
     },
     "errors": []

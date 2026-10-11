@@ -5,12 +5,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-events",
-    "mismatchPercent": 19.795,
-    "interfaceMismatchPercent": 18.039,
-    "ssimFull": 0.5797,
-    "ssimInterface": 0.5794,
+    "mismatchPercent": 18.462,
+    "interfaceMismatchPercent": 16.122,
+    "ssimFull": 0.5962,
+    "ssimInterface": 0.6034,
     "geometry": {
-      "scrollHeight": 1074,
+      "scrollHeight": 1044,
       "overflow": false
     },
     "errors": []

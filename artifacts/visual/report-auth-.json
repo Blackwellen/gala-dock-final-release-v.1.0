@@ -5,10 +5,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-login",
-    "mismatchPercent": 15.381,
-    "interfaceMismatchPercent": 6.332,
-    "ssimFull": 0.7945,
-    "ssimInterface": 0.8055,
+    "mismatchPercent": 10.351,
+    "interfaceMismatchPercent": 6.065,
+    "ssimFull": 0.8187,
+    "ssimInterface": 0.8127,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -24,10 +24,10 @@
     "check": [
       "input[name=\"terms\"]"
     ],
-    "mismatchPercent": 16.513,
-    "interfaceMismatchPercent": 8.7,
-    "ssimFull": 0.7195,
-    "ssimInterface": 0.7355,
+    "mismatchPercent": 12.801,
+    "interfaceMismatchPercent": 8.361,
+    "ssimFull": 0.7681,
+    "ssimInterface": 0.7436,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -40,10 +40,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-verify-email",
-    "mismatchPercent": 16.38,
-    "interfaceMismatchPercent": 9.221,
-    "ssimFull": 0.7667,
-    "ssimInterface": 0.7522,
+    "mismatchPercent": 10.465,
+    "interfaceMismatchPercent": 7.104,
+    "ssimFull": 0.8138,
+    "ssimInterface": 0.8052,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -56,10 +56,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-forgot-password",
-    "mismatchPercent": 14.589,
-    "interfaceMismatchPercent": 5.491,
-    "ssimFull": 0.8187,
-    "ssimInterface": 0.8543,
+    "mismatchPercent": 9.595,
+    "interfaceMismatchPercent": 5.413,
+    "ssimFull": 0.8433,
+    "ssimInterface": 0.8587,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -72,10 +72,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-reset-password",
-    "mismatchPercent": 17.412,
-    "interfaceMismatchPercent": 7.522,
-    "ssimFull": 0.7761,
-    "ssimInterface": 0.7756,
+    "mismatchPercent": 11.99,
+    "interfaceMismatchPercent": 7.371,
+    "ssimFull": 0.8023,
+    "ssimInterface": 0.783,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -88,10 +88,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-mfa",
-    "mismatchPercent": 15.811,
-    "interfaceMismatchPercent": 10.18,
-    "ssimFull": 0.7651,
-    "ssimInterface": 0.7554,
+    "mismatchPercent": 9.894,
+    "interfaceMismatchPercent": 7.171,
+    "ssimFull": 0.8036,
+    "ssimInterface": 0.7805,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -104,10 +104,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-invite",
-    "mismatchPercent": 19.834,
-    "interfaceMismatchPercent": 11.328,
-    "ssimFull": 0.735,
-    "ssimInterface": 0.6962,
+    "mismatchPercent": 12.782,
+    "interfaceMismatchPercent": 8.74,
+    "ssimFull": 0.7856,
+    "ssimInterface": 0.7472,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -120,12 +120,12 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-secure-access",
-    "mismatchPercent": 18.538,
-    "interfaceMismatchPercent": 10.216,
-    "ssimFull": 0.7316,
-    "ssimInterface": 0.7113,
+    "mismatchPercent": 11.413,
+    "interfaceMismatchPercent": 8.546,
+    "ssimFull": 0.7788,
+    "ssimInterface": 0.7405,
     "geometry": {
-      "scrollHeight": 1134,
+      "scrollHeight": 1086,
       "overflow": false
     },
     "errors": []

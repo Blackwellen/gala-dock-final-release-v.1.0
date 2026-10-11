@@ -35,3 +35,20 @@ export async function loadSpaceContext(venueId: string, spaceId: string | null) 
     venueCommercial: ((venue.details as { commercial?: { rate_from?: number; cancellation?: { window: string; refund: number }[] } }).commercial ?? {}),
   };
 }
+
+type Ctx = NonNullable<Awaited<ReturnType<typeof loadSpaceContext>>>;
+const HARD = ["held", "confirmed", "active"];
+/** Props for SpaceRulesForm: other spaces, current links, inherited venue rules, and live overlaps that would block an exclusivity rule. */
+export function buildRulesInput(c: Ctx, s: SpaceRow) {
+  const now = Date.now();
+  const mine = c.jobs.filter(j => j.space_id === s.id && j.role === "primary" && HARD.includes(j.status) && new Date(j.ends_at).getTime() > now);
+  const others = c.spaces.filter(o => o.id !== s.id);
+  const overlaps = Object.fromEntries(others.map(o => [o.id, c.jobs.filter(j => j.space_id === o.id && j.role === "primary" && HARD.includes(j.status)
+    && mine.some(m => new Date(m.starts_at) < new Date(j.ends_at) && new Date(j.starts_at) < new Date(m.ends_at))).map(j => j.event_name)]));
+  return {
+    space: { id: s.id, name: s.name, status: s.status, image: s.image, gallery: s.details.gallery ?? [], capacity: Math.max(s.capacity_standing ?? 0, s.capacity_seated ?? 0), area: s.area_sqm,
+      type: s.details.space_type ?? (s.indoor ? "Indoor space" : "Outdoor space"), rate_hourly: s.rate_hourly, min_hours: Number(s.min_hours), details: s.details },
+    others: others.map(o => ({ id: o.id, name: o.name })), linked: c.linked, exclusive: c.exclusive, venueHours: c.venueHours,
+    venueRate: c.venueCommercial.rate_from ?? c.venue.price_from ?? null, venueResponse: c.venue.response_hours, venueCancellation: c.venueCommercial.cancellation ?? [], overlaps,
+  };
+}

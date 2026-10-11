@@ -7,7 +7,7 @@ export type Listing = {
   id: string; name: string; kind: "venue" | "service"; slug: string | null; description: string; image: string; gallery: string[]; tags: string[]; category: string; city: string; location: string;
   published: boolean; paused_at: string | null; review_status: string; booking_mode: string; response_hours: number; price_from: number | null;
   price_unit: string; capacity_min: number | null; capacity_max: number | null; rating: number; review_count: number; views: number; enquiry_count: number;
-  verified: boolean; instant_book: boolean; emergency_supply: boolean; details: Record<string, unknown>; created_at: string;
+  verified: boolean; instant_book: boolean; emergency_supply: boolean; details: Record<string, unknown>; created_at: string; lat: number | null; lng: number | null;
 };
 export type Item = {
   id: string; status: string; role: string; listing_id: string; package: string; scope: string; image: string; amount: number | null; deposit: number;

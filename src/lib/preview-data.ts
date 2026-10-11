@@ -32,7 +32,7 @@ const sample: Record<string, Values> = {
   "organizer-3": { logo: "", brand_color: "#2563EB", support_email: "events@thomasevents.co.uk", invoice_prefix: "INV", tax_setting: "UK VAT 20% (standard rate)", payment_terms: "14 days" },
   "organizer-4": { members: [{ email: "sophie@thomasevents.co.uk", role: "manager" }, { email: "marcus@thomasevents.co.uk", role: "finance" }, { email: "priya@thomasevents.co.uk", role: "member" }], notifications: ["enquiries", "payments", "team"], first_event_template: "Wedding" },
   "provider-1": { name: "Riverside Events", legal_name: "Riverside Events Ltd", country: "United Kingdom", timezone: "Europe/London", currency: "GBP", location: "London, UK", coverage: "Within 50 miles", capabilities: ["venue"], service_categories: [] },
-  "provider-2": { kind: "venue", listing_name: "Riverside Events Venue", venue_type: "Event hall", description: "Stunning riverside event space with panoramic views, ideal for weddings, corporate events and private parties.", location: "London, UK", capacity: "500", min_capacity: "50", address: "Riverside Road, London, SE1 7PB", amenities: ["Outdoor space", "On-site parking", "In-house catering"], event_types: ["Weddings", "Corporate Events", "Private Events"], photos: [] },
+  "provider-2": { kind: "venue", listing_name: "Riverside Events Venue", venue_type: "Event hall", description: "Stunning riverside event space with panoramic views, ideal for weddings, corporate events and private parties.", location: "London, UK", capacity: "500", min_capacity: "50", address: "Riverside Road, London, SE1 7PB", amenities: ["Outdoor space", "On-site parking", "In-house catering"], event_types: ["Weddings", "Corporate Events", "Private Parties"], photos: [] },
   "provider-3": { booking_mode: "Request to Book", response_time: "Within 2 hours", lead_time: "At least 24 hours", cancellation_policy: "Standard – 50% refund up to 14 days before", conditional_holds: true, hold_duration: "48 hours", standby: true, emergency: false, response_notifications: ["email", "push"], payout_currency: "GBP" },
   "provider-4": { documents: {}, members: [{ email: "sophie@riverside-events.co.uk", role: "manager" }] },
 };
@@ -44,7 +44,7 @@ export function previewOnboardingProps(flow: Flow, step: number): OnboardingProp
     context: {
       capabilities: flow === "provider" && step === 2 ? ["venue", "service"] : ["venue"], categories: [], country: "United Kingdom", currency: "GBP", bookingMode: "Request to Book",
       payoutStatus: "not_connected", verificationStatus: "unverified", workspaceName: flow === "provider" ? "Riverside Events" : "Thomas Events",
-      listing: step >= 2 && flow === "provider" ? { name: "Riverside Events Venue", kind: "venue", location: "London, UK", description: "", detail: "Up to 500 guests", photoUrl: null } : undefined,
+      listing: step >= 2 && flow === "provider" ? { name: "Riverside Events Venue", kind: "venue", location: "London, UK", description: "", detail: "Up to 500 guests", photoUrl: step === 4 ? "/assets/design-samples/sample-publish-preview.png" : "/assets/design-samples/sample-listing-preview.png" } : undefined,
       readiness: { eligible: false, missing: ["listing_photo", "verification", "payouts"] }, existing: [], invites: [],
       summary: { name: "Thomas Events", businessType: "Event Management Company", location: "United Kingdom ((GMT+0/+1) London)", currency: "GBP (£)" },
     },

@@ -1,0 +1,16 @@
+{
+  "key": "prov-w02-s1",
+  "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=layouts",
+  "file": "Designs/Provider Workspace/Gala·Dock Add Space Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 14.43,
+  "ssim": 0.6183,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1184
+  },
+  "errors": [],
+  "at": "2026-10-11T01:21:08.945Z"
+}

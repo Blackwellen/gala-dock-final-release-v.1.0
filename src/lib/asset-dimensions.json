@@ -578,5 +578,29 @@
   "venue-map": [
     317,
     157
+  ],
+  "sample-listing-1": [
+    108,
+    103
+  ],
+  "sample-listing-2": [
+    108,
+    103
+  ],
+  "sample-listing-3": [
+    118,
+    103
+  ],
+  "sample-listing-4": [
+    95,
+    103
+  ],
+  "sample-listing-preview": [
+    237,
+    133
+  ],
+  "sample-publish-preview": [
+    244,
+    114
   ]
 }

@@ -3,12 +3,12 @@
 .qp-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#22265e;margin:6px 0 4px}
 .qp-back svg{width:17px!important;height:17px!important}
 .qp-head{display:flex;align-items:flex-start;gap:28px}
-.qp-head h1{font-size:31px;font-weight:800;letter-spacing:-.035em;color:#06073f;line-height:1.2}
+.qp-head h1{font-size:31px;font-weight:800;letter-spacing:-.035em;color:#02032e;line-height:1.2}
 .qp-sub{display:flex;align-items:center;gap:14px;margin-top:4px;font-size:10.5px;color:var(--ws-muted)}
 .qp-sub .ws-chip{height:20px;font-size:10px}
 .qp-status{display:flex;align-items:center;gap:12px;padding:8px 16px 8px 12px;border-radius:8px;margin-top:4px;background:#eef3fe;color:#1a1af2}
 .qp-status svg{width:28px!important;height:28px!important}
-.qp-status span{display:grid}.qp-status b{font-size:12px;font-weight:600}.qp-status small{font-size:10px;color:#4f5785}
+.qp-status span{display:grid}.qp-status b{font-size:12px;font-weight:600}.qp-status small{font-size:10px;color:#3f4596}
 .qp-status.amber{background:#fff4e6;color:#d86d00}.qp-status.grey{background:#f3f4f8;color:#6c74a8}.qp-status.green{background:#e5f8ef;color:#0f7a3f}.qp-status.red{background:#fff1f3;color:#e3122e}.qp-status.purple{background:#f4effe;color:#5c19e6}
 .qp-actions{margin-left:auto;display:flex;gap:10px;padding-top:6px}
 .qp-actions .ws-btn{height:36px;font-size:11.5px}
@@ -22,7 +22,7 @@
 .qp-event b{font-size:11.5px;margin-bottom:2px}
 .qp-event small{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--ws-muted)}
 .qp-event small svg{width:12px!important;height:12px!important}
-.qp-label{font-size:10.5px;font-weight:600;color:#06073f}
+.qp-label{font-size:10.5px;font-weight:600;color:#02032e}
 .qp-client-row{display:flex;gap:10px;align-items:center;margin:8px 0}
 .qp-client-row span{display:grid}.qp-client-row b{font-size:11.5px}.qp-client-row small{font-size:10px;color:var(--ws-muted)}
 .qp-client-actions{display:flex;gap:8px}
@@ -40,7 +40,7 @@
 .qp-main{display:grid;gap:10px;min-width:0}
 .qp-items{padding:0;overflow:hidden}
 .qp-items-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px}
-.qp-items h2,.qp h2{font-size:14px;font-weight:720;color:#06073f;display:flex;align-items:center;gap:10px}
+.qp-items h2,.qp h2{font-size:14px;font-weight:720;color:#02032e;display:flex;align-items:center;gap:10px}
 .qp-items h2 svg{width:20px!important;height:20px!important;color:#4b55a8}
 .qp-table td{padding:8px 10px}
 .qp-table .qp-detail{font-size:10.5px;color:var(--ws-muted);max-width:180px}
@@ -51,7 +51,7 @@
 .qp-fin dl{margin:8px 0 0;display:grid;gap:7px;font-size:11px}
 .qp-fin dl div{display:flex;justify-content:space-between}
 .qp-fin dd{margin:0}
-.qp-fin .total{font-size:14px;font-weight:760;color:#06073f;border-top:1px solid var(--ws-border-2);padding-top:8px}
+.qp-fin .total{font-size:14px;font-weight:760;color:#02032e;border-top:1px solid var(--ws-border-2);padding-top:8px}
 .qp-schedule ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
 .qp-schedule li{display:grid;grid-template-columns:12px 1fr auto;grid-template-areas:"i l v" "i s s";gap:2px 10px;align-items:center;padding:8px 10px;border:1px solid var(--ws-border-2);border-radius:8px;font-size:11px}
 .qp-schedule li i{grid-area:i;width:10px;height:10px;border-radius:50%}
@@ -69,9 +69,9 @@
 .qp-pv-meta{display:flex;gap:14px;font-size:10px;color:var(--ws-muted);margin-top:4px}
 .qp-pv-meta span{display:inline-flex;align-items:center;gap:5px}
 .qp-pv-meta svg{width:12px!important;height:12px!important}
-.qp-pv-msg{font-size:10px;margin-top:8px;color:#4f5785}
+.qp-pv-msg{font-size:10px;margin-top:8px;color:#3f4596}
 .qp-actions-card ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
-.qp-act{display:flex!important;align-items:center;gap:12px;width:100%;height:auto!important;padding:8px 10px!important;border:1px solid var(--ws-border-2)!important;border-radius:8px;justify-content:flex-start!important;text-align:left;white-space:normal!important;color:#06073f!important;background:#fff!important}
+.qp-act{display:flex!important;align-items:center;gap:12px;width:100%;height:auto!important;padding:8px 10px!important;border:1px solid var(--ws-border-2)!important;border-radius:8px;justify-content:flex-start!important;text-align:left;white-space:normal!important;color:#02032e!important;background:#fff!important}
 .qp-act:hover{background:#f8faff!important}
 .qp-act>svg{width:20px!important;height:20px!important;color:#1a1af2;flex-shrink:0}
 .qp-act span{display:grid;gap:1px}.qp-act b{font-size:11px;font-weight:600}.qp-act small{font-size:10px;color:var(--ws-muted);font-weight:400}
@@ -107,8 +107,8 @@ svg.ok{color:#0f8a4e}svg.warn{color:#e27a00}svg.no{color:#ec2f52}
 @media (max-width:860px){.qp-head{flex-wrap:wrap;gap:12px}.qp-actions{margin-left:0;flex-wrap:wrap}.qp-cards,.qp-money,.qp-terms-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* Printable quote */
-.qprint{max-width:820px;margin:0 auto;background:#fff;padding:36px 40px;border:1px solid var(--ws-border);border-radius:12px;color:#06073f;font-size:11.5px;display:grid;gap:18px}
-.qprint header{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #06073f;padding-bottom:14px}
+.qprint{max-width:820px;margin:0 auto;background:#fff;padding:36px 40px;border:1px solid var(--ws-border);border-radius:12px;color:#02032e;font-size:11.5px;display:grid;gap:18px}
+.qprint header{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #02032e;padding-bottom:14px}
 .qprint h1{font-size:21.5px}.qprint header p{font-size:10.5px}
 .qprint-ref{display:grid;text-align:right;font-size:10.5px;gap:2px}.qprint-ref b{font-size:12.5px}.qprint-ref strong{color:#d86d00}
 .qprint-for{display:grid;gap:2px;font-size:11px}
@@ -118,7 +118,7 @@ svg.ok{color:#0f8a4e}svg.warn{color:#e27a00}svg.no{color:#ec2f52}
 .qprint td small{display:block;color:#6c74a8;font-size:10px}
 .qprint th:not(:first-child),.qprint td:not(:first-child){text-align:right;white-space:nowrap}
 .qprint tfoot td{border:0;padding:4px 6px}
-.qprint tfoot .total td{font-size:13.5px;font-weight:760;border-top:2px solid #06073f;padding-top:8px}
+.qprint tfoot .total td{font-size:13.5px;font-weight:760;border-top:2px solid #02032e;padding-top:8px}
 .qprint-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .qprint h2{font-size:11.5px;margin-bottom:6px}
 .qprint ul{margin:0;padding-left:16px;display:grid;gap:3px;font-size:10.5px}

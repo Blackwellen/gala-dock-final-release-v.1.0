@@ -57,7 +57,7 @@ for (const slug of ["summer-sessions-2026", "food-drink-expo-2026", "rooftop-din
 
 // 4) Customer wedding objectives for the brief.
 const wed = await ev("alex-taylor-wedding");
-must(await sb.from("events").update({ settings: { ...wed.settings, hero_image: "/assets/gd/hero-wedding.webp" } }).eq("id", wed.id), "wedding hero");
+must(await sb.from("events").update({ settings: { ...wed.settings, hero_image: "/assets/gd/hero-wedding.webp", hero_compact: "/assets/gd/hero-wedding-compact.webp", hero_compact_tabs: { guests: "/assets/gd/hero-wedding-compact-guests.webp", plan: "/assets/gd/hero-wedding-compact-plan.webp", money: "/assets/gd/hero-wedding-compact-money.webp", messages: "/assets/gd/hero-wedding-compact-messages.webp" }, thumb: "/assets/gd/thumb-wedding.webp" } }).eq("id", wed.id), "wedding hero");
 
 console.log(JSON.stringify({ tickets_created: created, ok: true }));
 

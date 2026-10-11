@@ -64,5 +64,47 @@
     "url": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
     "file": "Designs/Provider Workspace/Gala Dock Venue Spaces Dashboard.png",
     "who": "provider"
+  },
+  {
+    "key": "prov-010-space",
+    "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+    "file": "Designs/Provider Workspace/Main Hall Venue Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-010-space-rules",
+    "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+    "file": "Designs/Provider Workspace/Gala Dock Space Availability Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w02-s1",
+    "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=layouts",
+    "file": "Designs/Provider Workspace/Gala·Dock Add Space Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w01-s1",
+    "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+    "file": "Designs/Provider Workspace/Modern Venue Setup Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w01-s2",
+    "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+    "file": "Designs/Provider Workspace/Gala Dock Venue Spaces Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w01-s3",
+    "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+    "file": "Designs/Provider Workspace/Gala Dock Venue Setup Dashboard(1).png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-w01-s4",
+    "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+    "file": "Designs/Provider Workspace/Riverside Arena Venue Setup Dashboard.png",
+    "who": "provider"
   }
 ]

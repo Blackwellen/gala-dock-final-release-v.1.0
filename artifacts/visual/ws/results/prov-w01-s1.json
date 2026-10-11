@@ -1,0 +1,16 @@
+{
+  "key": "prov-w01-s1",
+  "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+  "file": "Designs/Provider Workspace/Modern Venue Setup Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 16.46,
+  "ssim": 0.6414,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [],
+  "at": "2026-10-11T01:42:22.106Z"
+}
