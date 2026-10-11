@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Headset, Clock3, TriangleAlert, Upload, BadgeCheck, Plus, ChevronDown, Filter, ArrowRight, PenLine, ExternalLink, Reply, UserPlus, SquareArrowOutUpRight,
-  RefreshCw, Store, Building2, Users, Search, Sparkles, MessageSquareText, StickyNote, ArrowUpFromLine, CirclePlus, Receipt, UserRound, Timer, type LucideIcon, ShieldAlert } from "lucide-react";
+  RefreshCw, Store, Building2, Users, Search, Sparkles, MessageSquareText, StickyNote, ArrowUpFromLine, CirclePlus, Receipt, UserRound, Timer, type LucideIcon, ShieldAlert, ShieldCheck } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-support.css";
 import { Donut, Restricted } from "@/components/workspace/kit";
@@ -75,6 +75,7 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
   return <div className="adb adsu">
     <Head title="Support" subtitle="Resolve booking, ticket, payment and platform issues."
       actions={<>
+        <Link className="adb-btn" href="/admin/support/privacy"><ShieldCheck aria-hidden="true" />Privacy requests</Link>
         {permissions.has("support.break_glass_conversation.read") && <Link className="adb-btn" href="/admin/conversations"><ShieldAlert aria-hidden="true" />Break-glass access</Link>}
         <Link className="adb-btn" href="/admin/support/export"><Upload aria-hidden="true" />Export</Link>
         <details className="adb-pop"><summary className="adb-btn primary"><Plus aria-hidden="true" />New support case<ChevronDown aria-hidden="true" /></summary>
