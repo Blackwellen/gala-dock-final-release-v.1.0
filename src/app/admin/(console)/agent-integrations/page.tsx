@@ -85,6 +85,7 @@ export default async function AgentPage(props: PageProps<"/admin/agent-integrati
     <Head title="Agent & Integrations" subtitle="Operate Agent runtime, tool health and external connectors."
       actions={<>
         <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="range" label="Period" value={range} options={Object.entries(RANGES).map(([value, [label]]) => ({ value, label }))} /></Suspense></span>
+        <Link className="adb-btn" href="/admin/agent-integrations/credits"><Coins aria-hidden="true" />Credits &amp; pricing</Link>
         <Link className="adb-btn" href={`/admin/agent-integrations/export?range=${range}`}><Upload aria-hidden="true" />Export</Link>
         <details className="adb-pop"><summary className="adb-btn primary"><Play aria-hidden="true" />New run<ChevronDown aria-hidden="true" /></summary>
           <div className="adb-pop-body"><h3>Start a Gala Agent run</h3>

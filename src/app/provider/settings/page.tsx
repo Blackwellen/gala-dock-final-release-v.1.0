@@ -8,6 +8,7 @@ import "@/styles/provider-settings.css";
 import { Avatar, Chip } from "@/components/workspace/kit";
 import { CredentialsCard } from "./_components/credentials-card";
 import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
+import { AgentCredits } from "@/components/agent/credits";
 import { policyOf, mfaRequired } from "@/lib/mfa/policy";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money, relative, titleCase, requestTime } from "@/lib/workspace/format";
@@ -137,7 +138,8 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         <ul className="ps-rows">{["Google Calendar", "Outlook Calendar", "Apple Calendar", "Xero", "QuickBooks"].map(x => <li key={x} className="ps-li"><span>{x}</span><b>Not connected</b><span className="ws-btn outline sm" aria-disabled="true">Coming soon</span></li>)}</ul></>}
       {tab === "agent" && <><h2>Gala Agent</h2><p className="ps-sub">Gala Agent only proposes changes — every action needs approval on the <Link href="/provider/agent?tab=approvals">Approvals</Link> tab.</p>
         <ActionForm action={saveAgent} className="pt-form ps-form">{([["response_automation", "Response automation"], ["quote_generation", "Quote generation"], ["availability_management", "Availability management"], ["pre_event_confirmations", "Pre-event confirmations"]] as const).map(([k, l]) => <Toggle key={k} name={k} label={l} on={ag[k] !== false} />)}
-          {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save</button></div>}</ActionForm></>}
+          {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save</button></div>}</ActionForm>
+        <AgentCredits db={ctx.db} workspaceId={ws.id} canEdit={ctx.can.manage} canSeeUsage={ctx.can.finance} /></>}
       {tab === "notifications" && <><h2>Notifications</h2><ActionForm action={saveNotifications} className="ps-notif"><table className="ws-table"><thead><tr><th>Event</th><th>Email</th><th>In-app</th><th>SMS</th></tr></thead>
         <tbody>{([["enquiries", "New enquiries"], ["bookings", "Booking updates"], ["agent", "Agent notifications"], ["mentions", "Team mentions"]] as const).map(([k, l]) => { const x = n[k] ?? { email: true, in_app: true }; return <tr key={k}><td>{l}</td>
           <td><input type="checkbox" name={`${k}_email`} defaultChecked={!!x.email} aria-label={`${l} email`} /></td><td><input type="checkbox" name={`${k}_app`} defaultChecked={x.in_app !== false} aria-label={`${l} in-app`} /></td><td><input type="checkbox" name={`${k}_sms`} defaultChecked={!!x.sms} aria-label={`${l} SMS`} /></td></tr>; })}</tbody></table>
