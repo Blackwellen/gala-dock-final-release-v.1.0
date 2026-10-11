@@ -4,7 +4,7 @@
 
 These terms apply when you use Gala Dock as a **customer**: to discover events, buy tickets, plan a personal event, or book venues and suppliers for a personal occasion such as a birthday, wedding or private party. They sit alongside the Platform Terms of Service (`/terms`), the Ticket Purchase Terms (`/ticket-terms`), the Cancellation & Refund Policy and the Privacy Notice. If these terms conflict with the Platform Terms on a customer matter, these terms apply.
 
-Gala Dock is operated by Blackwellen Limited, a company registered in England and Wales (company number 16482166), registered office 61 Bridge Street, Kington, HR5 3DJ ("**we**", "**us**"). Contact: support@galadock.com.
+Gala Dock is operated by Blackwellen Limited, a company registered in England and Wales (company number 16482166), registered office 61 Bridge Street, Kington, Herefordshire, HR5 3DJ ("**we**", "**us**"). Contact: support@galadock.com.
 
 ## 1. What we do, and what we don't
 

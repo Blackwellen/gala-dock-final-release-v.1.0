@@ -4,7 +4,7 @@
 
 These terms apply when you list services and take bookings through Gala Dock as a **Provider**. Venues are additionally covered by the Venue Marketplace Terms. These terms incorporate the Platform Terms of Service, Acceptable Use Policy, Community & Marketplace Standards, Marketplace Payment Protection Terms, Cancellation & Refund Policy and AI / Gala Agent Terms.
 
-Contracting entity: Blackwellen Limited (company number 16482166), registered office 61 Bridge Street, Kington, HR5 3DJ.
+Contracting entity: Blackwellen Limited (company number 16482166), registered office 61 Bridge Street, Kington, Herefordshire, HR5 3DJ.
 
 ## 1. Appointment
 

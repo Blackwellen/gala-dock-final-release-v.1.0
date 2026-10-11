@@ -5,7 +5,7 @@ export const LEGAL = {
   service: "Gala Dock",
   site: "galadock.com",
   /** Operator, per Companies House (company 16482166, registered in England and Wales). Gala Dock is a trading name. */
-  entity: { name: "Blackwellen Limited", number: "16482166", address: "61 Bridge Street, Kington, HR5 3DJ, United Kingdom" },
+  entity: { name: "Blackwellen Limited", number: "16482166", address: "61 Bridge Street, Kington, Herefordshire, HR5 3DJ, United Kingdom", ico: "ZB905402", vat: "" },
   dpo: { name: "Jamahl Thomas", role: "Data Protection Officer" },
   contact: { privacy: "legal@galadock.com", support: "support@galadock.com", legal: "legal@galadock.com" },
   ico: { name: "Information Commissioner’s Office", url: "https://ico.org.uk/make-a-complaint/", phone: "0303 123 1113" },

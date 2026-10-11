@@ -10,7 +10,7 @@ We want to put things right when something goes wrong. This policy explains how 
 
 * In the app: Help → Contact support → Complaint
 * Email: support@galadock.com (subject "Complaint")
-* Post: Blackwellen Limited, 61 Bridge Street, Kington, HR5 3DJ
+* Post: Blackwellen Limited, 61 Bridge Street, Kington, Herefordshire, HR5 3DJ
 
 Tell us what happened, when, the booking, order or ticket reference, and what you'd like us to do.
 
