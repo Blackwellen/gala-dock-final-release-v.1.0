@@ -35,7 +35,7 @@ You can complain to our Data Protection Officer at legal@galadock.com. You also 
 
 ## Alternative dispute resolution and courts
 
-If we can't resolve a consumer complaint, you may be able to use an alternative dispute resolution scheme: **[ADR PROVIDER, if appointed]**. You can also go to court. Card payments may be protected by your card issuer's chargeback scheme or Section 75 of the Consumer Credit Act 1974.
+If we can't resolve a consumer complaint, we will tell you in writing that we cannot settle it. We are not currently signed up to an alternative dispute resolution (ADR) scheme, so we do not offer one. You can also go to court. Card payments may be protected by your card issuer's chargeback scheme or Section 75 of the Consumer Credit Act 1974.
 
 ## Record keeping
 

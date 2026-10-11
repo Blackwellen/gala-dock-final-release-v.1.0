@@ -37,4 +37,4 @@ If you're not happy with our response, you can contact the Equality Advisory and
 
 ## Preparation of this statement
 
-Prepared on 11 October 2026, based on internal testing. A full independent audit is planned before production launch: **[DATE OF AUDIT]**.
+Prepared on 11 October 2026, based on internal testing. A full independent audit will be scheduled before production launch, and this statement will be updated with its date and findings.

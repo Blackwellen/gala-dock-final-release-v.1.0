@@ -1,6 +1,6 @@
 # Safeguarding & Abuse Policy
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. Safeguarding lead: **[NAMED SAFEGUARDING LEAD]**; deputy: **[NAME]**.
+> **Draft for specialist UK legal review before production publication.** Version 2026-10. Safeguarding lead: **Jamahl Thomas, Director**; deputy: **not yet appointed — the lead covers all reports until a deputy is named**.
 
 ## 1. Purpose and scope
 

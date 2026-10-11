@@ -78,7 +78,7 @@ Gala Agent acts only within the permissions of the person who started the task a
 
 9.2 Subject to 9.1, neither party is liable for indirect or consequential loss, or for loss of profit, revenue, goodwill or data.
 
-9.3 Subject to 9.1, Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the fees you paid to Gala Dock in that period and (b) £[AMOUNT]. Ticket proceeds held for you, which remain payable to you, are not counted against this cap.
+9.3 Subject to 9.1, Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the fees you paid to Gala Dock in that period and (b) £100. Ticket proceeds held for you, which remain payable to you, are not counted against this cap.
 
 9.4 Gala Dock is not responsible for the delivery of providers' services, for your event, or for attendees' conduct.
 

@@ -38,7 +38,7 @@ Contracting entity: Blackwellen Limited (company number 16482166), registered of
 
 4.2 You must use the booking's check-in tools where required (for example arrival and setup status on event day) and tell the organiser promptly about delays or problems.
 
-4.3 You must hold appropriate insurance, normally public liability of at least £[AMOUNT] per occurrence, and provide evidence on request.
+4.3 You must hold appropriate insurance, normally public liability of at least £2,000,000 per occurrence (venues may require more), and provide evidence on request.
 
 ## 5. Payment, commission and payouts
 

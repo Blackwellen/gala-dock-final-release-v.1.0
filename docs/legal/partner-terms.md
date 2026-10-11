@@ -15,7 +15,7 @@ These terms apply to organisations that join the Gala Dock **Partner** programme
 
 ## 2. Referral fees
 
-2.1 A referral counts when a new workspace signs up through the partner's tracked link or code and starts a paid plan within 60 days. Fees, the payment period and any caps are set out in the partner order form: **[FEE SCHEDULE]**.
+2.1 A referral counts when a new workspace signs up through the partner's tracked link or code and starts a paid plan within 60 days. Fees, the payment period and any caps are set individually in each partner’s signed order form and shown in the partner portal.
 
 2.2 No fees are due on refunded amounts, on fraudulent or self-referred accounts, or on existing customers.
 
