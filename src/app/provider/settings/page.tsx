@@ -9,6 +9,7 @@ import { Avatar, Chip } from "@/components/workspace/kit";
 import { CredentialsCard } from "./_components/credentials-card";
 import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
 import { AgentCredits } from "@/components/agent/credits";
+import { DevelopersPanel } from "@/components/developer/panel";
 import { policyOf, mfaRequired } from "@/lib/mfa/policy";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money, relative, titleCase, requestTime } from "@/lib/workspace/format";
@@ -20,7 +21,7 @@ import { setCapability, saveProfile, saveBooking, saveComms, saveNotifications, 
 
 export const metadata: Metadata = { title: "Settings" };
 const TABS: [string, string][] = [["workspace", "Workspace"], ["capabilities", "Capabilities"], ["team", "Team & Access"], ["booking", "Marketplace & Booking Rules"], ["billing", "Payments & Billing"],
-  ["communications", "Communications"], ["integrations", "Integrations"], ["agent", "Agent"], ["notifications", "Notifications"], ["security", "Security"]];
+  ["communications", "Communications"], ["integrations", "Integrations"], ["agent", "Agent"], ["notifications", "Notifications"], ["security", "Security"], ["developers", "Developers"]];
 type S = { profile?: Record<string, string>; booking?: Record<string, unknown>; communications?: Record<string, unknown>; notifications?: Record<string, { email?: boolean; in_app?: boolean; sms?: boolean }>; agent?: Record<string, boolean>; tax?: { vat_registered?: boolean; number?: string } };
 const Row = ({ l, v, href }: { l: string; v: React.ReactNode; href?: string }) => <li>{href ? <Link href={href}><span>{l}</span><b>{v}</b><ChevronRight aria-hidden="true" /></Link> : <><span>{l}</span><b>{v}</b></>}</li>;
 const Toggle = ({ name, label, on }: { name: string; label: string; on?: boolean }) => <label className="vw-switch ps-tg"><input type="checkbox" name={name} defaultChecked={!!on} /><i aria-hidden="true" /><span><b>{label}</b></span></label>;
@@ -131,6 +132,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
       {tab === "security" && <><h2>Security</h2><p className="ps-sub">Two-step verification for your own login, and the policy for who in this workspace must use it.</p>
         <MfaCard required={mfaRequired(policyOf(ws.settings), ctx.role) ? ws.name : null} />
         <WorkspaceMfaPolicy workspaceId={ws.id} policy={policyOf(ws.settings)} owner={owner} /></>}
+      {tab === "developers" && <><h2>Developers</h2><p className="ps-sub">API keys, webhooks and integrations for this workspace.</p><DevelopersPanel db={ctx.db} workspaceId={ws.id} canManage={ctx.can.manage} /></>}
       {tab === "communications" && <><h2>Communications</h2><ActionForm action={saveComms} className="pt-form ps-form"><label>From name<input name="from_name" defaultValue={String(c.from_name ?? ws.name)} /></label><label>Email address<input name="email" type="email" defaultValue={String(c.email ?? p.email ?? "")} /></label>
         <label>Reply-to<input name="reply_to" type="email" defaultValue={String(c.reply_to ?? "")} /></label><Toggle name="customer_notifications" label="Customer notifications" on={c.customer_notifications !== false} />
         {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save</button></div>}</ActionForm></>}
