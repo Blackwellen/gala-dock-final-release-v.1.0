@@ -62,6 +62,25 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
     expect(byAccount).toEqual({ cash_stripe: 5000, platform_fee: -500, provider_payable: -4500 });
   });
 
+  test("charge.dispute.* mirrors the chargeback, opens one support case and posts funds movements once", async () => {
+    const pi = `pi_${randomUUID().slice(0, 12)}`, dp = `dp_${randomUUID().slice(0, 12)}`;
+    await send({ id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", data: { object: { id: pi, amount_received: 4000, currency: "gbp", metadata: { order_ref: ref } } } });
+    const dispute = (status: string) => ({ id: dp, amount: 4000, currency: "gbp", charge: `ch_${pi}`, payment_intent: pi, reason: "fraudulent", status, evidence_details: { due_by: Math.floor(Date.now() / 1000) + 7 * 86400, submission_count: 0 } });
+    expect((await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.created", data: { object: dispute("needs_response") } })).body).toEqual({ received: true });
+    await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.funds_withdrawn", data: { object: dispute("needs_response") } });
+    await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.funds_withdrawn", data: { object: dispute("needs_response") } }); // redelivery under a new id
+    await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.closed", data: { object: dispute("won") } });
+    await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.funds_reinstated", data: { object: dispute("won") } });
+    const row = (await admin.from("stripe_disputes" as never).select("status,outcome,order_ref,event_id").eq("stripe_dispute_id", dp).single()).data;
+    expect(row).toEqual({ status: "won", outcome: "won", order_ref: ref, event_id: eventId });
+    const { count } = await admin.from("support_cases").select("id", { count: "exact", head: true }).contains("related", { stripe_dispute_id: dp });
+    expect(count).toBe(1);
+    const { data: txs } = await admin.from("ledger_transactions" as never).select("kind").eq("source_id", dp).order("posted_at");
+    expect((txs as { kind: string }[]).map(t => t.kind)).toEqual(["dispute", "reversal"]);
+    await admin.from("support_cases").delete().contains("related", { stripe_dispute_id: dp });
+    await admin.from("stripe_disputes" as never).delete().eq("stripe_dispute_id", dp);
+  });
+
   test("charge.refunded records each cumulative refund once and never issues a refund", async () => {
     const ch = `ch_${randomUUID().slice(0, 12)}`;
     const refund = (amount: number) => ({ id: `evt_${randomUUID()}`, type: "charge.refunded", data: { object: { id: ch, amount_refunded: amount, currency: "gbp", metadata: { order_ref: ref } } } });

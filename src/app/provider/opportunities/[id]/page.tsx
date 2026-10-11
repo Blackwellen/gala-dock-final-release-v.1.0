@@ -13,6 +13,7 @@ import { workspaceBlocks, workspaceQuotes } from "@/lib/provider/commercial";
 import { compatibility } from "@/lib/provider/fit";
 import { addInternalNote } from "./actions";
 import { QuickResponse, HeaderActions } from "./interactive";
+import { LifecyclePanel } from "@/components/marketplace/lifecycle-panel";
 
 export const metadata: Metadata = { title: "Opportunity" };
 const verdict: Record<string, Record<string, string>> = {
@@ -157,6 +158,7 @@ export default async function OpportunityPage(props: PageProps<"/provider/opport
         <section className="ws-panel pq-card"><h2 className="pq-h"><CalendarRange aria-hidden="true" />Request status</h2>
           <p className="pq-status"><FileText aria-hidden="true" /><span><b>{statusChip.label}</b><small>{open ? "No response yet" : `Updated ${relative(item.updated_at, now)}`}</small></span></p>
           <ol className="pq-steps">{steps.map((s, i) => <li key={s} className={!expired && i <= stepOf(item.status) ? "on" : ""}><i /><span>{s}</span></li>)}</ol></section>
+        <LifecyclePanel itemId={item.id} viewer="provider" />
         {tab !== "response" && <section className="ws-panel pq-card"><h2 className="pq-h"><ShieldCheck aria-hidden="true" />Quick response</h2>
           <QuickResponse itemId={id} open={open} hard={fit.hard} hardReason={fit.checks.find(c => c.state === "fail")?.detail ?? ""} expired={expired} /></section>}
         <section className="ws-panel pq-card"><h2 className="pq-h"><NotebookPen aria-hidden="true" />Internal notes</h2>

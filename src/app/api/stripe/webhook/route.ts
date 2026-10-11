@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { finalise } from "@/lib/checkout";
 import { syncConnectAccount, type StripeAccount } from "@/lib/commerce/connect";
+import { syncStripeDispute, type StripeDispute } from "@/lib/commerce/disputes";
 
 /** Verifies a Stripe-Signature header (v1 HMAC-SHA256, 5-minute tolerance). */
 function verify(payload: string, header: string | null, secret: string) {
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
     if (event.type === "payment_intent.succeeded") await ledgerForPayment(db, object);
     if (event.type === "charge.refunded") await ledgerForRefund(db, object);
     if (event.type === "account.updated") await syncConnectAccount(object as unknown as StripeAccount);
+    if (event.type.startsWith("charge.dispute.")) await syncStripeDispute(object as unknown as StripeDispute, event.type);
     // Only now is the event done; a throw above leaves it claimable so Stripe's retry completes it.
     await db.rpc("finish_webhook_event", { p_provider: "stripe", p_external_id: event.id, p_status: "processed" });
     return NextResponse.json({ received: true });

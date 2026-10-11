@@ -26,8 +26,8 @@ Service layer: `src/lib/actions/*` (customer + organizer server actions), `src/l
 | Phase | Scope | Key new/extended records | Status |
 |---|---|---|---|
 | 1 Foundation | Capability permissions (§99), state-machine module + DB transition guards (§114), audit actor types (§100), immutable ledger (§42), webhook event log (§109), soft-delete conventions (§101) | `role_permissions` + `has_permission()`, `state_machines`/`state_transitions`/`state_violations` + guard trigger (generated from `src/lib/domain/*.ts`), `ledger_transactions`/`ledger_entries` + `post_ledger_transaction()`, `webhook_events` + `claim_webhook_event()`, `audit_events.actor_type` | **done** — migrations 202610160001/2, tests/foundation (5/5) |
-| 2 Trust & Connect | Stripe Connect state (§29), verification (§30), credentials + expiry (§31), reliability (§32) | `provider_documents`, `verification_records`, `reliability_metrics` | planned |
-| 3 Marketplace booking | Full booking lifecycle (§33), response SLA (§34), holds (§35), standby (§36), emergency (§37), cancellation (§45), disputes (§44) | `conditional_holds`, `standby_commitments`, `emergency_requests`, `booking_disputes` | planned |
+| 2 Trust & Connect | Stripe Connect state (§29), verification (§30), credentials + expiry (§31), reliability (§32) | `connect_accounts`, `credential_types`/`credential_requirements`, `provider_documents`, `verification_records`, `reliability_metrics` | **done** — migration 202610160003, webhook sync, provider cards |
+| 3 Marketplace booking | Full booking lifecycle (§33), response SLA (§34), holds (§35), standby (§36), emergency (§37), cancellation (§45), disputes (§44) | `conditional_holds`, `standby_commitments`, `emergency_requests`, `booking_disputes` | **done** — migration 202610170001 (+ state seed 202610170002), pg_cron `marketplace-sweep` every 5 min, shared lifecycle panel (organizer/provider/customer), Emergency Supply pages, dispute threads, admin /admin/disputes, Stripe chargeback sync; tests/marketplace (6) + webhook dispute test |
 | 4 Customer build | `/account/events/[id]/build` canvas (§66–71), backups | extend `build_items` | partly exists |
 | 5 Venue / F&B | Venue profile tabs, commercial engine, BEO, menus, bar (§59–65) | `beo_versions`, `menus`, `menu_items` | planned |
 | 6 Organizer depth | Five-tab event record (§3), sales (§73–75), team conflicts (§84–85), readiness (§87), feasibility (§88), live mode (§86) | | partly exists |
@@ -38,6 +38,7 @@ Service layer: `src/lib/actions/*` (customer + organizer server actions), `src/l
 | 13 Admin / observability | §106, §128 | | partly exists |
 | 14 QA / release | §115–132 | | ongoing |
 | + User additions | Messaging between accounts and portals; ticket QR scanning; ticket PDF generation and printing | | planned (Phase 7 / comms) |
+| 15 (last) Media Studio, canvas agent, PWA nav, ticket credential formats | Spec in `docs/specs/media-studio-part1.md` + `part2.md` (§1–92) — queued by user to be done after phases 3–14 | designs, design_pages/layers/versions/assets/shares, template_publications/reports, brand_assets, uploaded_fonts, ticket_display_preferences | queued |
 
 ## 3. Non-negotiables carried into every phase
 

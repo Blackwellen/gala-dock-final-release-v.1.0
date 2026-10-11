@@ -1,6 +1,7 @@
 import { ShieldCheck } from "lucide-react";
 import { Chip } from "@/components/workspace/kit";
 import { createClient } from "@/lib/supabase/server";
+import { requestTime } from "@/lib/workspace/format";
 import { CredentialUpload } from "./credential-upload";
 import "@/styles/provider-credentials.css";
 
@@ -15,7 +16,8 @@ export async function CredentialsCard({ workspaceId, canManage }: { workspaceId:
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("workspace_credential_status" as never, { p_workspace: workspaceId } as never);
   const rows = (data ?? []) as Row[];
-  const soon = (d: string | null) => d && new Date(d).getTime() - Date.now() < 30 * 86_400_000;
+  const now = requestTime();
+  const soon = (d: string | null) => d && new Date(d).getTime() - now < 30 * 86_400_000;
   const blocking = rows.filter(r => r.gates_marketplace && r.status !== "verified").length;
   return <section className="ws-panel pc-card" aria-labelledby="pc-title">
     <div className="ws-panel-head"><h2 id="pc-title"><span className="ps-ic"><ShieldCheck aria-hidden="true" /></span>Trust &amp; credentials</h2>
