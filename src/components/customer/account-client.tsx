@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Lock, Plus, MoreHorizontal, CalendarCheck, Ticket, MessageSquare, Megaphone, FileText, Clock4, KeyRound, Download, Trash2, Copy, Loader2, Check, Eye, EyeOff, CreditCard } from "lucide-react";
@@ -29,7 +30,7 @@ export function AvatarButton({ url, name }: { url: string | null; name: string }
 
 type P = { full_name: string; phone: string; country: string; language: string; bio: string; date_of_birth: string };
 export function ProfileDetails({ profile, email, verified, countries, langs }: { profile: P; email: string; verified: boolean; countries: Record<string, string>; langs: Record<string, string> }) {
-  const [open, setOpen] = useState(false); const [v, setV] = useState(profile); const { run, pending } = useAction();
+  const [open, setOpen] = useState(false); const [v, setV] = useState(profile); const { run, pending } = useAction(); const [now] = useState(() => Date.now());
   const dob = profile.date_of_birth ? new Date(`${profile.date_of_birth}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "Not set";
   return <section className="ce-card ac-card">
     <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Profile details</h2><p className="ac-hint">Keep your personal information up to date.</p></div><button className="k-btn outline ac-edit" onClick={() => { setV(profile); setOpen(true); }}>Edit</button></div>
@@ -46,7 +47,7 @@ export function ProfileDetails({ profile, email, verified, countries, langs }: {
       <form className="ac-form" onSubmit={async e => { e.preventDefault(); const r = await run(() => saveProfile(v)); if (r.ok) setOpen(false); }}>
         <label className="k-field"><span>Full name</span><input className="k-input" required minLength={2} maxLength={120} value={v.full_name} onChange={e => setV(p => ({ ...p, full_name: e.target.value }))} autoComplete="name" /></label>
         <label className="k-field"><span>Phone number</span><input className="k-input" type="tel" maxLength={20} value={v.phone} onChange={e => setV(p => ({ ...p, phone: e.target.value }))} autoComplete="tel" placeholder="+44 7700 900000" /></label>
-        <label className="k-field"><span>Date of birth</span><input className="k-input" type="date" value={v.date_of_birth} onChange={e => setV(p => ({ ...p, date_of_birth: e.target.value }))} max={new Date(Date.now() - 13 * 365.25 * 864e5).toISOString().slice(0, 10)} /></label>
+        <label className="k-field"><span>Date of birth</span><input className="k-input" type="date" value={v.date_of_birth} onChange={e => setV(p => ({ ...p, date_of_birth: e.target.value }))} max={new Date(now - 13 * 365.25 * 864e5).toISOString().slice(0, 10)} /></label>
         <label className="k-field"><span>Country</span><select className="k-input" value={v.country} onChange={e => setV(p => ({ ...p, country: e.target.value }))}>{Object.entries(countries).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
         <label className="k-field"><span>Preferred language</span><select className="k-input" value={v.language} onChange={e => setV(p => ({ ...p, language: e.target.value }))}>{Object.entries(langs).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
         <label className="k-field wide"><span>Bio (optional)</span><textarea className="k-textarea" maxLength={250} value={v.bio} onChange={e => setV(p => ({ ...p, bio: e.target.value }))} /><small className="k-muted">{v.bio.length}/250</small></label>
@@ -64,8 +65,9 @@ function AddCard({ open, onClose }: { open: boolean; onClose: () => void }) {
   const host = useRef<HTMLDivElement>(null); const [state, setState] = useState<"loading" | "ready" | "saving" | "error">("loading"); const [err, setErr] = useState("");
   const api = useRef<{ stripe: StripeJs; elements: unknown } | null>(null); const toast = useKitToast(); const router = useRouter();
   useEffect(() => {
-    if (!open) return; let el: { destroy: () => void } | null = null; let dead = false; setState("loading"); setErr("");
+    if (!open) return; let el: { destroy: () => void } | null = null; let dead = false;
     (async () => {
+      await Promise.resolve(); if (dead) return; setState("loading"); setErr("");
       const r = await startAddCard(); if (!r.ok || !r.data) { setState("error"); setErr(r.error ?? "Could not start."); return; }
       try { await loadStripe(); } catch { setState("error"); setErr("Couldn't load the secure card form. Check your connection."); return; }
       if (dead || !host.current || !window.Stripe) return;
@@ -120,7 +122,7 @@ export function NotificationPrefs({ prefs, rows, editable }: { prefs: Record<str
   const [v, setV] = useState(prefs); const { run } = useAction();
   const flip = (k: string, val: boolean) => { const next = { ...v, [k]: val }; setV(next); void run(() => saveNotifications(next), { refresh: false }); };
   return <section className="ce-card ac-card">
-    <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Notification preferences</h2><p className="ac-hint">Choose what you want to be notified about.</p></div>{!editable && <a className="k-btn outline ac-edit" href="/account?tab=notifications">Edit</a>}</div>
+    <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Notification preferences</h2><p className="ac-hint">Choose what you want to be notified about.</p></div>{!editable && <Link className="k-btn outline ac-edit" href="/account?tab=notifications">Edit</Link>}</div>
     <ul className="ac-notifs">{rows.map(r => { const I = ICON[r.key] ?? CalendarCheck; return <li key={r.key}><span className="ac-nico"><I size={18} /></span><span className="k-grow"><b>{r.title}</b><small>{r.desc}</small></span><Toggle checked={!!v[r.key]} onChange={val => flip(r.key, val)} label={r.title} /></li>; })}</ul>
   </section>;
 }
@@ -151,5 +153,5 @@ export function DeletionCard({ scheduled, inline }: { scheduled: boolean; inline
 }
 
 export function QuickActions() {
-  return <section className="ac-quick"><b>Quick actions</b><div className="ac-qrow"><a className="k-btn outline" href="/account?tab=security"><Lock size={15} />Change password</a><a className="k-btn outline" href="/api/account/export"><Download size={15} />Download my data</a><a className="k-btn outline ac-del-btn" href="/account?tab=security#delete"><Trash2 size={15} />Delete account</a></div></section>;
+  return <section className="ac-quick"><b>Quick actions</b><div className="ac-qrow"><Link className="k-btn outline" href="/account?tab=security"><Lock size={15} />Change password</Link><a className="k-btn outline" href="/api/account/export" download><Download size={15} />Download my data</a><Link className="k-btn outline ac-del-btn" href="/account?tab=security#delete"><Trash2 size={15} />Delete account</Link></div></section>;
 }

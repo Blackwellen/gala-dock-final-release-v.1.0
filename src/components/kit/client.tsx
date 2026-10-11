@@ -118,7 +118,7 @@ export function SaveHeart({ itemKey, saved: initial, className = "heart", size =
 /** Live countdown to a server-authoritative timestamp. */
 export function Countdown({ to, compact }: { to: string; compact?: boolean }) {
   const [now, setNow] = useState<number | null>(null);
-  useEffect(() => { setNow(Date.now()); const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t); }, []);
+  useEffect(() => { queueMicrotask(() => setNow(Date.now())); const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t); }, []);
   const c = countdown(to, now ?? new Date(to).getTime() - 1);
   if (compact) return <span className="k-tnum" suppressHydrationWarning>{now == null ? "—" : c.done ? "Expired" : c.days ? `${c.days}d ${c.hours}h` : `${c.hours}h ${c.mins}m`}</span>;
   return <div className="k-row" style={{ gap: 14 }} aria-label="Time remaining" suppressHydrationWarning>{([["Days", c.days], ["Hours", c.hours], ["Mins", c.mins], ["Secs", c.secs]] as const).map(([l, v]) => <div key={l} style={{ textAlign: "center", minWidth: 34 }}><b style={{ display: "block", fontSize: 19, fontWeight: 750, color: "#fff" }} className="k-tnum">{now == null ? "–" : v}</b><small style={{ fontSize: 9.5, color: "#ffffffb0" }}>{l}</small></div>)}</div>;

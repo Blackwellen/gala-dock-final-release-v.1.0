@@ -5,6 +5,7 @@ import { getMyEvent } from "@/lib/data/customer-events";
 import { CuEventHeader } from "@/components/customer/event-header";
 import { Conversation } from "@/components/customer/guests-client";
 import { relative, dateShort, time12 } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Messages" };
 const STC: Record<string, string> = { "Booking confirmed": "green", Confirmed: "green", "Response required": "red", "Quote received": "blue", Pending: "amber" };
@@ -19,7 +20,7 @@ export default async function MessagesPage({ params, searchParams }: { params: P
   const item = sel?.build_item_id ? d.items.find(i => i.id === sel.build_item_id) : sel?.listing_id ? d.items.find(i => i.listing_id === sel.listing_id) : null;
   const { data: l } = sel?.listing_id ? await ctx.supabase.from("listings").select("rating,review_count,location,details,category").eq("id", sel.listing_id).maybeSingle() : { data: null };
   const base = `/account/events/${e.id}/messages`;
-  const due = sel?.response_due_at; const daysLeft = due ? Math.max(0, Math.ceil((new Date(due).getTime() - Date.now()) / 864e5)) : null;
+  const due = sel?.response_due_at; const daysLeft = due ? Math.max(0, Math.ceil((new Date(due).getTime() - requestTime()) / 864e5)) : null;
   const atts = msgs.flatMap(m => m.attachments ?? []);
   const sub = (s: string) => { const [cat, st] = s.split(" • "); return { cat, st: st ?? "" }; };
   return <div className="ce">
@@ -29,7 +30,7 @@ export default async function MessagesPage({ params, searchParams }: { params: P
         <div className="k-row" style={{ gap: 8 }}><div className="cm-ltabs">{([["all", "All"], ["venue", "Venue"], ["supplier", "Suppliers"]] as const).map(([k, lb]) => <Link key={k} href={k === "all" ? base : `${base}?tab=${k}`} aria-selected={tab === k}>{lb}</Link>)}</div><Link className="k-icon-btn cm-sq" href={`/account/events/${e.id}/build`} aria-label="Start a conversation from your build"><ArrowRight size={16} /></Link></div>
         <div className="k-row" style={{ gap: 8, marginTop: 10 }}><form className="k-input-icon k-grow" action={base}><Search size={15} /><input className="k-input" name="q" defaultValue={sp.q ?? ""} placeholder="Search messages..." aria-label="Search messages" style={{ height: 38 }} /></form><Link className="k-icon-btn cm-sq" href={`/account/events/${e.id}/build`} aria-label="New message"><PenSquare size={16} /></Link></div>
         <ul className="cm-threads">{T.map(t => { const ms = [...(t.messages ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at)); const last = ms[0]; const unread = ms.filter(m => m.from_provider && !m.read_at).length; const s = sub(t.subtitle);
-          return <li key={t.id}><Link href={`${base}?thread=${t.id}${tab !== "all" ? `&tab=${tab}` : ""}`} className="cm-th" aria-current={sel?.id === t.id ? "true" : undefined}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-grow" style={{ minWidth: 0 }}><span className="k-between"><b>{t.title}</b><small>{last ? (Date.now() - new Date(last.created_at).getTime() < 864e5 ? time12(last.created_at) : relative(last.created_at).replace("1 day ago", "Yesterday")) : ""}</small></span><span className={`cm-st ${STC[s.st] ?? "gray"}`}>{s.st && <i />}{s.cat}{s.st ? ` • ${s.st}` : ""}</span><span className="cm-prev">{last ? `${last.from_provider ? `${last.sender_name.split(" ")[0]}: ` : "You: "}${last.body}` : "No messages yet"}</span></span>{unread > 0 && <span className={`cm-badge ${s.st === "Response required" ? "red" : ""}`}>{unread}</span>}</Link></li>; })}
+          return <li key={t.id}><Link href={`${base}?thread=${t.id}${tab !== "all" ? `&tab=${tab}` : ""}`} className="cm-th" aria-current={sel?.id === t.id ? "true" : undefined}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-grow" style={{ minWidth: 0 }}><span className="k-between"><b>{t.title}</b><small>{last ? (requestTime() - new Date(last.created_at).getTime() < 864e5 ? time12(last.created_at) : relative(last.created_at).replace("1 day ago", "Yesterday")) : ""}</small></span><span className={`cm-st ${STC[s.st] ?? "gray"}`}>{s.st && <i />}{s.cat}{s.st ? ` • ${s.st}` : ""}</span><span className="cm-prev">{last ? `${last.from_provider ? `${last.sender_name.split(" ")[0]}: ` : "You: "}${last.body}` : "No messages yet"}</span></span>{unread > 0 && <span className={`cm-badge ${s.st === "Response required" ? "red" : ""}`}>{unread}</span>}</Link></li>; })}
           <li><span className="cm-th"><span className="cm-team"><Users size={20} /></span><span className="k-grow"><span className="k-between"><b>General Event Team</b><small>4 days ago</small></span><span className="cm-st blue">Team chat available on Organizer</span><span className="cm-prev">Upgrade to collaborate with a team.</span></span></span></li></ul>
       </aside>
       <section className="ce-card cm-conv">{sel ? <>

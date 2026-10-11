@@ -7,6 +7,7 @@ import { EventFilters, EventRowMenu, ImportExport, CreateEventSplit, PerPageMenu
 import { TypeChip, PhaseChip, nextAction, readinessTone, phaseOf } from "@/components/organizer/event-bits";
 import { MonthCalendar, MiniMonth, londonYmd, type CalItem } from "@/components/organizer/month-calendar";
 import { money, num, dateShort, timeRange, eventTypeLabel, EVENT_TYPE_LABEL, time } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Events" };
 type SP = Record<string, string | string[] | undefined>;
@@ -35,7 +36,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
   if (str(sp.ticketed)) rows = rows.filter(e => (e.ticketCap > 0) === (str(sp.ticketed) === "yes"));
   if (str(sp.city)) rows = rows.filter(e => `${e.city} ${e.location}`.toLowerCase().includes(str(sp.city).toLowerCase()));
   if (str(sp.risk)) rows = rows.filter(e => str(sp.risk) === "high" ? e.readiness < 50 : str(sp.risk) === "medium" ? e.readiness >= 50 && e.readiness < 75 : e.readiness >= 75);
-  if (str(sp.date)) { const d = str(sp.date); rows = rows.filter(e => e.starts_at && (d === "past" ? e.starts_at < now : e.starts_at >= now && e.starts_at <= new Date(Date.now() + Number(d) * 864e5).toISOString())); }
+  if (str(sp.date)) { const d = str(sp.date); rows = rows.filter(e => e.starts_at && (d === "past" ? e.starts_at < now : e.starts_at >= now && e.starts_at <= new Date(requestTime() + Number(d) * 864e5).toISOString())); }
   if (!str(sp.date) || str(sp.date) !== "past") rows = [...rows].sort((a, b) => { const ua = isUpcoming(a) || isLive(a), ub = isUpcoming(b) || isLive(b); if (ua !== ub) return ua ? -1 : 1; return ua ? (a.starts_at ?? "").localeCompare(b.starts_at ?? "") : (b.starts_at ?? "").localeCompare(a.starts_at ?? ""); });
   const per = Math.min(50, Math.max(4, Number(str(sp.per)) || 8)); const pages = Math.max(1, Math.ceil(rows.length / per)); const page = Math.min(pages, Math.max(1, Number(str(sp.page)) || 1));
   const pageRows = rows.slice((page - 1) * per, page * per);

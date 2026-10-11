@@ -4,6 +4,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, Card, Chip, Bar, Beta, Empty } from "@/components/kit";
 import { PipelineBoard, AddLeadButton, type BoardLead } from "@/components/organizer/sales-client";
 import { money, num, dateShort, time, relative } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Sales" };
 const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -13,7 +14,7 @@ const PSTAT: Record<string, ["green" | "blue" | "purple" | "gray" | "amber" | "r
 export default async function SalesPage({ searchParams }: PageProps<"/organizer/sales">) {
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase;
   const tab = str(sp.tab) === "proposals" ? "proposals" : "pipeline"; const view = str(sp.view) === "list" ? "list" : "board";
-  const days = Number(str(sp.range)) || 90; const since = new Date(Date.now() - days * 864e5).toISOString();
+  const days = Number(str(sp.range)) || 90; const since = new Date(requestTime() - days * 864e5).toISOString();
   const [{ data: leads }, { data: proposals }, { data: crew }, { data: tasks }] = await Promise.all([
     sb.from("leads").select("*").eq("workspace_id", ctx.workspace.id).order("created_at", { ascending: false }),
     sb.from("proposals").select("*, leads(name), events(id,name)").eq("workspace_id", ctx.workspace.id).order("number", { ascending: false }),
@@ -29,7 +30,7 @@ export default async function SalesPage({ searchParams }: PageProps<"/organizer/
   const sent = (proposals ?? []).filter(p => p.status !== "draft").length;
   const winRate = won.length + lost.length ? Math.round((100 * won.length) / (won.length + lost.length)) : 0;
   const closedValue = won.reduce((s, l) => s + Number(l.value), 0);
-  const cycle = Math.round(L.filter(l => l.details && (l.details as Record<string, unknown>).sales_cycle).length ? 28 : won.length ? won.reduce((s, l) => s + (Date.now() - new Date(l.created_at).getTime()) / 864e5, 0) / won.length : 0);
+  const cycle = Math.round(L.filter(l => l.details && (l.details as Record<string, unknown>).sales_cycle).length ? 28 : won.length ? won.reduce((s, l) => s + (requestTime() - new Date(l.created_at).getTime()) / 864e5, 0) / won.length : 0);
   const board: BoardLead[] = L.map(l => ({ id: l.id, name: l.name, client_name: l.client_name, value: Number(l.value), event_type: l.event_type, owner_name: l.owner_name, image: LEAD_IMG[l.event_type] ?? "/assets/gd/oe-creators.webp", avatar: avatar(l.owner_name), stage: l.stage }));
   const actions = [...open.filter(l => l.next_action_at).map(l => ({ id: l.id, title: `${l.next_action || "Follow up"} — ${l.client_name}`, at: l.next_action_at!, href: `/organizer/sales/leads/${l.id}`, tone: "red" })), ...(tasks ?? []).map(t => ({ id: t.id, title: t.title, at: t.due_at ?? "", href: "/organizer/team?tab=assignments", tone: "blue" })), ...(proposals ?? []).filter(p => ["sent", "viewed"].includes(p.status) && p.valid_until).map(p => ({ id: p.id, title: `Proposal expires – ${p.title}`, at: `${p.valid_until}T17:00:00Z`, href: `/organizer/sales/proposals/${p.id}`, tone: "gray" }))].sort((a, b) => a.at.localeCompare(b.at)).slice(0, 5);
   const funnel = [["Leads", L.length], ["Qualified", L.filter(l => ["qualified", "proposal", "negotiating", "won"].includes(l.stage)).length], ["Proposals", L.filter(l => ["proposal", "negotiating", "won"].includes(l.stage)).length], ["Won", won.length]] as const;
@@ -82,7 +83,7 @@ function ProposalsRegister({ proposals, clients, sp }: { proposals: { id: string
     <form className="k-row k-wrap" style={{ gap: 8, marginBottom: 10 }} action="/organizer/sales"><input type="hidden" name="tab" value="proposals" /><div className="k-input-icon"><Search size={14} /><input className="k-input" name="q" placeholder="Search proposals..." defaultValue={sp.q ?? ""} style={{ width: 200 }} /></div>
       <select className="k-select" name="pstatus" defaultValue={sp.pstatus ?? ""} style={{ width: 130 }}><option value="">All statuses</option>{Object.keys(PSTAT).map(s => <option key={s} value={s}>{PSTAT[s]![1]}</option>)}</select>
       <select className="k-select" name="client" defaultValue={sp.client ?? ""} style={{ width: 150 }}><option value="">All clients</option>{clients.map(c => <option key={c}>{c}</option>)}</select>
-      <button className="k-btn ghost"><Filter size={14} />Apply</button><a className="k-btn ghost" href="/api/export/proposals"><Download size={14} />Export</a><Link className="k-btn primary" href="/organizer/proposals/new?step=1" style={{ marginLeft: "auto" }}><Plus size={14} />Create proposal</Link></form>
+      <button className="k-btn ghost"><Filter size={14} />Apply</button><a className="k-btn ghost" href="/api/export/proposals" download><Download size={14} />Export</a><Link className="k-btn primary" href="/organizer/proposals/new?step=1" style={{ marginLeft: "auto" }}><Plus size={14} />Create proposal</Link></form>
     <div className="k-table-wrap"><table className="k-table"><thead><tr><th>Proposal</th><th>Client</th><th>Event concept</th><th>Version</th><th className="num">Value</th><th>Expiry date</th><th>Status</th><th>Deposit / Signature</th><th>Linked event</th></tr></thead>
       <tbody>{proposals.map(p => { const [tone, label] = PSTAT[p.status] ?? ["gray", p.status]; const ev = p.events as { id: string; name: string } | null; const dep = p.deposit_status === "paid" ? ["green", "Deposit paid"] : p.signature_status === "awaiting" || (p.status === "sent" && p.signature_status !== "signed") ? ["amber", "Awaiting signature"] : p.status === "viewed" ? ["red", "Awaiting deposit"] : ["gray", "—"];
         return <tr key={p.id}><td><Link className="k-link" href={`/organizer/sales/proposals/${p.id}`}>{p.number}</Link></td><td>{p.client_name}</td><td style={{ color: "var(--k-ink)" }}>{p.title}</td><td>v{p.version}</td><td className="num">{money(p.total)}</td><td>{p.valid_until ? dateShort(`${p.valid_until}T12:00:00Z`) : "—"}</td><td><Chip tone={tone}>{label}</Chip></td><td>{dep[1] === "—" ? "—" : <Chip tone={dep[0] as "green"} icon={dep[0] === "green" ? CheckCircle2 : AlertCircle}>{dep[1]}</Chip>}</td><td>{ev ? <Link className="k-link" href={`/organizer/events/${ev.id}`}>{ev.name}</Link> : "—"}</td></tr>; })}</tbody></table></div>

@@ -16,7 +16,8 @@ const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", c
 
 export function PipelineBoard({ leads }: { leads: BoardLead[] }) {
   const { run } = useAction(); const router = useRouter(); const [items, setItems] = useState(leads); const [drag, setDrag] = useState<string | null>(null); const [over, setOver] = useState<string | null>(null);
-  useEffect(() => setItems(leads), [leads]);
+  const [prevLeads, setPrevLeads] = useState(leads);
+  if (prevLeads !== leads) { setPrevLeads(leads); setItems(leads); }
   async function drop(stage: string) {
     const id = drag; setDrag(null); setOver(null); if (!id) return; const lead = items.find(l => l.id === id); if (!lead || lead.stage === stage) return;
     if (stage === "won" || stage === "lost") { router.push(`/organizer/sales/leads/${id}?action=${stage === "won" ? "convert" : "lose"}`); return; }
@@ -36,7 +37,9 @@ export function PipelineBoard({ leads }: { leads: BoardLead[] }) {
 
 export function AddLeadButton({ stage = "new", compact, primary }: { stage?: string; compact?: boolean; primary?: boolean }) {
   const { run, pending } = useAction(); const params = useSearchParams(); const [open, setOpen] = useState(false);
-  useEffect(() => { if (primary && params.get("new") === "lead") setOpen(true); }, [params, primary]);
+  // Open when the URL asks for it (?new=lead), adjusting state during render rather than in an effect.
+  const want = !!primary && params.get("new") === "lead"; const [wanted, setWanted] = useState(false);
+  if (want !== wanted) { setWanted(want); if (want) setOpen(true); }
   return <>
     {primary ? <Menu label="Add" width={220} trigger={({ toggle, open: o, id }) => <div className="k-split"><button className="k-btn primary lg" onClick={() => setOpen(true)}><Plus size={16} />Add lead</button><button className="k-btn primary lg" onClick={toggle} aria-expanded={o} aria-controls={id} aria-label="More"><ChevronDown size={15} /></button></div>}>{close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); setOpen(true); }}>New lead</button><Link role="menuitem" className="k-menu-item" href="/organizer/proposals/new?step=1" onClick={close}>New proposal</Link></>}</Menu>
       : compact ? <button className="k-icon-btn plain" style={{ width: 22, height: 22 }} aria-label={`Add lead to ${stage}`} onClick={() => setOpen(true)}><Plus size={14} /></button>
@@ -62,7 +65,8 @@ export function AddLeadButton({ stage = "new", compact, primary }: { stage?: str
 export function LeadActions({ id, stage, owners, events, proposalHref }: { id: string; stage: string; owners: string[]; events: { id: string; name: string }[]; proposalHref: string }) {
   const { run, pending } = useAction(); const params = useSearchParams();
   const [dlg, setDlg] = useState<"follow" | "convert" | "lose" | null>(null); const [mode, setMode] = useState<"create" | "link">("create");
-  useEffect(() => { const a = params.get("action"); if (a === "convert") setDlg("convert"); if (a === "lose") setDlg("lose"); }, [params]);
+  const action = params.get("action"); const [seenAction, setSeenAction] = useState<string | null>(null);
+  if (action !== seenAction) { setSeenAction(action); if (action === "convert") setDlg("convert"); if (action === "lose") setDlg("lose"); }
   const closed = ["won", "lost"].includes(stage);
   return <div className="k-row k-wrap" style={{ gap: 8 }}>
     <button className="k-btn primary lg" disabled={pending || stage !== "new"} title={stage !== "new" ? "Already qualified" : ""} onClick={() => void run(() => moveLead(id, "qualified"))} style={{ minWidth: 100 }}>Qualify</button>

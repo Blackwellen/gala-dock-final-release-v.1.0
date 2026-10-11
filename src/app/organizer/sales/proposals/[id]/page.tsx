@@ -8,6 +8,7 @@ import { ProposalHeaderActions, ProposalStatusActions, OptionToggle } from "@/co
 import { LEAD_IMG } from "../../page";
 import type { LineItem, OptionItem } from "@/lib/actions/proposals";
 import { money, dateShort, relative } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Proposal" };
 const ICONS = ["#ef4444", "#7c3aed", "#2563eb", "#f97316", "#f59e0b", "#16a34a", "#0ea5e9"];
@@ -29,7 +30,7 @@ export default async function ProposalPage({ params, searchParams }: PageProps<"
   const itemsSum = items.reduce((s, i) => s + i[2] * i[3], 0), optSum = opts.filter(o => o[3]).reduce((s, o) => s + o[2], 0);
   const locked = p.status !== "draft";
   const reached = (s: typeof FLOW[number]) => s === "draft" ? true : s === "sent" ? p.status !== "draft" : s === "viewed" ? ["viewed", "accepted", "converted"].includes(p.status) : s === "accepted" ? ["accepted", "converted"].includes(p.status) : s === "deposit" ? p.deposit_status === "paid" : p.status === "converted";
-  const daysLeft = p.valid_until ? Math.ceil((new Date(`${p.valid_until}T23:59:59Z`).getTime() - Date.now()) / 864e5) : null;
+  const daysLeft = p.valid_until ? Math.ceil((new Date(`${p.valid_until}T23:59:59Z`).getTime() - requestTime()) / 864e5) : null;
   const shareUrl = `/proposal/${p.share_token}`;
   const contact = c.client?.contact_name || lead?.contact_name || "";
   return <>

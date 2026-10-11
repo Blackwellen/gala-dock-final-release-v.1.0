@@ -6,6 +6,7 @@ import { Crumbs, LinkTabs, Spark, LineChart, Beta } from "@/components/kit";
 import { AgentAsk } from "@/components/kit/client";
 import { HubFilters } from "@/components/organizer/tickets-hub-client";
 import { money, num, eventTypeLabel } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Tickets & Promotion" };
 const TZ = "Europe/London";
@@ -15,7 +16,7 @@ export default async function TicketsHub({ searchParams }: { searchParams: Promi
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase;
   const tab = ["promotion", "directory", "promoters", "media", "performance"].includes(sp.tab ?? "") ? sp.tab! : "ticketing";
   const days = Math.min(365, Math.max(7, Number(sp.days) || 30));
-  const now = Date.now(); const since = new Date(now - days * 864e5).toISOString(); const prevSince = new Date(now - 2 * days * 864e5).toISOString();
+  const now = requestTime(); const since = new Date(now - days * 864e5).toISOString(); const prevSince = new Date(now - 2 * days * 864e5).toISOString();
   const all = await withStats(sb, await listWorkspaceEvents(sb, ctx.workspace.id));
   const ticketed = all.filter(e => e.ticketCap > 0 && !["cancelled", "archived"].includes(e.status));
   const scope = sp.event ? ticketed.filter(e => e.id === sp.event) : ticketed;

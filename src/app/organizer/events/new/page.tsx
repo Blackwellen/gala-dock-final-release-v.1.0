@@ -2,6 +2,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { Crumbs } from "@/components/kit";
 import { CreateEventWizard, type CreateData } from "@/components/organizer/create-event";
 import { listingHref } from "@/lib/links";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Create event" };
 const TZ = "Europe/London";
@@ -22,7 +23,7 @@ export default async function CreateEventPage({ searchParams }: { searchParams: 
   /** ISO instant → "YYYY-MM-DDTHH:mm" wall time in London (for datetime-local inputs). */
   const wall = (d: Date) => { const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d).map(x => [x.type, x.value])); return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`; };
   const loc = (iso: string | null, def: string) => iso ? wall(new Date(iso)) : def;
-  const d0 = new Date(Date.now() + 60 * 864e5); d0.setUTCHours(17, 0, 0, 0);
+  const d0 = new Date(requestTime() + 60 * 864e5); d0.setUTCHours(17, 0, 0, 0);
   const data: CreateData = {
     id: e?.id ?? null, status: e?.status ?? "draft", owner: ctx.name, maps: process.env.MAP_TILER_API_KEY ?? "",
     s1: { name: e?.name ?? "", event_type: (e?.event_type as CreateData["s1"]["event_type"]) ?? (tpl?.event_types?.[0]?.toLowerCase().includes("festival") ? "festival" : "festival"), client_name: e?.client_name ?? "", visibility: (e?.visibility as "public" | "private") ?? "public", goal: e?.goal ?? "", cover_image: e?.cover_image ?? "" },

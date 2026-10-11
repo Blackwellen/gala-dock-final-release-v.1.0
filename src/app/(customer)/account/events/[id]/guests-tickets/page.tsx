@@ -6,6 +6,7 @@ import { CuEventHeader } from "@/components/customer/event-header";
 import { GuestToolbar, GuestRowMenu, NewTierButton, CheckInButtons } from "@/components/customer/guests-client";
 import { Avatar } from "@/components/kit";
 import { money, dayMonth } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Guests & Tickets" };
 const ST: Record<string, [string, string]> = { confirmed: ["Confirmed", "green"], pending: ["Pending", "amber"], declined: ["Declined", "red"], invited: ["Invited", "blue"], draft: ["Not invited", "gray"] };
@@ -28,7 +29,7 @@ export default async function GuestsTickets({ params, searchParams }: { params: 
   const avatars = ["/assets/gd/av-sophie-malik.webp", "/assets/gd/av-james-carter.webp", "/assets/gd/av-mia-chen.webp", "/assets/gd/av-daniel-kim.webp", "/assets/gd/av-ava-thompson.webp", "/assets/gd/av-liam-patel.webp", "/assets/gd/av-isabella-garcia.webp", "/assets/gd/av-noah-evans.webp"];
   const base = `/account/events/${e.id}/guests-tickets`;
   const qs = (p: Record<string, string | null>) => { const u = new URLSearchParams(Object.entries(sp).filter(([, v]) => v) as [string, string][]); for (const [k, v] of Object.entries(p)) v == null ? u.delete(k) : u.set(k, v); return `${base}?${u}`; };
-  const sale = (t: typeof T[number]) => t.status === "sold_out" ? ["Sold out", "red"] : t.sale_end && t.sale_end > new Date().toISOString() && new Date(t.sale_end).getTime() - Date.now() < 30 * 864e5 ? [`Ends ${dayMonth(t.sale_end)}`, "amber"] : t.status === "draft" ? ["Draft", "gray"] : ["On sale", "green"];
+  const sale = (t: typeof T[number]) => t.status === "sold_out" ? ["Sold out", "red"] : t.sale_end && t.sale_end > new Date().toISOString() && new Date(t.sale_end).getTime() - requestTime() < 30 * 864e5 ? [`Ends ${dayMonth(t.sale_end)}`, "amber"] : t.status === "draft" ? ["Draft", "gray"] : ["On sale", "green"];
   return <div className="ce">
     <CuEventHeader d={d} tab="guests" variant="compact" buildPath />
     <div className="gt-top"><div className="gt-tabs" role="tablist">{([["guests", "Guests", Users], ["tickets", "Tickets", Ticket], ["checkin", "Check-in", ClipboardCheck]] as const).map(([k, l, I]) => <Link key={k} role="tab" aria-selected={tab === k} href={k === "guests" ? base : `${base}?tab=${k}`}><I size={17} />{l}</Link>)}</div>

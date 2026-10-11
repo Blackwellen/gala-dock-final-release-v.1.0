@@ -8,6 +8,7 @@ import { AddTaskBtn, AddDayItem, SharePlan } from "@/components/customer/plan-cl
 import { Avatar, Beta } from "@/components/kit";
 import { AgentAsk } from "@/components/kit/client";
 import { dayMonth, time12 } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Plan" };
 const CAT_ICON: Record<string, [React.ComponentType<{ size?: number }>, string]> = { "Venue & Location": [MapPin, "#e11d48"], "Food & Drink": [Utensils, "#e11d48"], Entertainment: [Music2, "#7c3aed"], "Guests & Tickets": [Ticket, "#e11d48"], Payments: [CreditCard, "#2563eb"] };
@@ -26,7 +27,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
   const shown = tasks.filter(t => filter === "all" || t.status === filter);
   const cats = [...new Set(tasks.map(t => t.category))];
   // planning journey phases relative to event date (guidance only; never blocks short-notice events)
-  const weeks = e.starts_at ? Math.floor((new Date(e.starts_at).getTime() - Date.now()) / (7 * 864e5)) : 99;
+  const weeks = e.starts_at ? Math.floor((new Date(e.starts_at).getTime() - requestTime()) / (7 * 864e5)) : 99;
   const phases = [["6+ weeks", "Foundation", "Venue, key providers"], ["4–6 weeks", "Details", "Catering, entertainment"], ["2–4 weeks", "Finalise", "Guests, remaining suppliers"], ["1 week", "Confirm", "Final checks & balances"], ["Event day", "Enjoy!", "Everything comes together"]] as const;
   const cur = weeks >= 6 ? (d.s.venueOk ? 1 : 0) : weeks >= 4 ? 1 : weeks >= 2 ? 2 : weeks >= 1 ? 3 : 4;
   const curIdx = Math.max(cur, d.s.venueOk && d.s.confirmed >= 3 ? 2 : cur);

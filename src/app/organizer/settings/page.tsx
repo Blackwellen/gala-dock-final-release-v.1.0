@@ -8,6 +8,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs } from "@/components/kit";
 import { EditCard, NotifToggles, RoleSelect } from "@/components/organizer/settings-client";
 import { BrandLogo } from "@/components/kit/brand-logo";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Settings" };
 type S = Record<string, unknown>;
@@ -20,7 +21,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     sb.from("workspace_members").select("user_id,role,status,created_at").eq("workspace_id", ws),
     sb.from("crew_members").select("id,avatar,member_type,role").eq("workspace_id", ws).neq("status", "deactivated"),
     sb.from("events").select("id", { count: "exact", head: true }).eq("workspace_id", ws).not("status", "in", "(archived,completed,cancelled)"),
-    sb.from("agent_runs").select("id,cost_cents,created_at").eq("workspace_id", ws).gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()),
+    sb.from("agent_runs").select("id,cost_cents,created_at").eq("workspace_id", ws).gte("created_at", new Date(requestTime() - 30 * 864e5).toISOString()),
     tab === "team" ? sb.from("audit_events").select("event,created_at,metadata").eq("workspace_id", ws).order("created_at", { ascending: false }).limit(12) : Promise.resolve({ data: [] }),
   ]);
   const s = (w?.settings ?? {}) as S; const can = ["owner", "manager"].includes(String(ctx.role)); const owner = ctx.role === "owner";

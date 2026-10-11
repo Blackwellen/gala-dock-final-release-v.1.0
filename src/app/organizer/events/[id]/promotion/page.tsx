@@ -6,6 +6,7 @@ import { Crumbs, LinkTabs, Spark } from "@/components/kit";
 import { DistToggle, PromoterButton, PromoMenu } from "@/components/organizer/promotion-client";
 import { money } from "@/lib/format";
 import { BrandLogo } from "@/components/kit/brand-logo";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Promotion" };
 const TZ = "Europe/London";
@@ -22,11 +23,11 @@ export default async function PromotionPage({ params, searchParams }: { params: 
     sb.from("promotions").select("id,title,channel,status,audience,scheduled_at,cost,est_reach,metrics").eq("event_id", id).order("scheduled_at"),
     sb.from("promoters").select("id,name,code,tickets_sold,commission_pct,status,revenue").eq("event_id", id).order("tickets_sold", { ascending: false }),
     sb.from("media_assets").select("id,url,title").eq("event_id", id).limit(6),
-    sb.from("tickets").select("created_at").eq("event_id", id).gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()),
+    sb.from("tickets").select("created_at").eq("event_id", id).gte("created_at", new Date(requestTime() - 30 * 864e5).toISOString()),
   ]);
   const s = (e.settings ?? {}) as Record<string, unknown>; const dist = (s.distribution ?? {}) as Record<string, boolean>;
   const sold = (tiers ?? []).reduce((a, t) => a + t.sold, 0), cap = (tiers ?? []).reduce((a, t) => a + t.quantity, 0); const pct = cap ? Math.round((sold / cap) * 100) : 0;
-  const daily = Array.from({ length: 14 }, (_, i) => { const d = new Date(Date.now() - (13 - i) * 864e5).toISOString().slice(0, 10); return (tk ?? []).filter(t => t.created_at.slice(0, 10) === d).length; });
+  const daily = Array.from({ length: 14 }, (_, i) => { const d = new Date(requestTime() - (13 - i) * 864e5).toISOString().slice(0, 10); return (tk ?? []).filter(t => t.created_at.slice(0, 10) === d).length; });
   const last7 = daily.slice(7).reduce((a, b) => a + b, 0), prev7 = daily.slice(0, 7).reduce((a, b) => a + b, 0); const mom = prev7 ? Math.round(((last7 - prev7) / prev7) * 100) : null;
   const live = ["published", "on_sale", "live"].includes(e.status) && e.visibility === "public";
   const checklist = [["Event page published", live && !!e.slug], ["Added to Gala Dock directory", live], ["Synced to external calendars", !!dist.google || !!dist.apple || !!dist.ics], ["Created promoter link", (promoters ?? []).length > 0], ["Prepared media pack", (media ?? []).length > 0], ["Scheduled audience campaign", (promos ?? []).some(p => /email/i.test(p.channel) && p.status !== "draft")], ["Added a featured boost", (promos ?? []).some(p => Number(p.cost) > 0)]] as [string, boolean][];

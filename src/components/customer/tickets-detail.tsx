@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { Send, Tag, CalendarPlus, Wallet, MoreHorizontal, Repeat, ChevronRight, Download, Copy, CircleHelp, Loader2 } from "lucide-react";
 import { Dialog, Menu, useAction, useKitToast } from "@/components/kit/client";
@@ -14,7 +15,7 @@ export function ManageTicket({ ticket: t }: { ticket: { id: string; code: string
       <Menu label="Ticket options" width={220} trigger={({ toggle, open, id }) => <button className="k-icon-btn" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Ticket options"><MoreHorizontal size={18} /></button>}>{close => <>
         <button role="menuitem" className="k-menu-item" onClick={async () => { close(); try { await navigator.clipboard.writeText(t.code); toast("Ticket code copied"); } catch { toast("Couldn't copy the code", "error"); } }}><Copy size={14} />Copy ticket code</button>
         <a role="menuitem" className="k-menu-item" href={t.qr} download={`${t.code}.png`} onClick={close}><Download size={14} />Download QR image</a>
-        <a role="menuitem" className="k-menu-item" href="/help?topic=tickets" onClick={close}><CircleHelp size={14} />Report a problem</a></>}</Menu></div>
+        <Link role="menuitem" className="k-menu-item" href="/help?topic=tickets" onClick={close}><CircleHelp size={14} />Report a problem</Link></>}</Menu></div>
     <div className="td-mgrid">
       <button className="k-btn primary td-mbig" disabled={!valid || !t.transfers} title={!t.transfers ? "Transfers are turned off for this event" : undefined} onClick={() => setTransfer(true)}><Send size={18} />Transfer ticket</button>
       {listed ? <button className="k-btn outline td-mbig" disabled={pending} onClick={() => void run(() => resaleTicket(t.id, true))}><Repeat size={18} />Cancel resale</button> : <button className="k-btn outline td-mbig" disabled={!valid} onClick={() => setResale(true)}><Tag size={18} />Official resale</button>}

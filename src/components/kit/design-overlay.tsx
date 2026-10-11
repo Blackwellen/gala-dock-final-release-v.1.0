@@ -43,9 +43,9 @@ export function DesignOverlay() {
   const [files, setFiles] = useState<string[]>([]); const [open, setOpen] = useState(false); const [show, setShow] = useState(false);
   const [file, setFile] = useState(""); const [opacity, setOpacity] = useState(.5); const [diff, setDiff] = useState(false); const [dy, setDy] = useState(0); const [mounted, setMounted] = useState(false);
   const suggested = useMemo(() => { const m = MAP.find(([re]) => re.test(pathname)); return m ? `customer & Organizer workspace/${m[1]}` : ""; }, [pathname]);
-  useEffect(() => { setMounted(true); try { const s = JSON.parse(localStorage.getItem(KEY) ?? "{}"); if (s.opacity) setOpacity(s.opacity); if (s.diff) setDiff(s.diff); } catch { /* ignore */ } }, []);
+  useEffect(() => { queueMicrotask(() => { setMounted(true); try { const s = JSON.parse(localStorage.getItem(KEY) ?? "{}"); if (s.opacity) setOpacity(s.opacity); if (s.diff) setDiff(s.diff); } catch { /* ignore */ } }); }, []);
   useEffect(() => { if (!open || files.length) return; fetch("/api/dev/designs").then(r => r.json()).then(j => setFiles(j.files ?? [])).catch(() => setFiles([])); }, [open, files.length]);
-  useEffect(() => { setFile(params.get("ref") ? `customer & Organizer workspace/${params.get("ref")}` : suggested); }, [suggested, params]);
+  useEffect(() => { const next = params.get("ref") ? `customer & Organizer workspace/${params.get("ref")}` : suggested; queueMicrotask(() => setFile(next)); }, [suggested, params]);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.altKey && e.key.toLowerCase() === "o") { e.preventDefault(); setShow(s => !s); setOpen(true); } }; addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, []);
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify({ opacity, diff })); } catch { /* ignore */ } }, [opacity, diff]);
   useEffect(() => { // render at reference scale (zoom 1) while comparing; restore the saved density afterwards

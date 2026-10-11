@@ -8,6 +8,7 @@ import { WizardFrame } from "@/components/organizer/wizard";
 import { ProposalClientForm, ProposalPricingForm, SendProposalForm } from "@/components/organizer/proposal-forms";
 import type { LineItem, OptionItem } from "@/lib/actions/proposals";
 import { money, dateShort } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Create proposal" };
 const STEPS = [{ title: "Client & Event", sub: "Who and what" }, { title: "Offer & Pricing", sub: "Packages, items and terms" }, { title: "Review & Send", sub: "Check and deliver" }];
@@ -27,7 +28,7 @@ export default async function NewProposal({ searchParams }: PageProps<"/organize
   return <WizardFrame crumbs={[{ label: "Organizer", href: "/organizer" }, { label: "Proposals", href: "/organizer/sales?tab=proposals" }, { label: p ? `${p.number} (draft)` : "Create Proposal" }]} title="Create Proposal" sub="Turn your client's requirements into a professional event proposal." steps={STEPS} step={step} hrefFor={hrefFor}
     actions={p && <Chip tone={p.status === "draft" ? "amber" : "green"} lg>{p.number} · {p.status === "draft" ? "Draft saved" : p.status}</Chip>}>
     {step === 1 && <ProposalClientForm id={p?.id ?? null} leads={leads ?? []} initial={p ? { title: p.title, client_name: p.client_name, lead_id: p.lead_id ?? "", contact_name: c.client?.contact_name ?? "", contact_email: c.client?.contact_email ?? "", event_type: c.event_type ?? "Festival", date: c.date ?? "", flexible: !!c.flexible, location: c.location ?? "", venue: c.venue ?? "", attendance: c.attendance ?? "", attendance_type: c.attendance_type ?? "General public", summary: c.summary ?? "" } : fromLead ? { title: fromLead.name, client_name: fromLead.client_name, lead_id: fromLead.id, contact_name: fromLead.contact_name, contact_email: fromLead.contact_email, event_type: fromLead.event_type, date: fromLead.expected_date ?? "", location: fromLead.location, attendance: fromLead.guests, venue: "", attendance_type: "General public", summary: "", flexible: false } : { event_type: "Festival", attendance_type: "General public" }} />}
-    {step === 2 && p && (p.status !== "draft" ? <IssuedNotice id={p.id} /> : <ProposalPricingForm id={p.id} taxRate={taxRate} initial={{ line_items: c.line_items ?? [], options: c.options ?? [], deposit_pct: p.deposit_pct, valid_until: p.valid_until ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10), terms: c.terms ?? {} }} />)}
+    {step === 2 && p && (p.status !== "draft" ? <IssuedNotice id={p.id} /> : <ProposalPricingForm id={p.id} taxRate={taxRate} initial={{ line_items: c.line_items ?? [], options: c.options ?? [], deposit_pct: p.deposit_pct, valid_until: p.valid_until ?? new Date(requestTime() + 30 * 864e5).toISOString().slice(0, 10), terms: c.terms ?? {} }} />)}
     {step === 3 && p && <div className="wz-grid">
       <Card><div className="k-between" style={{ marginBottom: 12 }}><h2 className="wz-h">Brand preview</h2><Link className="k-link" href={`/organizer/proposals/new?step=2&id=${p.id}`}>Edit pricing</Link></div>
         <div className="pr-preview"><div className="pr-prev-head">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/gala-dock-logo.png" alt="Gala·Dock" height={28} /><span className="k-small k-muted">{ctx.workspace.name}</span></div>

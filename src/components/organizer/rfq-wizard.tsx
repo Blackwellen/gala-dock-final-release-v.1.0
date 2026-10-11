@@ -13,7 +13,7 @@ const CATS = [["venue", "Venue"], ["production", "Production & AV"], ["catering"
 
 export function RfqStep1({ events, initial }: { events: { id: string; name: string; starts_at: string | null; location: string; capacity: number | null }[]; initial: Partial<Draft> }) {
   const router = useRouter(); const [d, setD] = useState<Draft>({ event_id: "", category: "production", title: "", scope: "", budget_min: "", budget_max: "", date: "", location: "", capacity: "", credentials: "", deadline: "8", ...initial });
-  useEffect(() => { try { const s = JSON.parse(sessionStorage.getItem(KEY) ?? "null"); if (s && !initial.title) setD(x => ({ ...x, ...s, ...Object.fromEntries(Object.entries(initial).filter(([, v]) => v)) })); } catch { /* ignore */ } }, [initial]);
+  useEffect(() => { queueMicrotask(() => { try { const s = JSON.parse(sessionStorage.getItem(KEY) ?? "null"); if (s && !initial.title) setD(x => ({ ...x, ...s, ...Object.fromEntries(Object.entries(initial).filter(([, v]) => v)) })); } catch { /* ignore */ } }); }, [initial]);
   const set = (k: keyof Draft, v: string) => setD(x => { const n = { ...x, [k]: v }; if (k === "event_id") { const e = events.find(e => e.id === v); if (e) { n.date = e.starts_at?.slice(0, 10) ?? ""; n.location = e.location; n.capacity = String(e.capacity ?? ""); } } return n; });
   return <form className="wz-grid" onSubmit={e => { e.preventDefault(); try { sessionStorage.setItem(KEY, JSON.stringify(d)); } catch { /* ignore */ } const p = new URLSearchParams({ step: "2", event: d.event_id, category: d.category }); router.push(`/organizer/marketplace/requests/new?${p}`); }}>
     <section className="k-card"><h2 className="wz-h">Requirement</h2><p className="k-small" style={{ marginBottom: 12 }}>Describe what you need. Providers see this brief with your event context.</p>
@@ -39,7 +39,7 @@ export function RfqStep2({ candidates, eventId, preselect, eventDate }: { candid
   const [draft, setDraft] = useState<Draft | null>(null);
   const [sel, setSel] = useState<Record<string, "primary" | "backup">>(() => Object.fromEntries(preselect.map((id, i) => [id, i < 2 ? "primary" : "backup"])));
   const [hours, setHours] = useState(8); const [hold, setHold] = useState(true); const [holdH, setHoldH] = useState(24); const [backups, setBackups] = useState(true); const [emergency, setEmergency] = useState(false);
-  useEffect(() => { try { setDraft(JSON.parse(sessionStorage.getItem(KEY) ?? "null")); } catch { setDraft(null); } }, []);
+  useEffect(() => { queueMicrotask(() => { try { setDraft(JSON.parse(sessionStorage.getItem(KEY) ?? "null")); } catch { setDraft(null); } }); }, []);
   const chosen = useMemo(() => candidates.filter(c => sel[c.id]).sort((a, b) => (sel[a.id] === sel[b.id] ? b.fit - a.fit : sel[a.id] === "primary" ? -1 : 1)), [candidates, sel]);
   const toggle = (id: string) => setSel(s => { const n = { ...s }; if (n[id]) delete n[id]; else n[id] = Object.values(n).filter(v => v === "primary").length < 2 ? "primary" : "backup"; return n; });
   const send = async () => {

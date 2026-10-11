@@ -7,6 +7,7 @@ import { AgentAsk, MapView } from "@/components/kit/client";
 import { LeadActions, ActivityComposer } from "@/components/organizer/sales-client";
 import { LEAD_IMG } from "../../page";
 import { money, dateShort, time, relative } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Lead" };
 const CITY: Record<string, [number, number]> = { london: [51.5072, -0.1276], manchester: [53.4808, -2.2426], birmingham: [52.4862, -1.8904], surrey: [51.3148, -0.56] };
@@ -77,7 +78,7 @@ export default async function LeadPage({ params, searchParams }: PageProps<"/org
             <Card><h2 className="ov-h" style={{ fontSize: 15, marginBottom: 10 }}>Key information</h2><div className="k-grid k-g3" style={{ gap: 8 }}>
               <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile green"><Wallet size={16} /></span><div><div className="lbl">Expected value</div><div className="val" style={{ fontSize: 15.5 }}>{money(l.value)}</div></div></div>
               <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile green"><Target size={16} /></span><div className="k-grow"><div className="lbl">Probability</div><div className="val" style={{ fontSize: 15.5 }}>{l.probability}%</div><Bar value={l.probability} tone="green" label="Probability" /></div></div>
-              <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile"><Clock size={16} /></span><div><div className="lbl">Sales cycle</div><div className="val" style={{ fontSize: 15.5 }}>{Math.max(1, Math.round((Date.now() - new Date(l.created_at).getTime()) / 864e5))} days</div></div></div>
+              <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile"><Clock size={16} /></span><div><div className="lbl">Sales cycle</div><div className="val" style={{ fontSize: 15.5 }}>{Math.max(1, Math.round((requestTime() - new Date(l.created_at).getTime()) / 864e5))} days</div></div></div>
               <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile"><BarChart3 size={16} /></span><div><div className="lbl">Weighted value</div><div className="val" style={{ fontSize: 15.5 }}>{money(Number(l.value) * l.probability / 100)}</div></div></div>
               {d.potential_profit != null && <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile"><BarChart3 size={16} /></span><div><div className="lbl">Potential profit</div><div className="val" style={{ fontSize: 15.5 }}>{money(d.potential_profit)}</div></div></div>}
             </div></Card>

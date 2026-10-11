@@ -17,8 +17,8 @@ export function Overview({ e, d, me, canMoney }: { e: ProEvent; d: EventData; me
   const confirmed = d.primary.filter(b => ["confirmed", "fulfilled"].includes(b.status));
   const crew = [...new Set(d.shifts.filter(s => s.crew_id).map(s => s.crew_id!))].map(id => d.crewMap.get(id)).filter(Boolean) as { name: string; avatar: string }[];
   // cumulative ticket sales pace from issued entitlements
-  let acc = Math.max(0, d.sold - d.series.reduce((s, x) => s + Number(x.tickets), 0));
-  const pace = d.series.map(x => (acc += Number(x.tickets)));
+  const start = Math.max(0, d.sold - d.series.reduce((s, x) => s + Number(x.tickets), 0));
+  const pace = d.series.reduce<number[]>((a, x) => [...a, (a.at(-1) ?? start) + Number(x.tickets)], []);
   const paceLabels = d.series.map((x, i) => (i % 7 === 0 || i === d.series.length - 1) ? new Date(`${x.day}T12:00:00Z`).toLocaleString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }) : "");
   const budget = Number(e.budget_total ?? 0), committed = d.committed, actual = d.costsActual, forecastCost = Math.max(committed, d.estimated);
   const milestones = [

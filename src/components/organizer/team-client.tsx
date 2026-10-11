@@ -43,7 +43,7 @@ export function TeamHeaderActions({ events, people, compact }: { events: Ev[]; p
     <Link className="k-btn outline" href="/organizer/calendar"><CalendarDays size={16} />View calendar</Link>
     <Menu label="More actions" width={220} trigger={({ toggle, open, id }) => <button className="k-btn outline" onClick={toggle} aria-expanded={open} aria-controls={id}>More actions <ChevronDown size={15} /></button>}>{close => <>
       <button role="menuitem" className="k-menu-item" onClick={() => { close(); setAssign(true); }}><CalendarPlus size={14} />Assign to event</button>
-      <a role="menuitem" className="k-menu-item" href="/api/export/team" onClick={close}><Download size={14} />Export team (CSV)</a></>}</Menu>
+      <a role="menuitem" className="k-menu-item" href="/api/export/team" download onClick={close}><Download size={14} />Export team (CSV)</a></>}</Menu>
     <span className="tm-split"><button className="k-btn primary" onClick={() => setInvite(true)}><Plus size={16} />Invite people</button><Menu label="Add options" width={210} trigger={({ toggle, open, id }) => <button className="k-btn primary tm-caret" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="More add options"><ChevronDown size={15} /></button>}>{close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); setInvite(true); }}><UserPlus size={14} />Invite person</button><button role="menuitem" className="k-menu-item" onClick={() => { close(); setAssign(true); }}><CalendarPlus size={14} />Assign shift</button></>}</Menu></span>
     <InviteDialog open={invite} onClose={() => setInvite(false)} />
     <AssignDialog open={assign} onClose={() => setAssign(false)} events={events} people={people} />

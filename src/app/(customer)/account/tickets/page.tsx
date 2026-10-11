@@ -4,6 +4,7 @@ import { getCustomer } from "@/lib/data/context";
 import { myTickets, ticketQr, whenLine } from "@/lib/data/customer-tickets";
 import { TicketPanel, GroupActions, FilterSelect } from "@/components/customer/tickets-client";
 import { eventTypeLabel } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "My Tickets" };
 const TONES: Record<string, string> = { music: "purple", festival: "blue", nightlife: "blue", food_drink: "green", party: "purple", comedy: "amber", wedding: "purple" };
@@ -12,7 +13,7 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
   const sp = await searchParams; const ctx = await getCustomer(); const all = await myTickets(ctx);
   const tab = (["past", "resale"].includes(sp.tab ?? "") ? sp.tab : "upcoming") as "upcoming" | "past" | "resale";
   const q = (sp.q ?? "").toLowerCase(), type = sp.type ?? "", when = sp.when ?? "", loc = sp.loc ?? "";
-  const now = Date.now();
+  const now = requestTime();
   const list = all[tab].filter(g => (!q || `${g.event.name} ${g.event.venue_name} ${g.event.location} ${g.order}`.toLowerCase().includes(q)) && (!type || g.event.event_type === type) && (!loc || g.event.city === loc)
     && (!when || (() => { const t = g.event.starts_at ? new Date(g.event.starts_at).getTime() : 0; const d = (t - now) / 864e5; return when === "week" ? d <= 7 && d >= -7 : when === "month" ? d <= 31 && d >= -31 : when === "later" ? d > 31 : true; })()));
   const sel = sp.t === "none" ? null : list.find(g => g.key === sp.t) ?? list[0] ?? null;

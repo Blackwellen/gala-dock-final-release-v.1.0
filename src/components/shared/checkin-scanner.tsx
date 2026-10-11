@@ -9,7 +9,7 @@ export function CheckInScanner({ eventId, compact }: { eventId: string; compact?
   const video = useRef<HTMLVideoElement>(null); const stream = useRef<MediaStream | null>(null); const last = useRef<{ v: string; t: number }>({ v: "", t: 0 });
   const [cam, setCam] = useState(false); const [supported, setSupported] = useState(true); const [code, setCode] = useState(""); const [busy, setBusy] = useState(false);
   const [res, setRes] = useState<ScanResult | null>(null); const [online, setOnline] = useState(true); const [log, setLog] = useState<{ code: string; result: string; at: string }[]>([]);
-  useEffect(() => { setOnline(navigator.onLine); const on = () => setOnline(true), off = () => setOnline(false); addEventListener("online", on); addEventListener("offline", off); setSupported("BarcodeDetector" in window); return () => { removeEventListener("online", on); removeEventListener("offline", off); stop(); }; }, []);
+  useEffect(() => { queueMicrotask(() => { setOnline(navigator.onLine); setSupported("BarcodeDetector" in window); }); const on = () => setOnline(true), off = () => setOnline(false); addEventListener("online", on); addEventListener("offline", off); return () => { removeEventListener("online", on); removeEventListener("offline", off); stop(); }; }, []);
   function stop() { stream.current?.getTracks().forEach(t => t.stop()); stream.current = null; setCam(false); }
   async function submit(v: string) {
     if (!v.trim() || busy) return; if (!navigator.onLine) { setRes({ ok: false, error: "Offline — secure check-in requires a connection." }); return; }

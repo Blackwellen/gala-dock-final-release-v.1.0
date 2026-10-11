@@ -2,7 +2,8 @@ import Link from "next/link";
 import { CalendarDays, MapPin, Users, LayoutGrid, ListChecks, Ticket, Wallet, MessagesSquare, ArrowLeft, Crown } from "lucide-react";
 import { Countdown } from "@/components/kit/client";
 import { HeaderMenu } from "./build-client";
-import { dateLong, timeRange12, relative, eventTypeLabel } from "@/lib/format";
+import { dateLong, timeRange12, eventTypeLabel } from "@/lib/format";
+import { requestTime } from "@/lib/workspace/format";
 import type { MyEventFull } from "@/lib/data/customer-events";
 
 export const CU_TABS = [
@@ -35,11 +36,11 @@ export function CuEventHeader({ d, tab, variant = "compact", buildPath = false }
           <span><MapPin size={variant === "full" ? 26 : 24} strokeWidth={1.7} /><span><b>{e.venue_name || "Venue to be confirmed"}</b><small>{e.location}</small></span></span>
           <span><Users size={variant === "full" ? 26 : 24} strokeWidth={1.7} /><span><b>{e.guest_count} guests</b><small>{e.capacity ? `Max ${e.capacity}` : "Capacity TBC"}</small></span></span>
           {variant === "compact" && <span className={`ce-ontrack ce-ontrack-c ${onTrack ? "" : "warn"}`}>{onTrack ? "On track" : "Needs attention"}</span>}
-          {variant === "full" && <span className="ce-track"><span className={`ce-ontrack ${onTrack ? "" : "warn"}`}>{onTrack ? "On track" : "Needs attention"}</span><small>Updated {relative(new Date(Date.now() - 2 * 36e5).toISOString())}</small></span>}
+          {variant === "full" && <span className="ce-track"><span className={`ce-ontrack ${onTrack ? "" : "warn"}`}>{onTrack ? "On track" : "Needs attention"}</span></span>}
         </div>
       </div>
       <div className="ce-hero-right">
-        {variant === "full" && e.starts_at && new Date(e.starts_at).getTime() > Date.now() && <div className="ce-count"><Countdown to={e.starts_at} /></div>}
+        {variant === "full" && e.starts_at && new Date(e.starts_at).getTime() > requestTime() && <div className="ce-count"><Countdown to={e.starts_at} /></div>}
         <div className="k-row" style={{ gap: 10 }}>
           {e.visibility === "public" && e.slug ? <Link className="k-btn ghost ce-btn" href={`/events/${e.slug}`}>Preview Event Page</Link> : <Link className="k-btn ghost ce-btn" href={`/account/events/${e.id}/guests-tickets`}>Preview Event Page</Link>}
           <HeaderMenu id={e.id} name={e.name} />

@@ -28,7 +28,7 @@ const SUGGEST: Record<string, Omit<Tier, "sold" | "status" | "sale_start" | "sal
 
 export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "customer" | "organizer"; step: 1 | 2 | 3; data: SetupData; base: string; back: string; crumbs: [string, string][] }) {
   const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
-  const [model, setModel] = useState(data.model); const [capacity, setCapacity] = useState(data.capacity);
+  const [model, setModel] = useState(data.model); const [capacity, setCapacity] = useState(data.capacity); const [now] = useState(() => Date.now());
   const [tiers, setTiers] = useState<Tier[]>(data.tiers.length ? data.tiers : []);
   const [rules, setRules] = useState<Rules>(data.rules); const [promos, setPromos] = useState<Promo[]>(data.promos);
   const [agree, setAgree] = useState(false); const [checked, setChecked] = useState(0);
@@ -39,14 +39,14 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
   const suggest = () => { const list = SUGGEST.default!.map(t => ({ ...t, sold: 0, status: "draft", sale_start: null, sale_end: null })); const scale = Math.max(0.2, capacity / 200); setTiers(list.map(t => ({ ...t, quantity: Math.max(5, Math.round(t.quantity * scale / 5) * 5) }))); toast("Suggested tiers added — adjust names and prices to suit"); };
   const addTier = () => setTiers(ts => [...ts, { name: `Tier ${ts.length + 1}`, description: "", price: model === "free" ? 0 : 25, quantity: Math.max(0, capacity - total), badge: null, color: COLORS[ts.length % COLORS.length]!, kind: "general", sold: 0, status: "draft", sale_start: null, sale_end: null }]);
   const steps = [{ title: "Ticket Model", sub: step === 1 ? "Create your ticket tiers and capacity" : "Ticket types and capacity" }, { title: mode === "customer" && step === 1 ? "Details & Settings" : "Sales & Rules", sub: step === 1 ? "Add descriptions and options" : "Set sale timing and ticket policy" }, { title: "Review & Publish", sub: step === 3 ? "Confirm and go live" : "Check and go live" }];
-  const days = e.starts_at ? Math.round((Date.parse(e.starts_at) - Date.now()) / 864e5) : null;
+  const days = e.starts_at ? Math.round((Date.parse(e.starts_at) - now) / 864e5) : null;
   const saleDays = e.starts_at ? Math.round((Date.parse(e.starts_at) - Date.parse(rules.sale_start)) / 864e5) : null;
   const go = async (n: 1 | 2, to: number | "exit") => {
     const r = await run(() => n === 1 ? saveTicketModel(e.id, { model, capacity, tiers: tiers.map(({ sold: _s, status: _st, sale_start: _a, sale_end: _b, ...t }) => ({ ...t, kind: t.kind as "general" })) }) : saveSalesRules(e.id, { ...rules, promos }), { refresh: false });
     if (r.ok) router.push(to === "exit" ? back : `${base}?step=${to}`);
   };
   const checks = useMemo(() => [
-    ["Sale dates are in the future", !rules.sale_start || Date.parse(rules.sale_start) > Date.now() - 864e5],
+    ["Sale dates are in the future", !rules.sale_start || Date.parse(rules.sale_start) > now - 864e5],
     ["No conflicts with event date", !e.starts_at || Date.parse(rules.sale_start) < Date.parse(e.starts_at)],
     ["Order limit is reasonable", rules.order_limit <= 20],
     ["Transfer and resale settings are supported", true],

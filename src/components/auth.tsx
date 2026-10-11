@@ -1,5 +1,6 @@
 "use client";
 
+import { useHydrated } from "@/lib/use-hydrated";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -106,8 +107,7 @@ export function AuthPage(props: AuthProps) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   // Submitting before hydration would fall back to a native form submit; keep it disabled until JS is ready.
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
+  const hydrated = useHydrated();
   const [error, setError] = useState(props.error ?? "");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState("");

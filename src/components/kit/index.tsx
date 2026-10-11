@@ -53,9 +53,9 @@ export function Ring({ value, size = 64, stroke = 7, color = "var(--k-blue)", tr
 /** Donut chart: segments with colors; centre label. */
 export function Donut({ parts, size = 120, stroke = 16, label, sub }: { parts: { value: number; color: string; label: string }[]; size?: number; stroke?: number; label?: ReactNode; sub?: ReactNode }) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, total = parts.reduce((s, p) => s + p.value, 0) || 1;
-  let off = 0;
+  const lens = parts.map(p => (c * p.value) / total); const offs = lens.map((_, i) => lens.slice(0, i).reduce((s, x) => s + x, 0));
   return <span className="k-ring" style={{ width: size, height: size }} role="img" aria-label={parts.map(p => `${p.label} ${Math.round((100 * p.value) / total)}%`).join(", ")}>
-    <svg width={size} height={size}><circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#eef1f8" strokeWidth={stroke} />{parts.map((p, i) => { const len = (c * p.value) / total; const el = <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={p.color} strokeWidth={stroke} strokeDasharray={`${Math.max(0, len - 1.5)} ${c}`} strokeDashoffset={-off} />; off += len; return el; })}</svg>
+    <svg width={size} height={size}><circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#eef1f8" strokeWidth={stroke} />{parts.map((p, i) => { const len = lens[i]!; return <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={p.color} strokeWidth={stroke} strokeDasharray={`${Math.max(0, len - 1.5)} ${c}`} strokeDashoffset={-offs[i]!} />; })}</svg>
     <span className="lbl"><span style={{ fontSize: size / 7.5 }}>{label}{sub && <small style={{ display: "block", fontSize: 10.5, fontWeight: 500, color: "var(--k-muted)" }}>{sub}</small>}</span></span>
   </span>;
 }

@@ -175,14 +175,14 @@ function MonthPicker({ value, to, onPick }: { value: string; to: string; onPick:
 }
 
 function Donut({ rows, total }: { rows: Alloc[]; total: number }) {
-  let acc = 0; const stops = rows.map((r, i) => { const a = acc; acc += r.pct; return `${COLORS[i % COLORS.length]} ${a}% ${acc}%`; }).join(", ");
+  const ends = rows.reduce<number[]>((a, r) => [...a, (a.at(-1) ?? 0) + r.pct], []);
+  const stops = rows.map((r, i) => `${COLORS[i % COLORS.length]} ${ends[i]! - r.pct}% ${ends[i]}%`).join(", ");
   return <div className="pw-donut" style={{ background: `conic-gradient(${stops})` }}><span><b>{gbp(total)}</b><small>Total budget</small></span></div>;
 }
 
 function BudgetSide({ data, s3, ev, s2 }: { data: PlanData; s3: PlanStep3; ev: PlanData["event"]; s2: PlanStep2 }) {
   const total = s3.budget_mode === "range" ? Math.round((s3.budget_min + s3.budget_max) / 2) : s3.budget;
-  const rows = useMemo(() => { const cats = [...s3.must, ...s3.optional]; const weights: Record<string, number> = { venue: 35, food: 25, drinks: 15, entertainment: 10, styling: 8, media: 7, transport: 4, accommodation: 6, security: 4, staff: 5, invitations: 2, activities: 4 }; const sum = cats.reduce((a, c) => a + (weights[c] ?? 4), 0) || 1; return cats.map(c => ({ key: c, pct: Math.round(((weights[c] ?? 4) / sum) * 100), amount: Math.round(total * (weights[c] ?? 4) / sum / 50) * 50, min: 0, max: 0 })); }, [s3.must, s3.optional, total]);
-  const fixPct = rows.length ? 100 - rows.reduce((a, r) => a + r.pct, 0) : 0; if (rows[0]) rows[0].pct += fixPct;
+  const rows = useMemo(() => { const cats = [...s3.must, ...s3.optional]; const weights: Record<string, number> = { venue: 35, food: 25, drinks: 15, entertainment: 10, styling: 8, media: 7, transport: 4, accommodation: 6, security: 4, staff: 5, invitations: 2, activities: 4 }; const sum = cats.reduce((a, c) => a + (weights[c] ?? 4), 0) || 1; const base = cats.map(c => ({ key: c, pct: Math.round(((weights[c] ?? 4) / sum) * 100), amount: Math.round(total * (weights[c] ?? 4) / sum / 50) * 50, min: 0, max: 0 })); const fixPct = base.length ? 100 - base.reduce((a, r) => a + r.pct, 0) : 0; return base.map((r, i) => (i === 0 ? { ...r, pct: r.pct + fixPct } : r)); }, [s3.must, s3.optional, total]);
   const over = total && total < data.bench.min; const under = total > data.bench.max * 1.5;
   return <>
     <section className="ce-card pw-bud"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="pw-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div>

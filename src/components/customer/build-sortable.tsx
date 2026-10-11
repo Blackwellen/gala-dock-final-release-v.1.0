@@ -9,7 +9,9 @@ export function SortableBuild({ eventId, ids, labels, children }: { eventId: str
   const rows = Children.toArray(children);
   const [order, setOrder] = useState(ids.map((_, i) => i)); const [drag, setDrag] = useState<number | null>(null); const [msg, setMsg] = useState("");
   const { run } = useAction();
-  useEffect(() => setOrder(ids.map((_, i) => i)), [ids]);
+  // Reset the local order when the server sends a different list (adjusting state during render, not in an effect).
+  const idsKey = ids.join(","); const [prevKey, setPrevKey] = useState(idsKey);
+  if (prevKey !== idsKey) { setPrevKey(idsKey); setOrder(ids.map((_, i) => i)); }
   const commit = (next: number[]) => { setOrder(next); void run(() => reorderBuild(eventId, next.map(i => ids[i]!)), { refresh: false }); };
   const move = (pos: number, to: number) => { if (to < 0 || to >= order.length) return; const n = [...order]; const [x] = n.splice(pos, 1); n.splice(to, 0, x!); setMsg(`${labels[x!]} moved to position ${to + 1} of ${n.length}`); commit(n); };
   return <><ol className="cb-list">{order.map((ix, pos) => <li key={ids[ix]} className={`cb-row ${drag === pos ? "dragging" : ""}`} draggable onDragStart={e => { setDrag(pos); e.dataTransfer.effectAllowed = "move"; }} onDragEnd={() => setDrag(null)} onDragOver={e => { e.preventDefault(); if (drag !== null && drag !== pos) { const n = [...order]; const [x] = n.splice(drag, 1); n.splice(pos, 0, x!); setOrder(n); setDrag(pos); } }} onDrop={e => { e.preventDefault(); setDrag(null); commit(order); }}>
