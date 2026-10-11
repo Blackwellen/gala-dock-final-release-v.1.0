@@ -1,0 +1,52 @@
+/* AD-004 Workspaces / AD-005 Workspace */
+.aw{--aa-rail:384px}
+.aw .aa-split{gap:12px}
+.aw-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.aw .aa-bar{margin-bottom:10px}
+.aw .aa-bar .aa-search{max-width:none}
+.aw-filters{grid-template-columns:repeat(6,minmax(0,1fr))}
+.aw-table td{height:45.5px}
+.aw-table .aa-who .ws-thumb{border-radius:5px}
+.aw-table .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aw-table td .aa-who{gap:8px}
+.aa-blue{color:#1a1af2}
+.aw-drawer{gap:10px}
+.aw-drawer .aa-drawer-head .ws-thumb{border-radius:6px}
+.aw-drawer .aa-drawer-head h2{display:flex;align-items:center;gap:10px;font-size:16px}
+.aw-dtabs a,.aw-dtabs span.t{font-size:11.5px;padding:0 4px;background:none}
+.aw-dtabs span.t.on{background:#eef2ff;color:#1a1af2;box-shadow:inset 0 -2px 0 #1a1af2}
+.aw-details{border:1px solid var(--aa-line);border-radius:8px;padding:10px 12px}
+.aw-details .aa-kv{gap:6px}
+.aw-details .aa-kv>div{grid-template-columns:112px minmax(0,1fr) max-content;font-size:11px}
+.aw-owner{gap:8px}
+.aw-owner>span{display:grid;line-height:1.25}
+.aw-owner b{font-weight:500;font-size:11px}
+.aw-owner small{font-size:10.5px;color:var(--aa-muted)}
+.aw-drawer .aa-mini strong{font-size:15px}
+.aw-tls{gap:6px}
+.aw-tls .aa-tl-ico{background:none}
+.aw-drawer .aa-drawer-actions .ws-btn{gap:6px;font-size:11.5px}
+.aw-drawer .aa-drawer-actions .ws-btn svg{width:14px!important;height:14px!important}
+@media (max-width:1180px){.aw-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.aw-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.aw-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.aw-table{font-size:10.5px}
+.aw-table th{font-size:10.5px;padding:0 5px}
+.aw-table td{padding:0 5px}
+.aw-table .ck{padding-left:10px}
+.aw-table .aa-who b{font-size:10.5px}
+.aw-table .aa-who small{font-size:10px}
+.aw-table .aa-chip{padding:0 7px;font-size:10px}
+.aw-table .aa-status{font-size:10px;padding:0 6px;gap:5px}
+.aw-table .aa-dots{width:30px;height:28px}
+.aw-drawer{gap:8px;padding-top:12px}
+.aw-details{padding:8px 12px}
+.aw-details .aa-sec-head{margin-bottom:6px}
+.aw-details .aa-kv{gap:3px}
+.aw-details .aa-kv>div{font-size:10.5px;min-height:19px}
+.aw-details .ws-btn.sm{height:26px}
+.aw-drawer .aa-mini{padding:7px 8px 7px 10px}
+.aw-drawer .aa-minis{gap:6px}
+.aw-drawer .aa-sec-head{margin-bottom:6px}
+.aw-tls .aa-tl b{font-size:10.5px}
+.aw-tls .aa-tl small{font-size:10px;margin-top:0}
+.aw-drawer .aa-drawer-actions .ws-btn{height:34px}

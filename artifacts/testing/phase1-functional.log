@@ -1,54 +1,62 @@
 
 Running 30 tests using 1 worker
 
-  ok  1 [desktop] › tests\phase1\e2e\journeys.spec.ts:10:5 › login: wrong password and unknown email get the same generic error (3.2s)
-  ok  2 [desktop] › tests\phase1\e2e\journeys.spec.ts:21:5 › login: client validation blocks empty submit; forgot password is neutral (2.9s)
-  ok  3 [desktop] › tests\phase1\e2e\journeys.spec.ts:32:5 › register: terms must be explicitly accepted and marketing is opt-in (2.0s)
-  ok  4 [desktop] › tests\phase1\e2e\journeys.spec.ts:44:5 › protected routes redirect to login and preserve the destination (6.1s)
-  x   5 [desktop] › tests\phase1\e2e\journeys.spec.ts:51:5 › Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover (6.3s)
-  ok  6 [desktop] › tests\phase1\e2e\journeys.spec.ts:67:5 › Journey B: ticket purchaser keeps checkout intent through sign-in, no business setup (3.8s)
-  ok  7 [desktop] › tests\phase1\e2e\journeys.spec.ts:76:5 › Journey C + M + P: organizer onboarding — refresh-safe drafts, single workspace, owner, invites after commit (16.5s)
-  ok  8 [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating (10.4s)
-  ok  9 [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage (10.2s)
-  ok 10 [desktop] › tests\phase1\e2e\journeys.spec.ts:185:5 › Journey F: mixed provider uses one workspace for venue and services (10.2s)
-  ok 11 [desktop] › tests\phase1\e2e\journeys.spec.ts:198:5 › Journey H: an organizer can add a provider workspace without permission crossover (5.3s)
-  ok 12 [desktop] › tests\phase1\e2e\journeys.spec.ts:208:5 › Journey I: invitation opened while signed out, accepted after sign-in (6.3s)
-  ok 13 [desktop] › tests\phase1\e2e\journeys.spec.ts:233:5 › Journey J: password recovery link resets once, signs out everywhere, and cannot be reused (4.0s)
-  ok 14 [desktop] › tests\phase1\e2e\journeys.spec.ts:251:5 › Journey K: MFA challenge is required, rejects bad codes and resumes the original page (36.6s)
-  ok 15 [desktop] › tests\phase1\e2e\journeys.spec.ts:275:5 › Journey L: suspended member sees the access state; owned workspaces stay available (5.7s)
-  ok 16 [desktop] › tests\phase1\security\rls.spec.ts:28:7 › Supabase RLS and authorization › owner membership is created automatically with the workspace (54ms)
-  ok 17 [desktop] › tests\phase1\security\rls.spec.ts:33:7 › Supabase RLS and authorization › profiles are isolated between identities (205ms)
-  ok 18 [desktop] › tests\phase1\security\rls.spec.ts:39:7 › Supabase RLS and authorization › another account cannot read, update or join a private workspace (IDOR/BOLA) (370ms)
-  ok 19 [desktop] › tests\phase1\security\rls.spec.ts:50:7 › Supabase RLS and authorization › owners cannot self-verify, self-connect payouts, unsuspend or force-complete via REST (557ms)
-  ok 20 [desktop] › tests\phase1\security\rls.spec.ts:60:7 › Supabase RLS and authorization › listings cannot be published by writing the column; publish_listing enforces readiness (663ms)
-  ok 21 [desktop] › tests\phase1\security\rls.spec.ts:79:7 › Supabase RLS and authorization › platform admin cannot be self-assigned (211ms)
-  ok 22 [desktop] › tests\phase1\security\rls.spec.ts:84:7 › Supabase RLS and authorization › anonymous callers cannot use signed-in RPCs; internal tables are closed (341ms)
-  ok 23 [desktop] › tests\phase1\security\rls.spec.ts:93:7 › Supabase RLS and authorization › invitations: only the addressed identity can accept; single use; role never replaced (731ms)
-  ok 24 [desktop] › tests\phase1\security\rls.spec.ts:109:7 › Supabase RLS and authorization › expired, revoked and declined invitations cannot be accepted (769ms)
-  ok 25 [desktop] › tests\phase1\security\rls.spec.ts:124:7 › Supabase RLS and authorization › invite preview exposes no recipient email and unknown tokens are unavailable (127ms)
-  ok 26 [desktop] › tests\phase1\security\rls.spec.ts:132:7 › Supabase RLS and authorization › suspended membership loses access immediately; other workspaces unaffected (424ms)
-  ok 27 [desktop] › tests\phase1\security\rls.spec.ts:142:7 › Supabase RLS and authorization › a suspended workspace blocks member access (261ms)
-  ok 28 [desktop] › tests\phase1\security\rls.spec.ts:149:7 › Supabase RLS and authorization › open redirects are rejected by /continue and auth callbacks (347ms)
-  ok 29 [desktop] › tests\phase1\security\rls.spec.ts:157:7 › Supabase RLS and authorization › state-changing APIs reject cross-origin requests and unauthenticated callers (626ms)
-  ok 30 [desktop] › tests\phase1\security\rls.spec.ts:166:7 › Supabase RLS and authorization › private pages are not cacheable and security headers are present (134ms)
+  ok  1 [desktop] › tests\phase1\e2e\journeys.spec.ts:10:5 › login: wrong password and unknown email get the same generic error (3.9s)
+  ok  2 [desktop] › tests\phase1\e2e\journeys.spec.ts:21:5 › login: client validation blocks empty submit; forgot password is neutral (2.8s)
+  ok  3 [desktop] › tests\phase1\e2e\journeys.spec.ts:32:5 › register: terms must be explicitly accepted and marketing is opt-in (3.3s)
+  ok  4 [desktop] › tests\phase1\e2e\journeys.spec.ts:44:5 › protected routes redirect to login and preserve the destination (8.5s)
+  ok  5 [desktop] › tests\phase1\e2e\journeys.spec.ts:51:5 › Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover (10.8s)
+  ok  6 [desktop] › tests\phase1\e2e\journeys.spec.ts:67:5 › Journey B: ticket purchaser keeps checkout intent through sign-in, no business setup (3.0s)
+  ok  7 [desktop] › tests\phase1\e2e\journeys.spec.ts:76:5 › Journey C + M + P: organizer onboarding — refresh-safe drafts, single workspace, owner, invites after commit (14.3s)
+  ok  8 [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating (11.5s)
+  ok  9 [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage (11.1s)
+  ok 10 [desktop] › tests\phase1\e2e\journeys.spec.ts:185:5 › Journey F: mixed provider uses one workspace for venue and services (11.3s)
+  ok 11 [desktop] › tests\phase1\e2e\journeys.spec.ts:198:5 › Journey H: an organizer can add a provider workspace without permission crossover (5.2s)
+  ok 12 [desktop] › tests\phase1\e2e\journeys.spec.ts:208:5 › Journey I: invitation opened while signed out, accepted after sign-in (8.8s)
+  x  13 [desktop] › tests\phase1\e2e\journeys.spec.ts:233:5 › Journey J: password recovery link resets once, signs out everywhere, and cannot be reused (3.0m)
+  ok 14 [desktop] › tests\phase1\e2e\journeys.spec.ts:251:5 › Journey K: MFA challenge is required, rejects bad codes and resumes the original page (2.0m)
+  ok 15 [desktop] › tests\phase1\e2e\journeys.spec.ts:275:5 › Journey L: suspended member sees the access state; owned workspaces stay available (9.6s)
+  ok 16 [desktop] › tests\phase1\security\rls.spec.ts:28:7 › Supabase RLS and authorization › owner membership is created automatically with the workspace (47ms)
+  ok 17 [desktop] › tests\phase1\security\rls.spec.ts:33:7 › Supabase RLS and authorization › profiles are isolated between identities (197ms)
+  ok 18 [desktop] › tests\phase1\security\rls.spec.ts:39:7 › Supabase RLS and authorization › another account cannot read, update or join a private workspace (IDOR/BOLA) (315ms)
+  ok 19 [desktop] › tests\phase1\security\rls.spec.ts:50:7 › Supabase RLS and authorization › owners cannot self-verify, self-connect payouts, unsuspend or force-complete via REST (511ms)
+  ok 20 [desktop] › tests\phase1\security\rls.spec.ts:60:7 › Supabase RLS and authorization › listings cannot be published by writing the column; publish_listing enforces readiness (625ms)
+  ok 21 [desktop] › tests\phase1\security\rls.spec.ts:79:7 › Supabase RLS and authorization › platform admin cannot be self-assigned (176ms)
+  ok 22 [desktop] › tests\phase1\security\rls.spec.ts:84:7 › Supabase RLS and authorization › anonymous callers cannot use signed-in RPCs; internal tables are closed (328ms)
+  ok 23 [desktop] › tests\phase1\security\rls.spec.ts:93:7 › Supabase RLS and authorization › invitations: only the addressed identity can accept; single use; role never replaced (734ms)
+  ok 24 [desktop] › tests\phase1\security\rls.spec.ts:109:7 › Supabase RLS and authorization › expired, revoked and declined invitations cannot be accepted (698ms)
+  ok 25 [desktop] › tests\phase1\security\rls.spec.ts:124:7 › Supabase RLS and authorization › invite preview exposes no recipient email and unknown tokens are unavailable (144ms)
+  ok 26 [desktop] › tests\phase1\security\rls.spec.ts:132:7 › Supabase RLS and authorization › suspended membership loses access immediately; other workspaces unaffected (330ms)
+  ok 27 [desktop] › tests\phase1\security\rls.spec.ts:142:7 › Supabase RLS and authorization › a suspended workspace blocks member access (255ms)
+  ok 28 [desktop] › tests\phase1\security\rls.spec.ts:149:7 › Supabase RLS and authorization › open redirects are rejected by /continue and auth callbacks (592ms)
+  ok 29 [desktop] › tests\phase1\security\rls.spec.ts:157:7 › Supabase RLS and authorization › state-changing APIs reject cross-origin requests and unauthenticated callers (1.1s)
+  ok 30 [desktop] › tests\phase1\security\rls.spec.ts:166:7 › Supabase RLS and authorization › private pages are not cacheable and security headers are present (248ms)
 
 
-  1) [desktop] › tests\phase1\e2e\journeys.spec.ts:51:5 › Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover 
+  1) [desktop] › tests\phase1\e2e\journeys.spec.ts:233:5 › Journey J: password recovery link resets once, signs out everywhere, and cannot be reused 
 
-    Error: browserContext.close: ENOENT: no such file or directory, open 'C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\test-results\.playwright-artifacts-0\traces\resources\b7668d5cc2e22319e16f0d6e551e1929.jsonl'
+    Test timeout of 180000ms exceeded.
 
-    Error Context: test-results\phase1-e2e-journeys-Journe-af746-eferences-lands-on-Discover-desktop\error-context.md
+    Error: locator.fill: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for getByLabel('New password', { exact: true })
+        - waiting for "http://localhost:3107/reset-password" navigation to finish...
+        - navigated to "http://localhost:3107/reset-password"
 
-    Error Context: test-results\phase1-e2e-journeys-Journe-af746-eferences-lands-on-Discover-desktop\error-context.md
 
-    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results\phase1-e2e-journeys-Journe-af746-eferences-lands-on-Discover-desktop\trace.zip
-    Usage:
+      238 |   await expectPath(page, /\/reset-password$/);
+      239 |   const fresh = "New-Gala-Pass-42!";
+    > 240 |   await page.getByLabel("New password", { exact: true }).fill(fresh);
+          |                                                          ^
+      241 |   await page.getByLabel("Confirm new password").fill(fresh);
+      242 |   await page.getByRole("button", { name: "Save new password" }).click();
+      243 |   await expect(page.getByRole("heading", { name: "Password updated" })).toBeVisible();
+        at C:\Users\PC\Documents\Blackwellen - Business Files\gala-dock-final-release\tests\phase1\e2e\journeys.spec.ts:240:58
 
-        npx playwright show-trace test-results\phase1-e2e-journeys-Journe-af746-eferences-lands-on-Discover-desktop\trace.zip
+    Error Context: test-results\phase1-e2e-journeys-Journe-3260c-ywhere-and-cannot-be-reused-desktop\error-context.md
 
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results\phase1-e2e-journeys-Journe-3260c-ywhere-and-cannot-be-reused-desktop\error-context.md
 
   1 failed
-    [desktop] › tests\phase1\e2e\journeys.spec.ts:51:5 › Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover 
-  29 passed (2.4m)
+    [desktop] › tests\phase1\e2e\journeys.spec.ts:233:5 › Journey J: password recovery link resets once, signs out everywhere, and cannot be reused 
+  29 passed (7.0m)

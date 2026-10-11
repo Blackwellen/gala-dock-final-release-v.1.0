@@ -7,6 +7,7 @@ const results = [];
 const check = (name, ok, detail = "") => { results.push(ok); console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? " — " + detail : ""}`); };
 const venue = (await admin.from("listings").select("id,details,published,paused_at").eq("slug", "riverside-arena").single()).data;
 const space = async name => (await admin.from("spaces").select("*").eq("venue_id", venue.id).eq("name", name).maybeSingle()).data;
+await admin.from("spaces").delete().eq("venue_id", venue.id).eq("name", "E2E Gallery");
 const published = async () => (await admin.from("venue_structures").select("version,elements").eq("venue_id", venue.id).eq("status", "published").single()).data;
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const ctx = await browser.newContext({ storageState: "artifacts/auth/provider.json", viewport: { width: 1536, height: 1024 } });
@@ -38,25 +39,27 @@ try {
   const added = await space("E2E Gallery");
   check("New space created as draft", added?.status === "draft" && added?.layouts?.standing === 60, JSON.stringify(added?.layouts));
 
-  // 4. Map: draft save creates a draft version; live version unchanged
+  // 4. Map (plan builder): draft save creates a draft version; live version unchanged
   const before = await published();
   await page.reload({ waitUntil: "load" });
-  await page.getByRole("button", { name: "Draw on map" }).click();
-  await page.locator(".se-features").getByRole("button", { name: "Add feature" }).click();
-  await page.getByRole("menuitem", { name: /Entrance/ }).click();
-  await page.getByRole("button", { name: "Save draft" }).click();
+  const svg = page.locator(".mb-svg"); await svg.click({ position: { x: 30, y: 30 } }); await page.keyboard.press("f"); await page.waitForTimeout(300);
+  const box = await svg.boundingBox();
+  await page.locator(".mb-tabs button", { hasText: "Assets" }).click();
+  await page.getByTitle(/^Entrance/).click();
+  await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.2);
+  await page.locator(".mb-bar button", { hasText: "Save draft" }).click();
   await toast(/saved as draft/);
   const drafts = (await admin.from("venue_structures").select("version,status").eq("venue_id", venue.id).eq("status", "draft")).data;
   check("Map draft saved; published map unchanged", drafts.length >= 1 && (await published()).version === before.version, `drafts=${drafts.length}`);
 
-  // 5. Protected exits can't be removed; publishing creates a new live version
-  await page.reload({ waitUntil: "load" });
-  await page.getByRole("button", { name: "Draw on map" }).click();
-  await page.locator(".se-features li", { hasText: "Fire exit A" }).click().catch(() => {});
-  check("Protected exits have no remove control", await page.locator(".se-features li", { hasText: "Fire exit A" }).locator(".se-del").count() === 0);
-  await page.locator(".se-features").getByRole("button", { name: "Add feature" }).click();
-  await page.getByRole("menuitem", { name: /Bar/ }).click();
-  await page.getByRole("button", { name: "Publish map" }).click();
+  // 5. Protected exits can't be removed; publishing creates a new live version keeping them
+  await page.locator(".mb-tabs button", { hasText: "Layers" }).click();
+  await page.locator(".mb-layers li button", { hasText: "Fire exit A" }).first().click();
+  check("Protected exits can’t be deleted", await page.locator(".mb-acts button.danger").isDisabled());
+  await page.locator(".mb-tabs button", { hasText: "Assets" }).click();
+  await page.getByTitle(/^Bar —|^Bar$/).first().click();
+  await page.mouse.click(box.x + box.width * 0.3, box.y + box.height * 0.25);
+  await page.locator(".mb-bar button", { hasText: "Publish" }).click();
   await toast(/published/);
   const after = await published();
   check("Publish creates a new live version keeping exits", after.version > before.version && after.elements.filter(e => e.type === "exit").length === 2, `v${before.version}→v${after.version}`);
@@ -96,8 +99,10 @@ try {
   await toast(/published/i);
   check("Republish goes live", (await admin.from("listings").select("published").eq("id", venue.id).single()).data.published);
 } catch (e) {
+  await page.screenshot({ path: "artifacts/visual/planner/ve-fail.png" }).catch(() => {});
   check("unexpected error", false, e.message.split("\n")[0]);
 } finally {
+  await admin.from("spaces").delete().eq("venue_id", venue.id).eq("name", "E2E Gallery");
   await browser.close();
   console.log(`\n${results.filter(Boolean).length}/${results.length} passed`);
   process.exit(results.every(Boolean) ? 0 : 1);

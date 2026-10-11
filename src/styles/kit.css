@@ -288,3 +288,5 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
   .k-dialog { padding: 16px; border-radius: 14px; }
   .k-backdrop { align-items: end; padding: 0; } .k-backdrop .k-dialog { border-bottom-left-radius: 0; border-bottom-right-radius: 0; width: 100%; }
 }
+/* Shared card surface for components reused across shells (organizer + public). */
+.o-root .ce-card, .pub-root .ce-card { background: #fff; border: 1px solid var(--k-line); border-radius: 12px; padding: 16px; box-shadow: var(--k-card-shadow); min-width: 0; }

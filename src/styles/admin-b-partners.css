@@ -1,0 +1,75 @@
+/* AD-015 Partners ("Gala Dock Partners Dashboard"). */
+.adp{gap:12px}
+.adp-grid{display:grid;grid-template-columns:minmax(0,860fr) minmax(0,397fr);gap:10px;align-items:start}
+.adp-main{display:grid;gap:12px;min-width:0}
+.adp-kpis{grid-template-columns:252fr 288fr 300fr}
+.adp-kpis .adb-kpi{min-height:104px}
+.adp-filters{display:grid;grid-template-columns:minmax(0,405fr) 104px 104px 136px 80px;gap:10px;align-items:end}
+.adp-filters .adb-search{height:34px;align-self:start}
+.adp-filters .adb-filter{gap:3px;font-size:11px}
+.adp-filters .adb-select{height:30px;font-size:11.5px;width:100%}
+.adp-fbtn{height:46px;color:#1a1af2;flex-direction:row}
+.adp-table{table-layout:fixed;margin-top:10px}
+.adp-table th{background:transparent;padding:8px 6px;font-size:10.5px}
+.adp-table td{padding:3px 6px;height:47px;font-size:11px;color:#3f4596;white-space:nowrap;overflow:hidden}
+.adp-table th:first-child,.adp-table td:first-child{padding-left:12px}
+.adp-table .adb-cell b{font-size:11px;color:#0d0d63}
+.adp-table .adb-pill{height:22px;gap:4px}
+.ws-app .adp-table .adb-pill svg{width:11px;height:11px}
+.adp-table .adb-dots{width:30px;height:30px;margin-left:auto}
+.adp-table .adb-menu{display:block}
+.adp-main .adb-pager{padding:22px 4px 0}
+.adp-policy{padding:14px 16px;display:grid;gap:12px}
+.adp-rail{display:grid;gap:10px;min-width:0}
+.adp-pending{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:8px;align-items:start}
+.adp-pending .adb-kpi{min-height:104px}
+.adp-pending .adb-kpi-badge .adb-pill{height:22px;gap:4px}
+.ws-app .adp-pending .adb-kpi-badge svg{width:11px;height:11px}
+.adp-dots{width:38px;height:36px;padding:0}
+.adp-tabs{margin:0 0 -2px}
+.adp-tabs a{font-size:11.5px}
+.adp-banner{display:flex;align-items:center;gap:12px;height:78px;padding:0 12px;border-radius:8px;background:#0b0c48 center/cover no-repeat;color:#fff}
+.adp-banner .adb-mark{font-size:22px!important;font-weight:800}
+.adp-banner span{display:grid;line-height:1.3;flex:1;min-width:0}
+.adp-banner b{font-size:15px;font-weight:700}
+.adp-banner small{font-size:11px;opacity:.85}
+.adp-visit{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0d0d63;border-radius:5px;padding:5px 10px;font-size:11px;align-self:flex-start;margin-top:22px}
+.ws-app .adp-visit svg{width:12px;height:12px}
+.adp-key{padding:10px 12px}
+.adp-key .adb-sec-h{margin-bottom:4px}
+.adp-key h2{font-size:13.5px}
+.adp-kv{gap:2px}
+.adp-kv>div{grid-template-columns:118px minmax(0,1fr);font-size:11.5px}
+.adp-kv dd{color:#1d2068}
+.adp-kv .adb-pill{height:18px}
+.adp-who{display:flex;align-items:center;gap:7px}
+.adp-who a{color:#1d2068}
+.ws-app .adp-who>svg{width:14px;height:14px;color:#1a1af2}
+.ws-app svg.adp-flag{width:18px;height:12px}
+.adp-perf{padding:10px 12px}
+.adp-perf h2{font-size:13.5px}
+.adp-perf h2 small{font-size:11px;font-weight:400;color:#3f4596}
+.adp-perf-g{display:grid;grid-template-columns:repeat(4,1fr)}
+.adp-perf-g>div{display:grid;line-height:1.25;padding:0 10px;border-left:1px solid #eef3fb}
+.adp-perf-g>div:first-child{border-left:0;padding-left:6px}
+.adp-perf-g small{font-size:11px;color:#3f4596}
+.adp-perf-g b{font-size:15px;font-weight:750;color:#02032e}
+.adp-perf-g .adb-delta{font-size:11px;margin:0}
+.adp-comm{padding:10px 12px}
+.adp-comm h2{font-size:13.5px}
+.adp-comm dl{display:grid;gap:4px;margin:0}
+.adp-comm dl>div{display:grid;grid-template-columns:150px minmax(0,1fr) auto;font-size:11.5px;align-items:center}
+.adp-comm dl>div.gap{margin-top:6px}
+.adp-comm dt{color:#3f4596}
+.adp-comm dd{margin:0;color:#1d2068;display:flex;align-items:center;gap:4px}
+.adp-comm dd small{font-size:10.5px;color:#3f4596}
+.ws-app .adp-comm dd svg{width:12px;height:12px}
+.adp-comm em{font-style:normal;font-size:10.5px;color:#3f4596}
+.adp-qa{padding:10px 12px}
+.adp-qa h2{font-size:13.5px;margin-bottom:8px}
+.adp-qa-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.adp-qa-g .adb-btn,.adp-qa-g .ws-btn{height:32px;font-size:11px;padding:0 6px;width:100%;color:#1a1af2;border-color:#d6defa}
+.adp-qa-g .adb-pop>summary{width:100%}
+.adp-payout{width:100%;height:32px;margin-top:8px;font-size:11.5px}
+@media (max-width:1360px){.adp-grid{grid-template-columns:1fr}.adp-filters{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:860px){.adp-kpis,.adp-filters{grid-template-columns:1fr}.adp-table{min-width:860px}}

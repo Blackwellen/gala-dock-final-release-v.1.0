@@ -1,0 +1,16 @@
+{
+  "key": "ad-013-support",
+  "url": "/admin/support",
+  "file": "Designs/Admin Workspace/Gala Dock Support Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 15.09,
+  "ssim": 0.5793,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1077
+  },
+  "errors": [],
+  "at": "2026-10-11T08:58:08.047Z"
+}

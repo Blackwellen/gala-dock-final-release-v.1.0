@@ -1,0 +1,20 @@
+[
+  {
+    "key": "port-001-client-portal",
+    "url": "/portal/jhd2omL3RaDSCI2jA22ZJLvDQAFtUrQaO4DunQia_wE",
+    "file": "Designs/Portals/Neon Nights Festival Dashboard.png",
+    "who": null
+  },
+  {
+    "key": "prom-001-promoter",
+    "url": "/promoter",
+    "file": "Designs/Portals/Neon Nights Promoter Dashboard.png",
+    "who": "promoter"
+  },
+  {
+    "key": "part-001-partner",
+    "url": "/partner",
+    "file": "Designs/Portals/Gala Dock Partner Performance Dashboard.png",
+    "who": "partner"
+  }
+]

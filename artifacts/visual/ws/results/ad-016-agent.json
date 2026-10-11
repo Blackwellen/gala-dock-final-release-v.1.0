@@ -1,0 +1,16 @@
+{
+  "key": "ad-016-agent",
+  "url": "/admin/agent-integrations",
+  "file": "Designs/Admin Workspace/Gala·Dock Agent Integrations Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.82,
+  "ssim": 0.6292,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1053
+  },
+  "errors": [],
+  "at": "2026-10-11T08:56:31.536Z"
+}

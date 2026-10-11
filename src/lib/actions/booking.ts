@@ -3,6 +3,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
 import { stripe, stripeKey } from "@/lib/stripe";
+import { stripeCustomer, savedCards } from "@/lib/payments";
 import type { ActionResult } from "./shell";
 
 const Id = z.string().uuid();
@@ -70,13 +71,17 @@ export async function acceptQuote(eventId: string, itemId: string, agreed: boole
   bump(eventId); return { ok: true, message: `${o.it.title} is booked. Deposit of £${deposit.toLocaleString("en-GB")} paid.` };
 }
 
-/** Card payment in Stripe test mode with the saved test card. Live mode requires Stripe Elements card collection. */
+/** Charges (or authorises) the customer's default saved card. In Stripe test mode with no saved card, the test card is used. */
 async function authorise(amount: number, description: string, itemId: string, capture: boolean): Promise<{ ok: true; ref: string } | { ok: false; error: string }> {
   const key = stripeKey();
   if (!key) return { ok: false, error: "Payments aren't configured yet." };
-  if (!key.startsWith("sk_test_")) return { ok: false, error: "Add a card to continue." };
+  const ctx = await getCustomer();
+  const card = (await savedCards(ctx)).find(c => c.isDefault);
+  if (!card && !key.startsWith("sk_test_")) return { ok: false, error: "Add a card in My Account → Payments to continue." };
   try {
-    const pi = await stripe<{ id: string; status: string }>("payment_intents", { amount: String(Math.round(amount * 100)), currency: "gbp", payment_method: "pm_card_visa", confirm: "true", capture_method: capture ? "automatic" : "manual", description, "metadata[build_item_id]": itemId, "automatic_payment_methods[enabled]": "true", "automatic_payment_methods[allow_redirects]": "never" });
+    const cid = card ? await stripeCustomer(ctx) : null;
+    const pi = await stripe<{ id: string; status: string }>("payment_intents", { amount: String(Math.round(amount * 100)), currency: "gbp", payment_method: card?.id ?? "pm_card_visa", ...(cid ? { customer: cid } : {}), confirm: "true", capture_method: capture ? "automatic" : "manual", description, "metadata[build_item_id]": itemId, "metadata[user_id]": ctx.user.id, "automatic_payment_methods[enabled]": "true", "automatic_payment_methods[allow_redirects]": "never" });
+    if (pi.status === "requires_action") { await stripe(`payment_intents/${pi.id}/cancel`, {}).catch(() => null); return { ok: false, error: "Your bank needs to verify this payment. Please use a different card." }; }
     if (!["succeeded", "requires_capture"].includes(pi.status)) return { ok: false, error: "Your card was declined." };
     return { ok: true, ref: pi.id };
   } catch { return { ok: false, error: "Payment couldn't be processed. You have not been charged." }; }

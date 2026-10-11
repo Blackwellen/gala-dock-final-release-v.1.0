@@ -1,0 +1,16 @@
+{
+  "key": "ad-008-listing",
+  "url": "/admin/marketplace/listings/{listing:Riverside Arena}",
+  "file": "Designs/Admin Workspace/Riverside Arena Marketplace Review Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 18.01,
+  "ssim": 0.5728,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": true,
+    "scrollHeight": 1087
+  },
+  "errors": [],
+  "at": "2026-10-11T08:49:37.168Z"
+}

@@ -1,0 +1,121 @@
+/* AD-013 Support ("Gala Dock Support Dashboard"). Rail styles are shared with AD-014. */
+.adsu{gap:8px}
+.adsu .adb-head{margin-top:-12px}
+.adsu-bar{display:grid;grid-template-columns:minmax(0,600fr) minmax(0,312fr) 96px 230px;gap:10px;align-items:center}
+.adsu-bar .adb-tabs{height:38px}
+.adsu-bar .adb-tabs a{padding:0 22px;font-size:13.5px}
+.adsu-bar .adb-tabs a b{background:#eceffa;font-size:10.5px}
+.adsu-bar .adb-search{height:34px}
+.adsu-filters{height:34px;width:100%;color:#0d0d63}
+.adsu-bar>.adb-pop>summary{width:100%}
+.adsu-sort{height:34px;width:100%;font-size:12px}
+.adsu-grid{display:grid;grid-template-columns:minmax(0,909fr) minmax(0,362fr);gap:10px;align-items:start}
+.adsu-main{display:grid;gap:10px;min-width:0}
+.adsu-kpis{grid-template-columns:200fr 195fr 170fr 154fr 152fr;gap:9px}
+.adsu-kpis .adb-kpi{min-height:100px;padding:12px 10px 8px;gap:12px}
+.adsu-kpis .adb-kpi strong{font-size:19px}
+.adsu-kpis .adb-kpi-spark{width:44px;right:8px;bottom:26px}
+.ws-app .adsu-kpis .adb-kpi-spark svg{width:44px;height:34px}
+.adsu-kpis .adb-kpi-label{font-size:11px}
+.adsu-table{table-layout:fixed}
+.adsu-table th{background:transparent;padding:7px 5px;font-size:10.5px}
+.adsu-table td{padding:2px 5px;height:49px;font-size:10.5px;overflow:hidden}
+.adsu-table th:first-child,.adsu-table td:first-child{padding-left:10px}
+.adsu-muted{color:#3f4596;white-space:nowrap}
+.adsu-subj a{color:#1d2068;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45}
+.adsu-table .adb-cell b{font-size:10.5px}
+.adsu-table .adb-cell small{font-size:10px}
+.adsu-table .adb-cell img{width:32px;height:30px}
+.adsu-ico{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;background:#f1e9ff;color:#8429f5;flex-shrink:0}
+.ws-app .adsu-ico svg{width:16px;height:16px}
+.adsu-table .adb-pill{height:22px;min-width:46px;justify-content:center;padding:0 6px}
+.adsu-sla{line-height:1.3}
+.adsu-sla b{display:block;font-weight:500;color:#1d2068}
+.adsu-sla small{font-size:10px;color:#1d2068;white-space:nowrap}
+.adsu-sla.over small{color:#e3122e}
+.adsu-table .adb-dots{width:26px;height:26px}
+.adsu-main .adb-pager{padding:0 4px}
+.adsu-bottom{display:grid;grid-template-columns:minmax(0,319fr) minmax(0,290fr) minmax(0,281fr);gap:9px}
+.adsu-bottom .adb-panel{padding:8px 12px}
+.adsu-bottom .adb-sec-h{margin-bottom:6px}
+.adsu-bottom h2{font-size:13.5px}
+.adsu-em ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.adsu-em li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:start}
+.adsu-em li i{width:24px;height:24px;border-radius:6px;background:#eef3ff;color:#1a4fe0;display:grid;place-items:center}
+.ws-app .adsu-em li i svg{width:14px;height:14px}
+.adsu-em li span{display:grid;line-height:1.3}
+.adsu-em li b{font-size:11px;font-weight:500;color:#0d0d63}
+.adsu-em li b u{text-decoration:none;font-size:9.5px;background:#f1eafe;color:#5c19e6;border-radius:4px;padding:1px 6px;margin-left:6px}
+.adsu-em li small{font-size:10px;color:#3f4596;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adsu-em li em{font-style:normal;font-size:10px;color:#e3122e;border:1px solid #f6b9c3;border-radius:4px;padding:1px 8px;white-space:nowrap}
+.adsu-em li em.off{color:#5157a4;border-color:#e2e8fb}
+.adsu-sla-b{display:grid;grid-template-columns:98px 1fr;gap:26px;align-items:center;margin-top:4px}
+.adsu-sla-b .ws-donut-center b{font-size:16px;font-weight:800}
+.adsu-sla-b .ws-donut-center small{font-size:9.5px}
+.adsu-sla-b ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.adsu-sla-b li{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:11px;color:#0d0d63}
+.adsu-sla-b li i{width:10px;height:10px;border-radius:50%}
+.adsu-sla-b li b{font-weight:500}
+.adsu-new{font-size:9.5px;font-weight:600;color:#1a1af2;background:#e8eefe;border-radius:4px;padding:2px 7px;margin-left:6px;vertical-align:middle}
+.adsu-ai ul{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:3px}
+.adsu-ai li{display:grid;grid-template-columns:12px 1fr;gap:6px;font-size:10px;color:#3f4596;line-height:1.35}
+.adsu-ai li i{width:8px;height:8px;border-radius:50%;margin-top:3px;border:2px solid currentColor}
+.adsu-ai li i.green{color:#16a46c}.adsu-ai li i.red{color:#ec3a52}.adsu-ai li i.amber{color:#f5a524}
+.adsu-gen{width:100%;height:30px;font-size:11px;color:#1a1af2}
+.adsu-rail{display:grid;gap:8px;min-width:0}
+.adsu-prev{padding:6px 12px 8px}
+.adsu-prev-h{display:flex;align-items:center;gap:10px}
+.adsu-ref{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#0d0d63}
+.ws-app .adsu-ref svg{width:15px;height:15px;color:#1a1af2}
+.adsu-st{margin-left:auto}
+.adsu-st .adb-pill{height:24px;background:#fff;border:1px solid #f4c2cb;gap:14px;padding:0 8px 0 12px}
+.ws-app .adsu-st svg{width:13px;height:13px}
+.adsu-prev-h .adb-dots{width:28px;height:26px}
+.adsu-prev-t{font-size:16px!important;font-weight:780!important;margin-top:6px}
+.adsu-prev-s{font-size:11.5px;color:#3f4596;line-height:1.35;margin-top:2px}
+.adsu-ctabs{margin:6px -4px 4px}
+.adsu-ctabs a{padding:6px 2px}
+.adsu-ctabs a{font-size:11px;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.adsu-ctabs a b{font-size:9.5px;font-weight:600;background:#eceffa;border-radius:4px;padding:1px 5px;color:#3d4592}
+.adsu-cd{margin:2px 0 0}
+.adsu-cd .ads-edit{height:24px}
+.adsu-cd h2{font-size:13px}
+.adsu-kv{gap:2px}
+.adsu-kv>div{grid-template-columns:120px minmax(0,1fr);font-size:11.5px;line-height:1.35}
+.adsu-kv>div.pad{padding:3px 0}
+.adsu-kv dd{color:#1d2068}
+.adsu-kv dd.red{color:#e3122e}
+.adsu-kv dd.red svg,.adsu-kv dd svg{width:13px;height:13px;vertical-align:-2px;margin-right:4px}
+.adsu-kv .adb-pill{height:19px}
+.adsu-who{display:flex;align-items:center;gap:8px}
+.adsu-who span{display:grid;line-height:1.25}
+.adsu-who b{font-weight:500;color:#0d0d63}.adsu-who small{font-size:10.5px;color:#3f4596}
+.adsu-who a{color:#0d0d63;display:inline-flex;align-items:center;gap:6px}
+.ws-app .adsu-who a svg{width:12px;height:12px;color:#1a1af2}
+.adsu-who img{width:26px;height:22px;border-radius:3px;object-fit:cover}
+.ws-app .adsu-oi{width:18px!important;height:18px!important;color:#1a1af2}
+.adsu-qa{padding:10px 12px}
+.adsu-qa h2{font-size:13.5px;margin-bottom:8px}
+.adsu-qa-g{display:grid;grid-template-columns:142fr 80fr 104fr;gap:8px}
+.adsu-qa-g .adb-btn,.adsu-qa-g .ws-btn{height:30px;font-size:11px;padding:0 8px;color:#1a1af2;border-color:#d6defa;width:100%}
+.adsu-qa-g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;margin-top:8px}
+.adsu-qa-g2 .ws-btn,.adsu-qa-g2 .adb-btn{height:30px;font-size:9.5px;padding:0 5px;gap:4px;width:100%;letter-spacing:-.02em}
+.ws-app .adsu-qa-g2 svg{width:13px!important;height:13px!important}
+.adsu-refund{background:#eef3ff!important;color:#1a1af2!important;border-color:#c9d6fb!important}
+.adsu-find{background:#fff6e8!important;color:#d86d00!important;border-color:#f7d9a8!important}
+.adsu-qa-g2 .adb-dots{width:30px;height:30px}
+.adsu-tl{padding:10px 12px}
+.adsu-tl h2{font-size:13.5px}
+.adsu-tl ol{list-style:none;margin:4px 0 0;padding:0 0 0 14px;display:grid;gap:12px;position:relative}
+.adsu-tl ol::before{content:"";position:absolute;left:4px;top:6px;bottom:8px;width:1.5px;background:#cfe9dc}
+.adsu-tl li{display:grid;grid-template-columns:64px 26px minmax(0,1fr);gap:8px;align-items:start;position:relative}
+.adsu-tl li::before{content:"";position:absolute;left:-13px;top:4px;width:7px;height:7px;border-radius:50%;background:#16a46c}
+.adsu-tl time{font-size:10.5px;color:#3f4596}
+.adsu-tl li i{width:22px;height:22px;border-radius:5px;display:grid;place-items:center}
+.ws-app .adsu-tl li i svg{width:13px;height:13px}
+.adsu-tl li i.blue{background:#eef3ff;color:#1a4fe0}.adsu-tl li i.amber{background:#fff4dc;color:#e39200}.adsu-tl li i.red{background:#ffe5ea;color:#ec2f52}.adsu-tl li i.green{background:#ddf7ea;color:#0d9f62}.adsu-tl li i.purple{background:#f1e9ff;color:#8429f5}
+.adsu-tl li span{display:grid;line-height:1.3}
+.adsu-tl li b{font-size:11px;font-weight:500;color:#0d0d63}
+.adsu-tl li small{font-size:10px;color:#3f4596}
+@media (max-width:1360px){.adsu-grid{grid-template-columns:1fr}.adsu-bar{grid-template-columns:1fr 1fr}.adsu-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:860px){.adsu-bar,.adsu-bottom,.adsu-kpis{grid-template-columns:1fr}.adsu-table{min-width:900px}}

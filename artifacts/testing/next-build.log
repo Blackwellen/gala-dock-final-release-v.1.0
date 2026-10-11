@@ -1,17 +1,17 @@
 ▲ Next.js 16.4.0 (Turbopack)
 - Environments: .env.local, .env
-✓ Running next.config.ts took 121ms
+✓ Running next.config.ts took 158ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 8.2s
+✓ Compiled successfully in 14.8s
   Running TypeScript ...
-  Finished TypeScript in 36.3s ...
+  Finished TypeScript in 73s ...
   Collecting page data using 27 workers ...
-  Generating static pages using 27 workers (0/46) ...
-  Generating static pages using 27 workers (11/46) 
-  Generating static pages using 27 workers (22/46) 
-  Generating static pages using 27 workers (34/46) 
-✓ Generating static pages using 27 workers (46/46) in 1523ms
+  Generating static pages using 27 workers (0/102) ...
+  Generating static pages using 27 workers (25/102) 
+  Generating static pages using 27 workers (50/102) 
+  Generating static pages using 27 workers (76/102) 
+✓ Generating static pages using 27 workers (102/102) in 1234ms
   Finalizing page optimization ...
 
 Route (app)
@@ -19,6 +19,7 @@ Route (app)
 ├ ○ /_not-found
 ├ ƒ /[...slug]
 ├ ƒ /access
+├ ƒ /account
 ├ ƒ /account/events
 ├ ƒ /account/events/[id]
 ├ ƒ /account/events/[id]/book
@@ -27,10 +28,54 @@ Route (app)
 ├ ƒ /account/events/[id]/messages
 ├ ƒ /account/events/[id]/money
 ├ ƒ /account/events/[id]/plan
+├ ƒ /account/events/[id]/tickets/setup
+├ ƒ /account/reviews
+├ ƒ /account/saved
+├ ƒ /account/tickets
+├ ƒ /account/tickets/[id]
 ├ ƒ /admin
+├ ƒ /admin/agent-integrations
+├ ƒ /admin/agent-integrations/export
+├ ƒ /admin/analytics
+├ ƒ /admin/analytics/export
+├ ƒ /admin/commerce
+├ ƒ /admin/commerce/export
+├ ƒ /admin/commerce/payouts
+├ ƒ /admin/commerce/transactions/[id]
+├ ƒ /admin/events
+├ ƒ /admin/events/export
 ├ ƒ /admin/login
+├ ƒ /admin/marketplace
+├ ƒ /admin/marketplace/export
+├ ƒ /admin/marketplace/listings/[id]
+├ ƒ /admin/partners
+├ ƒ /admin/partners/export
+├ ƒ /admin/settings
+├ ƒ /admin/settings/export
+├ ƒ /admin/support
+├ ƒ /admin/support/[id]
+├ ƒ /admin/support/export
+├ ƒ /admin/tickets
+├ ƒ /admin/tickets/export
+├ ƒ /admin/trust
+├ ƒ /admin/trust/[id]
+├ ƒ /admin/trust/disputes
+├ ƒ /admin/trust/export
+├ ƒ /admin/users
+├ ƒ /admin/users/[id]
+├ ƒ /admin/users/export
+├ ƒ /admin/workspaces
+├ ƒ /admin/workspaces/[id]
+├ ƒ /admin/workspaces/export
+├ ƒ /api/account/avatar
+├ ƒ /api/account/export
 ├ ƒ /api/agent/ask
 ├ ƒ /api/agent/onboarding
+├ ƒ /api/agent/provider
+├ ƒ /api/agent/worker
+├ ƒ /api/calendar/[token]
+├ ƒ /api/checkout/complete
+├ ƒ /api/checkout/session
 ├ ƒ /api/dev/design
 ├ ƒ /api/dev/designs
 ├ ƒ /api/enquiries
@@ -40,15 +85,22 @@ Route (app)
 ├ ƒ /api/listing-media
 ├ ƒ /api/onboarding
 ├ ƒ /api/payouts
+├ ƒ /api/recent
 ├ ƒ /api/saved
+├ ƒ /api/stripe/webhook
+├ ƒ /api/tickets/[id]/ics
 ├ ƒ /api/uploads
 ├ ƒ /auth/callback
 ├ ƒ /auth/confirm
 ├ ƒ /auth/continue
 ├ ƒ /auth/signout
+├ ƒ /checkout/[event]
+├ ƒ /checkout/[event]/confirmation
 ├ ƒ /continue
 ├ ƒ /discover
+├ ƒ /events/[slug]
 ├ ƒ /forgot-password
+├ ƒ /home
 ├ ƒ /invite/[token]
 ├ ƒ /login
 ├ ƒ /mfa
@@ -59,16 +111,35 @@ Route (app)
 ├ ƒ /organizer/events
 ├ ƒ /organizer/events/[id]
 ├ ƒ /organizer/events/[id]/map
+├ ƒ /organizer/events/[id]/tickets/setup
 ├ ƒ /organizer/marketplace
 ├ ƒ /organizer/marketplace/[type]/[id]
 ├ ƒ /organizer/marketplace/requests/[id]
 ├ ƒ /organizer/marketplace/requests/new
+├ ƒ /organizer/money
+├ ƒ /organizer/money/invoices/[id]
+├ ƒ /organizer/money/invoices/new
 ├ ƒ /organizer/proposals/new
 ├ ƒ /organizer/sales
 ├ ƒ /organizer/sales/leads/[id]
 ├ ƒ /organizer/sales/proposals/[id]
+├ ƒ /organizer/settings
+├ ƒ /organizer/team
+├ ƒ /organizer/team/[id]
+├ ƒ /organizer/tickets
+├ ƒ /organizers/[slug]
+├ ƒ /partner
+├ ƒ /partner/qr
+├ ƒ /partner/resources/[slug]
+├ ƒ /pay/[token]
+├ ƒ /plan
+├ ƒ /portal/[token]
+├ ƒ /portal/[token]/documents/[id]
+├ ƒ /promoter
+├ ƒ /promoter/[promoterId]
 ├ ƒ /proposal/[token]
 ├ ƒ /provider
+├ ƒ /provider/agent
 ├ ƒ /provider/bookings
 ├ ƒ /provider/bookings/[id]
 ├ ƒ /provider/bookings/export
@@ -76,18 +147,31 @@ Route (app)
 ├ ƒ /provider/calendar
 ├ ƒ /provider/listings/[[...type]]
 ├ ƒ /provider/messages/[id]
+├ ƒ /provider/money
+├ ƒ /provider/money/export
+├ ƒ /provider/money/statement
 ├ ƒ /provider/opportunities
 ├ ƒ /provider/opportunities/[id]
 ├ ƒ /provider/opportunities/[id]/quote
+├ ƒ /provider/packages/[id]
+├ ƒ /provider/packages/new
 ├ ƒ /provider/quotes/[id]
 ├ ƒ /provider/quotes/[id]/print
 ├ ƒ /provider/search
+├ ƒ /provider/services/[id]
+├ ƒ /provider/services/new
+├ ƒ /provider/settings
+├ ƒ /provider/team
+├ ƒ /provider/team/[id]
 ├ ƒ /provider/venues/[id]
 ├ ƒ /provider/venues/[id]/spaces/[spaceId]
 ├ ƒ /provider/venues/[id]/spaces/new
 ├ ƒ /provider/venues/new
+├ ƒ /r/[code]
 ├ ƒ /register
 ├ ƒ /reset-password
+├ ƒ /services/[slug]
+├ ƒ /venues/[slug]
 └ ƒ /verify-email
 
 

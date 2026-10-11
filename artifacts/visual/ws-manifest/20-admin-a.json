@@ -1,0 +1,50 @@
+[
+  {
+    "key": "ad-002-users",
+    "url": "/admin/users",
+    "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-003-user",
+    "url": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+    "file": "Designs/Admin Workspace/Gala Dock User Profile Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-004-workspaces",
+    "url": "/admin/workspaces",
+    "file": "Designs/Admin Workspace/Gala Dock Workspace Management Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-005-workspace",
+    "url": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+    "file": "Designs/Admin Workspace/Gala Dock Workspace Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-006-events",
+    "url": "/admin/events",
+    "file": "Designs/Admin Workspace/GalaDock Events Admin Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-007-marketplace",
+    "url": "/admin/marketplace",
+    "file": "Designs/Admin Workspace/Gala Dock Marketplace Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-008-listing",
+    "url": "/admin/marketplace/listings/{listing:Riverside Arena}",
+    "file": "Designs/Admin Workspace/Riverside Arena Marketplace Review Dashboard.png",
+    "who": "admin"
+  },
+  {
+    "key": "ad-009-tickets",
+    "url": "/admin/tickets",
+    "file": "Designs/Admin Workspace/Gala·Dock Ticketing Dashboard.png",
+    "who": "admin"
+  }
+]

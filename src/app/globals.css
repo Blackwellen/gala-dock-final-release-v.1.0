@@ -938,3 +938,241 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .onboarding-page.setup-provider-business .choice-fieldset{margin-top:30px}
 .onboarding-page.setup-provider-rules .form-main{margin-top:-8px}
 .onboarding-page.setup-provider-rules .setup-story .setup-features{margin-top:16px}
+/* Auth re-tune for Satoshi (component-match offsets) */
+.auth-secure-access .workspace-select{margin-top:2px!important}
+.auth-secure-access .social-buttons{margin-top:-8px}
+.auth-reset-password .auth-hint{margin-bottom:-6px}
+.auth-reset-password .reset-security{margin-top:6px;margin-bottom:6px}
+.auth-mfa .auth-divider{margin-top:14px;margin-bottom:12px}
+.auth-invite .auth-card{margin-top:-6px}
+
+/* tuned: invite */
+.auth-page.auth-invite .auth-card>h2{letter-spacing:-1.0px!important}
+.auth-page.auth-invite .auth-card>.auth-description{font-size:16.0px!important}
+.auth-page.auth-invite .auth-card>.auth-description{letter-spacing:0.2px!important}
+.auth-page.auth-invite .auth-card .auth-security{margin-top:10px!important}
+.auth-page.auth-invite .auth-card{padding-top:22px!important}
+.auth-page.auth-invite .auth-card>h2{font-size:40px!important}
+.auth-page.auth-invite .auth-card>.auth-description{line-height:24px!important}
+
+/* tuned: access */
+.auth-page.auth-secure-access .auth-card{padding-top:30px!important}
+.auth-page.auth-secure-access .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-secure-access .auth-card>h2{margin-bottom:8px!important}
+.auth-page.auth-secure-access .auth-card>.auth-description{letter-spacing:0.2px!important}
+.auth-page.auth-secure-access .auth-card form{margin-top:-4px!important}
+.auth-page.auth-secure-access .auth-card form{zoom:1.01!important}
+.auth-page.auth-secure-access .auth-card .auth-security{margin-top:16px!important}
+.auth-page.auth-secure-access .auth-card .auth-security small{font-size:11.0px!important}
+
+/* tuned: login */
+.auth-page.auth-login .auth-card>h2{font-size:40px!important}
+.auth-page.auth-login .auth-card>h2{letter-spacing:-1.8px!important}
+.auth-page.auth-login .auth-card>.auth-description{letter-spacing:-0.3px!important}
+.auth-page.auth-login .auth-card .auth-security small{font-size:11.0px!important}
+
+/* tuned: register */
+.auth-page.auth-register .auth-card{padding-top:26px!important}
+.auth-page.auth-register .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-register .auth-card>.auth-description{font-size:15.5px!important}
+.auth-page.auth-register .auth-card .auth-security{margin-top:6px!important}
+.auth-page.auth-register .auth-card .auth-security small{font-size:11.0px!important}
+
+/* tuned: verify-email */
+
+/* tuned: forgot-password */
+.auth-page.auth-forgot-password .auth-card{padding-top:30px!important}
+.auth-page.auth-forgot-password .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-forgot-password .auth-card>h2{margin-bottom:14px!important}
+.auth-page.auth-forgot-password .auth-card>.auth-description{font-size:18.5px!important}
+
+/* tuned: reset-password */
+.auth-page.auth-reset-password .auth-card{padding-top:30px!important}
+.auth-page.auth-reset-password .auth-card>h2{font-size:37px!important}
+.auth-page.auth-reset-password .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-reset-password .auth-card>.auth-description{font-size:18.5px!important}
+.auth-page.auth-reset-password .auth-card>.auth-description{letter-spacing:0.1px!important}
+.auth-page.auth-reset-password .auth-card>.auth-description{margin-bottom:20px!important}
+.auth-page.auth-reset-password .auth-card form{margin-top:-4px!important}
+.auth-page.auth-reset-password .auth-card .auth-security small{font-size:13.0px!important}
+
+/* tuned: mfa */
+.auth-page.auth-mfa .auth-card{padding-top:28px!important}
+.auth-page.auth-mfa .auth-card>h2{font-size:36px!important}
+.auth-page.auth-mfa .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-mfa .auth-card>.auth-description{font-size:15.5px!important}
+.auth-page.auth-mfa .auth-card .auth-help{margin-top:28px!important}
+.auth-page.auth-mfa .auth-card .auth-security small{font-size:11.5px!important}
+
+/* tuned: verify-email */
+.auth-page.auth-verify-email .auth-card{padding-top:30px!important}
+.auth-page.auth-verify-email .auth-card>h2{letter-spacing:-0.4px!important}
+.auth-page.auth-verify-email .auth-card>.auth-description{font-size:16.5px!important}
+.auth-page.auth-verify-email .auth-card>.auth-description{line-height:24px!important}
+.auth-page.auth-verify-email .auth-card>.auth-description{letter-spacing:0.1px!important}
+
+/* tuned story: login */
+.auth-page.auth-login .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-login .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-login .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-login .auth-story .story-description{margin-top:24px!important}
+.auth-page.auth-login .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: register */
+.auth-page.auth-register .auth-story .story-description{font-size:19.5px!important}
+.auth-page.auth-register .auth-story .story-features{row-gap:28px!important}
+.auth-page.auth-register .auth-story .story-features p{font-size:12.0px!important}
+
+/* tuned story: verify-email */
+.auth-page.auth-verify-email .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-verify-email .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-verify-email .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-verify-email .auth-story .story-description{margin-top:24px!important}
+.auth-page.auth-verify-email .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: forgot-password */
+.auth-page.auth-forgot-password .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-forgot-password .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-forgot-password .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-forgot-password .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: reset-password */
+.auth-page.auth-reset-password .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-reset-password .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-reset-password .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-reset-password .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: mfa */
+.auth-page.auth-mfa .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-mfa .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-mfa .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-mfa .auth-story .story-description{margin-top:24px!important}
+.auth-page.auth-mfa .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: invite */
+.auth-page.auth-invite .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-invite .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-invite .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-invite .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned story: access */
+.auth-page.auth-secure-access .auth-story .story-content h1{font-size:65px!important}
+.auth-page.auth-secure-access .auth-story .story-content h1{letter-spacing:-2.5px!important}
+.auth-page.auth-secure-access .auth-story .story-content h1{line-height:66px!important}
+.auth-page.auth-secure-access .auth-story .story-description{margin-top:24px!important}
+.auth-page.auth-secure-access .auth-story .story-features b{font-size:17.0px!important}
+
+/* tuned onboarding: provider-business */
+.onboarding-page.setup-provider-business .setup-main{padding-top:27px!important}
+.onboarding-page.setup-provider-business .form-main{zoom:1.03!important}
+.onboarding-page.setup-provider-business .form-main>h2{font-size:44px!important}
+.onboarding-page.setup-provider-business .form-main>h2{letter-spacing:-2.0px!important}
+.onboarding-page.setup-provider-business .form-main>h2{margin-bottom:6px!important}
+.onboarding-page.setup-provider-business .form-main .field>label{font-size:14.0px!important}
+.onboarding-page.setup-provider-business .form-wide{margin-top:-20px!important}
+.onboarding-page.setup-provider-business .setup-assistant{zoom:0.99!important}
+.onboarding-page.setup-provider-business .setup-story h1{font-size:43.5px!important}
+.onboarding-page.setup-provider-business .setup-story .setup-story-description{font-size:15.0px!important}
+.onboarding-page.setup-provider-business .setup-story .setup-features{row-gap:24px!important}
+.onboarding-page.setup-provider-business .setup-subtitle{margin-bottom:14px!important}
+
+/* tuned onboarding: organizer-brand */
+.onboarding-page.setup-organizer-brand .setup-main{padding-top:36px!important}
+.onboarding-page.setup-organizer-brand .form-main{zoom:0.95!important}
+.onboarding-page.setup-organizer-brand .form-main>h2{font-size:42px!important}
+.onboarding-page.setup-organizer-brand .form-main>h2{margin-bottom:0px!important}
+.onboarding-page.setup-organizer-brand .setup-subtitle{font-size:14.0px!important}
+.onboarding-page.setup-organizer-brand .setup-subtitle{margin-bottom:4px!important}
+.onboarding-page.setup-organizer-brand .form-main .setup-panel{padding-top:10px!important}
+.onboarding-page.setup-organizer-brand .form-main .field>label{font-size:11.5px!important}
+.onboarding-page.setup-organizer-brand .setup-assistant{zoom:0.98!important}
+.onboarding-page.setup-organizer-brand .setup-assistant{margin-top:-48px!important}
+.onboarding-page.setup-organizer-brand .setup-story h1{font-size:45.0px!important}
+.onboarding-page.setup-organizer-brand .setup-story h1{line-height:1.06!important}
+.onboarding-page.setup-organizer-brand .setup-story .setup-story-description{font-size:15.0px!important}
+.onboarding-page.setup-organizer-brand .setup-story .setup-features{row-gap:14px!important}
+
+/* tuned onboarding: organizer-team */
+.onboarding-page.setup-organizer-team .setup-main{padding-top:24px!important}
+.onboarding-page.setup-organizer-team .form-main>h2{font-size:36px!important}
+.onboarding-page.setup-organizer-team .form-main>h2{margin-bottom:6px!important}
+.onboarding-page.setup-organizer-team .setup-subtitle{font-size:15.0px!important}
+.onboarding-page.setup-organizer-team .form-main .setup-panel{margin-bottom:22px!important}
+.onboarding-page.setup-organizer-team .setup-assistant{zoom:1.03!important}
+.onboarding-page.setup-organizer-team .setup-story h1{font-size:48.0px!important}
+.onboarding-page.setup-organizer-team .setup-story h1{line-height:1.1!important}
+.onboarding-page.setup-organizer-team .setup-story .setup-story-description{font-size:17.0px!important}
+.onboarding-page.setup-organizer-team .setup-story .setup-features{row-gap:18px!important}
+.onboarding-page.setup-organizer-team .form-main{zoom:1.03!important}
+.onboarding-page.setup-organizer-team .setup-subtitle{letter-spacing:0.2px!important}
+.onboarding-page.setup-organizer-team .form-main .setup-panel{padding-top:24px!important}
+.onboarding-page.setup-organizer-team .form-main .field{margin-top:8px!important}
+.onboarding-page.setup-organizer-team .setup-assistant{margin-top:-30px!important}
+
+/* tuned onboarding: provider-rules */
+.onboarding-page.setup-provider-rules .form-main{zoom:0.96!important}
+.onboarding-page.setup-provider-rules .form-main>h2{letter-spacing:-1.6px!important}
+.onboarding-page.setup-provider-rules .form-main>h2{margin-bottom:10px!important}
+.onboarding-page.setup-provider-rules .setup-subtitle{font-size:14.5px!important}
+.onboarding-page.setup-provider-rules .setup-subtitle{margin-bottom:4px!important}
+.onboarding-page.setup-provider-rules .setup-assistant{zoom:0.95!important}
+.onboarding-page.setup-provider-rules .setup-assistant{margin-top:-12px!important}
+.onboarding-page.setup-provider-rules .setup-story h1{font-size:48.0px!important}
+.onboarding-page.setup-provider-rules .setup-story .setup-story-description{font-size:16.5px!important}
+
+/* tuned onboarding: organizer-business */
+.onboarding-page.setup-organizer-business .setup-main{padding-top:36px!important}
+.onboarding-page.setup-organizer-business .form-main>h2{font-size:43px!important}
+.onboarding-page.setup-organizer-business .form-main>h2{letter-spacing:-0.8px!important}
+.onboarding-page.setup-organizer-business .form-main>h2{margin-bottom:6px!important}
+.onboarding-page.setup-organizer-business .setup-subtitle{font-size:14.0px!important}
+.onboarding-page.setup-organizer-business .setup-subtitle{letter-spacing:0.1px!important}
+.onboarding-page.setup-organizer-business .setup-assistant{zoom:1.02!important}
+.onboarding-page.setup-organizer-business .setup-story h1{font-size:46.5px!important}
+.onboarding-page.setup-organizer-business .setup-story .setup-story-description{font-size:17.0px!important}
+.onboarding-page.setup-organizer-business .setup-story .setup-features{row-gap:16px!important}
+.choice-fieldset>legend.sr-only{float:none;width:1px}
+
+/* tuned onboarding: organizer-events */
+.onboarding-page.setup-organizer-events .setup-main{padding-top:36px!important}
+.onboarding-page.setup-organizer-events .form-main>h2{letter-spacing:-1.0px!important}
+.onboarding-page.setup-organizer-events .setup-subtitle{font-size:14.0px!important}
+.onboarding-page.setup-organizer-events .setup-subtitle{letter-spacing:-0.3px!important}
+.onboarding-page.setup-organizer-events .form-wide{margin-top:-20px!important}
+.onboarding-page.setup-organizer-events .setup-assistant{zoom:0.96!important}
+.onboarding-page.setup-organizer-events .setup-assistant{margin-top:-54px!important}
+
+/* tuned onboarding: provider-listing */
+.onboarding-page.setup-provider-listing .setup-main{padding-top:24px!important}
+.onboarding-page.setup-provider-listing .form-main{zoom:0.98!important}
+.onboarding-page.setup-provider-listing .form-main>h2{font-size:44px!important}
+.onboarding-page.setup-provider-listing .form-main>h2{letter-spacing:-2.0px!important}
+.onboarding-page.setup-provider-listing .form-main>h2{margin-bottom:12px!important}
+.onboarding-page.setup-provider-listing .setup-subtitle{margin-bottom:12px!important}
+.onboarding-page.setup-provider-listing .form-wide{margin-top:-20px!important}
+.onboarding-page.setup-provider-listing .setup-assistant{zoom:0.97!important}
+.onboarding-page.setup-provider-listing .setup-story h1{font-size:42.0px!important}
+.onboarding-page.setup-provider-listing .setup-story h1{line-height:1.1!important}
+.onboarding-page.setup-provider-listing .setup-story .setup-story-description{font-size:16.0px!important}
+.onboarding-page.setup-provider-listing .setup-story .setup-features{row-gap:18px!important}
+.onboarding-page.setup-provider-listing .setup-assistant{margin-top:-36px!important}
+
+/* tuned onboarding: provider-publish */
+.onboarding-page.setup-provider-publish .setup-main{padding-top:27px!important}
+.onboarding-page.setup-provider-publish .form-main{zoom:0.95!important}
+.onboarding-page.setup-provider-publish .form-main>h2{font-size:34px!important}
+.onboarding-page.setup-provider-publish .form-main>h2{margin-bottom:0px!important}
+.onboarding-page.setup-provider-publish .setup-subtitle{font-size:14.0px!important}
+.onboarding-page.setup-provider-publish .setup-subtitle{margin-bottom:12px!important}
+.onboarding-page.setup-provider-publish .setup-assistant{zoom:0.95!important}
+.onboarding-page.setup-provider-publish .setup-assistant{margin-top:-60px!important}
+.onboarding-page.setup-provider-publish .setup-story h1{line-height:1.06!important}
+.onboarding-page.setup-provider-publish .setup-story .setup-story-description{font-size:17.0px!important}
+.onboarding-page.setup-provider-publish .setup-story .setup-features{row-gap:26px!important}
+.onboarding-page.setup-provider-publish .setup-story h1{font-size:45.0px!important}
+
+/* tuned onboarding: experience */
+
+
+/* tuned onboarding: preferences */
+

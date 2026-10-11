@@ -1,0 +1,16 @@
+{
+  "key": "ad-012-trust",
+  "url": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+  "file": "Designs/Admin Workspace/Gala·Dock Trust & Safety Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.67,
+  "ssim": 0.6407,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [],
+  "at": "2026-10-11T08:56:07.849Z"
+}

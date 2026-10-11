@@ -1,0 +1,18 @@
+baseline 15.323%
+  15.099%  .onboarding-page.setup-provider-publish .setup-main { padding-top: 24px }
+  15.029%  .onboarding-page.setup-provider-publish .setup-main { padding-top: 27px }
+  14.804%  .onboarding-page.setup-provider-publish .form-main { zoom: 0.95 }
+  14.273%  .onboarding-page.setup-provider-publish .form-main>h2 { font-size: 34px }
+  13.800%  .onboarding-page.setup-provider-publish .form-main>h2 { margin-bottom: 0px }
+  13.772%  .onboarding-page.setup-provider-publish .setup-subtitle { font-size: 14.0px }
+  13.702%  .onboarding-page.setup-provider-publish .setup-subtitle { margin-bottom: 10px }
+  13.632%  .onboarding-page.setup-provider-publish .setup-subtitle { margin-bottom: 12px }
+  12.529%  .onboarding-page.setup-provider-publish .setup-assistant { zoom: 0.95 }
+  12.181%  .onboarding-page.setup-provider-publish .setup-assistant { margin-top: -60px }
+  12.156%  .onboarding-page.setup-provider-publish .setup-story h1 { line-height: 1.06 }
+  12.139%  .onboarding-page.setup-provider-publish .setup-story .setup-story-description { font-size: 16.0px }
+  12.129%  .onboarding-page.setup-provider-publish .setup-story .setup-story-description { font-size: 16.5px }
+  12.106%  .onboarding-page.setup-provider-publish .setup-story .setup-story-description { font-size: 17.0px }
+  12.089%  .onboarding-page.setup-provider-publish .setup-story .setup-features { row-gap: 26px }
+  12.033%  .onboarding-page.setup-provider-publish .setup-story h1 { font-size: 45.0px }
+final 12.033%

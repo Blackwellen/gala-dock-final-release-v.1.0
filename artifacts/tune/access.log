@@ -1,0 +1,17 @@
+baseline 8.549%
+  8.509%  .auth-page.auth-secure-access .auth-card { padding-top: 28px }
+  8.264%  .auth-page.auth-secure-access .auth-card { padding-top: 30px }
+  8.247%  .auth-page.auth-secure-access .auth-card>h2 { letter-spacing: -1.0px }
+  8.203%  .auth-page.auth-secure-access .auth-card>h2 { letter-spacing: -0.8px }
+  8.149%  .auth-page.auth-secure-access .auth-card>h2 { letter-spacing: -0.6px }
+  8.107%  .auth-page.auth-secure-access .auth-card>h2 { letter-spacing: -0.4px }
+  8.074%  .auth-page.auth-secure-access .auth-card>h2 { margin-bottom: 8px }
+  8.068%  .auth-page.auth-secure-access .auth-card>.auth-description { letter-spacing: -0.5px }
+  8.062%  .auth-page.auth-secure-access .auth-card>.auth-description { letter-spacing: -0.1px }
+  8.054%  .auth-page.auth-secure-access .auth-card>.auth-description { letter-spacing: 0.1px }
+  8.037%  .auth-page.auth-secure-access .auth-card>.auth-description { letter-spacing: 0.2px }
+  7.984%  .auth-page.auth-secure-access .auth-card form { margin-top: -4px }
+  7.958%  .auth-page.auth-secure-access .auth-card form { zoom: 1.01 }
+  7.925%  .auth-page.auth-secure-access .auth-card .auth-security { margin-top: 16px }
+  7.866%  .auth-page.auth-secure-access .auth-card .auth-security small { font-size: 11.0px }
+final 7.866%

@@ -1,0 +1,101 @@
+/* AD-018 Platform settings ("Gala Dock Platform Settings Dashboard"). */
+.adst{gap:10px}
+.adst .adb-head{padding-left:10px}
+.adst-hb{height:36px;font-size:12.5px}
+.adst .adb-head-actions .ws-btn.outline{color:#0d0d63;border-color:#dbe3f5}
+.adst-grid{display:grid;grid-template-columns:minmax(0,906fr) minmax(0,350fr);gap:12px;align-items:start}
+.adst-main{display:grid;gap:10px;min-width:0}
+.adst-main .adb-tabs{height:36px}
+.adst-main .adb-tabs a{padding:0 26px;font-size:13px}
+.adst-kpis{display:grid;grid-template-columns:274fr 280fr 192fr 136fr;gap:10px}
+.adst-k{position:relative;display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--ws-border);border-radius:10px;box-shadow:var(--ws-shadow);padding:14px 14px;height:108px;overflow:hidden}
+.adst-k>i{width:40px;height:40px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.ws-app .adst-k>i svg{width:21px;height:21px}
+.adst-k>i.blue{background:#e8f0ff;color:#2459f5}.adst-k>i.orange{background:#fff1dc;color:#f05a28}
+.adst-k>span{display:grid;line-height:1.3;min-width:0}
+.adst-k small{font-size:11.5px;color:#0d0d63}
+.adst-k b{font-size:19px;font-weight:800;color:#02032e}
+.adst-k em{font-style:normal;font-size:11px;color:#3f4596;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.adst-k em.ok{display:flex;align-items:center;gap:6px;margin-top:10px}
+.ws-app .adst-k em.ok svg{width:16px;height:16px;color:#fff;fill:#16a46c}
+.adst-k em a{color:#1a1af2;display:inline-flex;align-items:center;gap:4px}
+.ws-app .adst-k em a svg{width:12px;height:12px}
+.adst-k>.adb-pill{position:absolute;right:12px;top:14px;height:22px}
+.adst-preview{padding:12px 14px}
+.adst-prev-a{display:flex;justify-content:flex-end;margin-top:8px}
+.adst-form{padding:10px 12px}
+.adst-form-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.adst-form-h h2{font-size:22px!important;font-weight:800!important}
+.adst-form-h p{font-size:13.5px;color:#3f4596;margin-top:2px}
+.adst-draft{color:#d86d00}
+.adst-form-h .adb-btn{height:34px;margin-top:4px}
+.adst-sections{display:grid;gap:10px}
+.adst-fs{border:1px solid #eef3fb;border-radius:8px;padding:10px 12px;margin:0;min-width:0}
+.adst-fs legend{float:left;width:100%;font-size:14px;font-weight:720;color:#02032e;margin-bottom:10px;display:grid}
+.adst-fs legend small{font-size:11.5px;font-weight:400;color:#3f4596;margin-top:2px}
+.adst-fs input:not([type=checkbox]),.adst-fs textarea,.adst-fs .adb-select{height:34px;border:1px solid #e2e8fb;border-radius:6px;padding:0 10px;font-size:12px;color:#0d0d63;width:100%;background-color:#fff}
+.adst-fs textarea{height:auto;padding:8px 10px;resize:vertical;line-height:1.6}
+.adst-two{clear:both;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.adst-rows{display:grid;gap:8px;align-content:start}
+.adst-rows>label{display:grid;grid-template-columns:144px minmax(0,1fr);align-items:center;font-size:11.5px;color:#1d2068}
+.adst-desc{grid-template-columns:1fr!important;gap:6px;align-items:start!important}
+.adst-desc small{justify-self:end;font-size:10.5px;color:#3f4596}
+.adst-inline{grid-template-columns:154px minmax(0,1fr)!important}
+.adst-flagsel{position:relative;display:block}
+.ws-app svg.adst-flag{position:absolute;left:10px;top:11px;width:20px;height:12px;pointer-events:none}
+.adst-flagsel .adb-select{padding-left:38px}
+.adst-loc{clear:both;display:grid;grid-template-columns:428fr 214fr 190fr;gap:18px;align-items:start}
+.adst-lbl{display:block;font-size:11.5px;color:#1d2068;margin-bottom:6px}
+.adst-chips{display:flex;flex-wrap:wrap;gap:6px;border:1px solid #e2e8fb;border-radius:6px;padding:6px}
+.adst-chip input{position:absolute;opacity:0;pointer-events:none}
+.adst-chip span{display:inline-flex;align-items:center;gap:8px;height:24px;padding:0 8px;border-radius:4px;background:#f1f4fd;font-size:11px;color:#0d0d63;cursor:pointer}
+.ws-app .adst-chip svg{width:11px;height:11px}
+.adst-chip input:not(:checked)+span{display:none}
+.adst-chips:hover .adst-chip input:not(:checked)+span,.adst-chips:focus-within .adst-chip input:not(:checked)+span{display:inline-flex;opacity:.55}
+.adst-chip input:focus-visible+span{outline:2px solid #9aa8ff}
+.adst-add{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:1px solid #e2e8fb;border-radius:4px;font-size:11px;color:#0d0d63}
+.ws-app .adst-add svg{width:11px;height:11px}
+.adst-tax{display:grid;grid-template-columns:1fr 16px;gap:6px;align-items:center}
+.ws-app .adst-tax svg{width:14px;height:14px;color:#1a1af2}
+.adst-ops{clear:both;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.adst-ops>label,.adst-trow{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:start;font-size:11.5px;color:#1d2068;gap:8px}
+.adst-ops>label>span:last-child{display:grid;gap:4px}
+.adst-ops small{font-size:10px;color:#3f4596}
+.adst-tg{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:center;cursor:pointer;font-size:11px;color:#3f4596}
+.adst-tg input[type=checkbox]{position:absolute;opacity:0}
+.adst-tg i{width:36px;height:20px;border-radius:10px;background:#cfd6ea;position:relative;transition:background .15s}
+.adst-tg i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.adst-tg input:checked+i{background:#16a46c}
+.adst-tg input:checked+i::after{transform:translateX(16px)}
+.adst-tg input:focus-visible+i{outline:2px solid #9aa8ff;outline-offset:2px}
+.adst-gen{clear:both;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.adst-gen>label{display:grid;gap:4px;font-size:11.5px;color:#1d2068;text-transform:capitalize}
+.adst-gen>label small{text-transform:none;font-size:10px;color:#3f4596}
+.adst-gen .adst-trow{text-transform:capitalize}
+.adst-ro{display:grid;gap:4px;font-size:11.5px;color:#1d2068;text-transform:capitalize}
+.adst-ro code{font-size:10.5px;background:#f6f9fe;border-radius:6px;padding:6px 8px;color:#3f4596;overflow-wrap:anywhere;text-transform:none}
+.adst-rail{display:grid;gap:10px;min-width:0}
+.adst-hist{padding:10px 12px}
+.adst-hist h2,.adst-sys h2,.adst-qa h2{font-size:14px}
+.adst-hist ol{list-style:none;margin:0;padding:0 0 0 18px;display:grid;gap:12px;position:relative}
+.adst-hist ol::before{content:"";position:absolute;left:5px;top:6px;bottom:30px;width:1.5px;background:#cfe9dc}
+.adst-hist li{display:grid;grid-template-columns:minmax(0,1fr) 28px;gap:8px;position:relative}
+.adst-hist li::before{content:"";position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;background:#16a46c}
+.adst-hist li>span{display:grid;line-height:1.4}
+.adst-hist li b{font-size:12px;font-weight:600;color:#0d0d63}
+.adst-hist li b em{font-style:normal;font-weight:400;font-size:10px;color:#0f7a3f;background:#e3f8ec;border-radius:4px;padding:1px 5px;margin-left:4px}
+.adst-hist li small{font-size:11.5px;color:#3f4596}
+.adst-hist .adb-dots{width:28px;height:26px}
+.adst-pop pre{font-size:10px;max-height:180px;overflow:auto;background:#f6f9fe;border-radius:6px;padding:8px;margin-bottom:8px;white-space:pre-wrap}
+.adst-sys{padding:10px 12px}
+.adst-sys p{font-size:11.5px;color:#3f4596}
+.adst-sys ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.adst-sys li{display:grid;grid-template-columns:20px 1fr auto;align-items:center;font-size:12px;color:#0d0d63}
+.adst-sys li>i,.adst-sys b i{width:8px;height:8px;border-radius:50%;background:#16a46c}
+.adst-sys b{display:inline-flex;align-items:center;gap:8px;font-weight:400;font-size:11.5px;color:#16a46c;min-width:84px}
+.adst-sys b.warn{color:#e08a00}.adst-sys b.warn i{background:#f5a524}.adst-sys b.bad{color:#ec3a52}.adst-sys b.bad i{background:#ec3a52}
+.adst-qa{padding:10px 12px}
+.adst-qa>div{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.adst-qa .adb-btn,.adst-qa .ws-btn{height:38px;font-size:11.5px;color:#1a1af2;border-color:#d6defa;justify-content:flex-start;gap:10px;padding:0 12px}
+@media (max-width:1180px){.adst-grid{grid-template-columns:1fr}}
+@media (max-width:860px){.adst-kpis,.adst-two,.adst-loc,.adst-ops,.adst-gen{grid-template-columns:1fr}.adst-rows>label,.adst-ops>label,.adst-trow{grid-template-columns:1fr}}

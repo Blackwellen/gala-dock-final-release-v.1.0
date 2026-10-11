@@ -1,0 +1,25 @@
+baseline 14.744%
+  14.606%  .onboarding-page.setup-provider-business .setup-main { padding-top: 24px }
+  14.537%  .onboarding-page.setup-provider-business .setup-main { padding-top: 27px }
+  14.532%  .onboarding-page.setup-provider-business .form-main { zoom: 0.95 }
+  14.521%  .onboarding-page.setup-provider-business .form-main { zoom: 1.02 }
+  14.486%  .onboarding-page.setup-provider-business .form-main { zoom: 1.03 }
+  14.411%  .onboarding-page.setup-provider-business .form-main>h2 { font-size: 41px }
+  14.356%  .onboarding-page.setup-provider-business .form-main>h2 { font-size: 42px }
+  14.312%  .onboarding-page.setup-provider-business .form-main>h2 { font-size: 43px }
+  14.259%  .onboarding-page.setup-provider-business .form-main>h2 { font-size: 44px }
+  14.185%  .onboarding-page.setup-provider-business .form-main>h2 { letter-spacing: -2.2px }
+  14.144%  .onboarding-page.setup-provider-business .form-main>h2 { letter-spacing: -2.0px }
+  14.136%  .onboarding-page.setup-provider-business .form-main>h2 { margin-bottom: 4px }
+  14.120%  .onboarding-page.setup-provider-business .form-main>h2 { margin-bottom: 6px }
+  14.114%  .onboarding-page.setup-provider-business .form-main .field>label { font-size: 14.0px }
+  14.099%  .onboarding-page.setup-provider-business .form-wide { margin-top: -20px }
+  14.093%  .onboarding-page.setup-provider-business .setup-assistant { zoom: 0.98 }
+  14.048%  .onboarding-page.setup-provider-business .setup-assistant { zoom: 0.99 }
+  13.997%  .onboarding-page.setup-provider-business .setup-story h1 { font-size: 42.0px }
+  13.943%  .onboarding-page.setup-provider-business .setup-story h1 { font-size: 43.5px }
+  13.907%  .onboarding-page.setup-provider-business .setup-story .setup-story-description { font-size: 15.0px }
+  13.880%  .onboarding-page.setup-provider-business .setup-story .setup-features { row-gap: 16px }
+  13.864%  .onboarding-page.setup-provider-business .setup-story .setup-features { row-gap: 24px }
+  13.850%  .onboarding-page.setup-provider-business .setup-subtitle { margin-bottom: 14px }
+final 13.850%

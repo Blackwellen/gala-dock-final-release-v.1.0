@@ -3,14 +3,14 @@
   "url": "/admin",
   "file": "Designs/platform shell/platform admin shell.png",
   "status": 200,
-  "mismatchPercent": 10.71,
-  "ssim": 0.7062,
+  "mismatchPercent": 14.14,
+  "ssim": 0.6126,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1194
+    "scrollHeight": 1086
   },
   "errors": [],
-  "at": "2026-10-10T23:33:03.618Z"
+  "at": "2026-10-11T08:58:55.441Z"
 }

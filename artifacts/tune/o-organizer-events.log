@@ -1,0 +1,12 @@
+baseline 15.342%
+  15.241%  .onboarding-page.setup-organizer-events .setup-main { padding-top: 36px }
+  15.214%  .onboarding-page.setup-organizer-events .form-main>h2 { letter-spacing: -1.6px }
+  15.207%  .onboarding-page.setup-organizer-events .form-main>h2 { letter-spacing: -1.4px }
+  15.169%  .onboarding-page.setup-organizer-events .form-main>h2 { letter-spacing: -1.0px }
+  15.134%  .onboarding-page.setup-organizer-events .setup-subtitle { font-size: 14.0px }
+  15.125%  .onboarding-page.setup-organizer-events .setup-subtitle { letter-spacing: -0.3px }
+  13.574%  .onboarding-page.setup-organizer-events .form-wide { margin-top: -20px }
+  13.515%  .onboarding-page.setup-organizer-events .setup-assistant { zoom: 0.95 }
+  13.435%  .onboarding-page.setup-organizer-events .setup-assistant { zoom: 0.96 }
+  13.397%  .onboarding-page.setup-organizer-events .setup-assistant { margin-top: -54px }
+final 13.397%

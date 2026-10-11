@@ -1,0 +1,9 @@
+baseline 7.266%
+  7.093%  .auth-page.auth-verify-email .auth-card { padding-top: 28px }
+  7.084%  .auth-page.auth-verify-email .auth-card { padding-top: 30px }
+  6.997%  .auth-page.auth-verify-email .auth-card>h2 { letter-spacing: -0.6px }
+  6.861%  .auth-page.auth-verify-email .auth-card>h2 { letter-spacing: -0.4px }
+  6.829%  .auth-page.auth-verify-email .auth-card>.auth-description { font-size: 16.5px }
+  6.514%  .auth-page.auth-verify-email .auth-card>.auth-description { line-height: 24px }
+  6.506%  .auth-page.auth-verify-email .auth-card>.auth-description { letter-spacing: 0.1px }
+final 6.506%

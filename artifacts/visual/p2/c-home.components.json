@@ -1,0 +1,16 @@
+{
+ "name": "c-home",
+ "path": "/home",
+ "page": 32.46,
+ "components": [
+  {
+   "sel": ".c-top",
+   "label": "c-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  }
+ ]
+}

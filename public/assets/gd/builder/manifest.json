@@ -1,0 +1,1684 @@
+{
+ "generator": "scripts/design/extract-builder-assets.py",
+ "grid": "1536x1024 design pixels",
+ "assets": [
+  {
+   "file": "public/assets/gd/builder/venue-map/site-base.webp",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    508,
+    229,
+    1198,
+    944
+   ],
+   "size": [
+    690,
+    715
+   ],
+   "use": "Venue map builder canvas background (aerial festival site illustration, Riverside Park). Map UI chrome (2D/3D toggle, zoom, fullscreen, legend & zoom pills) removed; zone fills, signage and zone captions are part of the illustration and retained. Bottom 41px decorative strip trimmed (covered by legend/zoom pills).",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/site-base-unlabelled.webp",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    508,
+    229,
+    1198,
+    944
+   ],
+   "size": [
+    690,
+    715
+   ],
+   "use": "Label/zone-free base map so app-rendered zone polygons, pins and captions can be overlaid",
+   "status": "needs-regeneration",
+   "reason": "Zone tints (GA blue, VIP purple, table-seating sand), green route dashes, entrance pins and zone captions are painted into the illustration across ~40% of the canvas; inpainting cannot reconstruct the crowd/seating texture underneath. Not shipped."
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/thumb-ga-zone.webp",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    1223,
+    288,
+    1317,
+    340
+   ],
+   "size": [
+    94,
+    52
+   ],
+   "use": "Element details panel thumbnail for the selected GA zone",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-seating-fixed.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    263,
+    346,
+    281,
+    363
+   ],
+   "size": [
+    18,
+    17
+   ],
+   "use": "Element palette tool icon: seating fixed",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-table.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    325,
+    347,
+    344,
+    366
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "Element palette tool icon: table",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-ga-zone.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    388,
+    348,
+    407,
+    366
+   ],
+   "size": [
+    19,
+    18
+   ],
+   "use": "Element palette tool icon: ga zone",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-vip-area.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    452,
+    348,
+    470,
+    366
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Element palette tool icon: vip area",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-stage.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    263,
+    407,
+    281,
+    425
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Element palette tool icon: stage",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-bar.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    328,
+    408,
+    342,
+    425
+   ],
+   "size": [
+    14,
+    17
+   ],
+   "use": "Element palette tool icon: bar",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-toilet.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    389,
+    406,
+    407,
+    424
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Element palette tool icon: toilet",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-entrance-exit.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    452,
+    406,
+    470,
+    424
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Element palette tool icon: entrance exit",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-barrier.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    262,
+    470,
+    283,
+    482
+   ],
+   "size": [
+    21,
+    12
+   ],
+   "use": "Element palette tool icon: barrier",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-path-route.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    327,
+    466,
+    343,
+    484
+   ],
+   "size": [
+    16,
+    18
+   ],
+   "use": "Element palette tool icon: path route",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-booth.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    388,
+    466,
+    407,
+    485
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "Element palette tool icon: booth",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-camera.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    451,
+    466,
+    470,
+    483
+   ],
+   "size": [
+    19,
+    17
+   ],
+   "use": "Element palette tool icon: camera",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-staff-zone.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    263,
+    526,
+    281,
+    545
+   ],
+   "size": [
+    18,
+    19
+   ],
+   "use": "Element palette tool icon: staff zone",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-kill-seats.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    325,
+    527,
+    343,
+    545
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Element palette tool icon: kill seats",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-sponsor-area.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    388,
+    527,
+    407,
+    545
+   ],
+   "size": [
+    19,
+    18
+   ],
+   "use": "Element palette tool icon: sponsor area",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/icon-custom-area.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    452,
+    526,
+    470,
+    545
+   ],
+   "size": [
+    18,
+    19
+   ],
+   "use": "Element palette tool icon: custom area",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-vip-areas.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    799,
+    282,
+    813
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "use": "Map legend swatch: vip areas",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-ga-zones.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    821,
+    282,
+    835
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "use": "Map legend swatch: ga zones",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-tables-booths.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    842,
+    282,
+    857
+   ],
+   "size": [
+    14,
+    15
+   ],
+   "use": "Map legend swatch: tables booths",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-camera-production.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    864,
+    282,
+    878
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "use": "Map legend swatch: camera production",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-staff-only.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    886,
+    282,
+    901
+   ],
+   "size": [
+    14,
+    15
+   ],
+   "use": "Map legend swatch: staff only",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-kill-seats.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    908,
+    283,
+    923
+   ],
+   "size": [
+    15,
+    15
+   ],
+   "use": "Map legend swatch: kill seats",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/venue-map/legend-paths-barriers.png",
+   "source": "Neon Nights Festival Venue Map Builder.png",
+   "box": [
+    268,
+    931,
+    282,
+    945
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "use": "Map legend swatch: paths barriers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/poster-main.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    695,
+    271,
+    1080,
+    786
+   ],
+   "size": [
+    385,
+    515
+   ],
+   "use": "Poster builder canvas: full Neon Nights A3 poster artwork (selection frame & handles removed)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-a3-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    252,
+    270,
+    333,
+    380
+   ],
+   "size": [
+    81,
+    110
+   ],
+   "use": "Template picker thumbnail: a3 poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-a4-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    364,
+    280,
+    427,
+    372
+   ],
+   "size": [
+    63,
+    92
+   ],
+   "use": "Template picker thumbnail: a4 poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-square.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    455,
+    284,
+    540,
+    372
+   ],
+   "size": [
+    85,
+    88
+   ],
+   "use": "Template picker thumbnail: square",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-portrait.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    258,
+    438,
+    327,
+    533
+   ],
+   "size": [
+    69,
+    95
+   ],
+   "use": "Template picker thumbnail: portrait",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-story.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    370,
+    439,
+    421,
+    533
+   ],
+   "size": [
+    51,
+    94
+   ],
+   "use": "Template picker thumbnail: story",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-landscape.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    454,
+    460,
+    540,
+    514
+   ],
+   "size": [
+    86,
+    54
+   ],
+   "use": "Template picker thumbnail: landscape",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-qr-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    252,
+    604,
+    305,
+    689
+   ],
+   "size": [
+    53,
+    85
+   ],
+   "use": "Template picker thumbnail: qr poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-ticket-launch.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    327,
+    613,
+    386,
+    681
+   ],
+   "size": [
+    59,
+    68
+   ],
+   "use": "Template picker thumbnail: ticket launch",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-final-tickets.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    407,
+    608,
+    464,
+    686
+   ],
+   "size": [
+    57,
+    78
+   ],
+   "use": "Template picker thumbnail: final tickets",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/template-sold-out.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    484,
+    604,
+    543,
+    689
+   ],
+   "size": [
+    59,
+    85
+   ],
+   "use": "Template picker thumbnail: sold out",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-a3-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    256,
+    851,
+    324,
+    941
+   ],
+   "size": [
+    68,
+    90
+   ],
+   "use": "Format variation preview thumbnail: a3 poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-a4-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    358,
+    856,
+    423,
+    941
+   ],
+   "size": [
+    65,
+    85
+   ],
+   "use": "Format variation preview thumbnail: a4 poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-square.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    454,
+    861,
+    538,
+    937
+   ],
+   "size": [
+    84,
+    76
+   ],
+   "use": "Format variation preview thumbnail: square",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-story.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    573,
+    849,
+    622,
+    941
+   ],
+   "size": [
+    49,
+    92
+   ],
+   "use": "Format variation preview thumbnail: story",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-banner-16x9.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    658,
+    869,
+    797,
+    928
+   ],
+   "size": [
+    139,
+    59
+   ],
+   "use": "Format variation preview thumbnail: banner 16x9",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-qr-poster.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    834,
+    851,
+    888,
+    941
+   ],
+   "size": [
+    54,
+    90
+   ],
+   "use": "Format variation preview thumbnail: qr poster",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/variant-sold-out.webp",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    925,
+    855,
+    1013,
+    941
+   ],
+   "size": [
+    88,
+    86
+   ],
+   "use": "Format variation preview thumbnail: sold out",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-text.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    604,
+    281,
+    619,
+    298
+   ],
+   "size": [
+    15,
+    17
+   ],
+   "use": "Poster design tool rail icon: text",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-image.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    602,
+    341,
+    620,
+    359
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "use": "Poster design tool rail icon: image",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-shapes.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    602,
+    402,
+    621,
+    421
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "Poster design tool rail icon: shapes",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-elements.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    602,
+    465,
+    621,
+    484
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "Poster design tool rail icon: elements",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-qr-code.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    601,
+    528,
+    621,
+    547
+   ],
+   "size": [
+    20,
+    19
+   ],
+   "use": "Poster design tool rail icon: qr-code",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-background.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    603,
+    592,
+    620,
+    610
+   ],
+   "size": [
+    17,
+    18
+   ],
+   "use": "Poster design tool rail icon: background",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/tool-layers.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    602,
+    659,
+    620,
+    678
+   ],
+   "size": [
+    18,
+    19
+   ],
+   "use": "Poster design tool rail icon: layers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/logo-gala-dock-white.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    719,
+    759,
+    798,
+    780
+   ],
+   "size": [
+    79,
+    21
+   ],
+   "use": "Gala·Dock wordmark (white) used on poster footers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/logo-alex-events-white.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    833,
+    759,
+    912,
+    780
+   ],
+   "size": [
+    79,
+    21
+   ],
+   "use": "Organiser lockup \"Alex Events\" (white) for poster footers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/poster/logo-riverside-park-white.png",
+   "source": "Neon Nights Festival Poster Builder.png",
+   "box": [
+    989,
+    757,
+    1052,
+    781
+   ],
+   "size": [
+    63,
+    24
+   ],
+   "use": "Venue lockup \"Riverside Park\" (white) for poster footers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/hero-media.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    1222,
+    594,
+    1512,
+    687
+   ],
+   "size": [
+    290,
+    93
+   ],
+   "use": "Hero media image (event page hero / \"Hero media\" picker preview) - clean, no overlay",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/hero-preview-large.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    581,
+    265,
+    1185,
+    568
+   ],
+   "size": [
+    604,
+    303
+   ],
+   "use": "Large live-preview hero background",
+   "status": "needs-regeneration",
+   "reason": "Nav bar, title, date/venue lines, play button, tag pills and three gallery thumbs cover ~45% of the hero; use page-editor/hero-media.webp (same photo, clean) until a large clean render exists."
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/hero-gallery-1.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    951,
+    522,
+    1020,
+    553
+   ],
+   "size": [
+    69,
+    31
+   ],
+   "use": "Hero media gallery thumbnail 1",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/hero-gallery-2.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    1032,
+    522,
+    1092,
+    553
+   ],
+   "size": [
+    60,
+    31
+   ],
+   "use": "Hero media gallery thumbnail 2",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/hero-gallery-3.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    1104,
+    522,
+    1164,
+    553
+   ],
+   "size": [
+    60,
+    31
+   ],
+   "use": "Hero media gallery thumbnail 3",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/lineup-dj-marcus-lee.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    602,
+    864,
+    736,
+    948
+   ],
+   "size": [
+    134,
+    84
+   ],
+   "use": "Line-up artist card photo: Dj Marcus Lee (role pill removed)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/lineup-elle-vance.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    746,
+    864,
+    880,
+    948
+   ],
+   "size": [
+    134,
+    84
+   ],
+   "use": "Line-up artist card photo: Elle Vance (role pill removed)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/lineup-the-neon-collective.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    891,
+    864,
+    1025,
+    948
+   ],
+   "size": [
+    134,
+    84
+   ],
+   "use": "Line-up artist card photo: The Neon Collective (role pill removed)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/lineup-kairo.webp",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    1035,
+    864,
+    1169,
+    948
+   ],
+   "size": [
+    134,
+    84
+   ],
+   "use": "Line-up artist card photo: Kairo (role pill removed)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-hero-media.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    295,
+    298,
+    316
+   ],
+   "size": [
+    21,
+    21
+   ],
+   "use": "Page block type icon: hero media",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-about.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    278,
+    345,
+    296,
+    362
+   ],
+   "size": [
+    18,
+    17
+   ],
+   "use": "Page block type icon: about",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-programme.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    392,
+    297,
+    411
+   ],
+   "size": [
+    20,
+    19
+   ],
+   "use": "Page block type icon: programme",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-performers.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    276,
+    440,
+    298,
+    460
+   ],
+   "size": [
+    22,
+    20
+   ],
+   "use": "Page block type icon: performers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-venue-map.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    279,
+    489,
+    296,
+    510
+   ],
+   "size": [
+    17,
+    21
+   ],
+   "use": "Page block type icon: venue map",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-tickets.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    276,
+    540,
+    298,
+    560
+   ],
+   "size": [
+    22,
+    20
+   ],
+   "use": "Page block type icon: tickets",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-accessibility.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    589,
+    297,
+    610
+   ],
+   "size": [
+    20,
+    21
+   ],
+   "use": "Page block type icon: accessibility",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-organiser.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    638,
+    298,
+    659
+   ],
+   "size": [
+    21,
+    21
+   ],
+   "use": "Page block type icon: organiser",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-sponsors.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    688,
+    300,
+    709
+   ],
+   "size": [
+    23,
+    21
+   ],
+   "use": "Page block type icon: sponsors",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-faq.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    275,
+    737,
+    301,
+    760
+   ],
+   "size": [
+    26,
+    23
+   ],
+   "use": "Page block type icon: faq",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-previous-media.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    274,
+    790,
+    301,
+    809
+   ],
+   "size": [
+    27,
+    19
+   ],
+   "use": "Page block type icon: previous media",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/block-related-events.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    277,
+    841,
+    298,
+    861
+   ],
+   "size": [
+    21,
+    20
+   ],
+   "use": "Page block type icon: related events",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/feature-line-up.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    883,
+    599,
+    906,
+    622
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "use": "About-section feature icon: line-up",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/feature-location.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    999,
+    599,
+    1022,
+    622
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "use": "About-section feature icon: location",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/feature-food-drink.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    1101,
+    599,
+    1124,
+    622
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "use": "About-section feature icon: food-drink",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/page-editor/feature-age-18.png",
+   "source": "Neon Nights Festival Page Editor.png",
+   "box": [
+    999,
+    683,
+    1022,
+    704
+   ],
+   "size": [
+    23,
+    21
+   ],
+   "use": "About-section feature icon: age-18",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/b-loft-v2.webp",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    47,
+    406,
+    294,
+    498
+   ],
+   "size": [
+    247,
+    92
+   ],
+   "use": "Event package row photo (Loft)",
+   "status": "needs-regeneration",
+   "reason": "Status pill [188, 414, 289, 447] covers the top-right ~100x34px over detailed content; inpainting leaves smears/ghosts. Needs a clean source render. In-app the status pill sits over this same spot, so the existing gd/ version is usable as a stopgap."
+  },
+  {
+   "file": "public/assets/gd/builder/build/b-taste-tango.webp",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    47,
+    508,
+    294,
+    605
+   ],
+   "size": [
+    247,
+    97
+   ],
+   "use": "Event package row photo (Taste Tango)",
+   "status": "needs-regeneration",
+   "reason": "Status pill [162, 514, 289, 548] covers the top-right ~100x34px over detailed content; inpainting leaves smears/ghosts. Needs a clean source render. In-app the status pill sits over this same spot, so the existing gd/ version is usable as a stopgap."
+  },
+  {
+   "file": "public/assets/gd/builder/build/b-elite-sounds-v2.webp",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    48,
+    614,
+    294,
+    710
+   ],
+   "size": [
+    246,
+    96
+   ],
+   "use": "Event package row photo (Elite Sounds)",
+   "status": "needs-regeneration",
+   "reason": "Status pill [180, 620, 289, 655] covers the top-right ~100x34px over detailed content; inpainting leaves smears/ghosts. Needs a clean source render. In-app the status pill sits over this same spot, so the existing gd/ version is usable as a stopgap."
+  },
+  {
+   "file": "public/assets/gd/builder/build/b-moments-v2.webp",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    48,
+    721,
+    294,
+    811
+   ],
+   "size": [
+    246,
+    90
+   ],
+   "use": "Event package row photo (Moments)",
+   "status": "needs-regeneration",
+   "reason": "Status pill [182, 727, 289, 761] covers the top-right ~100x34px over detailed content; inpainting leaves smears/ghosts. Needs a clean source render. In-app the status pill sits over this same spot, so the existing gd/ version is usable as a stopgap."
+  },
+  {
+   "file": "public/assets/gd/builder/build/bc-loft.webp",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    516,
+    360,
+    671,
+    448
+   ],
+   "size": [
+    155,
+    88
+   ],
+   "use": "Planner package card photo (Loft)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/bc-elite-sounds.webp",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    516,
+    707,
+    671,
+    797
+   ],
+   "size": [
+    155,
+    90
+   ],
+   "use": "Planner package card photo (Elite Sounds)",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-venue.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    375,
+    94,
+    416
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: venue",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-food-catering.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    423,
+    94,
+    464
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: food catering",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-drinks-bar.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    473,
+    94,
+    514
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: drinks bar",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-entertainment.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    524,
+    94,
+    565
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: entertainment",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-media-content.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    576,
+    94,
+    617
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: media content",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-styling-decor.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    630,
+    94,
+    671
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: styling decor",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-staff-crew.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    686,
+    94,
+    727
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: staff crew",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-production.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    741,
+    94,
+    782
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: production",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-hire-equipment.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    796,
+    94,
+    837
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: hire equipment",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-transport-accommodation.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    852,
+    94,
+    893
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: transport accommodation",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/cat-extras.png",
+   "source": "GalaDock Wedding Event Planner Dashboard.png",
+   "box": [
+    50,
+    910,
+    94,
+    951
+   ],
+   "size": [
+    44,
+    41
+   ],
+   "use": "\"Add to your event\" category tile icon: extras",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-catering.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    479,
+    840,
+    506,
+    862
+   ],
+   "size": [
+    27,
+    22
+   ],
+   "use": "\"Add more to your event\" quick-add icon: catering",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-decor.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    551,
+    840,
+    570,
+    859
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "\"Add more to your event\" quick-add icon: decor",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-photography.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    620,
+    840,
+    642,
+    859
+   ],
+   "size": [
+    22,
+    19
+   ],
+   "use": "\"Add more to your event\" quick-add icon: photography",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-transport.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    691,
+    840,
+    709,
+    859
+   ],
+   "size": [
+    18,
+    19
+   ],
+   "use": "\"Add more to your event\" quick-add icon: transport",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-accommodation.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    771,
+    840,
+    790,
+    859
+   ],
+   "size": [
+    19,
+    19
+   ],
+   "use": "\"Add more to your event\" quick-add icon: accommodation",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-entertainment.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    863,
+    837,
+    886,
+    860
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "use": "\"Add more to your event\" quick-add icon: entertainment",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-flowers.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    944,
+    839,
+    960,
+    860
+   ],
+   "size": [
+    16,
+    21
+   ],
+   "use": "\"Add more to your event\" quick-add icon: flowers",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/builder/build/add-more.png",
+   "source": "Gala·Dock Wedding Event Dashboard.png",
+   "box": [
+    1013,
+    846,
+    1029,
+    853
+   ],
+   "size": [
+    16,
+    7
+   ],
+   "use": "\"Add more to your event\" quick-add icon: more",
+   "status": "ok"
+  },
+  {
+   "file": "public/assets/gd/am-*.webp, sg-*.webp, bc-tastetango.webp, bc-riverside-bars.webp, bc-styling.webp",
+   "source": "GalaDock Wedding Event Planner Dashboard.png / Gala·Dock Wedding Event Dashboard.png",
+   "box": null,
+   "size": null,
+   "use": "\"Add more to your event\" (photographer, live band, transport, sweet cart, photo booth) and \"Smart suggestions\" (live band, wedding decor, photo booth, transport) tiles already exist at native resolution in public/assets/gd/ - reused, not duplicated",
+   "status": "ok"
+  }
+ ]
+}

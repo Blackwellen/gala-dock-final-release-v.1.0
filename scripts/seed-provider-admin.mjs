@@ -101,8 +101,13 @@ must(await sb.from("platform_admins").upsert([
 
 // ── Provider workspace ───────────────────────────────────────────────────
 const wsRow = must(await sb.from("workspaces").select("settings").eq("id", WS).single(), "ws settings");
-must(await sb.from("workspaces").update({ plan: "pro", commission_bps: 1500, cover_image: img("v-riverside-events-centre"),
-  settings: { ...(wsRow.settings ?? {}), tax: { vat_registered: true, rate_bps: 2000, jurisdiction: "GB", number: "GB 293 4471 06" }, booking_rules: { auto_response: true, default_response_hours: 4 } } }).eq("id", WS), "ws");
+must(await sb.from("workspaces").update({ plan: "starter", commission_bps: 1500, cover_image: img("v-riverside-events-centre"),
+  settings: { ...(wsRow.settings ?? {}), tax: { vat_registered: true, rate_bps: 2000, jurisdiction: "GB", number: "GB 293 4471 06" }, booking_rules: { auto_response: true, default_response_hours: 4 },
+    profile: { legal_name: "Riverside Events Ltd", address: "123 Riverside Walk, London SE1 9RT", phone: "+44 20 7123 4567", email: "hello@riversidearena.co.uk", website: "www.riversidearena.co.uk", language: "English (UK)", tagline: "Premium riverside venue with multiple event spaces and full in-house services." },
+    booking: { response_hours: 4, cancellation: "Standard (7 days)", holds: true, standby: true, emergency: true, auto_response: true },
+    communications: { from_name: "Riverside Arena", email: "hello@riversidearena.co.uk", reply_to: "team@riversidearena.co.uk", customer_notifications: true },
+    notifications: { enquiries: { email: true, in_app: true }, bookings: { email: true, sms: true }, agent: { in_app: true }, mentions: { in_app: true } },
+    agent: { response_automation: true, quote_generation: true, availability_management: true, pre_event_confirmations: true } } }).eq("id", WS), "ws");
 // One venue with spaces (designs), not one listing per room.
 must(await sb.from("listings").delete().eq("workspace_id", WS).in("slug", ["riverside-arena-main-hall", "riverside-arena-suite", "riverside-arena-rooftop", "riverside-arena-studio", "riverside-arena-grounds"]), "drop per-room listings");
 let venue = must(await sb.from("listings").select("*").eq("slug", "riverside-arena").maybeSingle(), "venue?");
@@ -190,17 +195,23 @@ for (const [i, p] of pkgs.entries()) must(await sb.from("packages").insert({ ...
 
 // ── Team (Phase 2 crew_members) ─────────────────────────────────────────
 const crewRows = [
-  { name: "Sarah Kim", role: "Event Manager", member_type: "member", status: "available", avatar: img("av-ava-thompson"), skills: ["Weddings", "Client liaison", "Run sheets"], day_rate: 260, location: "London SE1", email: "sarah.kim@riverside-arena.example.com" },
-  { name: "Marcus Hill", role: "Venue Operations", member_type: "member", status: "available", avatar: img("av-ryan-brooks"), skills: ["Setup", "Health & safety", "Licensing"], day_rate: 230, location: "London SE16", email: "marcus.hill@riverside-arena.example.com" },
-  { name: "Elena Rodriguez", role: "Catering Lead", member_type: "member", status: "on_event", avatar: img("av-isabella-garcia"), skills: ["Menus", "Allergens", "Food safety L3"], day_rate: 240, location: "London E1", email: "elena.r@riverside-arena.example.com" },
-  { name: "Devon Carter", role: "Sales Manager", member_type: "member", status: "available", avatar: img("av-noah-evans"), skills: ["Quotes", "Corporate"], day_rate: 250, location: "London SE1", email: "devon.c@riverside-arena.example.com" },
-  { name: "Priya Shah", role: "Event Coordinator", member_type: "member", status: "available", avatar: img("av-isabella-garcia"), skills: ["Weddings", "Suppliers", "BEO"], day_rate: 210, location: "London SE11", email: "priya.shah@riverside-arena.example.com", bio: "Coordinates weddings and private events end-to-end, from site visits to final BEO sign-off." },
-  { name: "Liam Patel", role: "AV Technician", member_type: "crew", status: "available", avatar: img("av-liam-patel"), skills: ["Sound", "Lighting", "Streaming"], day_rate: 220, location: "London N1" },
-  { name: "Chloe Roberts", role: "Bar Supervisor", member_type: "crew", status: "unavailable", avatar: img("av-chloe-roberts"), skills: ["Bar", "Personal licence"], day_rate: 180, location: "London SE5" },
-  { name: "Mia Chen", role: "Front of House", member_type: "crew", status: "available", avatar: img("av-mia-chen"), skills: ["Guest services", "Accreditation"], day_rate: 160, location: "London E14" },
+  { name: "Sarah Kim", role: "Event Manager", member_type: "member", status: "available", avatar: img("av-ava-thompson"), skills: ["Weddings", "Client liaison", "Run sheets"], day_rate: 260, location: "London SE1", email: "sarah.kim@riverside-arena.example.com", details: { employment: "employee", timezone: "Europe/London" } },
+  { name: "Marcus Hill", role: "Venue Operations", member_type: "member", status: "available", avatar: img("av-ryan-brooks"), skills: ["Setup", "Health & safety", "Licensing"], day_rate: 230, location: "London SE16", email: "marcus.hill@riverside-arena.example.com", details: { employment: "employee", timezone: "Europe/London" } },
+  { name: "Elena Rodriguez", role: "Catering Lead", member_type: "member", status: "on_event", avatar: img("av-isabella-garcia"), skills: ["Menus", "Allergens", "Food safety L3"], day_rate: 240, location: "London E1", email: "elena.r@riverside-arena.example.com", details: { employment: "employee", timezone: "Europe/London" } },
+  { name: "Devon Carter", role: "Sales Manager", member_type: "member", status: "available", avatar: img("av-noah-evans"), skills: ["Quotes", "Corporate"], day_rate: 250, location: "London SE1", email: "devon.c@riverside-arena.example.com", details: { employment: "employee", timezone: "Europe/London" } },
+  { name: "Priya Shah", role: "Bar Supervisor", member_type: "member", status: "available", avatar: img("av-isabella-garcia"), skills: ["Bar Management", "Mixology", "Customer Service", "Event Operations", "Health & Safety", "Stock Control"], day_rate: 144, location: "London", email: "priya.shah@riversidearena.co.uk", phone: "+44 7700 900123",
+    details: { employment: "employee", hourly_rate: 18, start_date: "2024-01-12", timezone: "Europe/London", emergency_contact: "Ravi Shah (+44 7700 111222)", certifications: [{ name: "Personal Licence (UK)", expires: "" }, { name: "Food Hygiene Level 2", expires: "" }, { name: "First Aid", expires: "2027-06-30" }], languages: ["English (Native)", "Hindi (Conversational)"] } },
+  { name: "Liam Patel", role: "AV Technician", member_type: "crew", status: "available", avatar: img("av-liam-patel"), skills: ["Sound", "Lighting", "Streaming"], day_rate: 220, location: "London N1", details: { employment: "contract", timezone: "Europe/London" } },
+  { name: "Chloe Roberts", role: "Bar Supervisor", member_type: "crew", status: "unavailable", avatar: img("av-chloe-roberts"), skills: ["Bar", "Personal licence"], day_rate: 180, location: "London SE5", details: { employment: "part_time", timezone: "Europe/London" } },
+  { name: "Mia Chen", role: "Front of House", member_type: "crew", status: "available", avatar: img("av-mia-chen"), skills: ["Guest services", "Accreditation"], day_rate: 160, location: "London E14", details: { employment: "external", timezone: "Europe/London" } },
 ];
 const crew = {};
 for (const c of crewRows) crew[c.name] = must(await sb.from("crew_members").insert({ ...c, workspace_id: WS }).select().single(), `crew ${c.name}`);
+must(await sb.from("availability_blocks").insert([
+  { workspace_id: WS, crew_id: crew["Chloe Roberts"].id, kind: "blocked", starts_at: at(1, 0), ends_at: at(3, 23, 59), note: "Holiday" },
+  { workspace_id: WS, crew_id: crew["Liam Patel"].id, kind: "blocked", starts_at: at(0, 0), ends_at: at(0, 23, 59), note: "Unavailable" },
+  { workspace_id: WS, crew_id: crew["Priya Shah"].id, kind: "blocked", starts_at: at(1, 0), ends_at: at(1, 23, 59), note: "Unavailable" },
+]), "crew blocks");
 
 // ── Marketplace requests (Phase 2 events + provider_requests + build_items) ──
 const opp = [

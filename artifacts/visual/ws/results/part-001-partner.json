@@ -1,0 +1,16 @@
+{
+  "key": "part-001-partner",
+  "url": "/partner",
+  "file": "Designs/Portals/Gala Dock Partner Performance Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.81,
+  "ssim": 0.6753,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1043
+  },
+  "errors": [],
+  "at": "2026-10-11T08:49:45.988Z"
+}

@@ -1,0 +1,22 @@
+baseline 9.042%
+  8.995%  .onboarding-page.setup-organizer-business .setup-main { padding-top: 33px }
+  8.978%  .onboarding-page.setup-organizer-business .setup-main { padding-top: 36px }
+  8.972%  .onboarding-page.setup-organizer-business .form-main>h2 { font-size: 40px }
+  8.897%  .onboarding-page.setup-organizer-business .form-main>h2 { font-size: 41px }
+  8.830%  .onboarding-page.setup-organizer-business .form-main>h2 { font-size: 42px }
+  8.808%  .onboarding-page.setup-organizer-business .form-main>h2 { font-size: 43px }
+  8.780%  .onboarding-page.setup-organizer-business .form-main>h2 { letter-spacing: -1.2px }
+  8.657%  .onboarding-page.setup-organizer-business .form-main>h2 { letter-spacing: -1.0px }
+  8.613%  .onboarding-page.setup-organizer-business .form-main>h2 { letter-spacing: -0.8px }
+  8.600%  .onboarding-page.setup-organizer-business .form-main>h2 { margin-bottom: 6px }
+  8.547%  .onboarding-page.setup-organizer-business .setup-subtitle { font-size: 14.0px }
+  8.542%  .onboarding-page.setup-organizer-business .setup-subtitle { letter-spacing: 0.1px }
+  8.377%  .onboarding-page.setup-organizer-business .setup-assistant { zoom: 1.01 }
+  8.284%  .onboarding-page.setup-organizer-business .setup-assistant { zoom: 1.02 }
+  8.261%  .onboarding-page.setup-organizer-business .setup-story h1 { font-size: 46.5px }
+  8.245%  .onboarding-page.setup-organizer-business .setup-story .setup-story-description { font-size: 16.5px }
+  8.226%  .onboarding-page.setup-organizer-business .setup-story .setup-features { row-gap: 16px }
+  8.191%  .onboarding-page.setup-organizer-business .setup-story .setup-features { row-gap: 18px }
+  8.183%  .onboarding-page.setup-organizer-business .setup-story .setup-story-description { font-size: 17.0px }
+  8.157%  .onboarding-page.setup-organizer-business .setup-story .setup-features { row-gap: 16px }
+final 8.157%

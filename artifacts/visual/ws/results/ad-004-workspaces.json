@@ -1,0 +1,16 @@
+{
+  "key": "ad-004-workspaces",
+  "url": "/admin/workspaces",
+  "file": "Designs/Admin Workspace/Gala Dock Workspace Management Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.01,
+  "ssim": 0.6549,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [],
+  "at": "2026-10-11T08:59:12.731Z"
+}

@@ -1,0 +1,16 @@
+{
+  "key": "ad-007-marketplace",
+  "url": "/admin/marketplace",
+  "file": "Designs/Admin Workspace/Gala Dock Marketplace Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.78,
+  "ssim": 0.604,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1065
+  },
+  "errors": [],
+  "at": "2026-10-11T08:59:39.534Z"
+}

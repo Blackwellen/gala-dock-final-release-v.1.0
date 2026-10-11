@@ -1,0 +1,142 @@
+{
+ "name": "c-org-021",
+ "path": "/organizer/settings",
+ "page": 12.88,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Workspace cover & branding",
+   "x": 1073,
+   "y": 511,
+   "w": 445,
+   "h": 208,
+   "mismatch": 59.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Gala Agent",
+   "x": 668,
+   "y": 969,
+   "w": 418,
+   "h": 55,
+   "mismatch": 15.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Integrations",
+   "x": 236,
+   "y": 969,
+   "w": 418,
+   "h": 55,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Workspace profile",
+   "x": 236,
+   "y": 224,
+   "w": 551,
+   "h": 275,
+   "mismatch": 14
+  },
+  {
+   "sel": ".k-card",
+   "label": "Notifications",
+   "x": 1100,
+   "y": 969,
+   "w": 418,
+   "h": 55,
+   "mismatch": 13.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Payments & billing",
+   "x": 668,
+   "y": 730,
+   "w": 418,
+   "h": 224,
+   "mismatch": 12.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Legal & business information",
+   "x": 236,
+   "y": 511,
+   "w": 405,
+   "h": 208,
+   "mismatch": 12.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Locale & defaults",
+   "x": 655,
+   "y": 511,
+   "w": 405,
+   "h": 208,
+   "mismatch": 12.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Team & access",
+   "x": 236,
+   "y": 730,
+   "w": 418,
+   "h": 224,
+   "mismatch": 12.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Communications",
+   "x": 1100,
+   "y": 730,
+   "w": 418,
+   "h": 224,
+   "mismatch": 11.6
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 173,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 11.1
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11
+  },
+  {
+   "sel": ".k-card",
+   "label": "Subscription & plan",
+   "x": 801,
+   "y": 224,
+   "w": 717,
+   "h": 275,
+   "mismatch": 10.4
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Settings",
+   "x": 236,
+   "y": 108,
+   "w": 1282,
+   "h": 53,
+   "mismatch": 7.9
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.1
+  }
+ ]
+}

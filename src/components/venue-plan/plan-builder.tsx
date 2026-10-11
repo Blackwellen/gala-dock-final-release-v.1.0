@@ -4,12 +4,12 @@ import "@/styles/venue-plan.css";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type PointerEvent as RPE } from "react";
 import { MousePointer2, Hand, Square, Pentagon, Minus as WallIcon, Type, Ruler, Undo2, Redo2, Trash2, Copy, Eye, EyeOff, Lock, Unlock, ImagePlus, Map as MapIcon, Maximize2, Minimize2,
   ZoomIn, ZoomOut, Scan, Grid3x3, Magnet, Layers, Crosshair, ArrowUpToLine, ArrowDownToLine, Save, Upload, Shapes, Search, Keyboard, RotateCw, RotateCcw, AlignStartVertical, AlignCenterVertical,
-  AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Sparkles, ShieldAlert, Armchair } from "lucide-react";
+  AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Sparkles, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { MapContent, MapDefs, mapBounds, elBounds, isPoly, FIXTURE_LABEL, UNITS_PER_M, type MapEl, type MapSpace } from "@/app/provider/venues/_components/venue-map";
-import { ASSETS, ASSET, ASSET_CATS, blockSeats, tableSeats, seatingSize, tableSize, type Seating, type TableSpec } from "./assets";
-import { assetDefaults, type SeatFlag } from "./asset-shape";
+import { ASSETS, ASSET, ASSET_CATS, ASSET_IMG, ASSET_SWATCH, KILL_SEATS_SWATCH, alpha, blockSeats, tableSeats, seatingSize, tableSize, type Seating, type TableSpec } from "./assets";
+import { AssetShape, assetDefaults, type SeatFlag } from "./asset-shape";
 
 type Tool = "select" | "hand" | "room" | "poly" | "wall" | "line" | "label" | "measure" | "calibrate" | "place";
 type View = { x: number; y: number; w: number; h: number };
@@ -17,6 +17,7 @@ type Drag =
   | { kind: "pan"; sx: number; sy: number; view: View }
   | { kind: "move"; sx: number; sy: number; orig: Map<number, MapEl> }
   | { kind: "resize"; i: number; corner: number; orig: MapEl }
+  | { kind: "rotate"; i: number; cx: number; cy: number; orig: MapEl }
   | { kind: "vertex"; i: number; v: number }
   | { kind: "draft"; sx: number; sy: number }
   | { kind: "marquee"; sx: number; sy: number }
@@ -33,7 +34,8 @@ const GROUPS: [string, string, (e: MapEl) => boolean][] = [
 const TOOLS: [Tool, LucideIcon, string, string][] = [["select", MousePointer2, "Select & move", "V"], ["hand", Hand, "Pan", "H"], ["room", Square, "Room", "R"], ["poly", Pentagon, "Polygon room", "P"],
   ["wall", WallIcon, "Wall", "W"], ["label", Type, "Text", "T"], ["measure", Ruler, "Measure", "M"]];
 const SHORTCUTS: [string, string][] = [["V", "Select"], ["H / hold Space", "Pan"], ["R", "Room"], ["P", "Polygon room"], ["W", "Wall"], ["T", "Text"], ["M", "Measure"], ["A", "Assets library"],
-  ["Shift + click", "Add to selection"], ["Shift + drag", "Box select"], ["Ctrl + A", "Select all"], ["Ctrl + C / V", "Copy / paste"], ["Ctrl + D", "Duplicate"], ["Q / E", "Rotate 15°"],
+  ["Shift + click", "Add to selection"], ["Shift + drag", "Box select"], ["Ctrl + A", "Select all"], ["Ctrl + C / V", "Copy / paste"], ["Ctrl + D", "Duplicate"], ["Q / E", "Rotate 15° (Shift = 1°)"],
+  ["Drag ↻ handle", "Free rotate"], ["Shift + drag ↻", "Rotate in 15° steps"], ["Shift + H / Shift + V", "Flip horizontal / vertical"], ["L", "Legend / key"],
   ["Arrows", "Nudge (Shift = 1 m)"], ["Del", "Delete"], ["Ctrl + Z / Y", "Undo / redo"], ["Enter", "Finish line"], ["Esc", "Cancel / deselect"], ["+ / −", "Zoom"], ["0", "Fit plan"], ["F", "Full screen"], ["?", "This list"]];
 const PRESETS: { key: string; label: string; sub: string; build: (cx: number, cy: number) => MapEl[] }[] = [
   { key: "theatre", label: "Theatre rows", sub: "3 blocks · 288 seats", build: (cx, cy) => ["A", "B", "C"].map((p, i) => block(p, cx - 200 + i * 135, cy - 40, { rows: 8, cols: 12 })) },
@@ -97,6 +99,10 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
   const [sideOpen, setSideOpen] = useState(false);
   const [px, setPx] = useState(800);
   const [clip, setClip] = useState<MapEl[]>([]);
+  const [legend, setLegend] = useState(false);
+  const [rotating, setRotating] = useState(false);
+  const [ghost, setGhost] = useState<{ key: string; x: number; y: number } | null>(null);
+  const dragKey = useRef<string | null>(null);
   const all = useMemo(() => [...base, ...initial], [base, initial]);
   const [view, setView] = useState<View>(() => { const b = mapBounds(all.length ? all : [{ type: "room", label: "", x: 0, y: 0, w: 600, h: 360 }]); return { x: -20, y: -20, w: b.w + 40, h: b.h + 40 }; });
   const svg = useRef<SVGSVGElement>(null);
@@ -133,6 +139,16 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     setDraft([]);
   }, [tool, draft, commit, els.length, placing]);
   const rotate = useCallback((deg: number) => { if (!sel.length) return; commit(l => l.map((x, j) => sel.includes(j) && x.type === "asset" && !x.points && editable(x) ? { ...x, rot: (((x.rot ?? 0) + deg) % 360 + 360) % 360 } : x)); }, [sel, commit]); // eslint-disable-line react-hooks/exhaustive-deps
+  const flip = useCallback((axis: "h" | "v") => {
+    if (!sel.length) return;
+    commit(l => l.map((x, j) => {
+      if (!sel.includes(j) || !editable(x)) return x;
+      if (x.points) { const b = elBounds(x), c = axis === "h" ? b.x * 2 + b.w : b.y * 2 + b.h; return { ...x, points: x.points.map(([px, py]) => axis === "h" ? [c - px, py] : [px, c - py]) }; }
+      if (x.type !== "asset") return x;
+      const r = x.rot ?? 0, nr = ((axis === "h" ? 360 - r : 540 - r) % 360 + 360) % 360;
+      return { ...x, rot: nr || undefined, ...(x.seating ? { seating: { ...x.seating, colDir: x.seating.colDir === "ltr" ? "rtl" as const : "ltr" as const } } : {}) };
+    }));
+  }, [sel, commit]); // eslint-disable-line react-hooks/exhaustive-deps
   const duplicate = useCallback((list = sel) => { if (!list.length) return; const copies = list.map(i => shift({ ...els[i], id: newId("copy"), protected: false, label: els[i].label }, 20, 20)); commit(l => [...l, ...copies]); setSel(copies.map((_, k) => els.length + k)); }, [sel, els, commit]);
   const zoomBy = (f: number) => setView(v => { const w = Math.min(12000, Math.max(40, v.w * f)), h = (w / v.w) * v.h; return { x: v.x + (v.w - w) / 2, y: v.y + (v.h - h) / 2, w, h }; });
   const fit = () => { const b = mapBounds([...base, ...els].length ? [...base, ...els] : [{ type: "room", label: "", x: 0, y: 0, w: 600, h: 360 }]); setView({ x: -20, y: -20, w: b.w + 40, h: (b.w + 40) * (view.h / view.w) }); };
@@ -151,12 +167,14 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       if (mod && k === "v") { if (clip.length) { const c = clip.map(x => shift({ ...x, id: newId("paste"), protected: false }, 30, 30)); commit(l => [...l, ...c]); setSel(c.map((_, j) => els.length + j)); } return; }
       if (mod && k === "d") { e.preventDefault(); duplicate(); return; }
       if ((e.key === "Delete" || e.key === "Backspace") && sel.length) { e.preventDefault(); removeSel(); return; }
-      if (e.key === "Escape") { setDraft([]); setMeasure(null); setSel([]); setSeats(null); setTool("select"); setPlacing(null); setMenu(null); setHelp(false); return; }
+      if (e.key === "Escape") { setDraft([]); setMeasure(null); setSel([]); setSeats(null); setTool("select"); setPlacing(null); setMenu(null); setHelp(false); setLegend(false); return; }
       if (e.key === "Enter") { finishDraft(); return; }
       if (e.key === "?") { setHelp(h => !h); return; }
       if (e.key.startsWith("Arrow") && sel.length) { e.preventDefault(); const d = e.shiftKey ? 10 : 1;
         commit(l => l.map((x, j) => sel.includes(j) && editable(x) ? shift(x, e.key === "ArrowLeft" ? -d : e.key === "ArrowRight" ? d : 0, e.key === "ArrowUp" ? -d : e.key === "ArrowDown" ? d : 0) : x)); return; }
       if (mod) return;
+      if (e.shiftKey && k === "h") { flip("h"); return; } if (e.shiftKey && k === "v") { flip("v"); return; }
+      if (k === "l") { setLegend(v => !v); return; }
       if (k === "q") { rotate(e.shiftKey ? -1 : -15); return; } if (k === "e") { rotate(e.shiftKey ? 1 : 15); return; }
       if (k === "+" || k === "=") { zoomBy(1 / 1.25); return; } if (k === "-") { zoomBy(1.25); return; } if (k === "0") { fit(); return; }
       if (k === "f") { setFull(f => !f); return; } if (k === "a") { setPanel("assets"); setSideOpen(true); return; }
@@ -221,9 +239,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     setSel([i]); setPanel("inspect"); setSideOpen(true);
     setSeats(cur => { const keys = new Set(cur && cur.el === i && e.shiftKey ? cur.keys : []); if (keys.has(key)) keys.delete(key); else keys.add(key); return { el: i, keys }; });
   };
-  const onHandleDown = (e: RPE<SVGRectElement>, kind: "resize" | "vertex", n: number) => {
+  const onHandleDown = (e: RPE<SVGElement>, kind: "resize" | "vertex" | "rotate", n: number) => {
     e.stopPropagation(); if (!s) return;
-    drag.current = kind === "resize" ? { kind, i: sel[0], corner: n, orig: s } : { kind, i: sel[0], v: n }; before.current = els; svg.current?.setPointerCapture(e.pointerId);
+    if (kind === "rotate") { const b = elBounds(s); drag.current = { kind, i: sel[0], cx: b.x + b.w / 2, cy: b.y + b.h / 2, orig: s }; setRotating(true); }
+    else drag.current = kind === "resize" ? { kind, i: sel[0], corner: n, orig: s } : { kind, i: sel[0], v: n };
+    before.current = els; svg.current?.setPointerCapture(e.pointerId);
   };
   const onMove = (e: RPE<SVGSVGElement>) => {
     const [x, y] = world(e); setCursor([x, y]);
@@ -231,11 +251,22 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     if (d.kind === "pan") { const r = svg.current!.getBoundingClientRect(), k = d.view.w / r.width; setView({ ...d.view, x: d.view.x - (e.clientX - d.sx) * k, y: d.view.y - (e.clientY - d.sy) * k }); return; }
     if (d.kind === "move") { const dx = sn(x - d.sx), dy = sn(y - d.sy); setEls(l => l.map((el, j) => d.orig.has(j) ? shift(d.orig.get(j)!, dx, dy) : el)); setDirty(true); return; }
     if (d.kind === "resize") {
-      const o = d.orig, x0 = o.x ?? 0, y0 = o.y ?? 0, x1 = x0 + (o.w ?? 0), y1 = y0 + (o.h ?? 0), X = sn(x), Y = sn(y);
-      const nx0 = d.corner === 0 || d.corner === 3 ? Math.min(X, x1 - 5) : x0, nx1 = d.corner === 1 || d.corner === 2 ? Math.max(X, x0 + 5) : x1;
-      const ny0 = d.corner === 0 || d.corner === 1 ? Math.min(Y, y1 - 5) : y0, ny1 = d.corner === 2 || d.corner === 3 ? Math.max(Y, y0 + 5) : y1;
-      const keep = o.type === "underlay" && !e.shiftKey ? (o.w ?? 1) / (o.h ?? 1) : null;
-      setEls(l => l.map((el, j) => j === d.i ? { ...el, x: nx0, y: ny0, w: nx1 - nx0, h: keep ? (nx1 - nx0) / keep : ny1 - ny0 } : el)); setDirty(true); return;
+      // Works in the element's own (possibly rotated) frame: the opposite corner stays fixed in world space.
+      const o = d.orig, ow = o.w ?? 0, oh = o.h ?? 0, ccx = (o.x ?? 0) + ow / 2, ccy = (o.y ?? 0) + oh / 2, th = ((o.rot ?? 0) * Math.PI) / 180, co = Math.cos(th), si = Math.sin(th);
+      const sx = d.corner === 1 || d.corner === 2 ? 1 : -1, sy = d.corner >= 2 ? 1 : -1, lx = (-sx * ow) / 2, ly = (-sy * oh) / 2;
+      const ax = ccx + lx * co - ly * si, ay = ccy + lx * si + ly * co, qx = x - ax, qy = y - ay;
+      let lw = (qx * co + qy * si) * sx, lh = (-qx * si + qy * co) * sy;
+      lw = Math.max(5, snap ? Math.round(lw / 5) * 5 : Math.round(lw)); lh = Math.max(5, snap ? Math.round(lh / 5) * 5 : Math.round(lh));
+      if (o.type === "underlay" && !e.shiftKey) lh = lw / ((o.w ?? 1) / (o.h ?? 1));
+      const hx = (sx * lw) / 2, hy = (sy * lh) / 2, ncx = ax + hx * co - hy * si, ncy = ay + hx * si + hy * co;
+      setEls(l => l.map((el, j) => j === d.i ? { ...el, x: Math.round((ncx - lw / 2) * 10) / 10, y: Math.round((ncy - lh / 2) * 10) / 10, w: lw, h: lh } : el)); setDirty(true); return;
+    }
+    if (d.kind === "rotate") {
+      let a = (Math.atan2(y - d.cy, x - d.cx) * 180) / Math.PI + 90;
+      a = e.shiftKey ? Math.round(a / 15) * 15 : Math.round(a);
+      if (!e.shiftKey && snap) for (const q of [0, 90, 180, 270, 360]) if (Math.abs(a - q) < 3 || Math.abs(a + 360 - q) < 3) a = q;
+      const r = ((a % 360) + 360) % 360;
+      setEls(l => l.map((el, j) => j === d.i ? { ...el, rot: r || undefined } : el)); setDirty(true); return;
     }
     if (d.kind === "vertex") { setEls(l => l.map((el, j) => j === d.i && el.points ? { ...el, points: el.points.map((p, v) => v === d.v ? [sn(x), sn(y)] : p) } : el)); setDirty(true); return; }
     if (d.kind === "measure") { setMeasure([[d.sx, d.sy], [x, y]]); return; }
@@ -243,9 +274,9 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     if (d.kind === "draft") setDraft([[d.sx, d.sy], [sn(x), sn(y)]]);
   };
   const onUp = () => {
-    const d = drag.current; drag.current = null;
+    const d = drag.current; drag.current = null; setRotating(false);
     if (!d) return;
-    if ((d.kind === "move" || d.kind === "resize" || d.kind === "vertex") && before.current && before.current !== els) { const b = before.current; setPast(p => [...p.slice(-100), b]); setFuture([]); }
+    if ((d.kind === "move" || d.kind === "resize" || d.kind === "vertex" || d.kind === "rotate") && before.current && before.current !== els) { const b = before.current; setPast(p => [...p.slice(-100), b]); setFuture([]); }
     if (d.kind === "marquee" && marquee) {
       const [a, b] = marquee, x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
       setSel(els.map((e, i) => ({ e, i, b: elBounds(e) })).filter(({ e, b: bb }) => editable(e) && e.type !== "basemap" && bb.x >= x0 && bb.y >= y0 && bb.x + bb.w <= x1 && bb.y + bb.h <= y1).map(q => q.i)); setMarquee(null);
@@ -278,7 +309,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     const r = await onSave(els, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) setDirty(false);
   });
   const setS = (patch: Partial<MapEl>) => s && commit(l => l.map((x, j) => j === sel[0] ? { ...x, ...patch } : x));
-  const setSeating = (patch: Partial<Seating>) => { if (!s?.seating) return; const ns = { ...s.seating, ...patch }; setS({ seating: ns, ...seatingSize(ns) }); };
+  const setSeating = (patch: Partial<Seating>) => {
+    if (!s?.seating) return; const ns = { ...s.seating, ...patch }, sz = seatingSize(ns);
+    const keepCentre = !!s.rot || "curve" in patch || "rowOffset" in patch;
+    setS({ seating: ns, ...sz, ...(keepCentre ? { x: Math.round(((s.x ?? 0) + (s.w ?? 0) / 2 - sz.w / 2) * 10) / 10, y: Math.round(((s.y ?? 0) + (s.h ?? 0) / 2 - sz.h / 2) * 10) / 10 } : {}) });
+  };
   const setTable = (patch: Partial<TableSpec>) => { if (!s?.table) return; const nt = { ...s.table, ...patch }; setS({ table: nt, ...tableSize(nt), label: patch.number ? `Table ${patch.number}` : s.label }); };
   const align = (how: "l" | "c" | "r" | "t" | "m" | "b" | "dh" | "dv") => {
     if (sel.length < 2) return;
@@ -296,6 +331,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     const idx = (sel.length > 1 ? sel : els.map((_, i) => i)).filter(i => ASSET[els[i]?.asset ?? ""]?.kind === "table");
     const order = [...idx].sort((a, b) => { const A = elBounds(els[a]), B = elBounds(els[b]); return Math.abs(A.y - B.y) > 15 ? A.y - B.y : A.x - B.x; });
     commit(l => l.map((x, j) => { const n = order.indexOf(j); return n < 0 ? x : { ...x, table: { ...x.table!, number: String(n + 1) }, label: `Table ${n + 1}` }; })); toast(`${order.length} tables renumbered`);
+  };
+  const renumberBlocks = () => {
+    const idx = (sel.length > 1 ? sel : els.map((_, i) => i)).filter(i => !!els[i]?.seating);
+    const order = [...idx].sort((a, b) => { const A = elBounds(els[a]), B = elBounds(els[b]); return Math.abs(A.y - B.y) > 15 ? A.y - B.y : A.x - B.x; });
+    commit(l => l.map((x, j) => { const n = order.indexOf(j); if (n < 0) return x; const p = alpha(n + 1, true); return { ...x, seating: { ...x.seating!, prefix: p }, label: `Block ${p}` }; })); toast(`${order.length} blocks renamed A–${alpha(order.length, true)}`);
   };
   const flagSeats = (flag: SeatFlag | "clear") => {
     if (!seats) return; const el = els[seats.el];
@@ -319,6 +359,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     return { seatN, tableSeatN, tables, standing, blocked };
   }, [els, base]);
   const tierColor = useCallback((t?: string | null) => tiers.find(x => x.id === t)?.color, [tiers]);
+  const used = useMemo(() => { const m = new Map<string, number>(); for (const e of [...base, ...els]) if (e.type === "asset" && e.asset && ASSET[e.asset]) m.set(e.asset, (m.get(e.asset) ?? 0) + 1); return [...m.entries()].sort((a, b) => ASSETS.findIndex(x => x.key === a[0]) - ASSETS.findIndex(x => x.key === b[0])); }, [base, els]);
+  const tierUse = useMemo(() => { const m = new Map<string, number>(); for (const e of els) { const d = ASSET[e.asset ?? ""]; if (!d) continue;
+    const keys = d.kind === "seating" && e.seating ? blockSeats(e.seating).map(q => q.key) : d.kind === "table" && e.table ? tableSeats(e.table).map(q => q.key) : [];
+    if (!keys.length && e.tier) m.set(e.tier, (m.get(e.tier) ?? 0) + (e.capacity ?? 0));
+    for (const k of keys) { const t = e.seatTiers?.[k] ?? e.tier; if (t) m.set(t, (m.get(t) ?? 0) + 1); } } return m; }, [els]);
   const scaleBar = (() => { const target = view.w / 6 / UNITS_PER_M, steps = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]; const m = steps.find(x => x >= target) ?? 1000; return { m, u: m * UNITS_PER_M }; })();
   const hr = view.w / 140;
   const shownAssets = ASSETS.filter(a => !query || `${a.label} ${a.cat}`.toLowerCase().includes(query.toLowerCase()));
@@ -339,6 +384,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       <button type="button" title="Redo (Ctrl+Y)" disabled={!future.length} onClick={redo}><Redo2 aria-hidden="true" /></button>
       <button type="button" title="Snap to grid" className={snap ? "on" : ""} aria-pressed={snap} onClick={() => setSnap(v => !v)}><Magnet aria-hidden="true" /></button>
       <button type="button" title="Show grid" className={grid ? "on" : ""} aria-pressed={grid} onClick={() => setGrid(v => !v)}><Grid3x3 aria-hidden="true" /></button>
+      <button type="button" title="Legend / key (L)" className={legend ? "on" : ""} aria-pressed={legend} onClick={() => setLegend(v => !v)}><BookOpen aria-hidden="true" /></button>
       <button type="button" title="Keyboard shortcuts (?)" onClick={() => setHelp(h => !h)}><Keyboard aria-hidden="true" /></button>
       <span className="ws-spacer" />
       <span className="mb-status">{dirty ? "Unsaved changes" : version ? `Version ${version} live` : "Not published"}</span>
@@ -347,8 +393,10 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, uploadKind.current); e.target.value = ""; }} />
     </div>
     <div className="mb-body">
-      <div className={`mb-canvas tool-${tool}`} onDragOver={e => { if (e.dataTransfer.types.includes("text/x-plan-asset")) e.preventDefault(); }}
-        onDrop={e => { const k = e.dataTransfer.getData("text/x-plan-asset"); if (!k) return; e.preventDefault(); const [x, y] = world(e); placeAt(k, x, y); }}>
+      <div className={`mb-canvas tool-${tool}`} onDragOver={e => { if (!e.dataTransfer.types.includes("text/x-plan-asset")) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy";
+          const k = dragKey.current; if (k && ASSET[k]?.kind !== "line") { const [x, y] = world(e); setGhost(g => g && g.key === k && Math.abs(g.x - x) < 0.5 && Math.abs(g.y - y) < 0.5 ? g : { key: k, x, y }); } }}
+        onDragLeave={e => { if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) setGhost(null); }}
+        onDrop={e => { const k = e.dataTransfer.getData("text/x-plan-asset"); setGhost(null); dragKey.current = null; if (!k) return; e.preventDefault(); const [x, y] = world(e); placeAt(k, x, y); }}>
         <svg ref={svg} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} className="vm mb-svg" onPointerDown={onCanvasDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onPointerLeave={() => setCursor(null)}
           onWheel={onWheel} onDoubleClick={() => finishDraft()} role="application" aria-label="Plan editor">
           <MapDefs />
@@ -359,10 +407,14 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
             selectedSeats={seats?.keys} onSeat={onSeat}>
             {s && !s.hidden && (() => { const b = elBounds(s);
               if (isPoly(s)) return <g>{s.points!.map((p, v) => <Handle key={`v${v}`} x={p[0]} y={p[1]} r={hr} cursor="move" kind="vertex" n={v} onDown={onHandleDown} />)}</g>;
-              const rotated = !!s.rot;
+              const rotated = !!s.rot, canRotate = editable(s) && s.type === "asset" && !s.points;
+              const cur = (n: number) => { const base = n % 2 ? 135 : 45, a = (((base + (s.rot ?? 0)) % 180) + 180) % 180; return a < 22.5 || a >= 157.5 ? "ew-resize" : a < 67.5 ? "nwse-resize" : a < 112.5 ? "ns-resize" : "nesw-resize"; };
               return <g transform={rotated ? `rotate(${s.rot} ${b.x + b.w / 2} ${b.y + b.h / 2})` : undefined}><rect x={b.x} y={b.y} width={b.w} height={b.h} className="mb-selbox" />
-                {editable(s) && !rotated && !s.seating && !s.table && !["label", "basemap"].includes(s.type) && ASSET[s.asset ?? ""]?.kind !== "point" && [[b.x, b.y, "nwse-resize"], [b.x + b.w, b.y, "nesw-resize"], [b.x + b.w, b.y + b.h, "nwse-resize"], [b.x, b.y + b.h, "nesw-resize"]].map(([hx, hy, c], n) =>
-                  <Handle key={`c${n}`} x={hx as number} y={hy as number} r={hr} cursor={c as string} kind="resize" n={n} onDown={onHandleDown} />)}
+                {editable(s) && !s.seating && !s.table && !["label", "basemap"].includes(s.type) && ASSET[s.asset ?? ""]?.kind !== "point" && [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([hx, hy], n) =>
+                  <Handle key={`c${n}`} x={hx} y={hy} r={hr} cursor={cur(n)} kind="resize" n={n} onDown={onHandleDown} />)}
+                {canRotate && <g><line x1={b.x + b.w / 2} y1={b.y} x2={b.x + b.w / 2} y2={b.y - hr * 6} className="mb-rot-stem" />
+                  <circle cx={b.x + b.w / 2} cy={b.y - hr * 6} r={hr * 1.15} className="mb-rot-handle" onPointerDown={e => onHandleDown(e, "rotate", 0)}><title>Drag to rotate · Shift snaps to 15°</title></circle>
+                  {rotating && <text x={b.x + b.w / 2} y={b.y - hr * 9} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{s.rot ?? 0}°</text>}</g>}
                 {(s.w ?? 0) > 0 && s.type !== "basemap" && <text x={b.x + b.w / 2} y={b.y - view.w / 160} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(b.w)} m × {mm(b.h)} m</text>}</g>; })()}
             {sel.length > 1 && sel.map(i => { const b = elBounds(els[i]); return <rect key={`ms${i}`} x={b.x} y={b.y} width={b.w} height={b.h} className="mb-selbox" />; })}
             {draft.length === 2 && tool === "room" && <g className="mb-draft"><rect x={Math.min(draft[0][0], draft[1][0])} y={Math.min(draft[0][1], draft[1][1])} width={Math.abs(draft[1][0] - draft[0][0])} height={Math.abs(draft[1][1] - draft[0][1])} />
@@ -374,7 +426,8 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
             {marquee && <rect className="mb-marquee" x={Math.min(marquee[0][0], marquee[1][0])} y={Math.min(marquee[0][1], marquee[1][1])} width={Math.abs(marquee[1][0] - marquee[0][0])} height={Math.abs(marquee[1][1] - marquee[0][1])} />}
             {measure && <g className="mb-measure"><line x1={measure[0][0]} y1={measure[0][1]} x2={measure[1][0]} y2={measure[1][1]} />
               <text x={(measure[0][0] + measure[1][0]) / 2} y={(measure[0][1] + measure[1][1]) / 2 - 8} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(dist(measure[0], measure[1]))} m</text></g>}
-            {tool === "place" && placing && cursor && <g className="mb-ghost" pointerEvents="none"><rect x={cursor[0] - (assetDefaults(placing).w / 2)} y={cursor[1] - (assetDefaults(placing).h / 2)} width={assetDefaults(placing).w} height={assetDefaults(placing).h} /></g>}
+            {tool === "place" && placing && cursor && !ghost && <Ghost k={placing} x={cursor[0]} y={cursor[1]} sn={sn} scale={scale} detail={detail} />}
+            {ghost && <Ghost k={ghost.key} x={ghost.x} y={ghost.y} sn={sn} scale={scale} detail={detail} />}
           </MapContent>
           {[...base, ...els].some(e => e.type === "basemap" && !e.hidden) && !hiddenGroups.includes("base") && <text x={view.x + view.w - 6} y={view.y + view.h - 6} textAnchor="end" className="vm-attr" style={{ fontSize: view.w / 110 }}>© OpenStreetMap contributors</text>}
         </svg>
@@ -387,14 +440,28 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
           <span className="mb-hint">{tool === "place" ? "Click to place · Shift-click to place several" : tool === "poly" ? "Click corners · click first point or double-click to close" : tool === "wall" || tool === "line" ? "Click points · double-click or Enter to finish" : tool === "select" ? (detail ? "Click seats to select · Shift+click for more · drag to move" : "Drag to move · Shift+drag box-selects · zoom in to edit seats") : tool === "measure" ? "Drag to measure" : "Drag to draw"}</span></div>
         {menu && s !== undefined && <div className="mb-menu" style={{ left: menu.x, top: menu.y }} role="menu" onPointerDown={e => e.stopPropagation()}>
           <button type="button" role="menuitem" onClick={() => { duplicate(); setMenu(null); }}><Copy aria-hidden="true" />Duplicate<kbd>Ctrl D</kbd></button>
-          <button type="button" role="menuitem" onClick={() => { rotate(90); setMenu(null); }}><RotateCw aria-hidden="true" />Rotate 90°<kbd>E</kbd></button>
+          <button type="button" role="menuitem" onClick={() => { rotate(90); setMenu(null); }}><RotateCw aria-hidden="true" />Rotate 90° right</button>
+          <button type="button" role="menuitem" onClick={() => { rotate(-90); setMenu(null); }}><RotateCcw aria-hidden="true" />Rotate 90° left</button>
+          <button type="button" role="menuitem" onClick={() => { flip("h"); setMenu(null); }}><FlipHorizontal2 aria-hidden="true" />Flip horizontal<kbd>Shift H</kbd></button>
+          <button type="button" role="menuitem" onClick={() => { flip("v"); setMenu(null); }}><FlipVertical2 aria-hidden="true" />Flip vertical<kbd>Shift V</kbd></button>
+          <hr />
           <button type="button" role="menuitem" onClick={() => { commit(l => [...l.filter((_, j) => !sel.includes(j)), ...sel.map(i => l[i])]); setSel(sel.map((_, k) => els.length - sel.length + k)); setMenu(null); }}><ArrowUpToLine aria-hidden="true" />Bring to front</button>
           <button type="button" role="menuitem" onClick={() => { commit(l => [...sel.map(i => l[i]), ...l.filter((_, j) => !sel.includes(j))]); setSel(sel.map((_, k) => k)); setMenu(null); }}><ArrowDownToLine aria-hidden="true" />Send to back</button>
           <button type="button" role="menuitem" onClick={() => { commit(l => l.map((x, j) => sel.includes(j) ? { ...x, locked: !x.locked } : x)); setMenu(null); }}><Lock aria-hidden="true" />Lock / unlock</button>
           {sel.some(i => ASSET[els[i]?.asset ?? ""]?.kind === "table") && <button type="button" role="menuitem" onClick={() => { renumberTables(); setMenu(null); }}><ListOrdered aria-hidden="true" />Renumber tables</button>}
+          {sel.some(i => !!els[i]?.seating) && <button type="button" role="menuitem" onClick={() => { renumberBlocks(); setMenu(null); }}><ListOrdered aria-hidden="true" />Rename blocks A, B, C…</button>}
+          <hr />
           <button type="button" role="menuitem" className="danger" onClick={() => { removeSel(); setMenu(null); }}><Trash2 aria-hidden="true" />Delete<kbd>Del</kbd></button></div>}
         {help && <div className="mb-help" role="dialog" aria-label="Keyboard shortcuts"><header><b><Keyboard aria-hidden="true" />Keyboard shortcuts</b><button type="button" aria-label="Close" onClick={() => setHelp(false)}><X aria-hidden="true" /></button></header>
           <dl>{SHORTCUTS.map(([k, v]) => <div key={k}><dt>{k.split(" / ").map((x, i) => <span key={x}>{i > 0 && " / "}<kbd>{x}</kbd></span>)}</dt><dd>{v}</dd></div>)}</dl></div>}
+        {legend && <div className="mb-legend" role="dialog" aria-label="Plan legend"><header>Legend<button type="button" aria-label="Close legend" onClick={() => setLegend(false)}><X aria-hidden="true" /></button></header>
+          {used.length > 0 ? <><h5>On this plan</h5><ul>{used.map(([key, n]) => { const d = ASSET[key]; return <li key={key}><span style={{ background: d.fill, color: d.stroke }}>{ASSET_IMG[key] ? <img src={ASSET_IMG[key]} alt="" className="mb-gd-ic" /> : <d.icon aria-hidden="true" />}</span>{d.label}
+              {ASSET_SWATCH[key] && <img src={ASSET_SWATCH[key]} alt="" className="mb-gd-sw" />}<em>{n}</em></li>; })}</ul></>
+            : <p className="mb-note">Nothing placed yet.</p>}
+          {tiers.length > 0 && <><h5>Ticket tiers</h5><ul>{tiers.map(t => <li key={t.id}><span><i className="dot" style={{ background: t.color }} /></span>{t.name}<em>{tierUse.get(t.id) ?? 0}</em></li>)}</ul></>}
+          {totals.seatN + totals.tableSeatN > 0 && <><h5>Seats</h5><ul>
+            {([["#fff", "#2f6bff", "Available"], ["#c3c8d8", "#9aa1bd", "Blocked"], ["#e0f2fe", "#0284c7", "Accessible"], ["#fff0d9", "#e08a00", "Restricted view"]] as const).map(([f, st, l]) => <li key={l}><span>{l === "Blocked" ? <img src={KILL_SEATS_SWATCH} alt="" className="mb-gd-sw" /> : <i className="dot" style={{ background: f, border: `1.5px solid ${st}` }} />}</span>{l}</li>)}</ul></>}
+        </div>}
       </div>
       <aside className="mb-side">
         <nav className="mb-tabs"><button type="button" className={panel === "assets" ? "on" : ""} onClick={() => setPanel("assets")}><Shapes aria-hidden="true" />Assets</button>
@@ -405,9 +472,10 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
           {!query && <section className="mb-presets"><h4>Quick layouts</h4><ul>{PRESETS.map(p => <li key={p.key}><button type="button" onClick={() => { const cx = view.x + view.w / 2, cy = view.y + view.h / 2, add = p.build(cx, cy); commit(l => [...l, ...add]); setSel(add.map((_, k) => els.length + k)); setPanel("inspect"); toast(`${p.label} added — drag to position`); }}>
             <b>{p.label}</b><small>{p.sub}</small></button></li>)}</ul></section>}
           {ASSET_CATS.map(cat => { const items = shownAssets.filter(a => a.cat === cat); if (!items.length) return null; return <section key={cat}><h4>{cat}</h4><ul className="mb-tiles">{items.map(a => <li key={a.key}>
-            <button type="button" draggable onDragStart={e => { e.dataTransfer.setData("text/x-plan-asset", a.key); e.dataTransfer.effectAllowed = "copy"; }} className={placing === a.key ? "on" : ""}
+            <button type="button" draggable onDragStart={e => { e.dataTransfer.setData("text/x-plan-asset", a.key); e.dataTransfer.effectAllowed = "copy"; dragKey.current = a.key; }}
+              onDragEnd={() => { dragKey.current = null; setGhost(null); }} className={placing === a.key ? "on" : ""}
               onClick={() => { if (a.kind === "line") placeAt(a.key, 0, 0); else { setTool("place"); setPlacing(a.key); } }} title={`${a.label} — drag onto the plan or click then place`}>
-              <span style={{ background: a.fill, color: a.stroke }}><a.icon aria-hidden="true" /></span>{a.label}</button></li>)}</ul></section>; })}
+              <span style={{ background: a.fill, color: a.stroke }}>{ASSET_IMG[a.key] ? <img src={ASSET_IMG[a.key]} alt="" className="mb-gd-ic" /> : <a.icon aria-hidden="true" />}</span>{a.label}</button></li>)}</ul></section>; })}
         </div>}
         {panel === "layers" && <div className="mb-layers">{GROUPS.map(([g, label, pred]) => { const items = els.map((e, i) => ({ e, i })).filter(x => pred(x.e)); if (!items.length && g !== "rooms") return null;
           if (g === "rooms" && mode === "event" && !items.length) return null;
@@ -447,6 +515,8 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
                 <label>Seat order<select className="ws-select" value={s.seating.colDir} onChange={e => setSeating({ colDir: e.target.value as Seating["colDir"] })}><option value="ltr">Left → right</option><option value="rtl">Right → left</option></select></label></div>
               <label>Aisles after seat <small>(e.g. 6, 12)</small><input value={s.seating.aisles.join(", ")} onChange={e => setSeating({ aisles: e.target.value.split(/[,\s]+/).map(Number).filter(n => n > 0 && n < (s.seating?.cols ?? 0)) })} /></label>
               <label className="mb-check"><input type="checkbox" checked={s.seating.skipIO} onChange={e => setSeating({ skipIO: e.target.checked })} />Skip letters I and O</label>
+              <label>Curve rows around stage<span className="mb-rot"><input type="range" min={0} max={150} step={5} value={s.seating.curve ?? 0} onChange={e => setSeating({ curve: Number(e.target.value) || undefined })} /><em>{s.seating.curve ?? 0}°</em></span></label>
+              <label className="mb-check"><input type="checkbox" checked={!!s.seating.rowOffset} onChange={e => setSeating({ rowOffset: e.target.checked ? 0.5 : undefined })} />Stagger alternate rows</label>
               <p className="mb-note">{s.seating.rows * s.seating.cols} seats · first {blockSeats(s.seating)[0]?.label}{detail ? "" : " · zoom in to select individual seats"}</p></fieldset>}
             {s.table && <fieldset className="mb-fs"><legend>Table</legend>
               <div className="mb-row"><label>Table number<input value={s.table.number} maxLength={10} onChange={e => setTable({ number: e.target.value })} /></label>
@@ -476,7 +546,15 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
 }
 
 function alphaNext(els: MapEl[]) { const used = new Set(els.map(e => e.seating?.prefix)); for (const c of "ABCDEFGHJKLMNPQRSTUVWXYZ") if (!used.has(c)) return c; return "Z"; }
-function Handle({ x, y, r, cursor, kind, n, onDown }: { x: number; y: number; r: number; cursor: string; kind: "resize" | "vertex"; n: number; onDown: (e: RPE<SVGRectElement>, kind: "resize" | "vertex", n: number) => void }) {
+function Handle({ x, y, r, cursor, kind, n, onDown }: { x: number; y: number; r: number; cursor: string; kind: "resize" | "vertex"; n: number; onDown: (e: RPE<SVGElement>, kind: "resize" | "vertex" | "rotate", n: number) => void }) {
   return <rect x={x - r} y={y - r} width={r * 2} height={r * 2} rx={r * 0.3} className="mb-handle" style={{ cursor }} onPointerDown={e => onDown(e, kind, n)} />;
+}
+/** Drop / placement preview: the real asset symbol at its drop size, snapped like the final placement. */
+function Ghost({ k, x, y, sn, scale, detail }: { k: string; x: number; y: number; sn: (v: number) => number; scale: number; detail: boolean }) {
+  const d = ASSET[k]; if (!d || d.kind === "line") return null;
+  const a = assetDefaults(k), el: MapEl = { type: "asset", asset: k, label: d.label, ...a, x: sn(x - a.w / 2), y: sn(y - a.h / 2) };
+  return <g className="mb-ghost" pointerEvents="none"><AssetShape e={el} detail={detail} scale={1 / scale} />
+    <rect x={el.x} y={el.y} width={a.w} height={a.h} className="mb-ghost-box" />
+    <text x={(el.x ?? 0) + a.w / 2} y={(el.y ?? 0) + a.h + 14 / scale} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(a.w)} m × {mm(a.h)} m</text></g>;
 }
 export { FIXTURE_LABEL };

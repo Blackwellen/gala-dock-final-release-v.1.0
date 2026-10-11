@@ -1,0 +1,12 @@
+[
+  { "key": "ad-010-commerce", "url": "/admin/commerce", "file": "Designs/Admin Workspace/Commerce Operations Dashboard.png", "who": "admin" },
+  { "key": "ad-011-transaction", "url": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821", "file": "Designs/Admin Workspace/Gala Dock Transaction Overview Dashboard.png", "who": "admin" },
+  { "key": "ad-012-trust", "url": "/admin/trust?case=d0000000-0000-4000-8000-000000008781", "file": "Designs/Admin Workspace/Gala·Dock Trust & Safety Dashboard.png", "who": "admin" },
+  { "key": "ad-013-support", "url": "/admin/support", "file": "Designs/Admin Workspace/Gala Dock Support Dashboard.png", "who": "admin" },
+  { "key": "ad-014-case", "url": "/admin/support/c0000000-0000-4000-8000-000000004421", "file": "Designs/Admin Workspace/Support Case Refund Dashboard.png", "who": "admin" },
+  { "key": "ad-015-partners", "url": "/admin/partners", "file": "Designs/Admin Workspace/Gala Dock Partners Dashboard.png", "who": "admin" },
+  { "key": "ad-016-agent", "url": "/admin/agent-integrations", "file": "Designs/Admin Workspace/Gala·Dock Agent Integrations Dashboard.png", "who": "admin" },
+  { "key": "ad-017-analytics", "url": "/admin/analytics", "file": "Designs/Admin Workspace/Gala·Dock Analytics Dashboard.png", "who": "admin" },
+  { "key": "ad-017b-analytics-platform", "url": "/admin/analytics?tab=platform", "file": "Designs/Admin Workspace/Gala Dock Admin Analytics Dashboard.png", "who": "admin" },
+  { "key": "ad-018-settings", "url": "/admin/settings", "file": "Designs/Admin Workspace/Gala Dock Platform Settings Dashboard.png", "who": "admin" }
+]

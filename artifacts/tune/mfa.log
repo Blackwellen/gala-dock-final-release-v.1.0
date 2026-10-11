@@ -1,0 +1,11 @@
+baseline 7.345%
+  7.144%  .auth-page.auth-mfa .auth-card { padding-top: 26px }
+  6.582%  .auth-page.auth-mfa .auth-card { padding-top: 28px }
+  6.577%  .auth-page.auth-mfa .auth-card>h2 { font-size: 36px }
+  6.557%  .auth-page.auth-mfa .auth-card>h2 { letter-spacing: -1.8px }
+  6.541%  .auth-page.auth-mfa .auth-card>h2 { letter-spacing: -0.4px }
+  6.520%  .auth-page.auth-mfa .auth-card>.auth-description { font-size: 15.5px }
+  6.504%  .auth-page.auth-mfa .auth-card .auth-help { margin-top: 24px }
+  6.487%  .auth-page.auth-mfa .auth-card .auth-help { margin-top: 28px }
+  6.479%  .auth-page.auth-mfa .auth-card .auth-security small { font-size: 11.5px }
+final 6.479%

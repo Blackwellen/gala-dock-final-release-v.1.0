@@ -31,7 +31,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
     <a href="#main" className="k-sr">Skip to content</a>
     <header className="c-top">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <Link href="/discover" className="c-logo" aria-label="Gala Dock — Discover"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={178} height={46} /></Link>
+      <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={178} height={46} /></Link>
       <form className="c-search" role="search" onSubmit={e => { e.preventDefault(); const v = (e.currentTarget.elements.namedItem("q") as HTMLInputElement).value.trim(); router.push(`/discover?${new URLSearchParams({ tab: params.get("tab") ?? "events", ...(v ? { q: v } : {}) })}`); }}>
         <Search size={18} aria-hidden /><input id="cu-search" name="q" defaultValue={pathname === "/discover" ? params.get("q") ?? "" : ""} placeholder="Search events, venues, artists, or experiences..." aria-label="Search events, venues and services" /><kbd>⌘ K</kbd>
       </form>
@@ -46,7 +46,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
         <Link className="c-icon" href="/help" aria-label="Help"><CircleHelp size={21} /></Link>
         <Menu label="Account" width={240} trigger={({ open, toggle, id }) => <button className="c-avatar" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Account menu">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={user.avatar || "/assets/gd/av-alex-customer.webp"} alt="" /><ChevronDown size={16} aria-hidden /></button>}>
+          {user.avatar ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={user.avatar} alt="" /> : <span className="c-initials" aria-hidden>{user.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()}</span>}<ChevronDown size={16} aria-hidden /></button>}>
           {close => <><div style={{ padding: "8px 10px" }}><b>{user.name}</b><div className="k-xs k-muted">{user.email}</div></div><div className="k-menu-sep" />
             <DensitySwitch /><div className="k-menu-sep" /><Link role="menuitem" className="k-menu-item" href="/account" onClick={close}><User size={15} aria-hidden />My account</Link>
             <Link role="menuitem" className="k-menu-item" href="/account/events" onClick={close}><CalendarDays size={15} aria-hidden />My events</Link>

@@ -1,0 +1,15 @@
+baseline 12.596%
+  12.445%  .onboarding-page.setup-provider-rules .form-main { zoom: 0.95 }
+  12.389%  .onboarding-page.setup-provider-rules .form-main { zoom: 0.96 }
+  12.358%  .onboarding-page.setup-provider-rules .form-main>h2 { letter-spacing: -1.6px }
+  12.343%  .onboarding-page.setup-provider-rules .form-main>h2 { margin-bottom: 0px }
+  12.331%  .onboarding-page.setup-provider-rules .form-main>h2 { margin-bottom: 10px }
+  12.312%  .onboarding-page.setup-provider-rules .setup-subtitle { font-size: 14.5px }
+  12.227%  .onboarding-page.setup-provider-rules .setup-subtitle { margin-bottom: 4px }
+  12.222%  .onboarding-page.setup-provider-rules .setup-assistant { zoom: 0.95 }
+  12.179%  .onboarding-page.setup-provider-rules .setup-assistant { margin-top: -60px }
+  12.162%  .onboarding-page.setup-provider-rules .setup-assistant { margin-top: -12px }
+  11.901%  .onboarding-page.setup-provider-rules .setup-story h1 { font-size: 48.0px }
+  11.870%  .onboarding-page.setup-provider-rules .setup-story .setup-story-description { font-size: 16.0px }
+  11.842%  .onboarding-page.setup-provider-rules .setup-story .setup-story-description { font-size: 16.5px }
+final 11.842%

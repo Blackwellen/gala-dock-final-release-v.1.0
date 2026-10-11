@@ -19,11 +19,11 @@ const hasState = await fs.stat(state).then(() => true, () => false);
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, reducedMotion: "reduce", ...(hasState ? { storageState: state } : {}) });
 await ctx.addInitScript(() => { try { localStorage.setItem("gd-density", "reference"); } catch {} document.documentElement.setAttribute("data-density", "reference"); });
 const page = await ctx.newPage();
-await page.goto(BASE + path, { waitUntil: "networkidle", timeout: 120000 });
+await page.goto(BASE + path, { waitUntil: process.env.WAIT ?? "networkidle", timeout: 120000 });
 if (new URL(page.url()).pathname.startsWith("/login")) {
   await page.fill('input[name="email"]', creds[0]); await page.fill('input[name="password"]', creds[1]);
   await Promise.all([page.waitForURL(u => !u.pathname.startsWith("/login"), { timeout: 60000 }), page.click('button[type="submit"]')]);
-  await ctx.storageState({ path: state }); await page.goto(BASE + path, { waitUntil: "networkidle", timeout: 120000 });
+  await ctx.storageState({ path: state }); await page.goto(BASE + path, { waitUntil: process.env.WAIT ?? "networkidle", timeout: 120000 });
 }
 await page.evaluate(() => document.documentElement.setAttribute("data-density", "reference"));
 await page.evaluate(() => document.fonts.ready);

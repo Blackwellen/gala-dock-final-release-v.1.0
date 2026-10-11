@@ -1,0 +1,16 @@
+{
+ "name": "c-service-public",
+ "path": "/services/gourmet-catering-co",
+ "page": 37.62,
+ "components": [
+  {
+   "sel": ".c-top",
+   "label": "c-top pub-top",
+   "x": 0,
+   "y": 0,
+   "w": 1448,
+   "h": 66,
+   "mismatch": 16.1
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-// E2E: organiser event layout → reserved-seat inventory → atomic buyer holds (run after seeding). Uses "Comedy Central Live" (public, on sale).
+// E2E: organiser event layout → reserved-seat inventory → atomic buyer holds (run after seeding). Uses "Sunset Sessions" (public, on sale).
 import { chromium } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "node:crypto";
@@ -7,7 +7,7 @@ const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUP
 const anon = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
 const results = [];
 const check = (name, ok, detail = "") => { results.push(ok); console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? " — " + detail : ""}`); };
-const ev = (await admin.from("events").select("id,name").eq("name", "Comedy Central Live").single()).data;
+const ev = (await admin.from("events").select("id,name").eq("name", "Sunset Sessions").single()).data;
 const tier = (await admin.from("ticket_tiers").select("id,name,held,sold,quantity").eq("event_id", ev.id).eq("status", "on_sale").limit(1).single()).data;
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const ctx = await browser.newContext({ storageState: "artifacts/auth/organizer.json", viewport: { width: 1536, height: 1024 } });

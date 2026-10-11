@@ -1,0 +1,16 @@
+{
+  "key": "ad-014-case",
+  "url": "/admin/support/c0000000-0000-4000-8000-000000004421",
+  "file": "Designs/Admin Workspace/Support Case Refund Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 13.09,
+  "ssim": 0.602,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1071
+  },
+  "errors": [],
+  "at": "2026-10-11T08:56:19.821Z"
+}

@@ -6,10 +6,10 @@
       "test",
       "tests/phase1/e2e",
       "--project=desktop",
-      "-g",
-      "Journey A:",
       "--trace",
-      "off"
+      "off",
+      "-g",
+      "Journey J"
     ],
     "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
     "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
@@ -136,7 +136,7 @@
       "line": 0,
       "specs": [
         {
-          "title": "Journey A: new customer chooses Plan an Event, saves preferences, lands on Discover",
+          "title": "Journey J: password recovery link resets once, signs out everywhere, and cannot be reused",
           "ok": true,
           "tags": [],
           "tests": [
@@ -151,12 +151,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5550,
+                  "duration": 4213,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T02:20:24.374Z",
+                  "startTime": "2026-10-11T08:56:30.027Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -164,9 +164,9 @@
               "status": "expected"
             }
           ],
-          "id": "c047376f7e34cf3d3eb7-787ae137119a545f9239",
+          "id": "c047376f7e34cf3d3eb7-80a05f89e774481c101f",
           "file": "phase1/e2e/journeys.spec.ts",
-          "line": 51,
+          "line": 233,
           "column": 5
         }
       ]
@@ -174,8 +174,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-11T02:20:23.314Z",
-    "duration": 7400.642000000001,
+    "startTime": "2026-10-11T08:56:28.832Z",
+    "duration": 6376.25,
     "expected": 1,
     "skipped": 0,
     "unexpected": 0,

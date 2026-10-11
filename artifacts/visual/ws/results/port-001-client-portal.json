@@ -1,0 +1,16 @@
+{
+  "key": "port-001-client-portal",
+  "url": "/portal/jhd2omL3RaDSCI2jA22ZJLvDQAFtUrQaO4DunQia_wE",
+  "file": "Designs/Portals/Neon Nights Festival Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.52,
+  "ssim": 0.6877,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1046
+  },
+  "errors": [],
+  "at": "2026-10-11T08:49:31.918Z"
+}

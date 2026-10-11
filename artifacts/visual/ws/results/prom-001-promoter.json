@@ -1,0 +1,16 @@
+{
+  "key": "prom-001-promoter",
+  "url": "/promoter",
+  "file": "Designs/Portals/Neon Nights Promoter Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.91,
+  "ssim": 0.683,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1056
+  },
+  "errors": [],
+  "at": "2026-10-11T08:49:38.705Z"
+}

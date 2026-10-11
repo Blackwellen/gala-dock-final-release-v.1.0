@@ -1,0 +1,12 @@
+baseline 8.642%
+  8.629%  .auth-page.auth-invite .auth-card>h2 { letter-spacing: -1.0px }
+  8.615%  .auth-page.auth-invite .auth-card>.auth-description { font-size: 15.5px }
+  8.608%  .auth-page.auth-invite .auth-card>.auth-description { letter-spacing: 0.2px }
+  8.592%  .auth-page.auth-invite .auth-card .auth-security { margin-top: 12px }
+  8.408%  .auth-page.auth-invite .auth-card { padding-top: 22px }
+  8.388%  .auth-page.auth-invite .auth-card>h2 { font-size: 40px }
+  8.382%  .auth-page.auth-invite .auth-card>.auth-description { font-size: 16.0px }
+  8.267%  .auth-page.auth-invite .auth-card>.auth-description { line-height: 23px }
+  8.194%  .auth-page.auth-invite .auth-card>.auth-description { line-height: 24px }
+  8.163%  .auth-page.auth-invite .auth-card .auth-security { margin-top: 10px }
+final 8.163%

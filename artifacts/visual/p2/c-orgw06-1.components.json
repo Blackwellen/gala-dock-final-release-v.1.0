@@ -1,0 +1,70 @@
+{
+ "name": "c-orgw06-1",
+ "path": "/organizer/money/invoices/new?from=916eec0d-3b93-46e0-8be3-f6c5033cb7b9&duplicate=1",
+ "page": 9.25,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Summer Sessions 2026",
+   "x": 1184,
+   "y": 243,
+   "w": 334,
+   "h": 133,
+   "mismatch": 20.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Gala Agent",
+   "x": 1184,
+   "y": 583,
+   "w": 334,
+   "h": 376,
+   "mismatch": 12.5
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "2. Invoice items",
+   "x": 236,
+   "y": 594,
+   "w": 934,
+   "h": 423,
+   "mismatch": 9.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "1. Invoice details",
+   "x": 236,
+   "y": 243,
+   "w": 934,
+   "h": 337,
+   "mismatch": 9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Invoice summary",
+   "x": 1184,
+   "y": 390,
+   "w": 334,
+   "h": 180,
+   "mismatch": 8.2
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 7.3
+  }
+ ]
+}

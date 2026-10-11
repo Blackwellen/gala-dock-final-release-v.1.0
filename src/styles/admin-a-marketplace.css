@@ -1,0 +1,38 @@
+/* AD-007 Marketplace */
+.am{--aa-rail:352px}
+.am .aa-split{gap:12px}
+.am-tabs{margin:0 0 10px;background:#fbfcff;border-bottom:1px solid var(--aa-line)}
+.am-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+.am .aa-bar{margin-bottom:10px}
+.am .aa-bar .aa-search{max-width:none}
+.am-filters{grid-template-columns:repeat(6,minmax(0,1fr))}
+.am-filters-req{grid-template-columns:220px}
+.am-full{display:block}
+.am-table td{height:47px}
+.am-table .ws-thumb{border-radius:4px}
+.am-req td{height:42px;font-size:11px}
+.am-req b{font-weight:600}
+.am-drawer{gap:9px;padding-top:12px}
+.am-drawer .aa-drawer-head h2{display:flex;align-items:center;gap:8px;font-size:15px}
+.am-drawer .aa-drawer-head h2 .aa-status{height:20px;font-size:10px}
+.am-drawer .ws-thumb{border-radius:6px}
+.am-drawer .aw-details .aa-kv>div{grid-template-columns:96px minmax(0,1fr)}
+.am-drawer .aa-mini strong{font-size:15px}
+.am-drawer .aa-mini{padding:7px 8px 7px 10px}
+.am-rel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.am-rel>div{display:grid;grid-template-columns:28px 1fr;column-gap:8px;align-items:center;padding:7px 8px;border:1px solid var(--aa-line);border-radius:8px}
+.am-rel .ico{grid-row:span 2;width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+.am-rel .ico.green{background:#10a160;color:#fff}.am-rel .ico.red{background:#fdecef;color:#e3213d}.am-rel .ico.amber{background:#fff3e0;color:#f29a1a}
+.am-rel .ico svg{width:15px!important;height:15px!important}
+.am-rel b{font-size:13px;font-weight:720}
+.am-rel small{font-size:9.5px;color:var(--aa-muted)}
+.am-tls .aa-tl-ico{background:none}
+.am-actions{grid-template-columns:1fr 1.1fr 1.15fr!important}
+.am-drawer .aa-drawer-actions .ws-btn{gap:6px;font-size:11px;height:34px;padding:0 6px}
+.am-drawer .aa-drawer-actions .ws-btn svg{width:14px!important;height:14px!important}
+@media (max-width:1180px){.am-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.am-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.am-kpis,.am-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.am-rel{grid-template-columns:1fr}}
+.am-drawer .aw-details .aa-kv{gap:2px}
+.am-drawer .aw-details .aa-kv>div{min-height:18px;font-size:10.5px}
+.am-drawer .aa-sec-head{margin-bottom:5px}
+.am-drawer .aa-minis{gap:6px}

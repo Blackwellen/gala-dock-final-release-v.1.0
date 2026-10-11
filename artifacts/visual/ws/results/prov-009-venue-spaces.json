@@ -3,8 +3,8 @@
   "url": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
   "file": "Designs/Provider Workspace/Gala Dock Venue Spaces Dashboard.png",
   "status": 200,
-  "mismatchPercent": 20.58,
-  "ssim": 0.5879,
+  "mismatchPercent": 20.62,
+  "ssim": 0.5877,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +12,5 @@
     "scrollHeight": 1024
   },
   "errors": [],
-  "at": "2026-10-11T01:51:35.881Z"
+  "at": "2026-10-11T02:37:13.901Z"
 }

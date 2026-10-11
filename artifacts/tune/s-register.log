@@ -1,0 +1,6 @@
+baseline 11.456%
+  11.432%  .auth-page.auth-register .auth-story .story-description { font-size: 19.5px }
+  11.407%  .auth-page.auth-register .auth-story .story-features { row-gap: 26px }
+  11.391%  .auth-page.auth-register .auth-story .story-features { row-gap: 28px }
+  11.369%  .auth-page.auth-register .auth-story .story-features p { font-size: 12.0px }
+final 11.369%

@@ -1,0 +1,76 @@
+/* AD-016 Agent & Integrations ("Gala·Dock Agent Integrations Dashboard"). */
+.adag{gap:12px}
+.adag-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+.adag-kpis .adb-kpi-spark{width:92px;right:12px;bottom:22px}
+.ws-app .adag-kpis .adb-kpi-spark svg{width:92px;height:46px}
+.adag-grid{display:grid;grid-template-columns:minmax(0,897fr) minmax(0,350fr);gap:20px;align-items:start}
+.adag-main{display:grid;gap:12px;min-width:0}
+.adag-filters{display:grid;grid-template-columns:minmax(0,340fr) 108px 108px 98px 116px 76px;gap:8px}
+.adag-filters .adb-search,.adag-filters .adb-select{height:34px;width:100%;font-size:11.5px}
+.adag-fbtn{height:34px;color:#1a1af2}
+.adag-table{table-layout:fixed}
+.adag-table th{background:transparent;padding:8px 6px;font-size:10.5px}
+.adag-table td{padding:3px 6px;height:38.5px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adag-table th:first-child,.adag-table td:first-child{padding-left:12px}
+.adag-m{color:#3f4596}
+.adag-agent{display:inline-flex;align-items:center;gap:8px;color:#0d0d63;font-size:10.5px;white-space:nowrap}
+.adag-agent i{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:#fff;flex-shrink:0}
+.ws-app .adag-agent i svg{width:12px;height:12px}
+.adag-agent.sm i{width:18px;height:18px}
+.adag-table .adb-pill{height:20px;min-width:66px;justify-content:center}
+.adag-table .adb-dots{width:30px;height:28px;margin-left:auto}
+.adag-table .adb-menu{display:block}
+.adag-main .adb-pager{padding:6px 4px 0}
+.adag-panel{padding:12px 14px;display:grid;gap:8px}
+.adag-dec{display:flex;gap:6px;justify-content:flex-end}
+.adag-tools{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 12px}
+.adag-tools legend{font-size:11.5px;font-weight:500;margin-bottom:4px}
+.adag-tools label{display:inline-flex!important;align-items:center;gap:5px;font-weight:400!important}
+.adag-tools input{width:auto!important}
+.adag-rail{display:grid;gap:12px;min-width:0}
+.adag-fails{padding:10px 12px}
+.adag-fails h2,.adag-health h2{font-size:13.5px}
+.adag-fails ul{list-style:none;margin:0;padding:0;display:grid}
+.adag-fails li{display:grid;grid-template-columns:22px minmax(0,1fr) auto 14px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f4f7fc}
+.adag-fails li:last-child{border-bottom:0}
+.ws-app .adag-fails li>svg{width:17px;height:17px;color:#fff;fill:#e3122e}
+.adag-fails li span{display:grid;line-height:1.35;min-width:0}
+.adag-fails li small{font-size:10px;color:#3f4596;white-space:nowrap}
+.adag-fails li small em{font-style:normal;margin-left:6px}
+.adag-fails li b{font-size:11px;font-weight:500;color:#0d0d63;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adag-fr{justify-items:end;gap:4px}
+.adag-fr .adb-pill{height:19px;font-size:10px}
+.ws-app .adag-fails li a svg{width:14px;height:14px;color:#1d2068}
+.adag-health{padding:10px 12px}
+.adag-health ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.adag-health li{display:grid;grid-template-columns:18px minmax(0,1fr) 72px 50px 40px;gap:8px;align-items:center;font-size:11px;color:#0d0d63}
+.adag-health li i{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;color:#fff;font-style:normal;font-size:9px;font-weight:800}
+.adag-health li .adb-pill{height:19px;font-size:10px}
+.ws-app .adag-health li svg.ws-spark{width:46px;height:18px}
+.adag-health li b{font-weight:500;text-align:right;color:#0d0d63}
+.adag-bottom{display:grid;grid-template-columns:283fr 412fr 313fr 229fr;gap:10px}
+.adag-bottom .adb-panel{padding:10px 12px}
+.adag-bottom h2{font-size:13.5px}
+.adag-queue ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.adag-queue li{display:grid;grid-template-columns:18px 28px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:11px;color:#0d0d63}
+.ws-app .adag-queue li svg{width:15px;height:15px;color:#0d0d63}
+.adag-queue li.red svg{color:#e3122e}
+.adag-queue li b{font-weight:600}
+.adag-queue li em{font-style:normal;color:#3f4596;font-size:10.5px}
+.adag-appr table th{background:transparent;padding:3px 6px;font-size:10px}
+.adag-appr table td{padding:4px 6px;font-size:11px;color:#0d0d63}
+.adag-appr table a{color:#0d0d63}
+.adag-usage-b{display:grid;grid-template-columns:112px 1fr;gap:18px;align-items:center}
+.adag-usage-b .ws-donut-center b{font-size:18px;font-weight:800}
+.adag-usage-b .ws-donut-center small{font-size:10px}
+.adag-usage-b ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.adag-usage-b li{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font-size:10.5px;color:#0d0d63}
+.adag-usage-b li b{font-weight:500}
+.adag-dot{width:9px;height:9px;border-radius:50%}
+.adag-dot.purple{background:#8b3dff}.adag-dot.orange{background:#ff9a1f}.adag-dot.green{background:#16b67a}.adag-dot.pink{background:#e8389d}.adag-dot.teal{background:#14b8a6}.adag-dot.grey{background:#98a2c3}
+.adag-qa{display:grid;gap:6px;align-content:start}
+.adag-qa h2{margin-bottom:2px}
+.adag-qa a{display:flex;align-items:center;gap:10px;height:30px;padding:0 12px;border:1px solid #e2e8fb;border-radius:6px;font-size:11px;color:#1a1af2}
+.ws-app .adag-qa a svg{width:14px;height:14px}
+@media (max-width:1360px){.adag-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.adag-grid{grid-template-columns:1fr}.adag-bottom{grid-template-columns:1fr 1fr}.adag-filters{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:860px){.adag-kpis,.adag-bottom,.adag-filters{grid-template-columns:1fr}.adag-table{min-width:860px}}

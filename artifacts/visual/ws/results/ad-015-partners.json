@@ -1,0 +1,16 @@
+{
+  "key": "ad-015-partners",
+  "url": "/admin/partners",
+  "file": "Designs/Admin Workspace/Gala Dock Partners Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.5,
+  "ssim": 0.6657,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1028
+  },
+  "errors": [],
+  "at": "2026-10-11T08:58:40.229Z"
+}

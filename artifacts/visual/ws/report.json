@@ -4,40 +4,56 @@
     "url": "/admin",
     "file": "Designs/platform shell/platform admin shell.png",
     "status": 200,
-    "mismatchPercent": 10.71,
-    "ssim": 0.7062,
+    "mismatchPercent": 14.17,
+    "ssim": 0.6126,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1194
+      "scrollHeight": 1086
     },
     "errors": [],
-    "at": "2026-10-10T23:33:03.618Z"
+    "at": "2026-10-11T08:48:42.633Z"
   },
   {
-    "key": "prov-001-home",
-    "url": "/provider",
-    "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
+    "key": "ad-002-users",
+    "url": "/admin/users",
+    "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
     "status": 200,
-    "mismatchPercent": 15.76,
-    "ssim": 0.5994,
+    "mismatchPercent": 11.1,
+    "ssim": 0.6317,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": true,
+      "scrollHeight": 1029
+    },
+    "errors": [],
+    "at": "2026-10-11T08:48:54.491Z"
+  },
+  {
+    "key": "ad-003-user",
+    "url": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+    "file": "Designs/Admin Workspace/Gala Dock User Profile Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.28,
+    "ssim": 0.6406,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1116
+      "scrollHeight": 1041
     },
     "errors": [],
-    "at": "2026-10-11T00:33:08.909Z"
+    "at": "2026-10-11T08:48:59.820Z"
   },
   {
-    "key": "prov-002-opportunities",
-    "url": "/provider/opportunities",
-    "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
+    "key": "ad-004-workspaces",
+    "url": "/admin/workspaces",
+    "file": "Designs/Admin Workspace/Gala Dock Workspace Management Dashboard.png",
     "status": 200,
-    "mismatchPercent": 15.02,
-    "ssim": 0.5622,
+    "mismatchPercent": 12.01,
+    "ssim": 0.6549,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -45,7 +61,329 @@
       "scrollHeight": 1024
     },
     "errors": [],
-    "at": "2026-10-11T00:33:14.359Z"
+    "at": "2026-10-11T08:49:05.941Z"
+  },
+  {
+    "key": "ad-005-workspace",
+    "url": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+    "file": "Designs/Admin Workspace/Gala Dock Workspace Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.84,
+    "ssim": 0.6172,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1108
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:17.111Z"
+  },
+  {
+    "key": "ad-006-events",
+    "url": "/admin/events",
+    "file": "Designs/Admin Workspace/GalaDock Events Admin Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.62,
+    "ssim": 0.5745,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1031
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:24.926Z"
+  },
+  {
+    "key": "ad-007-marketplace",
+    "url": "/admin/marketplace",
+    "file": "Designs/Admin Workspace/Gala Dock Marketplace Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.78,
+    "ssim": 0.604,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1065
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:30.731Z"
+  },
+  {
+    "key": "ad-008-listing",
+    "url": "/admin/marketplace/listings/{listing:Riverside Arena}",
+    "file": "Designs/Admin Workspace/Riverside Arena Marketplace Review Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 18.01,
+    "ssim": 0.5728,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": true,
+      "scrollHeight": 1087
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:37.168Z"
+  },
+  {
+    "key": "ad-009-tickets",
+    "url": "/admin/tickets",
+    "file": "Designs/Admin Workspace/Gala·Dock Ticketing Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.61,
+    "ssim": 0.6216,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:41.966Z"
+  },
+  {
+    "key": "ad-010-commerce",
+    "url": "/admin/commerce",
+    "file": "Designs/Admin Workspace/Commerce Operations Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.99,
+    "ssim": 0.6245,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1054
+    },
+    "errors": [],
+    "at": "2026-10-11T08:58:34.774Z"
+  },
+  {
+    "key": "ad-011-transaction",
+    "url": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+    "file": "Designs/Admin Workspace/Gala Dock Transaction Overview Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.5,
+    "ssim": 0.6402,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:00.719Z"
+  },
+  {
+    "key": "ad-012-trust",
+    "url": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+    "file": "Designs/Admin Workspace/Gala·Dock Trust & Safety Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.67,
+    "ssim": 0.6407,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:07.849Z"
+  },
+  {
+    "key": "ad-013-support",
+    "url": "/admin/support",
+    "file": "Designs/Admin Workspace/Gala Dock Support Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 15.09,
+    "ssim": 0.5793,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1077
+    },
+    "errors": [],
+    "at": "2026-10-11T08:58:08.047Z"
+  },
+  {
+    "key": "ad-014-case",
+    "url": "/admin/support/c0000000-0000-4000-8000-000000004421",
+    "file": "Designs/Admin Workspace/Support Case Refund Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.09,
+    "ssim": 0.602,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1071
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:19.821Z"
+  },
+  {
+    "key": "ad-015-partners",
+    "url": "/admin/partners",
+    "file": "Designs/Admin Workspace/Gala Dock Partners Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.5,
+    "ssim": 0.6657,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1028
+    },
+    "errors": [],
+    "at": "2026-10-11T08:58:40.229Z"
+  },
+  {
+    "key": "ad-016-agent",
+    "url": "/admin/agent-integrations",
+    "file": "Designs/Admin Workspace/Gala·Dock Agent Integrations Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.82,
+    "ssim": 0.6292,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1053
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:31.536Z"
+  },
+  {
+    "key": "ad-017-analytics",
+    "url": "/admin/analytics",
+    "file": "Designs/Admin Workspace/Gala·Dock Analytics Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.61,
+    "ssim": 0.6918,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:36.126Z"
+  },
+  {
+    "key": "ad-017b-analytics-platform",
+    "url": "/admin/analytics?tab=platform",
+    "file": "Designs/Admin Workspace/Gala Dock Admin Analytics Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.27,
+    "ssim": 0.686,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:40.082Z"
+  },
+  {
+    "key": "ad-018-settings",
+    "url": "/admin/settings",
+    "file": "Designs/Admin Workspace/Gala Dock Platform Settings Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 10.43,
+    "ssim": 0.6563,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1070
+    },
+    "errors": [],
+    "at": "2026-10-11T08:56:45.510Z"
+  },
+  {
+    "key": "part-001-partner",
+    "url": "/partner",
+    "file": "Designs/Portals/Gala Dock Partner Performance Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.81,
+    "ssim": 0.6753,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1043
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:45.988Z"
+  },
+  {
+    "key": "port-001-client-portal",
+    "url": "/portal/jhd2omL3RaDSCI2jA22ZJLvDQAFtUrQaO4DunQia_wE",
+    "file": "Designs/Portals/Neon Nights Festival Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.52,
+    "ssim": 0.6877,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1046
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:31.918Z"
+  },
+  {
+    "key": "prom-001-promoter",
+    "url": "/promoter",
+    "file": "Designs/Portals/Neon Nights Promoter Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 12.91,
+    "ssim": 0.683,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1056
+    },
+    "errors": [],
+    "at": "2026-10-11T08:49:38.705Z"
+  },
+  {
+    "key": "prov-001-home",
+    "url": "/provider",
+    "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
+    "status": 500,
+    "mismatchPercent": 12.29,
+    "ssim": 0.7066,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1086
+    },
+    "errors": [
+      "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
+    ],
+    "at": "2026-10-11T08:45:32.934Z"
+  },
+  {
+    "key": "prov-002-opportunities",
+    "url": "/provider/opportunities",
+    "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 14.91,
+    "ssim": 0.5697,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1024
+    },
+    "errors": [],
+    "at": "2026-10-11T02:36:57.326Z"
   },
   {
     "key": "prov-003-opportunity",
@@ -84,16 +422,16 @@
     "url": "/provider/bookings",
     "file": "Designs/Provider Workspace/Gala·Dock Bookings Dashboard.png",
     "status": 200,
-    "mismatchPercent": 13.16,
-    "ssim": 0.6047,
+    "mismatchPercent": 12.4,
+    "ssim": 0.6459,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1037
+      "scrollHeight": 1032
     },
     "errors": [],
-    "at": "2026-10-11T00:33:39.537Z"
+    "at": "2026-10-11T02:37:03.224Z"
   },
   {
     "key": "prov-006-booking",
@@ -132,40 +470,40 @@
     "url": "/provider/listings",
     "file": "Designs/Provider Workspace/Gala·Dock Listings Dashboard.png",
     "status": 200,
-    "mismatchPercent": 24.39,
-    "ssim": 0.541,
+    "mismatchPercent": 24.54,
+    "ssim": 0.5328,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1039
+      "scrollHeight": 1037
     },
     "errors": [],
-    "at": "2026-10-11T01:24:17.215Z"
+    "at": "2026-10-11T02:35:53.690Z"
   },
   {
     "key": "prov-009-venue",
     "url": "/provider/venues/{listing:Riverside Arena}",
     "file": "Designs/Provider Workspace/Riverside Arena Venue Dashboard.png",
     "status": 200,
-    "mismatchPercent": 24.38,
-    "ssim": 0.5329,
+    "mismatchPercent": 24.47,
+    "ssim": 0.5296,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1168
+      "scrollHeight": 1167
     },
     "errors": [],
-    "at": "2026-10-11T01:24:22.820Z"
+    "at": "2026-10-11T02:37:09.179Z"
   },
   {
     "key": "prov-009-venue-spaces",
     "url": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
     "file": "Designs/Provider Workspace/Gala Dock Venue Spaces Dashboard.png",
     "status": 200,
-    "mismatchPercent": 20.58,
-    "ssim": 0.5879,
+    "mismatchPercent": 20.62,
+    "ssim": 0.5877,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -173,7 +511,7 @@
       "scrollHeight": 1024
     },
     "errors": [],
-    "at": "2026-10-11T01:51:35.881Z"
+    "at": "2026-10-11T02:37:13.901Z"
   },
   {
     "key": "prov-010-space",
@@ -238,6 +576,86 @@
     },
     "errors": [],
     "at": "2026-10-11T02:17:22.202Z"
+  },
+  {
+    "key": "prov-013-team",
+    "url": "/provider/team",
+    "file": "Designs/Provider Workspace/Gala Dock Team Dashboard(1).png",
+    "status": 200,
+    "mismatchPercent": 13.33,
+    "ssim": 0.6374,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1313
+    },
+    "errors": [],
+    "at": "2026-10-11T02:37:18.926Z"
+  },
+  {
+    "key": "prov-014-member",
+    "url": "/provider/team/{crew:Priya Shah}",
+    "file": "Designs/Provider Workspace/Priya Shah Team Dashboard Overview.png",
+    "status": 200,
+    "mismatchPercent": 13.68,
+    "ssim": 0.6263,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": true,
+      "scrollHeight": 1362
+    },
+    "errors": [],
+    "at": "2026-10-11T02:27:12.468Z"
+  },
+  {
+    "key": "prov-015-money",
+    "url": "/provider/money?period=30d",
+    "file": "Designs/Provider Workspace/Gala·Dock Financial Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.01,
+    "ssim": 0.6275,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1142
+    },
+    "errors": [],
+    "at": "2026-10-11T02:37:24.038Z"
+  },
+  {
+    "key": "prov-016-agent",
+    "url": "/provider/agent",
+    "file": "Designs/Provider Workspace/Gala Agent SaaS Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 11.39,
+    "ssim": 0.644,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1129
+    },
+    "errors": [],
+    "at": "2026-10-11T02:50:52.025Z"
+  },
+  {
+    "key": "prov-017-settings",
+    "url": "/provider/settings",
+    "file": "Designs/Provider Workspace/Gala Dock Workspace Settings Dashboard(1).png",
+    "status": 200,
+    "mismatchPercent": 12.88,
+    "ssim": 0.6112,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1171
+    },
+    "errors": [],
+    "at": "2026-10-11T02:51:11.009Z"
   },
   {
     "key": "prov-w01-s1",

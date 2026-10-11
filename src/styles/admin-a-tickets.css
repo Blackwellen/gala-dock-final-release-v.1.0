@@ -1,0 +1,38 @@
+/* AD-009 Tickets */
+.at{--aa-rail:392px}
+.at .aa-split{gap:12px}
+.at-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+.at-head{margin-bottom:10px}
+.at-tabs{background:#fbfcff;border-bottom:1px solid var(--aa-line);border-radius:8px 8px 0 0}
+.at .aa-bar{margin-bottom:10px}
+.at .aa-bar .aa-search{max-width:none}
+.at-period{width:150px}
+.at-filters{grid-template-columns:repeat(6,minmax(0,1fr))}
+.at-scope{font-size:11.5px;margin:0 0 10px;color:var(--aa-muted)}
+.at-table td{height:46.5px}
+.at-table .ws-thumb{border-radius:4px}
+.at-meter{display:flex;align-items:center;gap:6px;margin-top:3px}
+.at-meter .ae-bar{margin:0;width:58px}
+.at-meter small{display:inline!important;font-size:9.5px}
+.at-ts{display:inline-flex;align-items:center;justify-content:center;min-width:72px;height:26px;padding:0 8px;border-radius:6px;font-size:10.5px;background:#e3f8ee;color:#0f8a4e}
+.at-ts.sold_out,.at-ts.cancelled,.at-ts.suspended{background:#fdecef;color:#e3213d}.at-ts.ended{background:#f0f2f8;color:#3f4596}.at-ts.draft,.at-ts.scheduled{background:#eef2ff;color:#1846e8}.at-ts.paused{background:#fff3e0;color:#d77400}
+.at-risk{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#fdecef}
+.at-risk svg{width:14px!important;height:14px!important;fill:#e3213d;color:#fff}
+.at-risk.medium{background:#fff3e0}.at-risk.medium svg{fill:#f29a1a}
+.at-rl{display:inline-flex;align-items:center;justify-content:center;min-width:58px;height:26px;border-radius:6px;font-size:10.5px;background:#e3f8ee;color:#0f8a4e}
+.at-rl.medium{background:#fff3e0;color:#d77400}.at-rl.high{background:#fdecef;color:#e3213d}
+.at-orders td{height:44px;font-size:11px}
+.at-orders b{font-weight:600}
+.at-drawer{gap:10px;padding-top:12px}
+.at-drawer .aa-drawer-head .ws-thumb{border-radius:6px}
+.at-drawer .aa-drawer-head h2{font-size:15.5px;margin-top:4px}
+.at-drawer .aa-drawer-head .aa-status{height:20px;font-size:10px}
+.at-pill{height:24px;display:inline-flex;align-items:center;padding:0 10px;border:1px solid #e0e6f6;border-radius:5px;font-size:10.5px}
+.at-drawer .aa-mini strong{font-size:16px}
+.at-recent td,.at-recent th{padding:5px 6px}
+.at-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+.at-actions .ws-btn{overflow:hidden;text-overflow:ellipsis}
+.at-drawer .aa-drawer-actions .ws-btn{gap:5px;font-size:10.5px;height:32px;padding:0 7px}
+.at-drawer .aa-drawer-actions .ws-btn svg{width:13px!important;height:13px!important}
+@media (max-width:1180px){.at-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.at-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.at-actions{grid-template-columns:1fr 1fr!important}}
+@media (max-width:640px){.at-kpis,.at-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}

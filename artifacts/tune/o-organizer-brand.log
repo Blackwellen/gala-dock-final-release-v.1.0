@@ -1,0 +1,23 @@
+baseline 13.969%
+  13.951%  .onboarding-page.setup-organizer-brand .setup-main { padding-top: 36px }
+  13.698%  .onboarding-page.setup-organizer-brand .form-main { zoom: 0.95 }
+  13.648%  .onboarding-page.setup-organizer-brand .form-main>h2 { font-size: 41px }
+  13.622%  .onboarding-page.setup-organizer-brand .form-main>h2 { font-size: 42px }
+  13.585%  .onboarding-page.setup-organizer-brand .form-main>h2 { margin-bottom: 0px }
+  13.566%  .onboarding-page.setup-organizer-brand .setup-subtitle { font-size: 14.0px }
+  13.389%  .onboarding-page.setup-organizer-brand .setup-subtitle { margin-bottom: 4px }
+  13.323%  .onboarding-page.setup-organizer-brand .form-main .setup-panel { padding-top: 10px }
+  13.282%  .onboarding-page.setup-organizer-brand .form-main .field>label { font-size: 11.5px }
+  13.273%  .onboarding-page.setup-organizer-brand .setup-assistant { zoom: 0.96 }
+  13.268%  .onboarding-page.setup-organizer-brand .setup-assistant { zoom: 0.99 }
+  13.258%  .onboarding-page.setup-organizer-brand .setup-assistant { margin-top: -48px }
+  13.229%  .onboarding-page.setup-organizer-brand .setup-story h1 { font-size: 45.0px }
+  13.195%  .onboarding-page.setup-organizer-brand .setup-story h1 { line-height: 1.06 }
+  13.097%  .onboarding-page.setup-organizer-brand .setup-story .setup-story-description { font-size: 15.0px }
+  13.082%  .onboarding-page.setup-organizer-brand .setup-story .setup-features { row-gap: 10px }
+  13.048%  .onboarding-page.setup-organizer-brand .setup-story .setup-features { row-gap: 12px }
+  12.993%  .onboarding-page.setup-organizer-brand .setup-story .setup-features { row-gap: 14px }
+  12.976%  .onboarding-page.setup-organizer-brand .setup-assistant { zoom: 0.95 }
+  12.968%  .onboarding-page.setup-organizer-brand .setup-assistant { zoom: 0.96 }
+  12.959%  .onboarding-page.setup-organizer-brand .setup-assistant { zoom: 0.98 }
+final 12.959%

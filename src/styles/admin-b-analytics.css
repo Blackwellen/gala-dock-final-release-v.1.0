@@ -1,0 +1,84 @@
+/* AD-017 Analytics ("Gala·Dock Analytics Dashboard" + alt "Gala Dock Admin Analytics Dashboard"). */
+.ada{gap:10px}
+.ada-cmp{height:36px;font-size:12.5px;min-width:176px}
+.ada-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+.ada-kpis .adb-kpi-spark{width:80px;right:10px;bottom:24px}
+.ws-app .ada-kpis .adb-kpi-spark svg{width:80px;height:42px}
+.ada-sub{font-size:11.5px;color:#3f4596;margin-top:1px}
+.ada-chip{display:inline-flex;align-items:center;gap:12px;height:26px;padding:0 10px;border:1px solid #e2e8fb;border-radius:6px;font-size:11px;color:#0d0d63;white-space:nowrap}
+.ws-app .ada-chip svg{width:13px;height:13px}
+.ada-r2{display:grid;grid-template-columns:543fr 337fr 367fr;gap:10px}
+.ada-r2 .adb-panel{padding:10px 12px}
+.ada-demand .adb-keys{margin:2px 0 4px}
+.ada-funnel h2,.ada-rev h2{font-size:14.5px}
+.ada-fn{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;height:150px;margin-top:6px}
+.ada-fn>div{display:grid;justify-items:center;gap:2px;position:relative;align-content:end;height:100%}
+.ada-fn b{font-size:12px;font-weight:700;color:#0d0d63}
+.ada-fn small{font-size:11px;color:#3f4596}
+.ada-fn i{width:40px;border-radius:3px;background:linear-gradient(180deg,#5b8cff,#3b6cf5);margin-top:4px}
+.ada-fn .e i{background:linear-gradient(180deg,#c7b5ff,#a78bfa)}.ada-fn .c i{background:linear-gradient(180deg,#34d399,#10b981)}
+.ada-fn span{font-size:10.5px;color:#3f4596;margin-top:6px}
+.ws-app .ada-fn-a{position:absolute;right:-14px;bottom:44px;width:12px;height:12px;color:#7b84b8}
+.ada-rev-b{display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:center;margin-top:12px}
+.ada-rev-b .ws-donut-center b{font-size:16px;font-weight:800}
+.ada-rev-b .ws-donut-center small{font-size:9.5px;color:#3f4596}
+.ada-rev-b .adb-legend{gap:12px}
+.ada-rev-b .adb-legend li{grid-template-columns:9px 1fr 0 34px;font-size:10.5px}
+.ada-dot.blue{background:#2f6bff}.ada-dot.green{background:#16b67a}.ada-dot.orange{background:#ff9a1f}.ada-dot.n3{background:#f59e0b}.ada-dot.grey{background:#98a2c3}.ada-dot.n4{background:#1d4ed8}
+.ada-r3{display:grid;grid-template-columns:410fr 398fr 439fr;gap:10px}
+.ada-r3 .adb-panel{padding:10px 12px}
+.ada-top .adb-table th{background:transparent;padding:4px 4px;font-size:10px}
+.ada-top .adb-table td{padding:5px 4px;font-size:11px;height:30px}
+.ada-top .adb-table .adb-delta{font-size:11px;margin:0}
+.ada-top .adb-cell b{font-weight:400;color:#1d2068}
+.ada-resp .adb-keys{margin-bottom:10px}
+.ada-hbars{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ada-hbars li{display:grid;grid-template-columns:86px 1fr 34px;gap:8px;align-items:center;font-size:11px;color:#1d2068}
+.ada-hb{display:flex;height:16px;border-radius:2px;overflow:hidden}
+.ada-hb i{display:block;height:100%;font-style:normal;font-size:9.5px;color:#fff;padding-left:4px;line-height:16px}
+.ada-hbars b{font-weight:400;text-align:right;color:#3f4596}
+.ada-r4{display:grid;grid-template-columns:445fr 415fr 389fr;gap:10px}
+.ada-mini{padding:10px 10px}
+.ada-mini h2{font-size:14.5px}
+.ada-mk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border:1px solid #f1f5fc;border-radius:8px;padding:6px 4px}
+.ada-mk.three{grid-template-columns:repeat(3,1fr)}
+.ada-mk>div{display:flex;gap:6px;align-items:flex-start;min-width:0}
+.ada-mk i{width:24px;height:24px;border-radius:6px;background:#eef3ff;color:#1a4fe0;display:grid;place-items:center;flex-shrink:0}
+.ws-app .ada-mk i svg{width:13px;height:13px}
+.ada-mk span{display:grid;line-height:1.2;min-width:0}
+.ada-mk small{font-size:8.5px;color:#3f4596;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ada-mk b{font-size:12.5px;font-weight:800;color:#02032e}
+.ada-mk .adb-delta{font-size:9.5px;margin:0}
+.ws-app .ada-mk .adb-delta svg{width:10px;height:10px}
+.ada-keys{justify-content:center;margin:8px 0 2px;font-size:9.5px}
+.ada-solo{display:grid;gap:10px}
+.ada-pk{grid-template-columns:repeat(4,minmax(0,1fr))}
+.ada-p2{display:grid;grid-template-columns:580fr 300fr 380fr;gap:10px}
+.ada-p2 .adb-panel,.ada-p3 .adb-panel{padding:10px 12px}
+.ada-uw ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ada-uw a{display:grid;grid-template-columns:1fr auto;align-items:center;padding:6px 4px;border-bottom:1px solid #f4f7fc;color:#0d0d63}
+.ada-uw b{font-size:15px;font-weight:800}.ada-uw small{grid-column:1;font-size:11px;color:#3f4596}
+.ws-app .ada-uw a svg{grid-row:1/3;grid-column:2;width:14px;height:14px}
+.ada-hf{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:14px}
+.ada-hf li{display:grid;grid-template-columns:130px 1fr 54px 36px;gap:8px;align-items:center;font-size:11px;color:#1d2068}
+.ada-hf i{height:16px;background:#f1f5fc;border-radius:3px;overflow:hidden}
+.ada-hf em{display:block;height:100%;background:#2f6bff}
+.ada-hf small{color:#3f4596}
+.ada-p3{display:grid;grid-template-columns:480fr 470fr 300fr;gap:10px}
+.ada-qg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ada-qg a{display:grid;grid-template-columns:30px 1fr;gap:4px 8px;padding:8px;border:1px solid #eef3fb;border-radius:8px;color:#0d0d63}
+.ada-qg i{width:28px;height:28px;border-radius:6px;background:#ffe5ea;color:#ec2f52;display:grid;place-items:center}
+.ws-app .ada-qg i svg{width:15px;height:15px}
+.ada-qg span{display:grid}.ada-qg small{font-size:11px}.ada-qg b{font-size:16px}
+.ada-qg em{grid-column:1/-1;font-style:normal;font-size:10.5px;color:#1a1af2}
+.ws-app .ada-qg em svg{width:11px;height:11px}
+.ada-hp td{font-size:11px}
+.ada-hp a{color:#0d0d63}
+.ada-ps p{font-size:13px;font-weight:600;margin-bottom:8px}.ada-ps p.ok{color:#16a46c}.ada-ps p.warn{color:#e08a00}
+.ada-ps ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ada-ps li{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font-size:11px}
+.ada-ps li i{width:8px;height:8px;border-radius:50%;background:#16a46c}.ada-ps li i.degraded{background:#f5a524}.ada-ps li i.down,.ada-ps li i.disabled{background:#ec3a52}
+.ada-ps li b{font-weight:500;text-transform:capitalize;display:inline-flex;align-items:center;gap:3px}
+.ws-app .ada-ps li b svg{width:11px;height:11px}
+@media (max-width:1360px){.ada-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.ada-r2,.ada-r3,.ada-r4,.ada-p2,.ada-p3{grid-template-columns:1fr 1fr}}
+@media (max-width:860px){.ada-kpis,.ada-pk,.ada-r2,.ada-r3,.ada-r4,.ada-p2,.ada-p3{grid-template-columns:1fr}.ada-mk{grid-template-columns:1fr 1fr}}

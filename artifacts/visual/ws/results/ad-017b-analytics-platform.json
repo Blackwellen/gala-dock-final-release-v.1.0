@@ -1,0 +1,16 @@
+{
+  "key": "ad-017b-analytics-platform",
+  "url": "/admin/analytics?tab=platform",
+  "file": "Designs/Admin Workspace/Gala Dock Admin Analytics Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.27,
+  "ssim": 0.686,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [],
+  "at": "2026-10-11T08:56:40.082Z"
+}

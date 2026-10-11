@@ -93,3 +93,4 @@
   .c-avatar { margin-left: 10px; gap: 14px; }
   .c-avatar img { width: 44px; height: 44px; }
 }
+.c-initials { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #e7efff; color: var(--k-blue); font-weight: 700; font-size: 15px; }

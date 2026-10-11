@@ -1,0 +1,293 @@
+[
+  {
+    "url": "/preview/login",
+    "file": "Designs\\auth & onboarding\\image-gen-1(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-login",
+    "mismatchPercent": 9.776,
+    "interfaceMismatchPercent": 5.441,
+    "ssimFull": 0.8367,
+    "ssimInterface": 0.8348,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/register",
+    "file": "Designs\\auth & onboarding\\image-gen-2(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-register",
+    "check": [
+      "input[name=\"terms\"]"
+    ],
+    "mismatchPercent": 11.045,
+    "interfaceMismatchPercent": 6.806,
+    "ssimFull": 0.8066,
+    "ssimInterface": 0.7968,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/verify-email",
+    "file": "Designs\\auth & onboarding\\image-gen-3(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-verify-email",
+    "mismatchPercent": 9.933,
+    "interfaceMismatchPercent": 6.505,
+    "ssimFull": 0.8263,
+    "ssimInterface": 0.8162,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/forgot-password",
+    "file": "Designs\\auth & onboarding\\image-gen-4(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-forgot-password",
+    "mismatchPercent": 9.158,
+    "interfaceMismatchPercent": 4.849,
+    "ssimFull": 0.8545,
+    "ssimInterface": 0.8726,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/reset-password",
+    "file": "Designs\\auth & onboarding\\image-gen-5(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-reset-password",
+    "mismatchPercent": 11.254,
+    "interfaceMismatchPercent": 6.454,
+    "ssimFull": 0.8177,
+    "ssimInterface": 0.8036,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/mfa",
+    "file": "Designs\\auth & onboarding\\image-gen-6(10).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-mfa",
+    "mismatchPercent": 9.294,
+    "interfaceMismatchPercent": 6.479,
+    "ssimFull": 0.8237,
+    "ssimInterface": 0.807,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/invite",
+    "file": "Designs\\auth & onboarding\\image-gen-7(9).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-invite",
+    "mismatchPercent": 12.292,
+    "interfaceMismatchPercent": 8.163,
+    "ssimFull": 0.7946,
+    "ssimInterface": 0.7563,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/access",
+    "file": "Designs\\auth & onboarding\\image-gen-8(7).png",
+    "width": 1448,
+    "height": 1086,
+    "key": "auth-secure-access",
+    "mismatchPercent": 10.896,
+    "interfaceMismatchPercent": 7.866,
+    "ssimFull": 0.7932,
+    "ssimInterface": 0.7554,
+    "geometry": {
+      "scrollHeight": 1086,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Onboarding Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-experience",
+    "mismatchPercent": 11.766,
+    "interfaceMismatchPercent": 12.653,
+    "ssimFull": 0.7514,
+    "ssimInterface": 0.7141,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Organizer Workspace Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-business",
+    "mismatchPercent": 8.069,
+    "interfaceMismatchPercent": 7.408,
+    "ssimFull": 0.7606,
+    "ssimInterface": 0.7439,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-events",
+    "mismatchPercent": 13.397,
+    "interfaceMismatchPercent": 13.213,
+    "ssimFull": 0.6754,
+    "ssimInterface": 0.6372,
+    "geometry": {
+      "scrollHeight": 1029,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=3",
+    "file": "Designs\\auth & onboarding\\Gala·Dock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-brand",
+    "mismatchPercent": 12.746,
+    "interfaceMismatchPercent": 12.798,
+    "ssimFull": 0.6815,
+    "ssimInterface": 0.6609,
+    "geometry": {
+      "scrollHeight": 1121,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/organizer?step=4",
+    "file": "Designs\\auth & onboarding\\GalaDock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-team",
+    "mismatchPercent": 11.996,
+    "interfaceMismatchPercent": 12.874,
+    "ssimFull": 0.6816,
+    "ssimInterface": 0.6393,
+    "geometry": {
+      "scrollHeight": 1335,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/customer?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Preferences Setup.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-preferences",
+    "mismatchPercent": 10.027,
+    "interfaceMismatchPercent": 9.614,
+    "ssimFull": 0.7642,
+    "ssimInterface": 0.7443,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=1",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-business",
+    "mismatchPercent": 13.698,
+    "interfaceMismatchPercent": 14.834,
+    "ssimFull": 0.6946,
+    "ssimInterface": 0.6713,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=2",
+    "file": "Designs\\auth & onboarding\\Gala Dock Venue Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-listing",
+    "mismatchPercent": 12.735,
+    "interfaceMismatchPercent": 14.209,
+    "ssimFull": 0.663,
+    "ssimInterface": 0.6095,
+    "geometry": {
+      "scrollHeight": 1034,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=3",
+    "file": "Designs\\auth & onboarding\\Gala-Dock Provider Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-rules",
+    "mismatchPercent": 11.881,
+    "interfaceMismatchPercent": 12.125,
+    "ssimFull": 0.667,
+    "ssimInterface": 0.6351,
+    "geometry": {
+      "scrollHeight": 1209,
+      "overflow": false
+    },
+    "errors": []
+  },
+  {
+    "url": "/preview/onboarding/provider?step=4",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard(1).png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-publish",
+    "mismatchPercent": 12.032,
+    "interfaceMismatchPercent": 12.76,
+    "ssimFull": 0.6549,
+    "ssimInterface": 0.6089,
+    "geometry": {
+      "scrollHeight": 1034,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

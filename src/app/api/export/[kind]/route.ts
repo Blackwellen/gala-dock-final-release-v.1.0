@@ -7,6 +7,7 @@ const SOURCES = {
   leads: { table: "leads", cols: "reference,name,client_name,stage,value,probability,expected_date,owner_name,source,created_at" },
   invoices: { table: "invoices", cols: "number,client_name,status,issue_date,due_date,subtotal,tax,total,amount_paid,currency" },
   transactions: { table: "transactions", cols: "occurred_at,description,kind,category,amount,status,source_type" },
+  team: { table: "crew_members", cols: "name,role,member_type,status,email,phone,location,day_rate" },
 } as const;
 
 /** CSV export of the caller's RLS-visible rows. */

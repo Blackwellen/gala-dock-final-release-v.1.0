@@ -1,0 +1,151 @@
+{
+ "name": "c-org-019",
+ "path": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9",
+ "page": 8.36,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Actions",
+   "x": 1132,
+   "y": 802,
+   "w": 386,
+   "h": 96,
+   "mismatch": 15.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Payment link",
+   "x": 1132,
+   "y": 675,
+   "w": 386,
+   "h": 113,
+   "mismatch": 13.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Communication history",
+   "x": 1132,
+   "y": 913,
+   "w": 386,
+   "h": 111,
+   "mismatch": 13.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "£4,800.00",
+   "x": 236,
+   "y": 293,
+   "w": 212,
+   "h": 136,
+   "mismatch": 13.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "1 Aug 2026",
+   "x": 907,
+   "y": 293,
+   "w": 212,
+   "h": 136,
+   "mismatch": 11.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Payment schedule",
+   "x": 1132,
+   "y": 507,
+   "w": 386,
+   "h": 155,
+   "mismatch": 11.4
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Invoice details",
+   "x": 236,
+   "y": 443,
+   "w": 380,
+   "h": 266,
+   "mismatch": 10
+  },
+  {
+   "sel": ".k-card",
+   "label": "£0.00",
+   "x": 683,
+   "y": 293,
+   "w": 212,
+   "h": 136,
+   "mismatch": 9.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "£4,800.00",
+   "x": 460,
+   "y": 293,
+   "w": 212,
+   "h": 136,
+   "mismatch": 8.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Line items (4)",
+   "x": 236,
+   "y": 723,
+   "w": 882,
+   "h": 301,
+   "mismatch": 7.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Invoice status",
+   "x": 1132,
+   "y": 293,
+   "w": 386,
+   "h": 199,
+   "mismatch": 6.8
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Bill to",
+   "x": 630,
+   "y": 443,
+   "w": 237,
+   "h": 266,
+   "mismatch": 5.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "Send to",
+   "x": 881,
+   "y": 443,
+   "w": 237,
+   "h": 266,
+   "mismatch": 4.8
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 242,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 2.4
+  }
+ ]
+}

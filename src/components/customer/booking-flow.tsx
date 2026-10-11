@@ -259,7 +259,7 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
       <div className="bk-pay">
         {data.card ? <label className="bk-card-row" data-on><input type="radio" name="pm" defaultChecked /><span className="bk-radio on"><Check size={11} strokeWidth={3} /></span><span className="bk-mc" aria-hidden><i /><i /></span><b>Card ending {data.card.last4}</b><small>Expires {data.card.exp}</small><span className="bk-default">{data.card.test ? "Test mode" : "Default"}</span></label>
           : <div className="bk-card-row empty"><CreditCard size={18} /><span>No card on file — requests and standby don&apos;t need one.</span></div>}
-        <button type="button" className="bk-card-row add" disabled title="Card entry opens with live payments"><span className="bk-radio" /><CreditCard size={18} /><b>Add a new card</b></button>
+        <Link className="bk-card-row add" href="/account?tab=payments"><span className="bk-radio" /><CreditCard size={18} /><b>Add a new card</b></Link>
         <Menu label="Payment options" width={220} trigger={({ toggle, open, id }) => <button className="k-icon-btn bk-pay-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Payment options"><MoreHorizontal size={16} /></button>}>{close => <><Link role="menuitem" className="k-menu-item" href="/account/settings?tab=payments" onClick={close}><CreditCard size={14} />Manage payment methods</Link><button role="menuitem" className="k-menu-item" onClick={close}><X size={14} />Close</button></>}</Menu>
       </div>
     </section>

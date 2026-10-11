@@ -1,0 +1,10 @@
+baseline 9.507%
+  9.449%  .auth-page.auth-mfa .auth-story .story-content h1 { font-size: 65px }
+  9.439%  .auth-page.auth-mfa .auth-story .story-content h1 { letter-spacing: -2.75px }
+  9.426%  .auth-page.auth-mfa .auth-story .story-content h1 { letter-spacing: -2.5px }
+  9.326%  .auth-page.auth-mfa .auth-story .story-content h1 { line-height: 65px }
+  9.302%  .auth-page.auth-mfa .auth-story .story-content h1 { line-height: 66px }
+  9.287%  .auth-page.auth-mfa .auth-story .story-description { margin-top: 24px }
+  9.281%  .auth-page.auth-mfa .auth-story .story-features b { font-size: 15.0px }
+  9.237%  .auth-page.auth-mfa .auth-story .story-features b { font-size: 17.0px }
+final 9.237%

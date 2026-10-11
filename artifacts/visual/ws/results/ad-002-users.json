@@ -1,0 +1,16 @@
+{
+  "key": "ad-002-users",
+  "url": "/admin/users",
+  "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.07,
+  "ssim": 0.6324,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": true,
+    "scrollHeight": 1029
+  },
+  "errors": [],
+  "at": "2026-10-11T08:59:00.632Z"
+}

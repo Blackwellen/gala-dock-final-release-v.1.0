@@ -1,6 +1,6 @@
 import "@/styles/venue-plan.css";
 import type { PointerEvent as ReactPointerEvent, Ref, ReactNode } from "react";
-import { AssetShape, PlanDefs, type SeatFlag, type SeatState } from "@/components/venue-plan/asset-shape";
+import { AssetShape, PlanDefs, pointLabelHidden, type SeatFlag, type SeatState } from "@/components/venue-plan/asset-shape";
 import type { Seating, TableSpec } from "@/components/venue-plan/assets";
 
 /**
@@ -56,6 +56,7 @@ export function MapContent({ elements, spaces, dim, selected, selectedIndex = nu
   const rooms = elements.filter(e => e.type === "room");
   const toneOf = (el: MapEl) => ROOM_TONES[Math.max(0, rooms.indexOf(el)) % ROOM_TONES.length];
   const k = labelSize / 13;
+  const hiddenLabels = pointLabelHidden(elements, k, new Set([...(selectedSet ?? []), ...(selectedIndex !== null ? [selectedIndex] : [])]));
   const down = (i: number) => (onElDown ? (ev: ReactPointerEvent<SVGGElement>) => onElDown(ev, i) : undefined);
   const on = (i: number, e: MapEl) => selectedIndex === i || !!selectedSet?.has(i) || (!!selected && selected === e.space);
   const layer = (pred: (e: MapEl) => boolean, draw: (e: MapEl, i: number) => ReactNode) => elements.map((e, i) => (!e.hidden && pred(e) ? draw(e, i) : null));
@@ -92,7 +93,7 @@ export function MapContent({ elements, spaces, dim, selected, selectedIndex = nu
         {!small && <text x={e.x! + (e.w ?? 0) / 2} y={e.y! + (e.h ?? 0) / 2 + 4 * k} textAnchor="middle" fill={f[1]} className="vm-fix-label" style={{ fontSize: 10 * k }}>{e.type === "stage" ? "STAGE" : e.label}</text>}</g>;
     })}
     {layer(e => e.type === "asset", (e, i) => <g key={`s${i}`} className={`vm-asset${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
-      <AssetShape e={e} selected={on(i, e)} detail={detail} tierColor={tierColor} seatState={seatState} selectedSeats={selectedSeats} onSeat={onSeat ? (k, ev) => onSeat(i, k, ev) : undefined} scale={labelSize / 13} /></g>)}
+      <AssetShape e={e} selected={on(i, e)} detail={detail} tierColor={tierColor} seatState={seatState} selectedSeats={selectedSeats} onSeat={onSeat ? (k, ev) => onSeat(i, k, ev) : undefined} scale={labelSize / 13} hideLabel={hiddenLabels.has(i)} /></g>)}
     {layer(e => e.type === "label", (e, i) => <g key={`t${i}`} className={`vm-text${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
       <text x={e.x} y={e.y} className="vm-free" style={{ fontSize: e.size ?? 14 }}>{e.label}</text></g>)}
     {children}

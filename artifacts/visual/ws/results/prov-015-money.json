@@ -1,0 +1,16 @@
+{
+  "key": "prov-015-money",
+  "url": "/provider/money?period=30d",
+  "file": "Designs/Provider Workspace/Gala·Dock Financial Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 13.01,
+  "ssim": 0.6275,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1142
+  },
+  "errors": [],
+  "at": "2026-10-11T02:37:24.038Z"
+}

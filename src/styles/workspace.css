@@ -342,3 +342,10 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 .ws-density>div{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;background:#f4f6fc;border-radius:8px;padding:3px}
 .ws-density button{height:28px;border-radius:6px;font-size:10.5px;color:#3d4592}
 .ws-density button.on{background:#fff;color:#1a1af2;font-weight:600;box-shadow:0 1px 3px #18205a1f}
+
+/* Typography tightening (design-calibrated): slightly tighter tracking across the workspace. */
+.ws-app{letter-spacing:-.006em}
+.ws-app :is(h1,h2,h3,strong,b){letter-spacing:-.014em}
+.ws-app .ws-kpi-text strong{letter-spacing:-.025em}
+.ws-app .ws-page-head p{letter-spacing:-.01em}
+.ws-app :is(small,td,dd,dt){line-height:1.25}

@@ -1,0 +1,16 @@
+{
+  "key": "ad-009-tickets",
+  "url": "/admin/tickets",
+  "file": "Designs/Admin Workspace/Gala·Dock Ticketing Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.61,
+  "ssim": 0.6216,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1024
+  },
+  "errors": [],
+  "at": "2026-10-11T08:49:41.966Z"
+}

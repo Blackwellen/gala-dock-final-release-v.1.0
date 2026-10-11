@@ -1,0 +1,16 @@
+{
+  "key": "ad-006-events",
+  "url": "/admin/events",
+  "file": "Designs/Admin Workspace/GalaDock Events Admin Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 13.62,
+  "ssim": 0.5745,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1031
+  },
+  "errors": [],
+  "at": "2026-10-11T08:59:34.297Z"
+}

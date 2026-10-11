@@ -148,5 +148,35 @@
     "url": "/provider/packages/new?package={package:Wedding Package}&step=2",
     "file": "Designs/Provider Workspace/Gala Dock Package Creation Dashboard.png",
     "who": "provider"
+  },
+  {
+    "key": "prov-013-team",
+    "url": "/provider/team",
+    "file": "Designs/Provider Workspace/Gala Dock Team Dashboard(1).png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-014-member",
+    "url": "/provider/team/{crew:Priya Shah}",
+    "file": "Designs/Provider Workspace/Priya Shah Team Dashboard Overview.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-015-money",
+    "url": "/provider/money?period=30d",
+    "file": "Designs/Provider Workspace/Gala·Dock Financial Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-016-agent",
+    "url": "/provider/agent",
+    "file": "Designs/Provider Workspace/Gala Agent SaaS Dashboard.png",
+    "who": "provider"
+  },
+  {
+    "key": "prov-017-settings",
+    "url": "/provider/settings",
+    "file": "Designs/Provider Workspace/Gala Dock Workspace Settings Dashboard(1).png",
+    "who": "provider"
   }
 ]

@@ -1,0 +1,106 @@
+{
+ "name": "c-org-016",
+ "path": "/organizer/team",
+ "page": 10.27,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Availability & assignments",
+   "x": 654,
+   "y": 339,
+   "w": 864,
+   "h": 196,
+   "mismatch": 22.6
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Team",
+   "x": 236,
+   "y": 108,
+   "w": 1282,
+   "h": 53,
+   "mismatch": 16.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Team members & crew",
+   "x": 236,
+   "y": 339,
+   "w": 404,
+   "h": 685,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "26",
+   "x": 236,
+   "y": 224,
+   "w": 247,
+   "h": 102,
+   "mismatch": 11.9
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "18",
+   "x": 495,
+   "y": 224,
+   "w": 247,
+   "h": 102,
+   "mismatch": 10.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "5",
+   "x": 754,
+   "y": 224,
+   "w": 247,
+   "h": 102,
+   "mismatch": 9.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "2",
+   "x": 1271,
+   "y": 224,
+   "w": 247,
+   "h": 102,
+   "mismatch": 7.1
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6
+  },
+  {
+   "sel": ".k-card",
+   "label": "0",
+   "x": 1012,
+   "y": 224,
+   "w": 247,
+   "h": 102,
+   "mismatch": 5.1
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 173,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 4.7
+  }
+ ]
+}

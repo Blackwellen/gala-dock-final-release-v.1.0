@@ -1,0 +1,289 @@
+{
+ "url": "/preview/onboarding/organizer?step=2",
+ "ref": "Designs/auth & onboarding/Gala Dock Event Setup Dashboard.png",
+ "width": 1536,
+ "height": 1024,
+ "left": 0,
+ "rounds": 2,
+ "params": [
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-main",
+   "prop": "padding-top",
+   "values": [
+    "24px",
+    "27px",
+    "30px",
+    "33px",
+    "36px",
+    "39px",
+    "42px",
+    "45px",
+    "48px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main",
+   "prop": "zoom",
+   "values": [
+    "0.95",
+    "0.96",
+    "0.97",
+    "0.98",
+    "0.99",
+    "1.01",
+    "1.02",
+    "1.03"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main>h2",
+   "prop": "font-size",
+   "values": [
+    "34px",
+    "35px",
+    "36px",
+    "37px",
+    "38px",
+    "39px",
+    "40px",
+    "41px",
+    "42px",
+    "43px",
+    "44px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main>h2",
+   "prop": "letter-spacing",
+   "values": [
+    "-2.2px",
+    "-2.0px",
+    "-1.8px",
+    "-1.6px",
+    "-1.4px",
+    "-1.2px",
+    "-1.0px",
+    "-0.8px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main>h2",
+   "prop": "margin-bottom",
+   "values": [
+    "0px",
+    "2px",
+    "4px",
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-subtitle",
+   "prop": "font-size",
+   "values": [
+    "14.0px",
+    "14.5px",
+    "15.0px",
+    "15.5px",
+    "16.0px",
+    "16.5px",
+    "17.0px",
+    "17.5px",
+    "18.0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-subtitle",
+   "prop": "letter-spacing",
+   "values": [
+    "-0.3px",
+    "-0.2px",
+    "-0.1px",
+    "0.0px",
+    "0.1px",
+    "0.2px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-subtitle",
+   "prop": "margin-bottom",
+   "values": [
+    "4px",
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main .setup-panel",
+   "prop": "padding-top",
+   "values": [
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main .setup-panel",
+   "prop": "margin-bottom",
+   "values": [
+    "6px",
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main .field>label",
+   "prop": "font-size",
+   "values": [
+    "11.5px",
+    "12.0px",
+    "12.5px",
+    "13.0px",
+    "13.5px",
+    "14.0px",
+    "14.5px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-main .field",
+   "prop": "margin-top",
+   "values": [
+    "-6px",
+    "-4px",
+    "-2px",
+    "0px",
+    "2px",
+    "4px",
+    "6px",
+    "8px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .form-wide",
+   "prop": "margin-top",
+   "values": [
+    "-20px",
+    "-16px",
+    "-12px",
+    "-8px",
+    "-4px",
+    "0px",
+    "4px",
+    "8px",
+    "12px",
+    "16px",
+    "20px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-assistant",
+   "prop": "zoom",
+   "values": [
+    "0.95",
+    "0.96",
+    "0.97",
+    "0.98",
+    "0.99",
+    "1.01",
+    "1.02",
+    "1.03"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-assistant",
+   "prop": "margin-top",
+   "values": [
+    "-60px",
+    "-54px",
+    "-48px",
+    "-42px",
+    "-36px",
+    "-30px",
+    "-24px",
+    "-18px",
+    "-12px",
+    "-6px",
+    "0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-story h1",
+   "prop": "font-size",
+   "values": [
+    "42.0px",
+    "43.5px",
+    "45.0px",
+    "46.5px",
+    "48.0px",
+    "49.5px",
+    "51.0px",
+    "52.5px",
+    "54.0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-story h1",
+   "prop": "line-height",
+   "values": [
+    "0.98",
+    "1.02",
+    "1.06",
+    "1.1"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-story .setup-story-description",
+   "prop": "font-size",
+   "values": [
+    "15.0px",
+    "15.5px",
+    "16.0px",
+    "16.5px",
+    "17.0px",
+    "17.5px",
+    "18.0px",
+    "18.5px",
+    "19.0px"
+   ]
+  },
+  {
+   "sel": ".onboarding-page.setup-organizer-events .setup-story .setup-features",
+   "prop": "row-gap",
+   "values": [
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px",
+    "26px",
+    "28px",
+    "30px"
+   ]
+  }
+ ]
+}

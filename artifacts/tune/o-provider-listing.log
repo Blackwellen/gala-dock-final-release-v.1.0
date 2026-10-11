@@ -1,0 +1,28 @@
+baseline 16.302%
+  15.991%  .onboarding-page.setup-provider-listing .setup-main { padding-top: 24px }
+  15.052%  .onboarding-page.setup-provider-listing .form-main { zoom: 0.95 }
+  14.615%  .onboarding-page.setup-provider-listing .form-main { zoom: 0.96 }
+  14.601%  .onboarding-page.setup-provider-listing .form-main { zoom: 0.98 }
+  14.589%  .onboarding-page.setup-provider-listing .form-main>h2 { font-size: 40px }
+  14.534%  .onboarding-page.setup-provider-listing .form-main>h2 { font-size: 43px }
+  14.479%  .onboarding-page.setup-provider-listing .form-main>h2 { font-size: 44px }
+  14.473%  .onboarding-page.setup-provider-listing .form-main>h2 { letter-spacing: -2.0px }
+  14.441%  .onboarding-page.setup-provider-listing .form-main>h2 { margin-bottom: 8px }
+  14.429%  .onboarding-page.setup-provider-listing .form-main>h2 { margin-bottom: 10px }
+  14.422%  .onboarding-page.setup-provider-listing .setup-subtitle { margin-bottom: 12px }
+  13.683%  .onboarding-page.setup-provider-listing .form-wide { margin-top: -20px }
+  13.560%  .onboarding-page.setup-provider-listing .form-wide { margin-top: -16px }
+  13.259%  .onboarding-page.setup-provider-listing .setup-assistant { zoom: 0.95 }
+  13.219%  .onboarding-page.setup-provider-listing .setup-assistant { zoom: 0.96 }
+  13.181%  .onboarding-page.setup-provider-listing .setup-assistant { zoom: 0.97 }
+  13.168%  .onboarding-page.setup-provider-listing .setup-assistant { zoom: 0.98 }
+  13.048%  .onboarding-page.setup-provider-listing .setup-story h1 { font-size: 42.0px }
+  13.038%  .onboarding-page.setup-provider-listing .setup-story h1 { line-height: 1.06 }
+  13.033%  .onboarding-page.setup-provider-listing .setup-story .setup-story-description { font-size: 16.0px }
+  13.007%  .onboarding-page.setup-provider-listing .setup-story .setup-features { row-gap: 18px }
+  12.946%  .onboarding-page.setup-provider-listing .form-main>h2 { margin-bottom: 12px }
+  12.897%  .onboarding-page.setup-provider-listing .form-wide { margin-top: -20px }
+  12.881%  .onboarding-page.setup-provider-listing .setup-assistant { zoom: 0.97 }
+  12.758%  .onboarding-page.setup-provider-listing .setup-assistant { margin-top: -36px }
+  12.735%  .onboarding-page.setup-provider-listing .setup-story h1 { line-height: 1.1 }
+final 12.735%

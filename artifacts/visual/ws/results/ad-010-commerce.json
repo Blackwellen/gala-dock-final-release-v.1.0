@@ -1,0 +1,16 @@
+{
+  "key": "ad-010-commerce",
+  "url": "/admin/commerce",
+  "file": "Designs/Admin Workspace/Commerce Operations Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 12.99,
+  "ssim": 0.6245,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1054
+  },
+  "errors": [],
+  "at": "2026-10-11T08:58:34.774Z"
+}

@@ -10,6 +10,7 @@ async function lookup(kind, name) {
   if (kind === "item") id = (await sb.from("build_items").select("id,event:events!inner(name)").eq("event.name", name).not("listing_id", "is", null).limit(1).maybeSingle()).data?.id;
   if (kind === "listing") id = (await sb.from("listings").select("id").eq("name", name).order("created_at").limit(1).maybeSingle()).data?.id;
   if (kind === "space") id = (await sb.from("spaces").select("id").eq("name", name).limit(1).maybeSingle()).data?.id;
+  if (kind === "crew") id = (await sb.from("crew_members").select("id").eq("name", name).order("created_at", { ascending: false }).limit(1).maybeSingle()).data?.id;
   if (kind === "package") id = (await sb.from("packages").select("id").eq("name", name).limit(1).maybeSingle()).data?.id;
   if (kind === "quote" || kind === "quote-draft") {
     const item = await lookup("item", name);
@@ -20,6 +21,6 @@ async function lookup(kind, name) {
 }
 export async function resolveUrl(url) {
   let out = url;
-  for (const m of url.matchAll(/\{(job|item|quote|quote-draft|listing|space|package):([^}]+)\}/g)) out = out.replace(m[0], await lookup(m[1], m[2]));
+  for (const m of url.matchAll(/\{(job|item|quote|quote-draft|listing|space|package|crew):([^}]+)\}/g)) out = out.replace(m[0], await lookup(m[1], m[2]));
   return out;
 }

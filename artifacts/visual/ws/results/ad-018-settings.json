@@ -1,0 +1,16 @@
+{
+  "key": "ad-018-settings",
+  "url": "/admin/settings",
+  "file": "Designs/Admin Workspace/Gala Dock Platform Settings Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 10.43,
+  "ssim": 0.6563,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1070
+  },
+  "errors": [],
+  "at": "2026-10-11T08:56:45.510Z"
+}

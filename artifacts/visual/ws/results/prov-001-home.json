@@ -2,15 +2,17 @@
   "key": "prov-001-home",
   "url": "/provider",
   "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
-  "status": 200,
-  "mismatchPercent": 15.76,
-  "ssim": 0.5994,
+  "status": 500,
+  "mismatchPercent": 12.29,
+  "ssim": 0.7066,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1116
+    "scrollHeight": 1086
   },
-  "errors": [],
-  "at": "2026-10-11T00:33:08.909Z"
+  "errors": [
+    "./src/app/admin/(console)/page.tsx:7:1\nError: Module not found: Can't resolve '@/styles/admin-a-overview.css'\n   5 |   UsersRound, Ban, CircleAlert, Copyright, Flag, MessageSquareWarning } from \"lucide-react\";\n   6 | import \"@/styles/admin-a-base.css\";\n>  7 | import \"@/styles/admin-a-overview.css\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import { Kpi, Avatar, Donut } from \"@/components/workspace/kit\";\n   9 | import { getAdmin } from \"@/lib/admin/context\";\n  10 | import { rows } from \"@/lib/workspace/db\";\n\nImport map: aliased to relative './src/styles/admin-a-overview.css' inside of [project]/\n\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n"
+  ],
+  "at": "2026-10-11T08:45:32.934Z"
 }

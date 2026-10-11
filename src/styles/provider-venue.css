@@ -248,3 +248,4 @@
 @media (max-width:860px){.pv-about-cols{grid-template-columns:1fr}.pv-grid{grid-template-columns:1fr}.se-cols,.se-pair{grid-template-columns:1fr}.pv-strip ul{grid-template-columns:repeat(2,minmax(0,1fr))}.pv-pkgs li{grid-template-columns:56px minmax(0,1fr) auto}.pv-pkgs li .ws-chip,.pv-pkgs li .pv-pkg-price{display:none}}
 @media (max-width:520px){.pv-kpis,.pv-insights ul,.pv-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.pv-title h1{font-size:24px}}
 
+.pv-head-actions>.ws-btn.primary,.pv-head-actions>.pv-menu .ws-btn.primary{color:#fff}

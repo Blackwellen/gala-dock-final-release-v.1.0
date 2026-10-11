@@ -96,3 +96,6 @@ console.log(JSON.stringify({ tickets_created: created, ok: true }));
 
 // Align demo data with the design references.
 await import("./seed-align.mjs");
+await import("./seed-customer-tickets.mjs");
+await import("./seed-public-event.mjs");
+await import("./seed-public-listings.mjs");

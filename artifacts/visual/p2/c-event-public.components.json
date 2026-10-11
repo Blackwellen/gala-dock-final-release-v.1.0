@@ -1,0 +1,16 @@
+{
+ "name": "c-event-public",
+ "path": "/events/neon-nights",
+ "page": 38.47,
+ "components": [
+  {
+   "sel": ".c-top",
+   "label": "c-top pub-top",
+   "x": 0,
+   "y": 0,
+   "w": 1448,
+   "h": 66,
+   "mismatch": 15.4
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "key": "prov-016-agent",
+  "url": "/provider/agent",
+  "file": "Designs/Provider Workspace/Gala Agent SaaS Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 11.39,
+  "ssim": 0.644,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1129
+  },
+  "errors": [],
+  "at": "2026-10-11T02:50:52.025Z"
+}
