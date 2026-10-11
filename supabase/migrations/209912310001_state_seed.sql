@@ -503,6 +503,16 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('payment','disputed','refunded');
 drop trigger if exists payment_orders_state_guard on public.payment_orders;
 create trigger payment_orders_state_guard before insert or update of status on public.payment_orders for each row execute function public.enforce_state_transition('payment', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('event_order', 'event_orders', 'status', 'enforce', array['draft']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('event_order','draft','sent'),
+  ('event_order','sent','revised'),
+  ('event_order','sent','approved'),
+  ('event_order','revised','sent'),
+  ('event_order','revised','approved'),
+  ('event_order','approved','revised');
+drop trigger if exists event_orders_state_guard on public.event_orders;
+create trigger event_orders_state_guard before insert or update of status on public.event_orders for each row execute function public.enforce_state_transition('event_order', 'status');
 insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('agent_run', 'agent_runs', 'status', 'enforce', array['queued','scheduled','running']::text[], array['completed','failed','cancelled']::text[]);
 insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_run','queued','planning'),

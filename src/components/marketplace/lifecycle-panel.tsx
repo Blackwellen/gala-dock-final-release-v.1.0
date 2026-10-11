@@ -5,6 +5,7 @@ import { loadLifecycle, STATUS_LABEL, DISPUTE_REASONS, DISPUTE_STATUS } from "@/
 import { requestTime } from "@/lib/workspace/format";
 import { money, dateShort, time } from "@/lib/format";
 import { PAYMENT_STATE } from "@/lib/commerce/orchestrator";
+import { venueBlocks } from "@/components/venue/venue-blocks";
 import { Countdown, PayButton, ActButton, HoldRequestForm, HoldRespondForm, StandbyRequestForm, StandbyOfferForm, CancelForm, DisputeOpenForm } from "./lifecycle-client";
 import "@/styles/marketplace.css";
 
@@ -37,7 +38,8 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
   const balanceDue = item.amount != null && ["confirmed", "active", "fulfilled", "completion_pending"].includes(item.status) && paidMinor > 0 ? Math.round(Number(item.amount) * 100) - paidMinor : 0;
   const emergency = (item.terms_snapshot as { source?: string } | null)?.source === "emergency";
   const payable = ["quoted", "available", "held", "conditionally_held"].includes(item.status) && item.amount != null;
-  if (quiet && !activity) return null;
+  const venue = await venueBlocks(supabase, { itemId: item.id, listingId: item.listing_id, status: item.status, eventId: event.id, viewer, starts: event.starts_at, ends: event.ends_at });
+  if (quiet && !activity && !venue.active) return null;
   const [label, tone] = STATUS_LABEL[item.status] ?? [item.status, "grey"];
   const responding = ["sent", "awaiting", "awaiting_provider"].includes(item.status) || item.response_status === "expired";
   const holdable = ["available", "quoted", "quote_received", "quote_revised", "customer_reviewing"].includes(item.status);
@@ -116,6 +118,8 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       </> : cancellable ? <CancelForm itemId={item.id} party={viewer === "provider" ? "provider" : "customer"} /> : null}
       {cancellations.filter(c => c !== openCancel).slice(0, 2).map(c => <p key={c.id} className="mk-history">{c.party} {c.kind.replace("_", " ")} · {c.status.replace("_", " ")}{c.calculation.refund_amount != null ? ` · refund ${money(c.calculation.refund_amount)}` : ""}</p>)}
     </div>}
+
+    {venue.node}
 
     {(openDispute || disputable || disputes.length > 0) && <div className="mk-block">
       <h3><ShieldAlert size={15} aria-hidden="true" />Disputes</h3>

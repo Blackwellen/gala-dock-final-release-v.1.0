@@ -14,7 +14,7 @@ export type LcCancellation = { id: string; party: string; kind: string; reason: 
 export type LcDispute = { id: string; reference: string; status: string; reason: string; opened_by_party: string; created_at: string; response_due_at: string };
 export type LcPayment = { id: string; reference: string; kind: string; status: string; amount_minor: number; refunded_minor: number; currency: string; description: string; created_at: string };
 export type Lifecycle = {
-  item: LcItem; event: { id: string; name: string; starts_at: string | null; workspace_id: string | null }; listing: { name: string; workspace_id: string } | null;
+  item: LcItem; event: { id: string; name: string; starts_at: string | null; ends_at: string | null; workspace_id: string | null }; listing: { name: string; workspace_id: string } | null;
   holds: LcHold[]; standby: LcStandby[]; cancellations: LcCancellation[]; disputes: LcDispute[]; payments: LcPayment[]; siblings: { id: string; title: string; status: string; category: string }[];
 };
 
@@ -24,7 +24,7 @@ export async function loadLifecycle(client: unknown, itemId: string): Promise<Li
   const { data: item } = await db.from("build_items").select("id,event_id,listing_id,request_id,title,category,status,role,amount,deposit,response_deadline,sent_at,responded_at,response_status,hold_expires_at,terms_snapshot").eq("id", itemId).maybeSingle();
   if (!item) return null;
   const [ev, listing, holds, standby, cancellations, disputes, siblings, payments] = await Promise.all([
-    db.from("events").select("id,name,starts_at,workspace_id").eq("id", item.event_id).maybeSingle(),
+    db.from("events").select("id,name,starts_at,ends_at,workspace_id").eq("id", item.event_id).maybeSingle(),
     item.listing_id ? db.from("listings").select("name,workspace_id").eq("id", item.listing_id).maybeSingle() : Promise.resolve({ data: null }),
     db.from("conditional_holds").select("id,status,requested_hours,expires_at,created_at,conditions,provider_note,dependency_state,depends_on_item_id,source").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(5),
     db.from("standby_commitments").select("id,status,primary_item_id,window_start,window_end,standby_fee,activation_price,cancellation_terms,organizer_note,expires_at,fee_status,activated_at").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(5),

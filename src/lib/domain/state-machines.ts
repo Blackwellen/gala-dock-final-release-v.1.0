@@ -171,6 +171,12 @@ export const machines = {
       refunded: [], cancelled: [],
     },
   },
+  /** Venue BEO / event order (§62). Content lives in append-only versions; this tracks the review cycle. */
+  event_order: {
+    table: "event_orders", column: "status", mode: "enforce",
+    initial: ["draft"], terminal: [],
+    transitions: { draft: ["sent"], sent: ["revised", "approved"], revised: ["sent", "approved"], approved: ["revised"] },
+  },
   /** Gala Agent run (§6). Owned by this phase: enforced. */
   agent_run: {
     table: "agent_runs", column: "status", mode: "enforce",
