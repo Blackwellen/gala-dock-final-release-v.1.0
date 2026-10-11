@@ -35,6 +35,8 @@ export async function invoke(actor: string, workspaceId: string, tool: Tool, inp
   const parsed = tool.input.safeParse(input);
   if (!parsed.success) throw new Error(`invalid_input: ${parsed.error.issues.map(i => `${i.path.join(".")} ${i.message}`).join("; ").slice(0, 300)}`);
   if (tool.id === "draft.note") return { draft: parsed.data };
+  const { data: lvl } = await svc().rpc("maintenance_level" as never, { p_module: "agent" } as never);
+  if (Number(lvl ?? 0) >= (tool.mutation ? 2 : 4)) throw new Error("maintenance: Gala Agent is temporarily restricted while maintenance is in progress.");
   let args = parsed.data as Record<string, unknown>;
   if (tool.id === "media.event_poster") {
     // The layout is built here from the canonical poster template; agent_invoke stores it as an agent-sourced draft as the human.
@@ -256,6 +258,9 @@ export function nextCron(expr: string, from: Date): Date | null {
 // ───────────────────────── worker tick ─────────────────────────
 export async function workerTick() {
   const db = svc();
+  // Maintenance (release spec §9): M2+ on the agent module (or any platform-wide M4/M5) suspends the worker; runs resume afterwards.
+  const { data: lvl } = await db.rpc("maintenance_level" as never, { p_module: "agent" } as never);
+  if (Number(lvl ?? 0) >= 2) return { routines: 0, planned: 0, executed: 0, expired: 0, errors: [] as string[], paused: `maintenance M${lvl}` };
   const out = { routines: 0, planned: 0, executed: 0, expired: 0, errors: [] as string[] };
   // Expire stale approvals → their steps are skipped and the run resumes.
   const { data: stale } = await db.from("agent_approvals").update({ status: "expired" }).eq("status", "pending").lt("expires_at", new Date().toISOString()).select("id");
