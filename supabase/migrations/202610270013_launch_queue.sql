@@ -113,7 +113,7 @@ begin
       update public.ticket_tiers set held = held + w.quantity where id = r.tier_id;
       update public.ticket_waitlist set status = 'offered', notified_at = now(), offer_expires_at = now() + interval '30 minutes', offer_tier_id = r.tier_id where id = w.id;
       insert into public.notifications(user_id, kind, title, body, link) values (w.user_id, 'ticket_waitlist', 'Tickets reserved for you: ' || r.ev,
-        w.quantity || ' × ' || r.name || ' are held for you for 30 minutes. After that they go to the next person in line.', '/events/' || coalesce(r.slug, '') || '?waitlist_offer=' || w.id);
+        w.quantity || ' × ' || r.name || ' are held for you for 30 minutes. After that they go to the next person in line.', '/checkout/' || coalesce(r.slug, '') || '?waitlist_offer=' || w.id);
       free := free - w.quantity; n := n + 1;
     end loop;
   end loop;
