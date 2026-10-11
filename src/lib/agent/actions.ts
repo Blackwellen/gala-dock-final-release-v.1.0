@@ -27,7 +27,7 @@ async function seat(workspaceId: string, roles = ["owner", "manager", "member", 
 }
 
 /** Do / Goal mode: creates a durable run; the worker plans and executes it. */
-export async function startRun(workspaceId: string, goal: string, mission?: string): Promise<R<string>> {
+export async function startRun(workspaceId: string, goal: string, mission?: string, quality: "fast" | "standard" | "deep" = "standard"): Promise<R<string>> {
   const s = await seat(workspaceId); if (!s) return { ok: false, error: "You don’t have access to this workspace." };
   if (goal.trim().length < 6) return { ok: false, error: "Describe what you want done." };
   if (!(await rateLimit(`agent-run:${s.user.id}`, 30, 3600))) return { ok: false, error: "Too many runs this hour." };
@@ -37,7 +37,7 @@ export async function startRun(workspaceId: string, goal: string, mission?: stri
   if ((count ?? 0) >= Number(pol?.max_parallel_runs ?? 3)) return { ok: false, error: "The maximum number of active runs is reached. Finish or cancel one first." };
   const key = createHash("sha256").update(`${s.user.id}:${goal.trim()}:${Math.floor(Date.now() / 60000)}`).digest("hex");
   const { data, error } = await db.from("agent_runs").insert({ workspace_id: workspaceId, user_id: s.user.id, surface: s.kind, mode: mission ? "mission" : "do", mission: mission ?? null,
-    goal: goal.trim().slice(0, 2000), status: "queued", idempotency_key: key, plan: [], triggered_by: "user" }).select("id").single();
+    goal: goal.trim().slice(0, 2000), status: "queued", idempotency_key: key, plan: [], triggered_by: "user", quality: ["fast", "standard", "deep"].includes(quality) ? quality : "standard" }).select("id").single();
   if (error) return error.code === "23505" ? { ok: false, error: "That run was already started." } : { ok: false, error: "Couldn’t start the run." };
   await db.from("audit_events").insert({ actor_id: s.user.id, actor_type: "user", workspace_id: workspaceId, agent_run_id: data.id, event: "agent.run_started", metadata: { mission: mission ?? null } });
   bump();
@@ -95,14 +95,14 @@ export async function askAgent(workspaceId: string, question: string): Promise<R
   const r = await ask(s.user.id, workspaceId, s.kind, question);
   if (!r.ok) return r;
   await untyped(createAdminClient() as never).from("agent_runs").insert({ workspace_id: workspaceId, user_id: s.user.id, surface: s.kind, mode: "ask", goal: question.slice(0, 2000), status: "completed",
-    summary: r.answer.slice(0, 4000), result: r.answer.slice(0, 2000), tokens: r.tokens, cost_cents: Math.ceil(r.tokens / 1000 * 0.06), progress: 100, finished_at: new Date().toISOString(), plan: r.sources });
+    summary: r.answer.slice(0, 4000), result: r.answer.slice(0, 2000), tokens: r.tokens, progress: 100, finished_at: new Date().toISOString(), plan: r.sources });
   return { ok: true, data: { answer: r.answer, sources: r.sources } };
 }
 
 /** Routines (§13): compiled + validated before they can be saved. */
 export async function saveRoutine(workspaceId: string, text: string): Promise<R> {
   const s = await seat(workspaceId, ["owner", "manager"]); if (!s) return { ok: false, error: "Only owners and managers can create routines." };
-  const c = await compileRoutine(s.kind, text);
+  const c = await compileRoutine(s.kind, text, { workspaceId, userId: s.user.id });
   if (!c.ok) return c;
   const next = nextCron(c.compiled.trigger.cron, new Date());
   const { error } = await untyped(createAdminClient() as never).from("agent_routines").insert({ workspace_id: workspaceId, owner_id: s.user.id, title: c.compiled.title, detail: c.compiled.goal,
@@ -124,7 +124,7 @@ export async function savePolicy(workspaceId: string, p: { mode: string; allowed
   maxParallel: number; maxRunMinutes: number; minConfidence: number; dailySpendCapMinor: number; monthlySpendCapMinor: number; refundThresholdMinor: number; bookingAuthorityMinor: number;
   autopilotRules: { tool: string; max_amount_minor?: number }[] }): Promise<R> {
   const s = await seat(workspaceId, ["owner"]); if (!s) return { ok: false, error: "Only the workspace owner can change Agent policy." };
-  if (!["suggest", "draft", "execute_with_approval", "policy_autopilot"].includes(p.mode)) return { ok: false, error: "Choose a mode." };
+  if (!["always_ask", "suggest", "draft", "execute_with_approval", "operational", "policy_autopilot"].includes(p.mode)) return { ok: false, error: "Choose a mode." };
   const known = (ids: string[]) => ids.filter(i => TOOL.has(i) && TOOL.get(i)!.risk < 5);
   const { error } = await s.sb.from("agent_policies" as never).upsert({
     workspace_id: workspaceId, mode: p.mode, allowed_tools: p.allowedTools ? known(p.allowedTools) : null, auto_tools: known(p.autoTools).filter(i => TOOL.get(i)!.risk === 3),

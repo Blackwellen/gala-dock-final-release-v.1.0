@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
-import { chat, SAFETY, agentConfigured } from "@/lib/agent/llm";
+import { chat, SAFETY, agentConfigured, dataBlock } from "@/lib/agent/llm";
 import { buildContext } from "@/lib/agent/context";
 
 const Body = z.object({ scope: z.enum(["customer", "organizer"]), eventId: z.string().uuid().optional(), question: z.string().trim().min(2).max(1500) });
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
   try {
     const { text } = await chat([
       { role: "system", content: `${SAFETY}\nAudience: ${scope === "customer" ? "a consumer planning a personal event or buying tickets; keep it friendly and simple" : "a professional event organizer; be operational and precise"}.\nToday is ${new Date().toISOString().slice(0, 10)}.` },
-      { role: "user", content: `<data>\n${context ?? "No records."}\n</data>\n\nQuestion: ${question}` },
-    ], { model: "mini", maxTokens: 700 });
+      { role: "user", content: `${dataBlock(context ?? "No records.")}\n\nQuestion: ${question}` },
+    ], { tier: "standard", maxTokens: 700, meter: { workspaceId: null, userId: user.id, purpose: `ask_${scope}` } });
     return NextResponse.json({ answer: text || "I couldn't find enough information to answer that." });
   } catch {
     return NextResponse.json({ error: "Gala Agent couldn't respond right now. Please try again." }, { status: 502 });

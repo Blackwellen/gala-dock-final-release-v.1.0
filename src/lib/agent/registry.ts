@@ -74,7 +74,12 @@ export const TOOLS: Tool[] = [
 ];
 export const TOOL = new Map(TOOLS.map(x => [x.id, x]));
 
-export type Mode = "suggest" | "draft" | "execute_with_approval" | "policy_autopilot";
+/**
+ * Autonomy levels (release spec §21): always_ask = every mutation needs approval · draft = drafts only · execute_with_approval =
+ * low-risk (R0–R2) automatic · operational = selected R3 tools automatic (auto_tools) · policy_autopilot = approved R3/R4 subsets
+ * within thresholds. R5 (payout/identity/security/legal/destructive) is never automatic in any mode.
+ */
+export type Mode = "always_ask" | "suggest" | "draft" | "execute_with_approval" | "operational" | "policy_autopilot";
 export type Policy = { mode: Mode; allowed_tools: string[] | null; auto_tools: string[]; autopilot_rules: { tool: string; max_amount_minor?: number; when?: Record<string, string> }[];
   quiet_hours: { from: string; to: string; tz: string } | null; min_confidence: number };
 export const DEFAULT_POLICY: Policy = { mode: "execute_with_approval", allowed_tools: null, auto_tools: [], autopilot_rules: [], quiet_hours: { from: "21:00", to: "08:00", tz: "Europe/London" }, min_confidence: 0.6 };
@@ -85,10 +90,11 @@ export function decide(tool: Tool, input: Record<string, unknown>, p: Policy, co
   if (tool.risk >= 5) return "blocked";
   if (tool.risk === 0) return "auto";
   if (p.mode === "suggest") return "suggest";
+  if (p.mode === "always_ask") return "approval";
   if (p.mode === "draft") return tool.risk <= 1 ? "auto" : "suggest";
   if (tool.risk <= 2) return "auto";
   if (confidence < p.min_confidence) return "approval";
-  if (tool.risk === 3 && p.auto_tools.includes(tool.id)) return "auto";
+  if (tool.risk === 3 && p.auto_tools.includes(tool.id) && (p.mode === "operational" || p.mode === "policy_autopilot")) return "auto";
   if (p.mode === "policy_autopilot") {
     const amount = tool.amountMinor?.(input) ?? 0;
     const rule = p.autopilot_rules.find(r => r.tool === tool.id && (r.max_amount_minor == null || amount <= r.max_amount_minor)

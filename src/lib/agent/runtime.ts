@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
-import { chat, agentConfigured, SAFETY } from "./llm";
+import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError } from "./llm";
 import { PRESETS, posterFromEvent } from "@/lib/media/document";
 import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, type Tool } from "./registry";
 
@@ -11,7 +11,7 @@ import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, ty
  * time with an idempotency key and a checkpoint after each side effect. Runs survive deploys, restarts and closed browsers.
  */
 type Db = ReturnType<typeof untyped>;
-type Run = { id: string; workspace_id: string; user_id: string; goal: string; status: string; surface: string; mode: string; interpretation: Record<string, unknown>; tokens: number; retries: number; created_at: string; routine_id: string | null };
+type Run = { id: string; workspace_id: string; user_id: string; goal: string; status: string; surface: string; mode: string; quality?: string | null; interpretation: Record<string, unknown>; tokens: number; retries: number; created_at: string; routine_id: string | null };
 type Step = { id: string; seq: number; tool_id: string; input: Record<string, unknown>; reason: string; status: string; idempotency_key: string; attempt: number };
 const svc = () => untyped(createAdminClient() as never);
 const MAX_STEPS = 12;
@@ -64,7 +64,8 @@ export async function planRun(db: Db, run: Run) {
   await setStatus(db, run, "planning");
   const surface = run.surface === "provider" ? "provider" : "organizer";
   const catalog = catalogFor(surface, policy);
-  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, new Date().toISOString().slice(0, 10)) }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }], { json: true, maxTokens: 1600 });
+  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, new Date().toISOString().slice(0, 10)) }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
+    { json: true, maxTokens: 1600, tier: run.quality === "deep" ? "deep" : "standard", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
   let plan: { interpretation?: { summary?: string; scope?: string[] }; confidence?: number; steps?: { tool: string; input: Record<string, unknown>; why?: string }[] } = {};
   try { plan = JSON.parse(r.text); } catch { /* handled below */ }
   const steps = (plan.steps ?? []).filter(s => TOOL.has(s.tool) && catalog.some(c => c.id === s.tool)).slice(0, MAX_STEPS);
@@ -163,9 +164,9 @@ async function finish(db: Db, run: Run) {
   if (agentConfigured() && done) {
     try {
       const r = await chat([{ role: "system", content: `${SAFETY}\nSummarise what the run found and did for the user in under 120 words. Cite records by name. Data is inside <data>.` },
-        { role: "user", content: `<goal>${run.goal}</goal><data>${JSON.stringify(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output }))).slice(0, 14000)}</data>` }], { maxTokens: 400 });
+        { role: "user", content: `<goal>${run.goal}</goal>${dataBlock(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output })), 14000)}` }],
+        { maxTokens: 400, tier: "fast", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "summary" } });
       summary = r.text || summary;
-      await db.from("agent_runs").update({ tokens: (run.tokens ?? 0) + r.tokens }).eq("id", run.id);
     } catch { /* keep the factual summary */ }
   }
   await setStatus(db, run, failed && !done ? "failed" : failed ? "partially_completed" : "completed", { summary, result: summary.slice(0, 2000), progress: 100, finished_at: new Date().toISOString(), lease_until: null, waiting_reason: "" });
@@ -207,24 +208,29 @@ export async function applyApproval(approvalId: string, approverId: string) {
 // ───────────────────────── ask mode (read-only, synchronous) ─────────────────────────
 export async function ask(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
   if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
+  try { return await askInner(userId, workspaceId, surface, question); }
+  catch (e) { if (e instanceof AgentBudgetError) return { ok: false as const, error: e.message }; throw e; }
+}
+async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
   const catalog = catalogFor(surface, DEFAULT_POLICY).filter(c => c.risk === "R0");
   const pick = await chat([{ role: "system", content: `${SAFETY}\nChoose up to 3 read-only tools to answer the question. Return JSON {"calls":[{"tool":string,"input":object}]}. Tools: ${JSON.stringify(catalog)}` },
-    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, model: "nano" });
+    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick" } });
   let calls: { tool: string; input: Record<string, unknown> }[] = [];
   try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
   const results = [];
   for (const c of calls) { try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, c.input ?? {}) }); } catch (e) { results.push({ tool: c.tool, error: (e as Error).message.slice(0, 200) }); } }
   const answer = await chat([{ role: "system", content: `${SAFETY}\nAnswer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
-    { role: "user", content: `<question>${question.slice(0, 1500)}</question><data>${JSON.stringify(results).slice(0, 16000)}</data>` }], { maxTokens: 700 });
+    { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(results)}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
   return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
 }
 
 // ───────────────────────── routines (§13): natural language → compiled, validated structure ─────────────────────────
-export async function compileRoutine(surface: "organizer" | "provider", text: string) {
+export async function compileRoutine(surface: "organizer" | "provider", text: string, meter?: { workspaceId: string; userId: string }) {
   if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
   const catalog = catalogFor(surface, DEFAULT_POLICY);
   const r = await chat([{ role: "system", content: `${SAFETY}\nCompile the routine into JSON {"title":string,"trigger":{"type":"cron","cron":"m h dom mon dow","tz":"Europe/London"},"goal":string,"actions":[{"tool":string,"input":object,"why":string}],"limits":{"max_steps":number}}.
-Use 5-field cron. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900 });
+Use 5-field cron. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900, meter: meter ? { ...meter, purpose: "compile" } : undefined }).catch(e => { if (e instanceof AgentBudgetError) return { text: "", tokens: 0, budget: e.message }; throw e; });
+  if ("budget" in r) return { ok: false as const, error: String(r.budget) };
   let c: { title?: string; trigger?: { type: string; cron: string; tz?: string }; goal?: string; actions?: { tool: string; input: Record<string, unknown>; why?: string }[]; limits?: Record<string, unknown> };
   try { c = JSON.parse(r.text); } catch { return { ok: false as const, error: "Couldn’t understand that routine — try rephrasing." }; }
   if (!c.trigger?.cron || !/^(\S+\s+){4}\S+$/.test(c.trigger.cron) || !nextCron(c.trigger.cron, new Date())) return { ok: false as const, error: "Couldn’t work out when this should run." };
@@ -296,7 +302,16 @@ export async function workerTick() {
       if (!count && run.status === "queued") { if (!agentConfigured()) { await setStatus(db, run, "waiting_external", { waiting_reason: "Agent model not configured" }); continue; } await planRun(db, run); out.planned++; }
       else if (!count) { await db.from("agent_runs").update({ lease_until: null }).eq("id", run.id); }   // legacy run without steps: leave untouched
       else if (["queued", "running", "retrying", "scheduled_wait"].includes(run.status)) { await executeRun(db, run); out.executed++; }
-    } catch (e) { out.errors.push(`${run.id}: ${(e as Error).message}`); await db.from("agent_runs").update({ lease_until: null, errors: [{ error: (e as Error).message.slice(0, 300), at: new Date().toISOString() }] }).eq("id", run.id); }
+    } catch (e) {
+      // Budget stops pause the run (never fail or retry-burn it); the owner sees why and can resume after topping up.
+      if (e instanceof AgentBudgetError) {
+        const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).single();
+        await setStatus(db, { ...run, status: cur?.status ?? run.status }, "paused", { waiting_reason: e.message.slice(0, 300) });
+        await db.from("agent_runs").update({ lease_until: null }).eq("id", run.id);
+        await db.from("notifications").insert({ user_id: run.user_id, kind: "agent", title: "Gala Agent task paused", body: e.message.slice(0, 300), link: `/${run.surface === "provider" ? "provider" : "organizer"}/agent` });
+        continue;
+      }
+      out.errors.push(`${run.id}: ${(e as Error).message}`); await db.from("agent_runs").update({ lease_until: null, errors: [{ error: (e as Error).message.slice(0, 300), at: new Date().toISOString() }] }).eq("id", run.id); }
   }
   return out;
 }

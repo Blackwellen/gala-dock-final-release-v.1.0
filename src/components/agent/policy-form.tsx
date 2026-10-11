@@ -10,9 +10,11 @@ type PolicyRow = { mode: string; allowed_tools: string[] | null; auto_tools: str
   max_run_minutes: number; min_confidence: number; daily_spend_cap_minor: number; monthly_spend_cap_minor: number; refund_threshold_minor: number; booking_authority_minor: number;
   autopilot_rules: { tool: string; max_amount_minor?: number }[] };
 const MODES: [string, string, string][] = [
+  ["always_ask", "Always ask", "Every change, even a draft or internal task, waits for your approval."],
   ["suggest", "Suggest", "Analyses and recommends only."],
   ["draft", "Draft", "Creates drafts; nothing external or binding."],
   ["execute_with_approval", "Execute with approval", "Low-risk internal actions run automatically; anything external or binding waits for a person. Recommended."],
+  ["operational", "Operational auto", "Low-risk actions plus the external actions you tick below run automatically; commitments still wait for a person."],
   ["policy_autopilot", "Policy autopilot", "Only the pre-authorised actions and limits below run automatically — never unrestricted."],
 ];
 const RISK = ["R0 Read", "R1 Draft", "R2 Internal", "R3 External", "R4 Commitment", "R5 Security"];
@@ -42,7 +44,7 @@ export function PolicyForm({ workspaceId, tools, policy, canEdit }: { workspaceI
         <div><b>{t.title}</b><small>{RISK[t.risk]} · {t.description}</small></div>
         <span className="mk-row">
           {restrict && <label className="mk-switch"><input type="checkbox" name="allowed" value={t.id} defaultChecked={p.allowed_tools?.includes(t.id) ?? true} />Allowed</label>}
-          {t.risk === 3 && <label className="mk-switch"><input type="checkbox" name="auto" value={t.id} defaultChecked={p.auto_tools.includes(t.id)} />Run without approval</label>}
+          {t.risk === 3 && (mode === "operational" || mode === "policy_autopilot") && <label className="mk-switch"><input type="checkbox" name="auto" value={t.id} defaultChecked={p.auto_tools.includes(t.id)} />Run without approval</label>}
           {mode === "policy_autopilot" && t.risk >= 3 && t.risk <= 4 && <><label className="mk-switch"><input type="checkbox" name={`ap_${t.id}`} defaultChecked={p.autopilot_rules.some(r => r.tool === t.id)} />Autopilot</label>
             <label className="mk-field" style={{ width: 120 }}><span>Up to £</span><input name={`apmax_${t.id}`} type="number" min={0} step="1" defaultValue={p.autopilot_rules.find(r => r.tool === t.id)?.max_amount_minor != null ? pounds(p.autopilot_rules.find(r => r.tool === t.id)!.max_amount_minor!) : ""} /></label></>}
         </span></div>)}</div>

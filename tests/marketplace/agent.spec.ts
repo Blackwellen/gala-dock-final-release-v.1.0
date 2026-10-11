@@ -37,7 +37,9 @@ test.describe("gala agent runtime", () => {
     expect(decide(TOOL.get("draft.note")!, {}, p({ mode: "draft" }))).toBe("auto");
     expect(decide(TOOL.get("task.create")!, {}, p({}))).toBe("auto");
     expect(decide(TOOL.get("message.party")!, {}, p({}))).toBe("approval");
-    expect(decide(TOOL.get("message.party")!, {}, p({ auto_tools: ["message.party"] }))).toBe("auto");
+    expect(decide(TOOL.get("message.party")!, {}, p({ mode: "operational", auto_tools: ["message.party"] }))).toBe("auto");
+    expect(decide(TOOL.get("message.party")!, {}, p({ auto_tools: ["message.party"] }))).toBe("approval");
+    expect(decide(TOOL.get("task.create")!, {}, p({ mode: "always_ask" }))).toBe("approval");
     expect(decide(TOOL.get("tickets.publish_tier")!, {}, p({}))).toBe("approval");
     const quote = { items: [{ name: "Hire", qty: 1, unit_price: 400 }] };
     expect(decide(TOOL.get("quote.send")!, quote, p({ mode: "policy_autopilot", autopilot_rules: [{ tool: "quote.send", max_amount_minor: 50000 }] }))).toBe("auto");
