@@ -65,7 +65,8 @@ export default async function AdminOverview(props: PageProps<"/admin">) {
 
   const u = ov.users, e = ov.events, c = ov.commerce, w = ov.workspaces;
   const labels = Array.from({ length: period.days }, (_, i) => day(new Date(now - (period.days - 1 - i) * 864e5).toISOString(), { month: "short", day: "numeric" }));
-  const chart = metric === "users" ? u?.cumulative : metric === "events" ? e?.cumulative : metric === "orders" ? c?.order_series : c?.revenue_series;
+  // Daily activity, as in the design (new sign-ups / events created per day); the headline figure above stays the running total.
+  const chart = metric === "users" ? u?.signups : metric === "events" ? e?.created_series : metric === "orders" ? c?.order_series : c?.revenue_series;
   const head = metric === "users" ? { v: u ? u.total.toLocaleString("en-GB") : "—", l: "Total Users", d: u ? delta(u.total, u.total_prev) : null }
     : metric === "events" ? { v: e ? e.total.toLocaleString("en-GB") : "—", l: "Total Events", d: e ? delta(e.total, e.total_prev) : null }
     : metric === "orders" ? { v: c ? c.orders.toLocaleString("en-GB") : "—", l: `Orders (${period.days}d)`, d: c ? delta(c.orders, c.orders_prev) : null }

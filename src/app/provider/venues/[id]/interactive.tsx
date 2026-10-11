@@ -23,7 +23,8 @@ export function LiveToggle({ venueId, live }: { venueId: string; live: boolean }
     <button type="button" role="switch" aria-checked={live} aria-label={live ? "Pause listing" : "Publish listing"} className={`pv-switch${live ? " on" : ""}`} disabled={pending}
       onClick={() => {
         if (live && !window.confirm("Pause this venue? It stops taking new requests; existing bookings are unaffected.")) return;
-        start(async () => { const r = live ? await pauseListing(venueId, true) : await publishListing(venueId); toast(r.ok ? (r.message ?? "Done") : r.error); if (r.ok) router.refresh(); });
+        start(async () => { // Going live from paused must clear the pause too, or the listing stays hidden (published but paused_at set).
+        const r = live ? await pauseListing(venueId, true) : await (async () => { const u = await pauseListing(venueId, false); return u.ok ? publishListing(venueId) : u; })(); toast(r.ok ? (r.message ?? "Done") : r.error); if (r.ok) router.refresh(); });
       }}><i /></button>
     <span><b className={live ? "ok" : ""}>{live ? "Published" : "Not live"}</b><small>{live ? "Live on marketplace" : "Hidden from the marketplace"}</small></span>
   </div>;

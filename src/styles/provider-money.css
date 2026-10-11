@@ -121,3 +121,9 @@
 .pm-plan li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .pm-plan li span{overflow:hidden;text-overflow:ellipsis}
 .pm-recent li{padding:5px 4px}
+/* Earnings chart — "Financial Dashboard": pale gross cap, light-blue fees, deep-blue net; indigo net line; darker axis labels. */
+.pm-bar-g{fill:#d5e1ff}
+.pm-line{stroke:#1a1fd6;stroke-width:1.8;stroke-linejoin:round}
+.pm-dot{fill:#1a1fd6}
+.pm-ax{font-size:10px;fill:#3f4596}
+.pm-grid{stroke:#edf1f8}

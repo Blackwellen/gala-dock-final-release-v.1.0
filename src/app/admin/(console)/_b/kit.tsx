@@ -122,7 +122,7 @@ export function LineChart({ series, labels, height = 150, width = 520, format = 
 /** Group/bar chart (optionally stacked) as SVG. */
 export function Bars({ data, height = 150, width = 520, format = (v: number) => String(v), stacked = true, labels, gap = 0.35, right, line }: {
   data: { parts: { value: number; color: string }[] }[]; height?: number; width?: number; format?: (v: number) => string; stacked?: boolean; labels: string[]; gap?: number;
-  right?: { format: (v: number) => string }; line?: { values: number[]; color: string };
+  right?: { format: (v: number) => string; /** Right-axis value per left-axis unit (bars drawn on the left scale). */ scale?: number }; line?: { values: number[]; color: string };
 }) {
   const pad = { l: 34, r: right ? 38 : 8, t: 8, b: 20 };
   const max = Math.max(1, ...data.map(d => stacked ? d.parts.reduce((a, p) => a + p.value, 0) : Math.max(...d.parts.map(p => p.value))));
@@ -134,10 +134,10 @@ export function Bars({ data, height = 150, width = 520, format = (v: number) => 
   return <svg viewBox={`0 0 ${width} ${height}`} className="adb-line" role="img" aria-label="Bar chart" preserveAspectRatio="none">
     {[0, 1, 2, 3, 4].map(k => <g key={k}><line x1={pad.l} x2={width - pad.r} y1={y((top / 4) * k)} y2={y((top / 4) * k)} className="adb-grid" />
       <text x={pad.l - 6} y={y((top / 4) * k) + 3} textAnchor="end" className="adb-ax">{format((top / 4) * k)}</text>
-      {right && <text x={width - pad.r + 6} y={y((rtop / 4) * k, rtop) + 3} className="adb-ax">{right.format((rtop / 4) * k)}</text>}</g>)}
+      {right && <text x={width - pad.r + 6} y={y((rtop / 4) * k, rtop) + 3} className="adb-ax">{right.format(right.scale ? (top / 4) * k * right.scale : (rtop / 4) * k)}</text>}</g>)}
     {data.map((d, i) => { let acc = 0; const x0 = pad.l + bw * i + (bw - inner) / 2;
       return <g key={i}>{d.parts.map((p, j) => { if (stacked) { const y1 = y(acc + p.value), y0 = y(acc); acc += p.value; return <rect key={j} x={x0} y={y1} width={inner} height={Math.max(0, y0 - y1)} fill={p.color} />; }
-        const w = inner / d.parts.length; return <rect key={j} x={x0 + w * j} y={y(p.value)} width={w * .86} height={Math.max(0, y(0) - y(p.value))} fill={p.color} rx="1" />; })}</g>; })}
+        const w = inner / d.parts.length; return <rect key={j} x={x0 + w * j + w * .08} y={y(p.value)} width={w * .72} height={Math.max(0, y(0) - y(p.value))} fill={p.color} rx="1" />; })}</g>; })}
     {line && <path d={line.values.map((v, i) => `${i ? "L" : "M"}${(pad.l + bw * (i + .5)).toFixed(1)},${y(v, rtop).toFixed(1)}`).join("")} fill="none" stroke={line.color} strokeWidth="1.5" />}
     {labels.map((l, i) => i % every === 0 && <text key={i} x={pad.l + bw * (i + .5)} y={height - 5} textAnchor="middle" className="adb-ax">{l}</text>)}
   </svg>;

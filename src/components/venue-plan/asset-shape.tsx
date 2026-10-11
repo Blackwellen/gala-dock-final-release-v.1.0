@@ -250,7 +250,8 @@ export function pointLabelHidden(els: { type: string; asset?: string; x?: number
   const order = els.map((_, i) => i).filter(i => els[i].type === "asset" && !els[i].hidden && ASSET[els[i].asset ?? ""]?.kind === "point").sort((a, b) => Number(selected.has(b)) - Number(selected.has(a)));
   for (const i of order) {
     const e = els[i], r = Math.max(e.w ?? 0, e.h ?? 0, 18) / 2, cx = (e.x ?? 0) + (e.w ?? 0) / 2, top = (e.y ?? 0) + (e.h ?? 0) / 2 + r + fs * 0.2;
-    const bw = e.label.length * fs * 0.56 + 4 * k, box: [number, number, number, number] = [cx - bw / 2, top, cx + bw / 2, top + fs * 1.3];
+    // 650-weight glyphs average ~0.6em; the 3px white halo (.vp-out stroke) adds ~3px per side on screen.
+    const bw = e.label.length * fs * 0.6 + 8 * k, box: [number, number, number, number] = [cx - bw / 2, top, cx + bw / 2, top + fs * 1.3];
     if (placed.some(p => box[0] < p[2] && p[0] < box[2] && box[1] < p[3] && p[1] < box[3])) hide.add(i); else placed.push(box);
   }
   return hide;

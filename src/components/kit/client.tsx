@@ -60,12 +60,16 @@ export function Menu({ trigger, children, align = "right", width, label }: { tri
 // ── Dialog / drawer ───────────────────────────────────────────────────────
 export function Dialog({ open, onClose, title, sub, children, wide, footer }: { open: boolean; onClose: () => void; title: string; sub?: string; children: ReactNode; wide?: boolean; footer?: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  // Keep the latest onClose without re-running the open/close effect: callers usually pass an inline arrow, and
+  // re-running on every render would steal focus back to the first field (and the opener) on each keystroke.
+  const closeRef = useRef(onClose);
+  useEffect(() => { closeRef.current = onClose; });
   useEffect(() => {
     if (!open) return;
     const prev = document.activeElement as HTMLElement | null;
-    const t = window.setTimeout(() => ref.current?.querySelector<HTMLElement>("input,select,textarea,button:not([data-close])")?.focus(), 30);
+    const t = window.setTimeout(() => { const el = ref.current; if (el && !el.contains(document.activeElement)) el.querySelector<HTMLElement>("input,select,textarea,button:not([data-close])")?.focus(); }, 30);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") closeRef.current();
       if (e.key === "Tab" && ref.current) { // focus trap
         const f = [...ref.current.querySelectorAll<HTMLElement>("a,button,input,select,textarea,[tabindex]:not([tabindex='-1'])")].filter(el => !el.hasAttribute("disabled"));
         if (!f.length) return; const first = f[0]!, last = f[f.length - 1]!;
@@ -74,7 +78,7 @@ export function Dialog({ open, onClose, title, sub, children, wide, footer }: { 
     };
     document.addEventListener("keydown", onKey); document.body.style.overflow = "hidden";
     return () => { window.clearTimeout(t); document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; prev?.focus?.(); };
-  }, [open, onClose]);
+  }, [open]);
   return <AnimatePresence>{open && <motion.div className="k-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
     <motion.div ref={ref} role="dialog" aria-modal="true" aria-label={title} className={`k-dialog ${wide ? "wide" : ""}`} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 14, opacity: 0 }}>
       <div className="k-dialog-head"><div><h2>{title}</h2>{sub && <p style={{ marginTop: 3, fontSize: 12.5 }}>{sub}</p>}</div><button className="k-icon-btn plain" data-close aria-label="Close" onClick={onClose}><X size={17} /></button></div>

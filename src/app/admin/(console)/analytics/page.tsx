@@ -28,7 +28,14 @@ export default async function AnalyticsPage(props: PageProps<"/admin/analytics">
   const period = PERIODS[s("period")] ? s("period") : "30d", [plabel, days] = PERIODS[period]!;
   const compare = s("compare") !== "none";
   const now = requestTime(), dayKey = (d: number) => new Date(now - d * 864e5).toISOString().slice(0, 10);
-  const all = (await rows<Row>(db.from("analytics_daily").select("day,metric,dim,value").gte("day", dayKey(2 * days)).order("day").limit(20000))).map(r => ({ ...r, value: Number(r.value) }));
+  // PostgREST caps each response (1,000 rows), so page through newest-first and then sort ascending for the charts.
+  const all: Row[] = [];
+  for (let from = 0; from < 20000; from += 1000) {
+    const page = await rows<Row>(db.from("analytics_daily").select("day,metric,dim,value").gte("day", dayKey(2 * days)).order("day", { ascending: false }).range(from, from + 999));
+    all.push(...page.map(r => ({ ...r, value: Number(r.value) })));
+    if (page.length < 1000) break;
+  }
+  all.sort((a, b) => a.day.localeCompare(b.day));
   const curStart = dayKey(days - 1), cur = all.filter(r => r.day >= curStart), prev = all.filter(r => r.day < curStart);
   const sum = (l: Row[], m: string, dim = "") => l.filter(r => r.metric === m && r.dim === dim).reduce((a, r) => a + r.value, 0);
   const avg = (l: Row[], m: string, dim = "") => { const x = l.filter(r => r.metric === m && r.dim === dim); return x.length ? x.reduce((a, r) => a + r.value, 0) / x.length : 0; };
@@ -70,11 +77,11 @@ export default async function AnalyticsPage(props: PageProps<"/admin/analytics">
 
   const ticketing = <section className="adb-panel ada-mini">
     <div className="adb-sec-h"><h2>Ticketing performance</h2><span className="ada-chip">{plabel}<ChevronDown aria-hidden="true" /></span></div>
-    <div className="ada-mk">{([[Ticket, "Tickets sold", T.toLocaleString("en-GB"), dl(T, sum(prev, "tickets_sold"))], [CalendarDays, "Events with tickets", Math.round(EV / Math.max(1, days / 30)).toLocaleString("en-GB"), dl(EV, sum(prev, "events_with_tickets"))],
+    <div className="ada-mk">{([[Ticket, "Tickets sold", Math.round(T).toLocaleString("en-GB"), dl(T, sum(prev, "tickets_sold"))], [CalendarDays, "Events with tickets", Math.round(EV / Math.max(1, days / 30)).toLocaleString("en-GB"), dl(EV, sum(prev, "events_with_tickets"))],
       [Wallet, "Gross ticket revenue", money(TR), dl(TR, sum(prev, "ticket_revenue"))], [Percent, "Platform fees", money(TF), dl(TF, sum(prev, "ticket_fees"))]] as [LucideIcon, string, string, number | null | undefined][]).map(([I, l, v, d]) =>
       <div key={l}><i><I aria-hidden="true" /></i><span><small>{l}</small><b>{v}</b>{d !== undefined && <Delta value={d} />}</span></div>)}</div>
     <ul className="adb-keys ada-keys"><li><i style={{ background: "#2f6bff" }} />Tickets sold</li><li><i style={{ background: "#8b3dff" }} />Revenue (right axis)</li></ul>
-    <Bars width={430} height={118} labels={labels} format={kshort} stacked={false} gap={0.3} right={{ format: gshort }} data={daily("tickets_sold").map((v, i) => ({ parts: [{ value: v, color: "#4f7cff" }, { value: daily("ticket_revenue")[i]! / 20, color: "#a78bfa" }] }))} />
+    <Bars width={430} height={118} labels={labels} format={kshort} stacked={false} gap={0.3} right={{ format: gshort, scale: Math.max(1, ...daily("ticket_revenue")) / Math.max(1, ...daily("tickets_sold")) }} data={daily("tickets_sold").map((v, i) => ({ parts: [{ value: v, color: "#4f7cff" }, { value: daily("ticket_revenue")[i]! / (Math.max(1, ...daily("ticket_revenue")) / Math.max(1, ...daily("tickets_sold"))), color: "#a78bfa" }] }))} />
   </section>;
   const saas = <section className="adb-panel ada-mini">
     <div className="adb-sec-h"><h2>SaaS performance</h2><span className="ada-chip">{plabel}<ChevronDown aria-hidden="true" /></span></div>

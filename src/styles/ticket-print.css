@@ -1,0 +1,24 @@
+/* Printable ticket (user addition: ticket PDF generation and printing) */
+.tp-wrap{max-width:760px;margin:24px auto;padding:0 16px;display:grid;gap:14px;color:#090a52;font-size:14px}
+.tp-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tp-actions a{color:#0038fd;font-weight:600;text-decoration:none}
+.tp-actions span{display:flex;gap:8px}
+.tp-btn{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:9px;background:#0038fd;color:#fff;font:inherit;font-weight:600;border:1px solid transparent;cursor:pointer;text-decoration:none}
+.tp-btn.ghost{background:#fff;color:#090a52;border-color:#dfe6f5}
+.tp-ticket{border:1px solid #e6ebf5;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 18px -8px rgba(30,60,160,.18)}
+.tp-ticket header{background:#090a52;color:#fff;padding:22px 26px}
+.tp-ticket header small{letter-spacing:.14em;color:#b8c4ff;font-weight:700}.tp-ticket header h1{margin:6px 0 0;font-size:26px}
+.tp-body{display:grid;grid-template-columns:1fr 240px;gap:20px;padding:22px 26px;border-bottom:1px dashed #d8def0}
+.tp-body dl{margin:0;display:grid;gap:12px}.tp-body dt{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4a50a6}.tp-body dd{margin:2px 0 0;font-size:15px}
+.tp-body figure{margin:0;text-align:center}.tp-body img{width:220px;height:220px;image-rendering:pixelated}.tp-body figcaption{font-weight:700;letter-spacing:.04em}
+.tp-note{margin:0;padding:12px 26px;color:#4a50a6;font-size:12.5px}
+.tp-terms{padding:0 26px 22px}.tp-terms h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#4a50a6;margin:0 0 6px}.tp-terms p{margin:0;font-size:12.5px;line-height:1.5}
+.tp-err{padding:16px;border-radius:10px;background:#feeaee;color:#a3122a}
+@media(max-width:600px){.tp-body{grid-template-columns:1fr}}
+@media print{
+  body *{visibility:hidden}
+  .tp-ticket,.tp-ticket *{visibility:visible}
+  .tp-ticket{position:absolute;left:0;top:0;width:100%;box-shadow:none;border-color:#999}
+  .tp-ticket header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tp-actions{display:none}
+}

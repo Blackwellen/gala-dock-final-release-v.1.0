@@ -23,8 +23,14 @@ function EarningsChart({ days }: { days: { d: number; gross: number; fees: numbe
   const pts = days.map((x, i) => [pad.l + bw * (i + 0.5), y(x.net)]);
   return <svg viewBox={`0 0 ${W} ${H}`} className="pm-chart" role="img" aria-label="Daily gross, fees and net earnings">
     {[0, 1, 2, 3].map(k => <g key={k}><line x1={pad.l} x2={W - pad.r} y1={y(tick * k)} y2={y(tick * k)} className="pm-grid" /><text x={pad.l - 8} y={y(tick * k) + 3} textAnchor="end" className="pm-ax">£{(tick * k).toLocaleString("en-GB")}</text></g>)}
-    {days.map((x, i) => { const bx = pad.l + bw * i + bw * 0.18, w = bw * 0.64; return <g key={x.d}><title>{`${day(new Date(x.d + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })}: gross ${money(x.gross)}, fees ${money(x.fees)}, net ${money(x.net)}`}</title>
-      <rect x={bx} y={y(x.gross)} width={w} height={Math.max(0, y(0) - y(x.gross))} rx={1.5} className="pm-bar-g" /><rect x={bx} y={y(x.net)} width={w} height={Math.max(0, y(0) - y(x.net))} rx={1.5} className="pm-bar-n" /></g>; })}
+    <defs><linearGradient id="pm-gn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3b7afd" /><stop offset="1" stopColor="#4580fd" /></linearGradient>
+      <linearGradient id="pm-gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6fb9fe" /><stop offset="1" stopColor="#3aa0fe" /></linearGradient></defs>
+    {/* Stacked as in the design: net (bottom), platform fees & commission, then any remaining gross (e.g. tax/refunds) pale on top. */}
+    {days.map((x, i) => { const bx = pad.l + bw * i + bw * 0.15, w = bw * 0.7, fees = Math.max(0, Math.min(x.fees, x.gross - x.net)), top = Math.max(x.gross, x.net + fees);
+      return <g key={x.d}><title>{`${day(new Date(x.d + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })}: gross ${money(x.gross)}, fees ${money(x.fees)}, net ${money(x.net)}`}</title>
+      {top > 0 && <rect x={bx} y={y(top)} width={w} height={Math.max(0, y(0) - y(top))} rx={2} className="pm-bar-g" />}
+      {x.net + fees > 0 && <rect x={bx} y={y(x.net + fees)} width={w} height={Math.max(0, y(0) - y(x.net + fees))} rx={2} fill="url(#pm-gf)" />}
+      {x.net > 0 && <rect x={bx} y={y(x.net)} width={w} height={Math.max(0, y(0) - y(x.net))} rx={2} fill="url(#pm-gn)" />}</g>; })}
     <polyline points={pts.map(p => p.join(",")).join(" ")} className="pm-line" />{pts.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r={2.4} className="pm-dot" />)}
     {days.map((x, i) => (i % 5 === 0 || i === days.length - 1) && <text key={`l${x.d}`} x={pad.l + bw * (i + 0.5)} y={H - 6} textAnchor="middle" className="pm-ax">{day(new Date(x.d + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })}</text>)}
   </svg>;

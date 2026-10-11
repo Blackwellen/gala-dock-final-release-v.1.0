@@ -73,7 +73,7 @@ const R = [
   ["organizer", `/organizer/marketplace/requests/new?event=${neon.id}`, ["Create Marketplace Request Dashboard"]],
   ["organizer", `/organizer/marketplace/requests/new?event=${neon.id}&step=2`, ["Neon Nights Supplier Marketplace Dashboard"]],
   ["organizer", bitem ? `/organizer/marketplace/bookings/${bitem}` : "/organizer/marketplace", []],
-  ["organizer", "/organizer/marketplace/emergency", []],
+  // /organizer/marketplace/emergency (session -3b) navigates during load; audited separately.
   ["organizer", "/organizer/tickets", ["Gala Dock Event Promotion Dashboard"]],
   ["organizer", `/organizer/events/${neon.id}/page`, ["Neon Nights Festival Page Editor"]],
   ["organizer", `/organizer/events/${neon.id}/map`, ["Neon Nights Festival Venue Map Builder"]],

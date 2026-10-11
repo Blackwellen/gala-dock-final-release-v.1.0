@@ -9,6 +9,8 @@ const venue = (await admin.from("listings").select("id,details,published,paused_
 const space = async name => (await admin.from("spaces").select("*").eq("venue_id", venue.id).eq("name", name).maybeSingle()).data;
 await admin.from("spaces").delete().eq("venue_id", venue.id).eq("name", "E2E Gallery");
 const published = async () => (await admin.from("venue_structures").select("version,elements").eq("venue_id", venue.id).eq("status", "published").single()).data;
+// The test publishes extra assets onto the demo venue map; snapshot the live elements so `finally` can republish them unchanged.
+const original = (await published())?.elements ?? null;
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const ctx = await browser.newContext({ storageState: "artifacts/auth/provider.json", viewport: { width: 1536, height: 1024 } });
 const page = await ctx.newPage();
@@ -103,6 +105,9 @@ try {
   check("unexpected error", false, e.message.split("\n")[0]);
 } finally {
   await admin.from("spaces").delete().eq("venue_id", venue.id).eq("name", "E2E Gallery");
+  if (original) { const cur = await published(); if (cur) await admin.from("venue_structures").update({ elements: original }).eq("venue_id", venue.id).eq("version", cur.version); }
+  await admin.from("venue_structures").delete().eq("venue_id", venue.id).eq("status", "draft");
+  await admin.from("listings").update({ published: true, paused_at: null }).eq("id", venue.id);
   await browser.close();
   console.log(`\n${results.filter(Boolean).length}/${results.length} passed`);
   process.exit(results.every(Boolean) ? 0 : 1);
