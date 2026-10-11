@@ -30,7 +30,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | Area | Status | Notes |
 |---|---|---|
 | §1 Branch & preservation | PASS_WITH_NOTE | Work is on `main` in a shared tree with two peer sessions; no stash/pull/checkout was used, commits were explicit-path, production data was never wiped or reseeded (`demo_copy_of` rows preserved). A dedicated release branch was not created because three sessions deploy from `main`; tag the release commit instead. |
-| §1 Migration dependencies | PASS_WITH_NOTE | 92 migration files. **Risk:** migrations were applied through the Supabase Management API; `supabase_migrations.schema_migrations` does not exist, so the CLI has no history. Before the next environment is built: baseline with `supabase migration repair --status applied` for every file, or squash into a baseline. Version collision `202610270001` (two files) was resolved by renaming. |
+| §1 Migration dependencies | FIXED | 95 migration files, applied through the Supabase Management API. The CLI history table didn't exist; it is now baselined (`scripts/migration-baseline.mjs`, 95/95 recorded) so `supabase migration list`/`db push` match the database. Two version collisions (`202610270001`, `202610250001`) were resolved by renaming this session's files. Future migrations: apply, then re-run the baseline script (idempotent). |
 | §2 Master system inventory | PASS | `docs/release/SYSTEM_INVENTORY.md` — every route by portal, API endpoint with its auth class, server action, table (RLS + policy count), client-callable function, job, bucket, agent tool, trigger and test file. All 157 tables have RLS. Unauthenticated endpoints are only those intended to be public (auth callbacks, checkout return, OpenAPI, maintenance feed, queue, referral link). |
 | §3 No scope inflation | PASS | New capability was added only to close end-to-end gaps (e.g. ticket refunds on event cancellation) or where the spec requires it. |
 
@@ -126,10 +126,10 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| §92 Cloudflare R2 | BLOCKED (not implemented) | Credentials present; **no code uses R2** (health reports `not_implemented`). Storage metering per plan depends on it. Supabase Storage remains the store. |
+| §92 Cloudflare R2 | BLOCKED_EXTERNAL_CONFIGURATION | **Implemented:** dependency-free SigV4 client (`src/lib/r2.ts`), storage→R2 replication every 15 min with change detection and 35-day keep of deleted objects (`storage-backup` job), health check. Credentials verified (signed requests succeed), but **the configured bucket `galadock` does not exist** in the Cloudflare account (only other projects' buckets are present). Create the bucket (or set `CLOUDFLARE_R2_BUCKET`) and replication starts automatically. Per-plan storage metering is still to do. |
 | §93 Stripe | PASS_WITH_NOTE | Payments orchestration, webhooks (authoritative), reconciliation, refunds, disputes, Connect transfers. **Local `.env` holds a LIVE secret key** — confirm intended environments; production uses the configured key. |
 | §94 MapTiler | PASS | Configured; maps and geocoding in listings/search. |
-| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects not backed up separately. |
+| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects: replication to R2 is implemented and starts once the R2 bucket exists (see §92). |
 | §133 Restore test | BLOCKED_EXTERNAL_CONFIGURATION | Needs a staging project; procedure in `docs/operations/runbook.md`. |
 | §134–135 DR / IR | PASS | Runbook with RTO/RPO table, secret-rotation steps, ICO 72-hour process. |
 | §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` (public liveness; authenticated readiness, cron freshness, backlogs) and `/admin/health`. External uptime monitor and error tracking not configured (BLOCKED_EXTERNAL). |
@@ -168,7 +168,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 |---|---|---|
 | §128–129 Document pack | BLOCKED_LEGAL_REVIEW | 5 published pages (session -22) + 18 drafts in `docs/legal/` (≈15k words), each labelled "Draft for specialist UK legal review before production publication", company details as placeholders, counsel review points listed per document. Drafts are deliberately concise where the subject is short; counsel may expand. |
 | §130 Source register | PASS | `docs/legal/source-register.md` with sources, dates, assumptions, implementation map. |
-| §131 Cookies / PECR | BLOCKED_LEGAL_REVIEW | No third-party trackers, analytics, ads or embeds found. **Open issue:** the `gd_ref` promoter attribution cookie (30 days) is set without consent; likely needs consent or replacement with URL-based attribution. |
+| §131 Cookies / PECR | PASS_WITH_NOTE | No third-party trackers, analytics, ads or embeds. The `gd_ref` promoter attribution cookie is now set only after the visitor agrees (`/r/[code]/consent`, choice stored 12 months in `gd_consent`; session -22). Counsel to confirm wording. |
 
 ## 15. Data & fraud (§138–140)
 
@@ -186,11 +186,11 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 |---|---|---|---|
 | 1 | **Transactional email provider** — `RESEND_API_KEY`, `EMAIL_FROM` on a verified domain (receipts, refunds, security alerts depend on it) | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
 | 2 | **Enable Supabase PITR** (RPO 24 h today) before live payments | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
-| 4 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh, cookie consent for `gd_ref`, company details | Legal | BLOCKED_LEGAL_REVIEW |
+| 3 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh. Placeholders still needing your input: ICO registration number, VAT number, named safeguarding lead + deputy, liability cap amounts (Organizer/Provider terms), partner fee schedule, accessibility audit date. Company name/number/office are filled (Blackwellen Limited, 16482166, 61 Bridge Street, Kington, HR5 3DJ). | Legal / Owner | BLOCKED_LEGAL_REVIEW |
 
 ## 17. Non-blocking items (§149)
 
-Guided tours & screenshot annotation; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 integration and storage metering; virtual-event adapters; Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; migration-history baseline; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Guided tours & screenshot annotation; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event adapters; Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -213,6 +213,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270013 | Launch states, waiting room, time-bound waitlist offers |
 | 202610270014 | Agent retention purge + monthly `agent-retention` job |
 | 202610270015 | Price book aligned to gpt-5.4-mini / gpt-5.4-nano |
+| 202610270016 | Storage → R2 replication bookkeeping + `storage-backup` job |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)

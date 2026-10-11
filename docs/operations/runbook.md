@@ -28,6 +28,7 @@ Scheduled jobs (pg_cron → `dispatch_worker` → HTTPS with `CRON_SECRET`):
 | privacy-deletions | daily 02:17 UTC | `/api/cron/privacy` |
 | break-glass-retention | monthly | SQL |
 | agent-retention | monthly (2nd, 04:15 UTC) | SQL |
+| storage-backup | every 15 min | `/api/cron/storage-backup` |
 | retention-security-logs | monthly | SQL |
 
 ## 2. Backups (§132)
@@ -35,7 +36,7 @@ Scheduled jobs (pg_cron → `dispatch_worker` → HTTPS with `CRON_SECRET`):
 **Current state, verified through the Supabase Management API on 11 Oct 2026:**
 * Daily physical backups (WAL-G) are **enabled**. Latest completed backup: 10 Oct 2026 18:23 UTC.
 * Point-in-time recovery is **disabled**, so the recovery point objective is up to 24 hours. **Recommendation (release-blocking for payments):** enable PITR before taking live money. Payment and ticket state also lives in Stripe, but bookings, check-ins and ledger postings made since the last backup would otherwise be lost.
-* Storage buckets (`workspace-files`, `event-media`, avatars) are **not** included in database backups. **Action:** a nightly replication of storage objects to R2 (lifecycle: 35 days). BLOCKED until the R2 integration ships; until then storage durability relies on Supabase's own replication.
+* Storage buckets (`workspace-files`, `event-media`, avatars) are not included in database backups. They are replicated to Cloudflare R2 every 15 minutes (`storage-backup` job → `/api/cron/storage-backup`, keys `storage/<bucket>/<path>`, deleted objects kept 35 days). **Requires the R2 bucket named in `CLOUDFLARE_R2_BUCKET` to exist** — at the time of writing it does not; `/api/health` reports it.
 * Secrets are held in Vercel environment variables and Supabase Vault (`cron_secret`, `app_url`) and are excluded from backups by design. Recovery uses the password manager record "Gala Dock production secrets".
 
 ## 3. Restore test (§133)
