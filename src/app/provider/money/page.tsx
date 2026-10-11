@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ConnectStatus } from "./_components/connect-status";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarDays, Download, ChevronDown, PoundSterling, Wallet, Percent, CreditCard, FileText, CircleCheck, Sparkles, CalendarClock, ChevronRight, ArrowRight, Landmark, FileDown, PieChart,
@@ -92,6 +93,7 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
           <div><Donut size={150} thickness={18} parts={cats.map(([l, v], i) => ({ label: l, value: v, tone: CAT_TONE[i % CAT_TONE.length] }))} center={<><b>{money(g)}</b><small>Total value</small></>} />
             <ul>{cats.map(([l, v], i) => <li key={l}><i className={CAT_TONE[i % CAT_TONE.length]} />{l}<b>{money(v)}</b><small>{g ? Math.round((100 * v) / g) : 0}%</small></li>)}</ul></div></section>
         <section className="ws-panel pm-pay"><div className="ws-panel-head"><h2>Upcoming payouts</h2><Link className="ws-link" href={qp("&tab=payouts")}>View all <ArrowRight aria-hidden="true" /></Link></div>
+          <ConnectStatus workspaceId={ctx.workspace.id} canManage={ctx.role === "owner"} />
           {upcoming.length ? <ul>{upcoming.slice(0, 3).map(t => <li key={t.id}><span className="ic"><CalendarClock aria-hidden="true" /></span><span><b>{money(-t.amount)}</b><Chip tone={t.status === "pending" ? "blue" : "amber"}>{t.status === "pending" ? "Scheduled" : "Processing"}</Chip><small>Arrives {day(t.occurred_at, { day: "numeric", month: "short", year: "numeric" })}</small></span>
             <small>{t.description}</small><ChevronRight aria-hidden="true" /></li>)}</ul> : <p className="pv-none">No payouts scheduled — payouts run {schedule} once funds clear.</p>}</section>
         <section className="ws-panel pm-pay pm-recent"><div className="ws-panel-head"><h2>Recent payouts</h2><Link className="ws-link" href={qp("&tab=payouts")}>View all <ArrowRight aria-hidden="true" /></Link></div>

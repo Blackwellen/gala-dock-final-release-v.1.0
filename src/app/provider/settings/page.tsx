@@ -6,6 +6,7 @@ import "@/styles/provider-team.css";
 import "@/styles/provider-agent.css";
 import "@/styles/provider-settings.css";
 import { Avatar, Chip } from "@/components/workspace/kit";
+import { CredentialsCard } from "./_components/credentials-card";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money, relative, titleCase, requestTime } from "@/lib/workspace/format";
 import { getProvider } from "@/lib/provider/context";
@@ -62,6 +63,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         : <><dl className="ps-dl">{([["Legal name", p.legal_name], ["Trading name", ws.name], ["Workspace type", ws.capabilities.map(x => x === "venue" ? "Venue" : "Services").join(" + ")], ["Address", p.address ?? venue?.location], ["Phone", p.phone], ["Email", p.email], ["Website", p.website], ["Time zone", "Europe/London"], ["Language", p.language ?? "English (UK)"]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || "—"}</dd></div>)}</dl>
           {owner && <Link href={`${base}?edit=1`} className="ws-btn outline sm ps-end">Edit details</Link>}</>}
       </section>
+      <CredentialsCard workspaceId={ws.id} canManage={owner} />
       <section className="ws-panel ps-caps"><h2><span className="ps-ic"><UserCog aria-hidden="true" /></span>Capability settings<small>Enable and configure the services you offer on Gala Dock.</small></h2>
         <div className="ps-capgrid">{([["venue", Landmark, "Venue operations", "List and manage your venue spaces, packages and venue bookings.", "/provider/listings/venues", ["Multiple spaces and layouts", "Venue packages", "Venue booking rules", "Map and seating plans", "Licences and compliance"]],
           ["service", Wrench, "Supplier services", "List and manage your services on the marketplace.", "/provider/listings/services", ["Create service listings", "Service packages", "Travel and coverage areas", "Equipment and staffing", "Service booking rules"]]] as const).map(([k, I, l, d, href, feats]) => {
