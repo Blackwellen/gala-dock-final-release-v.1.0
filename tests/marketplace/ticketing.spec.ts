@@ -119,7 +119,15 @@ test.describe("ticketing", () => {
     await db.from("ticket_tiers").update({ sold: 3 }).eq("id", tier);
     expect(Number((await db.rpc("notify_waitlists")).data)).toBeGreaterThanOrEqual(1);
     expect(((await db.from("ticket_tiers").select("status").eq("id", tier).single()).data as { status: string }).status).toBe("on_sale");
-    expect(((await buyC.from("ticket_waitlist").select("status").eq("event_id", event).single()).data as { status: string }).status).toBe("notified");
+    // §52: freed inventory is reserved for the next person for 30 minutes, then passed on.
+    const w = (await buyC.from("ticket_waitlist").select("id,status,offer_expires_at").eq("event_id", event).single()).data as { id: string; status: string; offer_expires_at: string };
+    expect(w.status).toBe("offered");
+    expect(new Date(w.offer_expires_at).getTime()).toBeGreaterThan(Date.now() + 25 * 60_000);
+    expect(((await db.from("ticket_tiers").select("held").eq("id", tier).single()).data as { held: number }).held).toBeGreaterThanOrEqual(2);
+    await db.from("ticket_waitlist").update({ offer_expires_at: new Date(Date.now() - 120_000).toISOString() }).eq("id", w.id);
+    await db.rpc("notify_waitlists");
+    expect(((await buyC.from("ticket_waitlist").select("status").eq("id", w.id).single()).data as { status: string }).status).toBe("expired");
+    expect(((await db.from("ticket_tiers").select("held").eq("id", tier).single()).data as { held: number }).held).toBe(0);
   });
 
   test("§47 inventory safety: 15 concurrent holds never oversell 5 tickets", async () => {
