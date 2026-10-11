@@ -54,7 +54,8 @@ export default function PrivacyPolicy() {
           <li>Supabase: database, authentication and file storage</li>
           <li>Vercel: hosting</li>
           <li>Our email delivery provider: account, booking and ticket emails</li>
-          <li>Anthropic: AI processing for Gala Agent</li>
+          <li>Microsoft (Azure OpenAI): AI processing for Gala Agent, in the UK or the EEA</li>
+          <li>Anthropic: AI processing for some assistant features, such as onboarding help</li>
           <li>Map services, such as OpenStreetMap, for venue maps</li>
         </ul>
         Each is bound by a contract that limits its use of your data.</li>

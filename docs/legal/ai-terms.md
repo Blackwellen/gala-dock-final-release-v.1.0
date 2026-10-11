@@ -44,7 +44,7 @@ Gala Agent is the AI assistant built into Gala Dock. These terms explain what it
 
 ## 5. Your data
 
-5.1 To answer, Gala Agent sends the minimum relevant records from your workspace, along with your question, to the AI provider. Data is processed under our agreement with Microsoft, in [REGION, e.g. UK/EU] where available. **It is not used to train the provider's models.** [Counsel/engineering: confirm Azure OpenAI data-processing terms, region, and abuse-monitoring retention.]
+5.1 To answer, Gala Agent sends the minimum relevant records from your workspace, along with your question, to the AI provider. Data is processed under our agreement with Microsoft (Azure OpenAI), in the United Kingdom, or in the European Economic Area when requests are routed there; it does not leave the UK/EEA for this purpose. **It is not used to train the provider's models.** [Counsel: confirm the Azure OpenAI data-processing terms and abuse-monitoring retention.]
 
 5.2 We store the task, the plan, tool calls and their results, approvals, and a concise summary, so you can see what happened and so Agent tasks can resume. **We do not request or store the model's private reasoning ("chain of thought").**
 
