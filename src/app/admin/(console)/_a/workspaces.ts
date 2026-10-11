@@ -3,7 +3,7 @@ import { rows, type Db } from "@/lib/workspace/db";
 import { rpc } from "./lib";
 
 export type Ws = { id: string; name: string; kind: "organizer" | "provider"; plan: string; status: string; verification_status: string; payout_status: string; commission_bps: number;
-  cover_image: string; created_at: string; owner_id: string; capabilities: string[]; settings: { reference?: string; company?: string; company_no?: string; vat_number?: string; location?: string } | null };
+  cover_image: string; created_at: string; owner_id: string; capabilities: string[]; settings: { reference?: string; company?: string; company_no?: string; vat_number?: string; location?: string; demo?: boolean | string } | null };
 export type WsMetric = { workspace_id: string; gmv: number; gmv_prev: number; tickets: number; tickets_prev: number; events: number; upcoming_events: number; services_booked: number;
   services_prev: number; members: number; last_activity: string | null; open_flags: number; max_risk: number | null; open_cases: number; fees: number };
 export type Owner = { id: string; full_name: string; avatar_url: string };

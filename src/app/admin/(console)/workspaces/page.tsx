@@ -104,7 +104,7 @@ export default async function WorkspacesPage(props: PageProps<"/admin/workspaces
                 const m = metrics.get(w.id), h = health(w, m), o = owners.get(w.owner_id);
                 return <tr key={w.id} className={w.id === selId ? "sel" : ""}>
                   <td className="ck"><input type="checkbox" name="id" value={w.id} aria-label={`Select ${w.name}`} /></td>
-                  <td><Link className="aa-who" href={qs(base, sp, { sel: w.id })} scroll={false}><Thumb src={w.cover_image || null} w={30} h={30} /><div><b>{w.name}</b><small>{shortRef("ORG", w.id, w.settings?.reference)}</small></div></Link></td>
+                  <td><Link className="aa-who" href={qs(base, sp, { sel: w.id })} scroll={false}><Thumb src={w.cover_image || null} w={30} h={30} /><div><b>{w.name}{w.settings?.demo === true || w.settings?.demo === "true" ? <span className="aa-demo">Demo</span> : null}</b><small>{shortRef("ORG", w.id, w.settings?.reference)}</small></div></Link></td>
                   <td><span className={`aa-chip ${w.kind === "organizer" ? "pink" : ""}`}>{titleCase(w.kind)}</span></td>
                   <td>{planLabel(w.plan)}</td>
                   <td>{o ? <span className="aa-who"><Avatar src={o.avatar_url} name={o.full_name} size={24} /><span className="nm">{o.full_name}</span></span> : <span className="aa-muted">—</span>}</td>
