@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/onboarding/provider?step=4",
+    "file": "Designs\\auth & onboarding\\Gala Dock Provider Setup Dashboard(1).png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-provider-publish",
+    "mismatchPercent": 18.375,
+    "interfaceMismatchPercent": 17.54,
+    "ssimFull": 0.5871,
+    "ssimInterface": 0.5619,
+    "geometry": {
+      "scrollHeight": 1157,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

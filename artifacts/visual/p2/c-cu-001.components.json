@@ -1,0 +1,16 @@
+{
+ "name": "c-cu-001",
+ "path": "/discover",
+ "page": 24.51,
+ "components": [
+  {
+   "sel": ".c-top",
+   "label": "c-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 64,
+   "mismatch": 10.4
+  }
+ ]
+}

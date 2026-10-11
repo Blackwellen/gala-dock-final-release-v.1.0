@@ -146,7 +146,7 @@ async function providerFinish(page: Page, userId: string, kind: "venue" | "servi
   await expectPath(page, /step=4/);
   // R: publishing is gated on verification and payouts; draft completion is allowed.
   await expect(page.getByRole("button", { name: "Publish listing" })).toBeDisabled();
-  await expect(page.getByText("Business verification by Gala Dock (in review after you submit documents)").or(page.getByText("Business identity verification")).first()).toBeVisible();
+  await expect(page.getByText("Business verification (Gala Dock review)")).toBeVisible();
   await page.getByRole("button", { name: "Finish setup — keep listing as draft" }).click();
   await expectPath(page, /:\d+\/provider(\?|$)/);
   const ws = (await admin.from("workspaces").select("id,capabilities,onboarding_complete,verification_status,payout_status,settings").eq("owner_id", userId).single()).data!;

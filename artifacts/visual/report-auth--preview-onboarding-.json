@@ -5,10 +5,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-login",
-    "mismatchPercent": 16.278,
-    "interfaceMismatchPercent": 7.963,
-    "ssimFull": 0.7673,
-    "ssimInterface": 0.7526,
+    "mismatchPercent": 15.381,
+    "interfaceMismatchPercent": 6.332,
+    "ssimFull": 0.7945,
+    "ssimInterface": 0.8055,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -21,12 +21,15 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-register",
-    "mismatchPercent": 17.147,
-    "interfaceMismatchPercent": 9.766,
-    "ssimFull": 0.694,
-    "ssimInterface": 0.6883,
+    "check": [
+      "input[name=\"terms\"]"
+    ],
+    "mismatchPercent": 16.513,
+    "interfaceMismatchPercent": 8.7,
+    "ssimFull": 0.7195,
+    "ssimInterface": 0.7355,
     "geometry": {
-      "scrollHeight": 1089,
+      "scrollHeight": 1086,
       "overflow": false
     },
     "errors": []
@@ -37,12 +40,12 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-verify-email",
-    "mismatchPercent": 17.549,
-    "interfaceMismatchPercent": 11.388,
-    "ssimFull": 0.7387,
-    "ssimInterface": 0.6992,
+    "mismatchPercent": 15.422,
+    "interfaceMismatchPercent": 7.244,
+    "ssimFull": 0.7895,
+    "ssimInterface": 0.7998,
     "geometry": {
-      "scrollHeight": 1088,
+      "scrollHeight": 1086,
       "overflow": false
     },
     "errors": []
@@ -53,10 +56,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-forgot-password",
-    "mismatchPercent": 15.573,
-    "interfaceMismatchPercent": 7.294,
-    "ssimFull": 0.7854,
-    "ssimInterface": 0.7892,
+    "mismatchPercent": 14.589,
+    "interfaceMismatchPercent": 5.491,
+    "ssimFull": 0.8187,
+    "ssimInterface": 0.8543,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -69,10 +72,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-reset-password",
-    "mismatchPercent": 18.281,
-    "interfaceMismatchPercent": 9.103,
-    "ssimFull": 0.757,
-    "ssimInterface": 0.7395,
+    "mismatchPercent": 17.412,
+    "interfaceMismatchPercent": 7.522,
+    "ssimFull": 0.7761,
+    "ssimInterface": 0.7756,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -85,10 +88,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-mfa",
-    "mismatchPercent": 16.376,
-    "interfaceMismatchPercent": 11.126,
-    "ssimFull": 0.7394,
-    "ssimInterface": 0.7053,
+    "mismatchPercent": 14.454,
+    "interfaceMismatchPercent": 7.38,
+    "ssimFull": 0.7739,
+    "ssimInterface": 0.7742,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -101,10 +104,10 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-invite",
-    "mismatchPercent": 20.523,
-    "interfaceMismatchPercent": 12.529,
-    "ssimFull": 0.7239,
-    "ssimInterface": 0.6764,
+    "mismatchPercent": 18.578,
+    "interfaceMismatchPercent": 8.737,
+    "ssimFull": 0.7575,
+    "ssimInterface": 0.7429,
     "geometry": {
       "scrollHeight": 1086,
       "overflow": false
@@ -117,12 +120,12 @@
     "width": 1448,
     "height": 1086,
     "key": "auth-secure-access",
-    "mismatchPercent": 19.454,
-    "interfaceMismatchPercent": 11.888,
-    "ssimFull": 0.7152,
-    "ssimInterface": 0.6798,
+    "mismatchPercent": 17.867,
+    "interfaceMismatchPercent": 8.725,
+    "ssimFull": 0.7432,
+    "ssimInterface": 0.7349,
     "geometry": {
-      "scrollHeight": 1141,
+      "scrollHeight": 1086,
       "overflow": false
     },
     "errors": []
@@ -133,10 +136,10 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-experience",
-    "mismatchPercent": 16.529,
-    "interfaceMismatchPercent": 13.811,
-    "ssimFull": 0.6815,
-    "ssimInterface": 0.6581,
+    "mismatchPercent": 17.476,
+    "interfaceMismatchPercent": 13.754,
+    "ssimFull": 0.6603,
+    "ssimInterface": 0.6582,
     "geometry": {
       "scrollHeight": 1055,
       "overflow": false
@@ -149,10 +152,10 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-business",
-    "mismatchPercent": 13.739,
-    "interfaceMismatchPercent": 11.479,
-    "ssimFull": 0.6739,
-    "ssimInterface": 0.6743,
+    "mismatchPercent": 13.149,
+    "interfaceMismatchPercent": 11.058,
+    "ssimFull": 0.6927,
+    "ssimInterface": 0.6828,
     "geometry": {
       "scrollHeight": 1039,
       "overflow": false
@@ -165,12 +168,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-events",
-    "mismatchPercent": 22.776,
-    "interfaceMismatchPercent": 17.707,
-    "ssimFull": 0.5186,
-    "ssimInterface": 0.5508,
+    "mismatchPercent": 18.699,
+    "interfaceMismatchPercent": 16.465,
+    "ssimFull": 0.5898,
+    "ssimInterface": 0.5941,
     "geometry": {
-      "scrollHeight": 1024,
+      "scrollHeight": 1044,
       "overflow": false
     },
     "errors": []
@@ -181,12 +184,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-brand",
-    "mismatchPercent": 16.531,
-    "interfaceMismatchPercent": 14.698,
-    "ssimFull": 0.6173,
-    "ssimInterface": 0.6309,
+    "mismatchPercent": 16.678,
+    "interfaceMismatchPercent": 14.814,
+    "ssimFull": 0.6133,
+    "ssimInterface": 0.6267,
     "geometry": {
-      "scrollHeight": 1227,
+      "scrollHeight": 1224,
       "overflow": false
     },
     "errors": []
@@ -197,13 +200,13 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-organizer-team",
-    "mismatchPercent": 16.326,
-    "interfaceMismatchPercent": 15.2,
-    "ssimFull": 0.5996,
-    "ssimInterface": 0.5767,
+    "mismatchPercent": 16.44,
+    "interfaceMismatchPercent": 15.204,
+    "ssimFull": 0.5982,
+    "ssimInterface": 0.5769,
     "geometry": {
       "scrollHeight": 1270,
-      "overflow": false
+      "overflow": true
     },
     "errors": []
   },
@@ -213,13 +216,13 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-preferences",
-    "mismatchPercent": 20.035,
-    "interfaceMismatchPercent": 20.886,
-    "ssimFull": 0.6321,
-    "ssimInterface": 0.6125,
+    "mismatchPercent": 15.214,
+    "interfaceMismatchPercent": 13.913,
+    "ssimFull": 0.6893,
+    "ssimInterface": 0.6944,
     "geometry": {
-      "scrollHeight": 1058,
-      "overflow": false
+      "scrollHeight": 1034,
+      "overflow": true
     },
     "errors": []
   },
@@ -229,10 +232,10 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-business",
-    "mismatchPercent": 16.946,
-    "interfaceMismatchPercent": 16.211,
-    "ssimFull": 0.6342,
-    "ssimInterface": 0.6218,
+    "mismatchPercent": 17.182,
+    "interfaceMismatchPercent": 16.367,
+    "ssimFull": 0.6298,
+    "ssimInterface": 0.6169,
     "geometry": {
       "scrollHeight": 1024,
       "overflow": false
@@ -245,12 +248,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-listing",
-    "mismatchPercent": 19.807,
-    "interfaceMismatchPercent": 20.908,
-    "ssimFull": 0.5871,
-    "ssimInterface": 0.5374,
+    "mismatchPercent": 20.509,
+    "interfaceMismatchPercent": 21.696,
+    "ssimFull": 0.5821,
+    "ssimInterface": 0.5323,
     "geometry": {
-      "scrollHeight": 1226,
+      "scrollHeight": 1211,
       "overflow": false
     },
     "errors": []
@@ -261,13 +264,13 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-rules",
-    "mismatchPercent": 15.88,
-    "interfaceMismatchPercent": 13.51,
-    "ssimFull": 0.5966,
-    "ssimInterface": 0.5822,
+    "mismatchPercent": 15.952,
+    "interfaceMismatchPercent": 13.556,
+    "ssimFull": 0.5954,
+    "ssimInterface": 0.5823,
     "geometry": {
-      "scrollHeight": 1313,
-      "overflow": false
+      "scrollHeight": 1303,
+      "overflow": true
     },
     "errors": []
   },
@@ -277,12 +280,12 @@
     "width": 1536,
     "height": 1024,
     "key": "preview-onboarding-provider-publish",
-    "mismatchPercent": 18.336,
-    "interfaceMismatchPercent": 17.578,
-    "ssimFull": 0.6008,
-    "ssimInterface": 0.5807,
+    "mismatchPercent": 18.375,
+    "interfaceMismatchPercent": 17.54,
+    "ssimFull": 0.5871,
+    "ssimInterface": 0.5619,
     "geometry": {
-      "scrollHeight": 1355,
+      "scrollHeight": 1157,
       "overflow": false
     },
     "errors": []

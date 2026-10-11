@@ -686,3 +686,47 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .setup-organizer-events .setup-assistant>.setup-panel:last-child .assistant-feature b{font-size:12.5px}
 .setup-organizer-events .setup-assistant>.setup-panel:last-child .assistant-feature p{font-size:12.2px;line-height:18px}
 .setup-organizer-events .setup-assistant>.setup-panel:last-child .icon-tile{width:32px;height:32px;border-radius:50%}
+
+/* ===== Fidelity pass: provider trust & publish ===== */
+.setup-provider-publish .setup-panel{padding:16px 16px 14px;margin-bottom:12px}
+.setup-provider-publish .setup-panel>h3{font-size:16px}
+.setup-provider-publish .setup-panel>p.muted{font-size:12.5px;margin:4px 0 12px}
+.credentials{gap:10px!important}
+.credentials .credential{border:1px solid #e3e9f7;border-radius:10px;padding:12px;background:#fff;display:grid;gap:10px}
+.credential-head{display:flex;gap:10px;align-items:flex-start}
+.credential-head .icon-tile{width:30px;height:30px;border-radius:8px}
+.credential-head .icon-tile svg{width:17px;height:17px}
+.credential-head>span{display:grid;gap:5px;justify-items:start}
+.credential-head b{font-size:12.5px;line-height:16px}
+.credential .badge{font-size:10.5px;padding:2px 8px;border-radius:999px}
+.credential .badge.required{background:#ffe9ec;color:#c0213f}
+.credential .badge.muted{background:#e6f7ee;color:#0f8a5a}
+.credentials .upload-box{min-height:92px;padding:12px}
+.stripe-brand{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:18px;background:#f5f8ff;border:0;border-radius:10px;padding:16px 20px}
+.stripe-word{font-size:32px;font-weight:800;letter-spacing:-1.4px;color:#635bff;font-family:Arial,Helvetica,sans-serif}
+.stripe-brand .check-list{display:grid;gap:4px;font-size:12.5px;margin:0}
+.stripe-actions{display:grid;gap:8px;justify-items:center}
+.stripe-actions .button{min-width:220px;min-height:36px;font-size:13px}
+.setup-provider-publish .team-row{padding:6px 8px}
+.setup-provider-publish .invite-form{gap:10px}
+.readiness.agent-panel h4{font-size:15px;font-weight:600;margin:12px 0 4px}
+.readiness.agent-panel>p{font-size:12.5px;line-height:18px}
+.readiness .readiness-list{gap:9px;margin:14px 0 4px}
+.readiness .readiness-list li{font-size:12.5px;color:#3b4270}
+.readiness .readiness-list li.met svg{color:#fff;fill:#16a36b}
+.readiness .readiness-list li:not(.met) svg{color:#9aa3c7}
+.preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.preview-actions .button{min-height:34px;font-size:12.5px;padding:8px 10px;width:100%;margin:0}
+@media(max-width:700px){.stripe-brand{grid-template-columns:1fr}}
+
+.credentials .credential{padding:10px;gap:8px}
+.credentials .upload-box{min-height:0!important;padding:10px 8px!important;gap:4px}
+.credentials .upload-box b{font-size:12.5px}
+.credentials .upload-box small{font-size:10.5px}
+.setup-provider-publish .stripe-brand{padding:12px 18px}
+.setup-provider-publish .stripe-brand .check-list{gap:2px}
+.readiness.agent-panel>p{font-size:12px;line-height:17px}
+.readiness .readiness-list{gap:8px}
+.setup-provider-publish .listing-preview .photo{height:108px!important}
+.setup-provider-publish .listing-preview h4{font-size:13.5px;margin:8px 0 2px}
+.setup-provider-publish .setup-assistant>.setup-panel{padding:14px;margin-bottom:12px}

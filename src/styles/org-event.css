@@ -167,3 +167,5 @@
 .eh-tabs .k-tab { padding: 0 8px !important; }
 .eh-tabactions .k-btn { padding: 0 14px !important; }
 .ov-row1 .k-card .k-grid.k-g3 { margin-top: 22px !important; }
+
+.eh-hero > img:first-child { position: absolute; z-index: 0; }

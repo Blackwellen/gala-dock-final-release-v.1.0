@@ -1,0 +1,9 @@
+
+Running 4 tests using 1 worker
+
+  ok 1 [desktop] › tests\phase1\e2e\journeys.spec.ts:163:5 › Journey D: provider with a venue — draft listing, booking rules, trust gating (10.3s)
+  ok 2 [desktop] › tests\phase1\e2e\journeys.spec.ts:174:5 › Journey E: provider with services — category and coverage (9.5s)
+  ok 3 [desktop] › tests\phase1\e2e\journeys.spec.ts:185:5 › Journey F: mixed provider uses one workspace for venue and services (10.5s)
+  ok 4 [desktop] › tests\phase1\e2e\journeys.spec.ts:198:5 › Journey H: an organizer can add a provider workspace without permission crossover (5.5s)
+
+  4 passed (38.5s)

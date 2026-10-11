@@ -28,6 +28,12 @@ begin
   select count(*) into bad from unnest(coalesce(p_linked, '{}') || coalesce(p_exclusive, '{}')) x
     where x = p_space or not exists(select 1 from public.spaces s where s.id = x and s.venue_id = v);
   if bad > 0 then raise exception 'invalid_space_link' using errcode = '22023'; end if;
+  -- Can't declare spaces exclusive while they already hold overlapping commitments.
+  if exists(select 1 from public.provider_jobs a join public.provider_jobs b on b.space_id = any(coalesce(p_exclusive, '{}'))
+      and tstzrange(a.starts_at, a.ends_at) && tstzrange(b.starts_at, b.ends_at)
+    where a.space_id = p_space and a.role = 'primary' and b.role = 'primary' and a.status in ('held','confirmed','active') and b.status in ('held','confirmed','active') and a.ends_at > now()) then
+    raise exception 'exclusive_conflict' using errcode = '23P01';
+  end if;
   delete from public.space_links where space_a = p_space or space_b = p_space;
   insert into public.space_links(workspace_id, space_a, space_b, kind)
     select p_ws, least(p_space, x), greatest(p_space, x), 'linked' from unnest(coalesce(p_linked, '{}')) x

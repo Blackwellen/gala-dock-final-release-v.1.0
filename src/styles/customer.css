@@ -19,7 +19,7 @@
 .c-avatar { display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; }
 .c-avatar img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
 .c-burger { display: none; }
-.c-main { padding: 22px 32px 32px; display: flex; flex-direction: column; gap: 16px; min-width: 0; max-width: 1600px; margin: 0 auto; width: 100%; }
+.c-main { padding: 17px 30px 32px 33px; display: flex; flex-direction: column; gap: 16px; min-width: 0; max-width: 1600px; margin: 0 auto; width: 100%; }
 .c-main.flush { padding: 0; }
 .c-tabbar { display: none; }
 .c-sheet { position: fixed; inset: 0 0 auto 0; z-index: 70; background: #fff; padding: 16px; box-shadow: 0 20px 40px #0b0f2e30; display: flex; flex-direction: column; gap: 6px; border-radius: 0 0 16px 16px; }

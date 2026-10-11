@@ -136,7 +136,7 @@ function UploadBox({ label, purpose, onUploaded, preview, current, compact = fal
 }
 
 /* ---------- Team invitations (queued; created only after the workspace is committed) ---------- */
-function TeamPanel({ members, onChange, ownerEmail, ownerNote = true }: { members: { email: string; role: string }[]; onChange: (m: { email: string; role: string }[]) => void; ownerEmail: string; ownerNote?: boolean }) {
+function TeamPanel({ members, onChange, ownerEmail, ownerNote = true, title = "Invite team members" }: { members: { email: string; role: string }[]; onChange: (m: { email: string; role: string }[]) => void; ownerEmail: string; ownerNote?: boolean; title?: string }) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("manager");
   const [error, setError] = useState("");
@@ -149,7 +149,7 @@ function TeamPanel({ members, onChange, ownerEmail, ownerNote = true }: { member
     onChange([...members, { email: value, role }]); setEmail(""); setError("");
   }
   return <section className="setup-panel">
-    <h3>Invite team members <span className="muted">(optional)</span></h3>
+    <h3>{title} <span className="muted">(optional)</span></h3>
     <p className="muted">Invitations are sent when you finish setup, after your workspace is created. Each person accepts with their own Gala Dock account.</p>
     <div className="invite-form">
       <TextField label="Email address" type="email" value={email} onChange={setEmail} placeholder="colleague@company.com" autoComplete="off" error={error} />
@@ -180,6 +180,13 @@ function PayoutPanel({ kind, status, preview, step }: { kind: "organizer" | "pro
       window.location.assign(data.url);
     } catch { setError("Couldn’t reach Stripe. Please try again."); setBusy(false); }
   }
+  if (kind === "provider") return <div className="stripe-panel stripe-brand">
+    <strong className="stripe-word" aria-label="Stripe">stripe</strong>
+    <CheckList items={["Secure and regulated payments", "Automatic payouts to your bank", "Support for multiple currencies", "Full transaction history"]} />
+    <div className="stripe-actions"><Button onClick={connect} disabled={busy || status === "active"}>{busy ? "Opening Stripe…" : status === "active" ? "Connected" : status === "not_connected" ? "Connect with Stripe" : "Continue Stripe setup"}</Button>
+      <span className={`status-pill ${tone}`}>{label}</span>
+      {error && <p className="field-error" role="alert">{error}</p>}</div>
+  </div>;
   return <div className="stripe-panel">
     <IconTile icon={CreditCard} />
     <div><b>Payments and payouts</b><p>Stripe hosts payout onboarding, so your bank details never touch Gala Dock. Payment-dependent actions stay blocked until Stripe confirms your account.</p>
@@ -485,15 +492,14 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         </section>}
 
         {key === "trust" && <>
-          <section className="setup-panel"><h3>1. Verification and credentials</h3><p className="muted">Requirements adapt to your {context.capabilities?.join(" and ")} offer, categories and {context.country}. Uploading documents submits them for review — it doesn’t verify your business on its own.</p>
-            <div className="verification-status"><ShieldCheck aria-hidden="true" /><span><b>Business verification</b><small>{context.verificationStatus === "verified" ? "Verified by Gala Dock" : context.verificationStatus === "pending" ? "In review by Gala Dock" : "Not yet verified — submit your documents and finish setup to start review."}</small></span><span className={`status-pill ${context.verificationStatus === "verified" ? "success" : "neutral"}`}>{context.verificationStatus === "verified" ? "Verified" : context.verificationStatus === "pending" ? "In review" : "Unverified"}</span></div>
-            <div className="three-columns">{requirements.filter(r => r.kind === "document").map(r => <div key={r.key} className="credential">
-              <IconTile icon={ShieldCheck} /><b>{r.label}</b><span className={`badge ${r.required ? "" : "muted"}`}>{r.required ? "Required" : "Recommended"}</span><small>{r.detail}</small>
+          <section className="setup-panel" id="trust-documents"><h3>1. Verification and credentials</h3><p className="muted">Add relevant documents to build trust with organisers. Requirements depend on your category and location.</p>
+            <div className="three-columns credentials">{requirements.filter(r => r.kind === "document").slice(0, 3).map((r, i) => <div key={r.key} className="credential" title={r.detail}>
+              <div className="credential-head"><IconTile icon={[ShieldCheck, Building2, FileText][i % 3]} /><span><b>{r.label}</b><span className={`badge ${r.required ? "required" : "muted"}`}>{r.required ? "Required" : "Recommended"}</span></span></div>
               <UploadBox label="Upload document" purpose="document" preview={preview} compact current={names[r.key] ?? (documents[r.key] ? "Submitted for review" : undefined)} onUploaded={f => { set("documents", { ...documents, [r.key]: f.path }); setNames(n => ({ ...n, [r.key]: f.name })); }} />
             </div>)}</div></section>
-          <section className="setup-panel"><h3>2. Payout connection</h3><PayoutPanel kind="provider" status={context.payoutStatus ?? "not_connected"} preview={preview} step={4} />
+          <section className="setup-panel" id="trust-payouts"><h3>2. Payout connection</h3><p className="muted">Connect your bank account through Stripe to receive payments from bookings on Gala Dock.</p><PayoutPanel kind="provider" status={context.payoutStatus ?? "not_connected"} preview={preview} step={4} />
             {context.payoutsResult && <p className="muted" role="status">Stripe status updated: {(payoutLabels[context.payoutsResult] ?? payoutLabels.error)[0]}.</p>}</section>
-          <TeamPanel members={(values.members as { email: string; role: string }[]) ?? []} onChange={m => set("members", m)} ownerEmail={user.email} />
+          <TeamPanel members={(values.members as { email: string; role: string }[]) ?? []} onChange={m => set("members", m)} ownerEmail={user.email} ownerNote={false} title="3. Invite your team" />
         </>}
 
         </div>
@@ -514,12 +520,21 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         {key === "rules" && <section className="setup-panel setup-checks" aria-live="polite"><h3><IconTile icon={ShieldCheck} />Setup checks</h3>
           {!issues.length ? <p className="agent-state success"><Check size={16} aria-hidden="true" />No conflicts found in these rules.</p> : issues.map(issue => <div key={issue.message} className={`agent-state ${issue.severity === "error" ? "danger" : "warning"}`}>
             <AlertTriangle size={16} aria-hidden="true" /><span>{issue.message}{issue.fix && <button type="button" className="link-button" onClick={() => set(issue.fix!.field, issue.fix!.value)}>{issue.fix.label}</button>}</span></div>)}</section>}
-        {key === "trust" && <section className="setup-panel readiness"><h3><IconTile icon={CircleCheck} />Marketplace readiness</h3>
-          <ul className="readiness-list">{requirements.filter(r => r.kind === "platform" || r.required).map(r => {
-            const met = r.key === "payouts" ? context.payoutStatus === "active" : r.key === "identity" ? context.verificationStatus === "verified" : !!documents[r.key];
-            return <li key={r.key} className={met ? "met" : ""}>{met ? <CircleCheck size={16} aria-hidden="true" /> : <CircleDashed size={16} aria-hidden="true" />}{r.label}{r.kind === "document" && met && <small> (submitted)</small>}</li>;
-          })}{(context.readiness?.missing ?? []).filter(m => m.startsWith("listing_")).map(m => <li key={m}><CircleDashed size={16} aria-hidden="true" />{missingLabels[m]}</li>)}</ul>
-          <p className="muted">{context.readiness?.eligible ? "Everything is in place — you can publish." : "You can finish setup now and keep your listing as a private draft. Publishing unlocks when every requirement is met."}</p></section>}
+        {key === "trust" && (() => {
+          const missing = context.readiness?.missing ?? [];
+          const docsDone = requirements.filter(r => r.kind === "document" && r.required).every(r => documents[r.key]);
+          const items: [string, boolean, string][] = [
+            ["Business details completed", true, ""], ["First offer added", !!context.listing && !missing.some(m => m.startsWith("listing_")), ""], ["Booking rules configured", true, ""],
+            [`Required documents ${docsDone ? "submitted" : "(required)"}`, docsDone, "trust-documents"], ["Business verification (Gala Dock review)", context.verificationStatus === "verified", "trust-documents"],
+            ["Connect payouts (required)", context.payoutStatus === "active", "trust-payouts"],
+            ["Team invited (optional)", ((values.members as unknown[]) ?? []).length > 0, ""], ["Publish listing", !!context.readiness?.eligible, ""],
+          ];
+          const firstGap = items.find(([, met, target]) => !met && target)?.[2];
+          return <section className="setup-panel agent-panel readiness"><h3><IconTile icon={Sparkles} />Gala Agent<span className="badge purple">BETA</span></h3>
+            <h4>Your readiness checklist</h4><p>I’ve checked your setup and here’s what’s left to go live. I can help you complete any missing items.</p>
+            <ul className="readiness-list">{items.map(([label, met]) => <li key={label} className={met ? "met" : ""}>{met ? <CircleCheck size={17} aria-hidden="true" /> : <CircleDashed size={17} aria-hidden="true" />}{label}</li>)}</ul>
+            <Button variant="outline" disabled={!firstGap} onClick={() => firstGap && document.getElementById(firstGap)?.scrollIntoView({ behavior: "smooth", block: "start" })} arrow>{firstGap ? "Help me complete setup" : "All set"}</Button></section>;
+        })()}
         {key === "preferences" && <section className="setup-panel why-panel"><h3><IconTile icon={Lightbulb} />Why we ask this</h3><p>Your preferences help us:</p>
           <CheckList items={["Show you relevant events and venues", "Suggest experiences you’ll love", "Alert you to special offers you opt into", "Make ticket booking faster"]} /><hr />
           <h4>Prefer to set this up later?</h4><p>You can skip this step and start exploring now. You’ll always be able to add your preferences in your account settings.</p>
@@ -531,7 +546,8 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         {(key === "offer" || key === "trust") && context.listing !== undefined && <section className="setup-panel listing-preview"><h3>Listing preview<span className="status-pill warning">Draft</span></h3>
           {context.listing ? <>{context.listing.photoUrl ? <img src={context.listing.photoUrl} alt="" className="photo" /> : <Photo name="venue-2" />}<h4>{context.listing.name}</h4><p><MapPin size={14} aria-hidden="true" />{context.listing.location}</p><div className="tags"><span>{context.listing.kind === "service" ? "Service" : "Venue"}</span><span>{context.listing.detail}</span></div></>
             : <><Photo name="venue-2" /><h4>{str("listing_name") || "Your listing"}</h4><p><MapPin size={14} aria-hidden="true" />{str("location") || "Location"}</p><div className="tags"><span>{str("kind") === "service" ? str("category") || "Service" : str("venue_type")}</span>{str("capacity") && <span>Up to {str("capacity")}</span>}</div>{arr("amenities").length > 0 && <div className="tags">{arr("amenities").slice(0, 3).map(a => <span key={a}>{a}</span>)}{arr("amenities").length > 3 && <span>+{arr("amenities").length - 3} more</span>}</div>}</>}
-          <p className="setup-note small"><LockKeyhole size={16} aria-hidden="true" /><span>This listing is saved as a draft and isn’t visible to organisers yet.</span></p>
+          {key === "trust" ? <div className="preview-actions"><Button variant="outline" disabled title="Available once the listing is published">View listing</Button><Button disabled={busy || !context.readiness?.eligible} onClick={() => post("publish")} title={context.readiness?.eligible ? undefined : "Complete the readiness checklist to publish"}>Publish now</Button></div>
+            : <p className="setup-note small"><LockKeyhole size={16} aria-hidden="true" /><span>This listing is saved as a draft and isn’t visible to organisers yet.</span></p>}
         </section>}
         {key === "offer" && <section className="setup-panel tips-panel"><h4><Lightbulb size={18} aria-hidden="true" /> Tips for a great listing</h4>
           <CheckList items={["Add at least 5 high quality photos", "Choose the most relevant event types", "Highlight what makes you unique", "You can edit everything later"]} /></section>}
@@ -541,7 +557,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
             <div className="assistant-feature" key={title}><IconTile icon={Icon} /><span><b>{title}</b><small>{text}</small></span></div>)}</div>
           <Link href="/onboarding/organizer?step=1" className="link-button">Edit details</Link></section>}
         {key === "organisation" && <section className="setup-panel"><h4>Popular organizer types</h4>{["Event Management Company", "Venue Operator", "Promoter", "Community Organisation"].map((name, i) => <button type="button" className="organizer-type" key={name} onClick={() => set("business_type", name)} aria-pressed={str("business_type") === name}><Photo name={`organizer-type-${i}`} /><span><b>{name}</b><small>{["Weddings, corporate, festivals", "Run your own venue(s)", "Concerts, nightlife, live shows", "Local events, fundraisers"][i]}</small></span></button>)}</section>}
-        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={Lightbulb} /><span><b>{key === "organisation" ? "You can always change this later" : key === "operating" ? "You can change this anytime" : "You can change this later"}</b><p>{key === "operating" ? "These settings only set your defaults. You can update them at any time in your workspace settings." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
+        {key !== "preferences" && key !== "offer" && <section className="setup-panel"><div className="assistant-feature"><IconTile icon={Lightbulb} /><span><b>{key === "organisation" ? "You can always change this later" : key === "operating" ? "You can change this anytime" : key === "trust" ? "You can edit this later" : "You can change this later"}</b><p>{key === "operating" ? "These settings only set your defaults. You can update them at any time in your workspace settings." : key === "trust" ? "You can update your documents, team members and listing details at any time from your workspace." : "Add team members, connect integrations and customise your workspace after setup."}</p></span></div></section>}
       </aside>}
     </div>
   </OnboardingShell>;

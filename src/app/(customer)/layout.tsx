@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import "@/styles/kit.css";
 import "@/styles/customer.css";
+import "@/styles/cu-discover.css";
 import { KitProviders } from "@/components/kit/client";
 import { CustomerShell } from "@/components/customer/shell";
 import { getCustomer } from "@/lib/data/context";
