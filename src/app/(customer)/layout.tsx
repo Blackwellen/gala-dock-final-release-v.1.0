@@ -8,6 +8,8 @@ import "@/styles/cu-event.css";
 import "@/styles/cu-build.css";
 import "@/styles/cu-plan.css";
 import "@/styles/cu-ops.css";
+import "@/styles/cu-book.css";
+import "@/styles/cu-plan-wizard.css";
 import { KitProviders } from "@/components/kit/client";
 import { CustomerShell } from "@/components/customer/shell";
 import { getCustomer } from "@/lib/data/context";

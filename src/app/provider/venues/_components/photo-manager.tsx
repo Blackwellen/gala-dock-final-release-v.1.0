@@ -7,7 +7,8 @@ import { useToast } from "@/components/ui";
 import { savePhotos } from "../new/actions";
 
 /** Venue photos: upload (public listing-media bucket), reorder, choose cover, remove. Compact mode is the preview card used in setup steps. */
-export function PhotoManager({ venueId, initial, compact = false, title, badge }: { venueId: string | null; initial: string[]; compact?: boolean; title?: string; badge?: string }) {
+export function PhotoManager({ venueId, initial, compact = false, title, badge, save }: { venueId: string | null; initial: string[]; compact?: boolean; title?: string; badge?: string;
+  /** Custom persistence (e.g. packages); defaults to the listing photo action. */ save?: (photos: string[]) => Promise<{ ok: boolean; message?: string; error?: string }> }) {
   const router = useRouter(), toast = useToast();
   const [pending, start] = useTransition();
   const [photos, setPhotos] = useState(initial);
@@ -15,7 +16,7 @@ export function PhotoManager({ venueId, initial, compact = false, title, badge }
   const [busy, setBusy] = useState(false);
   const [dirty, setDirty] = useState(false);
   const file = useRef<HTMLInputElement>(null);
-  const persist = (list: string[]) => { if (!venueId) return; start(async () => { const r = await savePhotos(venueId, list); toast(r.ok ? (r.message ?? "Saved") : r.error); if (r.ok) { setDirty(false); router.refresh(); } }); };
+  const persist = (list: string[]) => { if (!venueId) return; start(async () => { const r = save ? await save(list) : await savePhotos(venueId, list); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) { setDirty(false); router.refresh(); } }); };
   const upload = async (files: FileList) => {
     if (!venueId) { toast("Save the venue details first, then add photos."); return; }
     setBusy(true);

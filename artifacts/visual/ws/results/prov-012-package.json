@@ -1,0 +1,16 @@
+{
+  "key": "prov-012-package",
+  "url": "/provider/packages/{package:Wedding Package}",
+  "file": "Designs/Provider Workspace/Gala·Dock Wedding Package Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 22.48,
+  "ssim": 0.5367,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1132
+  },
+  "errors": [],
+  "at": "2026-10-11T02:17:22.202Z"
+}

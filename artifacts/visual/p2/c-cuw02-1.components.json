@@ -1,0 +1,16 @@
+{
+ "name": "c-cuw02-1",
+ "path": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1&step=1",
+ "page": 16.91,
+ "components": [
+  {
+   "sel": ".c-top",
+   "label": "c-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 7.9
+  }
+ ]
+}

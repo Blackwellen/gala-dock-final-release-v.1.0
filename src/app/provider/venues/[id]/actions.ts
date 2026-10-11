@@ -64,10 +64,13 @@ export async function saveSpace(venueId: string, spaceId: string | null, s: Spac
   const { db, workspace } = await getProvider();
   if (!s.name.trim()) return { ok: false, error: "Give the space a name." };
   if (!Object.keys(s.layouts).length) return { ok: false, error: "Add at least one layout with a capacity." };
+  // provider_save_space resets status to 'draft' when omitted — keep the current status unless explicitly changed.
+  let status = s.status;
+  if (!status && spaceId) { const { data } = await db.from("spaces").select("status").eq("id", spaceId).maybeSingle(); status = (data?.status as SpaceInput["status"]) ?? undefined; }
   const { data, error } = await db.rpc("provider_save_space", { p_ws: workspace.id, p_venue: venueId, p_space: spaceId, p: {
     name: s.name, indoor: s.indoor, capacity_standing: s.capacity_standing, capacity_seated: s.capacity_seated, area_sqm: s.area_sqm, rate_hourly: s.rate_hourly,
     min_hours: s.min_hours, turnaround_minutes: s.turnaround_minutes, layouts: s.layouts, amenities: s.amenities, details: { description: s.description.slice(0, 500) },
-    ...(s.status ? { status: s.status } : {}) } });
+    ...(status ? { status } : {}) } });
   if (error) return { ok: false, error: friendly(error) };
   revalidatePath(`/provider/venues/${venueId}`);
   return { ok: true, message: spaceId ? "Space saved" : "Space added as a draft", id: String(data) };

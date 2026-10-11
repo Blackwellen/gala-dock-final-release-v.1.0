@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ChevronRight, CheckCircle2, Clock4, CalendarDays, MessagesSquare, Wallet, Sparkles, MapPin, Star, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, CheckCircle2, Clock4, CalendarDays, MessagesSquare, Wallet, Sparkles, Users } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { questionsFor } from "@/lib/booking-questions";
@@ -8,6 +8,7 @@ import { stripeKey } from "@/lib/stripe";
 import { VSteps } from "@/components/kit";
 import { BookingFlow, type BookingData } from "@/components/customer/booking-flow";
 import { money, dateLong } from "@/lib/format";
+import { listingHref } from "@/lib/links";
 
 export const metadata = { title: "Booking request" };
 const OPEN = ["suggested", "draft", "sent", "awaiting", "clarification", "available", "quoted", "held", "expired", "declined", "unavailable", "standby"];
@@ -59,16 +60,18 @@ export default async function BookPage({ params, searchParams }: { params: Promi
 
   const req = (pr?.requirements ?? {}) as Partial<BookingData["saved"]>;
   const start = e.starts_at ? new Date(e.starts_at) : null; const end = e.ends_at ? new Date(e.ends_at) : null;
-  const hhmm = (dt: Date | null, f: string) => dt ? dt.toISOString().slice(11, 16) : f;
+  // Event times are shown and edited in the event's local time (UK).
+  const hhmm = (dt: Date | null, f: string) => dt ? dt.toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false }) : f;
+  const ymd = (dt: Date | null) => dt ? dt.toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : "";
   const sk = stripeKey();
   const data: BookingData = {
-    event: { id: e.id, name: e.name, date: e.starts_at?.slice(0, 10) ?? "", start: hhmm(start, "18:00"), end: hhmm(end, "23:00"), guests: e.guest_count, adults: e.adults, children: e.children, location: e.location },
+    event: { id: e.id, name: e.name, date: ymd(start), start: hhmm(start, "18:00"), end: hhmm(end, "23:00"), guests: e.guest_count, adults: e.adults, children: e.children, location: e.location },
     item: { id: it.id, title: it.title, status: it.status, category: it.category, amount: it.amount == null ? null : Number(it.amount), deposit: Number(it.deposit ?? 0), package: it.package, image: it.image, quote: (it.quote ?? {}) as BookingData["item"]["quote"], hold_expires_at: it.hold_expires_at, response_deadline: it.response_deadline },
-    listing: l ? { id: l.id, name: l.name, kind: l.kind, category: l.category, location: l.location || l.city, image: l.image, gallery: (l.gallery ?? []).slice(0, 8), rating: Number(l.rating ?? 0), reviews: l.review_count ?? 0, capacity: l.capacity_max, price_from: l.price_from == null ? null : Number(l.price_from), price_unit: l.price_unit, response_hours: l.response_hours ?? 48, description: l.description, setting: String((l.details as Record<string, unknown> | null)?.setting ?? ""), tags: l.tags ?? [], href: `/discover/${l.kind === "venue" ? "venue" : "service"}/${l.id}` } : null,
+    listing: l ? { id: l.id, name: l.name, kind: l.kind, category: l.category, location: l.location || l.city, image: l.image, gallery: (l.gallery ?? []).slice(0, 8), rating: Number(l.rating ?? 0), reviews: l.review_count ?? 0, capacity: l.capacity_max, price_from: l.price_from == null ? null : Number(l.price_from), price_unit: l.price_unit, response_hours: l.response_hours ?? 48, description: l.description, setting: String((l.details as Record<string, unknown> | null)?.setting ?? ""), tags: l.tags ?? [], href: listingHref(l.kind, l.slug, l.id) } : null,
     pkg: pkg ? { name: pkg.name, description: pkg.description, price: Number(pkg.base_price), image: pkg.image } : null,
     reviews: (revs ?? []).map(r => ({ rating: r.rating, body: r.body })),
     questions: questionsFor(it.category, l?.details),
-    saved: { date: req.date ?? e.starts_at?.slice(0, 10) ?? "", start: req.start ?? hhmm(start, "18:00"), end: req.end ?? hhmm(end, "23:00"), flexible_dates: req.flexible_dates ?? false, guests: req.guests ?? e.guest_count, adults: req.adults ?? e.adults ?? undefined, children: req.children ?? e.children ?? undefined, setup: req.setup ?? "", breakdown: req.breakdown ?? "", access: req.access ?? "standard", notes: req.notes ?? "", answers: req.answers ?? {}, alt_dates: req.alt_dates ?? true, standby_interest: req.standby_interest ?? false },
+    saved: { date: req.date ?? ymd(start), start: req.start ?? hhmm(start, "18:00"), end: req.end ?? hhmm(end, "23:00"), flexible_dates: req.flexible_dates ?? false, guests: req.guests ?? e.guest_count, adults: req.adults ?? e.adults ?? undefined, children: req.children ?? e.children ?? undefined, setup: req.setup ?? "", breakdown: req.breakdown ?? "", access: req.access ?? "standard", notes: req.notes ?? "", answers: req.answers ?? {}, alt_dates: req.alt_dates ?? true, standby_interest: req.standby_interest ?? false },
     savedOption: ((pr?.requirements as { option?: string } | null)?.option ?? null) as BookingData["savedOption"],
     submitted: pr?.status === "sent",
     card: sk?.startsWith("sk_test_") ? { brand: "Visa", last4: "4242", exp: "12/2034", test: true } : null,
@@ -76,6 +79,5 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   return <div className="bk">
     <div className="bk-head">{crumbs}<div className="bk-title"><h1>Booking Request</h1><p className="ce-sub">{step === 1 ? "Tell the provider what you need. This will be sent as a request for availability and a quote." : "Choose how you'd like to proceed, review the terms and add a payment method. No payment is taken unless you approve a quote."}</p></div></div>
     <BookingFlow step={step as 1 | 2} base={base} data={data} steps={steps} />
-    {l && <p className="k-xs k-muted bk-foot"><MapPin size={11} />{l.location || l.city} · <Star size={11} />{Number(l.rating ?? 0).toFixed(1)} · Responds within {l.response_hours ?? 48}h</p>}
   </div>;
 }

@@ -8,7 +8,7 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | Home (signed-in) | 9EC8147F…jpeg (+ (1)) | /account | ⬜ |
 | CU-001 Discover | Gala Dock Event Discovery Dashboard | /discover | ✅ |
 | Public event page | image-gen-3 | /events/[slug] | ⬜ |
-| Listing detail (venue/service) | image-gen-1, image-gen-2 (customer variant) | /discover/[kind]/[id] | ⬜ |
+| Listing detail (venue/service) | image-gen-1, image-gen-2 | /venues/[slug], /services/[slug] (owned by session -22) | — |
 | CU-002 My Events | Modern My Events Dashboard | /account/events | ✅ |
 | CU-003 Event profile | Gala·Dock Wedding Event Dashboard, GalaDock Wedding Planning Dashboard | /account/events/[id] | ✅ |
 | CU-004 Build canvas | GalaDock Wedding Event Planner Dashboard | /account/events/[id]/build | ✅ |
@@ -21,8 +21,8 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | CU-011 Saved | Gala·Dock Saved Events Dashboard | /account/saved | ⬜ |
 | CU-012 Reviews | Gala·Dock Reviews Dashboard | /account/reviews | ⬜ |
 | CU-013 Account | GalaDock Account Dashboard | /account/settings | ⬜ |
-| CU-W01 Plan an Event (4) | GalaDock Event Planning Wizard · GalaDock Event Planning Dashboard · Gala Dock Event Planning Dashboard · GalaDock Wedding Event Planner Dashboard(1) | /plan?step=1..4 | ⬜ |
-| CU-W02 Booking request (2 + confirmation) | Gala Dock Venue Booking Dashboard / Gala·Dock Venue Booking Dashboard · Gala Dock Wedding Booking Request | /account/events/[id]/book?item=&step=1..3 | 🔨 |
+| CU-W01 Plan an Event (4) | GalaDock Event Planning Wizard · GalaDock Event Planning Dashboard · Gala Dock Event Planning Dashboard · GalaDock Wedding Event Planner Dashboard(1) | /plan?step=1..4 | ✅ |
+| CU-W02 Booking request (2 + confirmation) | Gala Dock Venue Booking Dashboard / Gala·Dock Venue Booking Dashboard · Gala Dock Wedding Booking Request | /account/events/[id]/book?item=&step=1..3 | ✅ |
 | CU-W03 Ticket setup (3) | Gala·Dock Wedding Ticket Setup Dashboard · Ticket Setup Dashboard_ Sales & Rules · Gala·Dock Ticket Setup Review | /account/events/[id]/tickets/setup?step=1..3 | ⬜ |
 
 ## Organizer (sidebar shell)
@@ -37,7 +37,7 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | ORG-009 Request / quote comparison | Gala Dock Marketplace Quote Comparison | /organizer/marketplace/requests/[id] | ✅ |
 | ORG-011 Tickets & Promotion hub | Gala Dock Event Promotion Dashboard | /organizer/tickets | ⬜ |
 | ORG-012 Public page editor | Neon Nights Festival Page Editor | /organizer/events/[id]/page | ⬜ |
-| ORG-013 Venue map builder | Neon Nights Festival Venue Map Builder | /organizer/events/[id]/map | ⬜ |
+| ORG-013 Venue map builder | Neon Nights Festival Venue Map Builder | /organizer/events/[id]/map (session -22) | ✅ |
 | ORG-014 Promotion | Neon Nights Promotion Dashboard | /organizer/events/[id]/promotion | ⬜ |
 | ORG-015 Poster / media builder | Neon Nights Festival Poster Builder | /organizer/events/[id]/media | ⬜ |
 | ORG-016 Team | Gala Dock Team Dashboard | /organizer/team | ⬜ |

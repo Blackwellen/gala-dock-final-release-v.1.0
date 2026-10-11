@@ -208,6 +208,38 @@
     "at": "2026-10-11T01:24:37.287Z"
   },
   {
+    "key": "prov-011-service",
+    "url": "/provider/services/{listing:DJ & Sound}",
+    "file": "Designs/Provider Workspace/Gala Dock DJ Service Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 24.12,
+    "ssim": 0.5314,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1157
+    },
+    "errors": [],
+    "at": "2026-10-11T02:08:22.824Z"
+  },
+  {
+    "key": "prov-012-package",
+    "url": "/provider/packages/{package:Wedding Package}",
+    "file": "Designs/Provider Workspace/Gala·Dock Wedding Package Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 22.48,
+    "ssim": 0.5367,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1132
+    },
+    "errors": [],
+    "at": "2026-10-11T02:17:22.202Z"
+  },
+  {
     "key": "prov-w01-s1",
     "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
     "file": "Designs/Provider Workspace/Modern Venue Setup Dashboard.png",
@@ -286,6 +318,86 @@
     },
     "errors": [],
     "at": "2026-10-11T01:21:08.945Z"
+  },
+  {
+    "key": "prov-w03-s1",
+    "url": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+    "file": "Designs/Provider Workspace/Gala Dock Service Setup Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 15.32,
+    "ssim": 0.6312,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1534
+    },
+    "errors": [],
+    "at": "2026-10-11T02:07:26.440Z"
+  },
+  {
+    "key": "prov-w03-s2",
+    "url": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+    "file": "Designs/Provider Workspace/Gala Dock Pricing Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 13.95,
+    "ssim": 0.5884,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1249
+    },
+    "errors": [],
+    "at": "2026-10-11T02:07:31.375Z"
+  },
+  {
+    "key": "prov-w03-s3",
+    "url": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+    "file": "Designs/Provider Workspace/Gala·Dock Service Publishing Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 19.85,
+    "ssim": 0.5549,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1136
+    },
+    "errors": [],
+    "at": "2026-10-11T02:07:36.494Z"
+  },
+  {
+    "key": "prov-w04-s1",
+    "url": "/provider/packages/new?package={package:Wedding Package}&step=1",
+    "file": "Designs/Provider Workspace/Create Package Dashboard UI.png",
+    "status": 200,
+    "mismatchPercent": 15.19,
+    "ssim": 0.6057,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1196
+    },
+    "errors": [],
+    "at": "2026-10-11T02:17:28.566Z"
+  },
+  {
+    "key": "prov-w04-s2",
+    "url": "/provider/packages/new?package={package:Wedding Package}&step=2",
+    "file": "Designs/Provider Workspace/Gala Dock Package Creation Dashboard.png",
+    "status": 200,
+    "mismatchPercent": 16.97,
+    "ssim": 0.592,
+    "masks": [],
+    "maskReason": null,
+    "geometry": {
+      "overflowX": false,
+      "scrollHeight": 1237
+    },
+    "errors": [],
+    "at": "2026-10-11T02:17:33.095Z"
   },
   {
     "key": "prov-w05-s1-quote-builder",

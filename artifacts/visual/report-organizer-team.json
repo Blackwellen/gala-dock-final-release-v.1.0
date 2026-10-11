@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/onboarding/organizer?step=4",
+    "file": "Designs\\auth & onboarding\\GalaDock Organizer Setup Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-organizer-team",
+    "mismatchPercent": 13.27,
+    "interfaceMismatchPercent": 14.208,
+    "ssimFull": 0.6414,
+    "ssimInterface": 0.5981,
+    "geometry": {
+      "scrollHeight": 1277,
+      "overflow": true
+    },
+    "errors": []
+  }
+]

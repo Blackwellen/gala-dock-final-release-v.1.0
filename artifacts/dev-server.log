@@ -3233,3 +3233,12 @@ Creating turbopack project {
  POST /api/payouts 403 in 142ms (next.js: 118ms, proxy.ts: 8ms, application-code: 16ms)
  POST /api/agent/onboarding 401 in 84ms (next.js: 47ms, proxy.ts: 10ms, application-code: 27ms)
  GET /login 200 in 171ms (next.js: 47ms, proxy.ts: 7ms, application-code: 117ms)
+ GET /organizer/events/b52e0eae-5de4-46f7-8ba2-2e8861aa8555/map 200 in 1041ms (next.js: 45ms, proxy.ts: 18ms, application-code: 978ms)
+ POST /organizer/events/b52e0eae-5de4-46f7-8ba2-2e8861aa8555/map 200 in 1393ms (next.js: 33ms, proxy.ts: 11ms, application-code: 1348ms)
+  └─ ƒ saveEventPlan("b52e0eae-5de4-46f7-8ba2-2e8861aa8555", [{"asset":"seat_block","h":40,"id":"blk-1-j7n1","...":"7 items not stringified"},{"asset":"seat_block","h":40,"id":"blk-2-j7n1","...":"7 items not stringified"},{"asset":"seat_block","h":40,"id":"blk-3-j7n1","...":"7 items not stringified"}], true) in 362ms src/app/organizer/events/[id]/map/actions.ts
+✓ Compiled in 607ms
+ GET /organizer 200 in 530ms (next.js: 366ms, proxy.ts: 11ms, application-code: 153ms)
+ GET / 200 in 540ms (next.js: 202ms, proxy.ts: 11ms, application-code: 327ms)
+ GET /preview/onboarding/provider?step=4 200 in 1043ms (next.js: 801ms, proxy.ts: 14ms, application-code: 228ms)
+✓ Compiled in 429ms
+ GET /preview/onboarding/provider?step=4 200 in 661ms (next.js: 525ms, proxy.ts: 7ms, application-code: 129ms)

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { LayoutGrid, CircleCheck, FileText, CirclePause, Eye, MessageSquare, CalendarCheck, Users, Box, MapPin, Plus, Upload, ChevronDown, SlidersHorizontal, List, Map as MapIcon,
+import { LayoutGrid, CircleCheck, FileText, CirclePause, Eye, MessageSquare, CalendarCheck, Users, Box, MapPin, Plus, Upload, ChevronDown, SlidersHorizontal, Map as MapIcon,
   Sparkles, ArrowRight, Clock, ArrowUp, Building2, Wrench, Package as PackageIcon, CircleAlert, TrendingUp } from "lucide-react";
 import "@/styles/provider-opps.css";
 import "@/styles/provider-listings.css";

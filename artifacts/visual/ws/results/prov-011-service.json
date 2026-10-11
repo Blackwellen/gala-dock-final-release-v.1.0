@@ -1,0 +1,16 @@
+{
+  "key": "prov-011-service",
+  "url": "/provider/services/{listing:DJ & Sound}",
+  "file": "Designs/Provider Workspace/Gala Dock DJ Service Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 24.12,
+  "ssim": 0.5314,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1157
+  },
+  "errors": [],
+  "at": "2026-10-11T02:08:22.824Z"
+}

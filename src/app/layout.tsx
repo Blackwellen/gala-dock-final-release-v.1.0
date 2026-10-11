@@ -26,7 +26,7 @@ var z=function(dw,dh,k){return c(Math.max(Math.min(w/dw,h/dh),w/(dw*k)))};d.setP
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: fitScript }} /></head>
+      <head><link rel="preload" href="/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossOrigin="anonymous" /><link rel="preload" href="/fonts/satoshi-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" /><script dangerouslySetInnerHTML={{ __html: fitScript }} /></head>
       <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers>{children}<PwaLifecycle /></Providers></body>
     </html>
   );

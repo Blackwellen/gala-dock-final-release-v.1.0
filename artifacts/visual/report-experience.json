@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/preview/onboarding",
+    "file": "Designs\\auth & onboarding\\Gala Dock Event Onboarding Dashboard.png",
+    "width": 1536,
+    "height": 1024,
+    "key": "preview-onboarding-experience",
+    "mismatchPercent": 11.767,
+    "interfaceMismatchPercent": 12.653,
+    "ssimFull": 0.7513,
+    "ssimInterface": 0.7141,
+    "geometry": {
+      "scrollHeight": 1024,
+      "overflow": false
+    },
+    "errors": []
+  }
+]

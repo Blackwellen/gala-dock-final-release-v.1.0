@@ -1,0 +1,16 @@
+{
+  "key": "prov-w03-s2",
+  "url": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+  "file": "Designs/Provider Workspace/Gala Dock Pricing Dashboard.png",
+  "status": 200,
+  "mismatchPercent": 13.95,
+  "ssim": 0.5884,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1249
+  },
+  "errors": [],
+  "at": "2026-10-11T02:07:31.375Z"
+}

@@ -1,0 +1,16 @@
+{
+  "key": "prov-w04-s1",
+  "url": "/provider/packages/new?package={package:Wedding Package}&step=1",
+  "file": "Designs/Provider Workspace/Create Package Dashboard UI.png",
+  "status": 200,
+  "mismatchPercent": 15.19,
+  "ssim": 0.6057,
+  "masks": [],
+  "maskReason": null,
+  "geometry": {
+    "overflowX": false,
+    "scrollHeight": 1196
+  },
+  "errors": [],
+  "at": "2026-10-11T02:17:28.566Z"
+}

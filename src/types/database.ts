@@ -545,6 +545,7 @@ export type Database = {
           bio: string
           created_at: string
           day_rate: number | null
+          details: Json
           email: string
           id: string
           location: string
@@ -562,6 +563,7 @@ export type Database = {
           bio?: string
           created_at?: string
           day_rate?: number | null
+          details?: Json
           email?: string
           id?: string
           location?: string
@@ -579,6 +581,7 @@ export type Database = {
           bio?: string
           created_at?: string
           day_rate?: number | null
+          details?: Json
           email?: string
           id?: string
           location?: string
@@ -3982,8 +3985,22 @@ export type Database = {
         Returns: undefined
       }
       provider_release_hold: { Args: { p_item: string }; Returns: undefined }
+      provider_request_availability: {
+        Args: {
+          p_crew: string
+          p_ends: string
+          p_note: string
+          p_starts: string
+          p_ws: string
+        }
+        Returns: string
+      }
       provider_respond: {
         Args: { p_item: string; p_note?: string; p_response: string }
+        Returns: string
+      }
+      provider_save_crew: {
+        Args: { p: Json; p_crew: string; p_ws: string }
         Returns: string
       }
       provider_save_listing: {
@@ -4037,6 +4054,10 @@ export type Database = {
           p_ws: string
         }
         Returns: string
+      }
+      provider_set_crew_status: {
+        Args: { p_crew: string; p_status: string; p_ws: string }
+        Returns: undefined
       }
       provider_set_space_links: {
         Args: {

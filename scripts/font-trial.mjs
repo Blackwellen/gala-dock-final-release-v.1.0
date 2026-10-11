@@ -13,10 +13,16 @@ for (const font of ["(current)", ...list.split(",")]) {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
   await page.goto(`http://localhost:3107${url}`, { waitUntil: "networkidle" });
   if (font !== "(current)") {
-    const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${font.replace(/ /g, "+")}:wght@300..900&display=block`, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36" } })).text();
+    const fontshare = { "Satoshi": "satoshi", "General Sans": "general-sans", "Cabinet Grotesk": "cabinet-grotesk", "Switzer": "switzer", "Clash Grotesk": "clash-grotesk" };
+    const cssUrl = fontshare[font] ? `https://api.fontshare.com/v2/css?f[]=${fontshare[font]}@300,400,500,600,700,800,900&display=block`
+      : `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, "+")}:wght@400;500;600;700;800&display=block`;
+    const response = await fetch(cssUrl, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36" } });
+    if (!response.ok) { console.log(font.padEnd(20), "load failed", response.status); await page.close(); continue; }
+    const css = await response.text();
     await page.addStyleTag({ content: css });
     await page.addStyleTag({ content: `${process.env.SCOPE ?? "body,body *"}{font-family:"${font}",sans-serif!important}` });
   }
+  if (process.env.EXTRA_CSS) await page.addStyleTag({ content: process.env.EXTRA_CSS });
   await page.addStyleTag({ content: "nextjs-portal{display:none!important}*{animation:none!important;transition:none!important}" });
   await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(400);
   const shot = PNG.sync.read(await page.screenshot());
