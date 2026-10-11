@@ -82,3 +82,8 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 
 .mc-meta .k-row { flex-wrap: nowrap; gap: 6px !important; }
 .mc-meta .k-xs { white-space: nowrap; }
+/* Month-cell meta (status + capacity) never spills past the cell: capacity truncates, status chip keeps its width. */
+.mc-meta, .mc-meta .k-row { min-width: 0; max-width: 100%; overflow: hidden; }
+.mc-meta .k-row { flex-wrap: nowrap; }
+.mc-meta .k-xs { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-meta .k-row > :first-child { flex-shrink: 0; }

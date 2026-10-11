@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { promoFor } from "./promo-copy";
+import { MobileNav, type NavEntry } from "@/components/pwa/mobile-nav";
+import { GlobalSearch } from "@/components/search/global-search";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
-  House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Search, Bell, MessageSquareText, Plus,
-  ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network, Scale,
+  House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Bell, MessageSquareText, Plus,
+  ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network,
   ChartColumn, ArrowRight, Building2, LayoutGrid, Wrench, Package, Menu, X, LogOut, Check, type LucideIcon,
 } from "lucide-react";
 import { Suspense } from "react";
@@ -102,19 +104,6 @@ function Avatar({ src, name, size = 36 }: { src?: string; name: string; size?: n
     : <span className="ws-avatar initials" style={{ width: size, height: size }} aria-hidden="true">{letters}</span>;
 }
 
-function SearchBox({ placeholder, action }: { placeholder: string; action: string }) {
-  const ref = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); ref.current?.focus(); } };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
-  return <form className="ws-search" role="search" action={action}>
-    <Search aria-hidden="true" /><label className="sr-only" htmlFor="ws-search">Search</label>
-    <input id="ws-search" ref={ref} name="q" type="search" placeholder={placeholder} autoComplete="off" />
-    <kbd>⌘ K</kbd>
-  </form>;
-}
 
 function AccountMenu({ name, subtitle, avatar, links, showLabel }: { name: string; subtitle: string; avatar: string; links: { href: string; label: string }[]; showLabel?: boolean }) {
   return <Popover label="Account menu" className="ws-account" trigger={<><Avatar src={avatar} name={name} />{showLabel && <span className="ws-account-label"><b>{name}</b><small>{subtitle}</small></span>}<ChevronDown className="chev" aria-hidden="true" /></>}>
@@ -185,12 +174,14 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/packages/new?step=1", label: "Package" },
     { href: "/provider/calendar?action=block", label: "Availability block" },
   ].filter(Boolean) as { href: string; label: string }[];
+  const mobileMenu: NavEntry[] = nav.map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
   return <div className={`ws-app provider ${mobileOpen ? "nav-open" : ""}`}>
+    <MobileNav menu={mobileMenu} title={workspace.name} home="/provider" />
     <ShellTools />
-    <header className="ws-topbar">
+    <header className="ws-topbar pwa-hide-desktop-nav">
       <MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
       <div className="ws-brand"><BrandLogo href="/provider" /></div>
-      <SearchBox placeholder="Search events, bookings, venues, services, or contacts..." action="/provider/search" />
+      <div className="ws-gs"><GlobalSearch seat={activeId} placeholder="Search events, bookings, venues, services, or contacts..." /></div>
       <div className="ws-actions">
         <Popover label={`Messages, ${counts.messages} unread`} className="ws-icon-pop" trigger={<><MessageSquareText aria-hidden="true" />{counts.messages > 0 && <b className="ws-count">{counts.messages}</b>}</>}>
           <div className="ws-pop-head"><b>Messages</b><small>{counts.messages} unread</small></div>
@@ -207,7 +198,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
         <AccountMenu name={user.name} subtitle={workspace.name} avatar={user.avatar} links={[{ href: "/provider/settings", label: "Workspace settings" }, { href: "/discover", label: "Switch to Customer" }]} />
       </div>
     </header>
-    <nav className="ws-sidebar" aria-label="Provider workspace">
+    <nav className="ws-sidebar pwa-hide-desktop-nav" aria-label="Provider workspace">
       <Popover label="Switch workspace" className="ws-switcher" align="left" trigger={<>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {workspace.cover ? <img src={workspace.cover} alt="" width={52} height={52} /> : <span className="ws-switcher-blank"><Building2 aria-hidden="true" /></span>}
@@ -253,7 +244,7 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
     // One "Disputes" entry as in the AD designs: booking disputes, cancellation reviews and card chargebacks (tabs on /admin/disputes); trust chargeback cases highlight it too.
     { href: "/admin/disputes", label: "Disputes", icon: Headset, perm: ["support", "marketplace", "commerce", "trust"], match: /^\/admin\/(disputes|trust\/disputes)(\/|$)/ },
     { href: "/admin/trust", label: "Trust & Safety", icon: Shield, perm: "trust" },
-    { href: "/admin/support", label: "Support", icon: Headphones, perm: "support" },
+    { href: "/admin/support", label: "Support", icon: Headphones, perm: "support", match: /^\/admin\/(support|conversations)(\/|$)/ },
     { href: "/admin/partners", label: "Partners", icon: Mail, perm: "partners" },
     { href: "/admin/agent-integrations", label: "Agent & Integrations", icon: Network, perm: "agent_ops" },
     { href: "/admin/analytics", label: "Analytics", icon: ChartColumn, perm: "analytics" },
@@ -262,12 +253,14 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
   // Every destination stays visible so the console reads the same for everyone; restricted ones show a locked state.
   const nav = all.map(({ perm, ...item }) => ({ ...item, label: item.label, locked: perm ? ![perm].flat().some(p => permissions.includes(p)) : false }));
   const activeHref = [...nav].sort((a, b) => b.href.length - a.href.length).find(i => isActive(pathname, i))?.href;
+  const mobileMenu: NavEntry[] = nav.filter(n => !n.locked).map(n => ({ href: n.href, label: n.label, icon: n.icon }));
   return <div className={`ws-app admin ${mobileOpen ? "nav-open" : ""}`}>
+    <MobileNav menu={mobileMenu} title="Platform Admin" home="/admin" />
     <ShellTools />
-    <header className="ws-topbar">
+    <header className="ws-topbar pwa-hide-desktop-nav">
       <MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
       <div className="ws-brand"><BrandLogo href="/admin" /></div>
-      <SearchBox placeholder="Search users, events, orders, tickets, venues, services, reports..." action="/admin/search" />
+      <div className="ws-gs"><GlobalSearch seat={null} placeholder="Search users, events, orders, tickets, venues, services, reports..." /></div>
       <div className="ws-actions">
         <Popover label={`Platform alerts, ${counts.alerts}`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.alerts > 0 && <b className="ws-count">{counts.alerts}</b>}</>}>
           <div className="ws-pop-head"><b>Platform alerts</b></div>
@@ -283,7 +276,7 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
         <AccountMenu name="Admin" subtitle={user.title} avatar={user.avatar} showLabel links={[{ href: "/admin/settings", label: "Platform settings" }]} />
       </div>
     </header>
-    <nav className="ws-sidebar" aria-label="Platform Admin">
+    <nav className="ws-sidebar pwa-hide-desktop-nav" aria-label="Platform Admin">
       <ul className="ws-nav">{nav.map(item => {
         const Icon = item.icon;
         const active = item.href === activeHref;

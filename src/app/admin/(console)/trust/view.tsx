@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarDays, BookmarkCheck, ShieldCheck, Store, TriangleAlert, MessageCircleQuestion, Upload, Plus, ChevronDown, Filter, SquareArrowOutUpRight, ExternalLink, PenLine, ArrowRight,
-  ShoppingCart, CreditCard, UserRound, Clock3, CircleAlert, UserPlus, FileSearch, CircleX, CircleCheck, type LucideIcon } from "lucide-react";
+  ShoppingCart, CreditCard, UserRound, Clock3, CircleAlert, UserPlus, FileSearch, CircleX, CircleCheck, type LucideIcon, ShieldAlert } from "lucide-react";
 import { Restricted } from "@/components/workspace/kit";
 import { ActionButton, ActionForm } from "@/components/workspace/actions";
 import { requireAdminPermission } from "@/lib/admin/context";
@@ -128,7 +128,8 @@ async function CasePanel({ c, now, tab, href }: { c: Case; now: number; tab: str
   const indicators = (c.evidence ?? []).filter(e => e.kind === "indicator"), trail = (c.evidence ?? []).filter(e => e.kind !== "indicator");
   const ev = c.related?.event;
   const final = c.status === "actioned" || c.status === "dismissed";
-  const { db } = await requireAdminPermission("trust");
+  const { db, permissions } = await requireAdminPermission("trust");
+  const canBreakGlass = permissions.has("support.break_glass_conversation.read");
   const notes = tab === "notes" ? await rows<{ id: number; body: string; author_name: string; created_at: string }>(db.from("admin_notes").select("id,body,author_name,created_at").eq("entity_type", "trust_case").eq("entity_id", c.id).order("created_at", { ascending: false })) : [];
   const typeLabel = ql === "Fraud/Abuse" ? "Fraud / Abuse" : ql;
   return <aside className="ads-rail">
@@ -137,6 +138,7 @@ async function CasePanel({ c, now, tab, href }: { c: Case; now: number; tab: str
       <div className="ads-case-t">{(ev?.image ?? c.related?.image) ? <Img src={ev?.image ?? c.related?.image ?? ""} alt="" width={56} height={66} /> : <Mark text="G" size={56} round={false} />}
         <div><h2>{c.category || c.reason}</h2><p>{typeLabel} <span>•</span> {c.related?.related_to ?? c.subject_type}</p>
           {ev && <div className="ads-ev"><Img src={ev.image} alt="" width={30} height={24} /><span><b>{ev.name}</b><small>{ev.ref} • {ev.date_label ?? ""} • {ev.venue ?? ""}</small></span></div>}</div></div>
+      {canBreakGlass && <Link className="adb-btn ads-bg" href={`/admin/conversations/request?type=trust&case=${c.id}`}><ShieldAlert aria-hidden="true" />Request conversation access</Link>}
       <nav className="ads-ctabs">{[["overview", "Overview"], ["evidence", "Evidence"], ["activity", "Activity"], ["notes", "Notes"], ["related", "Related"]].map(([k, l]) => <Link key={k} href={href({ case: c.id, ctab: k === "overview" ? "" : k })} scroll={false} className={tab === k ? "on" : ""}>{l}</Link>)}</nav>
       {tab === "overview" && <>
         <div className="adb-sec-h ads-cd-h"><h2>Case details</h2><Link className="adb-btn ads-edit" href={href({ case: c.id, ctab: "notes" })}><PenLine aria-hidden="true" />Edit</Link></div>

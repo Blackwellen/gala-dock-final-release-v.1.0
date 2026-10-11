@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { UserPlus, ArrowUpFromLine, SquarePen, ClipboardCheck, ChevronDown, MoreHorizontal, ScanLine, CalendarDays, MapPin, Ticket, OctagonX, Layers, Copy, ExternalLink, PenLine,
-  CalendarCheck2, Receipt, UserRound, Headset, Mail, ArrowRight, BadgeCheck, CalendarClock, Paperclip, Smile, Hash, type LucideIcon } from "lucide-react";
+  CalendarCheck2, Receipt, UserRound, Headset, Mail, ArrowRight, BadgeCheck, CalendarClock, Paperclip, Smile, Hash, type LucideIcon, ShieldAlert } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-support.css";
 import "@/styles/admin-b-case.css";
@@ -24,7 +24,7 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
   const { id } = await props.params;
   const sp = await props.searchParams;
   if (!isUuid(id)) notFound();
-  const { db, allowed, userId } = await requireAdminPermission("support");
+  const { db, allowed, userId, permissions } = await requireAdminPermission("support");
   if (!allowed) return <Restricted area="Support" />;
   const c = await one<Case>(db.from("support_cases").select(CASE_COLS).eq("id", id).maybeSingle());
   if (!c) notFound();
@@ -73,6 +73,7 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
       badges={<span className="adca-badges"><Pill status={c.priority} label={`${c.priority[0]!.toUpperCase()}${c.priority.slice(1)} priority`} dot /><Pill status={c.status} dot /></span>}
       actions={<>
         <ActionButton action={assignCase} args={[id]} variant="outline" className="adca-b"><UserPlus aria-hidden="true" />Assign</ActionButton>
+        {permissions.has("support.break_glass_conversation.read") && !resolved && <Link className="adb-btn adca-b" href={`/admin/conversations/request?type=support&case=${id}`}><ShieldAlert aria-hidden="true" />Request conversation access</Link>}
         <ActionButton action={setCaseStatus} args={[id, "escalated"]} reason variant="danger" className="adca-b" disabled={c.status === "escalated" || resolved} confirm={{ title: "Escalate case", body: "Moves the case to Tier 2 / the escalated queue.", cta: "Escalate" }}><ArrowUpFromLine aria-hidden="true" />Escalate</ActionButton>
         <Link className="adb-btn blue adca-b" href={`${base}?compose=internal#reply`}><SquarePen aria-hidden="true" />Create internal note</Link>
         <span className="adca-resolve">

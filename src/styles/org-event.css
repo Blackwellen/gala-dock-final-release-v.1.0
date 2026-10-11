@@ -169,3 +169,26 @@
 .ov-row1 .k-card .k-grid.k-g3 { margin-top: 22px !important; }
 
 .eh-hero > img:first-child { position: absolute; z-index: 0; }
+/* ORG-005 Operations — "Neon Nights Festival Operations Dashboard": compact one-line run sheet (≈30px rows, 11px), hero 118px, map column taller. */
+.op-row2 .k-table { font-size: 11px; }
+.op-row2 .k-table th { font-size: 10.5px; padding: 6px 8px; }
+.op-row2 .k-table td { padding: 3px 8px; height: 29px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
+.op-row2 .k-table .k-chip, .op-row2 .k-table [class*="chip"] { height: 18px; font-size: 9.5px; }
+.op-row2 .k-table .k-icon-btn { width: 22px; height: 22px; }
+.op-row2 .k-table .k-avatar, .op-row2 .k-table [class*="avatar"] { width: 18px; height: 18px; font-size: 8px; }
+.op-row2 .sl-map { min-height: 322px; }
+.eh-hero:has(+ .eh-tabs) { height: 118px; }
+/* Plan tab: team conflicts as a one-line strip (the design gives this space to the brief and programme timetable). Every conflict and its Fix link stays. */
+.eh-sub + .op-ready:has(#tc-h) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 12px; border: 1px solid #fde2b8; border-radius: 10px; background: #fffaf2; margin-bottom: 12px; }
+.eh-sub + .op-ready:has(#tc-h) header { gap: 8px; }
+.eh-sub + .op-ready:has(#tc-h) h2 { font-size: 12px; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains { display: flex; flex-wrap: wrap; gap: 6px; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains li { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 999px; background: #fff; border: 1px solid #f6d9a8; font-size: 11px; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains li div { display: inline-flex; gap: 4px; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains li small { display: none; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains li:hover small, .eh-sub + .op-ready:has(#tc-h) .op-domains li:focus-within small { display: inline; color: #8a5a12; }
+.eh-sub + .op-ready:has(#tc-h) .op-domains svg { width: 13px; height: 13px; }
+/* Programme timetable rows at the design's 40px pitch (78×32 thumbnails, 12px title / 10.5px sub). */
+.pl-prog li { padding: 3px 0; min-height: 40px; }
+.pl-prog b { font-size: 12px; line-height: 1.25; } .pl-prog small { font-size: 10.5px; }
+.pl-prog .k-icon-btn { width: 26px; height: 26px; }

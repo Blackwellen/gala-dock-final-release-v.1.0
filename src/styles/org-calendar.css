@@ -46,3 +46,7 @@
 .tg-allday .tg-tz { font-size: 9.5px; }
 .tg-ad-col { border-left: 1px solid var(--k-line-2); padding: 4px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .tg-ad { display: block; text-align: left; font-size: 10.5px; font-weight: 600; padding: 3px 6px; border-radius: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: color-mix(in srgb, var(--c) 12%, #fff) !important; border-left: 3px solid var(--c) !important; color: var(--k-ink) !important; }
+/* Short (≤1h) week-view items: title + time must both fit the 30px minimum without clipping. */
+.tg-item { padding: 3px 6px; gap: 0; }
+.tg-item b { font-size: 10.5px; line-height: 1.2; }
+.tg-item small { line-height: 1.2; }
