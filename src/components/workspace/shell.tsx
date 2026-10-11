@@ -194,7 +194,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
       <div className="ws-actions">
         <Popover label={`Messages, ${counts.messages} unread`} className="ws-icon-pop" trigger={<><MessageSquareText aria-hidden="true" />{counts.messages > 0 && <b className="ws-count">{counts.messages}</b>}</>}>
           <div className="ws-pop-head"><b>Messages</b><small>{counts.messages} unread</small></div>
-          <NoticeList items={messages} empty="No conversations yet." footer={{ href: "/provider/opportunities", label: "Open opportunities" }} />
+          <NoticeList items={messages} empty="No conversations yet." footer={{ href: "/provider/inbox", label: "Open inbox" }} />
         </Popover>
         <Popover label={`Notifications, ${counts.notifications} unread`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.notifications > 0 && <i className="ws-dot" />}</>}>
           <div className="ws-pop-head"><b>Notifications</b></div>
