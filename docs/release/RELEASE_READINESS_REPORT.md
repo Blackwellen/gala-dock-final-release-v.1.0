@@ -160,7 +160,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| Virtual / webinar / hybrid | BLOCKED (not implemented) | Events support a `virtual` setting; no provider adapter (Zoom/Teams/etc.) or access-link delivery exists. Readiness reports `not_implemented`. Post-beta. |
+| Virtual / webinar / hybrid | FIXED (manual adapter) / BLOCKED_EXTERNAL for API adapters | New event types (webinar, virtual, live audio, podcast recording, hybrid, remote conference). `VirtualEventProvider` abstraction; the `manual` adapter works now (organiser pastes the platform's links on `/organizer/events/[id]/virtual`). Host links and notes are private (editor-only RLS). Ticket-gated join (`/tickets/[id]/join`): current valid holder only, inside the access window, replay when enabled; refunded/transferred/resold tickets lose access; joins logged as `virtual` check-ins. Zoom/Teams/Meet/YouTube/Vimeo API adapters declare their env contracts and report BLOCKED_EXTERNAL until credentials exist. No self-hosted media. Tests: `tests/release/virtual.spec.ts` (2). Programme tracks/speakers use the existing programme items. |
 
 ## 14. Legal (§128–131)
 
@@ -190,7 +190,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Guided tours & screenshot annotation; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event adapters; Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Guided tours & screenshot annotation; demo mode; CAPTCHA (needs key); AV scanning (needs service); R2 bucket creation (code ready) and storage metering; virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -214,6 +214,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270014 | Agent retention purge + monthly `agent-retention` job |
 | 202610270015 | Price book aligned to gpt-5.4-mini / gpt-5.4-nano |
 | 202610270016 | Storage → R2 replication bookkeeping + `storage-backup` job |
+| 202610270017 | Virtual sessions, ticket-gated join, `virtual` check-ins |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)

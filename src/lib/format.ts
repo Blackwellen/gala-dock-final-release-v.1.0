@@ -54,5 +54,6 @@ export const EVENT_TYPE_LABEL: Record<string, string> = {
   festival: "Festival", corporate: "Corporate", food_drink: "Food & Drink", nightlife: "Nightlife", wedding: "Wedding", conference: "Conference",
   community: "Community", awards: "Awards", party: "Party", comedy: "Comedy", birthday: "Birthday", private_dinner: "Private Dinner",
   childrens_party: "Children's Party", webinar: "Webinar", custom: "Custom",
+  virtual_event: "Virtual Event", live_audio: "Live Audio", podcast_recording: "Podcast Live Recording", hybrid: "Hybrid Event", remote_conference: "Remote Conference",
 };
 export const eventTypeLabel = (t?: string | null) => EVENT_TYPE_LABEL[t ?? ""] ?? titleCase(t ?? "Event");
