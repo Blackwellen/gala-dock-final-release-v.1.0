@@ -8,7 +8,7 @@ import { VenueMapSvg } from "../venue-map/render";
 import { SubTabs } from "./header";
 import { itemStatus } from "./overview";
 import { AddProgrammeButton, RunSheetStatus, TaskCheck, AddTaskButton, IncidentButton, ResolveIncident, StatusButton } from "./controls";
-import { CheckInScanner } from "@/components/shared/checkin-scanner";
+import { TicketScanner } from "@/components/tickets/scanner";
 
 const RS: Record<string, [string, "green" | "amber" | "blue"]> = { done: ["Done", "green"], in_progress: ["In progress", "amber"], upcoming: ["Upcoming", "blue"] };
 
@@ -20,7 +20,7 @@ export function OpsTab({ e, d, section }: { e: ProEvent; d: EventData; section: 
     <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: k === "floor" ? `/organizer/events/${e.id}/map?tab=operations` : `${base}${k === "runsheet" ? "" : `&section=${k}`}` }))} />
     {s === "runsheet" && <RunSheetView e={e} d={d} />}
     {s === "team" && <TeamView e={e} d={d} />}
-    {s === "checkin" && <div className="o-grid-main"><Card><h2 className="ov-h" style={{ fontSize: 15.5, marginBottom: 10 }}>Ticket check-in</h2><CheckInScanner eventId={e.id} /></Card><CheckinStats d={d} /></div>}
+    {s === "checkin" && <div className="o-grid-main"><Card><div className="k-between" style={{ marginBottom: 10 }}><h2 className="ov-h" style={{ fontSize: 15.5 }}>Ticket check-in</h2><span className="k-row" style={{ gap: 8 }}><Link className="k-btn outline sm" href={`/organizer/events/${e.id}/scan`}>Full-screen scanner</Link><Link className="k-btn primary sm" href={`/organizer/events/${e.id}/live`}>Live mode</Link></span></div><TicketScanner eventId={e.id} eventName={e.name} /></Card><CheckinStats d={d} /></div>}
     {(s === "hospitality" || s === "logistics" || s === "risk") && <TaskBoard e={e} d={d} category={s} />}
     {s === "incidents" && <IncidentsView e={e} d={d} full />}
     {s === "live" && <LiveMode e={e} d={d} />}

@@ -1,5 +1,6 @@
 import "server-only";
 import { Suspense } from "react";
+import { preloadSatoshi } from "@/lib/fonts";
 import { redirect } from "next/navigation";
 import { AuthPage, type AuthProps } from "./auth";
 import { createClient } from "@/lib/supabase/server";
@@ -39,6 +40,7 @@ export function maskEmail(email: string) {
 }
 
 export async function AuthRoute({ screen, searchParams, token, preview = false }: { screen: AuthScreen; searchParams: Promise<Search>; token?: string; preview?: boolean }) {
+  preloadSatoshi();
   const search = await searchParams;
   if (preview) return <Suspense><AuthPage {...previewAuthProps(screen, search)} /></Suspense>;
   const next = safeNext(one(search.next), "");

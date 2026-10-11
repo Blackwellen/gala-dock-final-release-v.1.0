@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Send, UserPlus, MoreHorizontal, Plus, ScanLine, UserCheck, Paperclip, Image as ImageIcon, FileText, Smile, SendHorizontal, Check, CheckCheck } from "lucide-react";
@@ -51,8 +52,8 @@ export function NewTierButton({ eventId }: { eventId: string }) {
 }
 export function CheckInButtons({ eventId }: { eventId: string }) {
   const [open, setOpen] = useState<"scan" | "manual" | null>(null);
-  return <><div className="gt-ck-btns"><button className="k-btn primary lg" onClick={() => setOpen("scan")}><ScanLine size={17} />Open QR Scanner</button><button className="k-btn outline lg" onClick={() => setOpen("manual")}><UserCheck size={17} />Manual Check-in</button></div>
-    <Dialog open={!!open} onClose={() => setOpen(null)} title={open === "scan" ? "Scan tickets" : "Manual check-in"} wide><CheckInScanner eventId={eventId} compact={open === "manual"} /></Dialog></>;
+  return <><div className="gt-ck-btns"><Link className="k-btn primary lg" href={`/account/events/${eventId}/scan`}><ScanLine size={17} />Open QR Scanner</Link><button className="k-btn outline lg" onClick={() => setOpen("manual")}><UserCheck size={17} />Manual Check-in</button></div>
+    <Dialog open={!!open} onClose={() => setOpen(null)} title="Manual check-in" wide><CheckInScanner eventId={eventId} compact /></Dialog></>;
 }
 
 type Msg = { id: string; body: string; sender_name: string; from_provider: boolean; created_at: string; read_at: string | null; attachments: { name: string; type: string; size: string; thumb?: string }[] };

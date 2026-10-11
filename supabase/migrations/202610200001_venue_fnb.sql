@@ -275,7 +275,12 @@ create policy event_order_versions_read on public.event_order_versions for selec
 -- Versions are append-only.
 create or replace function public.event_order_versions_immutable() returns trigger language plpgsql as $$
 begin
-  if tg_op = 'DELETE' or new.content is distinct from old.content or new.financial is distinct from old.financial or new.version <> old.version then
+  -- Deletion is only allowed as part of removing the whole order (cascade from account/workspace deletion).
+  if tg_op = 'DELETE' then
+    if exists (select 1 from public.event_orders o where o.id = old.order_id) then raise exception 'event order versions are immutable' using errcode = '42501'; end if;
+    return old;
+  end if;
+  if new.content is distinct from old.content or new.financial is distinct from old.financial or new.version <> old.version then
     raise exception 'event order versions are immutable' using errcode = '42501';
   end if;
   return new;

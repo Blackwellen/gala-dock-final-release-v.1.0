@@ -3,6 +3,7 @@ import { Users, CalendarDays, AlertTriangle, ShieldAlert, CalendarClock, Chevron
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs, Beta } from "@/components/kit";
 import { TeamHeaderActions, PersonRowMenu, ShiftMenu, ResolveButton } from "@/components/organizer/team-client";
+import { TeamConflicts } from "@/components/ops/readiness-panel";
 
 export const metadata = { title: "Team" };
 const TZ = "Europe/London";
@@ -52,6 +53,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Team" }]} />
     <div className="k-page-head"><div className="k-grow"><h1>Team</h1><p className="sub">Manage workspace people, crew, availability and assignments.</p></div><TeamHeaderActions events={(events ?? []).map(e => ({ id: e.id, name: e.name, starts_at: e.starts_at, ends_at: e.ends_at }))} people={people.map(p => ({ id: p.id, name: p.name }))} /></div>
     <LinkTabs current={tab} tabs={[["people", "People"], ["availability", "Availability"], ["assignments", "Assignments"], ["shifts", "Shifts"]].map(([k, l]) => ({ key: k, label: l, href: href({ tab: k === "people" ? undefined : k }) }))} />
+    <TeamConflicts workspaceId={ctx.workspace.id} limit={8} />
     <div className="tm-kpis">{([[Users, "Total people", people.length, `${people.filter(p => p.member_type === "member").length} members · ${people.filter(p => p.member_type === "crew").length} crew`, "blue", ""], [CalendarDays, "Assigned to events", assigned.size, `${people.length ? Math.round((assigned.size / people.length) * 100) : 0}% of team`, "blue", ""], [AlertTriangle, "Unfilled roles", unfilled.length, unfilled.length ? "Needs attention" : "All roles filled", "red", unfilled.length ? "warn" : ""], [ShieldAlert, "Conflicts", conflicts.length, "Next 30 days", "pink", ""], [CalendarClock, "Upcoming shifts", in7.length, "Next 7 days", "blue", ""]] as const).map(([I, l, v, s, c, w]) => <div key={l} className="k-card tm-kpi"><span><small>{l}</small><b>{v}</b><em className={w}>{w && <AlertTriangle size={12} />}{s}</em></span><span className={`tm-ki ${c}`}><I size={20} /></span></div>)}</div>
 
     <div className="tm-row1">

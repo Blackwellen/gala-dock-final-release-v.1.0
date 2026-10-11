@@ -1,3 +1,4 @@
+import { preloadSatoshi } from "@/lib/fonts";
 import "server-only";
 import { redirect } from "next/navigation";
 import { OnboardingPage, type Flow, type OnboardingContext } from "./onboarding";
@@ -37,6 +38,7 @@ function defaults(flow: Flow, key: string, settings: Record<string, Values>, use
 }
 
 export async function OnboardingRoute({ flow, searchParams, preview = false }: { flow: Flow; searchParams: Promise<Search>; preview?: boolean }) {
+  preloadSatoshi();
   const search = await searchParams;
   const requested = Number(one(search.step) ?? 1);
   const steps = flow === "experience" ? null : flowSteps[flow];

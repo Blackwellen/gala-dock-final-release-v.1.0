@@ -101,7 +101,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
       </div>
       <aside className="pe-side">
         <section id="tickets" className="ce-card pe-tickets"><div className="k-between"><h2>Get Tickets</h2><span className={`pe-sale ${onSale ? "" : "off"}`}><CheckCircle2 size={13} />{onSale ? "On Sale Now" : tk.length ? "Sold out" : "Coming soon"}</span></div>
-          <TicketPicker slug={e.slug!} tiers={tk} signedIn={!!user} /></section>
+          <TicketPicker slug={e.slug!} tiers={tk} signedIn={!!user} eventId={e.id} waitlist={((e.settings ?? {}) as Record<string, unknown>).waiting_list === true || (((e.settings ?? {}) as { ticket_pro?: { sales?: { waiting_list?: boolean } } }).ticket_pro?.sales?.waiting_list === true)} /></section>
         <div className="pe-stats"><div><Users size={24} /><span><b>{(Number(s.attendance) || 0).toLocaleString("en-GB")}+</b><small>Expected attendance</small></span></div><div><Ticket size={24} /><span><b>{sold >= 1000 ? `${(sold / 1000).toFixed(1)}K` : sold}</b><small>Tickets sold</small></span></div></div>
         {s.resale !== false && <Link href={user ? "/account/tickets" : "/login?next=/account/tickets"} className="ce-card pe-resale"><span className="pe-resale-ic"><Ticket size={22} /></span><span className="k-grow"><b>Resale &amp; Transfer</b><small>Can&apos;t make it? Resell or transfer your tickets safely through Gala Dock.</small></span><ArrowRight size={16} /></Link>}
         {o && <section className="ce-card pe-org"><div className="k-between"><h2>Event Promoter</h2>{e.workspace_id && <Link className="k-link" href={`/organizers/${e.workspace_id}`}>View profile <ArrowRight size={13} /></Link>}</div>

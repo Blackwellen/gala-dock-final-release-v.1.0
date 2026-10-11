@@ -28,6 +28,9 @@ test.describe("venue hire, BEO, food & drink", () => {
     [orgC, provC, outC] = await Promise.all([signedIn(org.email), signedIn(prov.email), signedIn(out.email)]) as unknown as SupabaseClient[];
   });
   test.afterAll(async () => {
+    // Unpublish first so nothing leaks into the live marketplace even if a later delete fails.
+    await db.from("listings").update({ published: false }).eq("workspace_id", ws);
+    await db.from("catering_selections").delete().eq("event_id", event);
     await db.from("provider_jobs").delete().eq("workspace_id", ws);
     await db.from("events").delete().eq("id", event);
     await db.from("workspaces").delete().eq("id", ws);

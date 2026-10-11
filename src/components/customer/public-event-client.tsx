@@ -1,9 +1,11 @@
 "use client";
+import { useAction } from "@/components/kit/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Share2, ShoppingCart, ShieldCheck, Smartphone, CheckCircle2, Minus, Plus } from "lucide-react";
+import { Heart, Share2, ShoppingCart, ShieldCheck, Smartphone, CheckCircle2, Minus, Plus, BellRing } from "lucide-react";
 import { useKitToast } from "@/components/kit/client";
+import { joinWaitlist } from "@/lib/tickets/actions";
 
 export function RecordView({ itemKey, signedIn }: { itemKey: string; signedIn: boolean }) {
   useEffect(() => { if (signedIn) void fetch("/api/recent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key: itemKey }) }).catch(() => null); }, [itemKey, signedIn]);
@@ -24,7 +26,10 @@ export function EventActions({ eventId, name, saved: initial, signedIn }: { even
 
 type Tier = { id: string; name: string; sub: string; price: number; left: number; qty: number; status: string; badge: string | null };
 /** Choose a ticket type and quantity, then continue to checkout (/checkout/[event]). */
-export function TicketPicker({ slug, tiers, signedIn }: { slug: string; tiers: Tier[]; signedIn: boolean }) {
+export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false }: { slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean }) {
+  const { run, pending } = useAction(); const [joined, setJoined] = useState<string[]>([]);
+  const soldOut = (x: Tier) => x.status === "sold_out" || (x.status === "on_sale" && x.left === 0);
+  const join = async (tierId: string) => { if (!eventId) return; const r = await run(() => joinWaitlist(eventId, tierId, 1), { refresh: false }); if (r.ok) setJoined(j => [...j, tierId]); };
   const buyable = tiers.filter(t => t.status === "on_sale" && t.left > 0);
   const [sel, setSel] = useState(buyable[0]?.id ?? ""); const [n, setN] = useState(1);
   const t = tiers.find(x => x.id === sel); const max = Math.min(10, t?.left ?? 1);
@@ -36,6 +41,9 @@ export function TicketPicker({ slug, tiers, signedIn }: { slug: string; tiers: T
         <span className="pe-price">{off ? <em className="gray">{x.status === "scheduled" ? "Coming soon" : "Sold out"}</em> : low ? <em>Almost gone</em> : null}<b>{x.price === 0 ? "Free" : `£${x.price.toLocaleString("en-GB")}`}</b></span>
         {sel === x.id && !off && <span className="pe-qty" onClick={e => e.preventDefault()}><button type="button" aria-label="Fewer tickets" onClick={() => setN(v => Math.max(1, v - 1))}><Minus size={13} /></button><b aria-live="polite">{n}</b><button type="button" aria-label="More tickets" onClick={() => setN(v => Math.min(max, v + 1))}><Plus size={13} /></button></span>}</label></li>; })}
       {!tiers.length && <li className="k-small">Tickets haven&apos;t been released yet.</li>}</ul>
+    {waitlist && eventId && tiers.some(soldOut) && <div className="pe-wait">{tiers.filter(soldOut).map(x => joined.includes(x.id) ? <span key={x.id} className="pe-wait-ok"><CheckCircle2 size={14} />You&apos;re on the {x.name} waiting list — we&apos;ll email you if tickets free up.</span>
+      : signedIn ? <button key={x.id} className="k-btn outline sm" disabled={pending} onClick={() => void join(x.id)}><BellRing size={14} />Join waiting list · {x.name}</button>
+      : <Link key={x.id} className="k-btn outline sm" href={`/login?next=${encodeURIComponent(`/events/${slug}`)}`}><BellRing size={14} />Sign in to join the {x.name} waiting list</Link>)}</div>}
     {t && buyable.length > 0 ? <Link className="k-btn primary pe-buy" href={signedIn ? href : `/login?next=${encodeURIComponent(href)}`}><ShoppingCart size={18} />Buy Tickets · £{(t.price * n).toLocaleString("en-GB")}</Link> : <button className="k-btn primary pe-buy" disabled>Not on sale</button>}
     <div className="pe-trust"><span><ShieldCheck size={14} />Secure checkout</span><span><Smartphone size={14} />Mobile tickets</span><span><CheckCircle2 size={14} />Instant confirmation</span></div>
   </>;

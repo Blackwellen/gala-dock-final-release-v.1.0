@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { CalendarPlus, Send, Tag, ExternalLink, MoreHorizontal, CheckCircle2, Repeat, XCircle, Wallet, Download, Copy, Loader2, ShieldCheck } from "lucide-react";
+import { CalendarPlus, Send, Tag, ExternalLink, MoreHorizontal, CheckCircle2, Repeat, XCircle, Wallet, Download, Copy, Loader2, ShieldCheck, Printer } from "lucide-react";
 import { Dialog, Menu, useAction, useKitToast } from "@/components/kit/client";
-import { transferTicket, resaleTicket } from "@/lib/actions/tickets";
+import { resaleTicket } from "@/lib/actions/tickets";
+import { offerTransfer } from "@/lib/tickets/actions";
+import { RotatingQr } from "@/components/tickets/rotating-qr";
 
 /** Native select that applies the filter immediately (progressive: the form still submits without JS). */
 export function FilterSelect({ name, value, label, options }: { name: string; value: string; label: string; options: [string, string][] }) {
@@ -35,14 +37,20 @@ export function GroupActions({ group: g }: { group: Group }) {
 }
 
 export function TransferDialog({ open, onClose, ticketId, name }: { open: boolean; onClose: () => void; ticketId: string; name: string }) {
-  const { run, pending } = useAction(); const [to, setTo] = useState({ name: "", email: "" });
-  return <Dialog open={open} onClose={onClose} title={`Transfer a ticket for ${name}`} sub="They'll get a brand-new ticket and QR code. Yours stops working immediately — this can't be undone.">
-    <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => transferTicket(ticketId, to.name, to.email)); if (r.ok) onClose(); }}>
+  const { run, pending } = useAction(); const toast = useKitToast(); const [to, setTo] = useState({ name: "", email: "" }); const [link, setLink] = useState<string | null>(null);
+  const close = () => { setLink(null); onClose(); };
+  // Two-step transfer (§49): the recipient accepts while signed in with this email; your ticket stays valid until then.
+  return <Dialog open={open} onClose={close} title={`Transfer a ticket for ${name}`} sub={link ? "Share this link with them. Your ticket keeps working until they accept — then it's replaced by theirs." : "We'll send them an acceptance link. Your ticket stays valid until they accept."}>
+    {link ? <div className="k-col" style={{ gap: 12 }}>
+      <div className="k-notice blue"><ShieldCheck size={15} className="k-blue" />Transfer offered to {to.email}. They must sign in with that email to accept.</div>
+      <div className="tk-acc"><code>{link}</code><button className="k-btn outline sm" onClick={async () => { try { await navigator.clipboard.writeText(link); toast("Acceptance link copied"); } catch { toast("Couldn't copy", "error"); } }}><Copy size={14} />Copy</button></div>
+      <div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn primary" onClick={close}>Done</button></div></div>
+    : <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => offerTransfer(ticketId, to.email, to.name), { refresh: true }); if (r.ok && typeof r.data === "string") setLink(r.data.startsWith("/") ? `${location.origin}${r.data}` : r.data); }}>
       <label className="k-field"><span>Recipient&apos;s full name</span><input className="k-input" required minLength={2} maxLength={120} value={to.name} onChange={e => setTo(p => ({ ...p, name: e.target.value }))} autoComplete="name" /></label>
       <label className="k-field"><span>Recipient&apos;s email</span><input className="k-input" type="email" required maxLength={200} value={to.email} onChange={e => setTo(p => ({ ...p, email: e.target.value }))} autoComplete="email" /></label>
       <div className="k-notice blue"><ShieldCheck size={15} className="k-blue" />Transfers are free and recorded against the ticket. Only transfer to people you know.</div>
-      <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={onClose}>Cancel</button><button className="k-btn primary" disabled={pending}>{pending && <Loader2 size={15} className="k-spin" />}Transfer ticket</button></div>
-    </form>
+      <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={close}>Cancel</button><button className="k-btn primary" disabled={pending}>{pending && <Loader2 size={15} className="k-spin" />}Send transfer offer</button></div>
+    </form>}
   </Dialog>;
 }
 export function ResaleDialog({ open, onClose, ticketId, name }: { open: boolean; onClose: () => void; ticketId: string; name: string }) {
@@ -65,7 +73,7 @@ export function TicketPanel({ tickets, when, slug, transfers }: { tickets: Panel
     {tickets.length > 1 && <div className="tk-seg" role="tablist">{tickets.map((x, k) => <button key={x.id} role="tab" aria-selected={k === i} onClick={() => setI(k)}>Ticket {k + 1} of {tickets.length}</button>)}</div>}
     <div className="tk-qrcard">
       <div className="k-between" style={{ alignItems: "flex-start" }}><span><b>{t.tier}</b><small>{t.seat ? `Seat ${t.seat}` : t.sub}</small></span><span className="tk-gate"><small>Entry gate</small><b>{t.gate}</b></span></div>
-      <div className={`tk-qr ${valid ? "" : "dim"}`}>{t.qr && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-logo" aria-hidden>G</span></>}{!valid && <span className="tk-qr-void">{listed ? "Paused while listed" : sl}</span>}</div>
+      <div className={`tk-qr ${valid ? "" : "dim"}`}>{valid ? <RotatingQr ticketId={t.id} size={170} /> : t.qr && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.qr} alt={`QR code for ticket ${t.code}`} /></>}{!valid && <span className="tk-qr-void">{listed ? "Paused while listed" : sl}</span>}</div>
       <b className="tk-code">{t.code}</b>
       <span className={`tk-valid ${tone}`}>{tone === "green" ? <CheckCircle2 size={15} /> : <XCircle size={15} />}{sl}</span>
       {when !== "resale" && <div className="tk-wallets"><button className="tk-wallet apple" onClick={() => setWallet(true)}><Wallet size={16} />Add to Apple Wallet</button><button className="tk-wallet" onClick={() => setWallet(true)}><Wallet size={16} />Add to Google Wallet</button></div>}
@@ -79,7 +87,7 @@ export function TicketPanel({ tickets, when, slug, transfers }: { tickets: Panel
     <TransferDialog open={transfer} onClose={() => setTransfer(false)} ticketId={t.id} name={t.tier} />
     <ResaleDialog open={resale} onClose={() => setResale(false)} ticketId={t.id} name={t.tier} />
     <Dialog open={wallet} onClose={() => setWallet(false)} title="Save your ticket" sub="Wallet passes aren't switched on for this event yet. Your QR code works from this page — or save it to your phone.">
-      <div className="k-col" style={{ gap: 10 }}>{t.qr && <a className="k-btn primary" href={t.qr} download={`${t.code}.png`}><Download size={15} />Download QR image</a>}
+      <div className="k-col" style={{ gap: 10 }}><a className="k-btn primary" href={`/api/tickets/${t.id}/pdf`}><Download size={15} />Download PDF ticket</a><a className="k-btn outline" href={`/account/tickets/${t.id}/print`} target="_blank" rel="noreferrer"><Printer size={15} />Print ticket</a>
         <button className="k-btn outline" onClick={async () => { try { await navigator.clipboard.writeText(t.code); toast("Ticket code copied"); } catch { toast("Couldn't copy the code", "error"); } }}><Copy size={15} />Copy ticket code</button>
         <a className="k-btn outline" href={`/api/tickets/${t.id}/ics`}><CalendarPlus size={15} />Add event to calendar</a></div>
     </Dialog>

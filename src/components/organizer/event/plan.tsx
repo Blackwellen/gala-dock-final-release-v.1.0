@@ -7,6 +7,7 @@ import { SubTabs } from "./header";
 import { itemStatus } from "./overview";
 import { AddProgrammeButton, ProgrammeItemMenu, TaskCheck, AddTaskButton, ItemActions, VenueConfirm } from "./controls";
 import { FileUploader } from "./files-client";
+import { TeamConflicts } from "@/components/ops/readiness-panel";
 
 const ICONS: Record<string, React.ComponentType<{ size?: number }>> = { layers: Layers, utensils: UtensilsCrossed, wine: Wine, shield: Shield, tent: Tent, card: CreditCard, user: User, volume: Volume2 };
 /** Programme structure adapts to event type (not one universal timeline). */
@@ -27,6 +28,7 @@ export function PlanTab({ e, d, section, role }: { e: ProEvent; d: EventData; se
   const s = items.some(i => i[0] === section) ? section : "brief";
   return <>
     <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: `${base}${k === "brief" ? "" : `&section=${k}`}` }))} />
+    {(s === "brief" || s === "schedule") && <TeamConflicts workspaceId={e.workspace_id as string} eventId={e.id} limit={5} />}
     {s === "brief" && <Brief e={e} d={d} />}
     {s === "programme" && <Card><ProgrammeList e={e} d={d} full /></Card>}
     {s === "venue" && <VenueSection e={e} d={d} />}

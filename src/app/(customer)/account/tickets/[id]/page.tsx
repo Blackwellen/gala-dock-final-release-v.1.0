@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, MapPin, CalendarDays, Ticket, Info, Clock, IdCard, ShieldCheck, Tag, ChevronRight, CircleHelp, FileText, Navigation, Map as MapIcon, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, CalendarDays, Ticket, Info, Clock, IdCard, ShieldCheck, Tag, ChevronRight, CircleHelp, FileText, Navigation, Map as MapIcon, BookOpen, Printer, Download } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { ticketQr, whenLine, type TicketRow } from "@/lib/data/customer-tickets";
 import { ManageTicket, AttendeeCard } from "@/components/customer/tickets-detail";
 import { eventTypeLabel } from "@/lib/format";
+import { RotatingQr } from "@/components/tickets/rotating-qr";
 
 export const metadata = { title: "Ticket" };
 const COLS = "id,code,status,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings,venue_listing_id)";
@@ -45,7 +46,10 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
       <div className="td-main">
         <section className="td-ticket"><div className="td-tin">
           <div className="k-between" style={{ alignItems: "flex-start" }}><div className="k-row" style={{ gap: 16, alignItems: "flex-start" }}><Ticket size={30} className="td-ticon" /><div><h2>{t.tier?.name ?? "Admission"}</h2><p>{t.seat ? `Seat ${t.seat}` : t.tier?.kind === "vip" ? "VIP Entry" : "Standard Entry"}</p>{t.tier?.description && <p className="k-muted">{t.tier.description}</p>}</div></div><span className="td-n">Ticket {idx + 1} of {sib.length || 1}</span></div>
-          <div className={`tk-qr td-qr ${t.status === "valid" ? "" : "dim"}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-logo" aria-hidden>G</span>{t.status !== "valid" && <span className="tk-qr-void">{t.status === "resale_listed" ? "Paused while listed" : sl}</span>}</div>
+          {/* Valid tickets show a signed, 30-second rotating code (screenshots expire; transfer/resale kills it). */}
+          {t.status === "valid" ? <div className="tk-qr td-qr live"><RotatingQr ticketId={t.id} size={170} /></div>
+            : <div className="tk-qr td-qr dim">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-void">{t.status === "resale_listed" ? "Paused while listed" : sl}</span></div>}
+          {t.status === "valid" && s.print_tickets !== false && <div className="td-print"><Link className="k-btn outline sm" href={`/account/tickets/${t.id}/print`} target="_blank"><Printer size={14} />Print ticket</Link><a className="k-btn outline sm" href={`/api/tickets/${t.id}/pdf`}><Download size={14} />Download PDF</a></div>}
           <b className="tk-code td-code">{t.code}</b>
           <span className={`tk-valid ${tone}`}>{tone === "green" ? "✓ Valid for entry" : sl}</span>
           <dl className="td-facts"><div><dt><MapPin size={20} /></dt><dd><small>Entry gate</small><b>{gate}</b></dd></div><div><dt><Ticket size={20} /></dt><dd><small>Ticket type</small><b>{t.tier?.name ?? "Admission"}</b></dd></div><div><dt><i className={`td-dot ${tone}`} /></dt><dd><small>Status</small><b>{sl}</b></dd></div><div><dt><FileText size={20} /></dt><dd><small>Order reference</small><b>{t.order_ref}</b></dd></div></dl>
