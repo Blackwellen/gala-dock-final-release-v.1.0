@@ -1,7 +1,7 @@
 {
  "name": "c-orgw05-1",
  "path": "/organizer/promotions/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=1",
- "page": 13.95,
+ "page": 13.9,
  "components": [
   {
    "sel": ".k-card",
@@ -10,7 +10,7 @@
    "y": 243,
    "w": 360,
    "h": 359,
-   "mismatch": 46.8
+   "mismatch": 46.2
   },
   {
    "sel": ".k-card",
@@ -19,7 +19,7 @@
    "y": 803,
    "w": 360,
    "h": 210,
-   "mismatch": 18.6
+   "mismatch": 18.5
   },
   {
    "sel": ".k-card",
@@ -28,7 +28,7 @@
    "y": 593,
    "w": 908,
    "h": 234,
-   "mismatch": 16.6
+   "mismatch": 16.5
   },
   {
    "sel": ".k-card",
@@ -37,7 +37,7 @@
    "y": 616,
    "w": 360,
    "h": 172,
-   "mismatch": 14.2
+   "mismatch": 14
   },
   {
    "sel": ".k-card",
@@ -46,16 +46,16 @@
    "y": 243,
    "w": 478,
    "h": 336,
-   "mismatch": 13.4
+   "mismatch": 13.3
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 11.9
+   "mismatch": 12.1
   },
   {
    "sel": ".k-card",
@@ -82,7 +82,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 7.4
+   "mismatch": 7.9
   },
   {
    "sel": ".k-card",
@@ -91,7 +91,7 @@
    "y": 840,
    "w": 478,
    "h": 158,
-   "mismatch": 5.9
+   "mismatch": 5.8
   }
  ]
 }

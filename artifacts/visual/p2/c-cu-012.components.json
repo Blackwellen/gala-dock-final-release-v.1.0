@@ -1,16 +1,16 @@
 {
  "name": "c-cu-012",
  "path": "/account/reviews",
- "page": 18.69,
+ "page": 18.98,
  "components": [
   {
    "sel": ".c-top",
-   "label": "c-top",
+   "label": "c-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 7.9
+   "mismatch": 8.5
   }
  ]
 }

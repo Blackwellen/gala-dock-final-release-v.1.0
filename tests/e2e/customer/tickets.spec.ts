@@ -19,7 +19,8 @@ test("list shows tickets with a scannable QR panel", async ({ page }) => {
   await page.goto("/account/tickets", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "My Tickets" })).toBeVisible();
   await expect(page.locator(".tk-card").first()).toBeVisible();
-  await expect(page.locator(".tk-panel img[alt^='QR code']")).toBeVisible();
+  // Valid tickets show the signed, rotating entry code (SVG), not a static image.
+  await expect(page.locator(".tk-panel [aria-label='Entry QR code'] svg")).toBeVisible({ timeout: 20_000 });
   const cal = await page.request.get(`/api/tickets/${ticket}/ics`);
   expect(cal.status()).toBe(200); expect(await cal.text()).toContain("BEGIN:VEVENT");
 });
@@ -49,14 +50,18 @@ test("an unrelated user cannot read or transfer this ticket (the event organizer
   expect(error?.message).toMatch(/not_authorized/);
 });
 
-test("transfer issues a new ticket and voids the old QR", async ({ page }) => {
+test("transfer is a two-step offer: link to share, ticket stays valid until accepted", async ({ page }) => {
   await login(page, "customer", `/account/tickets/${ticket}`);
   await page.goto(`/account/tickets/${ticket}`, { waitUntil: "networkidle" });
   await page.locator(".td-manage").getByRole("button", { name: "Transfer ticket" }).click();
   const dlg = page.getByRole("dialog");
   await dlg.getByLabel("Recipient's full name").fill("Sam Friend"); await dlg.getByLabel("Recipient's email").fill("sam.friend@example.com");
-  await dlg.getByRole("button", { name: "Transfer ticket" }).click();
-  await page.waitForURL(/tab=resale/);
-  const { data: t } = await admin().from("tickets").select("status,replaced_by").eq("id", ticket).single();
-  expect(t!.status).toBe("transferred"); expect(t!.replaced_by).toBeTruthy();
+  await dlg.getByRole("button", { name: "Send transfer offer" }).click();
+  await expect(dlg.locator(".tk-acc code")).toContainText("/tickets/accept/", { timeout: 20_000 });
+  const db = admin();
+  const { data: t } = await db.from("tickets").select("status").eq("id", ticket).single();
+  expect(t!.status).toBe("valid");
+  const { data: tr } = await db.from("ticket_transfers").select("id,status,to_email").eq("ticket_id", ticket).order("created_at", { ascending: false }).limit(1).single();
+  expect(tr).toMatchObject({ status: "pending", to_email: "sam.friend@example.com" });
+  await db.from("ticket_transfers").delete().eq("id", tr!.id);
 });

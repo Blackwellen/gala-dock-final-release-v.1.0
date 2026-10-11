@@ -147,7 +147,7 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
 .k-table tr:last-child td { border-bottom: 0; }
 .k-table tbody tr:hover td { background: #fafbff; }
 .k-table .num { text-align: right; font-variant-numeric: tabular-nums; }
-.k-table-wrap { overflow-x: auto; min-width: 0; }
+.k-table-wrap { overflow-x: auto; min-width: 0; position: relative; } /* positioned: absolutely placed cell content scrolls with the table instead of widening the page */
 
 /* Progress */
 .k-bar { height: 6px; border-radius: 999px; background: #edf0f7; overflow: hidden; min-width: 40px; }

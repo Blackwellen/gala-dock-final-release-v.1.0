@@ -1,0 +1,25 @@
+{
+ "name": "c-w03-1",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=1",
+ "page": 21.64,
+ "components": [
+  {
+   "sel": ".o-top",
+   "label": "o-top pwa-hide-desktop-nav",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 11.7
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 7
+  }
+ ]
+}

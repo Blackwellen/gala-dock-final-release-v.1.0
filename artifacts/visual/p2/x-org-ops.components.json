@@ -1,0 +1,160 @@
+{
+ "name": "x-org-ops",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations",
+ "page": 21.55,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Venue map & live overview",
+   "x": 829,
+   "y": 455,
+   "w": 413,
+   "h": 408,
+   "mismatch": 73.6
+  },
+  {
+   "sel": ".eh-hero",
+   "label": "Neon Nights Festival",
+   "x": 238,
+   "y": 110,
+   "w": 1280,
+   "h": 118,
+   "mismatch": 47.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Live event controls",
+   "x": 1256,
+   "y": 455,
+   "w": 262,
+   "h": 273,
+   "mismatch": 31.9
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 230,
+   "y": 238,
+   "w": 438,
+   "h": 42,
+   "mismatch": 17.8
+  },
+  {
+   "sel": ".eh-tabs",
+   "label": "eh-tabs",
+   "x": 236,
+   "y": 238,
+   "w": 1282,
+   "h": 43,
+   "mismatch": 14.9
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Team checked in",
+   "x": 667,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 14.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Run sheet",
+   "x": 236,
+   "y": 455,
+   "w": 579,
+   "h": 407,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Event status",
+   "x": 236,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 13.2
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Guests checked in",
+   "x": 882,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 13.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Check-in live stats",
+   "x": 1256,
+   "y": 741,
+   "w": 262,
+   "h": 277,
+   "mismatch": 13.1
+  },
+  {
+   "sel": ".k-table",
+   "label": "k-table",
+   "x": 253,
+   "y": 549,
+   "w": 545,
+   "h": 296,
+   "mismatch": 12.7
+  },
+  {
+   "sel": ".eh-sub",
+   "label": "eh-sub",
+   "x": 236,
+   "y": 292,
+   "w": 1282,
+   "h": 48,
+   "mismatch": 11
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top pwa-hide-desktop-nav",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.5
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Key suppliers",
+   "x": 1097,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 9.9
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Doors open in",
+   "x": 451,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 9.2
+  },
+  {
+   "sel": ".k-kpi",
+   "label": "Open issues",
+   "x": 1313,
+   "y": 354,
+   "w": 205,
+   "h": 87,
+   "mismatch": 8.9
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.5
+  }
+ ]
+}

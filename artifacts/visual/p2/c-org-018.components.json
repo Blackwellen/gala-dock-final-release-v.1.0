@@ -1,7 +1,7 @@
 {
  "name": "c-org-018",
  "path": "/organizer/money",
- "page": 12.45,
+ "page": 12.39,
  "components": [
   {
    "sel": ".k-card",
@@ -10,7 +10,7 @@
    "y": 369,
    "w": 405,
    "h": 272,
-   "mismatch": 25.1
+   "mismatch": 25.2
   },
   {
    "sel": ".k-card",
@@ -19,7 +19,7 @@
    "y": 369,
    "w": 405,
    "h": 272,
-   "mismatch": 21.3
+   "mismatch": 21.2
   },
   {
    "sel": ".k-card",
@@ -28,7 +28,7 @@
    "y": 369,
    "w": 445,
    "h": 272,
-   "mismatch": 19
+   "mismatch": 18.8
   },
   {
    "sel": ".k-page-head",
@@ -37,7 +37,7 @@
    "y": 108,
    "w": 1282,
    "h": 53,
-   "mismatch": 15.3
+   "mismatch": 15.1
   },
   {
    "sel": ".k-card",
@@ -55,16 +55,16 @@
    "y": 653,
    "w": 634,
    "h": 371,
-   "mismatch": 13.7
+   "mismatch": 12.8
   },
   {
    "sel": ".k-card",
-   "label": "£84,880",
+   "label": "£87,400",
    "x": 236,
    "y": 224,
    "w": 204,
    "h": 133,
-   "mismatch": 12.7
+   "mismatch": 12.5
   },
   {
    "sel": ".k-card",
@@ -73,7 +73,7 @@
    "y": 224,
    "w": 204,
    "h": 133,
-   "mismatch": 12.6
+   "mismatch": 12.5
   },
   {
    "sel": ".k-card",
@@ -86,12 +86,12 @@
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 10.9
+   "mismatch": 11.2
   },
   {
    "sel": ".k-card",
@@ -113,7 +113,7 @@
   },
   {
    "sel": ".k-card",
-   "label": "£33,745",
+   "label": "£36,265",
    "x": 1314,
    "y": 224,
    "w": 204,
@@ -127,7 +127,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 6.1
+   "mismatch": 6.8
   },
   {
    "sel": ".k-tabs",

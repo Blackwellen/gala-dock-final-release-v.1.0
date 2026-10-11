@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin, Play, LayoutDashboard, ListChecks, Megaphone, Settings2, Wallet } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Play, LayoutDashboard, ListChecks, Megaphone, Settings2, Wallet, Video } from "lucide-react";
 import { Crumbs } from "@/components/kit";
 import { dateLong, timeRange, eventTypeLabel } from "@/lib/format";
 import type { ProEvent } from "@/lib/data/event";
@@ -29,7 +29,7 @@ export function EventHeader({ e, tab, canMoney }: { e: ProEvent; tab: EventTab |
         <div className="eh-meta"><span><CalendarDays size={16} />{dateLong(e.starts_at, e.timezone)}</span><span><Clock size={16} />{timeRange(e.starts_at, e.ends_at, e.timezone)}</span><span><MapPin size={16} />{[e.venue_name, e.city].filter(Boolean).join(", ") || "Venue to be confirmed"}</span></div>
       </div>
       {hero && <span className="eh-play" aria-hidden><Play size={18} fill="currentColor" /></span>}
-      <div className="eh-hero-actions"><StatusMenu id={e.id} status={e.status} /><HeroActions id={e.id} name={e.name} slug={e.slug} isPublic={isPublic} /></div>
+      <div className="eh-hero-actions">{(["virtual_event", "live_audio", "podcast_recording", "hybrid", "remote_conference"].includes(e.event_type) || ((e.settings ?? {}) as { virtual?: boolean }).virtual === true) && <Link className="k-btn outline eh-online" href={`/organizer/events/${e.id}/virtual`}><Video size={15} />Online session</Link>}<StatusMenu id={e.id} status={e.status} /><HeroActions id={e.id} name={e.name} slug={e.slug} isPublic={isPublic} /></div>
     </section>
     <div className="eh-tabs">
       <nav className="k-tabs" aria-label="Event sections" style={{ borderBottom: 0 }}>{EVENT_TABS.filter(t => t.key !== "money" || canMoney).map(t => <Link key={t.key} href={`/organizer/events/${e.id}${t.key === "overview" ? "" : `?tab=${t.key}`}`} className="k-tab" aria-current={tab === t.key ? "page" : undefined} scroll={false}>{t.label}</Link>)}</nav>

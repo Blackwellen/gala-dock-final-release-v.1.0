@@ -3,7 +3,7 @@ import { login, admin } from "../p2-helpers";
 
 // ORG-015: the poster renders from event data, edits redraw it, PNG export downloads and "Save to library" stores a media asset.
 let eventId = ""; const started = new Date().toISOString();
-test.beforeAll(async () => { const { data } = await admin().from("events").select("id").eq("name", "Neon Nights Festival").limit(1).single(); eventId = data!.id; });
+test.beforeAll(async () => { const { data } = await admin().from("events").select("id").eq("name", "Neon Nights Festival").is("settings->>demo_copy_of", null).limit(1).single(); eventId = data!.id; });
 test.afterAll(async () => {
   const db = admin(); const { data } = await db.from("media_assets").select("id,url").eq("event_id", eventId).gte("created_at", started);
   for (const m of data ?? []) { const path = m.url.split("/event-media/")[1]; if (path) await db.storage.from("event-media").remove([path]); await db.from("media_assets").delete().eq("id", m.id); }

@@ -3,7 +3,7 @@ import { login, admin } from "../p2-helpers";
 
 // ORG-012 page editor (save draft persists hero copy) and W07 Save as Template (snapshot without personal/financial data).
 let eventId = ""; let original: Record<string, unknown> = {}; const tpl = `E2E Template ${Date.now()}`;
-test.beforeAll(async () => { const { data } = await admin().from("events").select("id,settings").eq("name", "Neon Nights Festival").limit(1).single(); eventId = data!.id; original = (data!.settings ?? {}) as Record<string, unknown>; });
+test.beforeAll(async () => { const { data } = await admin().from("events").select("id,settings").eq("name", "Neon Nights Festival").is("settings->>demo_copy_of", null).limit(1).single(); eventId = data!.id; original = (data!.settings ?? {}) as Record<string, unknown>; });
 test.afterAll(async () => { const db = admin(); await db.from("events").update({ settings: original }).eq("id", eventId); await db.from("event_templates").delete().eq("name", tpl); });
 
 test("page editor saves hero copy as a draft", async ({ page }) => {

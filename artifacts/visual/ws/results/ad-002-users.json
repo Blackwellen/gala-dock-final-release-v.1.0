@@ -3,8 +3,10 @@
   "url": "/admin/users",
   "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
   "status": 200,
-  "mismatchPercent": 11.06,
-  "ssim": 0.6305,
+  "mismatchPercent": 10.88,
+  "layoutPercent": 10.57,
+  "mediaBoxes": 3,
+  "ssim": 0.6368,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1041
   },
   "errors": [],
-  "at": "2026-10-11T09:16:42.114Z"
+  "at": "2026-10-11T14:39:46.339Z"
 }

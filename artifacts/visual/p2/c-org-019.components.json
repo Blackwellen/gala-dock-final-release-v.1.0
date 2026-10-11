@@ -1,7 +1,7 @@
 {
  "name": "c-org-019",
  "path": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9",
- "page": 8.36,
+ "page": 8.45,
  "components": [
   {
    "sel": ".k-card",
@@ -9,8 +9,8 @@
    "x": 1132,
    "y": 802,
    "w": 386,
-   "h": 96,
-   "mismatch": 15.4
+   "h": 138,
+   "mismatch": 16
   },
   {
    "sel": ".k-card",
@@ -19,15 +19,6 @@
    "y": 675,
    "w": 386,
    "h": 113,
-   "mismatch": 13.8
-  },
-  {
-   "sel": ".k-card",
-   "label": "Communication history",
-   "x": 1132,
-   "y": 913,
-   "w": 386,
-   "h": 111,
    "mismatch": 13.7
   },
   {
@@ -37,7 +28,7 @@
    "y": 293,
    "w": 212,
    "h": 136,
-   "mismatch": 13.2
+   "mismatch": 13.1
   },
   {
    "sel": ".k-card",
@@ -46,7 +37,16 @@
    "y": 293,
    "w": 212,
    "h": 136,
-   "mismatch": 11.9
+   "mismatch": 11.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Communication history",
+   "x": 1132,
+   "y": 955,
+   "w": 386,
+   "h": 69,
+   "mismatch": 11.5
   },
   {
    "sel": ".k-card",
@@ -59,12 +59,12 @@
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 10.8
+   "mismatch": 11.1
   },
   {
    "sel": ".k-card",
@@ -91,7 +91,7 @@
    "y": 293,
    "w": 212,
    "h": 136,
-   "mismatch": 8.9
+   "mismatch": 8.8
   },
   {
    "sel": ".k-card",
@@ -103,6 +103,15 @@
    "mismatch": 7.2
   },
   {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.9
+  },
+  {
    "sel": ".k-card",
    "label": "Invoice status",
    "x": 1132,
@@ -110,15 +119,6 @@
    "w": 386,
    "h": 199,
    "mismatch": 6.8
-  },
-  {
-   "sel": ".o-side",
-   "label": "Alex Events",
-   "x": 0,
-   "y": 66,
-   "w": 222,
-   "h": 958,
-   "mismatch": 6.1
   },
   {
    "sel": ".k-card",

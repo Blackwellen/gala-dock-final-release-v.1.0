@@ -1,16 +1,16 @@
 {
  "name": "c-cu-010",
  "path": "/account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2",
- "page": 32.18,
+ "page": 26.9,
  "components": [
   {
    "sel": ".c-top",
-   "label": "c-top",
+   "label": "c-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1222,
-   "h": 64,
-   "mismatch": 11.6
+   "h": 51,
+   "mismatch": 12.8
   }
  ]
 }

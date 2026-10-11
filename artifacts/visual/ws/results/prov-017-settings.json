@@ -3,16 +3,16 @@
   "url": "/provider/settings",
   "file": "Designs/Provider Workspace/Gala Dock Workspace Settings Dashboard(1).png",
   "status": 200,
-  "mismatchPercent": 12.61,
-  "layoutPercent": 11.17,
+  "mismatchPercent": 11.12,
+  "layoutPercent": 10.07,
   "mediaBoxes": 9,
-  "ssim": 0.6247,
+  "ssim": 0.6719,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1221
+    "scrollHeight": 1988
   },
   "errors": [],
-  "at": "2026-10-11T09:26:19.391Z"
+  "at": "2026-10-11T15:34:27.401Z"
 }

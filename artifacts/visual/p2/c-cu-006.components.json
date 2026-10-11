@@ -1,7 +1,7 @@
 {
  "name": "c-cu-006",
  "path": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
- "page": 12.49,
+ "page": 12.57,
  "components": [
   {
    "sel": ".k-table",
@@ -14,12 +14,12 @@
   },
   {
    "sel": ".c-top",
-   "label": "c-top",
+   "label": "c-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 7.1
+   "mismatch": 8.4
   }
  ]
 }

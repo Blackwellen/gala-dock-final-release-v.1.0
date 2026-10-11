@@ -4,17 +4,19 @@ import { getOrganizer } from "@/lib/data/context";
 import { listWorkspaceEvents, withStats, attentionQueue, ledgerSeries, shiftConflicts } from "@/lib/data/organizer";
 import { Card, Chip, Tile, Spark, Bar, DateBox, Avatar, Beta } from "@/components/kit";
 import { dateBadge, money, num, relative, dateShort } from "@/lib/format";
+import { TeamConflicts } from "@/components/ops/readiness-panel";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Command Centre" };
 const RANGES = { today: 1, week: 7, month: 31 } as const;
 
 export default async function CommandCentre({ searchParams }: PageProps<"/organizer">) {
   const sp = await searchParams; const range = (["today", "week", "month"].includes(String(sp.range)) ? sp.range : "today") as keyof typeof RANGES;
-  const ctx = await getOrganizer(); const sb = ctx.supabase; const ws = ctx.workspace.id;
+  const ctx = await getOrganizer(); const nowMs = requestTime(); const sb = ctx.supabase; const ws = ctx.workspace.id;
   const all = await withStats(sb, await listWorkspaceEvents(sb, ws));
-  const now = new Date().toISOString();
+  const now = new Date(nowMs).toISOString();
   const upcoming = all.filter(e => e.starts_at && e.starts_at >= now && !["cancelled", "archived", "completed"].includes(e.status)).slice(0, 4);
-  const horizon = new Date(Date.now() + RANGES[range] * 864e5 * 30).toISOString(); // attention looks ahead; range narrows recency of items shown
+  const horizon = new Date(nowMs + RANGES[range] * 864e5 * 30).toISOString(); // attention looks ahead; range narrows recency of items shown
   const attention = (await attentionQueue(sb, ws, all)).filter(a => !a.due || a.due <= horizon);
   const eventIds = all.map(e => e.id);
   const [leads, proposals, confirmed, dues, invoicesOut, runs, approvals, threads, tasks, shifts, series] = await Promise.all([
@@ -37,7 +39,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
   const amountsDue = (dues.data ?? []).reduce((s, p) => s + Number(p.amount), 0) + (invoicesOut.data ?? []).reduce((s, i) => s + Number(i.total) - Number(i.amount_paid), 0);
   const dueEvents = new Set([...(dues.data ?? []).map(p => p.event_id), ...(invoicesOut.data ?? []).map(i => i.event_id)].filter(Boolean)).size;
   const leadCount = (leads.data?.length ?? 0) + (proposals.count ?? 0);
-  const leads30 = (leads.data ?? []).filter(l => l.created_at > new Date(Date.now() - 30 * 864e5).toISOString()).length;
+  const leads30 = (leads.data ?? []).filter(l => l.created_at > new Date(nowMs - 30 * 864e5).toISOString()).length;
   const runStats = { done: (runs.data ?? []).filter(r => r.status === "completed").length, waiting: (runs.data ?? []).filter(r => r.status === "waiting_external").length };
   const conflicts = shiftConflicts(shifts.data ?? []).length;
   const overdueTasks = (tasks.data ?? []).filter(t => t.status !== "done" && t.due_at && t.due_at < now).length;
@@ -52,6 +54,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
         <div className="k-seg solid" role="tablist" aria-label="Time range">{(["today", "week", "month"] as const).map(r => <Link key={r} href={`/organizer?range=${r}`} role="tab" aria-selected={range === r} scroll={false}>{r === "today" ? "Today" : r === "week" ? "This Week" : "This Month"}</Link>)}</div>
       </div>
     </div>
+    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
 
     <Card aria-label="Attention queue">
       <div className="k-between" style={{ marginBottom: 10 }}>
@@ -80,7 +83,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
             <div className="oh-up-name"><Link href={`/organizer/events/${e.id}`} className="k-strong k-ellipsis" style={{ display: "block", fontSize: 13 }}>{e.name}</Link><span className="k-row k-small k-muted" style={{ gap: 4 }}><MapPin size={12} />{e.location || e.venue_name}</span></div>
             <span className="k-row k-small" style={{ gap: 5, color: "var(--k-ink-2)" }}><Users size={13} />{num(e.sold)} / {num(e.ticketCap)}</span>
             <div className="oh-up-bar"><span className="k-small">{pctSold}%</span><Bar value={pctSold} tone={pctSold >= 90 ? "green" : pctSold >= 70 ? undefined : "purple"} label={`${e.name} tickets sold`} /></div>
-            <div className="oh-up-task">{e.nextTask ? <><span className="k-row k-small" style={{ gap: 5, color: "var(--k-ink-2)" }}><CalendarDays size={12} />{e.nextTask.title}</span><span className={`k-xs ${e.nextTask.due_at && e.nextTask.due_at < new Date(Date.now() + 864e5).toISOString() ? "k-red" : "k-muted"}`}>{e.nextTask.due_at ? `Due ${dateShort(e.nextTask.due_at)}` : "No due date"}</span></> : <span className="k-xs k-muted">No open tasks</span>}</div>
+            <div className="oh-up-task">{e.nextTask ? <><span className="k-row k-small" style={{ gap: 5, color: "var(--k-ink-2)" }}><CalendarDays size={12} />{e.nextTask.title}</span><span className={`k-xs ${e.nextTask.due_at && e.nextTask.due_at < new Date(nowMs + 864e5).toISOString() ? "k-red" : "k-muted"}`}>{e.nextTask.due_at ? `Due ${dateShort(e.nextTask.due_at)}` : "No due date"}</span></> : <span className="k-xs k-muted">No open tasks</span>}</div>
             <Chip tone={tone as "green"}>{label}</Chip>
             <Link href={`/organizer/events/${e.id}`} className="k-icon-btn plain" aria-label={`Open ${e.name}`}><MoreHorizontal size={16} /></Link>
           </div>; })}</div>}

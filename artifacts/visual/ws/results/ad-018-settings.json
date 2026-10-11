@@ -3,8 +3,10 @@
   "url": "/admin/settings",
   "file": "Designs/Admin Workspace/Gala Dock Platform Settings Dashboard.png",
   "status": 200,
-  "mismatchPercent": 10.42,
-  "ssim": 0.6562,
+  "mismatchPercent": 10.4,
+  "layoutPercent": 10.16,
+  "mediaBoxes": 2,
+  "ssim": 0.6568,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1070
   },
   "errors": [],
-  "at": "2026-10-11T09:18:33.081Z"
+  "at": "2026-10-11T15:02:10.063Z"
 }

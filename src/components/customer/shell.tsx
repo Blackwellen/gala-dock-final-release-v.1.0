@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { Search, MessageSquare, Bell, CircleHelp, ChevronDown, User, Ticket, Heart, CalendarDays, Sparkles, Star, LogOut, Briefcase, Compass, Menu as MenuIcon, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, type ReactNode } from "react";
+import { Search, MessageSquare, Bell, CircleHelp, ChevronDown, User, Ticket, Heart, CalendarDays, Sparkles, Star, LogOut, Briefcase, Compass, Menu as MenuIcon, X, House } from "lucide-react";
 import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { markNotificationsRead } from "@/lib/actions/shell";
 import { relative } from "@/lib/format";
+import { MobileNav } from "@/components/pwa/mobile-nav";
+import { GlobalSearch } from "@/components/search/global-search";
 
 export const CU_NAV = [
   { href: "/discover", label: "Discover", icon: Compass },
@@ -19,22 +21,19 @@ export const CU_NAV = [
 type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; unread: number; notifications: { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string }[]; threads: { id: string; title: string; href: string; at: string; unread: boolean }[]; hasWorkspace: boolean };
 
 export function CustomerShell({ children, user, unread, notifications, threads, hasWorkspace }: Props) {
-  const pathname = usePathname(); const router = useRouter(); const params = useSearchParams(); const { run } = useAction();
+  const pathname = usePathname(); const router = useRouter(); const { run } = useAction();
   const [open, setOpen] = useState(false);
-  useEffect(() => setOpen(false), [pathname]);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); document.getElementById("cu-search")?.focus(); } };
-    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  // Close the mobile menu on navigation (reset-on-change during render, not in an effect).
+  const [navPath, setNavPath] = useState(pathname);
+  if (navPath !== pathname) { setNavPath(pathname); setOpen(false); }
   const active = (href: string) => pathname === href || pathname.startsWith(href + "/") || (href === "/plan" && pathname.startsWith("/plan"));
   return <div className="k-root c-root">
     <a href="#main" className="k-sr">Skip to content</a>
-    <header className="c-top">
+    <MobileNav home="/home" title="Gala Dock" tabs={CU_NAV.map(n => ({ href: n.href, label: n.label === "Plan an Event" ? "Plan" : n.label, icon: n.icon, match: n.href }))} menu={[...CU_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href })), { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "My Account", icon: User, match: "/account$" }, { href: "/help", label: "Help", icon: CircleHelp }]} />
+    <header className="c-top pwa-hide-desktop-nav">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={178} height={46} /></Link>
-      <form className="c-search" role="search" onSubmit={e => { e.preventDefault(); const v = (e.currentTarget.elements.namedItem("q") as HTMLInputElement).value.trim(); router.push(`/discover?${new URLSearchParams({ tab: params.get("tab") ?? "events", ...(v ? { q: v } : {}) })}`); }}>
-        <Search size={18} aria-hidden /><input id="cu-search" name="q" defaultValue={pathname === "/discover" ? params.get("q") ?? "" : ""} placeholder="Search events, venues, artists, or experiences..." aria-label="Search events, venues and services" /><kbd>⌘ K</kbd>
-      </form>
+      <div className="c-search c-gs"><GlobalSearch seat={null} placeholder="Search events, venues, artists, or experiences..." /></div>
       <nav className="c-nav" aria-label="Main">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</Link>)}</nav>
       <div className="c-icons">
         <Menu label="Messages" width={320} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><MessagePulse />{threads.some(t => t.unread) && <i className="o-dot" />}</button>}>
@@ -65,7 +64,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
       {CU_NAV.map(n => <Link key={n.href} href={n.href} className="k-menu-item" aria-current={active(n.href) ? "page" : undefined}><n.icon size={17} aria-hidden />{n.label}</Link>)}
     </div>}
     <main id="main" className="c-main">{children}</main>
-    <nav className="c-tabbar" aria-label="Quick navigation">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}><n.icon size={20} aria-hidden /><span>{n.label === "Plan an Event" ? "Plan" : n.label}</span></Link>)}</nav>
+    <nav className="c-tabbar pwa-hide-desktop-nav" aria-label="Quick navigation">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}><n.icon size={20} aria-hidden /><span>{n.label === "Plan an Event" ? "Plan" : n.label}</span></Link>)}</nav>
   </div>;
 }
 

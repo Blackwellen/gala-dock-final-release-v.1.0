@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { CalendarDays, MapPin, Users, ShieldAlert, Star, BadgeCheck, CheckCircle2, ArrowRight, Music2, Disc3, Utensils, Palette, Layers, Trees, Clock, Navigation, ChevronDown, Ticket, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MapView } from "@/components/kit/client";
@@ -26,8 +26,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 const FEAT: Record<string, typeof Music2> = { "Live Music": Music2, "DJ Sets": Disc3, "Food & Drink": Utensils, "Art Installations": Palette, "Multiple Stages": Layers, Outdoor: Trees };
 
+const LAUNCH: Record<string, [string, string]> = { draft: ["Not on sale", "off"], coming_soon: ["Coming soon", "off"], countdown: ["On sale soon", "off"], presale: ["Presale live", ""], on_sale: ["On Sale Now", ""], final_release: ["Final release", ""], low_availability: ["Selling fast", "warn"], sold_out: ["Sold out", "off"], waitlist: ["Waitlist open", "off"], postponed: ["Postponed", "warn"], cancelled: ["Cancelled", "bad"], ended: ["Event ended", "off"] };
+
 export default async function PublicEventPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
-  const [{ slug }, sp] = await Promise.all([params, searchParams]); const { supabase, e, preview } = await load(slug, sp.preview === "1");
+  const [{ slug }, sp] = await Promise.all([params, searchParams]);
+  // Waitlist offer links land here; checkout owns the "Use my reserved tickets" flow.
+  if (sp.waitlist_offer && /^[0-9a-f-]{36}$/i.test(sp.waitlist_offer)) redirect(`/checkout/${encodeURIComponent(slug)}?waitlist_offer=${sp.waitlist_offer}`);
+  const { supabase, e, preview } = await load(slug, sp.preview === "1");
   if (!e) notFound();
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const vis = ((s.page_blocks as { visible?: Record<string, boolean> } | undefined)?.visible ?? {}); const on = (k: string) => vis[k] !== false;
@@ -57,6 +62,9 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.venue_name, e.location].filter(Boolean).join(", "))}`;
   const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, eventStatus: "https://schema.org/EventScheduled", eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: x.price, priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
 
+  // §50 launch state (server-computed): drives the badge and whether checkout is offered.
+  const { data: launchRaw } = e ? await supabase.rpc("event_launch_state" as never, { p_event: e.id } as never) : { data: null };
+  const launch = (launchRaw as string | null) ?? null;
   return <div className="pe">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
     <RecordView itemKey={`event:${e.id}`} signedIn={!!user} />
@@ -100,8 +108,8 @@ export default async function PublicEventPage({ params, searchParams }: { params
           <div className="pe-rel-g">{(related ?? []).map(r => <Link key={r.id} href={r.slug ? `/events/${r.slug}` : "#"}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={r.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span><b>{r.name}</b><small>{eventTypeLabel(r.event_type)} • {r.starts_at ? new Date(r.starts_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: TZ }) : ""} • {r.city}</small></span></Link>)}</div></section>}
       </div>
       <aside className="pe-side">
-        <section id="tickets" className="ce-card pe-tickets"><div className="k-between"><h2>Get Tickets</h2><span className={`pe-sale ${onSale ? "" : "off"}`}><CheckCircle2 size={13} />{onSale ? "On Sale Now" : tk.length ? "Sold out" : "Coming soon"}</span></div>
-          <TicketPicker slug={e.slug!} tiers={tk} signedIn={!!user} eventId={e.id} waitlist={((e.settings ?? {}) as Record<string, unknown>).waiting_list === true || (((e.settings ?? {}) as { ticket_pro?: { sales?: { waiting_list?: boolean } } }).ticket_pro?.sales?.waiting_list === true)} /></section>
+        <section id="tickets" className="ce-card pe-tickets"><div className="k-between"><h2>Get Tickets</h2><span className={`pe-sale ${launch ? (LAUNCH[launch]?.[1] ?? "off") : onSale ? "" : "off"}`}><CheckCircle2 size={13} />{launch ? LAUNCH[launch]?.[0] ?? launch : onSale ? "On Sale Now" : tk.length ? "Sold out" : "Coming soon"}</span></div>
+          <TicketPicker slug={e.slug!} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} waitlist={((e.settings ?? {}) as Record<string, unknown>).waiting_list === true || (((e.settings ?? {}) as { ticket_pro?: { sales?: { waiting_list?: boolean } } }).ticket_pro?.sales?.waiting_list === true)} /></section>
         <div className="pe-stats"><div><Users size={24} /><span><b>{(Number(s.attendance) || 0).toLocaleString("en-GB")}+</b><small>Expected attendance</small></span></div><div><Ticket size={24} /><span><b>{sold >= 1000 ? `${(sold / 1000).toFixed(1)}K` : sold}</b><small>Tickets sold</small></span></div></div>
         {s.resale !== false && <Link href={user ? "/account/tickets" : "/login?next=/account/tickets"} className="ce-card pe-resale"><span className="pe-resale-ic"><Ticket size={22} /></span><span className="k-grow"><b>Resale &amp; Transfer</b><small>Can&apos;t make it? Resell or transfer your tickets safely through Gala Dock.</small></span><ArrowRight size={16} /></Link>}
         {o && <section className="ce-card pe-org"><div className="k-between"><h2>Event Promoter</h2>{e.workspace_id && <Link className="k-link" href={`/organizers/${e.workspace_id}`}>View profile <ArrowRight size={13} /></Link>}</div>

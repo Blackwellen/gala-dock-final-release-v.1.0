@@ -1,16 +1,16 @@
 {
  "name": "c-cu-005",
  "path": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
- "page": 12.64,
+ "page": 12.3,
  "components": [
   {
    "sel": ".c-top",
-   "label": "c-top",
+   "label": "c-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 7
+   "mismatch": 8.2
   }
  ]
 }

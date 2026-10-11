@@ -10,7 +10,7 @@ Date: 11 Oct 2026. Scope: the 85 references in `Designs/customer & Organizer wor
 ## Automated tests (Playwright, `--project=desktop`), 28 passing
 | Area | Spec |
 |---|---|
-| Booking request, quote → deposit via payment orders / Stripe Checkout, ownership RLS | `customer/booking.spec.ts` |
+| Booking request, quote → deposit paid on Stripe Checkout (test card) → confirmed on return, ownership RLS | `customer/booking.spec.ts` |
 | Plan-an-event wizard | `customer/plan-wizard.spec.ts` |
 | Tickets: rotating QR, resale/cancel, RLS, two-step transfer offer | `customer/tickets.spec.ts` |
 | Reviews | `customer/reviews.spec.ts` |
@@ -38,11 +38,22 @@ Run: `node --env-file=.env --env-file=.env.local node_modules/@playwright/test/c
 
 ## Design fidelity
 - **Palette:** colours, edges and icons follow the references. The Organizer uses royal-blue ink with periwinkle secondary text; the Customer and public pages use navy ink with grey-blue secondary text. Real brand marks (Google Calendar, Outlook, Apple, Stripe, Resend, Microsoft) appear in integrations and calendar sync.
-- **Pixel diffs:** `scripts/design/batch-p2.mjs` runs the comparison. Text-led pages score 8–12%. Photo-heavy pages score 20–30%, mostly because the photos and data differ from the mockups. The shared top bars add 8–12% on every page (logo kept from `public` as instructed).
+- **Pixel diffs:** `scripts/design/batch-p2.mjs` runs the comparison. Text-led pages score 8–12%, and My Tickets has improved to 18%. Photo-heavy pages score 20–30%; the remaining gap is mostly photography and mockup-only content. The shared top bars add 8–12% on every page (logo kept from `public` as instructed).
+
+## Demo data mirrors the references
+`scripts/seed-design-mirror.mjs` (run by `seed-demo-extras.mjs`) shapes the demo customer's data to the mockups:
+- **My Tickets:** Upcoming 4 / Past 12 / Resale·Transferred 3; Sunset Sessions at The Loft, Taste & Tango at Bayview Center, Elite Sounds DJ shown as "Resale in progress".
+- **Saved:** column order and tab counts.
+- **Recently viewed:** the closest real listings to the mockup's four.
+- **Reviews:** 3 completed bookings awaiting review; the 4 genuine recent reviews in the reference order.
+
+The script is idempotent, keeps dates in the future, and never touches events copied into real accounts (`settings.demo_copy_of`). It doesn't invent reviews or listings, so counts that would need fake records (e.g. "Submitted (12)") stay truthful.
 
 ## Integrated from session -3b
 Readiness panel, team conflicts, Live mode link, rotating signed QR, print/PDF tickets, ticket scanner, waiting list, build budget RPC and countdowns, cross-portal inbox links and listing enquiries.
 
+## Payment confirmation
+When the payer returns from Stripe Checkout, `/payments/[ref]` verifies the session server-side with Stripe and applies a paid PaymentIntent through the same idempotent `payment_order_succeeded` RPC the webhook uses (`src/lib/commerce/reconcile.ts`). Bookings confirm on return even when the webhook is delayed or unreachable (for example, local development without `stripe listen`). A later webhook delivery is a no-op. `customer/booking.spec.ts` pays with the 4242 test card and also proves the reconcile-only path.
+
 ## Known limits
-- Deposit confirmation depends on the Stripe webhook. Locally, without `stripe listen`, bookings stay pending after Checkout.
 - The pixel-diff target (5–9%) is met only on pages without large photography, unless demo data is reshaped to mirror each mockup.

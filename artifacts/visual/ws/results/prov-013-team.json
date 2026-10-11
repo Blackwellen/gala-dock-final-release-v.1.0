@@ -3,16 +3,16 @@
   "url": "/provider/team",
   "file": "Designs/Provider Workspace/Gala Dock Team Dashboard(1).png",
   "status": 200,
-  "mismatchPercent": 13.23,
-  "layoutPercent": 11.99,
-  "mediaBoxes": 15,
-  "ssim": 0.6442,
+  "mismatchPercent": 13.04,
+  "layoutPercent": 11.89,
+  "mediaBoxes": 14,
+  "ssim": 0.6564,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1313
+    "scrollHeight": 1375
   },
   "errors": [],
-  "at": "2026-10-11T09:25:54.635Z"
+  "at": "2026-10-11T14:47:57.246Z"
 }

@@ -1,16 +1,16 @@
 {
  "name": "c-home",
  "path": "/home",
- "page": 32.46,
+ "page": 30.85,
  "components": [
   {
    "sel": ".c-top",
-   "label": "c-top",
+   "label": "c-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
-   "w": 1536,
+   "w": 1448,
    "h": 66,
-   "mismatch": 10.8
+   "mismatch": 12
   }
  ]
 }

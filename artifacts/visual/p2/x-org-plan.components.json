@@ -1,0 +1,124 @@
+{
+ "name": "x-org-plan",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan",
+ "page": 15.6,
+ "components": [
+  {
+   "sel": ".eh-hero",
+   "label": "Neon Nights Festival",
+   "x": 238,
+   "y": 110,
+   "w": 1280,
+   "h": 118,
+   "mismatch": 47
+  },
+  {
+   "sel": ".k-card",
+   "label": "Programme",
+   "x": 236,
+   "y": 744,
+   "w": 690,
+   "h": 280,
+   "mismatch": 19.5
+  },
+  {
+   "sel": ".k-agent",
+   "label": "Gala Agent",
+   "x": 940,
+   "y": 419,
+   "w": 264,
+   "h": 287,
+   "mismatch": 19.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "Venue",
+   "x": 940,
+   "y": 720,
+   "w": 264,
+   "h": 187,
+   "mismatch": 16
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event planning checklist",
+   "x": 1218,
+   "y": 419,
+   "w": 300,
+   "h": 405,
+   "mismatch": 14.3
+  },
+  {
+   "sel": ".k-card",
+   "label": "Event brief",
+   "x": 236,
+   "y": 419,
+   "w": 690,
+   "h": 311,
+   "mismatch": 12.8
+  },
+  {
+   "sel": ".eh-tabs",
+   "label": "eh-tabs",
+   "x": 236,
+   "y": 238,
+   "w": 1282,
+   "h": 43,
+   "mismatch": 12.4
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 230,
+   "y": 238,
+   "w": 438,
+   "h": 42,
+   "mismatch": 11.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Tasks",
+   "x": 1218,
+   "y": 839,
+   "w": 300,
+   "h": 185,
+   "mismatch": 11.3
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top pwa-hide-desktop-nav",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".eh-sub",
+   "label": "eh-sub",
+   "x": 236,
+   "y": 292,
+   "w": 1282,
+   "h": 48,
+   "mismatch": 7.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Guests",
+   "x": 940,
+   "y": 922,
+   "w": 264,
+   "h": 102,
+   "mismatch": 7.3
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.5
+  }
+ ]
+}

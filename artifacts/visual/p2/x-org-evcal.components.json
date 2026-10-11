@@ -1,0 +1,88 @@
+{
+ "name": "x-org-evcal",
+ "path": "/organizer/events?view=calendar",
+ "page": 8.28,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Agenda – Sat 24 Oct",
+   "x": 1232,
+   "y": 608,
+   "w": 286,
+   "h": 155,
+   "mismatch": 23.6
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Events",
+   "x": 236,
+   "y": 106,
+   "w": 1282,
+   "h": 66,
+   "mismatch": 16
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 190,
+   "w": 538,
+   "h": 44,
+   "mismatch": 13.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "October 2026",
+   "x": 1232,
+   "y": 301,
+   "w": 286,
+   "h": 293,
+   "mismatch": 12.1
+  },
+  {
+   "sel": ".k-card",
+   "label": "Quick stats",
+   "x": 1232,
+   "y": 777,
+   "w": 286,
+   "h": 212,
+   "mismatch": 11.1
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top pwa-hide-desktop-nav",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.9
+  },
+  {
+   "sel": ".mc",
+   "label": "Organizer Sync",
+   "x": 237,
+   "y": 359,
+   "w": 980,
+   "h": 619,
+   "mismatch": 8.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "October 2026",
+   "x": 236,
+   "y": 301,
+   "w": 982,
+   "h": 678,
+   "mismatch": 7.9
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.6
+  }
+ ]
+}

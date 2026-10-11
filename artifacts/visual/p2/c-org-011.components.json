@@ -1,16 +1,16 @@
 {
  "name": "c-org-011",
  "path": "/organizer/tickets",
- "page": 14.3,
+ "page": 14.85,
  "components": [
   {
    "sel": ".k-table",
-   "label": "Summer Sessions 2026",
-   "x": 250,
-   "y": 405,
-   "w": 910,
-   "h": 619,
-   "mismatch": 22
+   "label": "Neon Nights Festival",
+   "x": 251,
+   "y": 408,
+   "w": 908,
+   "h": 616,
+   "mismatch": 23.3
   },
   {
    "sel": ".k-page-head",
@@ -19,16 +19,16 @@
    "y": 108,
    "w": 1282,
    "h": 55,
-   "mismatch": 18.5
+   "mismatch": 17.5
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 10.7
+   "mismatch": 11.1
   },
   {
    "sel": ".k-tabs",
@@ -37,7 +37,7 @@
    "y": 175,
    "w": 1282,
    "h": 39,
-   "mismatch": 6.8
+   "mismatch": 6.9
   },
   {
    "sel": ".o-side",
@@ -46,7 +46,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 5.8
+   "mismatch": 6.7
   }
  ]
 }

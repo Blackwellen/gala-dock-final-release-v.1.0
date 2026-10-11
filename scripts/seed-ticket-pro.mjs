@@ -5,7 +5,7 @@ const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABA
 const must = (r, what) => { if (r.error) { console.error(what, r.error); process.exit(1); } return r.data; };
 const I = "/assets/gd/builder/tickets";
 
-const ev = must(await sb.from("events").select("id,starts_at,settings").eq("name", "Neon Nights Festival").limit(1).single(), "event");
+const ev = must(await sb.from("events").select("id,starts_at,settings").eq("name", "Neon Nights Festival").is("settings->>demo_copy_of", null).limit(1).single(), "event");
 const start = Date.parse(ev.starts_at); const at = (days, h = 10) => { const d = new Date(start - days * 864e5); d.setUTCHours(h - 1, 0, 0, 0); return d.toISOString(); };
 const close = new Date(start - 60 * 6e4).toISOString();
 let tiers = must(await sb.from("ticket_tiers").select("id,name,sold,status").eq("event_id", ev.id), "tiers");

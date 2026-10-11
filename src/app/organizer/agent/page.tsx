@@ -4,13 +4,15 @@ import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs, Beta } from "@/components/kit";
 import { AgentComposer, ApprovalButtons, RoutineToggle, NewRoutineButton, NewRunSplit } from "@/components/organizer/agent-client";
 import { relative } from "@/lib/format";
+import { TeamConflicts } from "@/components/ops/readiness-panel";
+import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Gala Agent" };
 const ST: Record<string, [string, string]> = { completed: ["Completed", "green"], running: ["In progress", "blue"], planning: ["In progress", "blue"], waiting_approval: ["Waiting", "amber"], waiting_external: ["Waiting", "amber"], scheduled: ["Scheduled", "blue"], queued: ["Queued", "gray"], paused: ["Paused", "gray"], failed: ["Failed", "red"], cancelled: ["Cancelled", "gray"] };
 const RI = [BarChart3, Mail, ClipboardCheck, BarChart3, CalendarDays];
 
 export default async function AgentPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase; const ws = ctx.workspace.id;
+  const sp = await searchParams; const ctx = await getOrganizer(); const now = requestTime(); const sb = ctx.supabase; const ws = ctx.workspace.id;
   const tab = ["approvals", "routines", "history"].includes(sp.tab ?? "") ? sp.tab! : "work";
   const status = sp.status ?? "";
   const [{ data: runs }, { data: approvals }, { data: routines }, { data: events }] = await Promise.all([
@@ -20,11 +22,11 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
     sb.from("events").select("id,name,cover_image,starts_at").eq("workspace_id", ws).neq("status", "archived").order("starts_at"),
   ]);
   const R = runs ?? []; const ev = (id: string | null) => (events ?? []).find(e => e.id === id);
-  const active = R.filter(r => !["completed", "failed", "cancelled"].includes(r.status) || (r.status === "completed" && Date.parse(r.updated_at) > Date.now() - 2 * 864e5)).filter(r => !status || r.status === status);
+  const active = R.filter(r => !["completed", "failed", "cancelled"].includes(r.status) || (r.status === "completed" && Date.parse(r.updated_at) > now - 2 * 864e5)).filter(r => !status || r.status === status);
   const history = R.filter(r => ["completed", "failed", "cancelled"].includes(r.status));
   const pending = (approvals ?? []).filter(a => a.status === "pending");
-  const month = R.filter(r => Date.parse(r.created_at) > Date.now() - 30 * 864e5); const spend = month.reduce((s, r) => s + Number(r.cost_cents ?? 0), 0) / 100; const budget = 100;
-  const nextEvent = (events ?? []).find(e => e.starts_at && Date.parse(e.starts_at) > Date.now());
+  const month = R.filter(r => Date.parse(r.created_at) > now - 30 * 864e5); const spend = month.reduce((s, r) => s + Number(r.cost_cents ?? 0), 0) / 100; const budget = 100;
+  const nextEvent = (events ?? []).find(e => e.starts_at && Date.parse(e.starts_at) > now);
   const suggestions = [[FileText, `Create a full event plan for ${nextEvent?.name ?? "your next event"}`, "red"], [Megaphone, "Draft and schedule a promotion campaign", "red"], [Search, "Find and shortlist 5 suitable suppliers", "purple"], [Users, "Build a staffing plan and check availability", "purple"], [BarChart3, "Analyse ticket sales and suggest next steps", "green"]] as const;
   const href = (p: Record<string, string | undefined>) => { const u = new URLSearchParams(); for (const [k, v] of Object.entries({ tab: tab === "work" ? undefined : tab, status: sp.status, ...p })) if (v) u.set(k, v); return `/organizer/agent${u.size ? `?${u}` : ""}`; };
   const typeLabel: Record<string, string> = { plan: "Event planning", promotion: "Promotion", suppliers: "Suppliers", staffing: "Team", analysis: "Ticketing", compliance: "Venue" };
@@ -55,5 +57,6 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
       {tab === "work" && <section className="k-card ag-c"><div className="k-between"><h2>Recent history</h2><Link className="k-link" href={href({ tab: "history" })}>View all <ArrowRight size={13} /></Link></div>
         <ul className="ag-hist">{history.slice(0, 5).map(r => <li key={r.id}><span className="ag-si green"><CheckCircle2 size={15} /></span><span className="k-grow"><b>{r.goal}</b><small>{r.result || "Completed"}</small></span><small>{relative(r.updated_at)}</small><span className={`ag-st ${r.status === "completed" ? "green" : "red"}`}>{r.status === "completed" ? "Completed" : r.status}</span></li>)}</ul></section>}
     </div>
+    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
   </div>;
 }

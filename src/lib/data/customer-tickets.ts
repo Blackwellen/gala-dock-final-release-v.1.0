@@ -15,8 +15,9 @@ export async function myTickets(ctx: CustomerCtx) {
   const rows = (data ?? []) as unknown as TicketRow[];
   const now = Date.now(); const map = new Map<string, TicketGroup>();
   for (const t of rows) {
-    const resale = ["transferred", "resale_listed", "resold", "refunded"].includes(t.status);
     const ended = t.event.ends_at ? new Date(t.event.ends_at).getTime() < now : t.event.starts_at ? new Date(t.event.starts_at).getTime() + 864e5 < now : false;
+    // A ticket listed for resale is still yours until it sells: it stays in Upcoming ("Resale in progress") and is also listed under Resale.
+    const resale = ["transferred", "resold", "refunded"].includes(t.status) || (t.status === "resale_listed" && ended);
     const when = resale ? "resale" : ended || t.status === "used" ? "past" : "upcoming";
     const key = `${t.event.id}:${t.order_ref.replace(/-T$/, "")}:${when}`;
     const g = map.get(key) ?? { key, event: t.event, order: t.order_ref, tickets: [], when, state: { label: "", tone: "" } };
@@ -24,7 +25,7 @@ export async function myTickets(ctx: CustomerCtx) {
   }
   for (const g of map.values()) g.state = stateOf(g, now);
   const groups = [...map.values()].sort((a, b) => (a.event.starts_at ?? "9").localeCompare(b.event.starts_at ?? "9") * (a.when === "past" ? -1 : 1));
-  return { groups, upcoming: groups.filter(g => g.when === "upcoming"), past: groups.filter(g => g.when === "past"), resale: groups.filter(g => g.when === "resale") };
+  return { groups, upcoming: groups.filter(g => g.when === "upcoming"), past: groups.filter(g => g.when === "past"), resale: groups.filter(g => g.when === "resale" || g.tickets.some(t => t.status === "resale_listed")) };
 }
 function stateOf(g: TicketGroup, now: number) {
   const st = g.tickets.map(t => t.status);

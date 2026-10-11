@@ -16,6 +16,7 @@ const ModelIn = z.object({ model: z.enum(["general", "reserved", "hybrid"]), cap
 const TierIn = z.object({
   id: z.string().uuid().optional(), name: z.string().trim().min(1).max(60), description: z.string().max(200), kind: z.enum(["general", "vip", "group", "accessible", "comp", "student", "press", "early"]),
   price: z.number().min(0).max(100_000), quantity: z.number().int().min(0).max(1_000_000), sale_start: Iso.nullable(), sale_end: Iso.nullable(), release_name: z.string().max(60).nullable(),
+  valid_from: Iso.nullable().default(null), valid_to: Iso.nullable().default(null),
   after: z.number().int().min(-1).max(40), enabled: z.boolean(), image: z.string().max(400).nullable(), order_limit: z.number().int().min(1).max(100), badge: z.string().max(30).nullable(), color: Hex,
 });
 const Phase = z.object({ id: z.string().min(1).max(40), name: z.string().trim().min(1).max(60), starts_at: Iso.nullable() });
@@ -29,6 +30,7 @@ const AccessIn = z.object({
   questions: z.array(z.object({ key: z.string().regex(/^[a-z0-9_]{2,40}$/), label: z.string().trim().min(2).max(80), on: z.boolean(), required: z.boolean(), custom: z.boolean().optional() })).max(15),
   fee_display: z.enum(["upfront", "included", "checkout"]), terms_template: z.string().max(80), require_terms: z.boolean(), age_message: z.boolean(), age_text: z.string().max(120), info_text: z.string().max(2000),
   comps: z.number().int().min(0).max(100_000), companion: z.boolean(), accessible_seats: z.number().int().min(0).max(100_000),
+  ticket_display: z.enum(["qr", "visual", "barcode"]).default("qr"), ticket_display_switch: z.boolean().default(true),
 });
 
 async function access(eventId: string, perm: "tickets.manage" = "tickets.manage") {
@@ -87,6 +89,7 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
     if (s && en && en <= s) return { ok: false, error: `${t.name}: sales must end after they start.` };
     if (ev && s && s >= ev) return { ok: false, error: `${t.name}: sales must start before the event.` };
     if (ev && en && en > ev + 12 * 36e5) return { ok: false, error: `${t.name}: sales can't end long after the event starts.` };
+    if (t.valid_from && t.valid_to && Date.parse(t.valid_to) <= Date.parse(t.valid_from)) return { ok: false, error: `${t.name}: entry must end after it starts.` };
     if (t.after === i) return { ok: false, error: `${t.name} can't be released after itself.` };
     if (t.after >= tiers.length) return { ok: false, error: `${t.name}: choose a valid tier to release after.` };
     if (t.image && !/^\/(assets|event-media)\//.test(t.image) && !t.image.includes("/storage/v1/object/public/event-media/")) return { ok: false, error: `${t.name}: choose an image from your event media.` };
@@ -110,7 +113,7 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
     const ex = (existing ?? []).find(x => x.id === t.id);
     // Before launch tiers stay draft/hidden; once live, switching a tier off pauses it and back on restores sale timing.
     const status = !t.enabled ? (live ? "paused" : "hidden") : !live ? "draft" : ex && ["on_sale", "scheduled", "sold_out"].includes(ex.status) ? ex.status : t.after >= 0 || (t.sale_start && Date.parse(t.sale_start) > Date.now()) ? "scheduled" : "on_sale";
-    const row = { name: t.name, description: t.description, kind: t.kind, price: t.price, quantity: t.quantity, sale_start: t.sale_start, sale_end: t.sale_end, release_name: t.release_name ?? "", order_limit: Math.min(t.order_limit, sales.order_limit), image: t.image, badge: t.badge, color: t.color, sort: i + 1, status, after_tier: null };
+    const row = { name: t.name, description: t.description, kind: t.kind, price: t.price, quantity: t.quantity, sale_start: t.sale_start, sale_end: t.sale_end, release_name: t.release_name ?? "", order_limit: Math.min(t.order_limit, sales.order_limit), image: t.image, badge: t.badge, color: t.color, sort: i + 1, status, after_tier: null, valid_from: t.valid_from, valid_to: t.valid_to };
     const res = ex ? await sb.from("ticket_tiers").update(row).eq("id", ex.id).eq("event_id", o.e.id).select("id").single() : await sb.from("ticket_tiers").insert({ ...row, event_id: o.e.id }).select("id").single();
     if (res.error || !res.data) return { ok: false, error: `Could not save ${t.name}.` };
     ids.push(res.data.id);
@@ -166,7 +169,7 @@ export async function saveAccess(eventId: string, input: unknown): Promise<Actio
   for (const k of ["full_name", "email"]) { const q = a.questions.find(x => x.key === k); if (!q?.on || !q.required) return { ok: false, error: "Full name and email are always required at checkout." }; }
   const cut = a.refund_cutoff ? new Date(a.refund_cutoff).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }) : "";
   const refundText = { none: "No refunds (all sales are final)", date: `${a.refund_amount === 100 ? "Full" : "50%"} refund available until ${cut}`, flexible: "Refunds available up to 24 hours before the event", cancel: "Refunds only if the event is cancelled" }[a.refund];
-  const error = await writeSettings(o, { access: a }, { transfers: a.transfers, resale: a.resale, refund_policy: a.refund === "none" ? "none" : a.refund === "cancel" ? "custom" : "7days", refund_text: refundText, fee_display: a.fee_display, buyer_questions: a.questions.filter(q => q.on).map(({ key, label, required }) => ({ key, label, required })), age_restriction: a.age_message ? a.age_text : null });
+  const error = await writeSettings(o, { access: a }, { transfers: a.transfers, resale: a.resale, refund_policy: a.refund === "none" ? "none" : a.refund === "cancel" ? "custom" : "7days", refund_text: refundText, fee_display: a.fee_display, buyer_questions: a.questions.filter(q => q.on).map(({ key, label, required }) => ({ key, label, required })), age_restriction: a.age_message ? a.age_text : null, ticket_display: a.ticket_display, ticket_display_switch: a.ticket_display_switch });
   if (error) return { ok: false, error: "Could not save access settings." };
   bump(o.e.id, o.e.slug); return { ok: true, message: "Access and controls saved." };
 }

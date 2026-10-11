@@ -156,59 +156,95 @@ export type Database = {
       agent_approvals: {
         Row: {
           action: string
+          affected_ref: string | null
+          alternatives: Json
           amount: number | null
+          batch_key: string | null
+          confidence: number | null
           created_at: string
           decided_at: string | null
           decided_by: string | null
           detail: string
+          edited_payload: Json | null
           event_id: string | null
           executed_at: string | null
           expires_at: string | null
           id: string
           impact: string
           payload: Json
+          previous_state: Json | null
+          proposed_state: Json | null
+          reason: string | null
+          requested_by: string | null
           result: string | null
+          risk: number | null
           run_id: string | null
           status: string
+          step_id: string | null
           title: string
+          tool_id: string | null
           workspace_id: string | null
         }
         Insert: {
           action: string
+          affected_ref?: string | null
+          alternatives?: Json
           amount?: number | null
+          batch_key?: string | null
+          confidence?: number | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
           detail?: string
+          edited_payload?: Json | null
           event_id?: string | null
           executed_at?: string | null
           expires_at?: string | null
           id?: string
           impact?: string
           payload?: Json
+          previous_state?: Json | null
+          proposed_state?: Json | null
+          reason?: string | null
+          requested_by?: string | null
           result?: string | null
+          risk?: number | null
           run_id?: string | null
           status?: string
+          step_id?: string | null
           title: string
+          tool_id?: string | null
           workspace_id?: string | null
         }
         Update: {
           action?: string
+          affected_ref?: string | null
+          alternatives?: Json
           amount?: number | null
+          batch_key?: string | null
+          confidence?: number | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
           detail?: string
+          edited_payload?: Json | null
           event_id?: string | null
           executed_at?: string | null
           expires_at?: string | null
           id?: string
           impact?: string
           payload?: Json
+          previous_state?: Json | null
+          proposed_state?: Json | null
+          reason?: string | null
+          requested_by?: string | null
           result?: string | null
+          risk?: number | null
           run_id?: string | null
           status?: string
+          step_id?: string | null
           title?: string
+          tool_id?: string | null
           workspace_id?: string | null
         }
         Relationships: [
@@ -227,6 +263,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "agent_approvals_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "agent_run_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_approvals_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "agent_tools"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "agent_approvals_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
@@ -235,47 +285,205 @@ export type Database = {
           },
         ]
       }
-      agent_routines: {
+      agent_artifacts: {
         Row: {
-          approval_policy: string
           created_at: string
-          detail: string
-          enabled: boolean
+          data: Json
           id: string
-          last_result: string
-          last_run_at: string | null
-          next_run_at: string | null
-          schedule: string
-          suggested: boolean
+          kind: string
+          link: string | null
+          ref_id: string | null
+          ref_type: string | null
+          run_id: string
+          step_id: string | null
           title: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          kind: string
+          link?: string | null
+          ref_id?: string | null
+          ref_type?: string | null
+          run_id: string
+          step_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          kind?: string
+          link?: string | null
+          ref_id?: string | null
+          ref_type?: string | null
+          run_id?: string
+          step_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_artifacts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_artifacts_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "agent_run_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_policies: {
+        Row: {
+          allowed_tools: string[] | null
+          approval_expiry_hours: number
+          auto_tools: string[]
+          autopilot_rules: Json
+          booking_authority_minor: number
+          communication: Json
+          daily_spend_cap_minor: number
+          discount_authority_pct: number
+          escalation_user_ids: string[]
+          max_parallel_runs: number
+          max_run_minutes: number
+          min_confidence: number
+          mode: string
+          monthly_spend_cap_minor: number
+          quiet_hours: Json
+          refund_threshold_minor: number
+          retention_days: number
+          ticket_price_tolerance_pct: number
+          updated_at: string
+          updated_by: string | null
           workspace_id: string
         }
         Insert: {
-          approval_policy?: string
-          created_at?: string
-          detail?: string
-          enabled?: boolean
-          id?: string
-          last_result?: string
-          last_run_at?: string | null
-          next_run_at?: string | null
-          schedule: string
-          suggested?: boolean
-          title: string
+          allowed_tools?: string[] | null
+          approval_expiry_hours?: number
+          auto_tools?: string[]
+          autopilot_rules?: Json
+          booking_authority_minor?: number
+          communication?: Json
+          daily_spend_cap_minor?: number
+          discount_authority_pct?: number
+          escalation_user_ids?: string[]
+          max_parallel_runs?: number
+          max_run_minutes?: number
+          min_confidence?: number
+          mode?: string
+          monthly_spend_cap_minor?: number
+          quiet_hours?: Json
+          refund_threshold_minor?: number
+          retention_days?: number
+          ticket_price_tolerance_pct?: number
+          updated_at?: string
+          updated_by?: string | null
           workspace_id: string
         }
         Update: {
+          allowed_tools?: string[] | null
+          approval_expiry_hours?: number
+          auto_tools?: string[]
+          autopilot_rules?: Json
+          booking_authority_minor?: number
+          communication?: Json
+          daily_spend_cap_minor?: number
+          discount_authority_pct?: number
+          escalation_user_ids?: string[]
+          max_parallel_runs?: number
+          max_run_minutes?: number
+          min_confidence?: number
+          mode?: string
+          monthly_spend_cap_minor?: number
+          quiet_hours?: Json
+          refund_threshold_minor?: number
+          retention_days?: number
+          ticket_price_tolerance_pct?: number
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_policies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_routines: {
+        Row: {
+          actions: Json
+          approval_policy: string
+          compiled_at: string | null
+          conditions: Json
+          created_at: string
+          detail: string
+          enabled: boolean
+          failures: number
+          id: string
+          last_event: Json | null
+          last_result: string
+          last_run_at: string | null
+          limits: Json
+          next_run_at: string | null
+          owner_id: string | null
+          schedule: string
+          suggested: boolean
+          title: string
+          trigger: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          actions?: Json
           approval_policy?: string
+          compiled_at?: string | null
+          conditions?: Json
           created_at?: string
           detail?: string
           enabled?: boolean
+          failures?: number
           id?: string
+          last_event?: Json | null
           last_result?: string
           last_run_at?: string | null
+          limits?: Json
           next_run_at?: string | null
+          owner_id?: string | null
+          schedule: string
+          suggested?: boolean
+          title: string
+          trigger?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          actions?: Json
+          approval_policy?: string
+          compiled_at?: string | null
+          conditions?: Json
+          created_at?: string
+          detail?: string
+          enabled?: boolean
+          failures?: number
+          id?: string
+          last_event?: Json | null
+          last_result?: string
+          last_run_at?: string | null
+          limits?: Json
+          next_run_at?: string | null
+          owner_id?: string | null
           schedule?: string
           suggested?: boolean
           title?: string
+          trigger?: Json | null
           workspace_id?: string
         }
         Relationships: [
@@ -288,30 +496,109 @@ export type Database = {
           },
         ]
       }
+      agent_run_steps: {
+        Row: {
+          approval_id: string | null
+          attempt: number
+          decision: string | null
+          error: string | null
+          finished_at: string | null
+          id: string
+          idempotency_key: string
+          input: Json
+          output: Json | null
+          reason: string
+          run_id: string
+          seq: number
+          started_at: string | null
+          status: string
+          tool_id: string | null
+        }
+        Insert: {
+          approval_id?: string | null
+          attempt?: number
+          decision?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          idempotency_key: string
+          input?: Json
+          output?: Json | null
+          reason?: string
+          run_id: string
+          seq: number
+          started_at?: string | null
+          status?: string
+          tool_id?: string | null
+        }
+        Update: {
+          approval_id?: string | null
+          attempt?: number
+          decision?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          idempotency_key?: string
+          input?: Json
+          output?: Json | null
+          reason?: string
+          run_id?: string
+          seq?: number
+          started_at?: string | null
+          status?: string
+          tool_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_run_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_run_steps_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "agent_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_runs: {
         Row: {
           agent_name: string
+          batch: Json | null
           changes: Json
           cost_cents: number
           created_at: string
           current_step: number
           errors: Json
           event_id: string | null
+          financial_exposure_minor: number
           finished_at: string | null
           goal: string
           id: string
           idempotency_key: string | null
+          interpretation: Json
+          lease_until: string | null
+          mission: string | null
+          mode: string
           next_wake_at: string | null
           plan: Json
           progress: number
+          quality: string
           reference: string | null
           result: string
           retries: number
           routine_id: string | null
           run_type: string
           scope: string[]
+          started_at: string | null
           status: string
+          summary: string | null
           surface: string
+          tokens: number
           triggered_by: string
           updated_at: string
           user_id: string
@@ -320,27 +607,37 @@ export type Database = {
         }
         Insert: {
           agent_name?: string
+          batch?: Json | null
           changes?: Json
           cost_cents?: number
           created_at?: string
           current_step?: number
           errors?: Json
           event_id?: string | null
+          financial_exposure_minor?: number
           finished_at?: string | null
           goal: string
           id?: string
           idempotency_key?: string | null
+          interpretation?: Json
+          lease_until?: string | null
+          mission?: string | null
+          mode?: string
           next_wake_at?: string | null
           plan?: Json
           progress?: number
+          quality?: string
           reference?: string | null
           result?: string
           retries?: number
           routine_id?: string | null
           run_type?: string
           scope?: string[]
+          started_at?: string | null
           status?: string
+          summary?: string | null
           surface?: string
+          tokens?: number
           triggered_by?: string
           updated_at?: string
           user_id: string
@@ -349,27 +646,37 @@ export type Database = {
         }
         Update: {
           agent_name?: string
+          batch?: Json | null
           changes?: Json
           cost_cents?: number
           created_at?: string
           current_step?: number
           errors?: Json
           event_id?: string | null
+          financial_exposure_minor?: number
           finished_at?: string | null
           goal?: string
           id?: string
           idempotency_key?: string | null
+          interpretation?: Json
+          lease_until?: string | null
+          mission?: string | null
+          mode?: string
           next_wake_at?: string | null
           plan?: Json
           progress?: number
+          quality?: string
           reference?: string | null
           result?: string
           retries?: number
           routine_id?: string | null
           run_type?: string
           scope?: string[]
+          started_at?: string | null
           status?: string
+          summary?: string | null
           surface?: string
+          tokens?: number
           triggered_by?: string
           updated_at?: string
           user_id?: string
@@ -400,6 +707,390 @@ export type Database = {
           },
         ]
       }
+      agent_tools: {
+        Row: {
+          approval_note: string
+          description: string
+          id: string
+          idempotent: boolean
+          mutation: boolean
+          permission: string
+          retries: number
+          reversible: boolean
+          risk: number
+          surface: string
+          timeout_ms: number
+          title: string
+          version: number
+        }
+        Insert: {
+          approval_note?: string
+          description: string
+          id: string
+          idempotent: boolean
+          mutation: boolean
+          permission: string
+          retries: number
+          reversible: boolean
+          risk: number
+          surface: string
+          timeout_ms: number
+          title: string
+          version: number
+        }
+        Update: {
+          approval_note?: string
+          description?: string
+          id?: string
+          idempotent?: boolean
+          mutation?: boolean
+          permission?: string
+          retries?: number
+          reversible?: boolean
+          risk?: number
+          surface?: string
+          timeout_ms?: number
+          title?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      agent_waits: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          ref_id: string | null
+          run_id: string
+          satisfied_at: string | null
+          until_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          ref_id?: string | null
+          run_id: string
+          satisfied_at?: string | null
+          until_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          ref_id?: string | null
+          run_id?: string
+          satisfied_at?: string | null
+          until_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_waits_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_watches: {
+        Row: {
+          backoff_factor: number
+          check_every_minutes: number
+          checks: number
+          condition: Json
+          created_at: string
+          expires_at: string
+          id: string
+          input: Json
+          last_checked_at: string | null
+          last_error: string | null
+          last_value: Json | null
+          max_checks: number
+          next_check_at: string
+          status: string
+          title: string
+          tool_id: string
+          triggered_at: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          backoff_factor?: number
+          check_every_minutes?: number
+          checks?: number
+          condition: Json
+          created_at?: string
+          expires_at: string
+          id?: string
+          input?: Json
+          last_checked_at?: string | null
+          last_error?: string | null
+          last_value?: Json | null
+          max_checks?: number
+          next_check_at?: string
+          status?: string
+          title: string
+          tool_id: string
+          triggered_at?: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          backoff_factor?: number
+          check_every_minutes?: number
+          checks?: number
+          condition?: Json
+          created_at?: string
+          expires_at?: string
+          id?: string
+          input?: Json
+          last_checked_at?: string | null
+          last_error?: string | null
+          last_value?: Json | null
+          max_checks?: number
+          next_check_at?: string
+          status?: string
+          title?: string
+          tool_id?: string
+          triggered_at?: string | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_watches_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "agent_tools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_watches_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_budgets: {
+        Row: {
+          allow_overage: boolean
+          daily_limit: number | null
+          deep_allowed: boolean
+          hard_cap: boolean
+          monthly_allowance: number | null
+          overage_limit: number
+          per_run_limit: number
+          soft_caps: number[]
+          tool_limits: Json
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          allow_overage?: boolean
+          daily_limit?: number | null
+          deep_allowed?: boolean
+          hard_cap?: boolean
+          monthly_allowance?: number | null
+          overage_limit?: number
+          per_run_limit?: number
+          soft_caps?: number[]
+          tool_limits?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          allow_overage?: boolean
+          daily_limit?: number | null
+          deep_allowed?: boolean
+          hard_cap?: boolean
+          monthly_allowance?: number | null
+          overage_limit?: number
+          per_run_limit?: number
+          soft_caps?: number[]
+          tool_limits?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_budgets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_credit_ledger: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          credits: number
+          expires_at: string | null
+          id: string
+          kind: string
+          pack_id: string | null
+          payment_ref: string | null
+          reference: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          credits: number
+          expires_at?: string | null
+          id?: string
+          kind: string
+          pack_id?: string | null
+          payment_ref?: string | null
+          reference?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          credits?: number
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          pack_id?: string | null
+          payment_ref?: string | null
+          reference?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_credit_ledger_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_model_prices: {
+        Row: {
+          cached_input_per_mtok: number
+          currency: string
+          fx_to_gbp: number
+          input_per_mtok: number
+          model: string
+          output_per_mtok: number
+          provider: string
+          source: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          cached_input_per_mtok?: number
+          currency?: string
+          fx_to_gbp?: number
+          input_per_mtok: number
+          model: string
+          output_per_mtok: number
+          provider?: string
+          source?: string
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          cached_input_per_mtok?: number
+          currency?: string
+          fx_to_gbp?: number
+          input_per_mtok?: number
+          model?: string
+          output_per_mtok?: number
+          provider?: string
+          source?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_usage_events: {
+        Row: {
+          cached_tokens: number
+          cost_gbp_minor: number
+          created_at: string
+          credits: number
+          from_allowance: number
+          from_balance: number
+          id: string
+          input_tokens: number
+          model: string
+          output_tokens: number
+          overage: number
+          provider_cost: number
+          provider_currency: string
+          purpose: string
+          run_id: string | null
+          tier: string
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          cached_tokens?: number
+          cost_gbp_minor?: number
+          created_at?: string
+          credits?: number
+          from_allowance?: number
+          from_balance?: number
+          id?: string
+          input_tokens?: number
+          model: string
+          output_tokens?: number
+          overage?: number
+          provider_cost?: number
+          provider_currency?: string
+          purpose: string
+          run_id?: string | null
+          tier: string
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          cached_tokens?: number
+          cost_gbp_minor?: number
+          created_at?: string
+          credits?: number
+          from_allowance?: number
+          from_balance?: number
+          id?: string
+          input_tokens?: number
+          model?: string
+          output_tokens?: number
+          overage?: number
+          provider_cost?: number
+          provider_currency?: string
+          purpose?: string
+          run_id?: string | null
+          tier?: string
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_events_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_daily: {
         Row: {
           day: string
@@ -420,6 +1111,125 @@ export type Database = {
           value?: number
         }
         Relationships: []
+      }
+      api_keys: {
+        Row: {
+          acts_as: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          last_used_at: string | null
+          last_used_ip: string | null
+          name: string
+          prefix: string
+          revoked_at: string | null
+          revoked_by: string | null
+          scopes: string[]
+          workspace_id: string
+        }
+        Insert: {
+          acts_as: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          last_used_at?: string | null
+          last_used_ip?: string | null
+          name: string
+          prefix: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scopes: string[]
+          workspace_id: string
+        }
+        Update: {
+          acts_as?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          last_used_at?: string | null
+          last_used_ip?: string | null
+          name?: string
+          prefix?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scopes?: string[]
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_requests: {
+        Row: {
+          channel: string
+          created_at: string
+          duration_ms: number | null
+          id: string
+          idempotency_key: string | null
+          key_id: string | null
+          method: string
+          path: string
+          request_id: string
+          response: Json | null
+          status: number
+          tool: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          idempotency_key?: string | null
+          key_id?: string | null
+          method: string
+          path: string
+          request_id: string
+          response?: Json | null
+          status: number
+          tool?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          idempotency_key?: string | null
+          key_id?: string | null
+          method?: string
+          path?: string
+          request_id?: string
+          response?: Json | null
+          status?: number
+          tool?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_requests_key_id_fkey"
+            columns: ["key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_requests_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       audit_events: {
         Row: {
@@ -536,6 +1346,535 @@ export type Database = {
           },
         ]
       }
+      bar_jurisdiction_rules: {
+        Row: {
+          active: boolean
+          country: string
+          id: string
+          latest_service: string | null
+          licence_label: string
+          min_age: number
+          notes: string
+          region: string | null
+        }
+        Insert: {
+          active?: boolean
+          country: string
+          id?: string
+          latest_service?: string | null
+          licence_label: string
+          min_age: number
+          notes?: string
+          region?: string | null
+        }
+        Update: {
+          active?: boolean
+          country?: string
+          id?: string
+          latest_service?: string | null
+          licence_label?: string
+          min_age?: number
+          notes?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
+      bar_packages: {
+        Row: {
+          corkage_per_bottle: number | null
+          created_at: string
+          deposit_pct: number
+          description: string
+          equipment: Json
+          glassware: boolean
+          hours_from: string | null
+          hours_to: string | null
+          id: string
+          licensing: Json
+          listing_id: string | null
+          min_spend: number | null
+          model: string
+          name: string
+          per_person: number | null
+          price: number | null
+          setup_minutes: number
+          staffing: string
+          status: string
+          token_price: number | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          corkage_per_bottle?: number | null
+          created_at?: string
+          deposit_pct?: number
+          description?: string
+          equipment?: Json
+          glassware?: boolean
+          hours_from?: string | null
+          hours_to?: string | null
+          id?: string
+          licensing?: Json
+          listing_id?: string | null
+          min_spend?: number | null
+          model: string
+          name: string
+          per_person?: number | null
+          price?: number | null
+          setup_minutes?: number
+          staffing?: string
+          status?: string
+          token_price?: number | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          corkage_per_bottle?: number | null
+          created_at?: string
+          deposit_pct?: number
+          description?: string
+          equipment?: Json
+          glassware?: boolean
+          hours_from?: string | null
+          hours_to?: string | null
+          id?: string
+          licensing?: Json
+          listing_id?: string | null
+          min_spend?: number | null
+          model?: string
+          name?: string
+          per_person?: number | null
+          price?: number | null
+          setup_minutes?: number
+          staffing?: string
+          status?: string
+          token_price?: number | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bar_packages_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bar_packages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_cancellations: {
+        Row: {
+          build_item_id: string
+          calculation: Json
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          event_id: string
+          id: string
+          item_status_before: string
+          kind: string
+          party: string
+          policy_snapshot: Json
+          reason: string
+          refund_error: string | null
+          refund_status: string
+          refunded_minor: number
+          requested_by: string | null
+          requires_review: boolean
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          build_item_id: string
+          calculation: Json
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id: string
+          id?: string
+          item_status_before: string
+          kind: string
+          party: string
+          policy_snapshot: Json
+          reason: string
+          refund_error?: string | null
+          refund_status?: string
+          refunded_minor?: number
+          requested_by?: string | null
+          requires_review?: boolean
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          build_item_id?: string
+          calculation?: Json
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id?: string
+          id?: string
+          item_status_before?: string
+          kind?: string
+          party?: string
+          policy_snapshot?: Json
+          reason?: string
+          refund_error?: string | null
+          refund_status?: string
+          refunded_minor?: number
+          requested_by?: string | null
+          requires_review?: boolean
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_cancellations_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_cancellations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_cancellations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_dispute_entries: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          dispute_id: string
+          files: Json
+          id: string
+          internal: boolean
+          kind: string
+          party: string
+        }
+        Insert: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          dispute_id: string
+          files?: Json
+          id?: string
+          internal?: boolean
+          kind: string
+          party: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          dispute_id?: string
+          files?: Json
+          id?: string
+          internal?: boolean
+          kind?: string
+          party?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_dispute_entries_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "booking_disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_disputes: {
+        Row: {
+          amount_claimed: number | null
+          assignee_id: string | null
+          build_item_id: string
+          created_at: string
+          customer_accepted_at: string | null
+          event_id: string
+          id: string
+          item_status_at_open: string
+          opened_by: string | null
+          opened_by_party: string
+          payment_snapshot: Json
+          provider_accepted_at: string | null
+          provider_job_id: string | null
+          reason: string
+          reference: string
+          resolution: Json | null
+          resolved_at: string | null
+          response_due_at: string
+          status: string
+          summary: string
+          terms_snapshot: Json
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_claimed?: number | null
+          assignee_id?: string | null
+          build_item_id: string
+          created_at?: string
+          customer_accepted_at?: string | null
+          event_id: string
+          id?: string
+          item_status_at_open: string
+          opened_by?: string | null
+          opened_by_party: string
+          payment_snapshot?: Json
+          provider_accepted_at?: string | null
+          provider_job_id?: string | null
+          reason: string
+          reference?: string
+          resolution?: Json | null
+          resolved_at?: string | null
+          response_due_at?: string
+          status?: string
+          summary: string
+          terms_snapshot?: Json
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          amount_claimed?: number | null
+          assignee_id?: string | null
+          build_item_id?: string
+          created_at?: string
+          customer_accepted_at?: string | null
+          event_id?: string
+          id?: string
+          item_status_at_open?: string
+          opened_by?: string | null
+          opened_by_party?: string
+          payment_snapshot?: Json
+          provider_accepted_at?: string | null
+          provider_job_id?: string | null
+          reason?: string
+          reference?: string
+          resolution?: Json | null
+          resolved_at?: string | null
+          response_due_at?: string
+          status?: string
+          summary?: string
+          terms_snapshot?: Json
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_disputes_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_disputes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_disputes_provider_job_id_fkey"
+            columns: ["provider_job_id"]
+            isOneToOne: false
+            referencedRelation: "provider_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_disputes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_kits: {
+        Row: {
+          colors: Json
+          fonts: Json
+          logos: Json
+          sponsor_marks: Json
+          tokens: Json
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          colors?: Json
+          fonts?: Json
+          logos?: Json
+          sponsor_marks?: Json
+          tokens?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          colors?: Json
+          fonts?: Json
+          logos?: Json
+          sponsor_marks?: Json
+          tokens?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_kits_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      break_glass_access_log: {
+        Row: {
+          admin_id: string
+          closed_at: string | null
+          conversation_id: string
+          grant_id: string
+          id: string
+          last_seen_at: string
+          opened_at: string
+        }
+        Insert: {
+          admin_id: string
+          closed_at?: string | null
+          conversation_id: string
+          grant_id: string
+          id?: string
+          last_seen_at?: string
+          opened_at?: string
+        }
+        Update: {
+          admin_id?: string
+          closed_at?: string | null
+          conversation_id?: string
+          grant_id?: string
+          id?: string
+          last_seen_at?: string
+          opened_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "break_glass_access_log_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "break_glass_access_log_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "break_glass_grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      break_glass_grants: {
+        Row: {
+          affected_user_ids: string[]
+          approver_id: string | null
+          case_id: string
+          case_reference: string
+          case_type: string
+          closed_at: string | null
+          conversation_ids: string[]
+          created_at: string
+          decided_at: string | null
+          decision_note: string | null
+          duration_minutes: number
+          expires_at: string | null
+          id: string
+          justification: string
+          notified_at: string | null
+          notify_affected: boolean | null
+          notify_withheld_reason: string | null
+          reason: string
+          requester_id: string
+          requires_approval: boolean
+          starts_at: string | null
+          status: string
+        }
+        Insert: {
+          affected_user_ids?: string[]
+          approver_id?: string | null
+          case_id: string
+          case_reference?: string
+          case_type: string
+          closed_at?: string | null
+          conversation_ids?: string[]
+          created_at?: string
+          decided_at?: string | null
+          decision_note?: string | null
+          duration_minutes?: number
+          expires_at?: string | null
+          id?: string
+          justification: string
+          notified_at?: string | null
+          notify_affected?: boolean | null
+          notify_withheld_reason?: string | null
+          reason: string
+          requester_id: string
+          requires_approval?: boolean
+          starts_at?: string | null
+          status?: string
+        }
+        Update: {
+          affected_user_ids?: string[]
+          approver_id?: string | null
+          case_id?: string
+          case_reference?: string
+          case_type?: string
+          closed_at?: string | null
+          conversation_ids?: string[]
+          created_at?: string
+          decided_at?: string | null
+          decision_note?: string | null
+          duration_minutes?: number
+          expires_at?: string | null
+          id?: string
+          justification?: string
+          notified_at?: string | null
+          notify_affected?: boolean | null
+          notify_withheld_reason?: string | null
+          reason?: string
+          requester_id?: string
+          requires_approval?: boolean
+          starts_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       build_items: {
         Row: {
           amount: number | null
@@ -552,11 +1891,16 @@ export type Database = {
           price_basis: string
           quote: Json
           request_id: string | null
+          responded_at: string | null
           response_deadline: string | null
+          response_reminders: number
+          response_status: string | null
           role: string
           scope: string
+          sent_at: string | null
           sort: number
           status: string
+          status_before_hold: string | null
           terms_snapshot: Json | null
           title: string
           updated_at: string
@@ -576,11 +1920,16 @@ export type Database = {
           price_basis?: string
           quote?: Json
           request_id?: string | null
+          responded_at?: string | null
           response_deadline?: string | null
+          response_reminders?: number
+          response_status?: string | null
           role?: string
           scope?: string
+          sent_at?: string | null
           sort?: number
           status?: string
+          status_before_hold?: string | null
           terms_snapshot?: Json | null
           title: string
           updated_at?: string
@@ -600,11 +1949,16 @@ export type Database = {
           price_basis?: string
           quote?: Json
           request_id?: string | null
+          responded_at?: string | null
           response_deadline?: string | null
+          response_reminders?: number
+          response_status?: string | null
           role?: string
           scope?: string
+          sent_at?: string | null
           sort?: number
           status?: string
+          status_before_hold?: string | null
           terms_snapshot?: Json | null
           title?: string
           updated_at?: string
@@ -684,27 +2038,124 @@ export type Database = {
           },
         ]
       }
+      catering_selections: {
+        Row: {
+          build_item_id: string
+          created_at: string
+          dietary_counts: Json
+          equipment: string
+          event_id: string
+          final_numbers_due: string | null
+          guest_count: number
+          id: string
+          items: Json
+          menu_id: string
+          notes: string
+          price_snapshot: Json
+          service_at: string | null
+          serving_style: string | null
+          staffing: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          build_item_id: string
+          created_at?: string
+          dietary_counts?: Json
+          equipment?: string
+          event_id: string
+          final_numbers_due?: string | null
+          guest_count: number
+          id?: string
+          items?: Json
+          menu_id: string
+          notes?: string
+          price_snapshot?: Json
+          service_at?: string | null
+          serving_style?: string | null
+          staffing?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          build_item_id?: string
+          created_at?: string
+          dietary_counts?: Json
+          equipment?: string
+          event_id?: string
+          final_numbers_due?: string | null
+          guest_count?: number
+          id?: string
+          items?: Json
+          menu_id?: string
+          notes?: string
+          price_snapshot?: Json
+          service_at?: string | null
+          serving_style?: string | null
+          staffing?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catering_selections_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: true
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catering_selections_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catering_selections_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       check_ins: {
         Row: {
           created_at: string
+          credential: string | null
+          device: string | null
           event_id: string
+          gate: string | null
           id: number
+          offline_at: string | null
           result: string
           scanned_by: string | null
           ticket_id: string | null
         }
         Insert: {
           created_at?: string
+          credential?: string | null
+          device?: string | null
           event_id: string
+          gate?: string | null
           id?: never
+          offline_at?: string | null
           result: string
           scanned_by?: string | null
           ticket_id?: string | null
         }
         Update: {
           created_at?: string
+          credential?: string | null
+          device?: string | null
           event_id?: string
+          gate?: string | null
           id?: never
+          offline_at?: string | null
           result?: string
           scanned_by?: string | null
           ticket_id?: string | null
@@ -738,6 +2189,10 @@ export type Database = {
           lines: Json
           order_ref: string
           ref_code: string | null
+          refund_error: string | null
+          refund_reason: string | null
+          refund_status: string
+          refunded_at: string | null
           status: string
           stripe_session: string | null
           token: string
@@ -754,6 +2209,10 @@ export type Database = {
           lines?: Json
           order_ref: string
           ref_code?: string | null
+          refund_error?: string | null
+          refund_reason?: string | null
+          refund_status?: string
+          refunded_at?: string | null
           status?: string
           stripe_session?: string | null
           token: string
@@ -770,6 +2229,10 @@ export type Database = {
           lines?: Json
           order_ref?: string
           ref_code?: string | null
+          refund_error?: string | null
+          refund_reason?: string | null
+          refund_status?: string
+          refunded_at?: string | null
           status?: string
           stripe_session?: string | null
           token?: string
@@ -781,6 +2244,207 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commission_rules: {
+        Row: {
+          active: boolean
+          category: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          fixed_minor: number
+          id: string
+          name: string
+          partner_id: string | null
+          plan: string | null
+          priority: number
+          promotion_code: string | null
+          rate_bps: number
+          valid_from: string | null
+          valid_to: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          category?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          fixed_minor?: number
+          id?: string
+          name: string
+          partner_id?: string | null
+          plan?: string | null
+          priority?: number
+          promotion_code?: string | null
+          rate_bps: number
+          valid_from?: string | null
+          valid_to?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          category?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          fixed_minor?: number
+          id?: string
+          name?: string
+          partner_id?: string | null
+          plan?: string | null
+          priority?: number
+          promotion_code?: string | null
+          rate_bps?: number
+          valid_from?: string | null
+          valid_to?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_rules_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conditional_holds: {
+        Row: {
+          blocking_level: string
+          build_item_id: string
+          closed_reason: string | null
+          conditions: string
+          created_at: string
+          currency: string
+          dependency_state: string
+          depends_on_item_id: string | null
+          ends_at: string | null
+          event_id: string
+          expires_at: string | null
+          held_quantity: number | null
+          id: string
+          listing_id: string
+          price: number | null
+          provider_note: string
+          requested_by: string | null
+          requested_hours: number
+          responded_at: string | null
+          responded_by: string | null
+          source: string
+          space_id: string | null
+          starts_at: string | null
+          status: string
+          updated_at: string
+          window_end: string | null
+          window_start: string | null
+          workspace_id: string
+        }
+        Insert: {
+          blocking_level?: string
+          build_item_id: string
+          closed_reason?: string | null
+          conditions?: string
+          created_at?: string
+          currency?: string
+          dependency_state?: string
+          depends_on_item_id?: string | null
+          ends_at?: string | null
+          event_id: string
+          expires_at?: string | null
+          held_quantity?: number | null
+          id?: string
+          listing_id: string
+          price?: number | null
+          provider_note?: string
+          requested_by?: string | null
+          requested_hours: number
+          responded_at?: string | null
+          responded_by?: string | null
+          source?: string
+          space_id?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+          window_end?: string | null
+          window_start?: string | null
+          workspace_id: string
+        }
+        Update: {
+          blocking_level?: string
+          build_item_id?: string
+          closed_reason?: string | null
+          conditions?: string
+          created_at?: string
+          currency?: string
+          dependency_state?: string
+          depends_on_item_id?: string | null
+          ends_at?: string | null
+          event_id?: string
+          expires_at?: string | null
+          held_quantity?: number | null
+          id?: string
+          listing_id?: string
+          price?: number | null
+          provider_note?: string
+          requested_by?: string | null
+          requested_hours?: number
+          responded_at?: string | null
+          responded_by?: string | null
+          source?: string
+          space_id?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+          window_end?: string | null
+          window_start?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conditional_holds_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conditional_holds_depends_on_item_id_fkey"
+            columns: ["depends_on_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conditional_holds_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conditional_holds_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conditional_holds_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conditional_holds_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -853,6 +2517,172 @@ export type Database = {
           },
         ]
       }
+      conversation_messages: {
+        Row: {
+          attachments: Json
+          body: string
+          conversation_id: string
+          created_at: string
+          deleted_at: string | null
+          edited_at: string | null
+          id: string
+          sender_id: string | null
+          sender_name: string
+          sender_workspace_id: string | null
+        }
+        Insert: {
+          attachments?: Json
+          body?: string
+          conversation_id: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          sender_id?: string | null
+          sender_name?: string
+          sender_workspace_id?: string | null
+        }
+        Update: {
+          attachments?: Json
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          sender_id?: string | null
+          sender_name?: string
+          sender_workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_messages_sender_workspace_id_fkey"
+            columns: ["sender_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_participants: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          label: string
+          last_read_at: string | null
+          left_at: string | null
+          muted: boolean
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          label?: string
+          last_read_at?: string | null
+          left_at?: string | null
+          muted?: boolean
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          label?: string
+          last_read_at?: string | null
+          left_at?: string | null
+          muted?: boolean
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          build_item_id: string | null
+          created_at: string
+          created_by: string | null
+          event_id: string | null
+          id: string
+          kind: string
+          last_message_at: string
+          last_message_preview: string
+          listing_id: string | null
+          subject: string
+        }
+        Insert: {
+          build_item_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          last_message_at?: string
+          last_message_preview?: string
+          listing_id?: string | null
+          subject?: string
+        }
+        Update: {
+          build_item_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          last_message_at?: string
+          last_message_preview?: string
+          listing_id?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credential_requirements: {
         Row: {
           capability: string | null
@@ -912,6 +2742,51 @@ export type Database = {
           key?: string
           label?: string
           verification_method?: string
+        }
+        Relationships: []
+      }
+      credit_packs: {
+        Row: {
+          active: boolean
+          created_at: string
+          credits: number
+          currency: string
+          expiry_days: number | null
+          id: string
+          name: string
+          price_minor: number
+          target_margin_bps: number
+          vat_treatment: string
+          workspace_kinds: string[]
+          worst_case_cost_minor: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          credits: number
+          currency?: string
+          expiry_days?: number | null
+          id?: string
+          name: string
+          price_minor: number
+          target_margin_bps: number
+          vat_treatment?: string
+          workspace_kinds?: string[]
+          worst_case_cost_minor: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          credits?: number
+          currency?: string
+          expiry_days?: number | null
+          id?: string
+          name?: string
+          price_minor?: number
+          target_margin_bps?: number
+          vat_treatment?: string
+          workspace_kinds?: string[]
+          worst_case_cost_minor?: number
         }
         Relationships: []
       }
@@ -980,6 +2855,305 @@ export type Database = {
           },
         ]
       }
+      design_comments: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          design_id: string
+          id: string
+          layer_id: string | null
+          page_id: string | null
+          parent_id: string | null
+          resolved: boolean
+          x: number | null
+          y: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          design_id: string
+          id?: string
+          layer_id?: string | null
+          page_id?: string | null
+          parent_id?: string | null
+          resolved?: boolean
+          x?: number | null
+          y?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          design_id?: string
+          id?: string
+          layer_id?: string | null
+          page_id?: string | null
+          parent_id?: string | null
+          resolved?: boolean
+          x?: number | null
+          y?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_comments_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "designs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "design_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "design_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_shares: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          design_id: string
+          expires_at: string | null
+          id: string
+          link_token_hash: string | null
+          permission: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          design_id: string
+          expires_at?: string | null
+          id?: string
+          link_token_hash?: string | null
+          permission: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          design_id?: string
+          expires_at?: string | null
+          id?: string
+          link_token_hash?: string | null
+          permission?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_shares_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "designs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_templates: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          document: Json
+          event_type: string | null
+          height: number
+          id: string
+          link_token_hash: string | null
+          owner_id: string | null
+          placeholders: string[]
+          preview: string | null
+          save_count: number
+          source_design_id: string | null
+          status: string
+          tags: string[]
+          title: string
+          usage_count: number
+          visibility: string
+          width: number
+          workspace_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          document: Json
+          event_type?: string | null
+          height: number
+          id?: string
+          link_token_hash?: string | null
+          owner_id?: string | null
+          placeholders?: string[]
+          preview?: string | null
+          save_count?: number
+          source_design_id?: string | null
+          status?: string
+          tags?: string[]
+          title: string
+          usage_count?: number
+          visibility?: string
+          width: number
+          workspace_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          document?: Json
+          event_type?: string | null
+          height?: number
+          id?: string
+          link_token_hash?: string | null
+          owner_id?: string | null
+          placeholders?: string[]
+          preview?: string | null
+          save_count?: number
+          source_design_id?: string | null
+          status?: string
+          tags?: string[]
+          title?: string
+          usage_count?: number
+          visibility?: string
+          width?: number
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_templates_source_design_id_fkey"
+            columns: ["source_design_id"]
+            isOneToOne: false
+            referencedRelation: "designs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "design_templates_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_versions: {
+        Row: {
+          auto: boolean
+          created_at: string
+          created_by: string | null
+          design_id: string
+          document: Json
+          label: string
+          version: number
+        }
+        Insert: {
+          auto?: boolean
+          created_at?: string
+          created_by?: string | null
+          design_id: string
+          document: Json
+          label?: string
+          version: number
+        }
+        Update: {
+          auto?: boolean
+          created_at?: string
+          created_by?: string | null
+          design_id?: string
+          document?: Json
+          label?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_versions_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "designs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      designs: {
+        Row: {
+          agent_run_id: string | null
+          created_at: string
+          deleted_at: string | null
+          document: Json
+          event_id: string | null
+          id: string
+          kind: string
+          owner_id: string
+          source: string
+          status: string
+          template_id: string | null
+          thumbnail: string | null
+          title: string
+          updated_at: string
+          version: number
+          workspace_id: string | null
+        }
+        Insert: {
+          agent_run_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          document: Json
+          event_id?: string | null
+          id?: string
+          kind?: string
+          owner_id: string
+          source?: string
+          status?: string
+          template_id?: string | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          version?: number
+          workspace_id?: string | null
+        }
+        Update: {
+          agent_run_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          document?: Json
+          event_id?: string | null
+          id?: string
+          kind?: string
+          owner_id?: string
+          source?: string
+          status?: string
+          template_id?: string | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          version?: number
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "designs_agent_run_id_fkey"
+            columns: ["agent_run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "designs_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "designs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discount_codes: {
         Row: {
           amount: number
@@ -1027,6 +3201,280 @@ export type Database = {
           },
         ]
       }
+      email_outbox: {
+        Row: {
+          attempts: number
+          body: string
+          category: string
+          created_at: string
+          id: string
+          last_error: string | null
+          lease_until: string | null
+          link: string | null
+          notification_id: string | null
+          provider_id: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          to_email: string
+          user_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lease_until?: string | null
+          link?: string | null
+          notification_id?: string | null
+          provider_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          to_email: string
+          user_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lease_until?: string | null
+          link?: string | null
+          notification_id?: string | null
+          provider_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      emergency_candidates: {
+        Row: {
+          accepted_at: string | null
+          build_item_id: string | null
+          delivered_at: string
+          distance_km: number | null
+          eta_minutes: number | null
+          id: string
+          listing_id: string | null
+          note: string
+          opened_at: string | null
+          quote_amount: number | null
+          request_id: string
+          responded_at: string | null
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          build_item_id?: string | null
+          delivered_at?: string
+          distance_km?: number | null
+          eta_minutes?: number | null
+          id?: string
+          listing_id?: string | null
+          note?: string
+          opened_at?: string | null
+          quote_amount?: number | null
+          request_id: string
+          responded_at?: string | null
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          build_item_id?: string | null
+          delivered_at?: string
+          distance_km?: number | null
+          eta_minutes?: number | null
+          id?: string
+          listing_id?: string | null
+          note?: string
+          opened_at?: string | null
+          quote_amount?: number | null
+          request_id?: string
+          responded_at?: string | null
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_candidates_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emergency_candidates_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emergency_candidates_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emergency_candidates_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emergency_provider_profiles: {
+        Row: {
+          available_now: boolean
+          available_until: string | null
+          base_lat: number | null
+          base_lng: number | null
+          categories: string[]
+          enabled: boolean
+          radius_km: number
+          rate_notes: string
+          response_minutes: number
+          surcharge_pct: number
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          available_now?: boolean
+          available_until?: string | null
+          base_lat?: number | null
+          base_lng?: number | null
+          categories?: string[]
+          enabled?: boolean
+          radius_km?: number
+          rate_notes?: string
+          response_minutes?: number
+          surcharge_pct?: number
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          available_now?: boolean
+          available_until?: string | null
+          base_lat?: number | null
+          base_lng?: number | null
+          categories?: string[]
+          enabled?: boolean
+          radius_km?: number
+          rate_notes?: string
+          response_minutes?: number
+          surcharge_pct?: number
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_provider_profiles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emergency_requests: {
+        Row: {
+          budget_max: number | null
+          category: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          event_id: string
+          failure_reason: string
+          filled_candidate_id: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          location: string
+          original_item_id: string | null
+          pool_size: number
+          reference: string
+          required_arrival: string
+          scope: string
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget_max?: number | null
+          category: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          event_id: string
+          failure_reason?: string
+          filled_candidate_id?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string
+          original_item_id?: string | null
+          pool_size?: number
+          reference?: string
+          required_arrival: string
+          scope?: string
+          severity: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget_max?: number | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          event_id?: string
+          failure_reason?: string
+          filled_candidate_id?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string
+          original_item_id?: string | null
+          pool_size?: number
+          reference?: string
+          required_arrival?: string
+          scope?: string
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_requests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emergency_requests_original_item_id_fkey"
+            columns: ["original_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enquiries: {
         Row: {
           created_at: string
@@ -1057,6 +3505,41 @@ export type Database = {
         }
         Relationships: []
       }
+      event_cancellations: {
+        Row: {
+          cancelled_by: string | null
+          created_at: string
+          event_id: string
+          orders_refunded: number
+          reason: string
+          tickets_voided: number
+        }
+        Insert: {
+          cancelled_by?: string | null
+          created_at?: string
+          event_id: string
+          orders_refunded?: number
+          reason: string
+          tickets_voided?: number
+        }
+        Update: {
+          cancelled_by?: string | null
+          created_at?: string
+          event_id?: string
+          orders_refunded?: number
+          reason?: string
+          tickets_voided?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_cancellations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_metrics_daily: {
         Row: {
           day: string
@@ -1085,6 +3568,127 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_order_versions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          content: Json
+          created_at: string
+          created_by: string | null
+          financial: Json
+          note: string
+          order_id: string
+          version: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content: Json
+          created_at?: string
+          created_by?: string | null
+          financial?: Json
+          note?: string
+          order_id: string
+          version: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          financial?: Json
+          note?: string
+          order_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_order_versions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "event_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_orders: {
+        Row: {
+          approved_version: number | null
+          build_item_id: string | null
+          created_at: string
+          created_by: string | null
+          current_version: number
+          event_id: string | null
+          id: string
+          provider_job_id: string | null
+          reference: string
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          approved_version?: number | null
+          build_item_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_version?: number
+          event_id?: string | null
+          id?: string
+          provider_job_id?: string | null
+          reference?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          approved_version?: number | null
+          build_item_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_version?: number
+          event_id?: string | null
+          id?: string
+          provider_job_id?: string | null
+          reference?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_orders_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_orders_provider_job_id_fkey"
+            columns: ["provider_job_id"]
+            isOneToOne: false
+            referencedRelation: "provider_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_orders_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -1652,6 +4256,44 @@ export type Database = {
           },
         ]
       }
+      launch_queue: {
+        Row: {
+          admitted_at: string | null
+          event_id: string
+          joined_at: string
+          position: number
+          token_hash: string
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admitted_at?: string | null
+          event_id: string
+          joined_at?: string
+          position?: never
+          token_hash: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admitted_at?: string | null
+          event_id?: string
+          joined_at?: string
+          position?: never
+          token_hash?: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_queue_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_activities: {
         Row: {
           actor_id: string | null
@@ -2009,6 +4651,72 @@ export type Database = {
           },
         ]
       }
+      maintenance_windows: {
+        Row: {
+          audience: string
+          bypass_roles: string[]
+          created_at: string
+          created_by: string | null
+          dismissible: boolean
+          end_note: string | null
+          ended_at: string | null
+          ended_by: string | null
+          ends_at: string | null
+          expected_restore: string | null
+          id: string
+          level: number
+          message: string
+          modules: string[]
+          reference: string
+          severity: string
+          starts_at: string
+          status_url: string | null
+          title: string
+        }
+        Insert: {
+          audience?: string
+          bypass_roles?: string[]
+          created_at?: string
+          created_by?: string | null
+          dismissible?: boolean
+          end_note?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          ends_at?: string | null
+          expected_restore?: string | null
+          id?: string
+          level: number
+          message?: string
+          modules?: string[]
+          reference?: string
+          severity?: string
+          starts_at?: string
+          status_url?: string | null
+          title: string
+        }
+        Update: {
+          audience?: string
+          bypass_roles?: string[]
+          created_at?: string
+          created_by?: string | null
+          dismissible?: boolean
+          end_note?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          ends_at?: string | null
+          expected_restore?: string | null
+          id?: string
+          level?: number
+          message?: string
+          modules?: string[]
+          reference?: string
+          severity?: string
+          starts_at?: string
+          status_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           created_at: string
@@ -2069,6 +4777,182 @@ export type Database = {
           },
         ]
       }
+      menu_items: {
+        Row: {
+          add_ons: Json
+          allergen_note: string
+          allergens: string[]
+          available: boolean
+          description: string
+          dietary: string[]
+          id: string
+          menu_id: string
+          name: string
+          price: number | null
+          section_id: string | null
+          sort: number
+          unit: string
+          variations: Json
+        }
+        Insert: {
+          add_ons?: Json
+          allergen_note?: string
+          allergens?: string[]
+          available?: boolean
+          description?: string
+          dietary?: string[]
+          id?: string
+          menu_id: string
+          name: string
+          price?: number | null
+          section_id?: string | null
+          sort?: number
+          unit?: string
+          variations?: Json
+        }
+        Update: {
+          add_ons?: Json
+          allergen_note?: string
+          allergens?: string[]
+          available?: boolean
+          description?: string
+          dietary?: string[]
+          id?: string
+          menu_id?: string
+          name?: string
+          price?: number | null
+          section_id?: string | null
+          sort?: number
+          unit?: string
+          variations?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "menu_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_sections: {
+        Row: {
+          choose_max: number | null
+          choose_min: number | null
+          id: string
+          menu_id: string
+          name: string
+          sort: number
+        }
+        Insert: {
+          choose_max?: number | null
+          choose_min?: number | null
+          id?: string
+          menu_id: string
+          name: string
+          sort?: number
+        }
+        Update: {
+          choose_max?: number | null
+          choose_min?: number | null
+          id?: string
+          menu_id?: string
+          name?: string
+          sort?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_sections_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menus: {
+        Row: {
+          created_at: string
+          description: string
+          final_numbers_days: number
+          id: string
+          kind: string
+          listing_id: string | null
+          max_guests: number | null
+          min_guests: number | null
+          name: string
+          prep_requirements: string
+          price: number | null
+          pricing: string
+          service_window_minutes: number | null
+          serving_style: string | null
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          final_numbers_days?: number
+          id?: string
+          kind?: string
+          listing_id?: string | null
+          max_guests?: number | null
+          min_guests?: number | null
+          name: string
+          prep_requirements?: string
+          price?: number | null
+          pricing?: string
+          service_window_minutes?: number | null
+          serving_style?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          final_numbers_days?: number
+          id?: string
+          kind?: string
+          listing_id?: string | null
+          max_guests?: number | null
+          min_guests?: number | null
+          name?: string
+          prep_requirements?: string
+          price?: number | null
+          pricing?: string
+          service_window_minutes?: number | null
+          serving_style?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menus_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menus_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: Json
@@ -2112,6 +4996,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mfa_recovery_codes: {
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -2475,6 +5383,131 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_orders: {
+        Row: {
+          amount_minor: number
+          build_item_id: string | null
+          commission: Json
+          created_at: string
+          currency: string
+          description: string
+          event_id: string | null
+          failure_reason: string | null
+          id: string
+          idempotency_key: string | null
+          kind: string
+          livemode: boolean | null
+          payee_workspace_id: string | null
+          payer_id: string | null
+          platform_fee_minor: number
+          protected: boolean
+          reference: string
+          refunded_minor: number
+          release_eligible_at: string | null
+          released_at: string | null
+          standby_id: string | null
+          status: string
+          strategy: string
+          stripe_charge: string | null
+          stripe_checkout_session: string | null
+          stripe_payment_intent: string | null
+          stripe_transfer: string | null
+          transferred_minor: number
+          updated_at: string
+        }
+        Insert: {
+          amount_minor: number
+          build_item_id?: string | null
+          commission?: Json
+          created_at?: string
+          currency?: string
+          description: string
+          event_id?: string | null
+          failure_reason?: string | null
+          id?: string
+          idempotency_key?: string | null
+          kind: string
+          livemode?: boolean | null
+          payee_workspace_id?: string | null
+          payer_id?: string | null
+          platform_fee_minor?: number
+          protected?: boolean
+          reference?: string
+          refunded_minor?: number
+          release_eligible_at?: string | null
+          released_at?: string | null
+          standby_id?: string | null
+          status?: string
+          strategy?: string
+          stripe_charge?: string | null
+          stripe_checkout_session?: string | null
+          stripe_payment_intent?: string | null
+          stripe_transfer?: string | null
+          transferred_minor?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_minor?: number
+          build_item_id?: string | null
+          commission?: Json
+          created_at?: string
+          currency?: string
+          description?: string
+          event_id?: string | null
+          failure_reason?: string | null
+          id?: string
+          idempotency_key?: string | null
+          kind?: string
+          livemode?: boolean | null
+          payee_workspace_id?: string | null
+          payer_id?: string | null
+          platform_fee_minor?: number
+          protected?: boolean
+          reference?: string
+          refunded_minor?: number
+          release_eligible_at?: string | null
+          released_at?: string | null
+          standby_id?: string | null
+          status?: string
+          strategy?: string
+          stripe_charge?: string | null
+          stripe_checkout_session?: string | null
+          stripe_payment_intent?: string | null
+          stripe_transfer?: string | null
+          transferred_minor?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_orders_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_orders_payee_workspace_id_fkey"
+            columns: ["payee_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_orders_standby_id_fkey"
+            columns: ["standby_id"]
+            isOneToOne: false
+            referencedRelation: "standby_commitments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -2534,6 +5567,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      plan_entitlements: {
+        Row: {
+          capability: string
+          kind: string
+          plan: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          capability: string
+          kind: string
+          plan: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          capability?: string
+          kind?: string
+          plan?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
       }
       platform_admins: {
         Row: {
@@ -2840,6 +5897,60 @@ export type Database = {
           },
         ]
       }
+      privacy_requests: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          detail: string
+          due_at: string
+          extended_reason: string | null
+          id: string
+          kind: string
+          outcome: string | null
+          received_at: string
+          reference: string
+          refusal_reason: string | null
+          requester_email: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          detail?: string
+          due_at?: string
+          extended_reason?: string | null
+          id?: string
+          kind: string
+          outcome?: string | null
+          received_at?: string
+          reference?: string
+          refusal_reason?: string | null
+          requester_email: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          detail?: string
+          due_at?: string
+          extended_reason?: string | null
+          id?: string
+          kind?: string
+          outcome?: string | null
+          received_at?: string
+          reference?: string
+          refusal_reason?: string | null
+          requester_email?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string
@@ -2849,6 +5960,7 @@ export type Database = {
           created_at: string
           currency: string
           date_of_birth: string | null
+          deleted_at: string | null
           deletion_requested_at: string | null
           full_name: string
           home_area: string
@@ -2876,6 +5988,7 @@ export type Database = {
           created_at?: string
           currency?: string
           date_of_birth?: string | null
+          deleted_at?: string | null
           deletion_requested_at?: string | null
           full_name?: string
           home_area?: string
@@ -2903,6 +6016,7 @@ export type Database = {
           created_at?: string
           currency?: string
           date_of_birth?: string | null
+          deleted_at?: string | null
           deletion_requested_at?: string | null
           full_name?: string
           home_area?: string
@@ -3426,6 +6540,60 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_checkins: {
+        Row: {
+          arrived_at: string | null
+          build_item_id: string
+          eta: string | null
+          event_id: string
+          expected_at: string | null
+          id: string
+          note: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          arrived_at?: string | null
+          build_item_id: string
+          eta?: string | null
+          event_id: string
+          expected_at?: string | null
+          id?: string
+          note?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          arrived_at?: string | null
+          build_item_id?: string
+          eta?: string | null
+          event_id?: string
+          expected_at?: string | null
+          id?: string
+          note?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_checkins_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: true
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_checkins_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -3971,9 +7139,14 @@ export type Database = {
           created_at: string
           id: string
           listing_id: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_reason: string | null
           photos: string[]
+          provider_response: string | null
           rating: number
           ratings: Json
+          responded_at: string | null
           status: string
           updated_at: string | null
           user_id: string
@@ -3984,9 +7157,14 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
           photos?: string[]
+          provider_response?: string | null
           rating: number
           ratings?: Json
+          responded_at?: string | null
           status?: string
           updated_at?: string | null
           user_id: string
@@ -3997,9 +7175,14 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
           photos?: string[]
+          provider_response?: string | null
           rating?: number
           ratings?: Json
+          responded_at?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string
@@ -4255,6 +7438,117 @@ export type Database = {
           },
         ]
       }
+      standby_commitments: {
+        Row: {
+          activated_at: string | null
+          activation_price: number | null
+          activation_reason: string | null
+          build_item_id: string
+          cancellation_terms: string
+          created_at: string
+          currency: string
+          event_id: string
+          expires_at: string | null
+          fee_payment_ref: string | null
+          fee_status: string
+          id: string
+          listing_id: string
+          organizer_note: string
+          primary_item_id: string | null
+          requested_by: string | null
+          standby_fee: number | null
+          status: string
+          updated_at: string
+          window_end: string
+          window_start: string
+          workspace_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          activation_price?: number | null
+          activation_reason?: string | null
+          build_item_id: string
+          cancellation_terms?: string
+          created_at?: string
+          currency?: string
+          event_id: string
+          expires_at?: string | null
+          fee_payment_ref?: string | null
+          fee_status?: string
+          id?: string
+          listing_id: string
+          organizer_note?: string
+          primary_item_id?: string | null
+          requested_by?: string | null
+          standby_fee?: number | null
+          status?: string
+          updated_at?: string
+          window_end: string
+          window_start: string
+          workspace_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          activation_price?: number | null
+          activation_reason?: string | null
+          build_item_id?: string
+          cancellation_terms?: string
+          created_at?: string
+          currency?: string
+          event_id?: string
+          expires_at?: string | null
+          fee_payment_ref?: string | null
+          fee_status?: string
+          id?: string
+          listing_id?: string
+          organizer_note?: string
+          primary_item_id?: string | null
+          requested_by?: string | null
+          standby_fee?: number | null
+          status?: string
+          updated_at?: string
+          window_end?: string
+          window_start?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "standby_commitments_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standby_commitments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standby_commitments_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standby_commitments_primary_item_id_fkey"
+            columns: ["primary_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standby_commitments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       state_machines: {
         Row: {
           column_name: string
@@ -4340,6 +7634,81 @@ export type Database = {
           to_state?: string | null
         }
         Relationships: []
+      }
+      stripe_disputes: {
+        Row: {
+          amount_minor: number
+          build_item_id: string | null
+          charge_id: string | null
+          created_at: string
+          currency: string
+          event_id: string | null
+          evidence_due_by: string | null
+          evidence_submitted_at: string | null
+          is_charge_refundable: boolean | null
+          livemode: boolean
+          order_ref: string | null
+          outcome: string | null
+          payment_intent_id: string | null
+          reason: string | null
+          status: string
+          stripe_dispute_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_minor: number
+          build_item_id?: string | null
+          charge_id?: string | null
+          created_at?: string
+          currency: string
+          event_id?: string | null
+          evidence_due_by?: string | null
+          evidence_submitted_at?: string | null
+          is_charge_refundable?: boolean | null
+          livemode?: boolean
+          order_ref?: string | null
+          outcome?: string | null
+          payment_intent_id?: string | null
+          reason?: string | null
+          status: string
+          stripe_dispute_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_minor?: number
+          build_item_id?: string | null
+          charge_id?: string | null
+          created_at?: string
+          currency?: string
+          event_id?: string | null
+          evidence_due_by?: string | null
+          evidence_submitted_at?: string | null
+          is_charge_refundable?: boolean | null
+          livemode?: boolean
+          order_ref?: string | null
+          outcome?: string | null
+          payment_intent_id?: string | null
+          reason?: string | null
+          status?: string
+          stripe_dispute_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_disputes_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_disputes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_cases: {
         Row: {
@@ -4516,6 +7885,100 @@ export type Database = {
           },
         ]
       }
+      template_creator_restrictions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      template_reports: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          detail: string
+          id: string
+          reason: string
+          reporter_id: string | null
+          status: string
+          template_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          detail?: string
+          id?: string
+          reason: string
+          reporter_id?: string | null
+          status?: string
+          template_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          detail?: string
+          id?: string
+          reason?: string
+          reporter_id?: string | null
+          status?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_reports_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "design_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_saves: {
+        Row: {
+          created_at: string
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          template_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_saves_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "design_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       threads: {
         Row: {
           build_item_id: string | null
@@ -4641,6 +8104,8 @@ export type Database = {
           sold: number
           sort: number
           status: string
+          valid_from: string | null
+          valid_to: string | null
         }
         Insert: {
           after_tier?: string | null
@@ -4663,6 +8128,8 @@ export type Database = {
           sold?: number
           sort?: number
           status?: string
+          valid_from?: string | null
+          valid_to?: string | null
         }
         Update: {
           after_tier?: string | null
@@ -4685,6 +8152,8 @@ export type Database = {
           sold?: number
           sort?: number
           status?: string
+          valid_from?: string | null
+          valid_to?: string | null
         }
         Relationships: [
           {
@@ -4699,6 +8168,127 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_transfers: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          expires_at: string
+          from_user: string
+          id: string
+          new_ticket_id: string | null
+          status: string
+          ticket_id: string
+          to_email: string
+          to_name: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          expires_at?: string
+          from_user: string
+          id?: string
+          new_ticket_id?: string | null
+          status?: string
+          ticket_id: string
+          to_email: string
+          to_name?: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          expires_at?: string
+          from_user?: string
+          id?: string
+          new_ticket_id?: string | null
+          status?: string
+          ticket_id?: string
+          to_email?: string
+          to_name?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_transfers_new_ticket_id_fkey"
+            columns: ["new_ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_transfers_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_waitlist: {
+        Row: {
+          accessibility_needs: string | null
+          created_at: string
+          event_id: string
+          id: string
+          notified_at: string | null
+          offer_expires_at: string | null
+          offer_tier_id: string | null
+          quantity: number
+          status: string
+          tier_id: string | null
+          user_id: string
+        }
+        Insert: {
+          accessibility_needs?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          notified_at?: string | null
+          offer_expires_at?: string | null
+          offer_tier_id?: string | null
+          quantity?: number
+          status?: string
+          tier_id?: string | null
+          user_id: string
+        }
+        Update: {
+          accessibility_needs?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          notified_at?: string | null
+          offer_expires_at?: string | null
+          offer_tier_id?: string | null
+          quantity?: number
+          status?: string
+          tier_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_waitlist_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_waitlist_offer_tier_id_fkey"
+            columns: ["offer_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_waitlist_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
             referencedColumns: ["id"]
           },
         ]
@@ -4926,6 +8516,50 @@ export type Database = {
         }
         Relationships: []
       }
+      uploaded_fonts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          family: string
+          id: string
+          licence_acknowledged: boolean
+          path: string
+          style: string
+          weight: number
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          family: string
+          id?: string
+          licence_acknowledged: boolean
+          path: string
+          style?: string
+          weight?: number
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          family?: string
+          id?: string
+          licence_acknowledged?: boolean
+          path?: string
+          style?: string
+          weight?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_fonts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_tasks: {
         Row: {
           complete: boolean
@@ -4949,6 +8583,86 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      venue_alternatives: {
+        Row: {
+          build_item_id: string
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          ends_at: string | null
+          event_id: string
+          id: string
+          kind: string
+          note: string
+          price: number | null
+          space_id: string | null
+          starts_at: string | null
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          build_item_id: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          ends_at?: string | null
+          event_id: string
+          id?: string
+          kind: string
+          note?: string
+          price?: number | null
+          space_id?: string | null
+          starts_at?: string | null
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          build_item_id?: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          ends_at?: string | null
+          event_id?: string
+          id?: string
+          kind?: string
+          note?: string
+          price?: number | null
+          space_id?: string | null
+          starts_at?: string | null
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_alternatives_build_item_id_fkey"
+            columns: ["build_item_id"]
+            isOneToOne: false
+            referencedRelation: "build_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_alternatives_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_alternatives_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_alternatives_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       venue_maps: {
         Row: {
@@ -4987,6 +8701,106 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_rate_cards: {
+        Row: {
+          active: boolean
+          amount: number
+          bar_min: number | null
+          catering_min: number | null
+          created_at: string
+          days_of_week: number[]
+          fees: Json
+          id: string
+          min_hours: number | null
+          min_spend: number | null
+          model: string
+          name: string
+          peak: boolean
+          per_person: number | null
+          priority: number
+          season_from: string | null
+          season_to: string | null
+          space_id: string | null
+          time_from: string | null
+          time_to: string | null
+          updated_at: string
+          venue_id: string
+          workspace_id: string
+        }
+        Insert: {
+          active?: boolean
+          amount?: number
+          bar_min?: number | null
+          catering_min?: number | null
+          created_at?: string
+          days_of_week?: number[]
+          fees?: Json
+          id?: string
+          min_hours?: number | null
+          min_spend?: number | null
+          model: string
+          name: string
+          peak?: boolean
+          per_person?: number | null
+          priority?: number
+          season_from?: string | null
+          season_to?: string | null
+          space_id?: string | null
+          time_from?: string | null
+          time_to?: string | null
+          updated_at?: string
+          venue_id: string
+          workspace_id: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          bar_min?: number | null
+          catering_min?: number | null
+          created_at?: string
+          days_of_week?: number[]
+          fees?: Json
+          id?: string
+          min_hours?: number | null
+          min_spend?: number | null
+          model?: string
+          name?: string
+          peak?: boolean
+          per_person?: number | null
+          priority?: number
+          season_from?: string | null
+          season_to?: string | null
+          space_id?: string | null
+          time_from?: string | null
+          time_to?: string | null
+          updated_at?: string
+          venue_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_rate_cards_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_rate_cards_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_rate_cards_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -5076,6 +8890,125 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "verification_records_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivered_at: string | null
+          endpoint_id: string
+          event_id: string
+          event_type: string
+          id: string
+          lease_until: string | null
+          next_attempt_at: string
+          payload: Json
+          response_snippet: string | null
+          response_status: number | null
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id: string
+          event_id: string
+          event_type: string
+          id?: string
+          lease_until?: string | null
+          next_attempt_at?: string
+          payload: Json
+          response_snippet?: string | null
+          response_status?: number | null
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id?: string
+          event_id?: string
+          event_type?: string
+          id?: string
+          lease_until?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          response_snippet?: string | null
+          response_status?: number | null
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_deliveries_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_endpoints: {
+        Row: {
+          consecutive_failures: number
+          created_at: string
+          created_by: string | null
+          description: string
+          disabled_reason: string | null
+          events: string[]
+          first_failure_at: string | null
+          id: string
+          secret: string
+          status: string
+          url: string
+          workspace_id: string
+        }
+        Insert: {
+          consecutive_failures?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          disabled_reason?: string | null
+          events: string[]
+          first_failure_at?: string | null
+          id?: string
+          secret: string
+          status?: string
+          url: string
+          workspace_id: string
+        }
+        Update: {
+          consecutive_failures?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          disabled_reason?: string | null
+          events?: string[]
+          first_failure_at?: string | null
+          id?: string
+          secret?: string
+          status?: string
+          url?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_endpoints_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -5269,6 +9202,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_dispute_resolution: {
+        Args: { p_dispute: string }
+        Returns: string
+      }
+      accept_emergency_candidate: {
+        Args: { p_candidate: string }
+        Returns: string
+      }
       accept_proposal: {
         Args: {
           p_email: string
@@ -5277,6 +9218,24 @@ export type Database = {
           p_version: number
         }
         Returns: string
+      }
+      accept_standby: { Args: { p_standby: string }; Returns: string }
+      accept_ticket_transfer: {
+        Args: { p_token_hash: string }
+        Returns: string
+      }
+      activate_standby: {
+        Args: { p_reason: string; p_standby: string }
+        Returns: undefined
+      }
+      add_dispute_entry: {
+        Args: {
+          p_body: string
+          p_dispute: string
+          p_files?: Json
+          p_kind: string
+        }
+        Returns: undefined
       }
       admin_actor_name: { Args: never; Returns: string }
       admin_add_note: {
@@ -5289,8 +9248,20 @@ export type Database = {
       }
       admin_assign_case: { Args: { p_case: string }; Returns: undefined }
       admin_assign_trust: { Args: { p_case: string }; Returns: undefined }
+      admin_break_glass_report: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
       admin_cancel_money_request: {
         Args: { p_reason: string; p_request: string }
+        Returns: undefined
+      }
+      admin_case_conversations: {
+        Args: { p_case: string; p_case_type: string }
+        Returns: Json
+      }
+      admin_close_break_glass: {
+        Args: { p_grant: string; p_notify: boolean; p_withheld_reason?: string }
         Returns: undefined
       }
       admin_create_support_case: {
@@ -5315,8 +9286,23 @@ export type Database = {
         }
         Returns: string
       }
+      admin_cron_job_status: {
+        Args: never
+        Returns: {
+          active: boolean
+          failures_24h: number
+          job: string
+          last_run: string
+          last_status: string
+          schedule: string
+        }[]
+      }
       admin_decide_agent_approval: {
         Args: { p_approval: string; p_approve: boolean }
+        Returns: undefined
+      }
+      admin_decide_break_glass: {
+        Args: { p_approve: boolean; p_grant: string; p_note: string }
         Returns: undefined
       }
       admin_decide_trust: {
@@ -5325,6 +9311,15 @@ export type Database = {
       }
       admin_discard_setting_draft: {
         Args: { p_reason: string; p_section: string }
+        Returns: undefined
+      }
+      admin_dispute_update: {
+        Args: {
+          p_dispute: string
+          p_note: string
+          p_resolution?: Json
+          p_status: string
+        }
         Returns: undefined
       }
       admin_event_metrics: {
@@ -5348,6 +9343,17 @@ export type Database = {
           used: number
         }[]
       }
+      admin_grant_conversations: { Args: { p_grant: string }; Returns: Json }
+      admin_grant_credits: {
+        Args: {
+          p_credits: number
+          p_expires?: string
+          p_kind: string
+          p_reference: string
+          p_workspace: string
+        }
+        Returns: undefined
+      }
       admin_listing_metrics: {
         Args: { p_days?: number }
         Returns: {
@@ -5361,6 +9367,10 @@ export type Database = {
           responded: number
           revenue: number
         }[]
+      }
+      admin_open_conversation: {
+        Args: { p_conv: string; p_grant: string }
+        Returns: Json
       }
       admin_overview: { Args: { p_days?: number }; Returns: Json }
       admin_publish_setting: {
@@ -5379,6 +9389,17 @@ export type Database = {
       admin_reply_case: {
         Args: { p_body: string; p_case: string; p_internal: boolean }
         Returns: undefined
+      }
+      admin_request_break_glass: {
+        Args: {
+          p_case: string
+          p_case_type: string
+          p_conversations: string[]
+          p_justification: string
+          p_minutes?: number
+          p_reason: string
+        }
+        Returns: Json
       }
       admin_request_money: {
         Args: {
@@ -5467,6 +9488,10 @@ export type Database = {
           sold: number
         }[]
       }
+      admin_touch_conversation: {
+        Args: { p_close?: boolean; p_log: string }
+        Returns: undefined
+      }
       admin_update_case: {
         Args: {
           p_case: string
@@ -5541,6 +9566,19 @@ export type Database = {
         Args: { p_action: string; p_run: string }
         Returns: undefined
       }
+      agent_invoke: {
+        Args: {
+          p_actor: string
+          p_args: Json
+          p_tool: string
+          p_workspace: string
+        }
+        Returns: Json
+      }
+      agent_invoke_ext: {
+        Args: { p_args: Json; p_tool: string; p_workspace: string }
+        Returns: Json
+      }
       agent_propose_action: {
         Args: {
           p_action: string
@@ -5558,7 +9596,29 @@ export type Database = {
         Args: { p_approval: string; p_result: string }
         Returns: undefined
       }
+      ai_credit_status: { Args: { p_workspace: string }; Returns: Json }
+      ai_preflight: {
+        Args: {
+          p_estimate: number
+          p_run: string
+          p_tier: string
+          p_workspace: string
+        }
+        Returns: undefined
+      }
+      apply_cancellation: {
+        Args: { p_cancellation: string }
+        Returns: undefined
+      }
+      approve_event_order: {
+        Args: { p_order: string; p_version: number }
+        Returns: undefined
+      }
+      assert_writable: { Args: { p_module: string }; Returns: undefined }
       attribute_referral: { Args: { p_order_ref: string }; Returns: number }
+      bg_expire: { Args: never; Returns: undefined }
+      bg_purge: { Args: never; Returns: number }
+      bg_step_up_ok: { Args: never; Returns: boolean }
       calendar_feed: {
         Args: { p_token: string }
         Returns: {
@@ -5570,13 +9630,50 @@ export type Database = {
           uid: string
         }[]
       }
+      can_access_conversation: { Args: { p_conv: string }; Returns: boolean }
+      can_access_emergency_request: {
+        Args: { p_request: string }
+        Returns: boolean
+      }
       can_access_event: { Args: { target: string }; Returns: boolean }
       can_edit_event: { Args: { target: string }; Returns: boolean }
       can_manage_promoter: { Args: { p_promoter: string }; Returns: boolean }
+      can_read_media_path: { Args: { p_path: string }; Returns: boolean }
+      can_see_agent_run: { Args: { p_run: string }; Returns: boolean }
       can_see_event_money: { Args: { target: string }; Returns: boolean }
       can_write_listing_media: {
         Args: { object_name: string }
         Returns: boolean
+      }
+      cancel_agent_watch: { Args: { p_watch: string }; Returns: undefined }
+      cancel_emergency_request: {
+        Args: { p_request: string }
+        Returns: undefined
+      }
+      cancel_event_with_refunds: {
+        Args: { p_event: string; p_reason: string }
+        Returns: Json
+      }
+      cancel_ticket_transfer: {
+        Args: { p_transfer: string }
+        Returns: undefined
+      }
+      cancellation_quote: {
+        Args: { p_at?: string; p_item: string; p_kind: string; p_party: string }
+        Returns: Json
+      }
+      cancellation_refund_progress: {
+        Args: {
+          p_cancellation: string
+          p_error: string
+          p_refunded_minor: number
+          p_status: string
+        }
+        Returns: undefined
+      }
+      catering_price: {
+        Args: { p_guests: number; p_items: Json; p_menu: string }
+        Returns: Json
       }
       check_in_ticket: {
         Args: { p_code: string; p_event: string; p_nonce?: string }
@@ -5585,6 +9682,126 @@ export type Database = {
       checkout_holds: {
         Args: { p_event: string; p_token: string }
         Returns: Json
+      }
+      claim_agent_runs: {
+        Args: { p_lease_seconds?: number; p_limit?: number }
+        Returns: {
+          agent_name: string
+          batch: Json | null
+          changes: Json
+          cost_cents: number
+          created_at: string
+          current_step: number
+          errors: Json
+          event_id: string | null
+          financial_exposure_minor: number
+          finished_at: string | null
+          goal: string
+          id: string
+          idempotency_key: string | null
+          interpretation: Json
+          lease_until: string | null
+          mission: string | null
+          mode: string
+          next_wake_at: string | null
+          plan: Json
+          progress: number
+          quality: string
+          reference: string | null
+          result: string
+          retries: number
+          routine_id: string | null
+          run_type: string
+          scope: string[]
+          started_at: string | null
+          status: string
+          summary: string | null
+          surface: string
+          tokens: number
+          triggered_by: string
+          updated_at: string
+          user_id: string
+          waiting_reason: string
+          workspace_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "agent_runs"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_email_batch: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          body: string
+          category: string
+          created_at: string
+          id: string
+          last_error: string | null
+          lease_until: string | null
+          link: string | null
+          notification_id: string | null
+          provider_id: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          to_email: string
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "email_outbox"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_ticket_refunds: {
+        Args: { p_limit?: number }
+        Returns: {
+          amount: number
+          buyer_id: string | null
+          created_at: string
+          currency: string
+          event_id: string
+          fee: number
+          kind: string
+          lines: Json
+          order_ref: string
+          ref_code: string | null
+          refund_error: string | null
+          refund_reason: string | null
+          refund_status: string
+          refunded_at: string | null
+          status: string
+          stripe_session: string | null
+          token: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "checkout_orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_waitlist_offer: {
+        Args: { p_offer: string; p_token: string }
+        Returns: Json
+      }
+      claim_webhook_batch: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          delivery_id: string
+          endpoint_id: string
+          event_id: string
+          event_type: string
+          payload: Json
+          secret: string
+          url: string
+        }[]
       }
       claim_webhook_event: {
         Args: {
@@ -5600,7 +9817,107 @@ export type Database = {
         Args: { p_workspace: string }
         Returns: undefined
       }
+      create_agent_watch: {
+        Args: {
+          p_condition: Json
+          p_every: number
+          p_expires: string
+          p_input: Json
+          p_title: string
+          p_tool: string
+          p_workspace: string
+        }
+        Returns: string
+      }
+      create_api_key: {
+        Args: {
+          p_expires: string
+          p_hash: string
+          p_name: string
+          p_prefix: string
+          p_scopes: string[]
+          p_workspace: string
+        }
+        Returns: string
+      }
+      create_design: {
+        Args: {
+          p_document: Json
+          p_event: string
+          p_link_hash?: string
+          p_source?: string
+          p_template?: string
+          p_title: string
+          p_workspace: string
+        }
+        Returns: string
+      }
+      create_emergency_request: {
+        Args: { p: Json; p_event: string }
+        Returns: string
+      }
+      create_payment_order: {
+        Args: { p_item?: string; p_kind: string; p_standby?: string }
+        Returns: {
+          amount_minor: number
+          build_item_id: string | null
+          commission: Json
+          created_at: string
+          currency: string
+          description: string
+          event_id: string | null
+          failure_reason: string | null
+          id: string
+          idempotency_key: string | null
+          kind: string
+          livemode: boolean | null
+          payee_workspace_id: string | null
+          payer_id: string | null
+          platform_fee_minor: number
+          protected: boolean
+          reference: string
+          refunded_minor: number
+          release_eligible_at: string | null
+          released_at: string | null
+          standby_id: string | null
+          status: string
+          strategy: string
+          stripe_charge: string | null
+          stripe_checkout_session: string | null
+          stripe_payment_intent: string | null
+          stripe_transfer: string | null
+          transferred_minor: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_webhook_endpoint: {
+        Args: {
+          p_description: string
+          p_events: string[]
+          p_secret: string
+          p_url: string
+          p_workspace: string
+        }
+        Returns: string
+      }
       credit_invoice: { Args: { p_invoice: string }; Returns: undefined }
+      cron_job_status: {
+        Args: never
+        Returns: {
+          active: boolean
+          failures_24h: number
+          job: string
+          last_run: string
+          last_status: string
+          schedule: string
+        }[]
+      }
       customer_accept_quote: {
         Args: { p_item: string; p_payment_ref: string }
         Returns: undefined
@@ -5615,24 +9932,36 @@ export type Database = {
         Returns: string
       }
       decide_agent_approval: {
-        Args: { p_approval: string; p_approve: boolean }
+        Args: { p_approval: string; p_approve: boolean; p_edited?: Json }
         Returns: {
           action: string
+          affected_ref: string | null
+          alternatives: Json
           amount: number | null
+          batch_key: string | null
+          confidence: number | null
           created_at: string
           decided_at: string | null
           decided_by: string | null
           detail: string
+          edited_payload: Json | null
           event_id: string | null
           executed_at: string | null
           expires_at: string | null
           id: string
           impact: string
           payload: Json
+          previous_state: Json | null
+          proposed_state: Json | null
+          reason: string | null
+          requested_by: string | null
           result: string | null
+          risk: number | null
           run_id: string | null
           status: string
+          step_id: string | null
           title: string
+          tool_id: string | null
           workspace_id: string | null
         }
         SetofOptions: {
@@ -5642,8 +9971,66 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      decide_cancellation: {
+        Args: {
+          p_accept: boolean
+          p_cancellation: string
+          p_note?: string
+          p_refund?: number
+        }
+        Returns: undefined
+      }
+      decide_venue_alternative: {
+        Args: { p_accept: boolean; p_alt: string }
+        Returns: undefined
+      }
       delete_my_review: { Args: { p_review: string }; Returns: undefined }
+      deletion_blockers: {
+        Args: { p_user?: string }
+        Returns: {
+          code: string
+          detail: string
+        }[]
+      }
+      design_access: { Args: { p_design: string }; Returns: string }
+      dispatch_worker: { Args: { p_path: string }; Returns: number }
+      dispute_party: {
+        Args: { d: Database["public"]["Tables"]["booking_disputes"]["Row"] }
+        Returns: string
+      }
+      due_deletions: {
+        Args: never
+        Returns: {
+          requested_at: string
+          user_id: string
+        }[]
+      }
+      earth: { Args: never; Returns: number }
+      email_category: {
+        Args: { p_kind: string }
+        Returns: {
+          category: string
+          mandatory: boolean
+        }[]
+      }
+      emergency_match: {
+        Args: { p_limit?: number; p_request: string }
+        Returns: {
+          distance_km: number
+          listing_id: string
+          workspace_id: string
+        }[]
+      }
+      end_maintenance: {
+        Args: { p_note: string; p_window: string }
+        Returns: undefined
+      }
       ensure_invoice_token: { Args: { p_invoice: string }; Returns: string }
+      entitlement: {
+        Args: { p_capability: string; p_workspace: string }
+        Returns: Json
+      }
+      erase_user_data: { Args: { p_user: string }; Returns: Json }
       event_activity: {
         Args: { p_event: string; p_limit?: number }
         Returns: {
@@ -5654,11 +10041,27 @@ export type Database = {
           text: string
         }[]
       }
+      event_build_budget: { Args: { p_event: string }; Returns: Json }
+      event_feasibility: { Args: { p_event: string }; Returns: Json }
+      event_launch_state: { Args: { p_event: string }; Returns: string }
+      event_path: {
+        Args: { p_event: string; p_id: string; p_kind: string }
+        Returns: string
+      }
       event_readiness: { Args: { p_event: string }; Returns: Json }
       expire_checkout_holds: { Args: never; Returns: number }
       expire_provider_documents: { Args: never; Returns: number }
       expire_seat_holds: { Args: { p_event?: string }; Returns: number }
       expire_stale_items: { Args: never; Returns: number }
+      finish_webhook_delivery: {
+        Args: {
+          p_delivery: string
+          p_ok: boolean
+          p_snippet: string
+          p_status: number
+        }
+        Returns: undefined
+      }
       finish_webhook_event: {
         Args: {
           p_error?: string
@@ -5668,7 +10071,29 @@ export type Database = {
         }
         Returns: undefined
       }
+      global_search: {
+        Args: {
+          p_lat?: number
+          p_limit?: number
+          p_lng?: number
+          p_q: string
+          p_radius_km?: number
+          p_workspace?: string
+        }
+        Returns: {
+          id: string
+          kind: string
+          link: string
+          score: number
+          subtitle: string
+          title: string
+        }[]
+      }
       has_admin_permission: { Args: { p: string }; Returns: boolean }
+      has_capability: {
+        Args: { p_capability: string; p_workspace: string }
+        Returns: boolean
+      }
       has_permission: {
         Args: { p_permission: string; p_workspace: string }
         Returns: boolean
@@ -5721,6 +10146,7 @@ export type Database = {
         }[]
       }
       invoice_reminder: { Args: { p_invoice: string }; Returns: undefined }
+      is_emergency_candidate: { Args: { p_request: string }; Returns: boolean }
       is_event_promoter: { Args: { p_event: string }; Returns: boolean }
       is_listing_provider: { Args: { p_listing: string }; Returns: boolean }
       is_platform_admin: { Args: never; Returns: boolean }
@@ -5810,6 +10236,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      join_waitlist: {
+        Args: { p_event: string; p_qty: number; p_tier: string }
+        Returns: string
+      }
       list_ticket_for_resale: {
         Args: { p_cancel?: boolean; p_ticket: string }
         Returns: string
@@ -5819,12 +10249,74 @@ export type Database = {
         Returns: string
       }
       listing_readiness: { Args: { p_listing: string }; Returns: Json }
+      listing_workspace: { Args: { p_listing: string }; Returns: string }
       log_auth_event: { Args: { p_event: string }; Returns: undefined }
+      maintenance_level: { Args: { p_module: string }; Returns: number }
+      maintenance_state: {
+        Args: never
+        Returns: {
+          audience: string
+          bypass_roles: string[]
+          dismissible: boolean
+          ends_at: string
+          expected_restore: string
+          id: string
+          level: number
+          message: string
+          modules: string[]
+          reference: string
+          severity: string
+          starts_at: string
+          status_url: string
+          title: string
+        }[]
+      }
+      mark_conversation_read: { Args: { p_conv: string }; Returns: undefined }
       mark_proposal_converted: {
         Args: { p_event: string; p_proposal: string }
         Returns: undefined
       }
       mark_proposal_viewed: { Args: { p_token: string }; Returns: undefined }
+      marketplace_sweep: { Args: never; Returns: Json }
+      may_contact: {
+        Args: { p_target: string; p_type: string }
+        Returns: boolean
+      }
+      mfa_required: {
+        Args: { p_policy: string; p_role: string }
+        Returns: boolean
+      }
+      moderate_review: {
+        Args: { p_reason: string; p_review: string; p_status: string }
+        Returns: undefined
+      }
+      moderate_template: {
+        Args: { p_action: string; p_note: string; p_template: string }
+        Returns: undefined
+      }
+      my_contacts: {
+        Args: { p_workspace?: string }
+        Returns: {
+          context: string
+          id: string
+          kind: string
+          label: string
+        }[]
+      }
+      my_conversations: {
+        Args: { p_limit?: number; p_workspace?: string }
+        Returns: {
+          counterpart: string
+          event_id: string
+          id: string
+          kind: string
+          last_message_at: string
+          last_message_preview: string
+          listing_id: string
+          subject: string
+          unread: boolean
+        }[]
+      }
       my_pending_invites: {
         Args: never
         Returns: {
@@ -5833,6 +10325,19 @@ export type Database = {
           role: string
           workspace_kind: string
           workspace_name: string
+        }[]
+      }
+      my_recovery_code_count: { Args: never; Returns: number }
+      my_sessions: {
+        Args: never
+        Returns: {
+          aal: string
+          created_at: string
+          current: boolean
+          id: string
+          ip: string
+          last_active: string
+          user_agent: string
         }[]
       }
       my_workspace_access: {
@@ -5846,6 +10351,46 @@ export type Database = {
           role: string
           workspace_status: string
         }[]
+      }
+      notify_event: {
+        Args: {
+          p_body: string
+          p_event: string
+          p_kind: string
+          p_link?: string
+          p_title: string
+        }
+        Returns: undefined
+      }
+      notify_waitlists: { Args: never; Returns: number }
+      notify_workspace: {
+        Args: {
+          p_body: string
+          p_kind: string
+          p_link: string
+          p_roles: string[]
+          p_title: string
+          p_ws: string
+        }
+        Returns: undefined
+      }
+      offer_ticket_transfer: {
+        Args: {
+          p_email: string
+          p_name: string
+          p_ticket: string
+          p_token_hash: string
+        }
+        Returns: string
+      }
+      open_booking_dispute: {
+        Args: {
+          p_amount?: number
+          p_item: string
+          p_reason: string
+          p_summary: string
+        }
+        Returns: string
       }
       organizer_save_event_plan: {
         Args: {
@@ -5863,6 +10408,37 @@ export type Database = {
         Args: { p_body: string; p_subject: string }
         Returns: string
       }
+      payment_order_disputed: {
+        Args: { p_open: boolean; p_pi: string }
+        Returns: undefined
+      }
+      payment_order_failed: {
+        Args: { p_reason: string; p_ref: string }
+        Returns: undefined
+      }
+      payment_order_pending: {
+        Args: { p_ref: string; p_session: string }
+        Returns: undefined
+      }
+      payment_order_refunded: {
+        Args: { p_pi: string; p_refunded_minor: number }
+        Returns: undefined
+      }
+      payment_order_succeeded: {
+        Args: {
+          p_amount_minor: number
+          p_charge: string
+          p_livemode: boolean
+          p_pi: string
+          p_ref: string
+        }
+        Returns: string
+      }
+      payment_order_transferred: {
+        Args: { p_amount_minor: number; p_ref: string; p_transfer: string }
+        Returns: undefined
+      }
+      payment_release_scan: { Args: never; Returns: number }
       payout_eligible: { Args: { p_workspace: string }; Returns: boolean }
       plan_catalog: { Args: never; Returns: Json }
       portal_comment: {
@@ -5940,6 +10516,15 @@ export type Database = {
         }
         Returns: string
       }
+      post_message: {
+        Args: {
+          p_as_workspace?: string
+          p_attachments?: Json
+          p_body: string
+          p_conv: string
+        }
+        Returns: string
+      }
       promoter_click_stats: {
         Args: { p_promoter: string; p_since: string }
         Returns: {
@@ -5984,6 +10569,20 @@ export type Database = {
         Args: { p: Json; p_ws: string }
         Returns: string
       }
+      provider_decline_standby: {
+        Args: { p_reason?: string; p_standby: string }
+        Returns: undefined
+      }
+      provider_emergency_respond: {
+        Args: {
+          p_action: string
+          p_candidate: string
+          p_eta?: number
+          p_note?: string
+          p_quote?: number
+        }
+        Returns: undefined
+      }
       provider_issue_quote: {
         Args: {
           p_deposit_pct: number
@@ -6002,6 +10601,16 @@ export type Database = {
         Returns: undefined
       }
       provider_mark_thread_read: { Args: { p_thread: string }; Returns: number }
+      provider_offer_standby: {
+        Args: {
+          p_activation_price: number
+          p_fee: number
+          p_standby: string
+          p_terms: string
+          p_valid_hours: number
+        }
+        Returns: undefined
+      }
       provider_pause_listing: {
         Args: { p_listing: string; p_pause: boolean }
         Returns: undefined
@@ -6019,6 +10628,15 @@ export type Database = {
       }
       provider_respond: {
         Args: { p_item: string; p_note?: string; p_response: string }
+        Returns: string
+      }
+      provider_respond_hold: {
+        Args: {
+          p_accept: boolean
+          p_hold: string
+          p_hours?: number
+          p_note?: string
+        }
         Returns: string
       }
       provider_save_crew: {
@@ -6123,6 +10741,30 @@ export type Database = {
         }[]
       }
       publish_listing: { Args: { p_listing: string }; Returns: Json }
+      publish_template: {
+        Args: {
+          p_category: string
+          p_description: string
+          p_design: string
+          p_link_hash?: string
+          p_tags: string[]
+          p_title: string
+          p_visibility: string
+        }
+        Returns: string
+      }
+      queue_admit_check: {
+        Args: { p_consume?: boolean; p_event: string; p_token_hash: string }
+        Returns: boolean
+      }
+      queue_join: {
+        Args: { p_event: string; p_token_hash: string }
+        Returns: Json
+      }
+      queue_status: {
+        Args: { p_event: string; p_token_hash: string }
+        Returns: Json
+      }
       quote_totals: {
         Args: { p_discount?: number; p_items: Json; p_tax_bps: number }
         Returns: {
@@ -6135,6 +10777,19 @@ export type Database = {
         Args: { p_workspace: string }
         Returns: undefined
       }
+      record_ai_usage: {
+        Args: {
+          p_cached: number
+          p_input: number
+          p_model: string
+          p_output: number
+          p_purpose: string
+          p_run: string
+          p_user: string
+          p_workspace: string
+        }
+        Returns: Json
+      }
       record_invoice_payment: {
         Args: {
           p_amount: number
@@ -6145,13 +10800,54 @@ export type Database = {
         Returns: undefined
       }
       release_checkout: { Args: { p_token: string }; Returns: number }
+      release_conditional_hold: {
+        Args: { p_hold: string; p_reason?: string }
+        Returns: undefined
+      }
       release_resale_holds: { Args: { p_token: string }; Returns: number }
       release_seat_holds: { Args: { p_token: string }; Returns: number }
+      release_standby: { Args: { p_standby: string }; Returns: undefined }
       reliability_band: { Args: { p_workspace: string }; Returns: string }
       remember_workspace: { Args: { p_workspace: string }; Returns: undefined }
+      replay_webhook_delivery: {
+        Args: { p_delivery: string }
+        Returns: undefined
+      }
+      report_template: {
+        Args: { p_detail: string; p_reason: string; p_template: string }
+        Returns: undefined
+      }
       request_account_deletion: {
         Args: { p_cancel: boolean }
         Returns: undefined
+      }
+      request_cancellation: {
+        Args: {
+          p_item: string
+          p_kind: string
+          p_party: string
+          p_reason: string
+        }
+        Returns: string
+      }
+      request_conditional_hold: {
+        Args: {
+          p_conditions?: string
+          p_depends_on?: string
+          p_hours: number
+          p_item: string
+        }
+        Returns: string
+      }
+      request_standby: {
+        Args: {
+          p_item: string
+          p_note?: string
+          p_primary: string
+          p_window_end: string
+          p_window_start: string
+        }
+        Returns: string
       }
       require_provider_role: {
         Args: { p_roles: string[]; p_ws: string }
@@ -6159,19 +10855,131 @@ export type Database = {
       }
       resale_holds_for: { Args: { p_token: string }; Returns: Json }
       resale_listings: { Args: { p_event: string }; Returns: Json }
+      resolve_api_key: {
+        Args: { p_hash: string; p_ip: string }
+        Returns: {
+          acts_as: string
+          key_id: string
+          prefix: string
+          scopes: string[]
+          workspace_id: string
+        }[]
+      }
+      resolve_commission: {
+        Args: {
+          p_category?: string
+          p_country?: string
+          p_promotion?: string
+          p_workspace: string
+        }
+        Returns: Json
+      }
       respond_to_invite: {
         Args: { p_accept: boolean; p_invite_id: string; p_token_hash: string }
         Returns: Json
+      }
+      respond_to_review: {
+        Args: { p_body: string; p_review: string }
+        Returns: undefined
+      }
+      restore_design_version: {
+        Args: { p_design: string; p_version: number }
+        Returns: number
       }
       review_provider_document: {
         Args: { p_document: string; p_reason?: string; p_status: string }
         Returns: undefined
       }
       revise_proposal: { Args: { p_proposal: string }; Returns: undefined }
+      revoke_api_key: { Args: { p_key: string }; Returns: undefined }
+      revoke_other_sessions: { Args: never; Returns: number }
       rotate_calendar_token: { Args: never; Returns: string }
+      save_catering_selection: {
+        Args: {
+          p_accept_change?: boolean
+          p_dietary: Json
+          p_equipment: string
+          p_guests: number
+          p_item: string
+          p_items: Json
+          p_menu: string
+          p_notes: string
+          p_service_at: string
+          p_staffing: string
+          p_style: string
+          p_submit: boolean
+        }
+        Returns: Json
+      }
+      save_design: {
+        Args: {
+          p_design: string
+          p_document: Json
+          p_expected_version: number
+          p_label?: string
+          p_title?: string
+        }
+        Returns: number
+      }
+      save_emergency_profile: {
+        Args: { p: Json; p_ws: string }
+        Returns: undefined
+      }
+      save_event_order: {
+        Args: {
+          p_content: Json
+          p_financial: Json
+          p_job: string
+          p_note: string
+          p_send: boolean
+        }
+        Returns: string
+      }
+      scan_lookup: {
+        Args: { p_event: string; p_query: string }
+        Returns: {
+          attendee: string
+          checked_in_at: string
+          code: string
+          email: string
+          seat: string
+          status: string
+          ticket_id: string
+          tier: string
+        }[]
+      }
+      scan_manifest: {
+        Args: { p_event: string }
+        Returns: {
+          attendee: string
+          checked_in_at: string
+          code: string
+          seat: string
+          status: string
+          ticket_id: string
+          tier: string
+        }[]
+      }
+      scan_ticket: {
+        Args: {
+          p_code: string
+          p_credential: string
+          p_device?: string
+          p_event: string
+          p_gate?: string
+          p_nonce: string
+          p_offline_at?: string
+          p_ticket: string
+        }
+        Returns: Json
+      }
       seed_backfill_tickets: { Args: { p_days?: number }; Returns: number }
       seed_shift_event: {
         Args: { p_days: number; p_slug: string }
+        Returns: undefined
+      }
+      set_ai_budget: {
+        Args: { p: Json; p_workspace: string }
         Returns: undefined
       }
       set_member_role: {
@@ -6179,6 +10987,40 @@ export type Database = {
         Returns: undefined
       }
       set_my_avatar: { Args: { p_url: string }; Returns: undefined }
+      set_provider_checkin: {
+        Args: {
+          p_eta?: string
+          p_item: string
+          p_note?: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      set_webhook_endpoint_status: {
+        Args: { p_endpoint: string; p_status: string }
+        Returns: undefined
+      }
+      set_workspace_mfa_policy: {
+        Args: { p_policy: string; p_workspace: string }
+        Returns: undefined
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      space_conflicts: {
+        Args: {
+          p_ends: string
+          p_exclude_item?: string
+          p_space: string
+          p_starts: string
+        }
+        Returns: {
+          ends_at: string
+          level: string
+          reason: string
+          ref_id: string
+          starts_at: string
+        }[]
+      }
       start_agent_run: {
         Args: {
           p_constraints: Json
@@ -6188,6 +11030,25 @@ export type Database = {
           p_tools: string[]
           p_ws: string
         }
+        Returns: string
+      }
+      start_conversation: {
+        Args: {
+          p_as_workspace?: string
+          p_body: string
+          p_event?: string
+          p_item?: string
+          p_kind: string
+          p_listing?: string
+          p_subject: string
+          p_to: string
+          p_to_type: string
+        }
+        Returns: string
+      }
+      start_maintenance: { Args: { p: Json }; Returns: string }
+      submit_privacy_request: {
+        Args: { p_detail: string; p_kind: string }
         Returns: string
       }
       submit_review: {
@@ -6200,6 +11061,35 @@ export type Database = {
         }
         Returns: string
       }
+      team_conflicts: {
+        Args: { p_from?: string; p_to?: string; p_workspace: string }
+        Returns: {
+          crew_id: string
+          event_id: string
+          kind: string
+          message: string
+          other_id: string
+          severity: string
+          shift_id: string
+        }[]
+      }
+      template_by_link: {
+        Args: { p_link_hash: string }
+        Returns: {
+          category: string
+          description: string
+          document: Json
+          height: number
+          id: string
+          title: string
+          width: number
+        }[]
+      }
+      template_usable: {
+        Args: { p_link_hash?: string; p_template: string }
+        Returns: boolean
+      }
+      test_webhook_endpoint: { Args: { p_endpoint: string }; Returns: string }
       ticket_fee_config: { Args: never; Returns: Json }
       ticket_sales_series: {
         Args: { p_days?: number; p_event: string }
@@ -6230,11 +11120,16 @@ export type Database = {
           price_basis: string
           quote: Json
           request_id: string | null
+          responded_at: string | null
           response_deadline: string | null
+          response_reminders: number
+          response_status: string | null
           role: string
           scope: string
+          sent_at: string | null
           sort: number
           status: string
+          status_before_hold: string | null
           terms_snapshot: Json | null
           title: string
           updated_at: string
@@ -6247,6 +11142,15 @@ export type Database = {
         }
       }
       update_my_profile: { Args: { p: Json }; Returns: undefined }
+      update_privacy_request: {
+        Args: {
+          p_extend?: boolean
+          p_id: string
+          p_note: string
+          p_status: string
+        }
+        Returns: undefined
+      }
       update_ticket_attendee: {
         Args: { p_email: string; p_name: string; p_ticket: string }
         Returns: undefined
@@ -6259,6 +11163,41 @@ export type Database = {
         Args: { p_event: string; p_workspace: string }
         Returns: undefined
       }
+      venue_offer_alternative: {
+        Args: {
+          p_ends: string
+          p_item: string
+          p_kind: string
+          p_note: string
+          p_price: number
+          p_space: string
+          p_starts: string
+        }
+        Returns: string
+      }
+      venue_place_hold: {
+        Args: {
+          p_blocking: string
+          p_ends: string
+          p_hours: number
+          p_item: string
+          p_note?: string
+          p_space: string
+          p_starts: string
+        }
+        Returns: string
+      }
+      venue_quote: {
+        Args: {
+          p_ends: string
+          p_guests: number
+          p_space: string
+          p_starts: string
+        }
+        Returns: Json
+      }
+      waitlist_offer_for: { Args: { p_offer: string }; Returns: Json }
+      webhook_event_type: { Args: { p_audit: string }; Returns: string }
       withdraw_proposal: { Args: { p_proposal: string }; Returns: undefined }
       workspace_credential_status: {
         Args: { p_workspace: string }

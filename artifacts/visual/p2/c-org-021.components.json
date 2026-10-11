@@ -1,7 +1,7 @@
 {
  "name": "c-org-021",
  "path": "/organizer/settings",
- "page": 12.88,
+ "page": 12.98,
  "components": [
   {
    "sel": ".k-card",
@@ -19,7 +19,7 @@
    "y": 969,
    "w": 418,
    "h": 55,
-   "mismatch": 15.1
+   "mismatch": 14.9
   },
   {
    "sel": ".k-card",
@@ -28,7 +28,7 @@
    "y": 969,
    "w": 418,
    "h": 55,
-   "mismatch": 14.3
+   "mismatch": 14.2
   },
   {
    "sel": ".k-card",
@@ -37,7 +37,7 @@
    "y": 224,
    "w": 551,
    "h": 275,
-   "mismatch": 14
+   "mismatch": 13.9
   },
   {
    "sel": ".k-card",
@@ -55,7 +55,7 @@
    "y": 730,
    "w": 418,
    "h": 224,
-   "mismatch": 12.9
+   "mismatch": 12.8
   },
   {
    "sel": ".k-card",
@@ -64,7 +64,16 @@
    "y": 511,
    "w": 405,
    "h": 208,
-   "mismatch": 12.8
+   "mismatch": 12.7
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 173,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 12.6
   },
   {
    "sel": ".k-card",
@@ -94,22 +103,13 @@
    "mismatch": 11.6
   },
   {
-   "sel": ".k-tabs",
-   "label": "k-tabs",
-   "x": 236,
-   "y": 173,
-   "w": 1282,
-   "h": 39,
-   "mismatch": 11.1
-  },
-  {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 11
+   "mismatch": 11.3
   },
   {
    "sel": ".k-card",
@@ -118,7 +118,7 @@
    "y": 224,
    "w": 717,
    "h": 275,
-   "mismatch": 10.4
+   "mismatch": 10.3
   },
   {
    "sel": ".k-page-head",
@@ -127,7 +127,7 @@
    "y": 108,
    "w": 1282,
    "h": 53,
-   "mismatch": 7.9
+   "mismatch": 7.3
   },
   {
    "sel": ".o-side",
@@ -136,7 +136,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 6.1
+   "mismatch": 6.7
   }
  ]
 }

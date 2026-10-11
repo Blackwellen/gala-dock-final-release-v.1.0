@@ -14,6 +14,7 @@ export type ProSettings = {
     questions: Question[]; fee_display: "upfront" | "included" | "checkout";
     terms_template: string; require_terms: boolean; age_message: boolean; age_text: string; info_text: string;
     comps: number; companion: boolean; accessible_seats: number;
+    ticket_display: "qr" | "visual" | "barcode"; ticket_display_switch: boolean;
   };
 };
 
@@ -32,6 +33,7 @@ export const PRO_DEFAULTS: ProSettings = {
       { key: "accessibility", label: "Accessibility needs", on: true, required: false },
     ],
     fee_display: "upfront", terms_template: TERMS_TEMPLATES[0], require_terms: true, age_message: false, age_text: "", info_text: "", comps: 0, companion: true, accessible_seats: 0,
+    ticket_display: "qr", ticket_display_switch: true,
   },
 };
 

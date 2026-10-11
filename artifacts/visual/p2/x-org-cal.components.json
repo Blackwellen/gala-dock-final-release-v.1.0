@@ -1,0 +1,70 @@
+{
+ "name": "x-org-cal",
+ "path": "/organizer/calendar",
+ "page": 8.64,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Calendar layers",
+   "x": 1240,
+   "y": 586,
+   "w": 278,
+   "h": 438,
+   "mismatch": 17
+  },
+  {
+   "sel": ".k-page-head",
+   "label": "Calendar",
+   "x": 236,
+   "y": 104,
+   "w": 1282,
+   "h": 115,
+   "mismatch": 13.4
+  },
+  {
+   "sel": ".k-card",
+   "label": "October 2026",
+   "x": 1240,
+   "y": 281,
+   "w": 278,
+   "h": 291,
+   "mismatch": 11.2
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.8
+  },
+  {
+   "sel": ".tg",
+   "label": "5 Oct",
+   "x": 237,
+   "y": 282,
+   "w": 988,
+   "h": 693,
+   "mismatch": 7.7
+  },
+  {
+   "sel": ".k-card",
+   "label": "5 Oct",
+   "x": 236,
+   "y": 281,
+   "w": 990,
+   "h": 695,
+   "mismatch": 7.6
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 6.6
+  }
+ ]
+}

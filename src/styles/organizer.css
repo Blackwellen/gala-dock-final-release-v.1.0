@@ -148,3 +148,11 @@
 .o-create .k-btn { font-weight: 500; box-shadow: 0 6px 16px -6px #075dfe99; }
 .o-side { background: #fbfcfe; border-right-color: #eef2fc; }
 .o-side-agent b { color: var(--k-ink); }
+
+/* Global search (⌘K palette) sits in the top bar's search slot. */
+.o-search.o-gs { display: block; padding: 0; border: 0; background: none; height: auto; position: relative; }
+.o-gs .gs { position: relative; } .o-gs .gs-box { height: 42px; border-color: var(--k-line); background: #fbfcff; color: var(--k-blue); } .o-gs .gs-box input::placeholder { color: #6d74e6; }
+/* Phones: button rows and header rows wrap instead of widening the page (a wide row makes mobile browsers zoom out the whole layout). */
+@media (max-width: 600px) { .o-main .k-row, .o-main .k-between { flex-wrap: wrap; } .o-main { overflow-x: clip; } }
+/* Phones: grid/flex children may shrink so wide tables scroll inside their wrapper instead of widening the page. */
+@media (max-width: 900px) { .o-main :is(div, section, article) { min-width: 0; } .o-main .k-table-wrap { max-width: 100%; } }

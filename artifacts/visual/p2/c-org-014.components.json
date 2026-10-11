@@ -1,97 +1,97 @@
 {
  "name": "c-org-014",
  "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion",
- "page": 22.85,
+ "page": 20.04,
  "components": [
   {
    "sel": ".k-card",
    "label": "Promotion assets",
-   "x": 1073,
-   "y": 892,
-   "w": 445,
-   "h": 132,
-   "mismatch": 73.9
+   "x": 1072,
+   "y": 775,
+   "w": 446,
+   "h": 249,
+   "mismatch": 54.2
   },
   {
    "sel": ".k-card",
    "label": "Boosts & paid placements",
-   "x": 655,
-   "y": 892,
-   "w": 405,
-   "h": 132,
+   "x": 654,
+   "y": 775,
+   "w": 406,
+   "h": 215,
    "mismatch": 25
-  },
-  {
-   "sel": ".k-card",
-   "label": "Promoters",
-   "x": 1073,
-   "y": 509,
-   "w": 445,
-   "h": 372,
-   "mismatch": 22.9
-  },
-  {
-   "sel": ".k-card",
-   "label": "Directory distribution",
-   "x": 236,
-   "y": 509,
-   "w": 405,
-   "h": 347,
-   "mismatch": 18.7
   },
   {
    "sel": ".k-card",
    "label": "Promotion checklist",
    "x": 755,
-   "y": 236,
-   "w": 348,
-   "h": 261,
-   "mismatch": 17.9
+   "y": 228,
+   "w": 349,
+   "h": 225,
+   "mismatch": 19.5
   },
   {
    "sel": ".k-card",
-   "label": "Ticket sales pace",
-   "x": 1117,
-   "y": 236,
-   "w": 401,
-   "h": 261,
-   "mismatch": 17.6
+   "label": "Directory distribution",
+   "x": 236,
+   "y": 465,
+   "w": 406,
+   "h": 298,
+   "mismatch": 18.2
+  },
+  {
+   "sel": ".k-card",
+   "label": "Promoters",
+   "x": 1072,
+   "y": 465,
+   "w": 446,
+   "h": 291,
+   "mismatch": 17.1
   },
   {
    "sel": ".k-card",
    "label": "Calendar distribution",
-   "x": 655,
-   "y": 509,
-   "w": 405,
-   "h": 347,
-   "mismatch": 15.3
+   "x": 654,
+   "y": 465,
+   "w": 406,
+   "h": 298,
+   "mismatch": 15.1
   },
   {
    "sel": ".k-card",
    "label": "Audience campaigns",
    "x": 236,
-   "y": 892,
-   "w": 405,
-   "h": 132,
-   "mismatch": 15.1
+   "y": 775,
+   "w": 406,
+   "h": 157,
+   "mismatch": 13.9
+  },
+  {
+   "sel": ".k-card",
+   "label": "Ticket sales pace",
+   "x": 1116,
+   "y": 228,
+   "w": 402,
+   "h": 225,
+   "mismatch": 12.2
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 10.8
+   "mismatch": 11.1
   },
   {
    "sel": ".k-tabs",
    "label": "k-tabs",
    "x": 236,
-   "y": 185,
+   "y": 177,
    "w": 1282,
    "h": 39,
-   "mismatch": 8.2
+   "mismatch": 6.9
   },
   {
    "sel": ".o-side",
@@ -100,7 +100,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 6
+   "mismatch": 6.7
   }
  ]
 }

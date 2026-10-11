@@ -30,6 +30,8 @@ if (new URL(page.url()).pathname.startsWith("/login")) {
 await page.evaluate(() => document.documentElement.setAttribute("data-density", "reference"));
 await page.evaluate(() => document.fonts.ready);
 await page.addStyleTag({ content: "nextjs-portal{display:none!important}*{animation:none!important;transition:none!important;caret-color:transparent!important}" });
+// Re-assert the scaled zoom as a stylesheet: hydration can replace <html>'s inline style, dropping --k-zoom.
+if (ZOOM !== 1) await page.addStyleTag({ content: `:root, html[data-density] { --k-zoom: ${ZOOM} !important; }` });
 await page.waitForTimeout(Number(flags.settle ?? 500));
 const shot = PNG.sync.read(await page.screenshot({ path: `${OUT}/${name}.png` }));
 // Components: semantic containers that map to design components.

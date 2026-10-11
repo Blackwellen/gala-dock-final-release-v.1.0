@@ -9,6 +9,7 @@ import { LayerBar, LayerList, SavedViews, AddEntry, TimeGrid } from "@/component
 import { PhaseChip } from "@/components/organizer/event-bits";
 import { money, num, dateShort, timeRange, time, eventTypeLabel } from "@/lib/format";
 import { CalendarConnect } from "@/components/customer/account-client";
+import { TeamConflicts } from "@/components/ops/readiness-panel";
 
 export const metadata = { title: "Calendar" };
 const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -49,6 +50,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
         <AddEntry events={events.map(e => ({ id: e.id, name: e.name }))} defaultDate={anchor} />
       </div>
     </div>
+    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
     <div className="k-between" style={{ gap: 10 }}><LayerBar layers={LAYERS.map(l => ({ ...l }))} active={active} /><a className="k-btn ghost" href="#layers"><Layers size={15} />Layers</a></div>
     <div className="cal-grid">
       <div className="k-col" style={{ gap: 14, minWidth: 0 }}>

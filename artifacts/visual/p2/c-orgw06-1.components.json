@@ -1,7 +1,7 @@
 {
  "name": "c-orgw06-1",
  "path": "/organizer/money/invoices/new?from=916eec0d-3b93-46e0-8be3-f6c5033cb7b9&duplicate=1",
- "page": 9.25,
+ "page": 9.33,
  "components": [
   {
    "sel": ".k-card",
@@ -10,7 +10,7 @@
    "y": 243,
    "w": 334,
    "h": 133,
-   "mismatch": 20.9
+   "mismatch": 20.5
   },
   {
    "sel": ".k-card",
@@ -19,16 +19,16 @@
    "y": 583,
    "w": 334,
    "h": 376,
-   "mismatch": 12.5
+   "mismatch": 12.4
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 11.9
+   "mismatch": 12.2
   },
   {
    "sel": ".k-card",
@@ -37,7 +37,7 @@
    "y": 594,
    "w": 934,
    "h": 423,
-   "mismatch": 9.2
+   "mismatch": 9.3
   },
   {
    "sel": ".k-card",
@@ -46,7 +46,7 @@
    "y": 243,
    "w": 934,
    "h": 337,
-   "mismatch": 9
+   "mismatch": 8.9
   },
   {
    "sel": ".k-card",
@@ -64,7 +64,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 7.3
+   "mismatch": 8
   }
  ]
 }

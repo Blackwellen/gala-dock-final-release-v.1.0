@@ -4,9 +4,9 @@
   "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
   "status": 200,
   "mismatchPercent": 15.21,
-  "layoutPercent": 12.96,
+  "layoutPercent": 12.98,
   "mediaBoxes": 9,
-  "ssim": 0.6189,
+  "ssim": 0.6187,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -14,5 +14,5 @@
     "scrollHeight": 1115
   },
   "errors": [],
-  "at": "2026-10-11T09:38:47.829Z"
+  "at": "2026-10-11T14:47:42.035Z"
 }

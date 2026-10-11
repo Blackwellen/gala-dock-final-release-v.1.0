@@ -1,7 +1,7 @@
 {
  "name": "c-orgw07-1",
  "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template",
- "page": 14.58,
+ "page": 14.46,
  "components": [
   {
    "sel": ".k-card",
@@ -10,7 +10,7 @@
    "y": 243,
    "w": 300,
    "h": 126,
-   "mismatch": 24.1
+   "mismatch": 23.7
   },
   {
    "sel": ".k-card",
@@ -19,7 +19,7 @@
    "y": 243,
    "w": 968,
    "h": 781,
-   "mismatch": 17.2
+   "mismatch": 16.8
   },
   {
    "sel": ".k-card",
@@ -32,12 +32,12 @@
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 11.9
+   "mismatch": 12.2
   },
   {
    "sel": ".o-side",
@@ -46,7 +46,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 7.8
+   "mismatch": 8.3
   }
  ]
 }

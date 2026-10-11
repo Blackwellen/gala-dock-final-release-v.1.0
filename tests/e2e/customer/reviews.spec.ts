@@ -5,7 +5,9 @@ import { login, admin, userClient } from "../p2-helpers";
 let item = "", listing = "", before = 0, rating = 0;
 test.beforeAll(async () => {
   const db = admin();
-  const { data } = await db.from("build_items").select("id,listing_id,events!inner(name)").eq("events.name", "Rooftop Anniversary Dinner").eq("title", "The Loft London").single();
+  // Demo customer only — never touch copies attached to real accounts (settings.demo_copy_of).
+  const { data: us } = await db.auth.admin.listUsers({ perPage: 200 }); const alex = us.users.find(u => u.email === "alex.thompson@example.com")!.id;
+  const { data } = await db.from("build_items").select("id,listing_id,events!inner(name,owner_id)").eq("events.name", "Rooftop Anniversary Dinner").eq("events.owner_id", alex).eq("title", "The Loft London").limit(1).single();
   item = data!.id; listing = data!.listing_id!;
   await db.from("reviews").delete().eq("build_item_id", item);
   const l = (await db.from("listings").select("review_count,rating").eq("id", listing).single()).data!; before = l.review_count; rating = Number(l.rating);

@@ -54,3 +54,4 @@
 @media (max-width: 1000px) { .pe-grid { grid-template-columns: minmax(0, 1fr); } .pe-side { position: static; } .pe-two, .pe-three { grid-template-columns: minmax(0, 1fr); } .pe-facts { grid-template-columns: 1fr 1fr; row-gap: 12px; } .pe-facts > div:nth-child(2) { border: 0; } }
 @media (max-width: 640px) { .pe-strip { display: none; } .pe-title { grid-template-columns: 1fr; } .pe-poster { display: none; } .pe-title h1 { font-size: 22px; } .pe-artists { grid-template-columns: 1fr 1fr; } .pe-faq-g, .pe-rel-g { grid-template-columns: minmax(0, 1fr); } .pub-top .c-nav { display: none; } }
 .pe-wait { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 0; } .pe-wait .k-btn { justify-content: center; } .pe-wait-ok { display: flex; gap: 6px; align-items: center; font-size: 12px; color: #12805c; }
+.pe-sale.warn { background: #fff4e2; color: #b45309; } .pe-sale.bad { background: #fdecef; color: #c0263f; }

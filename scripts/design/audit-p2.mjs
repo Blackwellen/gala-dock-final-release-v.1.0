@@ -6,9 +6,11 @@ import { chromium } from "playwright";
 import { createClient } from "@supabase/supabase-js";
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
+// MOBILE=1: 390px PWA shell check (§66) — one nav only, no sideways scroll.
+const MOBILE = process.env.MOBILE === "1";
 const first = async (q) => (await q).data?.[0] ?? null;
-const neon = (await first(sb.from("events").select("id,slug").eq("name", "Neon Nights Festival").limit(1)));
-const wed = (await first(sb.from("events").select("id").eq("management", "consumer").ilike("name", "%wedding%").order("created_at").limit(1))).id;
+const neon = (await first(sb.from("events").select("id,slug").eq("name", "Neon Nights Festival").is("settings->>demo_copy_of", null).limit(1)));
+const wed = (await first(sb.from("events").select("id").eq("management", "consumer").is("settings->>demo_copy_of", null).ilike("name", "%wedding%").order("created_at").limit(1))).id;
 const { data: us } = await sb.auth.admin.listUsers({ perPage: 200 }); const cust = us.users.find(u => u.email === "alex.thompson@example.com").id;
 const tix = (await first(sb.from("tickets").select("id").eq("event_id", neon.id).eq("holder_id", cust).limit(1)))?.id;
 const inv = (await first(sb.from("invoices").select("id").eq("number", "INV-1047").limit(1)))?.id;
@@ -116,7 +118,7 @@ const browser = await chromium.launch({ executablePath: "C:/Program Files/Google
 const ctxs = {};
 for (const role of ["customer", "organizer", "anon"]) {
   const st = `artifacts/visual/state-${role}.json`;
-  ctxs[role] = await browser.newContext({ viewport: { width: 1536, height: 1024 },  });
+  ctxs[role] = await browser.newContext(MOBILE ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : { viewport: { width: 1536, height: 1024 } });
 }
 // Sign each role in fresh (other test runs rotate the demo users' refresh tokens).
 const CREDS = { customer: ["alex.thompson@example.com", process.env.DEMO_CUSTOMER_PASSWORD], organizer: ["alex.events@example.com", process.env.DEMO_ORGANIZER_PASSWORD] };
@@ -146,6 +148,14 @@ for (const [role, path, designs] of R) {
     if (/This page could not be found|404\b.*not found/i.test(body)) errs.push("renders 404");
     if (/Application error|Something went wrong/i.test(body)) errs.push("renders error boundary");
     if (url.startsWith("/login")) errs.push("redirected to login");
+    if (MOBILE && role !== "anon") {
+      const m = await page.evaluate(() => { const t = document.querySelector(".pwa-top"); return { top: !!t && getComputedStyle(t).display !== "none",
+        desk: [...document.querySelectorAll(".pwa-hide-desktop-nav")].some(e => getComputedStyle(e).display !== "none"),
+        overflow: Math.max(document.documentElement.scrollWidth, window.innerWidth) - document.documentElement.clientWidth, hidden: [...document.querySelectorAll("[hidden]")].filter(e => getComputedStyle(e).display !== "none" && !e.closest(".pwa-sheet")).length }; });
+      if (!m.top) errs.push("mobile: app top bar missing");
+      if (m.desk) errs.push("mobile: desktop nav still visible");
+      if (m.overflow > 4) errs.push(`mobile: horizontal scroll ${m.overflow}px`);
+    }
   } catch (e) { errs.push(`goto: ${String(e.message).slice(0, 120)}`); }
   rows.push({ role, path, status, ok: status === 200 && !errs.length, errs, designs: designs.length });
   console.log(`${status === 200 && !errs.length ? "OK  " : "FAIL"} ${status} ${role.padEnd(9)} ${path}${errs.length ? "\n      " + errs.join("\n      ") : ""}`);

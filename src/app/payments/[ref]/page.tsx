@@ -4,17 +4,20 @@ import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { untyped } from "@/lib/workspace/db";
 import { PAYMENT_STATE } from "@/lib/commerce/orchestrator";
+import { reconcilePaymentOrder } from "@/lib/commerce/reconcile";
 import { money } from "@/lib/format";
 import { RefreshWhilePending } from "./refresh";
 import "@/styles/marketplace.css";
 
 export const metadata = { title: "Payment" };
 
-/** Post-checkout status. Shows the state recorded from Stripe webhooks — never assumes success from the redirect (§43). */
+/** Post-checkout status. Never assumes success from the redirect (§43): state comes from Stripe — via the webhook or a server-side session check on return. */
 export default async function PaymentStatusPage({ params, searchParams }: PageProps<"/payments/[ref]">) {
   const [{ ref }, sp] = await Promise.all([params, searchParams]);
   if (!/^PO-[A-Z0-9]{8}$/.test(ref)) notFound();
   const ctx = await getCustomer(`/payments/${ref}`);
+  // Verify with Stripe on return (server-side, idempotent) so confirmation doesn't depend on webhook delivery timing.
+  await reconcilePaymentOrder(ref, ctx.user.id);
   const { data: po } = await untyped(ctx.supabase as never).from("payment_orders").select("reference,status,description,amount_minor,currency,failure_reason").eq("reference", ref).maybeSingle();
   if (!po) notFound();
   const back = typeof sp.back === "string" && sp.back.startsWith("/") && !sp.back.startsWith("//") ? sp.back : "/account/events";

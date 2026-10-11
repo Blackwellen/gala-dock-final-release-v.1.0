@@ -1,23 +1,27 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, MapPin, CalendarDays, Ticket, Info, Clock, IdCard, ShieldCheck, Tag, ChevronRight, CircleHelp, FileText, Navigation, Map as MapIcon, BookOpen, Printer, Download } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, CalendarDays, Ticket, Info, Clock, IdCard, ShieldCheck, Tag, ChevronRight, CircleHelp, FileText, Navigation, Map as MapIcon, BookOpen, Printer, Download, Video } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { ticketQr, whenLine, type TicketRow } from "@/lib/data/customer-tickets";
 import { ManageTicket, AttendeeCard } from "@/components/customer/tickets-detail";
 import { eventTypeLabel } from "@/lib/format";
-import { RotatingQr } from "@/components/tickets/rotating-qr";
+import { TicketCredential } from "@/components/tickets/ticket-credential";
 
 export const metadata = { title: "Ticket" };
 const COLS = "id,code,status,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings,venue_listing_id)";
 const stamp = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Europe/London" }).replace(" am", " AM").replace(" pm", " PM");
 
-export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TicketPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const { id } = await params; if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const ctx = await getCustomer();
   const { data } = await ctx.supabase.from("tickets").select(COLS).eq("id", id).eq("holder_id", ctx.user.id).maybeSingle();
   if (!data) notFound();
   const t = data as unknown as TicketRow & { event: TicketRow["event"] & { venue_listing_id: string | null } };
   const e = t.event; const s = (e.settings ?? {}) as Record<string, unknown>;
+  // Online session (virtual / hybrid events): null when the event has none.
+  const { data: virtualRaw } = await ctx.supabase.rpc("event_virtual_public" as never, { p_event: e.id } as never);
+  const online = virtualRaw as { format?: string; provider?: string; opens_minutes_before?: number; replay_available?: boolean } | null;
   const [{ data: siblings }, { data: scans }, { data: venue }, qr] = await Promise.all([
     ctx.supabase.from("tickets").select("id,status,tier:ticket_tiers(name)").eq("holder_id", ctx.user.id).eq("event_id", e.id).eq("order_ref", t.order_ref).order("created_at"),
     ctx.supabase.from("check_ins").select("result,created_at").eq("ticket_id", t.id).order("created_at"),
@@ -47,8 +51,11 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
         <section className="td-ticket"><div className="td-tin">
           <div className="k-between" style={{ alignItems: "flex-start" }}><div className="k-row" style={{ gap: 16, alignItems: "flex-start" }}><Ticket size={30} className="td-ticon" /><div><h2>{t.tier?.name ?? "Admission"}</h2><p>{t.seat ? `Seat ${t.seat}` : t.tier?.kind === "vip" ? "VIP Entry" : "Standard Entry"}</p>{t.tier?.description && <p className="k-muted">{t.tier.description}</p>}</div></div><span className="td-n">Ticket {idx + 1} of {sib.length || 1}</span></div>
           {/* Valid tickets show a signed, 30-second rotating code (screenshots expire; transfer/resale kills it). */}
-          {t.status === "valid" ? <div className="tk-qr td-qr live"><RotatingQr ticketId={t.id} size={170} /></div>
+          {t.status === "valid" ? <div className="td-cred"><TicketCredential defaultMode={(["qr", "visual", "barcode"].includes(String(s.ticket_display)) ? s.ticket_display : "qr") as "qr" | "visual" | "barcode"} allowSwitch={s.ticket_display_switch !== false}
+              ticket={{ id: t.id, code: t.code, status: t.status, event: e.name, date: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC", time: whenLine(e).split("•").pop()?.trim() ?? "", venue: [e.venue_name, e.city].filter(Boolean).join(", ") || e.location, holder: t.attendee_name || ctx.name, tier: t.tier?.name ?? "General Admission", seat: t.seat, orderRef: t.order_ref ?? "", artwork: e.cover_image, rules: `Entry via ${gate}. Doors ${doors}.`, transfer: s.transfers !== false ? "Transferable in Gala Dock" : "Non-transferable" }} /></div>
             : <div className="tk-qr td-qr dim">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-void">{t.status === "resale_listed" ? "Paused while listed" : sl}</span></div>}
+          {sp.join && <div className="k-notice amber td-join-note" role="status">{sp.join.slice(0, 200)}</div>}
+          {t.status === "valid" && online && <div className="td-join"><Link className="k-btn primary" href={`/tickets/${t.id}/join`}><Video size={15} />Join event</Link><small>{online.opens_minutes_before ? `Opens ${online.opens_minutes_before} min before start` : "Online session"}{online.replay_available ? " · replay available" : ""}</small></div>}
           {t.status === "valid" && s.print_tickets !== false && <div className="td-print"><Link className="k-btn outline sm" href={`/account/tickets/${t.id}/print`} target="_blank"><Printer size={14} />Print ticket</Link><a className="k-btn outline sm" href={`/api/tickets/${t.id}/pdf`}><Download size={14} />Download PDF</a></div>}
           <b className="tk-code td-code">{t.code}</b>
           <span className={`tk-valid ${tone}`}>{tone === "green" ? "✓ Valid for entry" : sl}</span>

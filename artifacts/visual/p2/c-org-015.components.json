@@ -1,61 +1,61 @@
 {
  "name": "c-org-015",
  "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/media",
- "page": 23.71,
+ "page": 21.69,
  "components": [
-  {
-   "sel": ".k-card",
-   "label": "4. Variations",
-   "x": 236,
-   "y": 834,
-   "w": 927,
-   "h": 190,
-   "mismatch": 43.8
-  },
   {
    "sel": ".k-card",
    "label": "2. Design your poster",
    "x": 564,
-   "y": 211,
+   "y": 204,
    "w": 599,
-   "h": 613,
-   "mismatch": 41.4
+   "h": 599,
+   "mismatch": 38.6
+  },
+  {
+   "sel": ".k-card",
+   "label": "4. Variations",
+   "x": 236,
+   "y": 813,
+   "w": 927,
+   "h": 211,
+   "mismatch": 34.3
   },
   {
    "sel": ".k-card",
    "label": "1. Choose a template",
    "x": 236,
-   "y": 211,
+   "y": 204,
    "w": 318,
-   "h": 613,
-   "mismatch": 34.7
+   "h": 599,
+   "mismatch": 33.4
   },
   {
    "sel": ".k-card",
    "label": "5. Attach and publish",
    "x": 1173,
-   "y": 791,
+   "y": 780,
    "w": 345,
-   "h": 214,
-   "mismatch": 24.5
+   "h": 208,
+   "mismatch": 21.3
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 10.7
+   "mismatch": 11
   },
   {
    "sel": ".k-card",
    "label": "3. Edit content",
    "x": 1173,
-   "y": 211,
+   "y": 204,
    "w": 345,
-   "h": 570,
-   "mismatch": 10.6
+   "h": 566,
+   "mismatch": 9.4
   },
   {
    "sel": ".o-side",
@@ -64,16 +64,16 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 5.9
+   "mismatch": 6.7
   },
   {
    "sel": ".k-tabs",
    "label": "k-tabs pb-tabs",
    "x": 236,
-   "y": 168,
+   "y": 163,
    "w": 1282,
    "h": 35,
-   "mismatch": 3.6
+   "mismatch": 2.8
   }
  ]
 }

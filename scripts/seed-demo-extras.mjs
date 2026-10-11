@@ -100,3 +100,4 @@ await import("./seed-customer-tickets.mjs");
 await import("./seed-public-event.mjs");
 await import("./seed-public-listings.mjs");
 await import("./seed-ticket-pro.mjs");
+await import("./seed-design-mirror.mjs");

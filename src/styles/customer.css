@@ -97,3 +97,6 @@
 
 /* Design palette for the customer top bar. */
 .c-nav a { color: #4f5598; font-weight: 450; } .c-icon { color: var(--k-nav); }
+.c-search.c-gs { display: block; padding: 0; border: 0; background: none; height: auto; position: relative; } .c-gs .gs { position: relative; } .c-gs .gs-box { height: 40px; border-color: var(--k-line); }
+@media (max-width: 600px) { .c-main .k-row, .c-main .k-between { flex-wrap: wrap; } .c-main { overflow-x: clip; } }
+@media (max-width: 900px) { .c-main :is(div, section, article) { min-width: 0; } .c-main .k-table-wrap { max-width: 100%; } }

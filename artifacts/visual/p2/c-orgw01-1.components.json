@@ -1,7 +1,7 @@
 {
  "name": "c-orgw01-1",
  "path": "/organizer/events/new?step=1",
- "page": 17.11,
+ "page": 17.16,
  "components": [
   {
    "sel": ".k-card",
@@ -19,7 +19,7 @@
    "y": 236,
    "w": 808,
    "h": 699,
-   "mismatch": 18.4
+   "mismatch": 18.3
   },
   {
    "sel": ".k-card",
@@ -32,12 +32,12 @@
   },
   {
    "sel": ".o-top",
-   "label": "o-top",
+   "label": "o-top pwa-hide-desktop-nav",
    "x": 0,
    "y": 0,
    "w": 1536,
    "h": 66,
-   "mismatch": 11
+   "mismatch": 11.3
   },
   {
    "sel": ".o-side",
@@ -46,7 +46,7 @@
    "y": 66,
    "w": 222,
    "h": 958,
-   "mismatch": 6
+   "mismatch": 6.6
   }
  ]
 }

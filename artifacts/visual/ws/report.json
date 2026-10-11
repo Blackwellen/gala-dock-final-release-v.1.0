@@ -20,8 +20,10 @@
     "url": "/admin/users",
     "file": "Designs/Admin Workspace/Gala·Dock User Management Dashboard.png",
     "status": 200,
-    "mismatchPercent": 11.06,
-    "ssim": 0.6305,
+    "mismatchPercent": 10.88,
+    "layoutPercent": 10.57,
+    "mediaBoxes": 3,
+    "ssim": 0.6368,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -29,7 +31,7 @@
       "scrollHeight": 1041
     },
     "errors": [],
-    "at": "2026-10-11T09:16:42.114Z"
+    "at": "2026-10-11T14:39:46.339Z"
   },
   {
     "key": "ad-003-user",
@@ -292,8 +294,10 @@
     "url": "/admin/settings",
     "file": "Designs/Admin Workspace/Gala Dock Platform Settings Dashboard.png",
     "status": 200,
-    "mismatchPercent": 10.42,
-    "ssim": 0.6562,
+    "mismatchPercent": 10.4,
+    "layoutPercent": 10.16,
+    "mediaBoxes": 2,
+    "ssim": 0.6568,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -301,7 +305,7 @@
       "scrollHeight": 1070
     },
     "errors": [],
-    "at": "2026-10-11T09:18:33.081Z"
+    "at": "2026-10-11T15:02:10.063Z"
   },
   {
     "key": "part-001-partner",
@@ -357,9 +361,9 @@
     "file": "Designs/Provider Workspace/Gala·Dock Venue Command Center.png",
     "status": 200,
     "mismatchPercent": 15.21,
-    "layoutPercent": 12.96,
+    "layoutPercent": 12.98,
     "mediaBoxes": 9,
-    "ssim": 0.6189,
+    "ssim": 0.6187,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -367,17 +371,17 @@
       "scrollHeight": 1115
     },
     "errors": [],
-    "at": "2026-10-11T09:38:47.829Z"
+    "at": "2026-10-11T14:47:42.035Z"
   },
   {
     "key": "prov-002-opportunities",
     "url": "/provider/opportunities",
     "file": "Designs/Provider Workspace/Gala Dock Opportunities Dashboard.png",
     "status": 200,
-    "mismatchPercent": 13.48,
-    "layoutPercent": 12.07,
-    "mediaBoxes": 10,
-    "ssim": 0.6279,
+    "mismatchPercent": 13.05,
+    "layoutPercent": 11.82,
+    "mediaBoxes": 9,
+    "ssim": 0.6344,
     "masks": [],
     "maskReason": null,
     "geometry": {
@@ -385,7 +389,7 @@
       "scrollHeight": 1024
     },
     "errors": [],
-    "at": "2026-10-11T09:28:19.355Z"
+    "at": "2026-10-11T14:47:48.220Z"
   },
   {
     "key": "prov-003-opportunity",
@@ -608,18 +612,18 @@
     "url": "/provider/team",
     "file": "Designs/Provider Workspace/Gala Dock Team Dashboard(1).png",
     "status": 200,
-    "mismatchPercent": 13.23,
-    "layoutPercent": 11.99,
-    "mediaBoxes": 15,
-    "ssim": 0.6442,
+    "mismatchPercent": 13.04,
+    "layoutPercent": 11.89,
+    "mediaBoxes": 14,
+    "ssim": 0.6564,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1313
+      "scrollHeight": 1375
     },
     "errors": [],
-    "at": "2026-10-11T09:25:54.635Z"
+    "at": "2026-10-11T14:47:57.246Z"
   },
   {
     "key": "prov-014-member",
@@ -680,18 +684,18 @@
     "url": "/provider/settings",
     "file": "Designs/Provider Workspace/Gala Dock Workspace Settings Dashboard(1).png",
     "status": 200,
-    "mismatchPercent": 12.61,
-    "layoutPercent": 11.17,
+    "mismatchPercent": 11.12,
+    "layoutPercent": 10.07,
     "mediaBoxes": 9,
-    "ssim": 0.6247,
+    "ssim": 0.6719,
     "masks": [],
     "maskReason": null,
     "geometry": {
       "overflowX": false,
-      "scrollHeight": 1221
+      "scrollHeight": 1988
     },
     "errors": [],
-    "at": "2026-10-11T09:26:19.391Z"
+    "at": "2026-10-11T15:34:27.401Z"
   },
   {
     "key": "prov-w01-s1",
