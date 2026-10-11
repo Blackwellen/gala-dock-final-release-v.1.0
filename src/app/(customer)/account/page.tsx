@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MfaCard } from "@/components/security/mfa-card";
+import { SessionsCard } from "@/components/security/sessions-card";
 import { User, CreditCard, Bell, ShieldCheck, CalendarDays, Bookmark, Sparkles, Crown, ArrowRight, ChevronRight, CheckCircle2, CalendarCheck, Ticket, MessageSquare, Megaphone, FileText, Clock4 } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { savedCards } from "@/lib/payments";
@@ -57,6 +58,6 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     </div>}
     {tab === "payments" && <div className="ac-grid two">{profileCard}<div className="ac-col"><CardsPanel cards={cards} /><section className="ce-card ac-card"><h2>Payment history</h2><p className="ac-hint">Deposits, balances and ticket orders are listed in each event&apos;s Money tab and in My Tickets.</p><div className="k-row" style={{ gap: 10 }}><Link className="k-btn outline" href="/account/events">Event payments</Link><Link className="k-btn outline" href="/account/tickets">Ticket orders</Link></div></section></div></div>}
     {tab === "notifications" && <div className="ac-grid two">{profileCard}<div className="ac-col"><NotificationPrefs prefs={prefs} rows={[...notifRows, ...extraRows].map(([k, , t, d]) => ({ key: k, title: t, desc: d }))} editable /></div></div>}
-    {tab === "security" && <div className="ac-grid two">{profileCard}<div className="ac-col"><MfaCard required={sp.mfa === "required" ? (typeof sp.ws === "string" ? sp.ws.slice(0, 80) : "Your workspace") : null} /><PasswordCard /><section className="ce-card ac-card"><h2>Sign-in methods</h2><p className="ac-hint">Accounts you can use to sign in to Gala Dock.</p><IdentityList identities={identities} /></section><section className="ce-card ac-card"><h2>Your data</h2><p className="ac-hint">Download a copy of your profile, events, tickets, reviews and messages.</p><a className="k-btn outline" href="/api/account/export">Download my data</a></section><DeletionCard scheduled={!!p?.deletion_requested_at} /></div></div>}
+    {tab === "security" && <div className="ac-grid two">{profileCard}<div className="ac-col"><MfaCard required={sp.mfa === "required" ? (typeof sp.ws === "string" ? sp.ws.slice(0, 80) : "Your workspace") : null} /><PasswordCard /><SessionsCard /><section className="ce-card ac-card"><h2>Sign-in methods</h2><p className="ac-hint">Accounts you can use to sign in to Gala Dock.</p><IdentityList identities={identities} /></section><section className="ce-card ac-card"><h2>Your data</h2><p className="ac-hint">Download a copy of your profile, events, tickets, reviews and messages.</p><a className="k-btn outline" href="/api/account/export">Download my data</a></section><DeletionCard scheduled={!!p?.deletion_requested_at} /></div></div>}
   </div>;
 }

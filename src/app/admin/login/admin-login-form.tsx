@@ -14,7 +14,7 @@ const GENERIC = "The email or password you entered is incorrect.";
  */
 export function AdminLoginForm({ reason }: { reason?: string }) {
   const router = useRouter();
-  const [error, setError] = useState(reason === "insufficient" ? "This account doesn’t have Platform Admin access." : "");
+  const [error, setError] = useState(reason === "insufficient" ? "This account doesn’t have Platform Admin access." : reason === "idle" ? "You were signed out after 30 minutes of inactivity. Sign in again to continue." : "");
   const [show, setShow] = useState(false);
   const [pending, start] = useTransition();
   // Never allow a pre-hydration native submit (it would place credentials in the URL).
