@@ -4,7 +4,8 @@ import { test, expect } from "@playwright/test";
 import { admin, BASE, cleanup, createUser, seedWorkspace } from "../phase1/helpers";
 
 // Signs payloads with the local test secret, exactly as Stripe does (t=..,v1=HMAC-SHA256).
-const secret = fs.readFileSync(".env.local", "utf8").match(/^STRIPE_WEBHOOK_SECRET=(.+)$/m)?.[1]?.trim() ?? "";
+// Signs with the sandbox platform endpoint secret from .env (the route accepts any configured endpoint secret).
+const secret = fs.readFileSync(".env", "utf8").match(/^STRIPE_WEBHOOK_SECRET_SANDBOX=(.+)$/m)?.[1]?.trim() ?? "";
 const send = async (event: object, sign = true) => {
   const body = JSON.stringify(event); const t = Math.floor(Date.now() / 1000);
   const sig = sign ? `t=${t},v1=${createHmac("sha256", secret).update(`${t}.${body}`).digest("hex")}` : `t=${t},v1=deadbeef`;
@@ -17,7 +18,7 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
   const acct = `acct_test_${randomUUID().slice(0, 8)}`;
 
   test.beforeAll(async () => {
-    expect(secret, "STRIPE_WEBHOOK_SECRET in .env.local").toMatch(/^whsec_/);
+    expect(secret, "STRIPE_WEBHOOK_SECRET_SANDBOX in .env").toMatch(/^whsec_/);
     owner = await createUser("wh-owner");
     ws = await seedWorkspace(owner.id, "provider", "Webhook Provider");
     await admin.from("workspaces").update({ stripe_account_id: acct } as never).eq("id", ws);

@@ -59,10 +59,12 @@ async function ledgerForRefund(db: ReturnType<typeof untyped>, charge: StripeEve
 
 /** Stripe webhook: authoritative payment/Connect state. Each event is processed once (claim → handle → finish). */
 export async function POST(request: Request) {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret) return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+  // One URL serves four Stripe endpoints (live/sandbox × platform/Connect); each signs with its own secret.
+  const secrets = [process.env.STRIPE_WEBHOOK_SECRET, process.env.STRIPE_WEBHOOK_SECRET_CONNECT, process.env.STRIPE_WEBHOOK_SECRET_SANDBOX, process.env.STRIPE_WEBHOOK_SECRET_SANDBOX_CONNECT].filter((v): v is string => !!v);
+  if (!secrets.length) return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
   const payload = await request.text();
-  if (!verify(payload, request.headers.get("stripe-signature"), secret)) return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  const signature = request.headers.get("stripe-signature");
+  if (!secrets.some(secret => verify(payload, signature, secret))) return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   const event = JSON.parse(payload) as StripeEvent;
   const db = untyped(createAdminClient() as never);
 
