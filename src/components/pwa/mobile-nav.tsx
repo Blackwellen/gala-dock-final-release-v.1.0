@@ -46,7 +46,7 @@ export function MobileNav({ menu, tabs, title, right, home = "/" }: { menu: NavE
         ? <button type="button" className="pwa-icon" aria-label="Back" onClick={() => (history.length > 1 ? router.back() : router.push(home))}><ChevronLeft size={22} /></button>
         : <Link href={home} className="pwa-mark" aria-label="Gala Dock home">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/favicon-48.png" alt="" width={28} height={28} /></Link>}</div>
       <div className="pwa-top-c">{depth > 1 ? <span className="pwa-title">{title ?? current?.label ?? ""}</span>
-        : <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/favicon-48.png" alt="Gala Dock" width={26} height={26} className="pwa-center-mark" /></>}</div>
+        : <span className="pwa-title">{title ?? "Gala Dock"}</span>}</div>
       <div className="pwa-top-r">{right}<button ref={opener} type="button" className="pwa-icon" aria-label="Open menu" aria-expanded={open} aria-controls="pwa-sheet" onClick={() => setOpen(true)}><LayoutGrid size={21} /></button></div>
     </header>
 
