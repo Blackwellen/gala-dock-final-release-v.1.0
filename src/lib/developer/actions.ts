@@ -24,7 +24,7 @@ export async function createApiKey(workspaceId: string, name: string, scopes: st
   const sb = await createClient();
   const { error } = await sb.rpc("create_api_key" as never, { p_workspace: workspaceId, p_name: name, p_scopes: clean, p_prefix: prefix, p_hash: createHash("sha256").update(key).digest("hex"),
     p_expires: expiresDays ? new Date(Date.now() + Math.min(expiresDays, 365) * 864e5).toISOString() : null } as never);
-  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can create API keys." : "Couldn’t create the key." };
+  if (error) return { ok: false, error: /plan_required/.test(error.message) ? "API access is included from the Pro plan. Upgrade in Settings → Payments & Billing." : /not_authorized/.test(error.message) ? "Only owners and managers can create API keys." : "Couldn’t create the key." };
   bump(); return { ok: true, data: key };
 }
 export async function revokeApiKey(id: string): Promise<R> {

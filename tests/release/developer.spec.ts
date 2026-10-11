@@ -13,6 +13,10 @@ test.describe("developer platform", () => {
   test.beforeAll(async () => {
     owner = await createUser("dev-o");
     ws = await seedWorkspace(owner.id, "organizer", "Dev Org");
+    // API access is a plan capability; starter has none.
+    const c0 = await signedIn(owner.email) as unknown as SupabaseClient;
+    expect((await c0.rpc("create_api_key", { p_workspace: ws, p_name: "nope", p_scopes: ["events:read"], p_prefix: "AAAAAAAA", p_hash: sha("x"), p_expires: null })).error?.message).toMatch(/plan_required/);
+    await db.from("workspaces").update({ plan: "pro" }).eq("id", ws);
     await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "API Launch", starts_at: new Date(Date.now() + 7 * 864e5).toISOString() });
     const c = await signedIn(owner.email) as unknown as SupabaseClient;
     const a = mk(), b = mk();
