@@ -48,7 +48,7 @@ export default async function TeamMember(props: PageProps<"/provider/team/[id]">
   const anchor = /^\d{4}-\d{2}-\d{2}$/.test(String(sp.week ?? "")) ? startOfDay(0, new Date(`${sp.week}T12:00:00Z`).getTime()) : startOfDay(0, now);
   const dow = (new Date(anchor + 12 * 36e5).getUTCDay() + 6) % 7, weekStart = startOfDay(-dow, anchor), week = Array.from({ length: 7 }, (_, i) => startOfDay(i, weekStart));
   const wk = (o: number) => new Date(startOfDay(o * 7, weekStart) + 12 * 36e5).toISOString().slice(0, 10);
-  const H0 = 8, H1 = 24, hourPx = 18;
+  const H0 = 8, H1 = 24, hourPx = 7.5;
   const pos = (iso: string, dd: number) => Math.max(0, Math.min(H1 - H0, (new Date(iso).getTime() - dd) / 36e5 - H0));
   const st = crewState(c, shifts, blocks, now), active = c.status !== "deactivated";
   const base = `/provider/team/${c.id}`;
@@ -120,7 +120,7 @@ export default async function TeamMember(props: PageProps<"/provider/team/[id]">
               return <div key={dd} className="ptm-day"><b>{day(new Date(dd + 12 * 36e5).toISOString(), { weekday: "short", day: "numeric", month: "short" })}</b><div className="ptm-col" style={{ height: (H1 - H0) * hourPx }}>
                 {bl.map(b => <span key={b.id} className="ptm-ev off" style={{ top: 4, height: 30 }}>{b.note || "Unavailable"}</span>)}
                 {!bl.length && sh.map(s => { const top = pos(s.starts_at, dd), end = new Date(s.ends_at).getTime() > dd + 864e5 ? H1 - H0 : pos(s.ends_at, dd); return <Link key={s.id} href={s.job_id ? `/provider/bookings/${s.job_id}` : `${base}?tab=assignments`} className={`ptm-ev ${/setup|breakdown/i.test(s.title) ? "setup" : "event"}`}
-                  style={{ top: top * hourPx, height: Math.max(26, (end - top) * hourPx) }}><b>{s.title}</b><small>{time(s.starts_at)} – {time(s.ends_at)}</small><small>{s.location}</small></Link>; })}
+                  style={{ top: top * hourPx, height: Math.max(44, (end - top) * hourPx) }}><b>{s.title}</b><small>{time(s.starts_at)} – {time(s.ends_at)}</small><small>{s.location}</small></Link>; })}
                 {!bl.length && !sh.length && <span className="ptm-ev free" style={{ top: 4, height: 30 }}>Available</span>}</div></div>; })}
           </div>
           {sp.add && <ActionForm action={addCrewUnavailability.bind(null, c.id)} className="ptm-addblock"><label>From<input name="from" type="date" required /></label><label>To<input name="to" type="date" /></label>

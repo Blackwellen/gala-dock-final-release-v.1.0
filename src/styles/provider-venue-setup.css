@@ -270,3 +270,4 @@
 .vw-acc .vw-tg{gap:12px 10px}
 .vw-acc .vw-switch{gap:7px!important}
 .vw-acc .vw-switch b{font-size:10.5px;font-weight:500}
+.vw-prev-nm{display:flex;align-items:center;justify-content:space-between;gap:8px}

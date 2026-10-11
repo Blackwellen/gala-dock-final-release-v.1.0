@@ -113,15 +113,13 @@ async function render(cv: HTMLCanvasElement, f: Fmt, c: Content, wsName: string)
   }
 }
 
-export function PosterBuilder({ tab, event: e, workspaceId, workspaceName, library, previous }: { tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[] }) {
+export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName, library, previous }: { site: string; tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[] }) {
   const toast = useKitToast(); const { run } = useAction(); const cv = useRef<HTMLCanvasElement>(null);
   const [fmt, setFmt] = useState<Fmt>(FORMATS[0]!); const [zoom, setZoom] = useState(100); const [pane, setPane] = useState<"details" | "style" | "media" | "branding">("details");
-  const [c, setC] = useState<Content>({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `/events/${e.slug}` : "", showQr: true, presenter: `${workspaceName} presents`, accent: ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true });
+  const [c, setC] = useState<Content>({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `${site.replace(/\/$/, "")}/events/${e.slug}` : site, showQr: true, presenter: `${workspaceName} presents`, accent: ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true });
   const [hist, setHist] = useState<Content[]>([]); const [fut, setFut] = useState<Content[]>([]);
   const [opts, setOpts] = useState({ gallery: true, promo: true, library: true }); const [busy, setBusy] = useState<string | null>(null); const [menu, setMenu] = useState(false);
   const [thumbs, setThumbs] = useState<Record<string, string>>({}); const [extra, setExtra] = useState<string[]>([]);
-  // Absolute ticket URL once we know the origin (avoids a server/client mismatch).
-  useEffect(() => { setC(x => x.url.startsWith("/") ? { ...x, url: `${location.origin}${x.url}` } : x); }, []);
   useEffect(() => { loadImg(e.cover).then(im => { if (im.naturalHeight < 600) setC(x => x.bg === e.cover ? { ...x, bg: STOCK[0]! } : x); }, () => setC(x => ({ ...x, bg: STOCK[0]! }))); }, [e.cover]);
   const set = (p: Partial<Content>) => { setHist(h => [...h.slice(-30), c]); setFut([]); setC(x => ({ ...x, ...p })); };
   // Render offscreen and copy only the latest result, so overlapping async renders never interleave on screen.

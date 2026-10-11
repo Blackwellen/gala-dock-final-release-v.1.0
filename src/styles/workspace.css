@@ -358,3 +358,9 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 /* PROV-001 Home is drawn at 1448×1086 with a looser sidebar: nav from y≈160, 47px rows. */
 .ws-app.provider:has(.ph) .ws-switcher{margin-bottom:16px}
 .ws-app.provider:has(.ph) .ws-nav{gap:3px}
+/* Provider page titles/subtitles sampled from the PROV designs (indigo ink, lighter periwinkle subtitle). */
+.ws-app.provider .ws-page-head h1,.ws-app.provider .pv-title h1{color:#03034a}
+.ws-app.provider .ws-page-head p{color:#5a64b4}
+/* Listings open while another section is active (Team, Money, Agent, Settings designs): tinted row, tighter sub-list. */
+.ws-app.provider .group.expanded>.ws-nav-item:not(.active){background:#f3f6fe}
+.ws-app.provider .group.expanded:has(>.ws-nav-item:not(.active)) .ws-subnav{margin:-2px 0 0}

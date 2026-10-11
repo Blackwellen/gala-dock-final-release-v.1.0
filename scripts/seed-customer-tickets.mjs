@@ -55,3 +55,13 @@ if (!party) {
 }
 // Profile details shown on My Account.
 must(await sb.from("profiles").update({ phone: "+44 7712 345678", country: "GB", language: "en", bio: "I love discovering unique venues and organising amazing experiences with friends and family.", date_of_birth: "1994-03-14", avatar_url: "/assets/gd/av-alex-customer.webp" }).eq("id", alex.id), "profile details");
+// "My Schedule" on Home lists tasks due today: give the wedding four timed tasks for the current day (London time).
+{
+  const wed = must(await sb.from("events").select("id").eq("owner_id", alex.id).eq("management", "consumer").ilike("name", "%wedding%").order("created_at").limit(1), "wedding")[0];
+  if (wed) {
+    const london = (h, m = 0) => { const now = new Date(); const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), h, m)); const off = new Date(d.toLocaleString("en-US", { timeZone: "Europe/London" })).getTime() - new Date(d.toLocaleString("en-US", { timeZone: "UTC" })).getTime(); return new Date(d.getTime() - off).toISOString(); };
+    const today = [["Team sync", "meeting", 10], ["Review event details", "event", 13], ["Venue call", "venue", 16], ["Dinner reservation", "food", 18]];
+    must(await sb.from("tasks").delete().eq("event_id", wed.id).in("title", today.map(t => t[0])), "clear today tasks");
+    must(await sb.from("tasks").insert(today.map(([title, category, h]) => ({ event_id: wed.id, owner_id: alex.id, title, category, due_at: london(h), status: "todo", priority: "medium" }))), "today tasks");
+  }
+}

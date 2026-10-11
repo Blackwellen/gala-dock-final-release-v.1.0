@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui";
 import { GripVertical, X, Plus, Building2, Wrench, Speaker, UserRound, ChevronLeft, ChevronRight } from "lucide-react";
@@ -44,7 +44,7 @@ export function InclusionsEditor({ initial, options }: { initial: PkgItem[]; opt
 
 export type DayState = "available" | "partial" | "unavailable" | "blocked";
 /** Month calendar of package availability. Editable mode toggles date-specific blocks (serialised into `blocked`). */
-export function AvailabilityCalendar({ days, blocked: initial, editable = false, months = 1 }: { days: Record<string, DayState>; blocked: string[]; editable?: boolean; months?: number }) {
+export function AvailabilityCalendar({ days, blocked: initial, editable = false, months = 1, side }: { days: Record<string, DayState>; blocked: string[]; editable?: boolean; months?: number; side?: ReactNode }) {
   const [blocked, setBlocked] = useState<string[]>(initial);
   const [offset, setOffset] = useState(0);
   const first = useMemo(() => { const k = Object.keys(days).sort()[0] ?? "2026-10-01"; return new Date(`${k.slice(0, 7)}-01T12:00:00Z`); }, [days]);
@@ -61,6 +61,7 @@ export function AvailabilityCalendar({ days, blocked: initial, editable = false,
           return <button key={d} type="button" className={`d ${st}`} disabled={!editable || st === "unavailable"} aria-pressed={blocked.includes(d)} title={st === "unavailable" ? "Booked" : st}
             onClick={() => setBlocked(b => b.includes(d) ? b.filter(x => x !== d) : [...b, d])}>{Number(d.slice(8))}<em /></button>; })}</div></div>; })}
     <ul className="pkw-legend"><li className="available">Available</li><li className="partial">Partially booked</li><li className="unavailable">Unavailable</li><li className="blocked">Blocked</li></ul>
+    {side}
     {editable && <small className="pkw-hint">Click dates to block or unblock them for this package. Booked dates can’t be changed here.</small>}
   </div>;
 }

@@ -53,7 +53,9 @@
 .pkw-facts svg{width:13px!important;height:13px!important;color:var(--ws-blue-2)}
 
 /* Wizard step 2 */
-.pkw-s2{grid-template-columns:494fr 375fr 375fr;grid-template-areas:"price avail side" "mode cancel side" "rules holds side" "foot foot foot"}
+.pkw-s2{grid-template-columns:494fr 375fr 375fr;grid-template-areas:"cola colb side" "foot foot foot"}
+.pkw-col{display:grid;gap:12px;align-content:start;min-width:0}.pkw-col-a{grid-area:cola}.pkw-col-b{grid-area:colb}
+.pkw-col>section{grid-area:auto!important}
 .pkw-price{grid-area:price}.pkw-avail{grid-area:avail;display:grid;gap:8px;align-content:start}.pkw-mode{grid-area:mode}.pkw-cancel{grid-area:cancel}.pkw-rules{grid-area:rules}.pkw-holds{grid-area:holds;display:grid;gap:10px;align-content:start}.pkw-side2{grid-area:side;grid-row:1/4}
 .pkw-models{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .pkw-pricerow{display:grid;grid-template-columns:1.3fr 1fr .8fr 80px;gap:8px;align-items:end;margin-bottom:10px}
@@ -134,5 +136,31 @@
 .pkp-perf .ws-panel-head small{font-size:10px;color:#5157a4}
 
 @media (max-width:1360px){.pkw-s1{grid-template-columns:1fr 1fr;grid-template-areas:"parent basic" "incl event" "addons feat" "side side" "foot foot"}.pkw-side1,.pkw-side2{grid-row:auto}
-  .pkw-s2{grid-template-columns:1fr 1fr;grid-template-areas:"price avail" "mode cancel" "rules holds" "side side" "foot foot"}.pkp-hero{grid-template-columns:1fr 1fr}.pkp-price{grid-column:1/-1}.pkp-grid{grid-template-columns:1fr}.pkp-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .pkw-s2{grid-template-columns:1fr 1fr;grid-template-areas:"cola colb" "side side" "foot foot"}.pkp-hero{grid-template-columns:1fr 1fr}.pkp-price{grid-column:1/-1}.pkp-grid{grid-template-columns:1fr}.pkp-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.pkw-s1,.pkw-s2{grid-template-columns:1fr;grid-template-areas:none}.pkw-pricerow,.pkw-custom,.pkw-opts,.pkw-addons li,.pkw-rlist li,.pkp-hero{grid-template-columns:1fr}.pkw-s3 .pkw-cal{grid-template-columns:1fr}.pkp-facts,.pkp-addons ul{grid-template-columns:1fr 1fr}}
+/* W04 step 2 availability — measured from "Gala Dock Package Creation Dashboard": source switch, 25px calendar rows, legend column on the right. */
+.pkw-availmode{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:2px 0 6px}
+.pkw-availmode>*{height:28px;display:grid;place-items:center;border:1px solid var(--ws-border);border-radius:6px;font-size:10.5px;color:#1d2068;background:#fff}
+.pkw-availmode .on{border-color:var(--ws-blue-2);color:var(--ws-blue-2);font-weight:550;box-shadow:0 0 0 1px var(--ws-blue-2) inset}
+.pkw-s2 .pkw-cal{grid-template-columns:minmax(0,1fr) 104px;column-gap:10px;row-gap:4px;align-items:start}
+.pkw-s2 .pkw-month{grid-row:1/4}
+.pkw-s2 .pkw-month header{margin-bottom:2px}
+.pkw-s2 .pkw-grid{gap:0 2px}
+.pkw-s2 .pkw-grid .d{height:25px;font-size:9.5px}
+.pkw-s2 .pkw-grid .d em{bottom:1px;width:4px;height:4px}
+.pkw-s2 .pkw-legend{flex-direction:column;gap:10px;padding-top:24px}
+.pkw-s2 .pkw-legend li{font-size:10.5px;color:#1d2068}
+.pkw-calside{display:grid;gap:10px;justify-items:start}
+.pkw-bulk{font-size:10.5px;color:#1d2068}
+.pkw-calside .ws-btn{height:28px;font-size:10px;padding:0 9px;color:var(--ws-blue-2)}
+.pkw-s2 .pkw-avail{gap:0}
+.pkw-s2 .pkw-avail>p,.pkw-s2 .pkw-holds>p{margin-bottom:8px}
+.pkw-s2 .pkw-cancel .vw-cancel-rows{gap:5px}
+.pkw-s2 .pkw-cancel .vw-cancel-rows input{height:30px!important}
+.pkw-s2 .pkw-holds{gap:6px}
+.pkw-rating{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:650;color:#0d0d63}
+.pkw-rating svg{width:14px!important;height:14px!important;color:#f5a524;fill:#f5a524}
+.pkw-rating small{font-weight:400;color:#5157a4}
+.pkw-preview .pkw-desc{font-size:11px;color:#3f4596;line-height:1.45;margin:0}
+.pkw-preview .pkw-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:2px 0 0}
+.pkw-preview .vw-prev-name{font-size:15.5px;color:#03035f}

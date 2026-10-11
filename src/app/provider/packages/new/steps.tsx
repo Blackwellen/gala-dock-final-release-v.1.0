@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Sparkles, CircleCheck, Info, ArrowLeft, ArrowRight, Save, Building2, Wrench, Clock3, Users, Tag, MapPin, Zap, Mail, HelpCircle, Plus } from "lucide-react";
+import { Sparkles, CircleCheck, Info, ArrowLeft, ArrowRight, Save, Building2, Wrench, Clock3, Users, Tag, MapPin, Zap, Mail, HelpCircle, Plus, Star } from "lucide-react";
+import { VenuePreview } from "../../venues/new/preview";
 import { ActionForm } from "@/components/workspace/actions";
 import { money } from "@/lib/workspace/format";
 import type { Listing } from "@/lib/provider/queries";
@@ -18,14 +19,16 @@ const Foot = ({ back, next, step, label }: { back?: string; next: string; step: 
 
 export function PackagePreview({ p, parent }: { p: PackageRow | null; parent: Listing | null }) {
   const photos = p ? [p.image, ...(p.details.gallery ?? [])].filter(Boolean) : [];
-  return <section className="ws-panel pkw-preview"><div className="vw-preview-head"><h2>Package preview</h2>{parent?.slug && p?.status === "published" && <Link className="ws-link" href={`/${parent.kind === "venue" ? "venues" : "services"}/${parent.slug}`} target="_blank">View on marketplace</Link>}</div>
-    <div className="vw-photo">{/* eslint-disable-next-line @next/next/no-img-element */}
-      {photos[0] ? <img src={photos[0]} alt="" /> : <span className="vw-nophoto">Add photos in step 4</span>}{photos.length > 0 && <span className="vw-count">1/{photos.length}</span>}</div>
-    <b className="pkw-name">{p?.name || "Your package"}</b>
-    <p className="pkw-meta"><span><MapPin aria-hidden="true" />{parent ? `${parent.name}, ${parent.city || "London"}` : "Choose a venue or service"}</span>{p?.details.event_type && <i>{p.details.event_type}</i>}</p>
+  const live = !!(parent?.slug && p?.status === "published");
+  const chips = [{ icon: <MapPin aria-hidden="true" />, label: parent ? `${parent.name}, ${parent.city || "London"}` : "Choose a venue or service" },
+    ...(p?.details.event_type ? [{ icon: <Tag aria-hidden="true" />, label: p.details.event_type }] : [])];
+  return <VenuePreview thumbsFirst className="pkw-preview" title="Package preview" editLabel="Change image" photos={photos} name={p?.name || "Your package"} chips={chips}
+    editHref={p ? `/provider/packages/new?package=${p.id}&step=4` : "#"} publicHref={live ? `/${parent!.kind === "venue" ? "venues" : "services"}/${parent!.slug}` : null}
+    nameExtra={parent && parent.review_count > 0 ? <span className="pkw-rating" title={`${parent.name} reviews`}><Star aria-hidden="true" />{parent.rating.toFixed(1)} <small>({parent.review_count})</small></span> : null}>
     {p?.description && <p className="pkw-desc">{p.description}</p>}
     <ul className="pkw-facts">{p?.duration_hours ? <li><Clock3 aria-hidden="true" />{p.duration_hours} hours</li> : null}{p?.max_guests ? <li><Users aria-hidden="true" />{p.min_guests ?? 1} – {p.max_guests} guests</li> : null}
-      {p && Number(p.base_price) > 0 && <li><Tag aria-hidden="true" />From {money(p.base_price)}</li>}{p?.booking_mode === "instant" && <li className="g"><Zap aria-hidden="true" />Instant book</li>}</ul></section>;
+      {p && Number(p.base_price) > 0 && <li><Tag aria-hidden="true" />From <b>{money(p.base_price)}</b></li>}{p?.booking_mode === "instant" && <li className="g"><Zap aria-hidden="true" />Instant book</li>}</ul>
+  </VenuePreview>;
 }
 
 export function PkgStep1({ p, parent, listings, options, next, presetListing }: { p: PackageRow | null; parent: Listing | null; listings: Listing[]; options: Parameters<typeof InclusionsEditor>[0]["options"]; next: string; presetListing: string | null }) {
@@ -70,6 +73,7 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
 export function PkgStep2({ p, parent, days, back, next, label }: { p: PackageRow; parent: Listing | null; days: Record<string, DayState>; back?: string; next: string; label?: string }) {
   const d = p.details, r = d.restrictions ?? {}, model = d.pricing?.model ?? "fixed", canc = d.cancellation ?? [{ window: "More than 30 days", refund: 100 }, { window: "15 – 30 days", refund: 50 }, { window: "7 – 14 days", refund: 25 }, { window: "Less than 7 days", refund: 0 }];
   return <ActionForm action={savePackagePricing.bind(null, p.id, next)} className="vw pkw-s2">
+    <div className="pkw-col pkw-col-a">
     <section className="ws-panel pkw-price"><h2>Pricing &amp; payment</h2><p>Set how this package is priced and how customers pay.</p>
       <div className="svw-models pkw-models">{([["fixed", "Fixed price", "One price for the full package"], ["from", "From price", "Show a starting price range."], ["quote", "Quote only", "No public price, customers must request a quote."]] as const).map(([k, l, sub]) =>
         <label key={k}><input type="radio" name="model" value={k} defaultChecked={model === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
@@ -78,14 +82,9 @@ export function PkgStep2({ p, parent, days, back, next, label }: { p: PackageRow
         <label>Deposit required <i>*</i><span className="vw-money"><input name="deposit" type="number" min={0} max={100} defaultValue={p.deposit_pct} /><em className="r">%</em></span></label>
         <span className="pkw-depamt">{Number(p.base_price) > 0 ? money((Number(p.base_price) * p.deposit_pct) / 100) : "—"}</span></div>
       <p className="vw-info"><Info aria-hidden="true" />Customers pay a {p.deposit_pct}% deposit{Number(p.base_price) > 0 ? ` (${money((Number(p.base_price) * p.deposit_pct) / 100)})` : ""} to confirm. The balance is due 14 days before the event by default.</p></section>
-    <section className="ws-panel pkw-avail"><h2>Availability</h2><p>When is this package available to book?</p><AvailabilityCalendar days={days} blocked={d.availability?.blocked ?? []} />
-      <Link href={`/provider/packages/new?package=${p.id}&step=3`} className="ws-btn outline sm">Edit specific dates</Link></section>
     <section className="ws-panel pkw-mode"><h2>Booking mode</h2><p>Choose how customers can book this package.</p>
       <div className="svw-bmodes">{([["instant", Zap, "Instant book", "Customers can book and pay immediately."], ["request", Mail, "Request to book", "Customers send a request, you approve."], ["enquiry", HelpCircle, "Enquiry only", "Customers can enquire, no booking or payment."]] as const).map(([k, I, l, sub]) =>
         <label key={k}><input type="radio" name="booking_mode" value={k} defaultChecked={p.booking_mode === k} /><span><b><I aria-hidden="true" /> {l}</b><small>{sub}</small></span></label>)}</div></section>
-    <section className="ws-panel pkw-cancel"><h2>Cancellation policy</h2><p>Set your cancellation terms for this package.</p>
-      <div className="vw-cancel-rows">{[0, 1, 2, 3].map(i => <div key={i}><input name={`c_window_${i}`} defaultValue={canc[i]?.window ?? ""} aria-label={`Window ${i + 1}`} /><span className="vw-money"><input name={`c_refund_${i}`} type="number" min={0} max={100} defaultValue={canc[i]?.refund ?? ""} aria-label={`Refund ${i + 1}`} /><em className="r">% refund</em></span></div>)}</div>
-      <small className="vw-hint">Leave empty to use {parent?.kind === "service" ? "the service’s" : "the venue’s"} policy.</small></section>
     <section className="ws-panel pkw-rules"><h2>Booking restrictions</h2><p>Set any rules or restrictions for this package.</p>
       <ul className="pkw-rlist">
         <li><Toggle name="x_min_notice" label="Minimum notice period" on={r.min_notice_days != null} /><span className="vw-money"><input name="min_notice" type="number" min={0} defaultValue={r.min_notice_days ?? 7} aria-label="Minimum notice" /><em className="r">days</em></span></li>
@@ -94,12 +93,27 @@ export function PkgStep2({ p, parent, days, back, next, label }: { p: PackageRow
         <li><Toggle name="x_max_guests" label="Maximum guest count" on={p.max_guests != null} /><input name="max_guests" type="number" min={1} defaultValue={p.max_guests ?? 300} aria-label="Maximum guests" /></li>
         <li><Toggle name="x_age" label="Age restriction" on={!!r.age} /><select name="age" className="ws-select" defaultValue={r.age ?? "18+ only"} aria-label="Age restriction"><option>18+ only</option><option>21+ only</option><option>Under-18s with adults</option></select></li>
         <li><Toggle name="x_types" label="Restrict to specific event types" on={!!r.event_types} /><input name="types" defaultValue={r.event_types ?? ""} placeholder="e.g. Weddings, Parties" aria-label="Event types" /></li></ul></section>
+    </div>
+    <div className="pkw-col pkw-col-b">
+    <section className="ws-panel pkw-avail"><h2>Availability</h2><p>When is this package available to book?</p><div className="pkw-availmode" role="group" aria-label="Availability source">
+        <span className={(d.availability?.blocked ?? []).length ? "" : "on"}>Use {parent?.kind === "service" ? "service" : "venue"} availability</span>
+        <Link href={`/provider/packages/new?package=${p.id}&step=3`} className={(d.availability?.blocked ?? []).length ? "on" : ""}>Set custom availability</Link></div>
+      <AvailabilityCalendar days={days} blocked={d.availability?.blocked ?? []} side={<div className="pkw-calside"><Link href={`/provider/packages/new?package=${p.id}&step=3`} className="pkw-bulk">Bulk update</Link>
+        <Link href={`/provider/packages/new?package=${p.id}&step=3`} className="ws-btn outline sm">Edit specific dates</Link></div>} /></section>
+    <section className="ws-panel pkw-cancel"><h2>Cancellation policy</h2><p>Set your cancellation terms for this package.</p>
+      <div className="vw-cancel-rows">{[0, 1, 2, 3].map(i => <div key={i}><input name={`c_window_${i}`} defaultValue={canc[i]?.window ?? ""} aria-label={`Window ${i + 1}`} /><span className="vw-money"><input name={`c_refund_${i}`} type="number" min={0} max={100} defaultValue={canc[i]?.refund ?? ""} aria-label={`Refund ${i + 1}`} /><em className="r">% refund</em></span></div>)}</div>
+      <small className="vw-hint">Leave empty to use {parent?.kind === "service" ? "the service’s" : "the venue’s"} policy.</small></section>
     <section className="ws-panel pkw-holds"><h2>Hold, standby &amp; emergency</h2><p>Manage conditional holds and last-minute options.</p>
       <div className="svw-buffer"><Toggle name="holds" label="Allow conditional holds" on={d.holds?.enabled ?? true} /><select name="hold_hours" className="ws-select" defaultValue={d.holds?.hours ?? 24} aria-label="Hold length">{[24, 48, 72].map(h => <option key={h} value={h}>{h} hours</option>)}</select></div>
       <Toggle name="standby" label="Offer standby option" sub="Show in last-minute search (within 48 hours)." on={d.standby?.enabled} />
       <Toggle name="emergency" label="Allow emergency booking" sub="Customers can book with less than 48 hours’ notice." on={d.emergency?.enabled} /></section>
+    </div>
     <aside className="vw-side pkw-side2"><section className="ws-panel vw-agent"><h2><span className="sb-agent-ic"><Sparkles aria-hidden="true" /></span>Gala Agent <em>Online</em></h2>
-      <div className="sb-agent-box"><p>Checks on your pricing and rules:</p><ul>{[`Deposit set to ${p.deposit_pct}%`, p.booking_mode === "instant" ? "Instant book needs accurate availability" : "Requests must be answered within your response window", "Cancellation terms shown before booking", "Availability follows the linked spaces"].map(i => <li key={i}><CircleCheck aria-hidden="true" />{i}</li>)}</ul></div></section>
+      <div className="sb-agent-box"><p>Checks on your pricing and rules:</p><ul>{[Number(p.base_price) > 0 ? `Price set: ${money(p.base_price)} ${p.price_basis === "per_person" ? "per person" : p.price_basis === "hourly" ? "per hour" : "per package"}` : "Set a price or choose Quote only",
+        `Deposit set to ${p.deposit_pct}%${Number(p.base_price) > 0 ? ` (${money((Number(p.base_price) * p.deposit_pct) / 100)})` : ""}`,
+        p.booking_mode === "instant" ? "Instant book needs accurate availability" : "Requests must be answered within your response window", "Cancellation terms shown before booking", "Availability follows the linked spaces",
+        p.max_guests ? `Guest range ${p.min_guests ?? 1}–${p.max_guests} checked against space limits` : "Add a guest range"].map(i => <li key={i}><CircleCheck aria-hidden="true" />{i}</li>)}</ul>
+        <Link href={`/provider/agent?goal=${encodeURIComponent(`Review pricing for ${p.name}`)}`} className="ws-btn outline block sm">Review with Gala Agent</Link></div></section>
       <PackagePreview p={p} parent={parent} /></aside>
     <Foot back={back} next="Next: Availability & Rules" step={2} label={label} />
   </ActionForm>;

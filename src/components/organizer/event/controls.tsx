@@ -136,7 +136,8 @@ export function ItemActions({ eventId, itemId, status, title, canConfirm }: { ev
         {can.held && <button role="menuitem" className="k-menu-item" onClick={() => { close(); setHold(true); }}>Place conditional hold</button>}
         {can.confirmed && <button role="menuitem" className="k-menu-item" disabled={!canConfirm} title={canConfirm ? "" : "Owners and managers confirm bookings"} onClick={() => { close(); setConfirm(true); }}>Confirm booking</button>}
         {can.standby && <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); void run(() => transitionItem(eventId, itemId, "standby")); }}>Make standby / backup</button>}
-        {can.cancelled && <><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" disabled={pending} onClick={() => { close(); void run(() => transitionItem(eventId, itemId, "cancelled")); }}>{["confirmed", "held"].includes(status) ? "Cancel booking" : "Remove option"}</button></>}
+        {/* Confirmed/held bookings cancel through the cancellation engine (policy refund, provider notice, standby prompt). */}
+        {can.cancelled && <><div className="k-menu-sep" />{["confirmed", "held"].includes(status) ? <Link role="menuitem" className="k-menu-item k-red" href={`/organizer/marketplace/bookings/${itemId}#cancel`} onClick={close}>Cancel booking…</Link> : <button role="menuitem" className="k-menu-item k-red" disabled={pending} onClick={() => { close(); void run(() => transitionItem(eventId, itemId, "cancelled")); }}>Remove option</button>}</>}
       </>}
     </Menu>
     <Dialog open={hold} onClose={() => setHold(false)} title={`Hold ${title}`} sub="A conditional hold reserves the provider for a limited time. It expires automatically if you don't confirm.">

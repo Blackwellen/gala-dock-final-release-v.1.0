@@ -1,10 +1,10 @@
 /* PROV-004 Quote profile — measured from "Gala·Dock Wedding Quote Dashboard" (1536×1024). */
 .qp{display:grid;gap:0}
-.qp-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#22265e;margin:6px 0 4px}
+.qp-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#22265e;margin:0 0 4px;color:#100e78}
 .qp-back svg{width:17px!important;height:17px!important}
 .qp-head{display:flex;align-items:flex-start;gap:28px}
-.qp-head h1{font-size:31px;font-weight:800;letter-spacing:-.035em;color:#02032e;line-height:1.2}
-.qp-sub{display:flex;align-items:center;gap:14px;margin-top:4px;font-size:10.5px;color:var(--ws-muted)}
+.qp-head h1{font-size:31px;font-weight:800;letter-spacing:-.035em;color:#03034a;line-height:1.2}
+.qp-sub{display:flex;align-items:center;gap:14px;margin-top:1px;font-size:10.5px;color:var(--ws-muted)}
 .qp-sub .ws-chip{height:20px;font-size:10px}
 .qp-status{display:flex;align-items:center;gap:12px;padding:8px 16px 8px 12px;border-radius:8px;margin-top:4px;background:#eef3fe;color:#1a1af2}
 .qp-status svg{width:28px!important;height:28px!important}
@@ -12,7 +12,7 @@
 .qp-status.amber{background:#fff4e6;color:#d86d00}.qp-status.grey{background:#f3f4f8;color:#6c74a8}.qp-status.green{background:#e5f8ef;color:#0f7a3f}.qp-status.red{background:#fff1f3;color:#e3122e}.qp-status.purple{background:#f4effe;color:#5c19e6}
 .qp-actions{margin-left:auto;display:flex;gap:10px;padding-top:6px}
 .qp-actions .ws-btn{height:36px;font-size:11.5px}
-.qp>.ws-tabs.underline{border-bottom:0;gap:30px;padding:0;margin:14px 0 10px}
+.qp>.ws-tabs.underline{border-bottom:0;gap:30px;padding:0;margin:9px 0 20px}
 .qp>.ws-tabs.underline a{font-size:13px;padding:6px 14px 9px}
 .qp-cards{display:grid;grid-template-columns:385fr 290fr 290fr 270fr;gap:12px;margin-bottom:10px}
 .qp-cards .ws-panel{padding:10px 12px}
@@ -131,3 +131,19 @@ svg.ok{color:#0f8a4e}svg.warn{color:#e27a00}svg.no{color:#ec2f52}
   .ws-main{padding:0!important}
   .qprint{border:0;padding:0;max-width:none}
 }
+/* PROV-004 — "Wedding Quote Dashboard": main 697px + two rail columns (preview/validity 310px, actions/agent 245px), terms strip. */
+@media (min-width:1281px){
+  .qp-body{grid-template-columns:minmax(0,1fr) 565px;gap:10px}
+  .qp-rail{grid-template-columns:310px 245px;grid-template-areas:"prev act" "valid agent";gap:10px;align-items:stretch}
+  .qp-rail .qp-preview{grid-area:prev}.qp-rail .qp-actions-card{grid-area:act}.qp-rail .qp-validity{grid-area:valid}.qp-rail .qp-agent{grid-area:agent}
+}
+.qp-strip{display:grid;grid-template-columns:150px repeat(4,minmax(0,1fr));gap:14px;align-items:start;padding:10px 14px;margin-top:10px}
+.qp-strip>div{display:flex;gap:9px;align-items:flex-start;min-width:0}
+.qp-strip svg{width:18px!important;height:18px!important;flex-shrink:0;color:var(--ws-blue-2);margin-top:1px}
+.qp-strip .ok svg{color:#16a46c}.qp-strip .no svg{color:#ec2f4d}
+.qp-strip span{display:grid;gap:2px;min-width:0}
+.qp-strip b{font-size:11px;font-weight:600;color:#0d0d63}
+.qp-strip small{font-size:10px;color:#3f4596;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qp-strip-h span{gap:6px}.qp-strip-h b{font-size:12.5px}
+.qp-strip-h .ws-btn{height:24px;font-size:10.5px;padding:0 10px;justify-self:start}
+@media (max-width:900px){.qp-strip{grid-template-columns:1fr 1fr}}

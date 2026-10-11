@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs } from "@/components/kit";
 import { PosterBuilder } from "@/components/organizer/poster-builder";
@@ -8,7 +9,8 @@ const TZ = "Europe/London";
 
 export default async function MediaBuilderPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]); if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const ctx = await getOrganizer(); const sb = ctx.supabase;
+  const ctx = await getOrganizer(); const sb = ctx.supabase; const h = await headers();
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host") ?? "localhost:3107"}`;
   const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,cover_image,settings,tags").eq("id", id).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) notFound();
   const [{ data: lineup }, { data: tiers }, { data: library }] = await Promise.all([
@@ -22,7 +24,7 @@ export default async function MediaBuilderPage({ params, searchParams }: { param
   const performers = (lineup ?? []).map(l => l.title).filter(x => !/gates|doors|close|open/i.test(x)).slice(0, 4);
   return <div className="pb">
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Poster & Media Builder" }]} />
-    <PosterBuilder tab={sp.tab === "library" || sp.tab === "previous" ? sp.tab : "create"} workspaceId={ctx.workspace.id} workspaceName={ctx.workspace.name}
+    <PosterBuilder site={site} tab={sp.tab === "library" || sp.tab === "previous" ? sp.tab : "create"} workspaceId={ctx.workspace.id} workspaceName={ctx.workspace.name}
       event={{ id, name: e.name, slug: e.slug, status: e.status, when: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }).toUpperCase() : "DATE TBC", date: d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "", time: `${t(e.starts_at)}${e.ends_at ? ` – ${t(e.ends_at)}` : ""}`, venue: [e.venue_name, e.location.split(",").map(x => x.trim()).filter(Boolean).at(-2) ?? e.location].filter(Boolean).join(", "), cover: (s.hero_image as string) || e.cover_image || "/assets/gd/hero-neon.webp", tags: e.tags ?? [], performers, price: tiers?.[0]?.price ? Number(tiers[0].price) : null, gallery: ((s.gallery as string[]) ?? []).slice(0, 6) }}
       library={(library ?? []).map(m => ({ id: m.id, url: m.url, title: m.title, format: m.format, version: m.version, at: m.created_at }))}
       previous={(prev ?? []).map(m => ({ id: m.id, url: m.url, title: m.title, format: m.format, version: m.version, at: m.created_at, event: m.events.name }))} />

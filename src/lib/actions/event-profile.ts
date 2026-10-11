@@ -129,6 +129,10 @@ export async function resolveIncident(eventId: string, incidentId: string): Prom
 export async function transitionItem(eventId: string, itemId: string, to: "sent" | "held" | "confirmed" | "standby" | "cancelled", holdHours?: number): Promise<ActionResult> {
   const o = await own(eventId); if ("error" in o) return { ok: false, error: o.error };
   if (to === "confirmed" && !["owner", "manager"].includes(o.ctx.role)) return { ok: false, error: "Only owners and managers can confirm binding bookings." };
+  if (to === "cancelled") {
+    const { data: cur } = await o.ctx.supabase.from("build_items").select("status").eq("id", itemId).eq("event_id", o.e.id).maybeSingle();
+    if (cur && ["confirmed", "held"].includes(cur.status)) return { ok: false, error: "Cancel confirmed or held bookings from Manage booking so the cancellation policy and provider notice apply.", redirect: `/organizer/marketplace/bookings/${itemId}#cancel` };
+  }
   const { error } = await o.ctx.supabase.rpc("transition_build_item", { p_item: itemId, p_to: to, p_hold_hours: holdHours ?? undefined });
   if (error) {
     const m = error.message;

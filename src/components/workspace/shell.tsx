@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Search, Bell, MessageSquareText, Plus,
-  ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network,
+  ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network, Scale,
   ChartColumn, ArrowRight, Building2, LayoutGrid, Wrench, Package, Menu, X, LogOut, Check, type LucideIcon,
 } from "lucide-react";
 import { Suspense } from "react";
@@ -27,7 +27,8 @@ function ShellTools() {
 
 /* ───────────────────────── shared primitives ───────────────────────── */
 
-type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number; badgeTone?: "red" | "grey"; exact?: boolean; children?: NavItem[]; match?: RegExp };
+type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number; badgeTone?: "red" | "grey"; exact?: boolean; children?: NavItem[]; match?: RegExp;
+  /** Group starts expanded on any route except those matching `collapseOn` (the designs keep the catalogue open while managing team, money and settings). */ defaultOpen?: boolean; collapseOn?: RegExp };
 
 function useOutside<T extends HTMLElement>(open: boolean, close: () => void) {
   const ref = useRef<T>(null);
@@ -56,7 +57,8 @@ function isActive(pathname: string, item: NavItem) {
 }
 
 function NavList({ items, pathname }: { items: NavItem[]; pathname: string }) {
-  const [openGroup, setOpenGroup] = useState<string | null>(() => items.find(i => i.children?.some(c => isActive(pathname, c)) || (i.children && isActive(pathname, i)))?.href ?? null);
+  const [openGroup, setOpenGroup] = useState<string | null>(() => (items.find(i => i.children?.some(c => isActive(pathname, c)) || (i.children && isActive(pathname, i)))
+    ?? items.find(i => i.children && i.defaultOpen && !i.collapseOn?.test(pathname)))?.href ?? null);
   return <ul className="ws-nav">{items.map(item => {
     const Icon = item.icon;
     const active = isActive(pathname, item) || !!item.children?.some(c => isActive(pathname, c));
@@ -162,7 +164,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/opportunities", label: "Opportunities", icon: Trophy, badge: counts.opportunities, badgeTone: "red" },
     { href: "/provider/bookings", label: "Bookings", icon: CalendarCheck, badge: counts.bookings, badgeTone: "grey" },
     { href: "/provider/calendar", label: "Calendar", icon: Calendar },
-    { href: "/provider/listings", label: "Listings", icon: Store, children: listingChildren },
+    { href: "/provider/listings", label: "Listings", icon: Store, children: listingChildren, defaultOpen: true, collapseOn: /^\/provider\/(opportunities(?!\/[^/]+\/quote)|quotes|bookings|calendar)(\/|$)/ },
     { href: "/provider/team", label: "Team", icon: Users },
     { href: "/provider/money", label: "Money", icon: Wallet },
     { href: "/provider/agent", label: "Gala Agent", icon: Sparkles },
@@ -243,6 +245,7 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
     { href: "/admin/trust/disputes", label: "Disputes", icon: Headset, perm: "trust" },
     { href: "/admin/trust", label: "Trust & Safety", icon: Shield, perm: "trust" },
     { href: "/admin/support", label: "Support", icon: Headphones, perm: "support" },
+    { href: "/admin/disputes", label: "Booking disputes", icon: Scale, perm: "support" },
     { href: "/admin/partners", label: "Partners", icon: Mail, perm: "partners" },
     { href: "/admin/agent-integrations", label: "Agent & Integrations", icon: Network, perm: "agent_ops" },
     { href: "/admin/analytics", label: "Analytics", icon: ChartColumn, perm: "analytics" },

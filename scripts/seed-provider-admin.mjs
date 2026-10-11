@@ -6,6 +6,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { randomBytes } from "node:crypto";
 import fs from "node:fs/promises";
+import { GALA_LINES } from "./seed-quote-lines.data.mjs";
 
 if (process.env.NODE_ENV === "production") { console.error("Refusing to seed in production."); process.exit(1); }
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
@@ -258,7 +259,7 @@ let qn = 4100;
 for (const it of Object.values(items)) {
   const { o } = it;
   if (!o.quote) continue;
-  const lines = it.L.kind === "venue"
+  const lines = o.event === "Charity Gala Dinner" ? GALA_LINES : it.L.kind === "venue"
     ? [{ label: `${o.space} hire`, qty: Math.round(o.end - o.start), unit: "hours", unit_price: spaces[o.space].rate_hourly, kind: "space" }, { label: "Event staffing", qty: 1, unit: "package", unit_price: Math.max(0, Math.round(o.quote / 1.2 - Math.round(o.end - o.start) * spaces[o.space].rate_hourly)), kind: "staff" }]
     : [{ label: o.scope, qty: 1, unit: "package", unit_price: Math.round(o.quote / 1.2), kind: "service" }];
   const sub = lines.reduce((a, l) => a + l.qty * l.unit_price, 0), tax = Math.round(sub * 0.2 * 100) / 100;

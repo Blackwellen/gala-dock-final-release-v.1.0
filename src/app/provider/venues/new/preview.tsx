@@ -5,26 +5,31 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ImagePlus, Plus, RefreshCw } from "lucide-react";
 
 /** Venue preview card (W01 step 4 rail): the venue's own photos as a carousel, plus its marketplace chips. */
-export function VenuePreview({ photos, name, chips, editHref, publicHref }: {
+export function VenuePreview({ photos, name, chips, editHref, publicHref, title = "Venue preview", editLabel = "Edit images", nameExtra, children, className = "", thumbsFirst = false }: {
   photos: string[]; name: string; chips: { icon: React.ReactNode; label: string }[]; editHref: string; publicHref: string | null;
+  title?: string; editLabel?: string; nameExtra?: React.ReactNode; children?: React.ReactNode; className?: string; thumbsFirst?: boolean;
 }) {
   const [i, setI] = useState(0);
   const n = photos.length, go = (d: number) => setI(x => (x + d + n) % n);
-  return <section className="ws-panel vw-prev">
-    <div className="vw-prev-h"><h2>Venue preview</h2>
+  return <section className={`ws-panel vw-prev ${className}`}>
+    <div className="vw-prev-h"><h2>{title}</h2>
       {publicHref ? <Link href={publicHref} target="_blank" className="ws-btn outline">View on marketplace<ChevronRight aria-hidden="true" /></Link>
         : <span className="ws-btn outline" aria-disabled="true" title="Publish the venue to see it on the marketplace">Not on marketplace yet</span>}</div>
     <div className="vw-prev-img">
       {n ? <img src={photos[i]} alt={`${name} photo ${i + 1} of ${n}`} /> : <span className="vw-prev-none">No photos yet</span>}
       {n > 1 && <><button type="button" className="prev" onClick={() => go(-1)} aria-label="Previous photo"><ChevronLeft aria-hidden="true" /></button>
         <button type="button" className="next" onClick={() => go(1)} aria-label="Next photo"><ChevronRight aria-hidden="true" /></button></>}
-      <Link href={editHref} className="vw-prev-edit"><ImagePlus aria-hidden="true" />Edit images</Link>
+      <Link href={editHref} className="vw-prev-edit"><ImagePlus aria-hidden="true" />{editLabel}</Link>
       {n > 0 && <span className="vw-prev-count">{i + 1}/{n}</span>}
     </div>
-    <b className="vw-prev-name">{name}</b>
-    <ul className="vw-prev-chips">{chips.map(c => <li key={c.label}>{c.icon}{c.label}</li>)}</ul>
-    <ul className="vw-prev-thumbs">{photos.slice(0, 5).map((p, k) => <li key={p}><button type="button" className={k === i ? "on" : ""} onClick={() => setI(k)} aria-label={`Show photo ${k + 1}`}><img src={p} alt="" /></button></li>)}
+    {thumbsFirst ? <><ul className="vw-prev-thumbs">{photos.slice(0, 5).map((p, k) => <li key={p}><button type="button" className={k === i ? "on" : ""} onClick={() => setI(k)} aria-label={`Show photo ${k + 1}`}><img src={p} alt="" /></button></li>)}
       <li><Link href={editHref} aria-label="Add photos"><Plus aria-hidden="true" /></Link></li></ul>
+<div className="vw-prev-nm"><b className="vw-prev-name">{name}</b>{nameExtra}</div>
+    <ul className="vw-prev-chips">{chips.map(c => <li key={c.label}>{c.icon}{c.label}</li>)}</ul></> : <><div className="vw-prev-nm"><b className="vw-prev-name">{name}</b>{nameExtra}</div>
+    <ul className="vw-prev-chips">{chips.map(c => <li key={c.label}>{c.icon}{c.label}</li>)}</ul>
+<ul className="vw-prev-thumbs">{photos.slice(0, 5).map((p, k) => <li key={p}><button type="button" className={k === i ? "on" : ""} onClick={() => setI(k)} aria-label={`Show photo ${k + 1}`}><img src={p} alt="" /></button></li>)}
+      <li><Link href={editHref} aria-label="Add photos"><Plus aria-hidden="true" /></Link></li></ul></>}
+    {children}
   </section>;
 }
 

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Home, CalendarDays, Calendar, BarChart3, Store, Ticket, Users, Wallet, Sparkles, Settings, Search, Plus, ChevronDown, MessageSquare, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon } from "lucide-react";
+import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Search, Plus, ChevronDown, MessageSquare, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon } from "lucide-react";
 import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { switchWorkspace, markNotificationsRead } from "@/lib/actions/shell";
@@ -13,10 +13,10 @@ export type ShellNote = { id: string; title: string; body: string; link: string;
 type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; workspace: ShellWorkspace; workspaces: ShellWorkspace[]; unread: number; notifications: ShellNote[]; threads: { id: string; title: string; event: string; href: string; at: string }[] };
 
 export const ORG_NAV = [
-  { href: "/organizer", label: "Home", icon: Home, exact: true },
+  { href: "/organizer", label: "Home", icon: House, exact: true },
   { href: "/organizer/events", label: "Events", icon: CalendarDays },
   { href: "/organizer/calendar", label: "Calendar", icon: Calendar },
-  { href: "/organizer/sales", label: "Sales", icon: BarChart3, also: ["/organizer/proposals"] },
+  { href: "/organizer/sales", label: "Sales", icon: ChartNoAxesColumnIncreasing, also: ["/organizer/proposals"] },
   { href: "/organizer/marketplace", label: "Marketplace", icon: Store },
   { href: "/organizer/tickets", label: "Tickets & Promotion", icon: Ticket },
   { href: "/organizer/team", label: "Team", icon: Users },
@@ -78,7 +78,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
       <Menu label="Create" width={260} trigger={({ open, toggle, id }) => <div className="k-split o-create"><Link href="/organizer/events/new?step=1" className="k-btn primary"><Plus size={17} aria-hidden />Create</Link><button className="k-btn primary" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu" aria-label="More create options"><ChevronDown size={16} /></button></div>}>
         {close => CREATE.map(c => <Link key={c.href} role="menuitem" href={c.href} className="k-menu-item" onClick={close}><c.icon size={16} className="k-blue" aria-hidden /><span>{c.label}<small>{c.sub}</small></span></Link>)}
       </Menu>
-      <Menu label="Messages" width={330} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={toggle} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><MessageSquare size={20} aria-hidden />{threads.length > 0 && <i className="o-dot" />}</span><span className="o-top-lbl">Messages</span></button>}>
+      <Menu label="Messages" width={330} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={toggle} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><MessageCircle size={21} aria-hidden />{threads.length > 0 && <i className="o-dot" />}</span><span className="o-top-lbl">Messages</span></button>}>
         {close => <><div className="k-between" style={{ padding: "6px 10px" }}><b>Recent conversations</b></div>
           {threads.length ? threads.map(t => <Link key={t.id} role="menuitem" href={t.href} className="k-menu-item" onClick={close}><MessageSquare size={15} aria-hidden className="k-blue" /><span className="k-grow">{t.title}<small>{t.event} · {relative(t.at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>No supplier conversations yet. Conversations start when you send an enquiry or request from Marketplace.</p>}
         </>}

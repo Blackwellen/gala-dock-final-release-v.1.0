@@ -5,8 +5,11 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const results = [];
 const check = (name, ok, detail = "") => { results.push(ok); console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? " — " + detail : ""}`); };
-const item = (await admin.from("build_items").select("id,status,event:events!inner(name)").eq("event.name", "Product Launch Event").not("listing_id", "is", null).single()).data;
+const item = (await admin.from("build_items").select("id,status,request_id,event:events!inner(name)").eq("event.name", "Product Launch Event").not("listing_id", "is", null).single()).data;
 await admin.from("provider_quotes").delete().eq("build_item_id", item.id); // clean slate for this fixture
+// The seeded request's response window is relative to seed time; reopen it so the send step isn't refused as expired.
+{ const soon = new Date(Date.now() + 6 * 3600e3).toISOString(); const bi = (await admin.from("build_items").select("request_id").eq("id", item.id).single()).data;
+  await admin.from("build_items").update({ response_deadline: soon, status: "sent" }).eq("id", item.id); if (bi?.request_id) await admin.from("provider_requests").update({ response_deadline: soon }).eq("id", bi.request_id); }
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const page = await (await browser.newContext({ storageState: "artifacts/auth/provider.json", viewport: { width: 1536, height: 1024 } })).newPage();
 try {

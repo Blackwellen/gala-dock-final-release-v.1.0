@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Sparkles, Lightbulb, CircleCheck, CircleAlert, Info, ArrowLeft, ArrowRight, Save, House, Monitor, Users, CalendarClock, ShieldCheck, FileText, ShieldAlert, CalendarDays, Clock3,
-  Percent, Ban, Boxes, Wrench, Calendar, MessageSquare, Plus, MoreVertical, FileCheck2 } from "lucide-react";
+  Percent, Ban, Boxes, Wrench, Calendar, MessageSquare, Plus, MoreVertical, FileCheck2, Star, MapPin } from "lucide-react";
 import { ActionForm } from "@/components/workspace/actions";
 import { money } from "@/lib/workspace/format";
 import type { Listing } from "@/lib/provider/queries";
@@ -92,20 +92,35 @@ export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc:
     [CalendarClock, "Minimum lead time", `${svc.lead?.min_days ?? 7} days`], [Ban, "Cancellation policy", canc.map(c => `${c.window}: ${c.refund}%`).join(" / ")]];
   return <div className="vw svw-s2">
     <ActionForm action={saveServicePricing.bind(null, s.id, next)} className="vw-contents">
+      <div className="svw-col svw-col-a">
       <section className="ws-panel svw-model"><h2>Pricing model</h2><p>Choose how this service is purchased on the marketplace.</p>
         <div className="svw-models">{([["fixed", "Fixed price", "Set a clear price for standard bookings."], ["from", "From price", "Show a starting price range."], ["quote", "Quote only", "No public price; customers request a quote."], ["hourly", "Hourly rate", "Charge by the hour."], ["daily", "Daily rate", "Charge per day."], ["package", "Package based", "Offer multiple packages."]] as const).map(([k, l, sub]) =>
           <label key={k}><input type="radio" name="model" value={k} defaultChecked={model === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
         <div className="vw-pair"><label>Starting price <i>*</i><span className="vw-money"><em>£</em><input name="price_from" type="number" min={0} defaultValue={s.price_from ?? (prices.length ? Math.min(...prices) : "")} /></span></label>
           <div className="svw-showprice"><b>Price display on marketplace</b><Toggle name="show_price" label="Show price publicly" sub="You can still require a quote for complex events." on={svc.pricing?.show_price ?? true} /></div></div></section>
-      <section className="ws-panel svw-addons"><div className="svw-h"><div><h2>Add-ons <small>(optional)</small></h2><p>Offer extra services or upgrades.</p></div></div>
-        <ul>{[0, 1, 2, 3].map(i => { const a = addons[i]; return <li key={i}><input name={`addon_name_${i}`} defaultValue={a?.name ?? ""} placeholder={i === 0 ? "e.g. Uplighting" : "Add-on name"} aria-label={`Add-on ${i + 1} name`} />
-          <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Short description" aria-label={`Add-on ${i + 1} description`} />
+      <section className="ws-panel svw-addons"><div className="svw-h"><div><h2>Add-ons <small>(optional)</small></h2><p>Offer extra services or upgrades.</p></div>
+          <label className="ws-btn outline sm svw-more"><input type="checkbox" className="sr-only" /><Plus aria-hidden="true" />Add add-on</label></div>
+        <ul>{[0, 1, 2, 3].map(i => { const a = addons[i]; return <li key={i} className={i >= Math.max(1, addons.length) ? "extra" : ""}><span className="svw-ao-ic" aria-hidden="true"><Boxes /></span><span className="svw-ao-txt"><input name={`addon_name_${i}`} defaultValue={a?.name ?? ""} placeholder={i === 0 ? "e.g. Uplighting" : "Add-on name"} aria-label={`Add-on ${i + 1} name`} />
+          <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Short description" aria-label={`Add-on ${i + 1} description`} /></span>
           <span className="vw-money"><em>£</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
           <select name={`addon_unit_${i}`} className="ws-select" defaultValue={a?.unit ?? "per event"} aria-label={`Add-on ${i + 1} unit`}><option>per event</option><option>per hour</option><option>per guest</option></select></li>; })}</ul></section>
-      <section className="ws-panel svw-qs"><div className="svw-h"><div><h2>Customer questions</h2><p>Collect key information when customers book or request a quote.</p></div></div>
-        <ul>{[0, 1, 2, 3, 4, 5].map(i => { const q = qs[i]; return <li key={i}><input name={`q_label_${i}`} defaultValue={q?.label ?? ""} placeholder="Question" aria-label={`Question ${i + 1}`} />
+      <section className="ws-panel svw-qs"><div className="svw-h"><div><h2>Customer questions</h2><p>Collect key information when customers book or request a quote.</p></div>
+          <label className="ws-btn outline sm svw-more"><input type="checkbox" className="sr-only" /><Plus aria-hidden="true" />Add question</label></div>
+        <ul>{[0, 1, 2, 3, 4, 5].map(i => { const q = qs[i]; return <li key={i} className={i >= Math.max(1, qs.length) ? "extra" : ""}><input name={`q_label_${i}`} defaultValue={q?.label ?? ""} placeholder="Question" aria-label={`Question ${i + 1}`} />
           <select name={`q_type_${i}`} className="ws-select" defaultValue={q?.type ?? "text"} aria-label={`Question ${i + 1} type`}><option value="text">Short text</option><option value="long_text">Long text</option><option value="number">Number</option><option value="date">Date</option><option value="dropdown">Dropdown</option></select>
           <Toggle name={`q_req_${i}`} label="Required" on={q?.required} /></li>; })}</ul></section>
+      </div>
+      <div className="svw-col svw-col-b">
+    <section className="ws-panel svw-rates"><div className="svw-h"><div><h2>Rates &amp; packages</h2><p>Standard packages customers can book. Each is a live package listing.</p></div>
+        <Link className="ws-btn outline sm" href={`/provider/packages/new?step=1&listing=${s.id}`}><Plus aria-hidden="true" />Add package</Link></div>
+        <div className="svw-rtabs" role="tablist" aria-label="Rates view">{([["pk", "Packages"], ["ir", "Individual rates"], ["ao", "Service add-ons"]] as const).map(([k, l], i) =>
+        <label key={k} className={`svw-rtab-${k}`}><input type="radio" name="_rates_view" value={k} defaultChecked={i === 0} className="sr-only" />{l}</label>)}</div>
+      <ul className="svw-rp-ir">{[["Starting price", Number(s.price_from) > 0 ? money(Number(s.price_from)) : "Not set"], ["Pricing model", summary[0][2]], ["Price shown publicly", svc.pricing?.show_price === false ? "No — quote on request" : "Yes"]].map(([l, v]) => <li key={l}><span><b>{l}</b></span><em>{v}</em></li>)}</ul>
+      <ul className="svw-rp-ao">{addons.length ? addons.map(a => <li key={a.name}><span><b>{a.name}</b><small>{a.desc}</small></span><em>{money(a.price)} <small>{a.unit}</small></em></li>) : <li><span><small>No add-ons yet — add them below.</small></span></li>}</ul>
+      {pkgs.length ? <ul className="svw-rp-pk">{pkgs.map(p => <li key={p.id}>{/* eslint-disable-next-line @next/next/no-img-element */}
+          {p.image ? <img src={p.image} alt="" /> : <span className="qb-noimg" />}<span><b>{p.name}</b><small>{[p.duration_hours ? `${p.duration_hours} hours` : null, p.description].filter(Boolean).join(" • ")}</small></span>
+          <em>{money(p.base_price)}</em><RowMenu label={`Actions for ${p.name}`} entries={[{ kind: "link", label: "Edit package", href: `/provider/packages/${p.id}` }]} /></li>)}</ul>
+          : <p className="pv-none">No packages yet — add your standard offers so customers can book instantly or request them.</p>}</section>
       <section className="ws-panel svw-setup"><h2>Setup &amp; requirements</h2><p>Define what’s needed to deliver this service.</p>
         <div className="vw-grid2"><label>Setup time<span className="vw-money"><input name="setup_h" type="number" min={0} step={0.5} defaultValue={(st.setup_minutes ?? 60) / 60} /><em className="r">hours</em></span></label>
           <label>Pack down time<span className="vw-money"><input name="packdown_h" type="number" min={0} step={0.5} defaultValue={(st.packdown_minutes ?? 60) / 60} /><em className="r">hours</em></span></label></div>
@@ -114,17 +129,20 @@ export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc:
       <section className="ws-panel svw-lead"><h2>Lead time &amp; cancellation</h2><p>Control how far in advance customers can book and your cancellation terms.</p>
         <div className="vw-grid2"><label>Minimum lead time<span className="vw-money"><input name="lead_min" type="number" min={0} defaultValue={svc.lead?.min_days ?? 7} /><em className="r">days</em></span></label>
           <label>Maximum lead time <small>(optional)</small><span className="vw-money"><input name="lead_max" type="number" min={0} defaultValue={svc.lead?.max_days ?? 365} /><em className="r">days</em></span></label></div>
-        <div className="vw-cancel-rows">{[0, 1, 2].map(i => <div key={i}><input name={`c_window_${i}`} defaultValue={canc[i]?.window ?? ""} aria-label={`Cancellation window ${i + 1}`} /><span className="vw-money"><input name={`c_refund_${i}`} type="number" min={0} max={100} defaultValue={canc[i]?.refund ?? ""} aria-label={`Refund ${i + 1}`} /><em className="r">% refund</em></span></div>)}</div></section>
+        <details className="svw-policy"><summary><span className="svw-policy-l">Cancellation policy</span><span className="svw-policy-v">{canc.filter(c => c.window).map(c => `${c.window}: ${c.refund}%`).join(", ") || "Not set — uses the platform default"}</span>
+          <span className="ws-btn outline">Edit policy details</span></summary>
+          <div className="vw-cancel-rows">{[0, 1, 2].map(i => <div key={i}><input name={`c_window_${i}`} defaultValue={canc[i]?.window ?? ""} aria-label={`Cancellation window ${i + 1}`} /><span className="vw-money"><input name={`c_refund_${i}`} type="number" min={0} max={100} defaultValue={canc[i]?.refund ?? ""} aria-label={`Refund ${i + 1}`} /><em className="r">% refund</em></span></div>)}</div></details></section>
+      </div>
       <Foot back={back} next={label ?? "Next: Availability & Requirements"} step={2} />
     </ActionForm>
-    <section className="ws-panel svw-rates"><div className="svw-h"><div><h2>Rates &amp; packages</h2><p>Standard packages customers can book. Each is a live package listing.</p></div>
-      <Link className="ws-btn outline sm" href={`/provider/packages/new?step=1&listing=${s.id}`}><Plus aria-hidden="true" />Add package</Link></div>
-      {pkgs.length ? <ul>{pkgs.map(p => <li key={p.id}>{/* eslint-disable-next-line @next/next/no-img-element */}
-        {p.image ? <img src={p.image} alt="" /> : <span className="qb-noimg" />}<span><b>{p.name}</b><small>{[p.duration_hours ? `${p.duration_hours} hours` : null, p.description].filter(Boolean).join(" • ")}</small></span>
-        <em>{money(p.base_price)}</em><RowMenu label={`Actions for ${p.name}`} entries={[{ kind: "link", label: "Edit package", href: `/provider/packages/${p.id}` }]} /></li>)}</ul>
-        : <p className="pv-none">No packages yet — add your standard offers so customers can book instantly or request them.</p>}</section>
     <aside className="vw-side svw-side2"><Agent goal={`Review pricing for ${s.name}`} title="Things to check before you continue:" items={["Packages cover your common booking lengths", "Add-ons for frequent upgrades", "Travel fee for events beyond your radius", "Deposit and cancellation terms are clear"]} />
-      <section className="ws-panel vw-summary-card"><h2>Pricing summary</h2><ul>{summary.map(([I, l, v]) => <li key={l}><I aria-hidden="true" /><b>{l}</b><span>{v}</span></li>)}</ul></section></aside>
+      <section className="ws-panel vw-summary-card"><h2>Pricing summary</h2><ul>{summary.map(([I, l, v]) => <li key={l}><I aria-hidden="true" /><b>{l}</b><span>{v}</span></li>)}</ul></section>
+      <section className="ws-panel svw-pcard"><div className="vw-prev-h"><h2>Preview card</h2>{s.published && s.slug ? <Link href={`/services/${s.slug}`} target="_blank" className="ws-btn outline">View on marketplace</Link> : <span className="ws-btn outline" aria-disabled="true">Draft</span>}</div>
+        <div className="svw-pcard-img">{/* eslint-disable-next-line @next/next/no-img-element */}{s.image ? <img src={s.image} alt="" /> : <span />}</div>
+        <div className="svw-pcard-nm"><b>{s.name}</b>{s.review_count > 0 && <span className="pkw-rating"><Star aria-hidden="true" />{s.rating.toFixed(1)} <small>({s.review_count})</small></span>}</div>
+        <p className="svw-pcard-loc"><MapPin aria-hidden="true" />{s.city || "Location not set"}</p>
+        <ul className="svw-pcard-chips">{[Number(s.price_from) > 0 ? `From ${money(Number(s.price_from))}` : "Quote only", ({ onsite: "On-site", remote: "Remote", hybrid: "Hybrid" } as Record<string, string>)[svc.delivery ?? "onsite"],
+          (svc.event_types ?? []).length ? `${(svc.event_types ?? []).slice(0, 2).join(", ")}${(svc.event_types ?? []).length > 2 ? ` +${(svc.event_types ?? []).length - 2}` : ""}` : null].filter(Boolean).map(c => <li key={c!}>{c}</li>)}</ul></section></aside>
   </div>;
 }
 

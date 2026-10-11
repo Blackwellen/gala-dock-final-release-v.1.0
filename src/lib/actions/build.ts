@@ -42,7 +42,7 @@ async function item(eventId: string, itemId: string) {
 }
 export async function removeFromBuild(eventId: string, itemId: string): Promise<ActionResult> {
   const o = await item(eventId, itemId); if (!o) return { ok: false, error: "Item not found." };
-  if (["confirmed", "held", "fulfilled"].includes(o.it.status)) return { ok: false, error: `${o.it.title} is ${o.it.status}. Cancel it from Money so cancellation terms are applied.` };
+  if (["confirmed", "held", "fulfilled"].includes(o.it.status)) return { ok: false, error: `${o.it.title} is ${o.it.status}. Use Manage booking to cancel it so the cancellation policy applies.` };
   const { error } = ["suggested", "draft"].includes(o.it.status) ? await o.ctx.supabase.from("build_items").delete().eq("id", o.it.id) : await o.ctx.supabase.rpc("transition_build_item", { p_item: o.it.id, p_to: "cancelled" });
   if (error) return { ok: false, error: "Could not remove." };
   bump(o.e.id); return { ok: true, message: `${o.it.title} removed.` };

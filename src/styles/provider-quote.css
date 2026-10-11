@@ -1,10 +1,10 @@
 /* PROV-W05 Respond with Quote — measured from "SaaS Quote Builder Dashboard" and "Gala·Dock Quote Review Dashboard" (1536×1024). */
 .qw-page{display:grid;gap:0}
-.qw-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#22265e;margin:4px 0 6px}
+.qw-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#100e78;margin:-5px 0 12px}
 .qw-back svg{width:17px!important;height:17px!important}
-.qw-head h1{font-size:30px;font-weight:800;letter-spacing:-.035em;color:#02032e;line-height:1.2}
-.qw-head p{font-size:16px;color:var(--ws-sub);margin-top:2px}
-.qw-steps{list-style:none;margin:16px 0 14px;padding:0 24px;display:flex;align-items:center;gap:14px}
+.qw-head h1{font-size:30px;font-weight:800;letter-spacing:-.035em;color:#03035f;line-height:1.2}
+.qw-head p{font-size:17.5px;color:#5559cf;margin-top:0;letter-spacing:-.01em}
+.qw-steps{list-style:none;margin:5px 0 14px;padding:0 24px;display:flex;align-items:center;gap:14px}
 .qw-steps li{display:flex;align-items:center;gap:14px;font-size:12.5px;color:#5b67b0;flex:1;white-space:nowrap}
 .qw-steps li:not(:last-child)::after{content:"";flex:1;height:2px;background:#e3e8f6;margin:0 10px}
 .qw-steps li span{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1.5px solid #dfe5f4;background:#fff;color:#22265e;font-weight:600;flex-shrink:0}

@@ -290,3 +290,16 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
 }
 /* Shared card surface for components reused across shells (organizer + public). */
 .o-root .ce-card, .pub-root .ce-card { background: #fff; border: 1px solid var(--k-line); border-radius: 12px; padding: 16px; box-shadow: var(--k-card-shadow); min-width: 0; }
+
+/* Design palette (1:1 with the 1536px references): royal-blue ink, periwinkle secondary text, hairline blue edges with a soft glow.
+   Scoped to the Customer App, Organizer workspace and public pages. */
+.o-root, .c-root, .pub-root {
+  --k-ink: #03037a; --k-ink-2: #22227d; --k-muted: #5b5dd6; --k-muted-2: #8e8ad1;
+  --k-line: #e6edfb; --k-line-2: #eff3fc; --k-page: #f9fbfe; --k-soft: #f4f7ff;
+  --k-blue: #075dfe; --k-blue-2: #0050ec; --k-blue-soft: #edf3ff; --k-blue-line: #cddafc;
+  --k-nav: #0505b4; --k-head: #0303a4;
+  --k-shadow: 0 1px 2px #2a46c80a, 0 8px 22px #2a46c80d; --k-card-shadow: 0 1px 2px #2a46c808, 0 6px 18px -8px #2a46c81a;
+  --k-line: #eaf1fd;
+}
+/* Customer App and public pages use the darker navy ink of their references (headings #02022a, secondary #5a5f9e). */
+.c-root, .pub-root { --k-line: #eef2fa; --k-ink: #04042e; --k-ink-2: #2c3064; --k-muted: #5a5f9e; --k-muted-2: #8b8fbf; --k-nav: #0b0c3c; --k-head: #04042e; }

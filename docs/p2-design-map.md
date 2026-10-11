@@ -39,10 +39,10 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | ORG-008 Marketplace | Services/Venues Marketplace (×5), image-gen-1/2, Marketplace UI cards | /organizer/marketplace… | ✅ |
 | ORG-009 Request / quote comparison | Gala Dock Marketplace Quote Comparison | /organizer/marketplace/requests/[id] | ✅ |
 | ORG-011 Tickets & Promotion hub | Gala Dock Event Promotion Dashboard | /organizer/tickets | ✅ |
-| ORG-012 Public page editor | Neon Nights Festival Page Editor | /organizer/events/[id]/page | ⬜ |
+| ORG-012 Public page editor | Neon Nights Festival Page Editor | /organizer/events/[id]/page | ✅ block order/visibility, hero + SEO, live same-origin preview, publish |
 | ORG-013 Venue map builder | Neon Nights Festival Venue Map Builder | /organizer/events/[id]/map (session -22) | ✅ |
 | ORG-014 Promotion | Neon Nights Promotion Dashboard | /organizer/events/[id]/promotion | ✅ |
-| ORG-015 Poster / media builder | Neon Nights Festival Poster Builder | /organizer/events/[id]/media | ⬜ |
+| ORG-015 Poster / media builder | Neon Nights Festival Poster Builder | /organizer/events/[id]/media | ✅ live canvas render (10 formats), edit tabs, Gala Agent copy, PNG/JPG export, storage upload + library, e2e |
 | ORG-016 Team | Gala Dock Team Dashboard | /organizer/team | ✅ |
 | ORG-017 Team profile | Gala·Dock Team Profile Dashboard | /organizer/team/[id] | ✅ |
 | ORG-018 Money | Gala Dock Event Finance Dashboard | /organizer/money | ✅ |
@@ -51,7 +51,7 @@ Source: `Designs/customer & Organizer workspace/` (85 images). Status: ✅ built
 | ORG-021 Settings | Gala Dock Workspace Settings Dashboard | /organizer/settings | ✅ |
 | W01 Create event (4) | Modern Event Creation Wizard · GalaDock Event Creation · Gala Dock Event Economics · Gala·Dock Event Setup | /organizer/events/new?step=1..4 | ✅ |
 | W02 Proposal (3) | Gala Dock Proposal · SaaS Proposal Builder · Proposal Review | /organizer/proposals/new | ✅ |
-| W03 Ticket setup (3) | GalaDock/Neon Ticket Setup (tiers) · Gala·Dock Ticket Setup (venue & capacity) · Gala Dock Ticket Setup / Neon (1) (rules & publish) | /organizer/events/[id]/tickets/setup | 🔨 functional (shared wizard); pro 5-step table layout pending |
+| W03 Ticket setup (3) | GalaDock/Neon Ticket Setup (tiers) · Gala·Dock Ticket Setup (venue & capacity) · Gala Dock Ticket Setup / Neon (1) (rules & publish) | /organizer/events/[id]/tickets/setup | ✅ pro 5 steps (model & capacity · tiers/releases & pricing · seating & allocation · access & controls · review & activate), sell-out release trigger, e2e |
 | W04 Marketplace request (2) | Create Marketplace Request (×2), Neon Supplier Marketplace (×2) | /organizer/marketplace/requests/new | ✅ |
 | W05 Promotion (3) | Neon Nights Promotion Dashboard2 · Neon Nights Festival Promotion · Gala Dock Promotion Review | /organizer/promotions/new | ✅ |
 | W06 Invoice (2) | Gala·Dock Invoice Creation · Gala·Dock Invoice Scheduling | /organizer/money/invoices/new | ✅ |

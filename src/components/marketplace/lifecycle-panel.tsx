@@ -86,7 +86,7 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       {standby.filter(s => s !== openSb).slice(0, 2).map(s => <p key={s.id} className="mk-history">{SB_LABEL[s.status]}{s.activated_at ? ` · ${when(s.activated_at)}` : ""}</p>)}
     </div>}
 
-    {(openCancel || cancellable || cancellations.length > 0) && <div className="mk-block">
+    {(openCancel || cancellable || cancellations.length > 0) && <div className="mk-block" id="cancel">
       <h3><Undo2 size={15} aria-hidden="true" />Cancellation</h3>
       {openCancel ? <>
         <p className="mk-line"><Tag tone="orange">{openCancel.status === "manual_review" ? "With Gala Dock review" : "Awaiting response"}</Tag>

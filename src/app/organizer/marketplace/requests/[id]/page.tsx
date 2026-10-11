@@ -11,6 +11,9 @@ export const metadata = { title: "Request" };
 type Q = { rating?: number; reviews?: number; cancellation?: string; reliability?: number; response_time?: string; hold?: string; setup?: string; recommended?: boolean; responded?: string; availability?: string; inclusions?: string[]; exclusions?: string };
 const STATUS: Record<string, [string, "green" | "blue" | "amber" | "red" | "gray" | "purple"]> = { quoted: ["Responded", "green"], available: ["Responded", "green"], held: ["On hold", "purple"], confirmed: ["Confirmed", "green"], sent: ["Awaiting response", "amber"], awaiting: ["Awaiting response", "amber"], declined: ["Declined", "red"], expired: ["No response", "gray"], unavailable: ["Unavailable", "red"], cancelled: ["Removed", "gray"] };
 
+/** Whole days until a deadline (server-side, request time). */
+function daysUntil(iso: string) { return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 864e5)); }
+
 export default async function RequestPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]); const ctx = await getOrganizer(); const sb = ctx.supabase;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
@@ -25,7 +28,7 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
   items = [...items].sort((a, b) => rank(a.status) - rank(b.status) || (sortBy === "total_desc" ? Number(b.amount ?? 0) - Number(a.amount ?? 0) : sortBy === "rating" ? Number((b.quote as Q).rating ?? 0) - Number((a.quote as Q).rating ?? 0) : Number(a.amount ?? 1e9) - Number(b.amount ?? 1e9)));
   const responded = items.filter(i => ["quoted", "available", "held", "confirmed", "declined", "unavailable"].includes(i.status)).length;
   const req = (r.requirements ?? {}) as Record<string, string>;
-  const due = r.response_deadline; const daysLeft = due ? Math.max(0, Math.ceil((new Date(due).getTime() - Date.now()) / 864e5)) : null;
+  const due = r.response_deadline; const daysLeft = due ? daysUntil(due) : null;
   const quotable = items.filter(i => ["quoted", "available", "held"].includes(i.status) && i.amount != null);
   const avg = quotable.length ? quotable.reduce((s, i) => s + Number(i.amount), 0) / quotable.length : 0;
   const best = [...quotable].sort((a, b) => ((Number((b.quote as Q).rating ?? 4) * 2000) - Number(b.amount)) - ((Number((a.quote as Q).rating ?? 4) * 2000) - Number(a.amount)))[0];

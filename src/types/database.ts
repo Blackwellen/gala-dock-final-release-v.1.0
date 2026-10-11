@@ -424,6 +424,9 @@ export type Database = {
       audit_events: {
         Row: {
           actor_id: string | null
+          actor_type: string
+          agent_run_id: string | null
+          correlation_id: string | null
           created_at: string
           event: string
           id: number
@@ -432,6 +435,9 @@ export type Database = {
         }
         Insert: {
           actor_id?: string | null
+          actor_type?: string
+          agent_run_id?: string | null
+          correlation_id?: string | null
           created_at?: string
           event: string
           id?: never
@@ -440,6 +446,9 @@ export type Database = {
         }
         Update: {
           actor_id?: string | null
+          actor_type?: string
+          agent_run_id?: string | null
+          correlation_id?: string | null
           created_at?: string
           event?: string
           id?: never
@@ -728,6 +737,7 @@ export type Database = {
           kind: string
           lines: Json
           order_ref: string
+          ref_code: string | null
           status: string
           stripe_session: string | null
           token: string
@@ -743,6 +753,7 @@ export type Database = {
           kind?: string
           lines?: Json
           order_ref: string
+          ref_code?: string | null
           status?: string
           stripe_session?: string | null
           token: string
@@ -758,6 +769,7 @@ export type Database = {
           kind?: string
           lines?: Json
           order_ref?: string
+          ref_code?: string | null
           status?: string
           stripe_session?: string | null
           token?: string
@@ -772,6 +784,136 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      connect_accounts: {
+        Row: {
+          account_type: string
+          card_payments_capability: string
+          charges_enabled: boolean
+          country: string | null
+          default_currency: string | null
+          details_submitted: boolean
+          disabled_reason: string | null
+          last_event_at: string | null
+          payouts_enabled: boolean
+          requirements_currently_due: string[]
+          requirements_eventually_due: string[]
+          requirements_past_due: string[]
+          stripe_account_id: string
+          transfers_capability: string
+          updated_at: string
+          verification_state: string
+          workspace_id: string
+        }
+        Insert: {
+          account_type?: string
+          card_payments_capability?: string
+          charges_enabled?: boolean
+          country?: string | null
+          default_currency?: string | null
+          details_submitted?: boolean
+          disabled_reason?: string | null
+          last_event_at?: string | null
+          payouts_enabled?: boolean
+          requirements_currently_due?: string[]
+          requirements_eventually_due?: string[]
+          requirements_past_due?: string[]
+          stripe_account_id: string
+          transfers_capability?: string
+          updated_at?: string
+          verification_state?: string
+          workspace_id: string
+        }
+        Update: {
+          account_type?: string
+          card_payments_capability?: string
+          charges_enabled?: boolean
+          country?: string | null
+          default_currency?: string | null
+          details_submitted?: boolean
+          disabled_reason?: string | null
+          last_event_at?: string | null
+          payouts_enabled?: boolean
+          requirements_currently_due?: string[]
+          requirements_eventually_due?: string[]
+          requirements_past_due?: string[]
+          stripe_account_id?: string
+          transfers_capability?: string
+          updated_at?: string
+          verification_state?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connect_accounts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credential_requirements: {
+        Row: {
+          capability: string | null
+          category: string | null
+          country: string | null
+          credential_key: string
+          gates_marketplace: boolean
+          id: string
+          requirement: string
+        }
+        Insert: {
+          capability?: string | null
+          category?: string | null
+          country?: string | null
+          credential_key: string
+          gates_marketplace?: boolean
+          id?: string
+          requirement: string
+        }
+        Update: {
+          capability?: string | null
+          category?: string | null
+          country?: string | null
+          credential_key?: string
+          gates_marketplace?: boolean
+          id?: string
+          requirement?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credential_requirements_credential_key_fkey"
+            columns: ["credential_key"]
+            isOneToOne: false
+            referencedRelation: "credential_types"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      credential_types: {
+        Row: {
+          description: string
+          expires: boolean
+          key: string
+          label: string
+          verification_method: string
+        }
+        Insert: {
+          description?: string
+          expires?: boolean
+          key: string
+          label: string
+          verification_method?: string
+        }
+        Update: {
+          description?: string
+          expires?: boolean
+          key?: string
+          label?: string
+          verification_method?: string
+        }
+        Relationships: []
       }
       crew_members: {
         Row: {
@@ -1640,6 +1782,104 @@ export type Database = {
           },
           {
             foreignKeyName: "leads_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ledger_entries: {
+        Row: {
+          account: string
+          amount_minor: number
+          created_at: string
+          id: number
+          party_id: string | null
+          party_type: string | null
+          transaction_id: string
+        }
+        Insert: {
+          account: string
+          amount_minor: number
+          created_at?: string
+          id?: never
+          party_id?: string | null
+          party_type?: string | null
+          transaction_id: string
+        }
+        Update: {
+          account?: string
+          amount_minor?: number
+          created_at?: string
+          id?: never
+          party_id?: string | null
+          party_type?: string | null
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_entries_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "ledger_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ledger_transactions: {
+        Row: {
+          actor_type: string
+          currency: string
+          description: string
+          event_id: string | null
+          id: string
+          idempotency_key: string
+          kind: string
+          posted_at: string
+          source_id: string | null
+          source_type: string | null
+          stripe_ref: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          actor_type?: string
+          currency: string
+          description?: string
+          event_id?: string | null
+          id?: string
+          idempotency_key: string
+          kind: string
+          posted_at?: string
+          source_id?: string | null
+          source_type?: string | null
+          stripe_ref?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          actor_type?: string
+          currency?: string
+          description?: string
+          event_id?: string | null
+          id?: string
+          idempotency_key?: string
+          kind?: string
+          posted_at?: string
+          source_id?: string | null
+          source_type?: string | null
+          stripe_ref?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_transactions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_transactions_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -2962,6 +3202,7 @@ export type Database = {
           payout_method: string | null
           revenue: number
           status: string
+          ticket_allocation: number | null
           tickets_sold: number
           user_id: string | null
         }
@@ -2977,6 +3218,7 @@ export type Database = {
           payout_method?: string | null
           revenue?: number
           status?: string
+          ticket_allocation?: number | null
           tickets_sold?: number
           user_id?: string | null
         }
@@ -2992,6 +3234,7 @@ export type Database = {
           payout_method?: string | null
           revenue?: number
           status?: string
+          ticket_allocation?: number | null
           tickets_sold?: number
           user_id?: string | null
         }
@@ -3180,6 +3423,78 @@ export type Database = {
           },
           {
             foreignKeyName: "proposals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_documents: {
+        Row: {
+          created_at: string
+          credential_key: string
+          effective_from: string | null
+          expires_on: string | null
+          file_name: string
+          file_path: string
+          id: string
+          issuing_organisation: string | null
+          reference: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          uploaded_by: string | null
+          verification_method: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          credential_key: string
+          effective_from?: string | null
+          expires_on?: string | null
+          file_name?: string
+          file_path: string
+          id?: string
+          issuing_organisation?: string | null
+          reference?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          uploaded_by?: string | null
+          verification_method?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          credential_key?: string
+          effective_from?: string | null
+          expires_on?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          issuing_organisation?: string | null
+          reference?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          uploaded_by?: string | null
+          verification_method?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_documents_credential_key_fkey"
+            columns: ["credential_key"]
+            isOneToOne: false
+            referencedRelation: "credential_types"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "provider_documents_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -3526,6 +3841,65 @@ export type Database = {
         }
         Relationships: []
       }
+      reliability_metrics: {
+        Row: {
+          bookings_completed: number
+          bookings_confirmed: number
+          computed_at: string
+          disputes: number
+          median_response_minutes: number | null
+          no_shows: number
+          provider_cancellations: number
+          quotes_sent: number
+          requests_received: number
+          requests_responded: number
+          verified_rating: number | null
+          verified_reviews: number
+          window_days: number
+          workspace_id: string
+        }
+        Insert: {
+          bookings_completed?: number
+          bookings_confirmed?: number
+          computed_at?: string
+          disputes?: number
+          median_response_minutes?: number | null
+          no_shows?: number
+          provider_cancellations?: number
+          quotes_sent?: number
+          requests_received?: number
+          requests_responded?: number
+          verified_rating?: number | null
+          verified_reviews?: number
+          window_days?: number
+          workspace_id: string
+        }
+        Update: {
+          bookings_completed?: number
+          bookings_confirmed?: number
+          computed_at?: string
+          disputes?: number
+          median_response_minutes?: number | null
+          no_shows?: number
+          provider_cancellations?: number
+          quotes_sent?: number
+          requests_received?: number
+          requests_responded?: number
+          verified_rating?: number | null
+          verified_reviews?: number
+          window_days?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reliability_metrics_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resale_holds: {
         Row: {
           expires_at: string
@@ -3646,6 +4020,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      role_permissions: {
+        Row: {
+          permission: string
+          role: string
+          workspace_kind: string
+        }
+        Insert: {
+          permission: string
+          role: string
+          workspace_kind: string
+        }
+        Update: {
+          permission?: string
+          role?: string
+          workspace_kind?: string
+        }
+        Relationships: []
       }
       saved_items: {
         Row: {
@@ -3862,6 +4254,92 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      state_machines: {
+        Row: {
+          column_name: string
+          initial_states: string[]
+          machine: string
+          mode: string
+          table_name: string
+          terminal_states: string[]
+        }
+        Insert: {
+          column_name: string
+          initial_states?: string[]
+          machine: string
+          mode: string
+          table_name: string
+          terminal_states?: string[]
+        }
+        Update: {
+          column_name?: string
+          initial_states?: string[]
+          machine?: string
+          mode?: string
+          table_name?: string
+          terminal_states?: string[]
+        }
+        Relationships: []
+      }
+      state_transitions: {
+        Row: {
+          from_state: string
+          machine: string
+          to_state: string
+        }
+        Insert: {
+          from_state: string
+          machine: string
+          to_state: string
+        }
+        Update: {
+          from_state?: string
+          machine?: string
+          to_state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "state_transitions_machine_fkey"
+            columns: ["machine"]
+            isOneToOne: false
+            referencedRelation: "state_machines"
+            referencedColumns: ["machine"]
+          },
+        ]
+      }
+      state_violations: {
+        Row: {
+          actor_id: string | null
+          from_state: string | null
+          id: number
+          machine: string
+          occurred_at: string
+          row_id: string | null
+          table_name: string
+          to_state: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          from_state?: string | null
+          id?: never
+          machine: string
+          occurred_at?: string
+          row_id?: string | null
+          table_name: string
+          to_state?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          from_state?: string | null
+          id?: never
+          machine?: string
+          occurred_at?: string
+          row_id?: string | null
+          table_name?: string
+          to_state?: string | null
+        }
+        Relationships: []
       }
       support_cases: {
         Row: {
@@ -4143,6 +4621,7 @@ export type Database = {
       }
       ticket_tiers: {
         Row: {
+          after_tier: string | null
           allocation: string
           badge: string | null
           color: string
@@ -4150,6 +4629,7 @@ export type Database = {
           event_id: string
           held: number
           id: string
+          image: string | null
           kind: string
           name: string
           order_limit: number
@@ -4163,6 +4643,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          after_tier?: string | null
           allocation?: string
           badge?: string | null
           color?: string
@@ -4170,6 +4651,7 @@ export type Database = {
           event_id: string
           held?: number
           id?: string
+          image?: string | null
           kind?: string
           name: string
           order_limit?: number
@@ -4183,6 +4665,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          after_tier?: string | null
           allocation?: string
           badge?: string | null
           color?: string
@@ -4190,6 +4673,7 @@ export type Database = {
           event_id?: string
           held?: number
           id?: string
+          image?: string | null
           kind?: string
           name?: string
           order_limit?: number
@@ -4203,6 +4687,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ticket_tiers_after_tier_fkey"
+            columns: ["after_tier"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ticket_tiers_event_id_fkey"
             columns: ["event_id"]
@@ -4550,6 +5041,89 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      verification_records: {
+        Row: {
+          created_at: string
+          decided_by: string | null
+          evidence: Json
+          id: string
+          kind: string
+          scope: string
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_by?: string | null
+          evidence?: Json
+          id?: string
+          kind: string
+          scope: string
+          status: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_by?: string | null
+          evidence?: Json
+          id?: string
+          kind?: string
+          scope?: string
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_records_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_events: {
+        Row: {
+          attempts: number
+          correlation_id: string | null
+          error: string | null
+          event_type: string
+          external_id: string
+          id: number
+          livemode: boolean | null
+          processed_at: string | null
+          provider: string
+          received_at: string
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          correlation_id?: string | null
+          error?: string | null
+          event_type: string
+          external_id: string
+          id?: never
+          livemode?: boolean | null
+          processed_at?: string | null
+          provider: string
+          received_at?: string
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          correlation_id?: string | null
+          error?: string | null
+          event_type?: string
+          external_id?: string
+          id?: never
+          livemode?: boolean | null
+          processed_at?: string | null
+          provider?: string
+          received_at?: string
+          status?: string
+        }
+        Relationships: []
       }
       workspace_invites: {
         Row: {
@@ -4984,6 +5558,7 @@ export type Database = {
         Args: { p_approval: string; p_result: string }
         Returns: undefined
       }
+      attribute_referral: { Args: { p_order_ref: string }; Returns: number }
       calendar_feed: {
         Args: { p_token: string }
         Returns: {
@@ -5010,6 +5585,15 @@ export type Database = {
       checkout_holds: {
         Args: { p_event: string; p_token: string }
         Returns: Json
+      }
+      claim_webhook_event: {
+        Args: {
+          p_external_id: string
+          p_livemode: boolean
+          p_provider: string
+          p_type: string
+        }
+        Returns: boolean
       }
       complete_customer_onboarding: { Args: never; Returns: undefined }
       complete_workspace_onboarding: {
@@ -5072,9 +5656,23 @@ export type Database = {
       }
       event_readiness: { Args: { p_event: string }; Returns: Json }
       expire_checkout_holds: { Args: never; Returns: number }
+      expire_provider_documents: { Args: never; Returns: number }
       expire_seat_holds: { Args: { p_event?: string }; Returns: number }
       expire_stale_items: { Args: never; Returns: number }
+      finish_webhook_event: {
+        Args: {
+          p_error?: string
+          p_external_id: string
+          p_provider: string
+          p_status: string
+        }
+        Returns: undefined
+      }
       has_admin_permission: { Args: { p: string }; Returns: boolean }
+      has_permission: {
+        Args: { p_permission: string; p_workspace: string }
+        Returns: boolean
+      }
       has_workspace_role: {
         Args: { roles: string[]; target: string }
         Returns: boolean
@@ -5265,6 +5863,7 @@ export type Database = {
         Args: { p_body: string; p_subject: string }
         Returns: string
       }
+      payout_eligible: { Args: { p_workspace: string }; Returns: boolean }
       plan_catalog: { Args: never; Returns: Json }
       portal_comment: {
         Args: { p_body: string; p_token_hash: string }
@@ -5325,6 +5924,22 @@ export type Database = {
       }
       portal_revoke_link: { Args: { p_link: string }; Returns: undefined }
       portal_view: { Args: { p_token_hash: string }; Returns: Json }
+      post_ledger_transaction: {
+        Args: {
+          p_actor_type?: string
+          p_currency: string
+          p_description?: string
+          p_event?: string
+          p_idempotency_key: string
+          p_kind: string
+          p_lines: Json
+          p_source_id?: string
+          p_source_type?: string
+          p_stripe_ref?: string
+          p_workspace?: string
+        }
+        Returns: string
+      }
       promoter_click_stats: {
         Args: { p_promoter: string; p_since: string }
         Returns: {
@@ -5516,6 +6131,10 @@ export type Database = {
           total: number
         }[]
       }
+      recompute_reliability: {
+        Args: { p_workspace: string }
+        Returns: undefined
+      }
       record_invoice_payment: {
         Args: {
           p_amount: number
@@ -5528,6 +6147,7 @@ export type Database = {
       release_checkout: { Args: { p_token: string }; Returns: number }
       release_resale_holds: { Args: { p_token: string }; Returns: number }
       release_seat_holds: { Args: { p_token: string }; Returns: number }
+      reliability_band: { Args: { p_workspace: string }; Returns: string }
       remember_workspace: { Args: { p_workspace: string }; Returns: undefined }
       request_account_deletion: {
         Args: { p_cancel: boolean }
@@ -5542,6 +6162,10 @@ export type Database = {
       respond_to_invite: {
         Args: { p_accept: boolean; p_invite_id: string; p_token_hash: string }
         Returns: Json
+      }
+      review_provider_document: {
+        Args: { p_document: string; p_reason?: string; p_status: string }
+        Returns: undefined
       }
       revise_proposal: { Args: { p_proposal: string }; Returns: undefined }
       rotate_calendar_token: { Args: never; Returns: string }
@@ -5636,6 +6260,17 @@ export type Database = {
         Returns: undefined
       }
       withdraw_proposal: { Args: { p_proposal: string }; Returns: undefined }
+      workspace_credential_status: {
+        Args: { p_workspace: string }
+        Returns: {
+          credential_key: string
+          expires_on: string
+          gates_marketplace: boolean
+          label: string
+          requirement: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

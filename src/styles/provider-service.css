@@ -36,7 +36,8 @@
 .svw-creds input{height:30px!important;font-size:10.5px!important}
 
 /* Step 2 */
-.svw-s2{grid-template-columns:510fr 410fr 320fr;grid-template-areas:"model rates side" "addons setup side" "qs lead side" "foot foot foot"}
+.svw-s2{grid-template-columns:510fr 410fr 320fr;grid-template-areas:"cola colb side" "foot foot foot"}
+.svw-col{display:grid;gap:12px;align-content:start;min-width:0}.svw-col-a{grid-area:cola}.svw-col-b{grid-area:colb}.svw-col>section{grid-area:auto!important}
 .svw-model{grid-area:model}.svw-rates{grid-area:rates}.svw-side2{grid-area:side;grid-row:1/4}.svw-addons{grid-area:addons}.svw-setup{grid-area:setup;display:grid;gap:10px;align-content:start}.svw-qs{grid-area:qs}.svw-lead{grid-area:lead;display:grid;gap:10px;align-content:start}
 .svw-models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .svw-models label{grid-template-columns:minmax(0,1fr)!important;align-items:start!important;min-height:62px}
@@ -132,7 +133,7 @@
 
 @media (max-width:1360px){
   .svw-s1{grid-template-columns:1fr 1fr;grid-template-areas:"basic deliv" "types creds" "media media" "side side" "foot foot"}.svw-side1{grid-row:auto}
-  .svw-s2{grid-template-columns:1fr 1fr;grid-template-areas:"model rates" "addons setup" "qs lead" "side side" "foot foot"}.svw-side2{grid-row:auto}
+  .svw-s2{grid-template-columns:1fr 1fr;grid-template-areas:"cola colb" "side side" "foot foot"}.svw-side2{grid-row:auto}
   .svw-s3{grid-template-columns:1fr 1fr;grid-template-areas:"avail cap" "resp holds" "sync ready" "verify side" "foot foot"}.svw-side3{grid-row:auto}
   .svp-grid{grid-template-columns:1fr}.svp-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -206,3 +207,70 @@
 .svw-creds.vw-docs details>summary{min-height:32px}
 .svw-creds>p{margin-bottom:8px}
 .svw-media .vw-strip{padding:10px 14px}
+/* Pricing-model cards: radio on the left as in the W03/W04 designs. */
+.svw-models label{padding-left:34px!important}
+.svw-models label::after{left:11px;right:auto;top:12px}
+/* W03 step 2 — "Gala Dock Pricing Dashboard": add-on rows (icon, name over description, price, unit), tighter section heads, collapsed policy. */
+.svw-addons ul{gap:0}
+.svw-addons li{grid-template-columns:40px minmax(0,1fr) 76px 92px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f1f4fa}
+.svw-addons li:last-child{border-bottom:0}
+.svw-ao-ic{width:40px;height:36px;border-radius:6px;background:#f1e9ff;color:#7a2fe0;display:grid;place-items:center}
+.svw-ao-ic svg{width:16px!important;height:16px!important}
+.svw-ao-txt{display:grid;gap:0;min-width:0}
+.svw-ao-txt input{height:20px!important;border:0!important;padding:0 2px!important;background:none!important;font-size:11.5px!important;font-weight:600;color:#0d0d63}
+.svw-ao-txt input+input{font-size:10px!important;font-weight:400;color:#5157a4}
+.svw-ao-txt input:focus{outline:2px solid #c9d6fb;border-radius:4px}
+.svw-addons li .vw-money input,.svw-addons li select{height:30px!important;font-size:11px!important}
+.svw-s2 .svw-setup,.svw-s2 .svw-lead{gap:6px}
+.svw-s2 .ws-panel>h2+p{margin-bottom:6px}
+.svw-policy>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l b" "v b";column-gap:10px;align-items:center;list-style:none;cursor:pointer;margin-top:4px}
+.svw-policy>summary::-webkit-details-marker{display:none}
+.svw-policy-l{grid-area:l;font-size:11px;color:#0d0d63}
+.svw-policy-v{grid-area:v;font-size:10.5px;color:#3f4596;padding:7px 10px;border:1px solid #e2e8fb;border-radius:7px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svw-policy .ws-btn{grid-area:b;align-self:end;height:30px;font-size:10.5px;padding:0 10px;color:var(--ws-blue-2)}
+.svw-policy[open] .ws-btn{background:#eef3ff}
+.svw-policy .vw-cancel-rows{margin-top:8px}
+/* W03 step 2 — add-row buttons, rates tabs, preview card. */
+.svw-addons,.svw-qs{position:relative}
+.svw-more{height:30px;font-size:11px;padding:0 12px;color:var(--ws-blue-2);cursor:pointer;flex-shrink:0}
+.svw-more:has(input:checked){background:#eef3ff}
+.svw-more:has(input:focus-visible){outline:3px solid #9aa8ff;outline-offset:2px}
+.svw-addons:not(:has(.svw-more input:checked)) li.extra,.svw-qs:not(:has(.svw-more input:checked)) li.extra{display:none}
+.svw-rtabs{display:flex;gap:6px;margin:4px 0 8px}
+.svw-rtabs label{height:28px;padding:0 12px;display:inline-grid;place-items:center;border:1px solid var(--ws-border);border-radius:6px;font-size:10.5px;color:#1d2068;cursor:pointer;background:#fff}
+.svw-rtabs label:has(input:checked){border-color:var(--ws-blue-2);color:var(--ws-blue-2);font-weight:550;box-shadow:0 0 0 1px var(--ws-blue-2) inset}
+.svw-rtabs label:has(input:focus-visible){outline:3px solid #9aa8ff;outline-offset:2px}
+.svw-rp-ir,.svw-rp-ao{display:none!important}
+.svw-rates:has(.svw-rtab-ir input:checked) .svw-rp-ir,.svw-rates:has(.svw-rtab-ao input:checked) .svw-rp-ao{display:grid!important}
+.svw-rates:not(:has(.svw-rtab-pk input:checked)) .svw-rp-pk,.svw-rates:not(:has(.svw-rtab-pk input:checked)) .pv-none{display:none!important}
+.svw-rp-ir li,.svw-rp-ao li{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f4fa;font-size:11px}
+.svw-rp-ir span,.svw-rp-ao span{display:grid;gap:1px}
+.svw-rp-ir b,.svw-rp-ao b{font-weight:600;color:#0d0d63}
+.svw-rp-ao small{font-size:10px;color:#5157a4}
+.svw-rp-ir em,.svw-rp-ao em{font-style:normal;font-weight:650;color:#0d0d63}
+.svw-pcard{padding:12px;display:grid;gap:7px}
+.svw-pcard .vw-prev-h .ws-btn{height:26px;font-size:10.5px;padding:0 10px;color:var(--ws-blue-2)}
+.svw-pcard-img{height:104px;border-radius:7px;overflow:hidden;background:#eef1f8}
+.svw-pcard-img img{width:100%;height:100%;object-fit:cover;display:block}
+.svw-pcard-nm{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.svw-pcard-nm b{font-size:13.5px;font-weight:750;color:#03035f;letter-spacing:-.02em}
+.svw-pcard-loc{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#3f4596;margin:0}
+.svw-pcard-loc svg{width:12px!important;height:12px!important}
+.svw-pcard-chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.svw-pcard-chips li{height:24px;padding:0 10px;display:inline-grid;place-items:center;border-radius:6px;background:#f3f6fd;font-size:10.5px;color:#1d2068}
+.svw-addons li{padding:5px 0}
+.svw-pcard .pkw-rating{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:650;color:#0d0d63}
+.svw-pcard .pkw-rating svg{width:14px!important;height:14px!important;color:#f5a524;fill:#f5a524}
+.svw-pcard .pkw-rating small{font-weight:400;color:#5157a4}
+/* W03 step 3 — "Service Publishing Dashboard": right column stacks (response → preview), 154px preview photo, 32px day rows, left radios. */
+.svw-s3{grid-template-areas:"avail cap resp" "avail cap side" "holds sync side" "ready verify side" "foot foot foot"}
+.svw-s3 .svw-side3{grid-row:auto;grid-area:side}
+.svw-side3 .vw-preview{padding:12px}
+.svw-side3 .vw-photo{height:154px}
+.svw-side3 .vw-thumbs{margin-top:7px}
+.svw-side3 .vw-thumbs button{height:44px}
+.svw-week{gap:2px}
+.svw-week input[type=time]{height:28px!important}
+.svw-bmodes label{padding-left:32px!important;position:relative}
+.svw-bmodes label::after{content:"";position:absolute;left:10px;top:11px;width:13px;height:13px;border-radius:50%;border:1.5px solid #c3c9dc;background:#fff}
+.svw-bmodes label:has(input:checked)::after{border:4px solid var(--ws-blue-2)}

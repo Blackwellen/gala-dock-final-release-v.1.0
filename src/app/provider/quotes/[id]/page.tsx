@@ -147,6 +147,13 @@ export default async function QuoteProfile(props: PageProps<"/provider/quotes/[i
           <ul>{tips.map(t => <li key={t.title}>{t.ok ? <CircleCheck aria-hidden="true" className="ok" /> : <CircleAlert aria-hidden="true" className="warn" />}<span><b>{t.title}</b><small>{t.text}</small></span></li>)}</ul></section>
       </aside>
     </div>
+    {tab === "quote" && <section className="ws-panel qp-strip" aria-label="Terms & policies">
+      <div className="qp-strip-h"><ScrollText aria-hidden="true" /><span><b>Terms &amp; policies</b><Link className="ws-btn outline sm" href={`/provider/quotes/${q.id}?tab=terms`}>View terms</Link></span></div>
+      <div><CalendarDays aria-hidden="true" /><span><b>Cancellation policy</b><small>{(terms.cancellation ?? []).map(t => `${t.window}: ${t.refund ? `${t.refund}% refund` : "no refund"}`).join(". ") || "Platform default applies."}</small></span></div>
+      <div><PenSquare aria-hidden="true" /><span><b>Changes &amp; amendments</b><small>Date or guest-number changes are subject to availability and may change the price.</small></span></div>
+      <div className="ok"><CircleCheck aria-hidden="true" /><span><b>Included in price</b><small>{(terms.inclusions ?? main.map(i => i.label)).slice(0, 4).join(", ")}.</small></span></div>
+      <div className="no"><Ban aria-hidden="true" /><span><b>Exclusions</b><small>{(terms.exclusions ?? []).join(", ") || "None listed."}</small></span></div>
+    </section>}
     <footer className="qp-foot">Created: {fmt(q.created_at)} <span>|</span> Version: {q.version} <span>|</span> {versions.length} version{versions.length === 1 ? "" : "s"} for this request <span>|</span> Status: {look.label}</footer>
   </div>;
 }

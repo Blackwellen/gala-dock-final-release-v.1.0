@@ -134,3 +134,17 @@
 .oh-sum .k-grow { overflow: hidden; }
 
 @media (max-height: 760px) and (min-width: 1100px) { .o-side-agent p { display: none; } .o-nav-item { height: 38px; } }
+
+/* Design palette for the shell: royal-blue nav ink and icons, blue top-bar icons (1:1 with the references). */
+.o-nav-item { font-size: 14.5px; color: var(--k-nav); }
+.o-nav-item > svg { width: 22px; height: 22px; color: var(--k-nav); stroke-width: 1.9; }
+.o-nav-item:hover { background: #f3f6fe; }
+.o-nav-item[aria-current="page"] { background: #f2f6fe; color: #1212e2; }
+.o-nav-item[aria-current="page"] > svg { color: #1a3cf0; }
+.o-nav-item[aria-current="page"]::before { width: 3px; left: -5px; top: 4px; bottom: 4px; border-radius: 0 3px 3px 0; background: #1f7bff; }
+.o-top-btn { color: var(--k-ink); font-size: 12.5px; } .o-top-btn svg { color: var(--k-nav); }
+.o-ws > svg, .o-avatar > svg { color: var(--k-nav); }
+.o-search { color: var(--k-blue); } .o-search input::placeholder { color: #6d74e6; } .o-search kbd { color: var(--k-ink); }
+.o-create .k-btn { font-weight: 500; box-shadow: 0 6px 16px -6px #075dfe99; }
+.o-side { background: #fbfcfe; border-right-color: #eef2fc; }
+.o-side-agent b { color: var(--k-ink); }

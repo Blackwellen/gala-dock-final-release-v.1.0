@@ -17,7 +17,9 @@ const state = `artifacts/visual/state-${role}.json`;
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: true });
 const hasState = await fs.stat(state).then(() => true, () => false);
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, reducedMotion: "reduce", ...(hasState ? { storageState: state } : {}) });
-await ctx.addInitScript(() => { try { localStorage.setItem("gd-density", "reference"); } catch {} document.documentElement.setAttribute("data-density", "reference"); });
+// Narrow references (e.g. 1222px) are the 1536 layout scaled down by 0.8: render at the same scale. 1448px references are native size.
+const ZOOM = Number(flags.zoom ?? (W < 1300 ? (W / 1536).toFixed(4) : 1));
+await ctx.addInitScript(z => { try { localStorage.setItem("gd-density", z === 1 ? "reference" : "scaled"); } catch {} const h = document.documentElement; if (z === 1) h.setAttribute("data-density", "reference"); else { h.setAttribute("data-density", "scaled"); h.style.setProperty("--k-zoom", String(z)); } }, ZOOM);
 const page = await ctx.newPage();
 await page.goto(BASE + path, { waitUntil: process.env.WAIT ?? "networkidle", timeout: 120000 });
 if (new URL(page.url()).pathname.startsWith("/login")) {
