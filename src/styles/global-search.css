@@ -1,0 +1,11 @@
+/* Global search (§95) */
+.gs{position:relative;width:100%;max-width:560px}
+.gs-box{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border:1px solid #e3e8f4;border-radius:10px;background:#f8faff;color:#5157a4}
+.gs-box:focus-within{border-color:#0b08f8;background:#fff;box-shadow:0 0 0 3px rgba(11,8,248,.12)}
+.gs-box input{flex:1;border:0;background:none;font:inherit;font-size:13.5px;color:#090a52;outline:none;min-width:0}
+.gs-box kbd{font:inherit;font-size:11px;border:1px solid #dfe5f3;border-radius:6px;padding:1px 6px;background:#fff;color:#7a80b8}
+.gs-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:90;background:#fff;border:1px solid #e6ebf5;border-radius:14px;box-shadow:0 18px 40px -18px rgba(9,10,82,.35);max-height:min(70dvh,520px);overflow:auto;padding:6px}
+.gs-group{display:grid;gap:2px;padding:4px 0}.gs-h{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:#9097cc;font-weight:700;padding:4px 10px}
+.gs-panel button{display:grid;gap:2px;text-align:left;border:0;background:none;padding:8px 10px;border-radius:9px;cursor:pointer;font:inherit;color:#090a52}
+.gs-panel button.on{background:#eef0ff}.gs-panel button b{font-size:13px;font-weight:600}.gs-panel button small{font-size:11.5px;color:#5157a4}
+.gs-empty{margin:0;padding:14px;color:#5157a4;font-size:13px;text-align:center}

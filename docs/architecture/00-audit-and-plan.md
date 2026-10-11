@@ -39,6 +39,7 @@ Service layer: `src/lib/actions/*` (customer + organizer server actions), `src/l
 | 14 QA / release | §115–132 | | ongoing |
 | + User additions | Messaging between accounts and portals; ticket QR scanning; ticket PDF generation and printing | | planned (Phase 7 / comms) |
 | 15 (last) Media Studio, canvas agent, PWA nav, ticket credential formats | Spec in `docs/specs/media-studio-part1.md` + `part2.md` (§1–92) — queued by user to be done after phases 3–14 | designs, design_pages/layers/versions/assets/shares, template_publications/reports, brand_assets, uploaded_fonts, ticket_display_preferences | queued |
+| 16 (after 15) Final release-readiness & go-live run | Spec in `docs/specs/release-readiness-part1.md` + `part2.md` (§1–150): governance + RELEASE_READINESS_REPORT, admin audit, break-glass conversation access, admin/workspace MFA, maintenance levels, agent run types + credits/caps, workspace sweeps, ticket/venue/provider marketplaces, PWA, QA/security matrix, comms + Google OAuth, help/tours/demo mode, DSAR/deletion, R2/Stripe/maps, API/MCP/webhooks, map + media audits, economics, ads, virtual events, legal drafts, DR/IR/observability, release verdict | | queued |
 
 ## 3. Non-negotiables carried into every phase
 
