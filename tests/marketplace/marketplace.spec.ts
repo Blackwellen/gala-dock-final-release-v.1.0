@@ -96,7 +96,7 @@ test.describe("marketplace lifecycle", () => {
     expect((await rpc(orgC, "accept_standby", { p_standby: sid })).data).toBe("fee_due");
     expect((await rpc(orgC, "activate_standby", { p_standby: sid, p_reason: "Headliner ill" })).error?.message).toMatch(/standby_fee_unpaid/);
     await db.from("standby_commitments").update({ fee_status: "paid" }).eq("id", sid as string); // settled by payment orchestration
-    await db.from("build_items").update({ status: "cancelled" }).eq("id", primary); // primary fails → standby surfaced
+    await db.from("build_items").update({ status: "cancelled_by_provider" }).eq("id", primary); // primary fails → standby surfaced
     const { count } = await db.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", org.id).like("title", "Standby ready:%");
     expect(count).toBeGreaterThan(0);
     expect((await rpc(orgC, "activate_standby", { p_standby: sid, p_reason: "Headliner ill" })).error).toBeNull();

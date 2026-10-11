@@ -81,3 +81,20 @@
 .mk-cats input,.mk-seg input,.mk-switch input,.mk-panel input[type=radio],.mk-page input[type=checkbox]{width:16px;height:16px;min-height:0;min-width:16px;padding:0;margin:0;flex:none;box-shadow:none;accent-color:var(--mk-blue)}
 .mk-cats label{white-space:nowrap}
 .mk-pay{display:grid;gap:6px;justify-items:start}
+/* Build budget rail (§70) */
+.mk-budget{--c-conf:#0f8a4e;--c-sb:#6a1ff0;--c-held:#a77bf5;--c-req:#f59e0b;--c-est:#c9d3ea;display:grid;gap:10px;font-size:12.5px;color:var(--ws-ink,#090a52)}
+.mk-budget-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mk-budget-head h2{font-size:14px;margin:0;font-weight:700}.mk-budget-head span{color:#5157a4}
+.mk-budget-bar{position:relative;display:flex;height:10px;border-radius:999px;background:#eef2fa;overflow:hidden}
+.mk-budget-bar i{display:block;height:100%}
+.mk-budget-bar .req{background:repeating-linear-gradient(45deg,var(--c-req) 0 4px,#fbd38d 4px 8px)}
+.mk-budget-bar .est{background:repeating-linear-gradient(45deg,var(--c-est) 0 4px,#e6ebf6 4px 8px)}
+.mk-budget-target{position:absolute;top:-3px;bottom:-3px;width:2px;background:#090a52;border-radius:2px}
+.mk-budget i.conf{background:var(--c-conf)}.mk-budget i.sb{background:var(--c-sb)}.mk-budget i.held{background:var(--c-held)}
+.mk-budget-rows,.mk-budget-money{margin:0;display:grid;gap:4px}
+.mk-budget-rows div,.mk-budget-money div{display:flex;justify-content:space-between;gap:8px}
+.mk-budget-rows dt{display:flex;align-items:center;gap:6px;color:#3b4270}.mk-budget-rows dd,.mk-budget-money dd{margin:0;font-weight:600}
+.mk-budget-rows dt i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.mk-budget-rows dt i.req{background:var(--c-req)}.mk-budget-rows dt i.est{background:var(--c-est)}
+.mk-budget-money{border-top:1px solid #eef1f8;padding-top:8px}.mk-budget-money dt{color:#5157a4}
+.mk-budget-money .over dd,.mk-budget-money .over dt{color:#c4142b}

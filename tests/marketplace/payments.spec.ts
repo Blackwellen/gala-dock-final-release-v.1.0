@@ -74,6 +74,15 @@ test.describe("payment orchestration", () => {
     expect(Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]))).toEqual({ cash_stripe: 50000, platform_fee: -6000, provider_payable: -44000 });
   });
 
+  test("§70 build budget keeps committed, paid and due separate from estimates", async () => {
+    await db.from("events").update({ budget_total: 5000 }).eq("id", event);
+    await db.from("build_items").insert({ event_id: event, listing_id: listing, category: "styling", title: "Estimate only", status: "suggested", amount: 700 });
+    const { data, error } = await orgC.rpc("event_build_budget", { p_event: event });
+    expect(error).toBeNull();
+    expect(data).toMatchObject({ target: 5000, estimated: 700, confirmed: 2000, paid: 500, due: 1500, remaining: 3000 });
+    expect((await outC.rpc("event_build_budget", { p_event: event })).error?.message).toMatch(/not_authorized/);
+  });
+
   test("tampered amount is rejected and recorded, not applied", async () => {
     const { data } = await orgC.rpc("create_payment_order", { p_kind: "balance_payment", p_item: item });
     const bal = data as PO;
