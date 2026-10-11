@@ -95,6 +95,21 @@ export async function POST(request: Request) {
   const completed = await supabase.rpc("complete_workspace_onboarding", { p_workspace: workspaceId });
   if (completed.error) return json({ error: completed.error.message.includes("capability") ? "Choose at least one capability in step 1." : "Could not activate your workspace. Please try again." }, 500);
 
+  // Uploaded credentials become reviewable provider documents (never self-verified). Retries skip existing paths.
+  if (flow === "provider") {
+    const credentialKey: Record<string, string> = { public_liability: "public_liability", premises_licence: "premises_licence", food_hygiene: "food_hygiene", security_licence: "security_licence", pat_testing: "electrical_safety", health_safety: "fire_safety" };
+    const docs = Object.entries((values.documents as Record<string, string>) ?? {}).filter(([k]) => credentialKey[k]);
+    if (docs.length) {
+      const { data: existing } = await supabase.from("provider_documents" as never).select("file_path").eq("workspace_id", workspaceId);
+      const known = new Set(((existing ?? []) as { file_path: string }[]).map(d => d.file_path));
+      const rows = docs.filter(([, path]) => !known.has(path)).map(([k, path]) => ({ workspace_id: workspaceId, credential_key: credentialKey[k], file_path: path, uploaded_by: user.id }));
+      if (rows.length) {
+        const { error } = await supabase.from("provider_documents" as never).insert(rows as never);
+        if (error) return json({ error: "Your workspace is active, but your documents could not be submitted for review. Upload them again from Settings." }, 500);
+      }
+    }
+  }
+
   // Invitations are created only now, after the workspace is committed. Retries skip existing pending invites.
   const origin = new URL(request.url).origin;
   const invites: { email: string; role: string; url: string }[] = [];

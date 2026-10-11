@@ -5,6 +5,7 @@ import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { countryByName } from "@/lib/onboarding-schema";
 import { payoutStatus, stripe, stripeKey } from "@/lib/stripe";
+import { syncConnectAccount, type StripeAccount } from "@/lib/commerce/connect";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 
@@ -58,8 +59,9 @@ export async function GET(request: NextRequest) {
   let status = "not_connected";
   if (owned.workspace.stripe_account_id) {
     try {
-      status = payoutStatus(await stripe(`accounts/${owned.workspace.stripe_account_id}`) as never);
-      await createAdminClient().from("workspaces").update({ payout_status: status }).eq("id", owned.workspace.id);
+      const account = await stripe<StripeAccount>(`accounts/${owned.workspace.stripe_account_id}`);
+      await syncConnectAccount({ ...account, metadata: { ...account.metadata, workspace_id: owned.workspace.id } });
+      status = payoutStatus(account as never);
     } catch { status = "error"; }
   }
   const destination = owned.workspace.kind === "organizer" ? `/onboarding/organizer?step=3` : `/onboarding/provider?step=4`;
