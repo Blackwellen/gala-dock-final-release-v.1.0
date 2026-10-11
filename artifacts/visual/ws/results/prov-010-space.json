@@ -3,8 +3,10 @@
   "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
   "file": "Designs/Provider Workspace/Main Hall Venue Dashboard.png",
   "status": 200,
-  "mismatchPercent": 22.72,
-  "ssim": 0.5604,
+  "mismatchPercent": 22.31,
+  "layoutPercent": 8.74,
+  "mediaBoxes": 14,
+  "ssim": 0.5731,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1149
   },
   "errors": [],
-  "at": "2026-10-11T09:14:59.555Z"
+  "at": "2026-10-11T09:24:22.833Z"
 }

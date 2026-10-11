@@ -23513,3 +23513,37 @@ https://react.dev/link/hydration-mismatch
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
 [browser] You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+[browser] Encountered two children with the same key, `1792882800000`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] ./src/app/events/[slug]/page.tsx:86:10
+Error: Unterminated regexp literal
+  84 |             <div className="pe-artists">{(lineup ?? []).filter(l => l.image).slice(0, 4).m...
+  85 |             {(lineup ?? []).length > 0 && <details id="schedule" className="pe-sched"><sum...
+> 86 |         </div>
+     |          ^^^^^
+  87 |         <div className="pe-three">
+  88 |           {on("venue") && <section id="venue" className="ce-card pe-venue"><div className=...
+  89 |             {/* eslint-disable-next-line @next/next/no-img-element */}<img src={venue?.ima...
+
+Parsing ecmascript source code failed 
+[browser] Encountered two children with the same key, `1792882800000`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+[browser] ./src/app/events/[slug]/page.tsx:86:10
+Error: Unterminated regexp literal
+  84 |             <div className="pe-artists">{(lineup ?? []).filter(l => l.image).slice(0, 4).m...
+  85 |             {(lineup ?? []).length > 0 && <details id="schedule" className="pe-sched"><sum...
+> 86 |         </div>
+     |          ^^^^^
+  87 |         <div className="pe-three">
+  88 |           {on("venue") && <section id="venue" className="ce-card pe-venue"><div className=...
+  89 |             {/* eslint-disable-next-line @next/next/no-img-element */}<img src={venue?.ima...
+
+Parsing ecmascript source code failed 
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3107". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior

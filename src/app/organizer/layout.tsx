@@ -19,6 +19,7 @@ import "@/styles/org-agent.css";
 import "@/styles/org-create-event.css";
 import "@/styles/org-template.css";
 import "@/styles/org-promotion.css";
+import "@/styles/org-poster.css";
 import { KitProviders } from "@/components/kit/client";
 import { OrganizerShell } from "@/components/organizer/shell";
 import { getOrganizer } from "@/lib/data/context";

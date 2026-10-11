@@ -3,8 +3,10 @@
   "url": "/provider/opportunities/{item:Summer Wedding Reception}",
   "file": "Designs/Provider Workspace/Gala·Dock Wedding Opportunity Dashboard.png",
   "status": 200,
-  "mismatchPercent": 16.43,
-  "ssim": 0.6085,
+  "mismatchPercent": 16.29,
+  "layoutPercent": 11.23,
+  "mediaBoxes": 7,
+  "ssim": 0.6185,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1255
   },
   "errors": [],
-  "at": "2026-10-11T09:14:02.977Z"
+  "at": "2026-10-11T09:23:23.592Z"
 }

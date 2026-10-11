@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: security },
+      // Public event pages may be framed by this origin only (organizer page-editor live preview).
+      { source: "/events/:path*", headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }, { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://*.supabase.co https://connect.stripe.com; object-src 'none'" }] },
       ...privatePaths.map(source => ({ source, headers: noStore })),
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Service-Worker-Allowed", value: "/" }] },
     ];

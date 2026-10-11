@@ -66,16 +66,23 @@ try {
     const a = ref.width === width && ref.height === height ? ref : null;
     if (!a) { console.log(row.key, "reference size differs from viewport; skipped metrics"); continue; }
     applyMask(a, row.mask); applyMask(shot, row.mask);
+    // Layout diff: same comparison with every photo / map canvas box greyed out in both images. Real listing photos and
+    // venue plans never match the designs' stock imagery, so this isolates what the UI controls (placement, type, colour, edges).
+    const media = await page.evaluate(() => [...document.querySelectorAll("img,canvas,video,svg.vm,[data-visual-media]")].map(e => e.getBoundingClientRect())
+      .filter(r => r.width >= 12 && r.height >= 12 && r.bottom > 0 && r.top < innerHeight).map(r => [Math.max(0, Math.floor(r.x)), Math.max(0, Math.floor(r.y)), Math.ceil(r.width), Math.ceil(r.height)]));
+    const la = new PNG({ width, height }), ls = new PNG({ width, height }); a.data.copy(la.data); shot.data.copy(ls.data);
+    applyMask(la, media); applyMask(ls, media);
+    const layoutMismatch = pixelmatch(la.data, ls.data, null, width, height, { threshold: 0.1, includeAA: false });
     const diff = new PNG({ width, height }), overlay = new PNG({ width, height });
     const mismatched = pixelmatch(a.data, shot.data, diff.data, width, height, { threshold: 0.1, includeAA: false });
     for (let i = 0; i < overlay.data.length; i++) overlay.data[i] = i % 4 === 3 ? 255 : Math.round((a.data[i] + shot.data[i]) / 2);
     await fs.writeFile(`${out}/diffs/${row.key}.png`, PNG.sync.write(diff));
     await fs.writeFile(`${out}/overlays/${row.key}.png`, PNG.sync.write(overlay));
     const geometry = await page.evaluate(() => ({ overflowX: document.documentElement.scrollWidth > innerWidth, scrollHeight: document.documentElement.scrollHeight }));
-    const result = { key: row.key, url: row.url, file: row.file, status: res?.status(), mismatchPercent: +(100 * mismatched / (width * height)).toFixed(2),
+    const result = { key: row.key, url: row.url, file: row.file, status: res?.status(), mismatchPercent: +(100 * mismatched / (width * height)).toFixed(2), layoutPercent: +(100 * layoutMismatch / (width * height)).toFixed(2), mediaBoxes: media.length,
       ssim: +ssim(grey(a), grey(shot), width, height).toFixed(4), masks: row.mask ?? [], maskReason: row.maskReason ?? null, geometry, errors, at: new Date().toISOString() };
     await fs.writeFile(`${out}/results/${row.key}.json`, JSON.stringify(result, null, 2));
-    console.log(`${row.key.padEnd(34)} ${String(result.status).padEnd(4)} diff ${String(result.mismatchPercent).padStart(6)}%  ssim ${result.ssim}${errors.length ? "  ERRORS: " + errors.join(" | ").slice(0, 200) : ""}`);
+    console.log(`${row.key.padEnd(34)} ${String(result.status).padEnd(4)} diff ${String(result.mismatchPercent).padStart(6)}%  layout ${String(result.layoutPercent).padStart(6)}%  ssim ${result.ssim}${errors.length ? "  ERRORS: " + errors.join(" | ").slice(0, 200) : ""}`);
     await ctx.close();
   }
 } finally {

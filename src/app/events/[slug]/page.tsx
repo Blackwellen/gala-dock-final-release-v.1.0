@@ -10,10 +10,15 @@ import { eventTypeLabel } from "@/lib/format";
 
 const TZ = "Europe/London";
 const COLS = "id,name,slug,description,event_type,starts_at,ends_at,venue_name,location,city,cover_image,tags,settings,status,workspace_id,venue_listing_id,capacity";
-async function load(slug: string) {
+/** Public read; `preview` lets signed-in workspace members see an unpublished page (RLS still decides what they can read). */
+async function load(slug: string, preview = false) {
   const supabase = await createClient();
+  if (preview) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) { const { data: e } = await supabase.from("events").select(COLS).eq("slug", slug).not("workspace_id", "is", null).maybeSingle(); if (e) return { supabase, e, preview: true }; }
+  }
   const { data: e } = await supabase.from("events").select(COLS).eq("slug", slug).eq("visibility", "public").in("status", ["published", "on_sale", "live"]).maybeSingle();
-  return { supabase, e };
+  return { supabase, e, preview: false };
 }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params; const { e } = await load(slug);
@@ -21,10 +26,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 const FEAT: Record<string, typeof Music2> = { "Live Music": Music2, "DJ Sets": Disc3, "Food & Drink": Utensils, "Art Installations": Palette, "Multiple Stages": Layers, Outdoor: Trees };
 
-export default async function PublicEventPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params; const { supabase, e } = await load(slug);
+export default async function PublicEventPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
+  const [{ slug }, sp] = await Promise.all([params, searchParams]); const { supabase, e, preview } = await load(slug, sp.preview === "1");
   if (!e) notFound();
   const s = (e.settings ?? {}) as Record<string, unknown>;
+  const vis = ((s.page_blocks as { visible?: Record<string, boolean> } | undefined)?.visible ?? {}); const on = (k: string) => vis[k] !== false;
   const [{ data: tiers }, { data: lineup }, { data: venue }, { data: org }, { data: related }, { data: { user } }] = await Promise.all([
     supabase.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,status,sale_end,badge,sort").eq("event_id", e.id).not("status", "in", "(draft,hidden)").order("sort"),
     supabase.from("programme_items").select("id,title,detail,area,starts_at,duration_minutes,image").eq("event_id", e.id).eq("kind", "programme").order("starts_at"),
@@ -54,6 +60,7 @@ export default async function PublicEventPage({ params }: { params: Promise<{ sl
   return <div className="pe">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
     <RecordView itemKey={`event:${e.id}`} signedIn={!!user} />
+    {preview && !["published", "on_sale", "live"].includes(e.status) && <div className="k-notice amber pe-previewbar">Preview — this page isn&apos;t public yet. Publish it from the page editor.</div>}
     <nav className="pe-crumbs" aria-label="Breadcrumb"><Link href="/discover">Discover</Link><span>/</span><Link href="/discover?tab=events&results=1">Events</Link><span>/</span><span aria-current="page">{e.name}</span></nav>
     <div className="pe-grid">
       <div className="pe-main">
@@ -62,9 +69,9 @@ export default async function PublicEventPage({ params }: { params: Promise<{ sl
             <EventActions eventId={e.id} name={e.name} saved={!!savedRow} signedIn={!!user} />
             <div className="pe-strip">{photos.slice(1, 6).map((p, i) => <a key={p + i} href="#gallery" className="pe-th">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 4 && photos.length > 6 && <b>+{photos.length - 6} photos</b>}</a>)}</div></div>
           <div className="pe-title">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="pe-poster" src={(s.poster as string) || e.cover_image || "/assets/gd/oe-neon.webp"} alt="" />
-            <div className="k-grow"><h1>{e.name}</h1><div className="pe-chips"><span className="p"><Music2 size={13} />{eventTypeLabel(e.event_type)}</span>{o?.verified && <span className="b"><BadgeCheck size={13} />Verified Event</span>}{rating && rating >= 4.7 && <span className="a"><Star size={13} />Top Rated</span>}</div>
+            <div className="k-grow"><h1>{(s.hero_title as string) || e.name}</h1><div className="pe-chips"><span className="p"><Music2 size={13} />{eventTypeLabel(e.event_type)}</span>{o?.verified && <span className="b"><BadgeCheck size={13} />Verified Event</span>}{rating && rating >= 4.7 && <span className="a"><Star size={13} />Top Rated</span>}</div>
               {rating && <p className="pe-rate"><Star size={15} fill="#f59e0b" color="#f59e0b" /><b>{rating.toFixed(1)}</b>{reviews && <span>({reviews.toLocaleString("en-GB")} reviews)</span>}</p>}</div>
-            <p className="pe-blurb">{e.description}</p></div>
+            <p className="pe-blurb">{(s.subtitle as string) || e.description}</p></div>
           <dl className="pe-facts"><div><dt><CalendarDays size={22} /></dt><dd><b>{dayStr}</b><small>{d ? d.toLocaleDateString("en-GB", { weekday: "short", timeZone: TZ }) : ""}, {t(e.starts_at)} – {t(e.ends_at)}</small></dd></div>
             <div><dt><MapPin size={22} /></dt><dd><b>{e.venue_name || e.city}</b><small>{e.location}</small></dd></div>
             <div><dt><Users size={22} /></dt><dd><b>{(Number(s.attendance) || e.capacity || 0).toLocaleString("en-GB")}+</b><small>Expected attendance</small></dd></div>
@@ -74,22 +81,22 @@ export default async function PublicEventPage({ params }: { params: Promise<{ sl
         <nav className="pe-tabs" aria-label="Sections">{[["about", "Overview"], ["lineup", "Lineup"], ["venue", "Venue"], ["tickets", "Tickets"], ["gallery", "Gallery"], ["faqs", "FAQs"], ["related", "Related Events"]].map(([id, l], i) => <a key={id} href={`#${id}`} className={i === 0 ? "on" : ""}>{l}</a>)}</nav>
         <div className="pe-two">
           <section id="about" className="ce-card pe-about"><h2>About This Event</h2><p>{e.description}</p>{highlights.length > 0 && <ul>{highlights.map(h => <li key={h}><CheckCircle2 size={17} />{h}</li>)}</ul>}</section>
-          <section id="lineup" className="ce-card pe-lineup"><div className="k-between"><h2>Lineup Highlights</h2><a className="k-link" href="#schedule">Full schedule <ArrowRight size={14} /></a></div>
+          {on("performers") && <section id="lineup" className="ce-card pe-lineup"><div className="k-between"><h2>Lineup Highlights</h2><a className="k-link" href="#schedule">Full schedule <ArrowRight size={14} /></a></div>
             <div className="pe-artists">{(lineup ?? []).filter(l => l.image).slice(0, 4).map(l => <article key={l.id}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image} alt="" /><b>{l.title}</b><span className="pe-role">{l.area || "Live"}</span><small><Clock size={12} />{t(l.starts_at)} – {t(l.starts_at && l.duration_minutes ? new Date(new Date(l.starts_at).getTime() + l.duration_minutes * 6e4).toISOString() : null)}</small></article>)}</div>
-            {(lineup ?? []).length > 0 && <details id="schedule" className="pe-sched"><summary>Full schedule <ChevronDown size={14} /></summary><ol>{(lineup ?? []).map(l => <li key={l.id}><time>{t(l.starts_at)}</time><b>{l.title}</b><small>{l.area}</small></li>)}</ol></details>}</section>
+            {(lineup ?? []).length > 0 && <details id="schedule" className="pe-sched"><summary>Full schedule <ChevronDown size={14} /></summary><ol>{(lineup ?? []).map(l => <li key={l.id}><time>{t(l.starts_at)}</time><b>{l.title}</b><small>{l.area}</small></li>)}</ol></details>}</section>}
         </div>
         <div className="pe-three">
-          <section id="venue" className="ce-card pe-venue"><div className="k-between"><h2>Venue Details</h2>{venue && <Link className="k-link" href={listingHref(venue.kind, venue.slug, venue.id)}>View venue <ArrowRight size={14} /></Link>}</div>
+          {on("venue") && <section id="venue" className="ce-card pe-venue"><div className="k-between"><h2>Venue Details</h2>{venue && <Link className="k-link" href={listingHref(venue.kind, venue.slug, venue.id)}>View venue <ArrowRight size={14} /></Link>}</div>
             {/* eslint-disable-next-line @next/next/no-img-element */}<img src={venue?.image || e.cover_image || "/assets/gd/hero-neon.webp"} alt="" />
             <div className="k-between"><b>{venue?.name ?? e.venue_name}</b>{venue && <span className="pe-vr"><Star size={13} fill="#f59e0b" color="#f59e0b" />{Number(venue.rating).toFixed(1)} <small>({venue.review_count} reviews)</small></span>}</div>
             <small className="pe-vsub">{[e.city, venue?.capacity_max ? `${venue.capacity_max.toLocaleString("en-GB")} capacity` : null].filter(Boolean).join(" • ")}</small>
-            <div className="pe-vtags">{(venue?.tags ?? []).slice(0, 6).map(tg => <span key={tg}>{tg}</span>)}</div></section>
+            <div className="pe-vtags">{(venue?.tags ?? []).slice(0, 6).map(tg => <span key={tg}>{tg}</span>)}</div></section>}
           <section className="ce-card pe-map"><h2>Location &amp; Map</h2>{pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={150} mapKey={process.env.MAP_TILER_API_KEY ?? ""} ariaLabel={`Map of ${e.venue_name}`} /> : <div className="pe-nomap">{e.location}</div>}
             <a className="k-btn outline pe-dir" href={maps} target="_blank" rel="noopener noreferrer"><Navigation size={15} />Get directions</a></section>
-          <section id="gallery" className="ce-card pe-gal"><h2>Event Gallery</h2><div className="pe-gal-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6} more</b>}</span>)}</div></section>
+          {on("gallery") && <section id="gallery" className="ce-card pe-gal"><h2>Event Gallery</h2><div className="pe-gal-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6} more</b>}</span>)}</div></section>}
         </div>
-        {faqs.length > 0 && <section id="faqs" className="ce-card pe-faqs"><h2>Frequently Asked Questions</h2><div className="pe-faq-g">{faqs.map(f => <details key={f.q}><summary>{f.q}<ChevronDown size={15} /></summary><p>{f.a}</p></details>)}</div></section>}
-        {(related ?? []).length > 0 && <section id="related" className="ce-card pe-related"><div className="k-between"><h2>Related Events</h2><Link className="k-link" href="/discover?tab=events&results=1">More events <ArrowRight size={14} /></Link></div>
+        {on("faqs") && faqs.length > 0 && <section id="faqs" className="ce-card pe-faqs"><h2>Frequently Asked Questions</h2><div className="pe-faq-g">{faqs.map(f => <details key={f.q}><summary>{f.q}<ChevronDown size={15} /></summary><p>{f.a}</p></details>)}</div></section>}
+        {on("related") && (related ?? []).length > 0 && <section id="related" className="ce-card pe-related"><div className="k-between"><h2>Related Events</h2><Link className="k-link" href="/discover?tab=events&results=1">More events <ArrowRight size={14} /></Link></div>
           <div className="pe-rel-g">{(related ?? []).map(r => <Link key={r.id} href={r.slug ? `/events/${r.slug}` : "#"}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={r.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span><b>{r.name}</b><small>{eventTypeLabel(r.event_type)} • {r.starts_at ? new Date(r.starts_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: TZ }) : ""} • {r.city}</small></span></Link>)}</div></section>}
       </div>
       <aside className="pe-side">

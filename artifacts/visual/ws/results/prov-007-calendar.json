@@ -3,8 +3,10 @@
   "url": "/provider/calendar",
   "file": "Designs/Provider Workspace/Gala Dock Calendar Dashboard.png",
   "status": 200,
-  "mismatchPercent": 13.34,
-  "ssim": 0.5998,
+  "mismatchPercent": 13.2,
+  "layoutPercent": 12,
+  "mediaBoxes": 13,
+  "ssim": 0.6099,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1553
   },
   "errors": [],
-  "at": "2026-10-11T09:14:36.625Z"
+  "at": "2026-10-11T09:23:59.017Z"
 }

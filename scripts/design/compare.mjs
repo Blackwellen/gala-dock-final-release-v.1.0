@@ -28,7 +28,7 @@ if (new URL(page.url()).pathname.startsWith("/login")) {
 await page.evaluate(() => document.documentElement.setAttribute("data-density", "reference"));
 await page.evaluate(() => document.fonts.ready);
 await page.addStyleTag({ content: "nextjs-portal{display:none!important}*{animation:none!important;transition:none!important;caret-color:transparent!important}" });
-await page.waitForTimeout(500);
+await page.waitForTimeout(Number(flags.settle ?? 500));
 const shot = PNG.sync.read(await page.screenshot({ path: `${OUT}/${name}.png` }));
 // Components: semantic containers that map to design components.
 const SEL = [".o-top", ".o-side", ".c-top", ".k-page-head", ".k-crumbs", ".eh-hero", ".eh-tabs", ".eh-sub", ".k-tabs", ".wz-steps", ".k-card", ".k-kpi", ".ev-kpi", ".k-agent", ".oh-attn-card", ".oh-quick", ".oh-sum", ".ev-card", ".sa-col", ".mc", ".tg", ".c-hero", ".k-table"];

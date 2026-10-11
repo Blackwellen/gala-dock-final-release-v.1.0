@@ -89,6 +89,11 @@ export async function saveOperations(venueId: string, next: string | null, fd: F
   const DOCS = ["Premises licence", "Public liability insurance", "Fire safety certificate", "Food hygiene rating"];
   const old = (prev.compliance ?? []) as { name: string; file?: string }[];
   const compliance = DOCS.map((name, i) => ({ name, reference: t(fd, `doc_ref_${i}`, 60), expires: t(fd, `doc_exp_${i}`, 10), file: old.find(o => o.name === name)?.file ?? null })).filter(d => d.reference || d.expires || d.file);
+  // "Other certificates" (Manage documents): free-named entries; a cleared name removes the row.
+  for (let k = 0; k < 20 && fd.has(`other_name_${k}`); k++) {
+    const name = t(fd, `other_name_${k}`, 60);
+    if (name && !DOCS.includes(name)) compliance.push({ name, reference: t(fd, `other_ref_${k}`, 60), expires: t(fd, `other_exp_${k}`, 10), file: old.find(o => o.name === name)?.file ?? null });
+  }
   const r = await save(venueId, { details: {
     operations: { access_type: t(fd, "access_type", 60), load_in: t(fd, "load_in", 30), load_out: t(fd, "load_out", 30), access_notes: t(fd, "access_notes", 500),
       parking: on(fd, "f_parking"), loading_bay: on(fd, "f_loading"), lift: on(fd, "f_lift"), stairs: on(fd, "f_stairs"), always_open: on(fd, "f_247"), notes: t(fd, "ops_notes", 500) },
@@ -98,6 +103,7 @@ export async function saveOperations(venueId: string, next: string | null, fd: F
     compliance,
   } });
   if (!r.ok) return r;
+  if (fd.get("_draft")) return { ok: true, message: "Draft saved" };
   return { ok: true, message: "Operations saved", ...(next ? { redirect: next } : {}) };
 }
 

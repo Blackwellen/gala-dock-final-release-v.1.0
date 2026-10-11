@@ -2,7 +2,7 @@
 .ph{display:grid;gap:9px}
 .ph-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:4px 0 2px}
 .ph-head h1{font-size:32px;line-height:1.15;font-weight:800;letter-spacing:-.04em;color:#02032e}
-.ph-head p{font-size:17px;color:var(--ws-sub);margin-top:2px}
+.ph-head p{font-size:18px;color:#3454ab;margin-top:3px;letter-spacing:-.01em}
 .ph-head-right{display:flex;align-items:center;gap:20px;color:#5b67b0;font-size:13.5px;padding-bottom:4px}
 .ph-range{display:flex;align-items:center;gap:8px;height:38px;padding:0 4px 0 14px;border:1px solid var(--ws-border);border-radius:8px;background:#fff}
 .ph-range svg{width:18px!important;height:18px!important;color:#1a1d5e}
@@ -157,3 +157,4 @@
 
 .ph-rel .ws-panel-head{margin-bottom:6px}
 .ph-team .ws-panel-head{margin-bottom:6px}
+@media (min-width:1101px){.ph-row-a{min-height:434px}}

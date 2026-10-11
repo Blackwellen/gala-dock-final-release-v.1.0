@@ -4,12 +4,10 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/phase1/e2e",
+      "tests/foundation",
       "--project=desktop",
       "--trace",
-      "off",
-      "-g",
-      "Journey J"
+      "off"
     ],
     "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
     "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
@@ -130,53 +128,198 @@
   },
   "suites": [
     {
-      "title": "phase1\\e2e\\journeys.spec.ts",
-      "file": "phase1/e2e/journeys.spec.ts",
+      "title": "foundation\\foundation.spec.ts",
+      "file": "foundation/foundation.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "Journey J: password recovery link resets once, signs out everywhere, and cannot be reused",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "foundation",
+          "file": "foundation/foundation.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 180000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "desktop",
-              "projectName": "desktop",
-              "results": [
+              "title": "TypeScript and database agree on the permission matrix",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4213,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-11T08:56:30.027Z",
+                  "timeout": 180000,
                   "annotations": [],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1439,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T09:40:43.858Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
+              "id": "40e04d67599cc04f671a-3e7db6603513c243c033",
+              "file": "foundation/foundation.spec.ts",
+              "line": 20,
+              "column": 7
+            },
+            {
+              "title": "enforced machine rejects illegal agent run transitions; legal path works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 355,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T09:40:46.321Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40e04d67599cc04f671a-dd7119e10f971c3d7ee0",
+              "file": "foundation/foundation.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "audit-mode machine records violations without breaking existing flows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 394,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T09:40:46.691Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40e04d67599cc04f671a-25762fdf0e741349a267",
+              "file": "foundation/foundation.spec.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "ledger: balanced, idempotent, immutable, finance-scoped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1234,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T09:40:47.098Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40e04d67599cc04f671a-2cfe1ae6d080f53995d9",
+              "file": "foundation/foundation.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "webhook events are claimed exactly once, retried only after failure",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 535,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-11T09:40:48.345Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40e04d67599cc04f671a-a5b38cde87c6805c408c",
+              "file": "foundation/foundation.spec.ts",
+              "line": 87,
+              "column": 7
             }
-          ],
-          "id": "c047376f7e34cf3d3eb7-80a05f89e774481c101f",
-          "file": "phase1/e2e/journeys.spec.ts",
-          "line": 233,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-11T08:56:28.832Z",
-    "duration": 6376.25,
-    "expected": 1,
+    "startTime": "2026-10-11T09:40:42.694Z",
+    "duration": 6639.764,
+    "expected": 5,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

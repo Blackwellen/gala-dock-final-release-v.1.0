@@ -3,8 +3,10 @@
   "url": "/provider/bookings/{job:Summer Wedding Reception}",
   "file": "Designs/Provider Workspace/Gala·Dock Wedding Booking Dashboard.png",
   "status": 200,
-  "mismatchPercent": 15.02,
-  "ssim": 0.5932,
+  "mismatchPercent": 14.88,
+  "layoutPercent": 11.02,
+  "mediaBoxes": 8,
+  "ssim": 0.6032,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1079
   },
   "errors": [],
-  "at": "2026-10-11T09:14:30.222Z"
+  "at": "2026-10-11T09:23:52.576Z"
 }

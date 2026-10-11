@@ -3,8 +3,10 @@
   "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
   "file": "Designs/Provider Workspace/Gala Dock Space Availability Dashboard.png",
   "status": 200,
-  "mismatchPercent": 15.37,
-  "ssim": 0.6132,
+  "mismatchPercent": 14.91,
+  "layoutPercent": 11.56,
+  "mediaBoxes": 4,
+  "ssim": 0.6281,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1176
   },
   "errors": [],
-  "at": "2026-10-11T09:15:04.613Z"
+  "at": "2026-10-11T09:24:28.596Z"
 }

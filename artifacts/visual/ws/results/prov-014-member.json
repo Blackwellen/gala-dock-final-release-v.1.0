@@ -3,14 +3,16 @@
   "url": "/provider/team/{crew:Priya Shah}",
   "file": "Designs/Provider Workspace/Priya Shah Team Dashboard Overview.png",
   "status": 200,
-  "mismatchPercent": 13.76,
-  "ssim": 0.6269,
+  "mismatchPercent": 13.56,
+  "layoutPercent": 12.4,
+  "mediaBoxes": 7,
+  "ssim": 0.6366,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1362
+    "scrollHeight": 1346
   },
   "errors": [],
-  "at": "2026-10-11T09:16:20.012Z"
+  "at": "2026-10-11T09:26:02.176Z"
 }

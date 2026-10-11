@@ -3,14 +3,16 @@
   "url": "/provider/packages/new?package={package:Wedding Package}&step=2",
   "file": "Designs/Provider Workspace/Gala Dock Package Creation Dashboard.png",
   "status": 200,
-  "mismatchPercent": 16.98,
-  "ssim": 0.5911,
+  "mismatchPercent": 16.48,
+  "layoutPercent": 12.9,
+  "mediaBoxes": 4,
+  "ssim": 0.6086,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1235
+    "scrollHeight": 1237
   },
   "errors": [],
-  "at": "2026-10-11T09:16:08.915Z"
+  "at": "2026-10-11T09:40:55.287Z"
 }

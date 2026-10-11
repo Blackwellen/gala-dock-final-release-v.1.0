@@ -2,12 +2,12 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Camera, Plus, Star, Trash2, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera, Plus, Star, Trash2, Save, CloudUpload } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { savePhotos } from "../new/actions";
 
 /** Venue photos: upload (public listing-media bucket), reorder, choose cover, remove. Compact mode is the preview card used in setup steps. */
-export function PhotoManager({ venueId, initial, compact = false, title, badge, save }: { venueId: string | null; initial: string[]; compact?: boolean; title?: string; badge?: string;
+export function PhotoManager({ venueId, initial, compact = false, strip = false, title, badge, save }: { venueId: string | null; initial: string[]; compact?: boolean; strip?: boolean; title?: string; badge?: string;
   /** Custom persistence (e.g. packages); defaults to the listing photo action. */ save?: (photos: string[]) => Promise<{ ok: boolean; message?: string; error?: string }> }) {
   const router = useRouter(), toast = useToast();
   const [pending, start] = useTransition();
@@ -45,6 +45,21 @@ export function PhotoManager({ venueId, initial, compact = false, title, badge, 
       <img src={p} alt="" /></button></li>)}
       <li><button type="button" className="vw-add" aria-label="Add photos" onClick={() => file.current?.click()} disabled={busy}><Plus aria-hidden="true" /></button></li></ul>
     {input}
+  </section>;
+
+  // Strip mode ("Service images & video" row in W03 step 1): drop zone + first four photos; every change saves immediately.
+  if (strip) return <section className="ws-panel vw-strip"><h2>{title ?? "Service images & video"}</h2><p>Add photos to showcase your work. The first photo is your cover.</p>
+    <div className="vw-strip-row">
+      <div className="vw-strip-drop" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (e.dataTransfer.files.length) void upload(e.dataTransfer.files); }}>
+        <CloudUpload aria-hidden="true" /><span><b>Upload images</b> or drag and drop</span><small>JPG, PNG or WebP. Max 10MB each.</small>
+        <button type="button" className="ws-btn outline" onClick={() => file.current?.click()} disabled={busy}>{busy ? "Uploading…" : "Upload files"}</button></div>
+      <ul>{photos.slice(0, 4).map((p, i) => <li key={p + i}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={p} alt={`Photo ${i + 1}`} />{i === 0 && <em><Star aria-hidden="true" />Cover</em>}
+        <div className="vw-strip-acts">{i > 0 && <button type="button" aria-label="Make cover" disabled={pending} onClick={() => { const n = [p, ...photos.filter((_, j) => j !== i)]; setPhotos(n); persist(n); }}><Star aria-hidden="true" /></button>}
+          <button type="button" aria-label="Remove photo" className="danger" disabled={pending} onClick={() => { const n = photos.filter((_, j) => j !== i); setPhotos(n); persist(n); }}><Trash2 aria-hidden="true" /></button></div></li>)}
+        <li><button type="button" className="vw-strip-more" onClick={() => file.current?.click()} disabled={busy}><Plus aria-hidden="true" />{photos.length > 4 ? `+${photos.length - 4} more` : "Add more"}</button></li></ul>
+    </div>{input}
   </section>;
 
   return <section className="ws-panel vw-media"><div className="vw-media-head"><div><h2>Photos</h2><p>The first photo is your cover. Add at least 3 — setups, details and the space empty.</p></div>

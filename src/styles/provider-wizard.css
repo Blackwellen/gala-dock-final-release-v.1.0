@@ -1,11 +1,11 @@
 /* PROV-W06 Create Venue Booking — measured from "Create Venue Booking Dashboard", "Gala·Dock Venue Booking Dashboard(1)", "GalaDock Venue Booking Dashboard". */
 @import "./provider-quote.css";
 .wz{display:grid;gap:0}
-.wz-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#22265e;margin:4px 0 6px}
+.wz-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#100e78;margin:-5px 0 12px}
 .wz-back svg{width:16px!important;height:16px!important}
-.wz-head h1{font-size:30px;font-weight:800;letter-spacing:-.035em;color:#02032e;line-height:1.2}
-.wz-head p{font-size:16px;color:var(--ws-sub);margin-top:2px}
-.wz-steps{list-style:none;margin:16px 0 14px;padding:0 24px;display:flex;align-items:center;gap:14px}
+.wz-head h1{font-size:30px;font-weight:800;letter-spacing:-.035em;color:#03035f;line-height:1.2}
+.wz-head p{font-size:17.5px;color:#5559cf;margin-top:0;letter-spacing:-.01em}
+.wz-steps{list-style:none;margin:14px 0 21px;padding:0 24px;display:flex;align-items:center;gap:14px}
 .wz-steps li{display:flex;align-items:center;gap:14px;font-size:12.5px;color:#5b67b0;flex:1;white-space:nowrap}
 .wz-steps li:not(:last-child)::after{content:"";flex:1;height:2px;background:#e3e8f6;margin:0 10px}
 .wz-steps li a{display:flex;align-items:center;gap:14px;color:inherit}

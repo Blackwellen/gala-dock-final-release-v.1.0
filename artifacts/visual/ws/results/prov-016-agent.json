@@ -3,8 +3,10 @@
   "url": "/provider/agent",
   "file": "Designs/Provider Workspace/Gala Agent SaaS Dashboard.png",
   "status": 200,
-  "mismatchPercent": 11.4,
-  "ssim": 0.6437,
+  "mismatchPercent": 11.3,
+  "layoutPercent": 10.86,
+  "mediaBoxes": 3,
+  "ssim": 0.6508,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1129
   },
   "errors": [],
-  "at": "2026-10-11T09:16:30.576Z"
+  "at": "2026-10-11T09:26:13.478Z"
 }

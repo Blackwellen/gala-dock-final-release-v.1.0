@@ -3,14 +3,16 @@
   "url": "/provider/services/new?service={listing:DJ & Sound}&step=3",
   "file": "Designs/Provider Workspace/Gala·Dock Service Publishing Dashboard.png",
   "status": 200,
-  "mismatchPercent": 19.8,
-  "ssim": 0.5599,
+  "mismatchPercent": 19.5,
+  "layoutPercent": 12.6,
+  "mediaBoxes": 8,
+  "ssim": 0.5699,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1130
+    "scrollHeight": 1132
   },
   "errors": [],
-  "at": "2026-10-11T09:15:52.729Z"
+  "at": "2026-10-11T09:40:45.031Z"
 }

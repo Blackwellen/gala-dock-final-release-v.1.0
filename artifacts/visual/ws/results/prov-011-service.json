@@ -3,8 +3,10 @@
   "url": "/provider/services/{listing:DJ & Sound}",
   "file": "Designs/Provider Workspace/Gala Dock DJ Service Dashboard.png",
   "status": 200,
-  "mismatchPercent": 23.94,
-  "ssim": 0.5402,
+  "mismatchPercent": 23.56,
+  "layoutPercent": 12.04,
+  "mediaBoxes": 18,
+  "ssim": 0.5535,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1148
   },
   "errors": [],
-  "at": "2026-10-11T09:15:37.524Z"
+  "at": "2026-10-11T09:25:00.224Z"
 }

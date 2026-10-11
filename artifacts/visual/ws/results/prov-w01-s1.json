@@ -3,8 +3,10 @@
   "url": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
   "file": "Designs/Provider Workspace/Modern Venue Setup Dashboard.png",
   "status": 200,
-  "mismatchPercent": 16.79,
-  "ssim": 0.62,
+  "mismatchPercent": 16.35,
+  "layoutPercent": 10.89,
+  "mediaBoxes": 8,
+  "ssim": 0.6358,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1024
   },
   "errors": [],
-  "at": "2026-10-11T09:15:15.826Z"
+  "at": "2026-10-11T09:40:14.595Z"
 }

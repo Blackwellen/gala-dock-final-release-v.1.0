@@ -1,0 +1,61 @@
+{
+ "name": "c-org-012",
+ "path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/page",
+ "page": 25.44,
+ "components": [
+  {
+   "sel": ".k-card",
+   "label": "Live preview",
+   "x": 570,
+   "y": 236,
+   "w": 624,
+   "h": 788,
+   "mismatch": 52.8
+  },
+  {
+   "sel": ".k-card",
+   "label": "Editing: Hero / Media",
+   "x": 1208,
+   "y": 236,
+   "w": 310,
+   "h": 760,
+   "mismatch": 28.5
+  },
+  {
+   "sel": ".k-card",
+   "label": "Page blocks",
+   "x": 236,
+   "y": 236,
+   "w": 320,
+   "h": 788,
+   "mismatch": 13
+  },
+  {
+   "sel": ".o-top",
+   "label": "o-top",
+   "x": 0,
+   "y": 0,
+   "w": 1536,
+   "h": 66,
+   "mismatch": 10.7
+  },
+  {
+   "sel": ".o-side",
+   "label": "Alex Events",
+   "x": 0,
+   "y": 66,
+   "w": 222,
+   "h": 958,
+   "mismatch": 5.8
+  },
+  {
+   "sel": ".k-tabs",
+   "label": "k-tabs",
+   "x": 236,
+   "y": 185,
+   "w": 1282,
+   "h": 39,
+   "mismatch": 2.6
+  }
+ ]
+}

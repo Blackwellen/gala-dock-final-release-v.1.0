@@ -3,14 +3,16 @@
   "url": "/provider/services/new?service={listing:DJ & Sound}&step=2",
   "file": "Designs/Provider Workspace/Gala Dock Pricing Dashboard.png",
   "status": 200,
-  "mismatchPercent": 14.03,
-  "ssim": 0.5874,
+  "mismatchPercent": 13.53,
+  "layoutPercent": 12.77,
+  "mediaBoxes": 5,
+  "ssim": 0.6053,
   "masks": [],
   "maskReason": null,
   "geometry": {
     "overflowX": false,
-    "scrollHeight": 1245
+    "scrollHeight": 1247
   },
   "errors": [],
-  "at": "2026-10-11T09:15:47.951Z"
+  "at": "2026-10-11T09:40:39.963Z"
 }

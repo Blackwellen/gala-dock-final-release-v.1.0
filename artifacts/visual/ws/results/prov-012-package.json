@@ -3,8 +3,10 @@
   "url": "/provider/packages/{package:Wedding Package}",
   "file": "Designs/Provider Workspace/Gala·Dock Wedding Package Dashboard.png",
   "status": 200,
-  "mismatchPercent": 22.42,
-  "ssim": 0.5384,
+  "mismatchPercent": 21.89,
+  "layoutPercent": 11.86,
+  "mediaBoxes": 12,
+  "ssim": 0.5578,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1129
   },
   "errors": [],
-  "at": "2026-10-11T09:15:58.330Z"
+  "at": "2026-10-11T09:25:37.816Z"
 }

@@ -41,12 +41,16 @@
 .pv-contact span a{color:var(--ws-blue-2)}
 .pv-contact .muted a{color:var(--ws-blue-2)}
 .pv-desc p{font-size:10.5px;line-height:1.5;color:#3f4596}
-.pv-desc ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.pv-desc li{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border:1px solid var(--ws-border);border-radius:5px;font-size:9.5px;color:#3f4596;white-space:nowrap}
+.pv-desc ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.pv-desc li{display:inline-flex;align-items:center;gap:3px;height:19px;padding:0 6px;border:1px solid var(--ws-border);border-radius:5px;font-size:9px;letter-spacing:-.01em;color:#3f4596;white-space:nowrap}
 .pv-desc li svg{width:10px!important;height:10px!important;color:#16a46c}
 
 .pv-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0}
-.pv-kpis .ws-kpi{min-height:95px}
+.pv-kpis .ws-kpi{min-height:97px;padding:10px 12px 6px;gap:16px}
+.pv-kpis .ws-kpi-text{padding-top:2px}
+.pv-kpis .ws-kpi-text>span{font-size:10.5px}
+.pv-kpis .ws-kpi-text strong{font-size:21px;margin-top:6px}
+.pv-kpis .ws-kpi-text>:nth-child(n+3){font-size:10.5px}
 
 .pv-pair{display:grid;grid-template-columns:365px minmax(0,1fr);gap:13px;align-items:stretch}
 .pv-pair .ws-panel{padding:12px 13px}
@@ -55,18 +59,19 @@
 .pv-pair .ws-panel-head h2 svg,.pv-insights .ws-panel-head h2>svg{width:16px!important;height:16px!important;color:var(--ws-blue-2)}
 .pv-pair .ws-link{font-size:11px}
 .pv-info dl{display:grid;grid-template-columns:130px minmax(0,1fr);margin:0}
-.pv-info dt,.pv-info dd{padding:5px 0;border-bottom:1px solid #f1f4fa;font-size:10.5px;line-height:1.4}
+.pv-info dt,.pv-info dd{padding:3px 0;border-bottom:1px solid #f1f4fa;font-size:10.5px;line-height:1.4}
 .pv-info dt{color:#0d0d63}
 .pv-info dd{margin:0;color:#3f4596;display:flex;align-items:flex-start;gap:7px}
 .pv-info dd svg{width:12px!important;height:12px!important;flex-shrink:0;margin-top:1px}
 .pv-info dl>:nth-last-child(-n+2){border-bottom:0}
 .pv-modes i{font-style:normal;height:20px;padding:0 9px;border-radius:5px;display:inline-flex;align-items:center;font-size:10px;font-weight:550}
 .pv-modes .instant{background:#e8f0ff;color:#1a4fe0}.pv-modes .request{background:#f1e9ff;color:#7a2fe0}
-.pv-map{display:flex;flex-direction:column;gap:10px}
-.pv-mapfilter{align-self:flex-start;border:0;padding:0;gap:4px}
+.pv-map{display:flex;flex-direction:column;gap:7px}
+.pv-map>.ws-panel-head{margin-bottom:0}
+.pv-mapfilter{align-self:flex-start;border:0;padding:0;gap:4px;height:26px;min-height:0;background:none}
 .pv-mapfilter button{height:26px;padding:0 12px;border-radius:6px;font-size:10.5px;color:#3d4592;background:none;border:0;cursor:pointer}
 .pv-mapfilter button.active{background:#eef2fe;color:var(--ws-blue-2);font-weight:600}
-.pv-mapbox{position:relative;height:200px;border:1px solid var(--ws-border);border-radius:8px;overflow:hidden;background:#f6f9fc}
+.pv-mapbox{position:relative;height:185px;border:1px solid var(--ws-border);border-radius:8px;overflow:hidden;background:#f6f9fc}
 .pv-mapbox .vm{width:100%;height:100%;display:block}
 .pv-nomap{height:100%;display:grid;place-content:center;gap:6px;text-align:center;font-size:12px}
 .pv-mapctl{position:absolute;top:8px;right:8px;display:grid;gap:4px}

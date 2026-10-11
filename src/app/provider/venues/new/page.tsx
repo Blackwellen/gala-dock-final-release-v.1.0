@@ -49,7 +49,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
     ["At least one space with capacity", spaces.some(s => Math.max(s.capacity_standing ?? 0, s.capacity_seated ?? 0) > 0)],
     ["Pricing and booking rules configured", !!(venue.price_from || (d.commercial as { pricing?: string } | undefined)?.pricing === "quote") && !!com?.cancellation?.length],
     ["Access and operational information added", !!d.operations],
-    ["Licences and compliance recorded", ((d.compliance as unknown[]) ?? []).length >= 2],
+    ["Required licences and compliance documents", ((d.compliance as unknown[]) ?? []).length >= 2],
     ["Payout account connected", !readinessRaw.missing.includes("payouts")],
     ["Photos added (minimum 3)", [venue.image, ...(venue.gallery ?? [])].filter(Boolean).length >= 3],
   ] : [];
@@ -68,7 +68,8 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
       footer={<div className="vw-foot se-foot"><Link href={url(1)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 2 of 6</span>
         <Link href={url(3)} className="ws-btn primary">Next: Commercial &amp; Booking Rules<ArrowRight aria-hidden="true" /></Link></div>} />}
     {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} />}
-    {step === 4 && venue && <StepOperations venue={venue} back={url(3)} next={url(5)} readiness={readiness} />}
+    {step === 4 && venue && <StepOperations venue={venue} back={url(3)} next={url(5)} photosHref={url(5)} readiness={readiness} photos={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)}
+      spaces={spaces.length} standing={spaces.reduce((n, x) => n + (x.capacity_standing ?? 0), 0)} />}
     {step === 5 && venue && <div className="vw vw-s5"><PhotoManager venueId={venue.id} initial={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)} />
       <div className="vw-foot"><Link href={url(4)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 5 of 6</span>
         <Link href={url(6)} className="ws-btn primary">Next: Review &amp; Publish<ArrowRight aria-hidden="true" /></Link></div></div>}

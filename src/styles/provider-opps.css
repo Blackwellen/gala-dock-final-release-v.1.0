@@ -5,11 +5,12 @@
 .po-auto i{width:12px;height:12px;border-radius:50%;background:#98a2c3}
 .po-auto.on{background:#e3f8ee;color:#0f7a3f}.po-auto.on i{background:#16b67a;box-shadow:0 0 0 3px #16b67a33}
 .po-manage{height:40px;font-weight:550;color:#141a5c!important}
-.po-kpis{grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:0}
-.po-kpis .ws-kpi{min-height:96px;padding:16px 14px 12px}
+.po-kpis{grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin:-4px 0 0}
+.po-kpis .ws-kpi{min-height:96px;padding:10px 14px 8px}
+.po-kpis .ws-tile{width:40px!important;height:40px!important;margin-top:1px}
 .po-table{padding-top:2px}
 .po-table>.ws-tabs.underline{padding:0 18px;gap:34px}
-.po-table>.ws-tabs.underline a{font-size:13.5px;padding:14px 4px 12px}
+.po-table>.ws-tabs.underline a{font-size:13.5px;padding:9px 4px 10px}
 .po-toolbar{padding:14px 10px 12px;gap:8px;flex-wrap:nowrap}
 .po-toolbar .ws-search-sm{width:215px;min-width:0;flex-shrink:1;height:36px}
 .po-toolbar .ws-search-sm svg{width:17px!important;height:17px!important;color:#22265e}

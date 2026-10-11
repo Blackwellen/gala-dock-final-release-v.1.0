@@ -79,7 +79,7 @@
   },
   {
     "key": "prov-w02-s1",
-    "url": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=layouts",
+    "url": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
     "file": "Designs/Provider Workspace/Gala·Dock Add Space Dashboard.png",
     "who": "provider"
   },

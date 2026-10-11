@@ -349,3 +349,12 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 .ws-app .ws-kpi-text strong{letter-spacing:-.025em}
 .ws-app .ws-page-head p{letter-spacing:-.01em}
 .ws-app :is(small,td,dd,dt){line-height:1.25}
+/* Provider sidebar rhythm, measured from the PROV designs: 66px switcher, nav from y≈150, 45px rows, 36px sub-rows. */
+.ws-app.provider .ws-switcher{margin-bottom:6px}
+.ws-app.provider .ws-switcher .ws-pop-trigger{padding:6px 4px 6px 5px}
+.ws-app.provider .ws-switcher img,.ws-app.provider .ws-switcher-blank{width:54px;height:52px}
+.ws-app.provider .ws-nav{gap:1px}
+.ws-app.provider .ws-subnav{margin:2px 0 4px;gap:0}
+/* PROV-001 Home is drawn at 1448×1086 with a looser sidebar: nav from y≈160, 47px rows. */
+.ws-app.provider:has(.ph) .ws-switcher{margin-bottom:16px}
+.ws-app.provider:has(.ph) .ws-nav{gap:3px}

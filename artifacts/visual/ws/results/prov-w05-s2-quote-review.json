@@ -3,8 +3,10 @@
   "url": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
   "file": "Designs/Provider Workspace/Gala·Dock Quote Review Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.42,
-  "ssim": 0.627,
+  "mismatchPercent": 12.34,
+  "layoutPercent": 11.33,
+  "mediaBoxes": 4,
+  "ssim": 0.6326,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1062
   },
   "errors": [],
-  "at": "2026-10-11T09:14:19.280Z"
+  "at": "2026-10-11T09:40:05.006Z"
 }
