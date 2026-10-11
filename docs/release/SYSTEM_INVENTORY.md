@@ -1,29 +1,29 @@
 # Gala Dock system inventory
 
-Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codebase and the live database catalogue. Regenerate before each release.
+Generated 2026-10-11 17:24 UTC by `scripts/release-inventory.mjs` from the codebase and the live database catalogue. Regenerate before each release.
 
 ## Summary
 
 | Item | Count |
 |---|---|
-| Pages (routes) | 161 |
-| API endpoints | 64 |
-| Server actions | 327 |
-| Database tables (public) | 157 |
-| Tables with RLS enabled | 157 / 157 |
-| RLS policies | 209 |
-| SQL functions (public) | 617 (336 security definer) |
+| Pages (routes) | 165 |
+| API endpoints | 66 |
+| Server actions | 329 |
+| Database tables (public) | 160 |
+| Tables with RLS enabled | 160 / 160 |
+| RLS policies | 211 |
+| SQL functions (public) | 627 (346 security definer) |
 | Triggers | 36 |
-| Scheduled jobs | 9 |
+| Scheduled jobs | 12 |
 | Storage buckets | 4 |
 | Agent tools | 27 |
-| Test files / tests | 40 / 144 |
+| Test files / tests | 44 / 150 |
 
 ## Pages by portal
 
-### Public (20)
+### Public (23)
 
-`/[...slug]` · `/checkout/[event]` · `/checkout/[event]/confirmation` · `/cookies` · `/data-retention` · `/events/[slug]` · `/home` · `/maintenance` · `/messages/[id]` · `/page.tsx` · `/pay/[token]` · `/payments/[ref]` · `/privacy` · `/proposal/[token]` · `/services/[slug]` · `/studio/[id]` · `/terms` · `/ticket-terms` · `/venues/[slug]` · `/verify-email`
+`/[...slug]` · `/checkout/[event]` · `/checkout/[event]/confirmation` · `/cookies` · `/data-retention` · `/events/[slug]` · `/help` · `/help/[slug]` · `/home` · `/maintenance` · `/messages/[id]` · `/page.tsx` · `/pay/[token]` · `/payments/[ref]` · `/privacy` · `/proposal/[token]` · `/r/[code]/consent` · `/services/[slug]` · `/studio/[id]` · `/terms` · `/ticket-terms` · `/venues/[slug]` · `/verify-email`
 
 ### Auth/Onboarding (9)
 
@@ -33,9 +33,9 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 
 `/account` · `/account/disputes/[id]` · `/account/events` · `/account/events/[id]` · `/account/events/[id]/book` · `/account/events/[id]/bookings/[item]` · `/account/events/[id]/bookings/[item]/catering` · `/account/events/[id]/build` · `/account/events/[id]/guests-tickets` · `/account/events/[id]/messages` · `/account/events/[id]/money` · `/account/events/[id]/plan` · `/account/events/[id]/scan` · `/account/events/[id]/tickets/setup` · `/account/inbox` · `/account/reviews` · `/account/saved` · `/account/tickets` · `/account/tickets/[id]` · `/account/tickets/[id]/print` · `/discover` · `/plan` · `/tickets/accept/[token]`
 
-### Organizer (39)
+### Organizer (40)
 
-`/organizer` · `/organizer/agent` · `/organizer/agent/policy` · `/organizer/calendar` · `/organizer/disputes/[id]` · `/organizer/events` · `/organizer/events/[id]` · `/organizer/events/[id]/live` · `/organizer/events/[id]/map` · `/organizer/events/[id]/media` · `/organizer/events/[id]/page` · `/organizer/events/[id]/promotion` · `/organizer/events/[id]/scan` · `/organizer/events/[id]/template` · `/organizer/events/[id]/tickets/setup` · `/organizer/events/new` · `/organizer/inbox` · `/organizer/marketplace` · `/organizer/marketplace/[type]/[id]` · `/organizer/marketplace/bookings/[id]` · `/organizer/marketplace/bookings/[id]/catering` · `/organizer/marketplace/emergency` · `/organizer/marketplace/emergency/[id]` · `/organizer/marketplace/requests/[id]` · `/organizer/marketplace/requests/new` · `/organizer/media` · `/organizer/money` · `/organizer/money/invoices/[id]` · `/organizer/money/invoices/new` · `/organizer/promotions/new` · `/organizer/proposals/new` · `/organizer/sales` · `/organizer/sales/leads/[id]` · `/organizer/sales/proposals/[id]` · `/organizer/settings` · `/organizer/team` · `/organizer/team/[id]` · `/organizer/tickets` · `/organizers/[slug]`
+`/organizer` · `/organizer/agent` · `/organizer/agent/policy` · `/organizer/calendar` · `/organizer/disputes/[id]` · `/organizer/events` · `/organizer/events/[id]` · `/organizer/events/[id]/live` · `/organizer/events/[id]/map` · `/organizer/events/[id]/media` · `/organizer/events/[id]/page` · `/organizer/events/[id]/promotion` · `/organizer/events/[id]/scan` · `/organizer/events/[id]/template` · `/organizer/events/[id]/tickets/setup` · `/organizer/events/[id]/virtual` · `/organizer/events/new` · `/organizer/inbox` · `/organizer/marketplace` · `/organizer/marketplace/[type]/[id]` · `/organizer/marketplace/bookings/[id]` · `/organizer/marketplace/bookings/[id]/catering` · `/organizer/marketplace/emergency` · `/organizer/marketplace/emergency/[id]` · `/organizer/marketplace/requests/[id]` · `/organizer/marketplace/requests/new` · `/organizer/media` · `/organizer/money` · `/organizer/money/invoices/[id]` · `/organizer/money/invoices/new` · `/organizer/promotions/new` · `/organizer/proposals/new` · `/organizer/sales` · `/organizer/sales/leads/[id]` · `/organizer/sales/proposals/[id]` · `/organizer/settings` · `/organizer/team` · `/organizer/team/[id]` · `/organizer/tickets` · `/organizers/[slug]`
 
 ### Provider (36)
 
@@ -78,6 +78,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `/api/cron/email` | GET, POST | cron bearer | src/app/api/cron/email/route.ts |
 | `/api/cron/payments` | GET, POST | cron bearer | src/app/api/cron/payments/route.ts |
 | `/api/cron/privacy` | GET, POST | cron bearer | src/app/api/cron/privacy/route.ts |
+| `/api/cron/storage-backup` | GET, POST | cron bearer | src/app/api/cron/storage-backup/route.ts |
 | `/api/cron/webhooks` | GET, POST | cron bearer | src/app/api/cron/webhooks/route.ts |
 | `/api/dev/design` | GET | dev only | src/app/api/dev/design/route.ts |
 | `/api/dev/designs` | GET | dev only | src/app/api/dev/designs/route.ts |
@@ -117,8 +118,9 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `/provider/bookings/export` | GET | session | src/app/provider/bookings/export/route.ts |
 | `/provider/money/export` | GET | session | src/app/provider/money/export/route.ts |
 | `/r/[code]` | GET | public | src/app/r/[code]/route.ts |
+| `/tickets/[id]/join` | GET | session | src/app/tickets/[id]/join/route.ts |
 
-## Server actions (327)
+## Server actions (329)
 
 * `src/app/admin/(console)/agent-integrations/credits/actions.ts`: grantCredits
 * `src/app/admin/(console)/conversations/actions.ts`: requestAccess, decideAccess, openConversation, touchConversation, closeAccess
@@ -127,7 +129,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 * `src/app/admin/(console)/support/privacy/actions.ts`: updatePrivacyRequest
 * `src/app/admin/(console)/_a/actions.ts`: setUserStatus, revokeSessions, addRecordNote, setWorkspaceStatus, setWorkspacePlan, setWorkspaceCommission, reviewListing, setEventRestriction, setEventFeatured, setTicketSales
 * `src/app/admin/(console)/_b/actions.ts`: requestRefund, retryPayout, cancelMoneyRequest, addNote, createSupportCase, replyCase, assignCase, setCaseStatus, resolveCase, decideTrust, assignTrust, requestEvidence, createTrustCase, setPartnerStatus, setPartnerTerms, requestPartnerPayout, decideAgentApproval, controlRun, startAdminRun, setIntegration, saveSettingsDraft, publishSettingsDraft, discardSettingsDraft, rollbackSetting
-* `src/app/checkout/[event]/actions.ts`: reserve, releaseHold, reserveResale
+* `src/app/checkout/[event]/actions.ts`: reserve, releaseHold, reserveResale, claimOffer
 * `src/app/organizer/events/[id]/map/actions.ts`: saveEventPlan
 * `src/app/partner/actions.ts`: contactSupport
 * `src/app/portal/[token]/actions.ts`: decideApproval, postComment
@@ -196,6 +198,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 * `src/lib/tickets/actions.ts`: offerTransfer, acceptTransfer, cancelTransfer, joinWaitlist
 * `src/lib/tickets/scan.ts`: scanCredential, scanManifest, scanLookup, syncOfflineScans
 * `src/lib/venue/actions.ts`: quoteVenue, placeVenueHold, offerAlternative, decideAlternative, saveRateCard, deleteRateCard, saveEventOrder, approveEventOrder, saveMenu, saveMenuSection, saveMenuItem, deleteMenuRow, saveBarPackage, saveCatering, priceCatering
+* `src/lib/virtual/actions.ts`: saveVirtual
 
 ## Database tables
 
@@ -220,7 +223,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `analytics_daily` | on | 1 | 3780 |
 | `api_keys` | on | 1 | 0 |
 | `api_requests` | on | 1 | 0 |
-| `audit_events` | on | 2 | 1500 |
+| `audit_events` | on | 2 | 1794 |
 | `availability_blocks` | on | 1 | 7 |
 | `bar_jurisdiction_rules` | on | 1 | 0 |
 | `bar_packages` | on | 2 | 0 |
@@ -230,7 +233,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `brand_kits` | on | 2 | 0 |
 | `break_glass_access_log` | on | 1 | 0 |
 | `break_glass_grants` | on | 1 | 0 |
-| `build_items` | on | 3 | 97 |
+| `build_items` | on | 3 | 106 |
 | `calendar_entries` | on | 1 | 9 |
 | `catering_selections` | on | 1 | 0 |
 | `check_ins` | on | 2 | 7949 |
@@ -251,7 +254,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `design_versions` | on | 1 | 0 |
 | `designs` | on | 1 | 0 |
 | `discount_codes` | on | 1 | 0 |
-| `email_outbox` | on | 1 | 6 |
+| `email_outbox` | on | 1 | 20 |
 | `emergency_candidates` | on | 1 | 0 |
 | `emergency_provider_profiles` | on | 1 | 0 |
 | `emergency_requests` | on | 1 | 0 |
@@ -262,7 +265,8 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `event_orders` | on | 1 | 0 |
 | `event_seats` | on | 2 | 264 |
 | `event_templates` | on | 1 | 0 |
-| `events` | on | 8 | 76 |
+| `event_virtual` | on | 1 | 0 |
+| `events` | on | 8 | 83 |
 | `guests` | on | 1 | 40 |
 | `incidents` | on | 1 | 0 |
 | `integrations` | on | 1 | 17 |
@@ -273,9 +277,9 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `launch_queue` | on | 0 | 0 |
 | `lead_activities` | on | 1 | 6 |
 | `leads` | on | 1 | 18 |
-| `ledger_entries` | on | 1 | 204 |
-| `ledger_transactions` | on | 1 | 56 |
-| `listings` | on | 3 | 43 |
+| `ledger_entries` | on | 1 | 276 |
+| `ledger_transactions` | on | 1 | 119 |
+| `listings` | on | 3 | 44 |
 | `maintenance_windows` | on | 1 | 0 |
 | `media_assets` | on | 1 | 0 |
 | `menu_items` | on | 2 | 0 |
@@ -283,24 +287,24 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `menus` | on | 2 | 0 |
 | `messages` | on | 2 | 13 |
 | `mfa_recovery_codes` | on | 0 | 0 |
-| `notifications` | on | 2 | 112 |
+| `notifications` | on | 2 | 130 |
 | `packages` | on | 2 | 13 |
 | `partner_content` | on | 1 | 0 |
 | `partner_earnings` | on | 1 | 181 |
 | `partner_referrals` | on | 1 | 144 |
 | `partner_statements` | on | 1 | 0 |
 | `partners` | on | 1 | 17 |
-| `payment_orders` | on | 1 | 7 |
+| `payment_orders` | on | 1 | 9 |
 | `payments` | on | 2 | 52 |
 | `plan_entitlements` | on | 1 | 64 |
 | `platform_admins` | on | 2 | 2 |
-| `platform_settings` | on | 1 | 16 |
+| `platform_settings` | on | 1 | 17 |
 | `portal_approvals` | on | 3 | 0 |
 | `portal_documents` | on | 3 | 0 |
 | `portal_links` | on | 1 | 0 |
 | `portal_messages` | on | 2 | 0 |
 | `privacy_requests` | on | 1 | 0 |
-| `profiles` | on | 3 | 79 |
+| `profiles` | on | 3 | 90 |
 | `programme_items` | on | 2 | 25 |
 | `promoter_assets` | on | 2 | 0 |
 | `promoter_clicks` | on | 1 | 3402 |
@@ -315,7 +319,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `provider_jobs` | on | 1 | 27 |
 | `provider_quotes` | on | 1 | 9 |
 | `provider_requests` | on | 2 | 18 |
-| `rate_limits` | on | 0 | 100 |
+| `rate_limits` | on | 0 | 113 |
 | `recently_viewed` | on | 1 | 17 |
 | `reliability_metrics` | on | 1 | 1 |
 | `resale_holds` | on | 0 | 0 |
@@ -329,17 +333,18 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `standby_commitments` | on | 1 | 0 |
 | `state_machines` | on | 0 | 11 |
 | `state_transitions` | on | 0 | 455 |
-| `state_violations` | on | 0 | 0 |
+| `state_violations` | on | 0 | 52 |
+| `storage_backups` | on | 0 | 0 |
 | `stripe_disputes` | on | 1 | 0 |
 | `support_cases` | on | 1 | 145 |
 | `support_messages` | on | 1 | 274 |
-| `tasks` | on | 1 | 64 |
+| `tasks` | on | 1 | 74 |
 | `template_creator_restrictions` | on | 1 | 0 |
 | `template_reports` | on | 1 | 0 |
 | `template_saves` | on | 1 | 0 |
 | `threads` | on | 2 | 10 |
 | `ticket_holds` | on | 0 | 0 |
-| `ticket_tiers` | on | 4 | 37 |
+| `ticket_tiers` | on | 4 | 42 |
 | `ticket_transfers` | on | 1 | 0 |
 | `ticket_waitlist` | on | 1 | 0 |
 | `tickets` | on | 2 | 17467 |
@@ -347,6 +352,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `trust_cases` | on | 1 | 88 |
 | `uploaded_fonts` | on | 2 | 0 |
 | `user_tasks` | on | 1 | 0 |
+| `user_tours` | on | 1 | 0 |
 | `venue_alternatives` | on | 1 | 0 |
 | `venue_maps` | on | 1 | 0 |
 | `venue_rate_cards` | on | 2 | 0 |
@@ -354,10 +360,10 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `verification_records` | on | 1 | 0 |
 | `webhook_deliveries` | on | 1 | 0 |
 | `webhook_endpoints` | on | 1 | 0 |
-| `webhook_events` | on | 0 | 196 |
+| `webhook_events` | on | 0 | 258 |
 | `workspace_invites` | on | 3 | 0 |
-| `workspace_members` | on | 2 | 57 |
-| `workspaces` | on | 4 | 51 |
+| `workspace_members` | on | 2 | 66 |
+| `workspaces` | on | 4 | 60 |
 
 ## Functions callable by clients
 
@@ -455,6 +461,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `complete_workspace_onboarding` | yes | authenticated,service_role |
 | `create_agent_watch` | yes | authenticated,service_role |
 | `create_api_key` | yes | authenticated,service_role |
+| `create_demo_workspace` | yes | authenticated,service_role |
 | `create_design` | yes | authenticated,service_role |
 | `create_emergency_request` | yes | authenticated,service_role |
 | `create_job_for_confirmed_item` | yes | authenticated,service_role |
@@ -499,6 +506,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `decide_agent_approval` | yes | authenticated,service_role |
 | `decide_cancellation` | yes | authenticated,service_role |
 | `decide_venue_alternative` | yes | authenticated,service_role |
+| `delete_demo_workspace` | yes | authenticated,service_role |
 | `delete_my_review` | yes | authenticated,service_role |
 | `deletion_blockers` | yes | authenticated,service_role |
 | `design_access` | yes | authenticated,service_role |
@@ -519,6 +527,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `event_launch_state` | yes | authenticated,anon,service_role |
 | `event_order_versions_immutable` |  | authenticated,anon,service_role |
 | `event_readiness` | yes | authenticated,service_role |
+| `event_virtual_public` | yes | authenticated,anon,service_role |
 | `float4_dist` |  | authenticated,anon,service_role |
 | `float8_dist` |  | authenticated,anon,service_role |
 | `g_cube_consistent` |  | authenticated,anon,service_role |
@@ -845,6 +854,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `require_provider_role` | yes | authenticated,service_role |
 | `resale_holds_for` | yes | authenticated,anon,service_role |
 | `resale_listings` | yes | authenticated,anon,service_role |
+| `reset_demo_workspace` | yes | authenticated,service_role |
 | `respond_to_invite` | yes | authenticated,service_role |
 | `respond_to_review` | yes | authenticated,service_role |
 | `restore_design_version` | yes | authenticated,service_role |
@@ -858,6 +868,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `save_design` | yes | authenticated,service_role |
 | `save_emergency_profile` | yes | authenticated,service_role |
 | `save_event_order` | yes | authenticated,service_role |
+| `save_event_virtual` | yes | authenticated,service_role |
 | `scan_lookup` | yes | authenticated,service_role |
 | `scan_manifest` | yes | authenticated,service_role |
 | `scan_ticket` | yes | authenticated,service_role |
@@ -911,6 +922,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | `venue_offer_alternative` | yes | authenticated,service_role |
 | `venue_place_hold` | yes | authenticated,service_role |
 | `venue_quote` | yes | authenticated,service_role |
+| `virtual_join` | yes | authenticated,service_role |
 | `waitlist_offer_for` | yes | authenticated,service_role |
 | `webhook_event_type` |  | authenticated,anon,service_role |
 | `withdraw_proposal` | yes | authenticated,service_role |
@@ -925,6 +937,7 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 
 | Job | Schedule | Active |
 |---|---|---|
+| agent-retention | `15 4 2 * *` | true |
 | agent-worker | `* * * * *` | true |
 | break-glass-expire | `*/15 * * * *` | true |
 | break-glass-retention | `30 3 1 * *` | true |
@@ -932,6 +945,8 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | marketplace-sweep | `*/5 * * * *` | true |
 | payments-worker | `*/5 * * * *` | true |
 | privacy-deletions | `17 2 * * *` | true |
+| retention-security-logs | `45 3 2 * *` | true |
+| storage-backup | `*/15 * * * *` | true |
 | waitlist-notify | `*/5 * * * *` | true |
 | webhook-deliveries | `* * * * *` | true |
 
@@ -1038,11 +1053,15 @@ Generated 2026-10-11 16:02 UTC by `scripts/release-inventory.mjs` from the codeb
 | tests/phase1/security/rls.spec.ts | 15 |
 | tests/release/agent-credits.spec.ts | 5 |
 | tests/release/agent-run-types.spec.ts | 3 |
+| tests/release/demo.spec.ts | 1 |
 | tests/release/developer.spec.ts | 3 |
 | tests/release/email.spec.ts | 1 |
 | tests/release/event-cancellation.spec.ts | 2 |
+| tests/release/help.spec.ts | 2 |
 | tests/release/launch.spec.ts | 2 |
 | tests/release/maintenance.spec.ts | 6 |
 | tests/release/mfa.spec.ts | 3 |
 | tests/release/privacy.spec.ts | 2 |
 | tests/release/sessions.spec.ts | 2 |
+| tests/release/tours.spec.ts | 1 |
+| tests/release/virtual.spec.ts | 2 |
