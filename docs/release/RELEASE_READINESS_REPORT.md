@@ -91,7 +91,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | §73 Bot & abuse | BLOCKED_EXTERNAL_CONFIGURATION | Rate limits + waiting room + purchase limits exist; **no CAPTCHA/Turnstile** (needs a site key) on sign-up/checkout. |
 | §74 File malware | BLOCKED_EXTERNAL_CONFIGURATION | Uploads are magic-byte sniffed (PNG/JPEG/WebP/PDF only), size-capped, private by default, served via short signed URLs. No AV scanning service is configured. |
 | §75 Dependencies | PASS | `npm audit --omit=dev`: 0 vulnerabilities. |
-| Lint | PASS_WITH_NOTE | 65 ESLint errors in older UI files (React-compiler `purity`/`set-state-in-effect`/`immutability`, `no-html-link-for-pages`); not runtime defects; build does not lint. Scheduled clean-up owned by the respective UI sessions. |
+| Lint | PASS_WITH_NOTE | 65 ESLint errors, all in older Customer and Organizer UI: `src/app/(customer)/account/**`, `src/app/organizer/**` pages (agent, events, money, proposals, sales, settings, tickets, home), `src/components/customer/*`, `src/components/organizer/*`, `src/components/kit/*`, `src/components/shared/{checkin-scanner,ticket-setup}.tsx`, `src/components/auth.tsx`. Rules: React-compiler `purity` (mostly `Date.now()` in server components), `set-state-in-effect`, `immutability`, plus `no-html-link-for-pages`. Not runtime defects; the build does not lint. Provider, Admin, Checkout, portals, venue-plan and legal areas lint clean (0 errors). |
 
 ## 6. Communications & auth (§76–83)
 
