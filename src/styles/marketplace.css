@@ -80,3 +80,4 @@
 .mk-card>.mk-form,.ws-panel .mk-page .mk-form,.mk-page .ws-panel>.mk-form{border:0;padding:0;background:none}
 .mk-cats input,.mk-seg input,.mk-switch input,.mk-panel input[type=radio],.mk-page input[type=checkbox]{width:16px;height:16px;min-height:0;min-width:16px;padding:0;margin:0;flex:none;box-shadow:none;accent-color:var(--mk-blue)}
 .mk-cats label{white-space:nowrap}
+.mk-pay{display:grid;gap:6px;justify-items:start}

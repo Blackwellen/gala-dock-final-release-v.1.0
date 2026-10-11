@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { CalendarClock, LifeBuoy, ShieldAlert, Undo2 } from "lucide-react";
+import { CalendarClock, CreditCard, LifeBuoy, ShieldAlert, Undo2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { loadLifecycle, STATUS_LABEL, DISPUTE_REASONS, DISPUTE_STATUS } from "@/lib/marketplace/lifecycle";
 import { requestTime } from "@/lib/workspace/format";
 import { money, dateShort, time } from "@/lib/format";
-import { Countdown, ActButton, HoldRequestForm, HoldRespondForm, StandbyRequestForm, StandbyOfferForm, CancelForm, DisputeOpenForm } from "./lifecycle-client";
+import { PAYMENT_STATE } from "@/lib/commerce/orchestrator";
+import { Countdown, PayButton, ActButton, HoldRequestForm, HoldRespondForm, StandbyRequestForm, StandbyOfferForm, CancelForm, DisputeOpenForm } from "./lifecycle-client";
 import "@/styles/marketplace.css";
 
 type Viewer = "organizer" | "provider" | "customer";
@@ -20,17 +21,22 @@ const when = (iso: string | null) => iso ? `${dateShort(iso)}, ${time(iso)}` : "
  * The database decides permissions and legality; buttons only appear where the viewer can act. With `quiet`, renders nothing
  * unless there is lifecycle activity (keeps ordinary request pages unchanged).
  */
-export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provider" }: { itemId: string; viewer: Viewer; quiet?: boolean }) {
+export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provider", returnPath }: { itemId: string; viewer: Viewer; quiet?: boolean; returnPath?: string }) {
   const supabase = await createClient();
   const lc = await loadLifecycle(supabase, itemId);
   if (!lc) return null;
-  const { item, holds, standby, cancellations, disputes, siblings, event } = lc;
+  const { item, holds, standby, cancellations, disputes, siblings, event, payments } = lc;
   const isEvent = viewer !== "provider";
   const openHold = holds.find(h => h.status === "requested" || h.status === "held");
   const openSb = standby.find(s => ["requested", "offered", "accepted"].includes(s.status));
   const openCancel = cancellations.find(c => c.status === "requested" || c.status === "manual_review");
   const openDispute = disputes.find(d => d.status !== "resolved");
-  const activity = holds.length + standby.length + cancellations.length + disputes.length > 0;
+  const activity = holds.length + standby.length + cancellations.length + disputes.length + payments.length > 0;
+  const back = returnPath ?? (viewer === "customer" ? `/account/events/${event.id}/bookings/${item.id}` : `/organizer/marketplace/bookings/${item.id}`);
+  const paidMinor = payments.filter(p => !["amount_due", "payment_pending", "failed", "cancelled"].includes(p.status)).reduce((a, p) => a + p.amount_minor - p.refunded_minor, 0);
+  const balanceDue = item.amount != null && ["confirmed", "active", "fulfilled", "completion_pending"].includes(item.status) && paidMinor > 0 ? Math.round(Number(item.amount) * 100) - paidMinor : 0;
+  const emergency = (item.terms_snapshot as { source?: string } | null)?.source === "emergency";
+  const payable = ["quoted", "available", "held", "conditionally_held"].includes(item.status) && item.amount != null;
   if (quiet && !activity) return null;
   const [label, tone] = STATUS_LABEL[item.status] ?? [item.status, "grey"];
   const responding = ["sent", "awaiting", "awaiting_provider"].includes(item.status) || item.response_status === "expired";
@@ -47,6 +53,16 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
     </header>
     {responding && <div className="mk-block"><Countdown deadline={item.response_deadline} sentAt={item.sent_at} status={item.response_status} serverNow={now} />
       {item.response_status === "expired" && <p className="mk-note">The provider didn’t respond in time. This is recorded as no response — not as declined or unavailable.</p>}</div>}
+
+    {(payments.length > 0 || (isEvent && (payable || balanceDue > 0 || openSb?.fee_status === "due"))) && <div className="mk-block" id="payments">
+      <h3><CreditCard size={15} aria-hidden="true" />Payments</h3>
+      {payments.map(p => { const [l, t] = PAYMENT_STATE[p.status] ?? [p.status, "grey"]; return <p key={p.id} className="mk-line"><Tag tone={t}>{l}</Tag><span>{p.description} · {money(p.amount_minor / 100)}{p.refunded_minor ? ` (refunded ${money(p.refunded_minor / 100)})` : ""} · {p.reference}</span></p>; })}
+      {isEvent && payable && <PayButton kind={emergency ? "emergency_service" : "deposit"} itemId={item.id} returnPath={back} label={emergency ? `Pay ${money(item.amount)} and confirm` : "Pay deposit and confirm"}
+        note={emergency ? "Emergency bookings are paid in full. Payment is protected until delivery and then released to the provider." : "Your deposit confirms the booking. Payment is protected until the service is delivered, then released to the provider."} />}
+      {isEvent && balanceDue > 0 && <PayButton kind="balance_payment" itemId={item.id} returnPath={back} label={`Pay balance ${money(balanceDue / 100)}`} />}
+      {isEvent && openSb?.status === "accepted" && openSb.fee_status === "due" && <PayButton kind="standby_fee" standbyId={openSb.id} returnPath={back} label={`Pay standby fee ${money(openSb.standby_fee)}`} />}
+      {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received and protected. It’s released to your Stripe account after delivery, once there’s no open dispute.</p>}
+    </div>}
 
     {(openHold || (isEvent && holdable)) && <div className="mk-block">
       <h3><CalendarClock size={15} aria-hidden="true" />Conditional hold</h3>

@@ -51,3 +51,4 @@ export async function GET(request: Request) {
   }
   return json({ routines: (due ?? []).length, processed: done });
 }
+export const POST = GET;

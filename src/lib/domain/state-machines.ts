@@ -152,6 +152,25 @@ export const machines = {
       rejected: [], completed: [], withdrawn: [],
     },
   },
+  /** Payment order (§38, §43). Stripe events drive every transition after payment_pending; "protected" is product language, not escrow (§39). */
+  payment: {
+    table: "payment_orders", column: "status", mode: "enforce",
+    initial: ["amount_due"], terminal: ["refunded", "cancelled"],
+    transitions: {
+      amount_due: ["payment_pending", "payment_succeeded", "protected_pending_delivery", "failed", "cancelled"],
+      payment_pending: ["amount_due", "payment_succeeded", "protected_pending_delivery", "failed", "cancelled"],
+      failed: ["amount_due", "payment_pending", "payment_succeeded", "protected_pending_delivery", "cancelled"],
+      payment_succeeded: ["eligible_for_provider_transfer", "partially_refunded", "refunded", "disputed"],
+      protected_pending_delivery: ["eligible_for_provider_transfer", "partially_refunded", "refunded", "disputed"],
+      eligible_for_provider_transfer: ["transfer_created", "partially_refunded", "refunded", "disputed"],
+      transfer_created: ["payout_pending", "paid_out", "partially_refunded", "refunded", "disputed"],
+      payout_pending: ["paid_out", "disputed"],
+      paid_out: ["partially_refunded", "refunded", "disputed"],
+      partially_refunded: ["eligible_for_provider_transfer", "transfer_created", "refunded", "disputed"],
+      disputed: ["payment_succeeded", "protected_pending_delivery", "eligible_for_provider_transfer", "transfer_created", "partially_refunded", "refunded"],
+      refunded: [], cancelled: [],
+    },
+  },
   /** Gala Agent run (§6). Owned by this phase: enforced. */
   agent_run: {
     table: "agent_runs", column: "status", mode: "enforce",

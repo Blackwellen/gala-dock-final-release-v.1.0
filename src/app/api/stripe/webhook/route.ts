@@ -81,10 +81,22 @@ export async function POST(request: Request) {
       const { data: o } = await db.from("checkout_orders").select("token,status").eq("order_ref", ref).maybeSingle();
       if (o?.status === "pending") { await db.rpc("release_checkout", { p_token: o.token }); await db.from("checkout_orders").update({ status: "expired" }).eq("order_ref", ref); }
     }
-    if (event.type === "payment_intent.succeeded") await ledgerForPayment(db, object);
-    if (event.type === "charge.refunded") await ledgerForRefund(db, object);
+    const po = object.metadata?.payment_order;
+    if (event.type === "payment_intent.succeeded") {
+      if (po) { const { error } = await db.rpc("payment_order_succeeded", { p_ref: po, p_pi: object.id, p_charge: String(object.latest_charge ?? ""), p_amount_minor: Number(object.amount_received ?? 0), p_livemode: !!event.livemode }); if (error) throw new Error(`payment_order: ${error.message}`); }
+      else await ledgerForPayment(db, object);
+    }
+    if (event.type === "payment_intent.payment_failed" && po) await db.rpc("payment_order_failed", { p_ref: po, p_reason: String((object.last_payment_error as { message?: string } | undefined)?.message ?? "declined") });
+    if (event.type === "checkout.session.expired" && po) await db.rpc("payment_order_failed", { p_ref: po, p_reason: "checkout_expired" });
+    if (event.type === "charge.refunded") {
+      await ledgerForRefund(db, object);
+      if (object.payment_intent) await db.rpc("payment_order_refunded", { p_pi: String(object.payment_intent), p_refunded_minor: Number(object.amount_refunded ?? 0) });
+    }
     if (event.type === "account.updated") await syncConnectAccount(object as unknown as StripeAccount);
-    if (event.type.startsWith("charge.dispute.")) await syncStripeDispute(object as unknown as StripeDispute, event.type);
+    if (event.type.startsWith("charge.dispute.")) {
+      await syncStripeDispute(object as unknown as StripeDispute, event.type);
+      if (object.payment_intent) await db.rpc("payment_order_disputed", { p_pi: String(object.payment_intent), p_open: !["won", "lost", "warning_closed"].includes(String(object.status)) });
+    }
     // Only now is the event done; a throw above leaves it claimable so Stripe's retry completes it.
     await db.rpc("finish_webhook_event", { p_provider: "stripe", p_external_id: event.id, p_status: "processed" });
     return NextResponse.json({ received: true });

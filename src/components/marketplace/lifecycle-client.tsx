@@ -178,3 +178,15 @@ export function DisputeOpenForm({ itemId, reasons, base }: { itemId: string; rea
     <Err e={error} />
   </form>;
 }
+
+/** Starts an orchestrated payment (payment order → Stripe Checkout). Money is only marked paid when Stripe confirms. */
+export function PayButton({ kind, itemId, standbyId, label, returnPath, note }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string }) {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState("");
+  const go = () => start(async () => {
+    setError("");
+    const r = await A.payBooking(kind, { itemId, standbyId }, returnPath);
+    if (!r.ok) setError(r.error); else if (r.data) window.location.assign(r.data);
+  });
+  return <div className="mk-pay">{note && <p className="mk-note">{note}</p>}<Btn tone="primary" type="button" pending={pending} onClick={go}>{label}</Btn><Err e={error} /></div>;
+}

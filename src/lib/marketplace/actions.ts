@@ -129,3 +129,15 @@ export async function saveEmergencyProfile(workspaceId: string, input: { enabled
     base_lat: input.baseLat, base_lng: input.baseLng,
   } }, EM_PATHS);
 }
+
+// ── §38 payments (orchestrated: payment order → Stripe Checkout; webhooks confirm)
+export async function payBooking(kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service", ids: { itemId?: string; standbyId?: string }, returnPath: string): Promise<ActionResult<string>> {
+  if ((ids.itemId && !UUID.test(ids.itemId)) || (ids.standbyId && !UUID.test(ids.standbyId))) return { ok: false, error: "That record could not be found." };
+  const { headers } = await import("next/headers");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "www.galadock.com";
+  const origin = `${h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}`;
+  const { startPayment } = await import("@/lib/commerce/orchestrator");
+  const r = await startPayment(kind, ids, origin, returnPath);
+  return r.ok ? { ok: true, data: r.url } : { ok: false, error: r.error };
+}

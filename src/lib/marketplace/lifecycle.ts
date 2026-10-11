@@ -12,9 +12,10 @@ export type LcHold = { id: string; status: string; requested_hours: number; expi
 export type LcStandby = { id: string; status: string; primary_item_id: string | null; window_start: string; window_end: string; standby_fee: number | null; activation_price: number | null; cancellation_terms: string; organizer_note: string; expires_at: string | null; fee_status: string; activated_at: string | null };
 export type LcCancellation = { id: string; party: string; kind: string; reason: string; status: string; requires_review: boolean; calculation: { refund_amount: number | null; provider_retains: number | null; paid: number; refund_pct: number | null; notes: string[] }; requested_by: string | null; created_at: string; decision_note: string | null };
 export type LcDispute = { id: string; reference: string; status: string; reason: string; opened_by_party: string; created_at: string; response_due_at: string };
+export type LcPayment = { id: string; reference: string; kind: string; status: string; amount_minor: number; refunded_minor: number; currency: string; description: string; created_at: string };
 export type Lifecycle = {
   item: LcItem; event: { id: string; name: string; starts_at: string | null; workspace_id: string | null }; listing: { name: string; workspace_id: string } | null;
-  holds: LcHold[]; standby: LcStandby[]; cancellations: LcCancellation[]; disputes: LcDispute[]; siblings: { id: string; title: string; status: string; category: string }[];
+  holds: LcHold[]; standby: LcStandby[]; cancellations: LcCancellation[]; disputes: LcDispute[]; payments: LcPayment[]; siblings: { id: string; title: string; status: string; category: string }[];
 };
 
 export async function loadLifecycle(client: unknown, itemId: string): Promise<Lifecycle | null> {
@@ -22,7 +23,7 @@ export async function loadLifecycle(client: unknown, itemId: string): Promise<Li
   const db = untyped(client as never);
   const { data: item } = await db.from("build_items").select("id,event_id,listing_id,request_id,title,category,status,role,amount,deposit,response_deadline,sent_at,responded_at,response_status,hold_expires_at,terms_snapshot").eq("id", itemId).maybeSingle();
   if (!item) return null;
-  const [ev, listing, holds, standby, cancellations, disputes, siblings] = await Promise.all([
+  const [ev, listing, holds, standby, cancellations, disputes, siblings, payments] = await Promise.all([
     db.from("events").select("id,name,starts_at,workspace_id").eq("id", item.event_id).maybeSingle(),
     item.listing_id ? db.from("listings").select("name,workspace_id").eq("id", item.listing_id).maybeSingle() : Promise.resolve({ data: null }),
     db.from("conditional_holds").select("id,status,requested_hours,expires_at,created_at,conditions,provider_note,dependency_state,depends_on_item_id,source").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(5),
@@ -30,11 +31,12 @@ export async function loadLifecycle(client: unknown, itemId: string): Promise<Li
     db.from("booking_cancellations").select("id,party,kind,reason,status,requires_review,calculation,requested_by,created_at,decision_note").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(5),
     db.from("booking_disputes").select("id,reference,status,reason,opened_by_party,created_at,response_due_at").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(5),
     db.from("build_items").select("id,title,status,category").eq("event_id", item.event_id).neq("id", itemId).not("status", "in", "(suggested,draft,cancelled)").order("sort").limit(40),
+    db.from("payment_orders").select("id,reference,kind,status,amount_minor,refunded_minor,currency,description,created_at").eq("build_item_id", itemId).order("created_at", { ascending: false }).limit(10),
   ]);
   if (!ev.data) return null;
   return {
     item: item as LcItem, event: ev.data, listing: listing.data, holds: (holds.data ?? []) as LcHold[], standby: (standby.data ?? []) as LcStandby[],
-    cancellations: (cancellations.data ?? []) as LcCancellation[], disputes: (disputes.data ?? []) as LcDispute[], siblings: siblings.data ?? [],
+    cancellations: (cancellations.data ?? []) as LcCancellation[], disputes: (disputes.data ?? []) as LcDispute[], payments: (payments.data ?? []) as LcPayment[], siblings: siblings.data ?? [],
   };
 }
 
