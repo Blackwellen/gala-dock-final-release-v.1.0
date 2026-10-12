@@ -33,4 +33,20 @@ test.describe("guided tours", () => {
     await expect(page.getByText("Hi, I’m your Gala Dock guide")).toBeVisible({ timeout: 20_000 });
     void dialog;
   });
+
+  test("Team and Money tours start and anchor; new guides render", async ({ page, request }) => {
+    await login(page, u.email, "/organizer/team?tour=1");
+    await expect(page.getByText("Your team and crew")).toBeVisible({ timeout: 30_000 });
+    await page.locator(".gd-tour-bubble").getByRole("button", { name: "Next" }).click();
+    await expect(page.locator(".gd-tour-bubble h2")).toHaveText("Team members & crew");
+    await expect(page.locator(".gd-tour-spot")).toBeVisible();
+    await page.goto(`${BASE}/organizer/money?tour=1`);
+    await expect(page.getByText("Your money, reconciled")).toBeVisible({ timeout: 20_000 });
+    for (const slug of ["team", "listings", "venue-maps"]) {
+      const r = await request.get(`${BASE}/help/${slug}`);
+      expect(r.status(), slug).toBe(200);
+    }
+    await page.goto(`${BASE}/help/venue-maps`);
+    await expect(page.getByRole("heading", { name: "Venue maps and seating" })).toBeVisible();
+  });
 });

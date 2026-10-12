@@ -1,7 +1,7 @@
 {
   "getting-started-organizers": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:16:55.424Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:48:32.446Z",
     "route": "/organizer",
     "width": 1280,
     "height": 800,
@@ -46,8 +46,8 @@
     ]
   },
   "events": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:16:59.653Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:48:36.994Z",
     "route": "/organizer/events",
     "width": 1280,
     "height": 800,
@@ -65,8 +65,8 @@
     ]
   },
   "tickets": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:17:05.097Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:48:42.411Z",
     "route": "/organizer/tickets",
     "width": 1280,
     "height": 800,
@@ -77,15 +77,15 @@
         "caption": "Ticket sales across events",
         "found": true,
         "x": 177,
-        "y": 81,
+        "y": 92,
         "w": 280,
         "h": 24
       }
     ]
   },
   "media-studio": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:17:09.069Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:48:45.997Z",
     "route": "/organizer/media",
     "width": 1280,
     "height": 800,
@@ -103,8 +103,8 @@
     ]
   },
   "gala-agent": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:17:13.407Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:48:50.228Z",
     "route": "/organizer/agent",
     "width": 1280,
     "height": 800,
@@ -115,19 +115,19 @@
         "caption": "Runs, approvals and routines",
         "found": true,
         "x": 177,
-        "y": 81,
+        "y": 92,
         "w": 108,
         "h": 29
       }
     ]
   },
   "provider-getting-started": {
-    "version": 2,
-    "captured_at": "2026-10-11T17:17:19.449Z",
+    "version": 6,
+    "captured_at": "2026-10-12T03:49:08.898Z",
     "route": "/provider",
     "width": 1280,
     "height": 800,
-    "signature": "4ca2939b0512f1bb",
+    "signature": "3e40f6c995f9efd2",
     "annotations": [
       {
         "n": 1,
@@ -155,6 +155,117 @@
         "y": 290,
         "w": 144,
         "h": 37
+      }
+    ]
+  },
+  "money-payouts": {
+    "version": 4,
+    "captured_at": "2026-10-12T03:48:54.946Z",
+    "route": "/organizer/money",
+    "width": 1280,
+    "height": 800,
+    "signature": "26d82433df6003fc",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Revenue vs costs per event",
+        "found": true,
+        "x": 177,
+        "y": 359,
+        "w": 1090,
+        "h": 204
+      },
+      {
+        "n": 2,
+        "caption": "Invoices and what clients owe",
+        "found": true,
+        "x": 243,
+        "y": 140,
+        "w": 59,
+        "h": 29
+      },
+      {
+        "n": 3,
+        "caption": "Export for your accountant",
+        "found": true,
+        "x": 1166,
+        "y": 101,
+        "w": 101,
+        "h": 30
+      }
+    ]
+  },
+  "team": {
+    "version": 4,
+    "captured_at": "2026-10-12T03:48:59.336Z",
+    "route": "/organizer/team",
+    "width": 1280,
+    "height": 800,
+    "signature": "34f93bc7fa2893ee",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Invite members or crew",
+        "found": true,
+        "x": 1139,
+        "y": 101,
+        "w": 128,
+        "h": 30
+      },
+      {
+        "n": 2,
+        "caption": "Availability and assignments",
+        "found": true,
+        "x": 230,
+        "y": 140,
+        "w": 53,
+        "h": 29
+      },
+      {
+        "n": 3,
+        "caption": "Team members & crew",
+        "found": true,
+        "x": 177,
+        "y": 506,
+        "w": 1090,
+        "h": 521
+      }
+    ]
+  },
+  "listings": {
+    "version": 4,
+    "captured_at": "2026-10-12T03:49:04.017Z",
+    "route": "/provider/listings",
+    "width": 1280,
+    "height": 800,
+    "signature": "8593d5c6b24b9abb",
+    "annotations": [
+      {
+        "n": 1,
+        "caption": "Venues, spaces, services and packages",
+        "found": true,
+        "x": 207,
+        "y": 127,
+        "w": 296,
+        "h": 36
+      },
+      {
+        "n": 2,
+        "caption": "Published, draft and paused",
+        "found": true,
+        "x": 742,
+        "y": 126,
+        "w": 293,
+        "h": 32
+      },
+      {
+        "n": 3,
+        "caption": "What’s missing",
+        "found": true,
+        "x": 1045,
+        "y": 126,
+        "w": 218,
+        "h": 264
       }
     ]
   }

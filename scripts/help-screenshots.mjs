@@ -27,11 +27,12 @@ for (const a of ARTICLES.filter(x => x.shot)) {
   if (!page.url().includes(a.shot.route.split("?")[0])) { console.warn(`skip ${a.slug}: redirected to ${page.url()} (refresh auth states with ws-auth)`); await ctx.close(); continue; }
   await page.addStyleTag({ content: ".gd-tour,.gd-maint,nextjs-portal,[data-design-overlay]{display:none!important} *{caret-color:transparent!important}" });
   // Remove dev-only floating tools (Next.js indicator, design overlay) so captures match production.
-  await page.evaluate(() => { for (const b of document.querySelectorAll('button[aria-label*="overlay" i]')) { const host = b.closest('div[style*="position: fixed"]'); (host ?? b).remove(); } });
+  await page.evaluate(() => { for (const b of [...document.querySelectorAll('button')].filter(x => /overlay/i.test(x.getAttribute("aria-label") ?? "") || /^overlay design$/i.test(x.textContent?.trim() ?? ""))) { const host = b.closest('div[style*="position: fixed"]'); (host ?? b).remove(); } });
   const annotations = [];
   for (const [i, an] of a.shot.annotations.entries()) {
     const el = page.locator(an.selector).first();
-    const box = (await el.count()) ? await el.boundingBox() : null;
+    const raw = (await el.count()) ? await el.boundingBox() : null;
+    const box = raw && raw.y < 800 && raw.y + raw.height > 0 && raw.x < 1280 ? raw : null;   // only mark what's inside the captured frame
     annotations.push({ n: i + 1, caption: an.caption, found: !!box, ...(box ? { x: Math.round(box.x), y: Math.round(box.y), w: Math.round(box.width), h: Math.round(box.height) } : {}) });
   }
   // UI signature: which anchors exist + main heading + nav labels. A change means the guide may be stale.
