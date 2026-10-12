@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { untyped } from "@/lib/workspace/db";
-import { eventDataFor } from "@/lib/media/actions";
+import { eventDataFor, businessDataFor } from "@/lib/media/actions";
 import { Studio } from "@/components/media/studio";
 import type { DesignDoc } from "@/lib/media/document";
 import type { BrandKit } from "@/lib/media/collab";
@@ -22,10 +22,11 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
     supabase.rpc("design_access" as never, { p_design: id } as never),
   ]);
   if (!d || !access) notFound();
-  const [{ data: versions }, { data: ws }, eventData, { data: ev }] = await Promise.all([
+  const [{ data: versions }, { data: ws }, evData, bizData, { data: ev }] = await Promise.all([
     db.from("design_versions").select("version,label,created_at").eq("design_id", id).order("version", { ascending: false }).limit(40),
     d.workspace_id ? supabase.from("workspaces").select("kind").eq("id", d.workspace_id).maybeSingle() : Promise.resolve({ data: null }),
     eventDataFor(d.event_id),
+    businessDataFor(d.workspace_id as string | null),
     d.event_id ? db.from("events").select("cover_image,gallery,settings").eq("id", d.event_id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
   // Brand kit + custom fonts of the design's workspace (members read; owners/managers edit).
@@ -34,6 +35,7 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
     db.from("uploaded_fonts").select("id,family,weight,style").eq("workspace_id", d.workspace_id).order("family"),
     supabase.from("workspace_members").select("role").eq("workspace_id", d.workspace_id).eq("user_id", user.id).eq("status", "active").maybeSingle(),
   ]) : [{ data: null }, { data: [] }, { data: null }];
+  const eventData = { ...bizData, ...evData };
   const gallery = ev ? [...new Set([((ev.settings ?? {}) as { hero_image?: string }).hero_image, ev.cover_image, ...((ev.gallery as string[]) ?? [])].filter((s): s is string => !!s && /^(https:|\/)/.test(s)))].slice(0, 24) : [];
   const back = ws?.kind === "provider" ? "/provider/media" : "/organizer/media";
   const brand = d.workspace_id ? { workspaceId: d.workspace_id as string, canManage: ["owner", "manager"].includes(member?.role ?? ""),

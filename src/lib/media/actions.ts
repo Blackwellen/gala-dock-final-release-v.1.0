@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { TemplateFilters } from "./template-taxonomy";
 import { randomUUID } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -79,7 +80,8 @@ export async function archiveDesign(id: string): Promise<R> {
  * Publish as a template (§8, §51). Private uploads are first copied to a public derivative under templates/, so the public
  * template never exposes the private original; event-bound text reverts to {{placeholders}} in the database function.
  */
-export async function publishTemplate(id: string, meta: { title: string; description: string; category: string; tags: string[]; visibility: "private" | "workspace" | "link" | "public" }): Promise<R<string>> {
+export async function publishTemplate(id: string, meta: { title: string; description: string; category: string; tags: string[]; visibility: "private" | "workspace" | "link" | "public";
+  audience?: string; eventType?: string; business?: string; style?: string; palette?: string }): Promise<R<string>> {
   if (!UUID.test(id)) return { ok: false, error: "Not found." };
   const sb = await createClient();
   const db = untyped(sb as never), admin = createAdminClient();
@@ -104,6 +106,9 @@ export async function publishTemplate(id: string, meta: { title: string; descrip
   const { data, error } = await sb.rpc("publish_template" as never, { p_design: id, p_title: meta.title, p_description: meta.description, p_category: meta.category, p_tags: meta.tags.slice(0, 10),
     p_visibility: meta.visibility, p_link_hash: token } as never);
   if (error) return fail(error.message);
+  const clean = (v?: string) => (v && /^[a-z_]{1,40}$/.test(v) ? v : "");
+  await sb.rpc("set_template_facets" as never, { p_template: data, p_audience: clean(meta.audience) || "both", p_event_type: clean(meta.eventType), p_business: clean(meta.business),
+    p_style: clean(meta.style), p_palette: clean(meta.palette) } as never);
   bump(); return { ok: true, data: data as unknown as string };
 }
 
@@ -133,22 +138,52 @@ export async function eventDataFor(eventId: string | null): Promise<EventData> {
   };
 }
 
-export type TemplateSummary = { id: string; title: string; category: string; usage_count: number; scope: "starter" | "community" | "workspace" | "mine"; document: DesignDoc };
+/** Business details for {{business.*}} fields (venues & suppliers): the workspace and its first published listing. Its photo stands in
+ *  for the cover image so photo templates show the venue/service straight away. */
+export async function businessDataFor(workspaceId: string | null): Promise<EventData> {
+  if (!workspaceId || !UUID.test(workspaceId)) return {};
+  const sb = untyped((await createClient()) as never);
+  const [{ data: w }, { data: l }] = await Promise.all([
+    sb.from("workspaces").select("name,settings,cover_image").eq("id", workspaceId).maybeSingle(),
+    sb.from("listings").select("city,image,price_from").eq("workspace_id", workspaceId).eq("published", true).order("created_at").limit(1).maybeSingle(),
+  ]);
+  if (!w) return {};
+  const st = (w.settings ?? {}) as Record<string, unknown>, str = (v: unknown) => (typeof v === "string" ? v : "");
+  const price = l?.price_from ? `From ${new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(Number(l.price_from))}` : "";
+  const img = [l?.image, w.cover_image].find(s => typeof s === "string" && /^(https:|\/)/.test(s));
+  return {
+    "business.name": w.name, "business.location": l?.city || str(st.location) || "", "business.price_from": price,
+    "business.website": str(st.website).replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") || "galadock.com", "business.email": str(st.contact_email), "business.phone": str(st.phone) || str((st.profile as Record<string, unknown> | undefined)?.phone),
+    ...(img ? { "event.cover_image": img } : {}),
+  };
+}
+
+export type TemplateSummary = { id: string; title: string; category: string; usage_count: number; audience?: string; format?: string; scope: "starter" | "community" | "workspace" | "mine"; document: DesignDoc };
 /** Templates the reader may use, for the editor's Templates tab: platform starters, public community, their workspace's and their own. */
-export async function listTemplates(scope: "all" | "starter" | "community" | "workspace", q: string, workspaceId: string | null): Promise<R<TemplateSummary[]>> {
+export async function listTemplates(scope: "all" | "starter" | "community" | "workspace", q: string, workspaceId: string | null, f: TemplateFilters = {}): Promise<R<TemplateSummary[]>> {
   const sb = await createClient();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { ok: false, error: "Please sign in again." };
   const term = String(q ?? "").replace(/[%_,()]/g, " ").trim().slice(0, 60);
-  let query = untyped(sb as never).from("design_templates").select("id,title,category,usage_count,document,workspace_id,owner_id,visibility").eq("status", "active").order("usage_count", { ascending: false }).limit(48);
+  const key = (v?: string) => (v && /^[a-z_]{1,40}$/.test(v) ? v : "");
+  const sort = key(f.sort) || "popular";
+  let query = untyped(sb as never).from("design_templates").select("id,title,category,usage_count,document,workspace_id,owner_id,visibility,audience,format,style,palette,event_type,business_type").eq("status", "active")
+    .order(sort === "newest" ? "created_at" : sort === "az" ? "title" : "usage_count", { ascending: sort === "az" }).limit(60);
   if (scope === "starter") query = query.is("workspace_id", null).is("owner_id", null);
   else if (scope === "community") query = query.eq("visibility", "public").not("owner_id", "is", null);
   else if (scope === "workspace") query = workspaceId && UUID.test(workspaceId) ? query.or(`workspace_id.eq.${workspaceId},owner_id.eq.${user.id}`) : query.eq("owner_id", user.id);
-  if (term) query = query.or(`title.ilike.%${term}%,category.ilike.%${term}%`);
+  if (term) query = query.or(`title.ilike.%${term}%,category.ilike.%${term}%,description.ilike.%${term}%,style.ilike.%${term}%,event_type.ilike.%${term}%,business_type.ilike.%${term}%`);
+  const aud = key(f.audience); if (aud === "organiser" || aud === "provider") query = query.in("audience", [aud, "both"]);
+  if (key(f.purpose)) query = query.eq("category", key(f.purpose));
+  if (key(f.eventType)) query = query.or(`event_type.eq.${key(f.eventType)},category.eq.${key(f.eventType)}`);
+  if (key(f.business)) query = query.eq("business_type", key(f.business));
+  if (key(f.style)) query = query.eq("style", key(f.style));
+  if (key(f.palette)) query = query.eq("palette", key(f.palette));
+  if (key(f.format)) query = query.eq("format", key(f.format));
   const { data, error } = await query;
   if (error) return fail(error.message);
-  return { ok: true, data: ((data ?? []) as (TemplateSummary & { workspace_id: string | null; owner_id: string | null; visibility: string })[]).map(t => ({
-    id: t.id, title: t.title, category: t.category, usage_count: t.usage_count, document: t.document,
+  return { ok: true, data: ((data ?? []) as unknown as (TemplateSummary & { workspace_id: string | null; owner_id: string | null; visibility: string })[]).map(t => ({
+    id: t.id, title: t.title, category: t.category, usage_count: t.usage_count, document: t.document, audience: t.audience, format: t.format,
     scope: !t.workspace_id && !t.owner_id ? "starter" : t.owner_id === user.id ? "mine" : t.visibility === "public" ? "community" : "workspace" })) };
 }
 export async function templateUsed(id: string): Promise<R> {

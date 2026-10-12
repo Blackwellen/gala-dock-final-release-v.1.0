@@ -41,7 +41,7 @@ export function DesignMenu({ id, title, library, inEditor = false, canEdit = tru
         : <button type="button" role="menuitem" className="danger" onClick={() => setConfirm(true)}><Trash2 size={14} aria-hidden="true" />Delete</button>)}
       {err && <p className="dm-err" role="alert">{err}</p>}
     </div>}
-    {sharing && <ShareToCommunity designId={id} title={title} onClose={() => setSharing(false)} />}
+    {sharing && <ShareToCommunity designId={id} title={title} audience={library.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setSharing(false)} />}
   </div>;
 }
 

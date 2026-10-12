@@ -48,17 +48,22 @@ export const PRESETS: { group: string; id: string; label: string; w: number; h: 
   { group: "Event", id: "tier", label: "Ticket tier card", w: 1200, h: 628 },
 ];
 
-export const PLACEHOLDERS = ["event.name", "event.date", "event.time", "event.venue_name", "event.city", "event.public_url", "ticket.starting_price", "organizer.name"] as const;
+export const PLACEHOLDERS = ["event.name", "event.date", "event.time", "event.venue_name", "event.city", "event.public_url", "ticket.starting_price", "organizer.name",
+  "business.name", "business.location", "business.price_from", "business.website", "business.email", "business.phone"] as const;
+/** Business details (venues & suppliers) — filled from the design's workspace and its listings. */
+export const BUSINESS_FIELDS = ["business.name", "business.location", "business.price_from", "business.website", "business.email", "business.phone"] as const;
 /** Image layers whose src is this placeholder show the event's cover photo (or the layer's `sample` until an event is linked). */
 export const COVER_PLACEHOLDER = "{{event.cover_image}}";
 export type EventData = Partial<Record<(typeof PLACEHOLDERS)[number] | "event.cover_image", string>>;
 /** Dynamic fields (§6): bound layers render live event data; publishing a template reverts them to {{placeholders}}. */
 /** Shown for placeholders when a design isn't linked to an event yet, so templates read naturally instead of showing {{braces}}. */
 export const PLACEHOLDER_DEFAULTS: EventData = { "event.name": "Your Event Name", "event.date": "Sat 21 June", "event.time": "19:30", "event.venue_name": "Your Venue", "event.city": "London",
-  "event.public_url": "https://www.galadock.com", "ticket.starting_price": "£25", "organizer.name": "Your Company" };
+  "event.public_url": "https://www.galadock.com", "ticket.starting_price": "£25", "organizer.name": "Your Company",
+  "business.name": "Your Business", "business.location": "London", "business.price_from": "From £450", "business.website": "galadock.com", "business.email": "hello@yourbusiness.com", "business.phone": "020 7946 0000" };
 /** Plain-English names for the placeholders. Editors show "[Event name]" instead of "{{event.name}}" (customers never see braces). */
 export const FIELD_LABELS: Record<(typeof PLACEHOLDERS)[number], string> = { "event.name": "Event name", "event.date": "Date", "event.time": "Start time", "event.venue_name": "Venue",
-  "event.city": "City", "event.public_url": "Ticket link", "ticket.starting_price": "Lowest ticket price", "organizer.name": "Organiser name" };
+  "event.city": "City", "event.public_url": "Ticket link", "ticket.starting_price": "Lowest ticket price", "organizer.name": "Organiser name",
+  "business.name": "Business name", "business.location": "Business location", "business.price_from": "Starting price", "business.website": "Website", "business.email": "Business email", "business.phone": "Phone number" };
 const LABEL_TO_KEY = Object.fromEntries(Object.entries(FIELD_LABELS).map(([k, v]) => [v.toLowerCase(), k]));
 /** {{event.name}} → [Event name] for display/editing. */
 export const toFriendly = (text: string) => text.replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, k: string) => (FIELD_LABELS as Record<string, string>)[k] ? `[${(FIELD_LABELS as Record<string, string>)[k]}]` : m);

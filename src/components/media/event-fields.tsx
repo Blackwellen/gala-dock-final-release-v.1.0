@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, Clock, Link2, MapPin, Building2, PoundSterling, Sparkles, Ticket, Type } from "lucide-react";
+import { CalendarDays, ChevronDown, Clock, Globe, Link2, Mail, MapPin, Building2, Phone, PoundSterling, Sparkles, Store, Ticket, Type } from "lucide-react";
 import "@/styles/event-fields.css";
 import { FIELD_LABELS, PLACEHOLDERS, PLACEHOLDER_DEFAULTS, fromFriendly, toFriendly, type EventData } from "@/lib/media/document";
 
@@ -11,9 +11,11 @@ import { FIELD_LABELS, PLACEHOLDERS, PLACEHOLDER_DEFAULTS, fromFriendly, toFrien
  */
 type Key = (typeof PLACEHOLDERS)[number];
 const ICON: Record<Key, typeof Type> = { "event.name": Sparkles, "event.date": CalendarDays, "event.time": Clock, "event.venue_name": Building2, "event.city": MapPin,
-  "event.public_url": Link2, "ticket.starting_price": PoundSterling, "organizer.name": Ticket };
+  "event.public_url": Link2, "ticket.starting_price": PoundSterling, "organizer.name": Ticket,
+  "business.name": Store, "business.location": MapPin, "business.price_from": PoundSterling, "business.website": Globe, "business.email": Mail, "business.phone": Phone };
 export const FIELD_HELP: Record<Key, string> = { "event.name": "Your event’s title", "event.date": "e.g. Sat 21 June 2026", "event.time": "When doors open", "event.venue_name": "Where it’s happening",
-  "event.city": "Town or city", "event.public_url": "Link to buy tickets", "ticket.starting_price": "Cheapest ticket, e.g. £25.00", "organizer.name": "Your company or name" };
+  "event.city": "Town or city", "event.public_url": "Link to buy tickets", "ticket.starting_price": "Cheapest ticket, e.g. £25.00", "organizer.name": "Your company or name",
+  "business.name": "Your venue or business", "business.location": "Where you’re based", "business.price_from": "e.g. From £450", "business.website": "Your Gala Dock page", "business.email": "Enquiries email", "business.phone": "Enquiries phone" };
 export const fieldPreview = (k: Key, data: EventData) => data[k] || PLACEHOLDER_DEFAULTS[k] || "";
 
 /** Dropdown listing every event detail with its current value; calls onPick with the canonical key. */

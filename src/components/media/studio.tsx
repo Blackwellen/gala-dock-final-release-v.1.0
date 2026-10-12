@@ -11,6 +11,8 @@ import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-pa
 import { CommentsPanel } from "./comments-panel";
 import { DesignMenu } from "./design-menu";
 import { FriendlyField, EventFieldButtons, InsertField } from "./event-fields";
+import { TemplateFilterBar, TemplateFacetFields, facetsFrom } from "./template-filters";
+import { FORMATS, labelOf, type TemplateFilters } from "@/lib/media/template-taxonomy";
 import { saveDesign, restoreVersion, deriveDesign, publishTemplate, listTemplates, templateUsed, type TemplateSummary } from "@/lib/media/actions";
 import { PRESETS, FIELD_LABELS, fontSpecs, googleFontHrefs, reflow, uid, type DesignDoc, type EventData, type Layer, type Page, type TextLayer, type Brush, type PathLayer, type WidgetLayer, type Effects, type TextFx } from "@/lib/media/document";
 import { loadFonts } from "@/lib/design-kit/assets";
@@ -329,7 +331,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <nav className="st-tabs" aria-label="Library">{TABS.filter(t => t !== "Brand" || brand).map(t => { const I = TAB_ICON[t]; return <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)} aria-pressed={tab === t}><I size={18} /><span>{t}</span></button>; })}</nav>
 
       <aside className="st-panel" aria-label={tab}>
-        {tab === "Templates" && <TemplatesPanel workspaceId={workspaceId} canEdit={design.canEdit} onUse={useTemplate} />}
+        {tab === "Templates" && <TemplatesPanel workspaceId={workspaceId} canEdit={design.canEdit} onUse={useTemplate} portal={back.startsWith("/provider") ? "provider" : "organiser"} />}
         {tab === "Elements" && <>
           <div className="st-quick">
             <button onClick={() => addShape("rect")}><Square size={18} />Rectangle</button><button onClick={() => addShape("ellipse")}><Circle size={18} />Circle</button>
@@ -513,7 +515,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <CommentsPanel designId={design.id} canEdit={design.canEdit} pageId={page.id} layer={one ? { id: one.id, name: one.name } : null} onJump={jumpTo} onCount={setOpenCount} />
     </Popover>}
     {panel === "export" && <ExportPanel pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
-    {panel === "publish" && <PublishPanel designId={design.id} title={title} onClose={() => setPanel("")} flush={async () => { if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (r.ok) { version.current = r.data!; setSave("saved"); } } }} />}
+    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (r.ok) { version.current = r.data!; setSave("saved"); } } }} />}
   </div>;
 }
 
@@ -526,17 +528,19 @@ function EmojiSymbols({ onEmoji, onSymbol }: { onEmoji: (e: string, n: string) =
   </>;
 }
 
-function TemplatesPanel({ workspaceId, canEdit, onUse }: { workspaceId: string | null; canEdit: boolean; onUse: (t: TemplateSummary, mode: "replace" | "page") => void }) {
+function TemplatesPanel({ workspaceId, canEdit, onUse, portal }: { workspaceId: string | null; canEdit: boolean; onUse: (t: TemplateSummary, mode: "replace" | "page") => void; portal: "organiser" | "provider" }) {
   const [scope, setScope] = useState<"all" | "starter" | "community" | "workspace">("all"), [q, setQ] = useState(""), [list, setList] = useState<TemplateSummary[] | null>(null), [err, setErr] = useState("");
-  useEffect(() => { let live = true; const t = setTimeout(() => { void listTemplates(scope, q, workspaceId).then(r => { if (!live) return; if (r.ok) { setList(r.data ?? []); setErr(""); } else setErr(r.error); }); }, q ? 250 : 0); return () => { live = false; clearTimeout(t); }; }, [scope, q, workspaceId]);
+  const [filters, setFilters] = useState<TemplateFilters>({ audience: portal }); const fkey = JSON.stringify(filters);
+  useEffect(() => { let live = true; const t = setTimeout(() => { void listTemplates(scope, q, workspaceId, JSON.parse(fkey)).then(r => { if (!live) return; if (r.ok) { setList(r.data ?? []); setErr(""); } else setErr(r.error); }); }, q ? 250 : 0); return () => { live = false; clearTimeout(t); }; }, [scope, q, workspaceId, fkey]);
   return <div className="dk-picker">
     <input className="dk-in" type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Search templates — wedding, nightclub, menu…" aria-label="Search templates" />
     <div className="dk-tabs" role="tablist" aria-label="Template source">{([["all", "All"], ["starter", "Starters"], ["community", "Community"], ["workspace", "Mine & team"]] as const).map(([k, l]) =>
       <button key={k} type="button" role="tab" aria-selected={scope === k} className={scope === k ? "on" : ""} onClick={() => setScope(k)}>{l}</button>)}</div>
+    <TemplateFilterBar value={filters} onChange={setFilters} />
 
     {err && <p className="st-warn">{err}</p>}
-    {!list ? <p className="dk-cap">Loading templates…</p> : !list.length ? <p className="dk-cap">No templates found{q ? ` for “${q}”` : ""}.</p>
-      : <div className="st-tgrid">{list.map(t => <div key={t.id} className="st-tcard"><MiniThumb doc={t.document} /><b title={t.title}>{t.title}</b><small>{t.scope === "starter" ? "Gala Dock" : t.scope === "community" ? "Community" : t.scope === "mine" ? "Yours" : "Your team"} · used {t.usage_count}×</small>
+    {!list ? <p className="dk-cap">Loading templates…</p> : !list.length ? <p className="dk-cap">No templates found{q ? ` for “${q}”` : ""}. Try removing a filter.</p>
+      : <div className="st-tgrid">{list.map(t => <div key={t.id} className="st-tcard"><MiniThumb doc={t.document} /><b title={t.title}>{t.title}</b><small>{t.scope === "starter" ? "Gala Dock" : t.scope === "community" ? "Community" : t.scope === "mine" ? "Yours" : "Your team"}{t.format ? ` · ${labelOf(FORMATS, t.format).split(" (")[0]}` : ""} · used {t.usage_count}×</small>
         {canEdit && <span className="st-row"><button className="st-btn" onClick={() => onUse(t, "replace")}>Use</button><button className="st-btn" onClick={() => onUse(t, "page")} title="Add as a new page">+ Page</button></span>}</div>)}</div>}
   </div>;
 }
@@ -695,15 +699,15 @@ function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; p
   </Popover>;
 }
 
-function PublishPanel({ designId, title, onClose, flush }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void> }) {
+function PublishPanel({ designId, title, onClose, flush, portal }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void>; portal: "organiser" | "provider" }) {
   const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   return <Popover title="Share as a template" onClose={onClose}>
     <form className="st-form" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); await flush();
-      const r = await publishTemplate(designId, { title: String(f.get("title")), description: String(f.get("description") ?? ""), category: String(f.get("category")), tags: String(f.get("tags") ?? "").split(",").map(s => s.trim()).filter(Boolean), visibility: f.get("visibility") as "private" });
+      const r = await publishTemplate(designId, { title: String(f.get("title")), description: String(f.get("description") ?? ""), category: String(f.get("category")), tags: String(f.get("tags") ?? "").split(",").map(s => s.trim()).filter(Boolean), visibility: f.get("visibility") as "private", ...facetsFrom(f) });
       setBusy(false); setMsg(r.ok ? "Template saved." : r.error); }}>
       <label className="st-field"><span>Title</span><input name="title" defaultValue={title} required minLength={2} maxLength={120} /></label>
       <label className="st-field"><span>Description</span><textarea name="description" rows={2} maxLength={1000} /></label>
-      <label className="st-field"><span>Category</span><select name="category">{["nightclub", "festival", "wedding", "birthday", "childrens_party", "conference", "corporate", "comedy", "concert", "theatre", "networking", "webinar", "private_party", "venue_hire", "catering", "menu", "drinks", "ticket_launch", "early_bird", "sold_out", "final_release", "event_day"].map(c => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}</select></label>
+      <TemplateFacetFields defaultAudience={portal} />
       <label className="st-field"><span>Tags (comma separated)</span><input name="tags" maxLength={200} /></label>
       <label className="st-field"><span>Who can use it</span><select name="visibility" defaultValue="public"><option value="private">Only me</option><option value="workspace">My workspace</option><option value="link">Anyone with the link</option><option value="public">Everyone (community)</option></select></label>
       <p className="st-hint">Event details become placeholders and private uploads are replaced with safe copies — your event’s private data is never published. Others always get their own copy. Community templates follow the Content &amp; Template Policy.</p>
