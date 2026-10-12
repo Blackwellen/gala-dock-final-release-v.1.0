@@ -1,6 +1,6 @@
 # Venue Marketplace Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10 · Additional terms for venues and space hire.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10 · Additional terms for venues and space hire.
 
 These terms add to the Provider Marketplace Terms for providers who list **venues and spaces** on Gala Dock. Where they conflict on a venue matter, these terms apply.
 

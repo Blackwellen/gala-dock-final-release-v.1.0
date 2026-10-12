@@ -1,6 +1,6 @@
 # Accessibility Statement
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. Conformance status below reflects the internal WCAG 2.2 AA audit of 12 October 2026 (docs/compliance/wcag-audit.md); an independent audit is still recommended before production launch.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10. Conformance status below reflects the internal WCAG 2.2 AA audit of 12 October 2026 (docs/compliance/wcag-audit.md); an independent audit is still recommended before production launch.
 
 Blackwellen Limited wants as many people as possible to be able to use Gala Dock: the website, the installable app (PWA), digital tickets, and the tools organisers and providers use. This statement covers galadock.com and its sub-pages.
 

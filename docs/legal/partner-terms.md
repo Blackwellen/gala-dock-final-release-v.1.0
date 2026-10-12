@@ -1,6 +1,6 @@
 # Affiliate & Partner Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 These terms apply to organisations that join the Gala Dock **Partner** programme (for example agencies, venues groups, associations and integrators) to refer customers, resell plans, or build integrations, and to their use of the Partner portal. Individual event promoters are covered by the Promoter Terms instead.
 

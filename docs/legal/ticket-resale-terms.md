@@ -1,6 +1,6 @@
 # Official Ticket Resale Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. **Resale law must be re-checked immediately before release**, including any secondary-ticketing price-cap legislation.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10. **Resale law must be re-checked immediately before release**, including any secondary-ticketing price-cap legislation.
 
 Gala Dock's official resale lets ticket holders who can't attend sell their tickets to other fans, safely and at a fair price. These terms apply to sellers and buyers using resale and sit alongside the Ticket Purchase Terms.
 

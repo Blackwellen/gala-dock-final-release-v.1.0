@@ -1,6 +1,6 @@
 # Marketplace Payment Protection Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. **This is not an escrow service and must never be described as escrow.**
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10. **This is not an escrow service and must never be described as escrow.**
 
 These terms explain how Gala Dock holds and releases money paid for provider bookings (venues, catering, entertainment, equipment and other services) made through Gala Dock. They form part of the Customer Terms, Organizer Terms, Provider Marketplace Terms and Venue Marketplace Terms.
 

@@ -1,6 +1,6 @@
 # Acceptable Use Policy
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 This policy applies to everyone who uses Gala Dock: customers, organisers, providers, partners, promoters, and anyone using our API, MCP server or Gala Agent. Breaking it can lead to content removal, account restrictions, suspension, termination and, where appropriate, reports to the police or other authorities.
 

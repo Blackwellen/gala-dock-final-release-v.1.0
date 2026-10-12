@@ -1,6 +1,6 @@
 # Content & Template Policy
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. Covers Media Studio designs, uploads, event pages, listings and community templates.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10. Covers Media Studio designs, uploads, event pages, listings and community templates.
 
 ## 1. Your content, your rights
 

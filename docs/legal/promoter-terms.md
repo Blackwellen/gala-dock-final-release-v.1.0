@@ -1,6 +1,6 @@
 # Promoter Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 These terms apply to people and businesses who promote events on Gala Dock using **promoter links** in the Promoter portal, and to the organisers who invite them. They sit alongside the Platform Terms and the Acceptable Use Policy.
 

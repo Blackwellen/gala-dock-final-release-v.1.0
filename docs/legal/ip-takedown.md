@@ -1,6 +1,6 @@
 # Intellectual Property & Takedown Procedure
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 Gala Dock hosts content uploaded by users: event pages, listings, images, designs, templates and reviews. We respect intellectual property rights and act quickly on valid notices, in line with the Electronic Commerce (EC Directive) Regulations 2002.
 

@@ -1,6 +1,6 @@
 # Legal source register
 
-> **Draft for specialist UK legal review before production publication.** The "date checked" column records when the drafting team last consulted each source. It is not a legal opinion that the source has been applied correctly.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** The "date checked" column records when the drafting team last consulted each source. It is not a legal opinion that the source has been applied correctly.
 
 **Jurisdiction for all documents:** England and Wales, with UK-wide consumer and data protection law. EU users (EEA consumers) raise additional questions, flagged per document.
 

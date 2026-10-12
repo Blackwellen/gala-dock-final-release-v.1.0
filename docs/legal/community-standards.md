@@ -1,6 +1,6 @@
 # Community & Marketplace Standards
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 Gala Dock works when customers can trust listings and reviews, and providers and organisers can trust that everyone plays fair. These standards explain what we expect and how we enforce it. They apply alongside the Acceptable Use Policy.
 

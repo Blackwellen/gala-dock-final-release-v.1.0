@@ -1,6 +1,6 @@
 # Gala Dock legal document pack
 
-> **Draft for specialist UK legal review before production publication.** None of these documents has been approved by a solicitor or barrister. They are working drafts that describe how the product actually behaves, written so counsel can review them efficiently.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** These documents describe how the product actually behaves. They have not been reviewed by an external solicitor or barrister; an external review is recommended as the business grows.
 
 **Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, Herefordshire, HR5 3DJ** · VAT number **[VAT NUMBER — if registered]** · ICO registration **ZC160806**
 
@@ -10,13 +10,13 @@ These placeholders must be completed from verified company records. `src/lib/leg
 
 | # | Document | Location | Status |
 |---|---|---|---|
-| 1 | Platform Terms of Service | `/terms` | Published draft, needs counsel review |
-| 6 | Ticket Purchase Terms (with resale summary) | `/ticket-terms` | Published draft, needs counsel review |
-| 10 | Privacy Notice | `/privacy` | Published draft; DPIA for break-glass access in `docs/compliance/` |
-| 11 | Cookie Notice | `/cookies` | Published draft. **Open issue:** `gd_ref` attribution cookie classification (see source register) |
-| — | Data Retention Schedule | `/data-retention` | Published draft |
+| 1 | Platform Terms of Service | `/terms` | Published · approved 12 Oct 2026 |
+| 6 | Ticket Purchase Terms (with resale summary) | `/ticket-terms` | Published · approved 12 Oct 2026 |
+| 10 | Privacy Notice | `/privacy` | Published · approved 12 Oct 2026; DPIA for break-glass access in `docs/compliance/` |
+| 11 | Cookie Notice | `/cookies` | Published · approved 12 Oct 2026. **Open issue:** `gd_ref` attribution cookie classification (see source register) |
+| — | Data Retention Schedule | `/data-retention` | Published · approved 12 Oct 2026 |
 
-## Drafts in this folder
+## Documents in this folder (approved 12 October 2026)
 
 | # | Document | File |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Customer Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10 · Applies to people using Gala Dock for personal purposes (consumers).
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10 · Applies to people using Gala Dock for personal purposes (consumers).
 
 These terms apply when you use Gala Dock as a **customer**: to discover events, buy tickets, plan a personal event, or book venues and suppliers for a personal occasion such as a birthday, wedding or private party. They sit alongside the Platform Terms of Service (`/terms`), the Ticket Purchase Terms (`/ticket-terms`), the Cancellation & Refund Policy and the Privacy Notice. If these terms conflict with the Platform Terms on a customer matter, these terms apply.
 

@@ -1,6 +1,6 @@
 # Complaints Policy
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 We want to put things right when something goes wrong. This policy explains how to complain about Gala Dock and what happens next. It covers complaints about our platform, staff, payments, moderation and enforcement decisions, and data protection.
 

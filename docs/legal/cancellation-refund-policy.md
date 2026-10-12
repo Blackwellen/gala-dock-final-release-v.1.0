@@ -1,6 +1,6 @@
 # Cancellation & Refund Policy
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10.
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10.
 
 This policy explains what happens to your money when a ticket or booking is cancelled, changed or goes wrong. It applies to customers, organisers and providers. It doesn't remove any rights you have by law.
 

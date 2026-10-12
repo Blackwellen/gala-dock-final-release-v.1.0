@@ -1,6 +1,6 @@
 # Organizer Terms
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10 · Business terms for organisers (B2B).
+> **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** Version 2026-10 · Business terms for organisers (B2B).
 
 These terms apply to businesses and individuals acting in the course of business who use Gala Dock's **Organizer** workspace to plan events, sell tickets, source venues and suppliers, manage teams and run event operations ("**you**", the "**Organizer**"). They incorporate the Platform Terms of Service, the Acceptable Use Policy, the Community & Marketplace Standards, the Marketplace Payment Protection Terms, the AI / Gala Agent Terms, and, where you process attendee data through Gala Dock, the Data Processing Addendum.
 
