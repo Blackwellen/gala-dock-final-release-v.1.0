@@ -47,8 +47,8 @@ To set it up again by hand:
    - Scopes: `email`, `profile`, `openid`
    - Publish the app.
 2. **Credentials → Create credentials → OAuth client ID** (type **Web application**):
-   - **Authorised JavaScript origins:** `https://www.galadock.com`
-   - **Authorised redirect URI:** `https://<your-project-ref>.supabase.co/auth/v1/callback` (Supabase handles the callback, then redirects to `/auth/callback`)
+   - **Authorised JavaScript origins:** `https://www.galadock.com` and `https://galadock.com`
+   - **Authorised redirect URIs:** `https://www.galadock.com/api/auth/google/callback` (and `http://localhost:3107/api/auth/google/callback` for local testing). Gala Dock runs its own Google sign-in (`src/app/api/auth/google`), so Google's screen says "continue to galadock.com" and never shows the Supabase project URL.
 3. Add `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` to `.env`, then run `scripts/auth-config.mjs --apply`.
 4. The **Continue with Google** button appears on the login and sign-up screens automatically: the app reads which providers are enabled from Supabase.
 5. Optionally, add `GOOGLE_OAUTH_CLIENT_ID` to Vercel too, so `/api/health` reports Google sign-in as configured.

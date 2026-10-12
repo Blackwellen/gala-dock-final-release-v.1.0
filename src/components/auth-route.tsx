@@ -15,6 +15,7 @@ const titles = Object.fromEntries(publicRoutes.map(r => [r.path, r.title]));
 const errorCodes: Record<string, string> = {
   link_expired: "Your sign-in link has expired. Please try again.",
   oauth_failed: "We couldn’t complete sign-in with that provider. Please try again.",
+  oauth_cancelled: "Google sign-in was cancelled. Choose a sign-in method to continue.",
 };
 export const accessReasons = ["denied", "suspended", "revoked", "expired", "insufficient"] as const;
 

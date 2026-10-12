@@ -80,9 +80,17 @@ function StatusSteps({ items, active, label }: { items: { key: string; label: st
   </div>;
 }
 
-function SocialButtons({ next, providers, onError }: { next: string; providers: AuthProps["providers"]; onError: (message: string) => void }) {
+function SocialButtons({ next, providers, onError, captcha, needsCaptcha }: { next: string; providers: AuthProps["providers"]; onError: (message: string) => void; captcha?: string; needsCaptcha?: boolean }) {
   if (!providers.length) return null;
   async function login(provider: "google" | "azure") {
+    // Google uses Gala Dock's own sign-in, so Google's screen says "continue to galadock.com" (src/app/api/auth/google).
+    if (provider === "google") {
+      if (needsCaptcha && !captcha) { onError("Please wait a moment for the security check, then try again."); return; }
+      const r = await fetch("/api/auth/google/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ next: next || "/continue", captcha }) }).catch(() => null);
+      const j = r ? await r.json().catch(() => ({})) as { url?: string; error?: string } : {};
+      if (r?.ok && j.url) { location.assign(j.url); return; }
+      onError(j.error ?? "We couldn’t start sign-in with Google. Please try again."); return;
+    }
     const { error } = await createClient().auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next || "/continue")}`, scopes: provider === "azure" ? "email" : undefined } });
     if (error) onError("We couldn’t start sign-in with that provider. Please try again.");
   }
@@ -373,7 +381,7 @@ export function AuthPage(props: AuthProps) {
           {screen === "reset-password" && state === "expired" && <div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>This reset link is invalid or has expired</b><small>Reset links can be used once and expire after a short time. Request a new link to continue.</small></span></div>}
           {screen === "verify-email" && state === "expired" && <><div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>Verification link expired</b><small>This link is no longer valid. Sign in to request a new verification email.</small></span></div><Button href={withNext("/login")} arrow className="full-width">Sign in to resend</Button></>}
           {screen === "login" && <PasskeySignIn next={next} captcha={needsCaptcha ? captcha : undefined} onError={setError} />}
-          {["login", "register"].includes(screen) && providers.length > 0 && <><div className="auth-divider">{screen === "login" ? "Use another method" : "Or continue with"}</div><SocialButtons next={next} providers={providers} onError={setError} /></>}
+          {["login", "register"].includes(screen) && providers.length > 0 && <><div className="auth-divider">{screen === "login" ? "Use another method" : "Or continue with"}</div><SocialButtons next={next} providers={providers} onError={setError} captcha={captcha} needsCaptcha={needsCaptcha} /></>}
           {screen === "reset-password" && state !== "complete" && <><div className="auth-divider">or</div><Link className="request-new-link" href="/forgot-password">Request new link</Link></>}
           {screen === "forgot-password" && <Link className="auth-back" href="/login">← Back to Log in</Link>}
           {screen === "mfa" && <><div className="auth-divider">Or try a different method</div><Button variant="outline" className="full-width" onClick={() => setMethod(method === "authenticator" ? "recovery" : "authenticator")}><RefreshCw size={20} aria-hidden="true" />Switch method</Button>
