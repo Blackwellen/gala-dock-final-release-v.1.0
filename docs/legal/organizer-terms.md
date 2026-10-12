@@ -8,6 +8,9 @@ The contracting entity is Blackwellen Limited (company number 16482166), registe
 
 ## 1. Your workspace
 
+1.0 **Independent businesses.** Gala Dock provides software. You, and the venues and suppliers you work with, are independent businesses that use the Gala Dock software under agreements with us. You are not our employee, worker, partner, joint venturer or contractor, and you can't bind us. You run your events under your own name and responsibility.
+
+
 1.1 **Accounts and roles.** You create a workspace and invite members with roles (owner, manager, member, finance). The owner is responsible for who has access and what roles they hold. Gala Dock enforces role permissions on every action, including actions taken through the API, MCP and Gala Agent.
 
 1.2 **Security.** You must keep credentials secure. You can require two-step verification for some or all members (Settings → Security). We recommend requiring it for owners, managers and finance roles. You are responsible for activity under your workspace's credentials and API keys until you tell us they've been compromised and we've had a reasonable opportunity to act.
@@ -24,9 +27,9 @@ The contracting entity is Blackwellen Limited (company number 16482166), registe
 * run the event as advertised, with reasonable care and skill;
 * hold any licences, permissions and insurance the event requires (including premises and alcohol licensing, temporary event notices, music licensing, safety certificates and capacity limits).
 
-2.3 **Pricing.** You set face values. The price shown to buyers includes all compulsory fees. You choose whether booking fees are absorbed or passed on. Gala Dock's booking fee is set out in your plan and at checkout.
+2.3 **Pricing.** You set face values. The price shown to buyers includes all compulsory fees. Gala Dock's ticket fees are set out in section 6.
 
-2.4 **Cancellation and changes.** If you cancel an event, you must cancel it through Gala Dock, which voids all tickets and refunds every buyer in full, including fees, from the ticket proceeds. You can't cancel an event with paid orders in any other way. If you materially change an event, you must offer refunds as required by the Cancellation & Refund Policy. You indemnify Gala Dock against refunds, chargebacks and claims arising from your event, cancellation or failure to deliver, except to the extent caused by our breach.
+2.4 **Cancellation and changes.** If you cancel an event, you must cancel it through Gala Dock, which voids all tickets and refunds every buyer in full, including the booking fee, from the ticket proceeds. You can't cancel an event with paid orders in any other way. **Platform fees on tickets that have sold (the seller commission and the buyers' booking fees) remain payable by you when you cancel, however close to the event you cancel.** We deduct them from your proceeds or future payouts, or invoice you, payable within 14 days. If you materially change an event, you must offer refunds as required by the Cancellation & Refund Policy. You indemnify Gala Dock against refunds, chargebacks and claims arising from your event, cancellation or failure to deliver, except to the extent caused by our breach.
 
 2.5 **Settlement.** Ticket proceeds, less fees, refunds and chargebacks, are paid to your connected payout account under your settlement schedule. We may hold proceeds for an event until it has taken place where there is a material risk of refunds (for example a new organiser, a large event or a pattern of complaints). We'll tell you if we do.
 
@@ -56,11 +59,17 @@ You keep ownership of your content (event descriptions, images, designs and temp
 
 ## 6. Fees and payment
 
-6.1 Subscription fees are billed in advance, monthly or annually, and are non-refundable except as required by law or where we fail to provide the service. Booking fees and commission are deducted from proceeds or invoiced.
+6.1 **All fees are platform usage fees** for using the Gala Dock software, payment tools and marketplace. They are not wages, a share of profits or payment for services you provide to us.
 
-6.2 Prices exclude VAT, which is added where applicable.
+6.2 **Ticket fees.** For each paid ticket sold: a booking fee of **£1.00**, paid by the buyer and shown at checkout; and a seller commission of **5% of the face value**, deducted from your proceeds. Free tickets carry no fees. Resale through Gala Dock carries the buyer booking fee only.
 
-6.3 We may change our fees with at least 30 days' notice. Changes don't apply to tickets already sold or bookings already made.
+6.3 **Marketplace bookings.** When you book venues or suppliers through Gala Dock, you pay a booking admin fee of **2.5% of each payment (minimum £1)**, shown as its own line before you pay. It is refunded if the provider cancels; otherwise it is not refundable.
+
+6.4 **Subscriptions** are billed in advance, monthly or annually, and are non-refundable except as required by law or where we fail to provide the service. Commission and fees are deducted from proceeds or invoiced. Amounts you owe us may be set off against amounts we hold for you.
+
+6.5 Prices exclude VAT, which is added where applicable.
+
+6.6 We may change our fees with at least 30 days' notice. Changes don't apply to tickets already sold or bookings already made.
 
 ## 7. Gala Agent and automation
 
@@ -78,13 +87,15 @@ Gala Agent acts only within the permissions of the person who started the task a
 
 9.2 Subject to 9.1, neither party is liable for indirect or consequential loss, or for loss of profit, revenue, goodwill or data.
 
-9.3 Subject to 9.1, Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the fees you paid to Gala Dock in that period and (b) £100. Ticket proceeds held for you, which remain payable to you, are not counted against this cap.
+9.3 Subject to 9.1, Gala Dock's total liability to you in any 12-month period, whether in contract, tort (including negligence) or otherwise, is limited to the greater of (a) the fees you paid to Gala Dock in that period and (b) £5,000. Ticket proceeds held for you, which remain payable to you, are not counted against this cap.
 
-9.4 Gala Dock is not responsible for the delivery of providers' services, for your event, or for attendees' conduct.
+9.4 **Responsibility for events.** You are solely responsible and liable for your events, including their safety, licensing, content, staffing, changes, cancellation and attendees' experience. Gala Dock is not responsible for your event, for providers' services, or for attendees' conduct.
+
+9.5 **Indemnity.** You indemnify Gala Dock against losses, claims, fines, refunds and chargebacks (including reasonable legal costs) arising from your events, your breach of these terms or of law, or claims by attendees, providers or regulators about your event, except to the extent caused by Gala Dock's breach or negligence.
 
 ## 10. General
 
 These terms are governed by the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction. If any provision is unenforceable, the rest continue. We may assign these terms to an affiliate or successor. Notices to us go to legal@galadock.com.
 
 ---
-*Counsel review points:* agency structure for ticket sales and VAT on booking fees (2.1, 2.3); proceeds holding (2.5) and regulatory perimeter; non-circumvention period (3.4) under competition law; controller/processor split (4.1); liability cap amount (9.3).
+*Counsel review points:* agency structure for ticket sales and VAT on booking fees (2.1, 2.3); proceeds holding (2.5) and regulatory perimeter; non-circumvention period (3.4) under competition law; controller/processor split (4.1); liability cap amount and floor (9.3); fees retained on organiser cancellation (2.4) as a fair term; set-off (6.4).

@@ -5,7 +5,9 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const S = "artifacts/visual/checkout"; const results = []; const check = (n, ok, d = "") => { results.push(ok); console.log(`${ok ? "PASS" : "FAIL"}  ${n}${d ? " — " + d : ""}`); };
 const ev = (await admin.from("events").select("id").eq("slug", "comedy-central-live").single()).data;
-const seller = (await admin.from("tickets").select("id,holder_id,seat,price_paid").eq("event_id", ev.id).eq("status", "valid").not("seat", "is", null).like("order_ref", "GD-%").limit(1).single()).data;
+// A seated ticket from a previous order that still owns its seat row (older runs may have left tickets whose seat was re-mapped).
+const owned = new Set(((await admin.from("event_seats").select("ticket_id").eq("event_id", ev.id).not("ticket_id", "is", null)).data ?? []).map(s => s.ticket_id));
+const seller = ((await admin.from("tickets").select("id,holder_id,seat,price_paid").eq("event_id", ev.id).eq("status", "valid").not("seat", "is", null).like("order_ref", "GD-%")).data ?? []).find(t => owned.has(t.id));
 await admin.from("tickets").update({ status: "resale_listed" }).eq("id", seller.id); // the seller's own "List for resale" action (customer area) does the same via list_ticket_for_resale
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const ctx = await browser.newContext({ storageState: "artifacts/auth/provider.json", viewport: { width: 1440, height: 1000 } });

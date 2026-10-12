@@ -5,7 +5,7 @@ import { stripe } from "@/lib/stripe";
 
 export const CHECKOUT_COOKIE = (eventId: string) => `gd_co_${eventId.replace(/-/g, "").slice(0, 12)}`;
 export type Line = { tier_id: string; name: string; unit: number; qty: number; seats: string[] };
-export type Summary = { kind: "primary" | "resale"; lines: Line[]; subtotal: number; fee: number; total: number; expiresAt: string | null; currency: string };
+export type Summary = { kind: "primary" | "resale"; lines: Line[]; subtotal: number; fee: number; commission: number; total: number; expiresAt: string | null; currency: string };
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 /** Prices an order from what the database actually holds for this token (never from client input). `db` may be the caller's own client. */
@@ -24,12 +24,14 @@ export async function summarise(eventId: string, token: string, db: Db = untyped
   // Resale listings held by this token become their own lines (one order is either primary or resale).
   const rs = ((resale ?? []) as { ticket_id: string; tier_id: string; tier: string; seat: string | null; price: number; expires_at: string }[]);
   for (const r of rs) { const key = `resale:${r.tier_id}:${r.price}`; const l = lines.get(key) ?? { tier_id: r.tier_id, name: `${r.tier} (resale)`, unit: Number(r.price), qty: 0, seats: [] }; l.qty += 1; if (r.seat) l.seats.push(r.seat); lines.set(key, l); }
-  const cfg = (fee ?? { fixed: 0, pct_bps: 0 }) as { fixed?: number; pct_bps?: number };
+  const cfg = (fee ?? { fixed: 0, pct_bps: 0 }) as { fixed?: number; pct_bps?: number; seller_bps?: number };
   const list = [...lines.values()];
   const subtotal = r2(list.reduce((a, l) => a + l.unit * l.qty, 0));
   const feeAmt = r2(list.reduce((a, l) => a + (l.unit > 0 ? l.qty * (Number(cfg.fixed ?? 0) + (l.unit * Number(cfg.pct_bps ?? 0)) / 10000) : 0), 0));
+  // Seller commission on primary sales (deducted from the organiser's proceeds, never added to the buyer's price).
+  const commission = rs.length ? 0 : r2(subtotal * Number(cfg.seller_bps ?? 0) / 10000);
   const exp = [...h.ga.map(g => g.expires_at), ...h.seats.map(s => s.expires_at), ...rs.map(r => r.expires_at)].sort()[0] ?? null;
-  return { kind: rs.length ? "resale" : "primary", lines: list, subtotal, fee: feeAmt, total: r2(subtotal + feeAmt), expiresAt: exp, currency: "GBP" };
+  return { kind: rs.length ? "resale" : "primary", lines: list, subtotal, fee: feeAmt, commission, total: r2(subtotal + feeAmt), expiresAt: exp, currency: "GBP" };
 }
 
 /** Issues tickets for a paid (or free) order exactly once. Safe to call from both the redirect and the webhook. */

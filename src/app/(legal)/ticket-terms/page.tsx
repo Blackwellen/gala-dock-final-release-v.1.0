@@ -8,11 +8,11 @@ export default function TicketTerms() {
   return <article>
     <h1>Ticket Purchase &amp; Resale Terms</h1>
     <p className="lg-meta">Version {LEGAL.version} · effective {LEGAL.effective}</p>
-    <p>These terms apply when you buy, hold, transfer or resell tickets on {LEGAL.service}, together with our <Link href="/terms">Terms of Service</Link>. The event organiser is responsible for the event and sets its entry conditions. {LEGAL.service} sells tickets on the organiser’s behalf.</p>
+    <p>These terms apply when you buy, hold, transfer or resell tickets on {LEGAL.service}, together with our <Link href="/terms">Terms of Service</Link>. The event organiser is an independent business using our software. It is responsible, and liable, for the event and sets its entry conditions. {LEGAL.service} sells tickets on the organiser’s behalf.</p>
 
     <h2 id="buying">1. Buying tickets</h2>
     <ul>
-      <li>The ticket price, any booking fee and the total are shown before you pay.</li>
+      <li>The ticket price, our booking fee ({LEGAL.fees.ticketBuyer}, a platform usage fee) and the total are shown before you pay. Free tickets carry no fee.</li>
       <li>While you check out, your chosen tickets or seats are held for a short time; the countdown is shown on screen. If the hold expires, they are released.</li>
       <li>There may be a limit on how many tickets you can buy in one order.</li>
       <li>Your order is confirmed only when payment succeeds. If the hold lapsed before payment completed, your payment is refunded automatically.</li>

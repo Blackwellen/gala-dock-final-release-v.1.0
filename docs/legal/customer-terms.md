@@ -10,7 +10,7 @@ Gala Dock is operated by Blackwellen Limited, a company registered in England an
 
 1.1 Gala Dock is a marketplace and planning platform. We let you find and buy tickets for events run by **organisers**, and find, request quotes from and book **providers** (venues, caterers, entertainers, equipment and other suppliers).
 
-1.2 **We are not the organiser of events listed by others, and we are not the provider of venues or services booked through Gala Dock.** The organiser is responsible for its event; the provider is responsible for the venue or service it agrees to deliver. When you buy a ticket or book a provider, your contract for the event or service is with that organiser or provider. We act as their commercial agent to take your payment and, for bookings, hold it under our payment protection arrangement (see the Marketplace Payment Protection Terms).
+1.2 **We are not the organiser of events listed by others, and we are not the provider of venues or services booked through Gala Dock.** Organisers and providers are independent businesses that use the Gala Dock software; they don't work for us. The organiser is responsible, and liable, for its event; the provider is responsible, and liable, for the venue or service it agrees to deliver. When you buy a ticket or book a provider, your contract for the event or service is with that organiser or provider. We act as their commercial agent to take your payment and, for bookings, hold it under our payment protection arrangement (see the Marketplace Payment Protection Terms).
 
 1.3 We are responsible to you for providing the Gala Dock platform itself with reasonable care and skill, for handling your payments as described, and for the accuracy of information we write ourselves. We are not responsible for statements made by organisers or providers in their listings, but we take action on misleading listings (see the Community & Marketplace Standards).
 
@@ -26,9 +26,9 @@ Gala Dock is operated by Blackwellen Limited, a company registered in England an
 
 3.1 The price you see before you pay includes all compulsory charges, including booking fees, so you won't be asked to pay unavoidable extras later. Optional extras are shown separately and only added if you choose them.
 
-3.2 For tickets, the organiser sets the face value. Gala Dock may charge a booking fee, which is shown before you pay.
+3.2 For tickets, the organiser sets the face value. Gala Dock charges a booking fee of £1.00 per paid ticket, a platform usage fee shown before you pay. Free tickets carry no fee.
 
-3.3 For provider bookings, the provider sets its prices and may ask for a deposit with the balance due later. The quote shows the deposit, balance, due dates and the provider's cancellation policy before you accept it.
+3.3 For provider bookings, the provider sets its prices and may ask for a deposit with the balance due later. The quote shows the deposit, balance, due dates and the provider's cancellation policy before you accept it. Gala Dock adds a booking admin fee of 2.5% of each payment (minimum £1), a platform usage fee shown as its own line before you pay. It is refunded if the provider cancels.
 
 3.4 Payments are processed by Stripe. We never see or store your full card number.
 

@@ -2,7 +2,10 @@ import "server-only";
 import { requireUser } from "@/lib/auth";
 import { untyped, rows, one } from "@/lib/workspace/db";
 
-export type Partner = { id: string; name: string; kind: string; status: string; referral_code: string | null; commission_bps: number; commission_basis: string; quality_score: number | null };
+export type Partner = { id: string; name: string; kind: string; status: string; referral_code: string | null; commission_bps: number; commission_basis: string; quality_score: number | null; grade: number; rate_locked: boolean };
+
+/** Partner Terms 2: grade by active referred accounts → commission rate. */
+export const GRADES = [{ grade: 1, from: 0, pct: 6 }, { grade: 2, from: 5, pct: 7 }, { grade: 3, from: 15, pct: 8 }, { grade: 4, from: 30, pct: 9 }, { grade: 5, from: 50, pct: 10 }];
 export type Referral = { id: string; name: string; kind: "organiser" | "venue" | "supplier"; status: "pending" | "trial" | "active" | "churned"; signed_up_at: string; activated_at: string | null };
 export type Earning = { occurred_at: string; eligible_revenue: number; commission: number; status: "pending" | "cleared" | "paid" | "reversed" };
 export type Statement = { id: string; period_start: string; eligible_revenue: number; commission: number; status: "open" | "pending" | "paid" | "on_hold"; payout_due: string | null; paid_at: string | null; reference: string | null };
@@ -13,7 +16,7 @@ export async function loadPartner() {
   const { supabase, user } = await requireUser("/partner");
   const sb = untyped(supabase);
   const [partner, profile] = await Promise.all([
-    one<Partner>(sb.from("partners").select("id,name,kind,status,referral_code,commission_bps,commission_basis,quality_score").eq("user_id", user.id).neq("status", "terminated").limit(1).maybeSingle()),
+    one<Partner>(sb.from("partners").select("id,name,kind,status,referral_code,commission_bps,commission_basis,quality_score,grade,rate_locked").eq("user_id", user.id).neq("status", "terminated").limit(1).maybeSingle()),
     one<{ full_name: string | null; avatar_url: string | null }>(sb.from("profiles").select("full_name,avatar_url").eq("id", user.id).maybeSingle()),
   ]);
   const me = { name: profile?.full_name || (user.user_metadata?.full_name as string | undefined) || user.email || "Partner", email: user.email ?? "", avatar: profile?.avatar_url ?? null };

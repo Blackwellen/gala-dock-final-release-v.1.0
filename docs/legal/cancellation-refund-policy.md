@@ -56,8 +56,10 @@ Please contact us before asking your bank for a chargeback; we can usually resol
 
 ## 6. Gala Dock fees, plans and credits
 
-* **Booking fees** on tickets are refunded when the organiser cancels the event, and otherwise when the law requires it.
-* **Commission** is only earned on completed bookings. If a booking is fully refunded, no commission is kept.
+* **Ticket booking fees** (£1.00 per ticket) are refunded to buyers when the organiser cancels the event, and otherwise when the law requires it.
+* **Organiser cancellations:** buyers are refunded in full, but the organiser still owes Gala Dock the platform fees on the tickets sold (the 5% seller commission and the booking fees refunded to buyers). These are deducted from the organiser's proceeds or payouts, or invoiced.
+* **Booking admin fee** on venue and supplier bookings (2.5%, minimum £1) is refunded if the provider or Gala Dock cancels, and is otherwise not refundable.
+* **Provider commission** is only earned on completed bookings. If a booking is fully refunded, no commission is kept.
 * **Subscriptions:** you can cancel a paid plan at any time from Settings → Payments & Billing. It stays active until the end of the paid period. We don't refund part-periods unless the law requires it or we have failed to provide the service.
 * **AI credit packs:** credits are a digital service that starts as soon as you buy them, with your consent. Unused credits expire after 12 months. Credits wrongly consumed because of a fault on our side are restored.
 

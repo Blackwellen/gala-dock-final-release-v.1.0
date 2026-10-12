@@ -60,8 +60,9 @@ test("accept quote → deposit via Stripe Checkout → booking confirmed on retu
   await page.getByRole("button", { name: /Book & pay £300 deposit/ }).click();
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 60_000 });
   const db = admin();
-  const { data: po } = await db.from("payment_orders").select("kind,status,amount_minor,currency,stripe_checkout_session,commission").eq("build_item_id", item).order("created_at", { ascending: false }).limit(1).single();
-  expect(po).toMatchObject({ kind: "deposit", amount_minor: 30000, currency: "GBP" });
+  const { data: po } = await db.from("payment_orders").select("kind,status,amount_minor,customer_fee_minor,currency,stripe_checkout_session,commission").eq("build_item_id", item).order("created_at", { ascending: false }).limit(1).single();
+  // Customer booking admin fee: 2.5% (min £1) on top of the deposit, charged as its own Stripe line.
+  expect(po).toMatchObject({ kind: "deposit", amount_minor: 30000, customer_fee_minor: 750, currency: "GBP" });
   expect(po!.stripe_checkout_session).toMatch(/^cs_/);
   // Nothing is confirmed or recorded as paid until Stripe confirms the payment.
   const { data: b } = await db.from("build_items").select("status").eq("id", item).single();

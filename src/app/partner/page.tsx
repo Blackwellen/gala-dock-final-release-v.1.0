@@ -9,7 +9,7 @@ import { BrandGlyph } from "@/components/portal/brand";
 import { partnerHero } from "@/components/portal/media";
 import { fmt, pctDelta } from "@/components/portal/format";
 import { money, num, requestTime } from "@/lib/workspace/format";
-import { loadPartner, RESOURCES, type Earning, type Referral, type Statement } from "./_data";
+import { loadPartner, RESOURCES, GRADES, type Earning, type Referral, type Statement } from "./_data";
 import { SupportForm } from "./support-form";
 
 export const metadata: Metadata = { title: "Partner portal · Gala Dock", robots: { index: false, follow: false } };
@@ -76,6 +76,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
   const sum = (l: Earning[], k: "eligible_revenue" | "commission") => l.reduce((a, e) => a + Number(e[k]), 0);
   const signups = referrals.filter(r => inRange(r.signed_up_at, n, 0)).length, signupsPrev = referrals.filter(r => inRange(r.signed_up_at, 2 * n, n)).length;
   const active = referrals.filter(r => r.status === "active").length, activeBefore = referrals.filter(r => r.status === "active" && r.activated_at && Date.parse(r.activated_at) < now - n * DAY).length;
+  const next = GRADES.find(g => g.from > active);
   const rev = sum(cur(earnings), "eligible_revenue"), revPrev = sum(prev(earnings), "eligible_revenue");
   const com = sum(cur(earnings), "commission"), comPrev = sum(prev(earnings), "commission");
   const dayStart = (i: number) => now - (n - 1 - i) * DAY;
@@ -150,7 +151,8 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
           {view === "earnings" && <>
             <section className="pt-panel pr-rev" data-q-group=""><div className="pr-rev-chart"><div className="pt-panel-head"><h2>Revenue &amp; commission · {PERIODS[periodKey].toLowerCase()}</h2></div>
               <ul className="pr-legend"><li className="b">Eligible revenue</li><li className="p">Your commission</li></ul><RevenueChart days={days} /></div>
-              <div className="pr-rev-side"><div className="pr-box"><div><span>Commission rate</span><b>{(p.commission_bps / 100).toFixed(p.commission_bps % 100 ? 1 : 0)}%</b><em className="plain">of {p.commission_basis.replaceAll("_", " ")}</em></div>
+              <div className="pr-rev-side"><div className="pr-box"><div><span>Commission rate</span><b>{(p.commission_bps / 100).toFixed(p.commission_bps % 100 ? 1 : 0)}%</b><em className="plain">of {p.commission_basis.replaceAll("_", " ")} · {p.rate_locked ? "custom terms" : `grade ${p.grade} of 5`}</em></div>
+                {!p.rate_locked && <div><span>Next grade</span><b>{next ? `${next.pct}%` : "Top grade"}</b><em className="plain">{next ? `${Math.max(0, next.from - active)} more active referrals` : "10% on all eligible revenue"}</em></div>}
                 <div><span>Pending commission</span><b>{money(pendingCom)}</b><em className="pend">Clears after 14 days</em></div></div></div></section>
             <PortalPanel title="Monthly statements" className="pr-hist pr-full">{stmtTable(statements)}</PortalPanel></>}
           {view === "resources" && <PortalPanel title="Partner resources" className="pr-full"><p className="pr-sub">Everything you need to promote Gala Dock. Files that include links are personalised with your referral code.</p>{resourceList}

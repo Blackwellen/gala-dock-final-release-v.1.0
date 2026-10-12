@@ -17,7 +17,7 @@ export default function Terms() {
       <li><b>organisers</b>, who run events, sell tickets and manage teams; and</li>
       <li><b>providers</b>, venues and suppliers who list spaces, services and packages.</li>
     </ul>
-    <p>When you book a venue or service, your contract for that venue or service is with the provider. We provide the platform, take payments for the provider, and help resolve disputes. We are not the provider of the venue or service.</p>
+    <p>{LEGAL.service} is software. Organisers, venues and suppliers are <b>independent businesses that use our software</b> under their own agreements with us. They are not our employees, workers, partners or contractors, and they don’t act for us. When you buy a ticket or book a venue or service, your contract for that event, venue or service is with the organiser or provider, and they are responsible for delivering it. We provide the platform, collect payments on their behalf, and help resolve disputes.</p>
 
     <h2 id="accounts">2. Your account</h2>
     <ul>
@@ -37,8 +37,11 @@ export default function Terms() {
 
     <h2 id="fees">4. Fees and payments</h2>
     <ul>
-      <li>Any booking or service fee is shown before you pay.</li>
-      <li>Providers and organisers pay the commission or subscription for their plan, as shown in their workspace settings.</li>
+      <li>All of our fees are <b>platform usage fees</b> for using the {LEGAL.service} software and payment tools. They are shown before you pay or agree.</li>
+      <li><b>Tickets:</b> buyers pay a booking fee of {LEGAL.fees.ticketBuyer}. Ticket sellers pay {LEGAL.fees.ticketSeller}, deducted from their proceeds.</li>
+      <li><b>Venue and supplier bookings:</b> providers pay commission of {LEGAL.fees.supplier}. Customers pay a booking admin fee of {LEGAL.fees.bookingAdmin}, shown as its own line at checkout.</li>
+      <li>Plans may also carry a subscription, shown in workspace settings. Prices for business users exclude VAT.</li>
+      <li>If an organiser cancels an event after tickets have sold, buyers are refunded in full, but the organiser still owes the platform fees on the tickets sold.</li>
       <li>Payments are processed by Stripe. Payouts go to the provider’s or organiser’s connected Stripe account, after any holding period and minus fees, refunds and chargebacks.</li>
       <li>Members must not take payment outside the platform for bookings arranged through it.</li>
     </ul>
@@ -49,6 +52,7 @@ export default function Terms() {
       <li>Hold the licences, permissions, insurance and certifications your activity needs, and keep the documents you give us valid.</li>
       <li>Follow the law, including on health and safety, licensing, equality, consumer protection, data protection and tax.</li>
       <li>Where you process attendees’ or customers’ personal data, you are its controller and must handle it lawfully.</li>
+      <li>You are responsible, and liable, for your events, venues and services, and for what happens at them. You indemnify us against claims arising from them.</li>
     </ul>
 
     <h2 id="conduct">6. Acceptable use</h2>
@@ -74,8 +78,8 @@ export default function Terms() {
     <h2 id="liability">10. Our liability</h2>
     <ul>
       <li>We do not exclude or limit our liability for death or personal injury caused by our negligence, for fraud, or for anything else that cannot be limited by law.</li>
-      <li>If you are a consumer, we are responsible for loss you suffer that is a foreseeable result of our breaking these terms or failing to use reasonable care and skill. We are not responsible for losses caused by providers or organisers in performing their own services.</li>
-      <li>If you use the platform for business, we are not liable for loss of profit, revenue, business or goodwill. Our total liability in any 12 months is limited to the fees you paid us in that period.</li>
+      <li>If you are a consumer, we are responsible for loss you suffer that is a foreseeable result of our breaking these terms or failing to use reasonable care and skill. Organisers and providers, not {LEGAL.service}, are responsible for their events and services and for any loss they cause. Your rights against them are not affected.</li>
+      <li>If you use the platform for business, we are not liable for indirect or consequential loss, or for loss of profit, revenue, business, goodwill or data. Our total liability in any 12 months is limited to the greater of the fees you paid us in that period and {LEGAL.liabilityFloor}. Money we hold that is payable to you does not count towards this limit.</li>
     </ul>
 
     <h2 id="ending">11. Suspension and closing your account</h2>

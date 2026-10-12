@@ -13,7 +13,7 @@ import { stripeKey } from "@/lib/stripe";
  */
 
 export type PayKind = "deposit" | "balance_payment" | "standby_fee" | "emergency_service" | "platform_boost";
-type Order = { id: string; reference: string; kind: string; status: string; amount_minor: number; platform_fee_minor: number; refunded_minor: number; transferred_minor: number;
+type Order = { id: string; reference: string; kind: string; status: string; amount_minor: number; platform_fee_minor: number; customer_fee_minor?: number; refunded_minor: number; transferred_minor: number;
   currency: string; description: string; payee_workspace_id: string | null; build_item_id: string | null; event_id: string | null; stripe_checkout_session: string | null;
   stripe_payment_intent: string | null; stripe_charge: string | null; stripe_transfer: string | null };
 
@@ -62,6 +62,9 @@ export async function startPayment(kind: PayKind, ids: { itemId?: string; standb
       expires_at: String(Math.floor(Date.now() / 1000) + 60 * 60),
       "line_items[0][quantity]": "1", "line_items[0][price_data][currency]": po.currency.toLowerCase(), "line_items[0][price_data][unit_amount]": String(po.amount_minor),
       "line_items[0][price_data][product_data][name]": po.description.slice(0, 200),
+      // Customer booking admin fee (platform usage): its own line so the customer sees it before paying.
+      ...(po.customer_fee_minor ? { "line_items[1][quantity]": "1", "line_items[1][price_data][currency]": po.currency.toLowerCase(),
+        "line_items[1][price_data][unit_amount]": String(po.customer_fee_minor), "line_items[1][price_data][product_data][name]": "Gala Dock booking admin fee" } : {}),
       "metadata[payment_order]": po.reference, "payment_intent_data[metadata][payment_order]": po.reference, "payment_intent_data[transfer_group]": po.reference,
       "payment_intent_data[description]": `${po.reference} · ${po.description}`.slice(0, 300),
     };
@@ -101,21 +104,24 @@ export async function processPayments(limit = 20) {
   }
 
   // Cancellation refunds (§45): refund the customer's payments newest-first; reverse the provider transfer pro rata where already released.
-  const { data: cancels } = await db.from("booking_cancellations").select("id,build_item_id,calculation,refunded_minor").eq("refund_status", "due").limit(limit);
-  for (const c of (cancels ?? []) as { id: string; build_item_id: string; calculation: { refund_amount: number | null }; refunded_minor: number }[]) {
-    let remaining = Math.round(Number(c.calculation.refund_amount ?? 0) * 100) - Number(c.refunded_minor);
+  const { data: cancels } = await db.from("booking_cancellations").select("id,build_item_id,party,calculation,refunded_minor").eq("refund_status", "due").limit(limit);
+  for (const c of (cancels ?? []) as { id: string; build_item_id: string; party: string; calculation: { refund_amount: number | null }; refunded_minor: number }[]) {
+    // The customer admin fee is refunded too when the provider (or the platform) cancelled; not when the customer did.
+    const feeBack = c.party === "provider" || c.party === "platform";
     await db.rpc("cancellation_refund_progress", { p_cancellation: c.id, p_status: "processing", p_refunded_minor: null, p_error: null });
     const { data: orders } = await db.from("payment_orders").select("*").eq("build_item_id", c.build_item_id).not("stripe_payment_intent", "is", null).order("created_at", { ascending: false });
+    let remaining = Math.round(Number(c.calculation.refund_amount ?? 0) * 100) - Number(c.refunded_minor)
+      + (feeBack ? ((orders ?? []) as Order[]).reduce((a, po) => a + Number(po.customer_fee_minor ?? 0), 0) : 0);
     let refunded = Number(c.refunded_minor), error: string | null = null;
     for (const po of (orders ?? []) as Order[]) {
       if (remaining <= 0) break;
-      const refundable = po.amount_minor - po.refunded_minor;
+      const refundable = po.amount_minor + (feeBack ? Number(po.customer_fee_minor ?? 0) : 0) - po.refunded_minor;
       const amt = Math.min(remaining, refundable);
       if (amt <= 0) continue;
       try {
         await stripeIdem("refunds", { payment_intent: po.stripe_payment_intent!, amount: String(amt), reason: "requested_by_customer", "metadata[payment_order]": po.reference, "metadata[cancellation]": c.id }, `refund:${c.id}:${po.reference}`);
         if (po.stripe_transfer && po.transferred_minor > 0) {
-          const back = Math.min(po.transferred_minor, Math.round(amt * (po.amount_minor - po.platform_fee_minor) / po.amount_minor));
+          const back = Math.min(po.transferred_minor, Math.round(Math.min(amt, po.amount_minor) * (po.amount_minor - po.platform_fee_minor) / po.amount_minor));
           if (back > 0) await stripeIdem(`transfers/${po.stripe_transfer}/reversals`, { amount: String(back), "metadata[cancellation]": c.id }, `reversal:${c.id}:${po.reference}`);
         }
         remaining -= amt; refunded += amt;

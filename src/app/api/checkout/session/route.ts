@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   if (admittedOk === false) return json({ error: "Your waiting-room slot has expired or hasn’t opened yet — please rejoin the queue.", queue: true }, 409);
   const orderRef = `GD-${randomBytes(5).toString("hex").toUpperCase()}`;
   await db.from("checkout_orders").update({ status: "expired", updated_at: new Date().toISOString() }).eq("token", token).eq("status", "pending");
-  const { error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode });
+  const { error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode });
   if (oe) return json({ error: "Couldn’t create your order. Please try again." }, 500);
   const origin = new URL(request.url).origin, slug = ev.slug || ev.id;
   if (sum.total === 0) {

@@ -6,11 +6,13 @@ These terms apply when you list services and take bookings through Gala Dock as 
 
 Contracting entity: Blackwellen Limited (company number 16482166), registered office 61 Bridge Street, Kington, Herefordshire, HR5 3DJ.
 
-## 1. Appointment
+## 1. Our relationship
 
-1.1 You appoint Gala Dock as your **non-exclusive commercial agent** to market your services, take bookings and collect payments from customers and organisers on your behalf. You remain the supplier of your services, and your contract for the service is with the customer.
+1.1 **You use our software; you don't work for us.** Gala Dock provides software that lets you list services, receive requests, quote, take bookings and get paid. You are an independent business using that software under these terms. You are not Gala Dock's employee, worker, partner, joint venturer or subcontractor, Gala Dock does not supply your services to anyone, and nothing in these terms creates employment or a contract of service.
 
-1.2 Gala Dock does not supervise how you perform your services and is not your employer.
+1.2 **You supply your services.** Your contract for each booking is directly between you and the customer or organiser. You decide how, when and by whom your services are performed, and you are responsible for your own staff, equipment, tax, National Insurance and insurance. Gala Dock does not supervise or direct your work.
+
+1.3 **Payment collection only.** So that customers can pay through the platform, you appoint Gala Dock as your **limited, non-exclusive agent to collect payments** for your bookings on your behalf. Payment to Gala Dock discharges the customer's obligation to pay you. This appointment is limited to taking and holding payments and doesn't make Gala Dock the supplier of your services.
 
 ## 2. Listings
 
@@ -42,11 +44,13 @@ Contracting entity: Blackwellen Limited (company number 16482166), registered of
 
 ## 5. Payment, commission and payouts
 
-5.1 Customers pay through Gala Dock. Payment to Gala Dock discharges the customer's obligation to pay you.
+5.1 Customers pay through Gala Dock under section 1.3.
 
 5.2 Funds are held under the Marketplace Payment Protection Terms and **released to your connected payout account after delivery** (fulfilled/completed, or 48 hours after the event ends), provided there is no open dispute, chargeback or pending cancellation and your payout account is in good standing.
 
-5.3 **Commission** is deducted from each payment at the rate recorded on the booking when the payment was made, under your plan or any negotiated rate. Commission is not charged on amounts refunded to the customer.
+5.3 **Commission** is a platform usage fee for using the Gala Dock software and payment tools. It is deducted from each payment at the rate recorded on the booking when the payment was made: **8% on the Starter plan, 7% on Pro and 6% on Business or Enterprise**, unless we have agreed a different rate with you in writing. Commission is not charged on amounts refunded to the customer.
+
+5.3A **Customer admin fee.** Customers pay Gala Dock a separate booking admin fee of 2.5% of each payment (minimum £1). It is Gala Dock's fee, is shown to the customer before they pay, and is not deducted from your share.
 
 5.4 You must complete payout onboarding with our payment processor (Stripe) and keep it in good standing. If you don't, funds stay protected until you do.
 
@@ -85,9 +89,13 @@ For customer data you receive through bookings, you and Gala Dock are each indep
 
 10.2 You may close your workspace at any time after completing or cancelling outstanding bookings under their terms.
 
-10.3 Liability: the same structure as the Organizer Terms section 9, with the cap based on commission and fees paid to Gala Dock in the preceding 12 months. You indemnify Gala Dock against claims arising from your services or your breach of law.
+10.3 **Responsibility for your services.** You are solely responsible and liable for your services and venue, including their quality, safety, legality, timing, staff, food safety and allergens, and for any injury, loss or damage they cause. Gala Dock is not liable for your acts or omissions or those of your staff and subcontractors.
 
-10.4 Governing law: England and Wales.
+10.4 **Indemnity.** You indemnify Gala Dock against losses, claims, fines, refunds and chargebacks (including reasonable legal costs) arising from your services, your breach of these terms or of law, or claims by customers, attendees or regulators about your services, except to the extent caused by Gala Dock's breach or negligence.
+
+10.5 **Our liability.** Nothing limits liability for death or personal injury caused by negligence, fraud, or anything that can't be limited by law. Otherwise, neither party is liable for indirect or consequential loss or loss of profit, revenue, goodwill or data, and Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the commission and fees you paid to Gala Dock in that period and (b) £5,000. Booking funds held for you, which remain payable to you, are not counted against this cap.
+
+10.6 Governing law: England and Wales.
 
 ---
-*Counsel review points:* commercial agent structure (1.1) and Commercial Agents Regulations 1993 applicability; reverse/set-off rights (6.4); non-circumvention (8); insurance minimums (4.3); VAT invoicing (5.5).
+*Counsel review points:* independent-business wording (1.1–1.2) against employment-status tests and IR35; limited payment-collection agency (1.3), the PSRs 2017 commercial-agent exclusion and Commercial Agents Regulations 1993 applicability; liability floor (10.5); reverse/set-off rights (6.4); non-circumvention (8); insurance minimums (4.3); VAT invoicing (5.5).

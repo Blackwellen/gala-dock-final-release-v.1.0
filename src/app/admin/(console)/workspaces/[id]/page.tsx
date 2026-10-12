@@ -99,7 +99,7 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
   ];
   const planEntries = ["starter", "pro", "business", "enterprise"].filter(p => p !== w.plan).map(p => ({ kind: "action" as const, label: `Change to ${planLabel(p)}${plans[p] ? ` (${money(plans[p]!.monthly)}/mo)` : ""}`,
     action: setWorkspacePlan, args: [id, p], reason: true, confirm: { title: `Move ${w.name} to ${planLabel(p)}?`, body: "Plan limits and pricing change immediately. The owner is notified.", cta: "Change plan" } }));
-  const tierEntries = [800, 1000, 1200, 1500].filter(b => b !== w.commission_bps).map(b => ({ kind: "action" as const, label: `Set to ${b / 100}%`, action: setWorkspaceCommission, args: [id, b], reason: true,
+  const tierEntries = [600, 700, 800].filter(b => b !== w.commission_bps).map(b => ({ kind: "action" as const, label: `Set to ${b / 100}%`, action: setWorkspaceCommission, args: [id, b], reason: true,
     confirm: { title: `Set commission to ${b / 100}%?`, body: "Applies to new bookings and ticket sales. Existing orders keep their snapshot.", cta: "Update commission" } }));
 
   const detailsPanel = <section className="aa-panel awd-details">

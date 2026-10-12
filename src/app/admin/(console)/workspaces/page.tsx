@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Workspaces" };
 const F = {
   plan: [{ value: "", label: "All plans" }, { value: "starter", label: "Starter" }, { value: "pro", label: "Pro" }, { value: "business", label: "Business" }, { value: "enterprise", label: "Enterprise" }],
   ver: [{ value: "", label: "All statuses" }, { value: "verified", label: "Verified" }, { value: "pending", label: "Pending" }, { value: "unverified", label: "Unverified" }, { value: "rejected", label: "Rejected" }],
-  tier: [{ value: "", label: "All tiers" }, { value: "low", label: "Up to 8%" }, { value: "mid", label: "8% – 12%" }, { value: "high", label: "Over 12%" }],
+  tier: [{ value: "", label: "All tiers" }, { value: "low", label: "6% (Business)" }, { value: "mid", label: "7% (Pro)" }, { value: "high", label: "8% and over" }],
   gmv: [{ value: "", label: "Any" }, { value: "none", label: "No GMV" }, { value: "s", label: "Under £10k" }, { value: "m", label: "£10k – £50k" }, { value: "l", label: "Over £50k" }],
   health: [{ value: "", label: "All statuses" }, { value: "healthy", label: "Healthy" }, { value: "review", label: "Review" }, { value: "at_risk", label: "At risk" }, { value: "suspended", label: "Suspended" }],
   created: [{ value: "", label: "Any date" }, { value: "30", label: "Last 30 days" }, { value: "90", label: "Last 90 days" }, { value: "365", label: "Last 12 months" }],
@@ -49,7 +49,7 @@ export default async function WorkspacesPage(props: PageProps<"/admin/workspaces
     if (q && !`${w.name} ${w.settings?.reference ?? ""} ${w.id} ${owners.get(w.owner_id)?.full_name ?? ""}`.toLowerCase().includes(q)) return false;
     if (f("plan") && w.plan !== f("plan")) return false;
     if (f("ver") && w.verification_status !== f("ver")) return false;
-    if (f("tier") && !(f("tier") === "low" ? w.commission_bps <= 800 : f("tier") === "mid" ? w.commission_bps > 800 && w.commission_bps <= 1200 : w.commission_bps > 1200)) return false;
+    if (f("tier") && !(f("tier") === "low" ? w.commission_bps <= 600 : f("tier") === "mid" ? w.commission_bps > 600 && w.commission_bps <= 700 : w.commission_bps > 700)) return false;
     if (f("gmv") && !(f("gmv") === "none" ? gmv === 0 : f("gmv") === "s" ? gmv > 0 && gmv < 10000 : f("gmv") === "m" ? gmv >= 10000 && gmv <= 50000 : gmv > 50000)) return false;
     if (f("health") && h !== f("health")) return false;
     if (f("created") && new Date(w.created_at).getTime() < now - Number(f("created")) * 864e5) return false;

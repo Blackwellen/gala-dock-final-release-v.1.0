@@ -10,7 +10,7 @@ These terms explain how Gala Dock holds and releases money paid for provider boo
 
 1.2 The payment is then **held** in Gala Dock's Stripe platform balance. The booking shows **"Paid · protected until delivery"**.
 
-1.3 Gala Dock releases the provider's share (the booking amount less Gala Dock's commission) by transferring it to the provider's connected Stripe account. The commission rate is the one recorded on the booking when it was paid. Later changes to plans or rates don't apply to it.
+1.3 Gala Dock releases the provider's share (the booking amount less Gala Dock's commission) by transferring it to the provider's connected Stripe account. The commission rate is the one recorded on the booking when it was paid. Later changes to plans or rates don't apply to it. The customer's booking admin fee (2.5%, minimum £1) is Gala Dock's own platform usage fee. It is not part of the provider's share and is refunded only if the provider (or Gala Dock) cancels.
 
 1.4 Payment is treated as received by the provider when the customer pays Gala Dock. This means the customer's obligation to pay is discharged by paying Gala Dock, even before the money is released to the provider.
 
