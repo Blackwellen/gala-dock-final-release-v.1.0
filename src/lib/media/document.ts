@@ -13,7 +13,7 @@ export type Effects = {
 type Base = { id: string; name: string; x: number; y: number; w: number; h: number; rotation: number; flipX?: boolean; flipY?: boolean; hidden?: boolean; locked?: boolean; effects?: Effects };
 export type TextLayer = Base & { type: "text"; text: string; bind?: string; font: string; size: number; weight: number; italic?: boolean; color: string; fill?: Fill; align: "left" | "center" | "right";
   valign?: "top" | "middle" | "bottom"; lineHeight: number; letterSpacing: number; transform?: "none" | "uppercase" | "lowercase"; underline?: boolean; highlight?: string | null; curve?: number };
-export type ImageLayer = Base & { type: "image"; asset: { src: string; path?: string; public?: boolean; width?: number; height?: number }; fit: "cover" | "contain"; focusX: number; focusY: number; zoom: number; mask?: "none" | "circle" | "rounded" | "ellipse";
+export type ImageLayer = Base & { type: "image"; asset: { src: string; path?: string; public?: boolean; width?: number; height?: number; sample?: string }; fit: "cover" | "contain"; focusX: number; focusY: number; zoom: number; mask?: "none" | "circle" | "rounded" | "ellipse";
   /** Crop window as fractions of the source image (0–1); erased strokes in layer pixels (rubber tool). */
   crop?: { x: number; y: number; w: number; h: number } | null; erase?: EraseStroke[] };
 /** Built-in shapes by name, or any library shape via `d` (SVG path in a 0–100 box; `lineOnly` = stroked, not filled). */
@@ -49,12 +49,18 @@ export const PRESETS: { group: string; id: string; label: string; w: number; h: 
 ];
 
 export const PLACEHOLDERS = ["event.name", "event.date", "event.time", "event.venue_name", "event.city", "event.public_url", "ticket.starting_price", "organizer.name"] as const;
-export type EventData = Partial<Record<(typeof PLACEHOLDERS)[number], string>>;
+/** Image layers whose src is this placeholder show the event's cover photo (or the layer's `sample` until an event is linked). */
+export const COVER_PLACEHOLDER = "{{event.cover_image}}";
+export type EventData = Partial<Record<(typeof PLACEHOLDERS)[number] | "event.cover_image", string>>;
 /** Dynamic fields (§6): bound layers render live event data; publishing a template reverts them to {{placeholders}}. */
+/** Shown for placeholders when a design isn't linked to an event yet, so templates read naturally instead of showing {{braces}}. */
+export const PLACEHOLDER_DEFAULTS: EventData = { "event.name": "Your Event Name", "event.date": "Sat 21 June", "event.time": "19:30", "event.venue_name": "Your Venue", "event.city": "London",
+  "event.public_url": "https://www.galadock.com", "ticket.starting_price": "£25", "organizer.name": "Your Company" };
+export const fillPlaceholders = (text: string, data: EventData) => text.replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, k: string) => data[k as keyof EventData] ?? PLACEHOLDER_DEFAULTS[k as keyof EventData] ?? m);
 export const resolveText = (l: TextLayer | CodeLayer, data: EventData) => {
   const raw = l.type === "text" ? l.text : l.value;
   const v = l.bind ? data[l.bind as keyof EventData] ?? raw : raw;
-  return String(v).replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, k: string) => data[k as keyof EventData] ?? m);
+  return fillPlaceholders(String(v), data);
 };
 
 export function blankDoc(w: number, h: number, background: Fill | null = { type: "solid", color: "#ffffff" }): DesignDoc {

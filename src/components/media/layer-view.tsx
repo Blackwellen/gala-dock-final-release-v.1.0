@@ -4,7 +4,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import QRCode from "qrcode";
 import { icons } from "lucide-react";
 import { code128Svg } from "@/lib/tickets/code128";
-import { resolveText, type EventData, type Layer, type Effects, type Fill, type EraseStroke, type PathLayer } from "@/lib/media/document";
+import { resolveText, fillPlaceholders, COVER_PLACEHOLDER, type EventData, type Layer, type Effects, type Fill, type EraseStroke, type PathLayer } from "@/lib/media/document";
 import { fillCss, assetSrc } from "@/lib/media/render";
 import { textFxShadow } from "@/lib/design-kit/effects";
 import { WidgetView } from "@/components/design-kit/widget-view";
@@ -101,7 +101,7 @@ export function LayerView({ l, data, editing, onText }: { l: Layer; data: EventD
       return <div style={{ ...box, overflow: "hidden", borderRadius: r, outline: stroke ? `${stroke.width}px ${stroke.dash ?? "solid"} ${stroke.color}` : undefined, ...eraseMask(l.w, l.h, l.erase) }} data-layer={l.id}>
         {duo}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={assetSrc(l.asset)} alt="" draggable={false} crossOrigin="anonymous" style={img} />
+        <img src={l.asset.src === COVER_PLACEHOLDER ? data["event.cover_image"] ?? l.asset.sample ?? "/assets/gd/oe-sunset.webp" : assetSrc(l.asset)} alt="" draggable={false} crossOrigin="anonymous" style={img} />
         {(l.effects?.vignette || l.effects?.innerShadow) && <div style={{ position: "absolute", inset: 0, borderRadius: r, pointerEvents: "none", boxShadow: inset(l.effects),
           background: l.effects?.vignette ? `radial-gradient(ellipse at center, transparent ${Math.max(10, 70 - l.effects.vignette / 2)}%, rgba(0,0,0,${(l.effects.vignette / 100).toFixed(2)}) 100%)` : undefined }} />}</div>;
     }
@@ -134,7 +134,7 @@ export function LayerView({ l, data, editing, onText }: { l: Layer; data: EventD
     case "path": return <PathView l={l} box={box} />;
     case "widget": {
       // Widget text supports the same {{event.*}} placeholders as text layers.
-      const props = Object.fromEntries(Object.entries(l.props).map(([k, v]) => [k, typeof v === "string" ? v.replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, key: string) => data[key as keyof EventData] ?? m) : v]));
+      const props = Object.fromEntries(Object.entries(l.props).map(([k, v]) => [k, typeof v === "string" ? fillPlaceholders(v, data) : v]));
       return <WidgetView l={{ ...l, props }} style={box} />;
     }
   }

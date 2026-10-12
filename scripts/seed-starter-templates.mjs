@@ -1,262 +1,237 @@
 // Seeds Gala Dock starter templates (platform templates: workspace_id and owner_id null, public, active) for the Media Studio
-// Templates tab. Premium design system: fixed margins and grid, refined type scale (small-caps eyebrows with wide tracking, tight
-// display headings, serif/sans pairings), hairline rules, mesh-gradient backdrops from soft colour orbs, frosted-glass panels.
-// Every layout ships in curated colourways. {{event.*}} placeholders, no stock photography. Idempotent (tag "gala-starter").
-// Usage: node --env-file=.env --env-file=.env.local scripts/seed-starter-templates.mjs
+// Templates tab. Original, photo-led layouts: every photo slot is bound to {{event.cover_image}} — it shows the event's own cover
+// photo once the design is linked to an event, and a sample from public/design-assets/samples until then. Type system: fixed
+// margins, small-caps eyebrows with wide tracking, tight display type, hairlines, gradient scrims for legibility over photos.
+// Idempotent (tag "gala-starter"). Usage: node --env-file=.env --env-file=.env.local scripts/seed-starter-templates.mjs
 import { createClient } from "@supabase/supabase-js";
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 let n = 0; const id = () => `t${(++n).toString(36)}`;
 const SIZE = { poster: [1240, 1754], portrait: [1080, 1350], square: [1080, 1080], story: [1080, 1920], screen: [1920, 1080] };
-
-// ── colourways
-const DARK = {
-  Midnight: { bg: "#07081a", ink: "#ffffff", sub: "#a9aed6", accent: "#d4b47a", a2: "#6d7bff", orbs: ["#2b31d9", "#5b1e8f", "#b8935a"] },
-  Noir: { bg: "#0b0708", ink: "#fff6f3", sub: "#cbb6b2", accent: "#e8a598", a2: "#8a3446", orbs: ["#7a2e3a", "#3d1621", "#c97a6c"] },
-  Ocean: { bg: "#03111f", ink: "#ecf7ff", sub: "#9db8cc", accent: "#62e3d4", a2: "#2f7bff", orbs: ["#0b4f8a", "#1f6feb", "#25a99a"] },
-  Emerald: { bg: "#04140f", ink: "#f1fbf6", sub: "#a7c6b8", accent: "#dcbc7c", a2: "#2a8a66", orbs: ["#0f5a43", "#1f7a5a", "#9c8148"] },
-  Ultraviolet: { bg: "#06030f", ink: "#ffffff", sub: "#b7a9d9", accent: "#ff4fd8", a2: "#3cf0ff", orbs: ["#7a1fd1", "#ff2fa8", "#1fb8ff"] },
-};
-const LIGHT = {
-  Ivory: { bg: "#f7f4ee", ink: "#14130f", sub: "#6e685c", accent: "#a8834e", a2: "#1d1c19", orbs: ["#ead8bb", "#f2e7d6", "#dcc7a3"] },
-  Porcelain: { bg: "#f3f5fb", ink: "#0b1230", sub: "#5c6688", accent: "#2f4cff", a2: "#0b1230", orbs: ["#cdd7ff", "#e4e9ff", "#b7c5ff"] },
-  Blush: { bg: "#fbf3f1", ink: "#2a1518", sub: "#80656a", accent: "#c2697a", a2: "#2a1518", orbs: ["#f6d3d3", "#fae4e0", "#efc2c8"] },
-  Sage: { bg: "#f2f3ec", ink: "#1b2a22", sub: "#5e6e64", accent: "#4f7a63", a2: "#1b2a22", orbs: ["#d7e3d2", "#e8eee2", "#c3d4bf"] },
-};
 const alpha = (hex, a) => `${hex}${Math.round(a * 255).toString(16).padStart(2, "0")}`;
+const solid = color => ({ type: "solid", color });
+const lin = (angle, stops) => ({ type: "linear", angle, stops: stops.map(([o, c]) => ({ offset: o, color: c })) });
 
 // ── primitives
 const T = (text, o) => ({ id: id(), name: o.name ?? text.replace(/[{}]/g, "").slice(0, 28), type: "text", text, bind: o.bind, font: o.font ?? "Inter", size: o.size, weight: o.weight ?? 600, italic: o.italic,
-  color: o.color, fill: o.fill, align: o.align ?? "left", valign: o.valign ?? "top", lineHeight: o.lh ?? 1.15, letterSpacing: o.ls ?? 0, transform: o.tt, x: o.x, y: o.y, w: o.w, h: o.h, rotation: 0, effects: o.fx });
-const R = (o) => ({ id: id(), name: o.name ?? "Panel", type: "shape", shape: o.shape ?? "rect", fill: o.fill, x: o.x, y: o.y, w: o.w, h: o.h, rotation: o.r ?? 0, effects: o.fx });
-const solid = color => ({ type: "solid", color });
-/** Soft colour orb: radial gradient to transparent — the building block of the mesh backdrops. */
-const orb = (cx, cy, r, color, a = 0.75) => R({ name: "Glow", shape: "ellipse", fill: { type: "radial", stops: [{ offset: 0, color: alpha(color, a) }, { offset: 0.3, color: alpha(color, a * 0.55) }, { offset: 0.5, color: alpha(color, a * 0.18) }, { offset: 0.68, color: alpha(color, 0) }] }, x: cx - r, y: cy - r, w: r * 2, h: r * 2 });
+  color: o.color, fill: o.fill, align: o.align ?? "left", valign: o.valign ?? "top", lineHeight: o.lh ?? 1.15, letterSpacing: o.ls ?? 0, transform: o.tt, x: o.x, y: o.y, w: o.w, h: o.h, rotation: o.r ?? 0, effects: o.fx });
+const R = (o) => ({ id: id(), name: o.name ?? "Panel", type: "shape", shape: o.d ? "custom" : o.shape ?? "rect", d: o.d, fill: o.fill, x: o.x, y: o.y, w: o.w, h: o.h, rotation: o.r ?? 0, effects: o.fx });
+const P = (sample, o) => ({ id: id(), name: o.name ?? "Event photo", type: "image", asset: { src: "{{event.cover_image}}", sample: `/design-assets/samples/${sample}.webp`, public: true },
+  fit: "cover", focusX: o.fx ?? 50, focusY: o.fy ?? 50, zoom: o.zoom ?? 1, x: o.x, y: o.y, w: o.w, h: o.h, rotation: 0, effects: o.effects });
+const scrim = (x, y, w, h, color, from = 0, to = 0.92, angle = 180) => R({ name: "Scrim", fill: lin(angle, [[0, alpha(color, from)], [0.45, alpha(color, (from + to) * 0.42)], [1, alpha(color, to)]]), x, y, w, h });
 const hair = (x, y, w, color, t = 1.5) => R({ name: "Rule", fill: solid(color), x, y, w, h: t });
-const vhair = (x, y, h, color, t = 1.5) => R({ name: "Rule", fill: solid(color), x, y, w: t, h });
-const frame = (inset, W, H, color, t = 1.5) => R({ name: "Frame", fill: solid("transparent"), x: inset, y: inset, w: W - inset * 2, h: H - inset * 2, fx: { stroke: { width: t, color } } });
-const glass = (x, y, w, h, r, dark = true) => R({ name: "Glass panel", fill: solid(dark ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.72)"), x, y, w, h, fx: { radius: r, stroke: { width: 1.5, color: dark ? "rgba(255,255,255,0.18)" : "rgba(20,20,40,0.08)" }, shadow: dark ? null : { x: 0, y: 18, blur: 48, color: "rgba(20,24,60,0.12)" } } });
-const eyebrow = (text, o) => T(text, { font: o.font ?? "Inter", weight: 600, size: o.size, ls: o.size * 0.28, tt: "uppercase", color: o.color, x: o.x, y: o.y, w: o.w, h: o.size * 1.6, align: o.align ?? "left", name: o.name ?? "Eyebrow" });
+const eyebrow = (text, o) => T(text, { font: o.font ?? "Inter", weight: o.weight ?? 600, size: o.size, ls: o.size * (o.track ?? 0.28), tt: "uppercase", color: o.color, x: o.x, y: o.y, w: o.w, h: o.size * 1.7, align: o.align ?? "left", name: o.name ?? "Eyebrow" });
 const qr = (o) => ({ id: id(), name: "Ticket QR", type: "qr", value: "{{event.public_url}}", bind: "event.public_url", fg: o.fg ?? "#0b0b14", bg: o.bg ?? "#ffffff", x: o.x, y: o.y, w: o.s, h: o.s, rotation: 0 });
-const icon = (name, o) => ({ id: id(), name, type: "icon", icon: name, color: o.color, x: o.x, y: o.y, w: o.s, h: o.s, rotation: 0 });
-/** DATE / TIME / VENUE columns with hairline dividers. */
-function details(x, y, w, c, u, cols = [["Date", "{{event.date}}"], ["Doors", "{{event.time}}"], ["Venue", "{{event.venue_name}}"]], valueFont = "Inter") {
-  const cw = w / cols.length, out = [];
-  cols.forEach(([label, value], i) => {
-    const cx = x + cw * i + (i ? u * 0.03 : 0);
-    if (i) out.push(vhair(x + cw * i, y, u * 0.1, alpha(c.sub, 0.45)));
-    out.push(eyebrow(label, { size: u * 0.016, color: c.accent, x: cx, y, w: cw - u * 0.04 }));
-    out.push(T(value, { font: valueFont, weight: 500, size: u * 0.026, color: c.ink, x: cx, y: y + u * 0.035, w: cw - u * 0.04, h: u * 0.08, lh: 1.25, name: label }));
-  });
-  return out;
-}
+const pill = (text, o) => [R({ name: "Button", fill: solid(o.bg), x: o.x, y: o.y, w: o.w, h: o.h, fx: { radius: o.h / 2 } }),
+  T(text, { font: o.font ?? "Inter", weight: 700, size: o.h * 0.36, color: o.color, x: o.x, y: o.y, w: o.w, h: o.h, align: "center", valign: "middle", ls: o.h * 0.02, name: "Button text" })];
+const qrCard = (x, y, s) => [R({ name: "QR card", fill: solid("#ffffff"), x, y, w: s, h: s, fx: { radius: s * 0.1, shadow: { x: 0, y: s * 0.06, blur: s * 0.18, color: "rgba(0,0,0,0.35)" } } }), qr({ x: x + s * 0.08, y: y + s * 0.08, s: s * 0.84 })];
 
 const OUT = [];
-const add = (title, category, size, c, layers, tags) => { const [W, H] = SIZE[size]; OUT.push({ title, category, tags: ["gala-starter", size, ...tags], width: W, height: H, document: { unit: "px", dpi: 150, pages: [{ id: id(), name: title, width: W, height: H, background: solid(c.bg), layers: layers(W, H) }] } }); };
+const add = (title, category, size, bg, layers, tags) => { const [W, H] = SIZE[size]; OUT.push({ title, category, tags: ["gala-starter", size, ...tags], width: W, height: H, document: { unit: "px", dpi: 150, pages: [{ id: id(), name: title, width: W, height: H, background: solid(bg), layers: layers(W, H) }] } }); };
+const condensed = f => f === "Anton" || f === "Bebas Neue";
 
-// ── A. Editorial poster (serif display, mesh glow, detail grid, glass ticket panel)
-const editorial = (name, cat, size, c, serif, tags) => add(`${name}`, cat, size, c, (W, H) => { const m = W * 0.075, u = W;
-  return [
-    orb(W * 0.86, H * 0.12, W * 0.62, c.orbs[0], 0.7), orb(W * 0.05, H * 0.5, W * 0.55, c.orbs[1], 0.55), orb(W * 0.7, H * 0.95, W * 0.6, c.orbs[2], 0.45),
-    frame(m * 0.45, W, H, alpha(c.ink, 0.16)),
-    eyebrow("{{organizer.name}} presents", { size: u * 0.017, color: c.sub, x: m, y: m, w: W * 0.5 }),
-    eyebrow("{{event.city}}", { size: u * 0.017, color: c.sub, x: W * 0.5, y: m, w: W * 0.5 - m, align: "right" }),
-    T("{{event.name}}", { bind: "event.name", font: serif, weight: serif === "Instrument Serif" || serif === "DM Serif Display" ? 400 : 600, size: u * 0.128, lh: 0.94, ls: -u * 0.002, color: c.ink, x: m, y: H * 0.22, w: W - m * 2, h: H * 0.38, valign: "bottom", name: "Event name" }),
-    T("An evening to remember", { font: "Instrument Serif", weight: 400, italic: true, size: u * 0.04, color: c.accent, x: m, y: H * 0.61, w: W - m * 2, h: u * 0.06, name: "Tagline" }),
-    hair(m, H * 0.675, W - m * 2, alpha(c.ink, 0.22)),
-    ...details(m, H * 0.695, W - m * 2, c, u),
-    glass(m, H - m - u * 0.2, W - m * 2, u * 0.2, u * 0.024),
-    eyebrow("Tickets from", { size: u * 0.016, color: c.sub, x: m + u * 0.04, y: H - m - u * 0.16, w: W * 0.5 }),
-    T("{{ticket.starting_price}}", { font: serif, weight: serif === "Instrument Serif" || serif === "DM Serif Display" ? 400 : 600, size: u * 0.06, color: c.ink, x: m + u * 0.04, y: H - m - u * 0.125, w: W * 0.5, h: u * 0.08, name: "Price" }),
-    T("Scan to book", { font: "Inter", weight: 500, size: u * 0.018, color: c.sub, x: W - m - u * 0.42, y: H - m - u * 0.105, w: u * 0.2, h: u * 0.03, align: "right", name: "Scan to book" }),
-    qr({ x: W - m - u * 0.185, y: H - m - u * 0.185, s: u * 0.17 }),
-  ]; }, tags);
+// 1 · Headline — full-bleed photo, deep scrim, condensed headline, price button + QR
+const headline = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.07, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H, ...focus }), scrim(0, H * 0.35, W, H * 0.65, c.bg, 0, 0.96), scrim(0, 0, W, H * 0.22, c.bg, 0.55, 0),
+    eyebrow("{{organizer.name}} presents", { size: u * 0.018, color: "#ffffff", x: m, y: m, w: W * 0.6 }), eyebrow("{{event.city}}", { size: u * 0.018, color: "#ffffff", x: W * 0.4, y: m, w: W * 0.6 - m, align: "right" }),
+    T("{{event.name}}", { bind: "event.name", font, weight: condensed(font) ? 400 : 800, size: u * (condensed(font) ? 0.17 : 0.11), lh: 0.9, ls: condensed(font) ? u * 0.002 : -u * 0.003, tt: "uppercase", color: "#ffffff",
+      x: m, y: H * 0.42, w: W - m * 2, h: H * 0.3, valign: "bottom", name: "Event name" }),
+    T("{{event.date}}  ·  {{event.time}}  ·  {{event.venue_name}}", { font: "Inter", weight: 500, size: u * 0.026, color: alpha("#ffffff", 0.88), x: m, y: H * 0.74, w: W - m * 2, h: u * 0.05, name: "Details" }),
+    hair(m, H * 0.8, W - m * 2, alpha("#ffffff", 0.25)),
+    ...pill("Tickets from {{ticket.starting_price}}", { bg: c.accent, color: c.on ?? "#0b0b14", x: m, y: H - m - u * 0.1, w: u * 0.5, h: u * 0.1 }),
+    ...qrCard(W - m - u * 0.15, H - m - u * 0.15, u * 0.15)]; }, ["photo", "headline"]);
 
-// ── B. Swiss modern (light, strict grid, oversized sans, accent block)
-const swiss = (name, cat, size, c, tags) => add(name, cat, size, c, (W, H) => { const m = W * 0.07, u = W, col = (W - m * 2) / 12;
-  return [
-    R({ name: "Accent block", fill: solid(c.accent), x: 0, y: 0, w: m + col * 4, h: H * 0.42 }),
-    eyebrow("Event", { size: u * 0.016, color: alpha("#ffffff", 0.85), x: m, y: m, w: col * 4 }),
-    T("{{event.date}}", { font: "Inter Tight", weight: 700, size: u * 0.05, lh: 1.02, ls: -u * 0.001, color: "#ffffff", x: m, y: H * 0.42 - m - u * 0.13, w: col * 4 - u * 0.02, h: u * 0.13, valign: "bottom", name: "Date" }),
-    vhair(m + col * 5, m, H - m * 2, alpha(c.ink, 0.12)),
-    eyebrow("{{event.city}} — {{event.time}}", { size: u * 0.016, color: c.sub, x: m + col * 5.4, y: m, w: col * 6.6 }),
-    T("{{event.name}}", { bind: "event.name", font: "Inter Tight", weight: 800, size: u * 0.118, lh: 0.9, ls: -u * 0.005, color: c.ink, x: m + col * 5.4, y: H * 0.12, w: col * 6.6, h: H * 0.5, name: "Event name" }),
-    hair(m, H * 0.66, W - m * 2, c.ink, 3),
-    eyebrow("Venue", { size: u * 0.016, color: c.accent, x: m, y: H * 0.68, w: col * 4 }),
-    T("{{event.venue_name}}", { font: "Inter Tight", weight: 600, size: u * 0.034, lh: 1.15, color: c.ink, x: m, y: H * 0.68 + u * 0.035, w: col * 4.6, h: u * 0.12, name: "Venue" }),
-    eyebrow("Tickets", { size: u * 0.016, color: c.accent, x: m + col * 5.4, y: H * 0.68, w: col * 3 }),
-    T("from {{ticket.starting_price}}", { font: "Inter Tight", weight: 600, size: u * 0.034, color: c.ink, x: m + col * 5.4, y: H * 0.68 + u * 0.035, w: col * 4, h: u * 0.06, name: "Price" }),
-    qr({ x: W - m - u * 0.16, y: H - m - u * 0.16, s: u * 0.16, fg: c.ink, bg: c.bg }),
-    T("galadock.com", { font: "Inter", weight: 500, size: u * 0.016, color: c.sub, x: m, y: H - m - u * 0.03, w: col * 5, h: u * 0.03, name: "Footer" }),
-  ]; }, tags);
+// 2 · Luxe wordmark — darkened photo, wide-tracked inscriptional title, gold hairlines
+const luxe = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.08, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H, ...focus, effects: { brightness: 62, contrast: 108, saturate: 92 } }), scrim(0, 0, W, H * 0.45, c.bg, 0.75, 0), scrim(0, H * 0.6, W, H * 0.4, c.bg, 0, 0.88),
+    eyebrow("{{organizer.name}} presents", { size: u * 0.016, color: c.accent, x: m, y: H * 0.09, w: W - m * 2, align: "center", track: 0.4 }),
+    T("{{event.name}}", { bind: "event.name", font, weight: font === "Italiana" || font === "Marcellus" ? 400 : 500, size: u * 0.085, lh: 1.08, ls: u * 0.012, tt: "uppercase", color: "#ffffff", x: m, y: H * 0.13, w: W - m * 2, h: H * 0.22, align: "center", valign: "middle", name: "Event name" }),
+    hair(W * 0.4, H * 0.37, W * 0.2, alpha(c.accent, 0.9), 2),
+    T("An evening of fine food, music and celebration", { font: "Cormorant Garamond", weight: 500, italic: true, size: u * 0.034, color: alpha("#ffffff", 0.9), x: m, y: H * 0.39, w: W - m * 2, h: u * 0.06, align: "center", name: "Tagline" }),
+    eyebrow("{{event.date}}", { size: u * 0.02, color: "#ffffff", x: m, y: H * 0.8, w: W - m * 2, align: "center", track: 0.32 }),
+    eyebrow("{{event.venue_name}}  ·  {{event.city}}", { size: u * 0.016, color: c.accent, x: m, y: H * 0.8 + u * 0.045, w: W - m * 2, align: "center", track: 0.32 }),
+    T("Reservations by QR · Black tie", { font: "Cormorant Garamond", weight: 500, italic: true, size: u * 0.026, color: alpha("#ffffff", 0.8), x: m, y: H * 0.88, w: W - m * 2, h: u * 0.05, align: "center", name: "Note" }),
+    qr({ x: W / 2 - u * 0.045, y: H - m * 0.7 - u * 0.09, s: u * 0.09, fg: c.bg, bg: c.accent })]; }, ["photo", "luxury"]);
 
-// ── C. Luxury gala (centred, script + inscriptional caps, double gold frame, ornament)
-const gala = (name, cat, size, c, caps, tags) => add(name, cat, size, c, (W, H) => { const m = W * 0.06, u = W;
-  return [
-    orb(W / 2, H * 0.36, W * 0.7, c.orbs[2], 0.38),
-    frame(m, W, H, alpha(c.accent, 0.85), 2), frame(m + u * 0.014, W, H, alpha(c.accent, 0.4), 1),
-    T("You are cordially invited", { font: "Pinyon Script", weight: 400, size: u * 0.06, color: c.accent, x: m, y: H * 0.17, w: W - m * 2, h: u * 0.1, align: "center", name: "Invitation" }),
-    T("{{event.name}}", { bind: "event.name", font: caps, weight: 500, size: u * 0.085, lh: 1.08, ls: u * 0.006, tt: "uppercase", color: c.ink, x: m * 2, y: H * 0.27, w: W - m * 4, h: H * 0.24, align: "center", valign: "middle", name: "Event name" }),
-    T("✦", { font: "Inter", weight: 400, size: u * 0.03, color: c.accent, x: 0, y: H * 0.53, w: W, h: u * 0.05, align: "center", name: "Ornament" }),
-    hair(W * 0.3, H * 0.545, W * 0.15, alpha(c.accent, 0.7)), hair(W * 0.55, H * 0.545, W * 0.15, alpha(c.accent, 0.7)),
-    T("{{event.date}}", { font: "Cormorant Garamond", weight: 500, size: u * 0.048, color: c.ink, x: m, y: H * 0.6, w: W - m * 2, h: u * 0.07, align: "center", name: "Date" }),
-    eyebrow("Seven thirty in the evening", { size: u * 0.017, color: c.sub, x: m, y: H * 0.6 + u * 0.08, w: W - m * 2, align: "center" }),
-    T("{{event.venue_name}}", { font: "Cormorant Garamond", weight: 500, italic: true, size: u * 0.04, color: c.ink, x: m, y: H * 0.72, w: W - m * 2, h: u * 0.06, align: "center", name: "Venue" }),
-    eyebrow("{{event.city}}", { size: u * 0.017, color: c.sub, x: m, y: H * 0.72 + u * 0.065, w: W - m * 2, align: "center" }),
-    eyebrow("Black tie  ·  RSVP via QR", { size: u * 0.016, color: c.accent, x: m, y: H - m - u * 0.2, w: W - m * 2, align: "center" }),
-    qr({ x: W / 2 - u * 0.065, y: H - m - u * 0.16, s: u * 0.13, fg: c.bg, bg: c.accent }),
-  ]; }, tags);
+// 3 · Arch frame — cream page, arch-cropped photo, script + serif
+const arch = (title, cat, size, sample, c, serif, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.1, u = W, aw = W * 0.62, ah = H * 0.48;
+  return [R({ name: "Arch outline", fill: solid("transparent"), x: (W - aw) / 2 - u * 0.018, y: H * 0.07 - u * 0.018, w: aw + u * 0.036, h: ah + u * 0.036, fx: { radii: [aw / 2 + u * 0.018, aw / 2 + u * 0.018, 0, 0], stroke: { width: 1.5, color: alpha(c.accent, 0.7) } } }),
+    P(sample, { x: (W - aw) / 2, y: H * 0.07, w: aw, h: ah, ...focus, effects: { radii: [aw / 2, aw / 2, 0, 0] } }),
+    T("together with their families", { font: "Pinyon Script", weight: 400, size: u * 0.05, color: c.accent, x: m, y: H * 0.58, w: W - m * 2, h: u * 0.08, align: "center", name: "Script" }),
+    T("{{event.name}}", { bind: "event.name", font: serif, weight: serif === "Instrument Serif" ? 400 : 500, size: u * 0.085, lh: 1.02, color: c.ink, x: m, y: H * 0.64, w: W - m * 2, h: H * 0.13, align: "center", valign: "middle", name: "Event name" }),
+    eyebrow("{{event.date}}  ·  {{event.time}}", { size: u * 0.018, color: c.ink, x: m, y: H * 0.8, w: W - m * 2, align: "center", track: 0.3 }),
+    T("{{event.venue_name}}, {{event.city}}", { font: serif, weight: 500, italic: true, size: u * 0.03, color: c.sub, x: m, y: H * 0.8 + u * 0.045, w: W - m * 2, h: u * 0.05, align: "center", name: "Venue" }),
+    eyebrow("Kindly RSVP", { size: u * 0.014, color: c.accent, x: m, y: H - u * 0.17, w: W - m * 2, align: "center" }),
+    qr({ x: W / 2 - u * 0.05, y: H - u * 0.13, s: u * 0.1, fg: c.ink, bg: c.bg })]; }, ["photo", "wedding"]);
 
-// ── D. Neon night (condensed display, gradient type, line-up with hairlines, glass QR)
-const neon = (name, cat, size, c, display, tags) => add(name, cat, size, c, (W, H) => { const m = W * 0.07, u = W;
-  const acts = ["Headliner", "Special guest", "Resident DJs", "Late set"];
-  return [
-    orb(W * 0.18, H * 0.16, W * 0.6, c.orbs[0], 0.85), orb(W * 0.95, H * 0.45, W * 0.55, c.orbs[1], 0.7), orb(W * 0.3, H * 0.98, W * 0.5, c.orbs[2], 0.55),
-    eyebrow("Live  ·  {{event.city}}", { size: u * 0.018, color: c.ink, x: m, y: m, w: W - m * 2 }),
-    T("{{event.name}}", { bind: "event.name", font: display, weight: display === "Anton" || display === "Bebas Neue" ? 400 : 800, size: u * (display === "Unbounded" ? 0.1 : display === "Syne" ? 0.115 : 0.15), lh: 0.92, ls: display === "Unbounded" ? -u * 0.003 : u * 0.002, tt: "uppercase",
-      fill: { type: "linear", angle: 100, stops: [{ offset: 0, color: "#ffffff" }, { offset: 0.55, color: c.accent }, { offset: 1, color: c.a2 }] }, color: c.ink, x: m, y: H * 0.1, w: W - m * 2, h: H * 0.38, valign: "bottom", name: "Event name",
-      fx: { glow: { blur: u * 0.02, color: alpha(c.accent, 0.55) } } }),
-    hair(m, H * 0.52, W - m * 2, alpha(c.ink, 0.25)),
-    ...acts.flatMap((a, i) => [T(i === 0 ? "{{organizer.name}}" : a, { font: "Inter", weight: i === 0 ? 700 : 500, size: u * (i === 0 ? 0.045 : 0.03), color: i === 0 ? c.ink : c.sub, x: m, y: H * 0.54 + i * u * 0.075, w: W * 0.6, h: u * 0.06, name: `Act ${i + 1}` }),
-      hair(m, H * 0.54 + i * u * 0.075 + u * 0.068, W * 0.55, alpha(c.ink, 0.1), 1)]),
-    ...details(m, H * 0.83, W * 0.58, c, u, [["Date", "{{event.date}}"], ["Doors", "{{event.time}}"]]),
-    glass(W - m - u * 0.28, H * 0.72, u * 0.28, u * 0.34, u * 0.03),
-    qr({ x: W - m - u * 0.24, y: H * 0.72 + u * 0.04, s: u * 0.2 }),
-    T("Tickets {{ticket.starting_price}}", { font: "Inter", weight: 600, size: u * 0.02, color: c.ink, x: W - m - u * 0.28, y: H * 0.72 + u * 0.26, w: u * 0.28, h: u * 0.04, align: "center", name: "Price" }),
-  ]; }, tags);
+// 4 · Split diagonal — photo top, diagonal colour panel, content below
+const split = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.075, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H * 0.62, ...focus }), R({ name: "Diagonal panel", d: "M0 22 L100 0 V100 H0 Z", fill: solid(c.bg), x: 0, y: H * 0.5, w: W, h: H * 0.5 }),
+    R({ name: "Accent edge", d: "M0 22 L100 0 V6 L0 28 Z", fill: solid(c.accent), x: 0, y: H * 0.5 - u * 0.005, w: W, h: H * 0.5 }),
+    eyebrow("{{event.date}}", { size: u * 0.018, color: c.accent, x: m, y: H * 0.64, w: W - m * 2 }),
+    T("{{event.name}}", { bind: "event.name", font, weight: 800, size: u * 0.095, lh: 0.95, ls: -u * 0.003, color: c.ink, x: m, y: H * 0.67, w: W - m * 2, h: H * 0.15, name: "Event name" }),
+    T("{{event.venue_name}}  ·  {{event.city}}  ·  Doors {{event.time}}", { font: "Inter", weight: 500, size: u * 0.024, color: c.sub, x: m, y: H * 0.84, w: W * 0.62, h: u * 0.08, lh: 1.4, name: "Details" }),
+    ...pill("Book now", { bg: c.accent, color: c.on ?? "#ffffff", x: m, y: H - m - u * 0.085, w: u * 0.3, h: u * 0.085 }),
+    qr({ x: W - m - u * 0.15, y: H - m - u * 0.15, s: u * 0.15, fg: c.ink, bg: c.bg })]; }, ["photo", "modern"]);
 
-// ── E. Minimal light (off-white, one accent disc, editorial serif)
-const minimal = (name, cat, size, c, serif, tags) => add(name, cat, size, c, (W, H) => { const m = W * 0.08, u = W;
-  return [
-    R({ name: "Accent disc", shape: "ellipse", fill: { type: "linear", angle: 145, stops: [{ offset: 0, color: c.accent }, { offset: 1, color: alpha(c.accent, 0.75) }] }, x: W * 0.52, y: -W * 0.12, w: W * 0.6, h: W * 0.6 }),
-    eyebrow("{{event.date}}", { size: u * 0.017, color: c.sub, x: m, y: m, w: W * 0.4 }),
-    T("{{event.name}}", { bind: "event.name", font: serif, weight: serif === "Instrument Serif" || serif === "DM Serif Display" || serif === "Gloock" ? 400 : 500, size: u * 0.125, lh: 0.96, ls: -u * 0.002, color: c.ink, x: m, y: H * 0.36, w: W - m * 2, h: H * 0.3, valign: "bottom", name: "Event name" }),
-    T("{{event.venue_name}}, {{event.city}}", { font: "Inter", weight: 500, size: u * 0.026, color: c.sub, x: m, y: H * 0.68, w: W - m * 2, h: u * 0.05, name: "Venue" }),
-    hair(m, H * 0.76, W - m * 2, alpha(c.ink, 0.15)),
-    eyebrow("Doors", { size: u * 0.016, color: c.accent, x: m, y: H * 0.79, w: W * 0.3 }),
-    T("{{event.time}}", { font: "Inter", weight: 600, size: u * 0.03, color: c.ink, x: m, y: H * 0.79 + u * 0.034, w: W * 0.3, h: u * 0.05, name: "Time" }),
-    eyebrow("Tickets", { size: u * 0.016, color: c.accent, x: m + W * 0.3, y: H * 0.79, w: W * 0.3 }),
-    T("{{ticket.starting_price}}", { font: "Inter", weight: 600, size: u * 0.03, color: c.ink, x: m + W * 0.3, y: H * 0.79 + u * 0.034, w: W * 0.3, h: u * 0.05, name: "Price" }),
-    qr({ x: W - m - u * 0.13, y: H - m - u * 0.13, s: u * 0.13, fg: c.ink, bg: c.bg }),
-  ]; }, tags);
+// 5 · Duotone club — duotoned photo, giant outlined + filled headline, line-up
+const duo = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.07, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H, ...focus, effects: { duotone: [c.bg, c.accent], contrast: 115 } }), scrim(0, H * 0.45, W, H * 0.55, c.bg, 0, 0.9),
+    T("{{event.name}}", { bind: "event.name", font, weight: 400, size: u * 0.2, lh: 0.86, tt: "uppercase", color: "transparent", x: m, y: H * 0.08, w: W - m * 2, h: H * 0.42, valign: "bottom", name: "Outline title", fx: { textFx: { kind: "hollow", color: "#ffffff" }, opacity: 0.85 } }),
+    T("{{event.name}}", { bind: "event.name", font, weight: 400, size: u * 0.2, lh: 0.86, tt: "uppercase", color: c.hot, x: m + u * 0.012, y: H * 0.08 + u * 0.012, w: W - m * 2, h: H * 0.42, valign: "bottom", name: "Event name", fx: { blend: "screen" } }),
+    eyebrow("Live  ·  all night  ·  {{event.city}}", { size: u * 0.02, color: "#ffffff", x: m, y: m, w: W - m * 2 }),
+    ...["Headliner", "Special guest", "Residents"].map((a, i) => T(i === 0 ? "{{organizer.name}}" : a, { font: "Inter", weight: i ? 500 : 800, size: u * (i ? 0.032 : 0.05), color: i ? alpha("#ffffff", 0.75) : "#ffffff", x: m, y: H * 0.58 + i * u * 0.075, w: W * 0.6, h: u * 0.07, name: `Act ${i + 1}` })),
+    eyebrow("{{event.date}}  ·  {{event.time}}", { size: u * 0.02, color: c.hot, x: m, y: H * 0.8, w: W * 0.6 }),
+    T("{{event.venue_name}}", { font: "Inter", weight: 600, size: u * 0.03, color: "#ffffff", x: m, y: H * 0.8 + u * 0.045, w: W * 0.6, h: u * 0.05, name: "Venue" }),
+    ...qrCard(W - m - u * 0.2, H - m - u * 0.2, u * 0.2)]; }, ["photo", "nightlife"]);
 
-// ── F. Story 9:16 (mesh glow, centred title, glass detail stack, QR)
-const story = (name, cat, c, display, headline, tags) => add(name, cat, "story", c, (W, H) => { const m = W * 0.08, u = W;
-  return [
-    orb(W * 0.15, H * 0.18, W * 0.75, c.orbs[0], 0.8), orb(W * 0.95, H * 0.5, W * 0.7, c.orbs[1], 0.6), orb(W * 0.4, H * 0.92, W * 0.7, c.orbs[2], 0.5),
-    eyebrow(headline, { size: u * 0.026, color: c.accent, x: m, y: H * 0.1, w: W - m * 2, align: "center" }),
-    T("{{event.name}}", { bind: "event.name", font: display, weight: display === "Instrument Serif" ? 400 : 700, italic: display === "Instrument Serif", size: u * 0.14, lh: 0.95, ls: -u * 0.002, color: c.ink, x: m, y: H * 0.15, w: W - m * 2, h: H * 0.3, align: "center", valign: "middle", name: "Event name" }),
-    glass(m, H * 0.5, W - m * 2, H * 0.22, u * 0.04),
-    ...[["Date", "{{event.date}}"], ["Doors", "{{event.time}}"], ["Venue", "{{event.venue_name}}"]].flatMap(([l, v], i) => [
-      eyebrow(l, { size: u * 0.02, color: c.accent, x: m + u * 0.06, y: H * 0.525 + i * H * 0.065, w: W * 0.3 }),
-      T(v, { font: "Inter", weight: 600, size: u * 0.04, color: c.ink, x: m + u * 0.06, y: H * 0.525 + i * H * 0.065 + u * 0.035, w: W - m * 2 - u * 0.12, h: u * 0.06, name: l }),
-      ...(i < 2 ? [hair(m + u * 0.06, H * 0.525 + i * H * 0.065 + u * 0.1, W - m * 2 - u * 0.12, alpha(c.ink, 0.12), 1)] : [])]),
-    R({ name: "Ticket QR card", fill: solid("#ffffff"), x: W / 2 - u * 0.17, y: H * 0.76, w: u * 0.34, h: u * 0.34, fx: { radius: u * 0.035, shadow: { x: 0, y: 24, blur: 60, color: "rgba(0,0,0,0.35)" } } }),
-    qr({ x: W / 2 - u * 0.14, y: H * 0.76 + u * 0.03, s: u * 0.28 }),
-    T("Tickets from {{ticket.starting_price}}", { font: "Inter", weight: 600, size: u * 0.032, color: c.ink, x: m, y: H * 0.76 + u * 0.38, w: W - m * 2, h: u * 0.05, align: "center", name: "Price" }),
-  ]; }, tags);
+// 6 · Artist spotlight — photo right, fade to colour, stacked name left
+const spotlight = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.07, u = W;
+  return [P(sample, { x: W * 0.3, y: 0, w: W * 0.7, h: H * 0.78, ...focus }), scrim(W * 0.3, 0, W * 0.45, H * 0.78, c.bg, 1, 0, 90), scrim(0, H * 0.5, W, H * 0.28, c.bg, 0, 1),
+    eyebrow("Live in concert", { size: u * 0.02, color: c.accent, x: m, y: m, w: W * 0.5 }),
+    T("{{event.name}}", { bind: "event.name", font, weight: condensed(font) ? 400 : 800, size: u * (condensed(font) ? 0.13 : 0.075), lh: 0.92, tt: "uppercase", color: "#ffffff", x: m, y: H * 0.12, w: W * 0.58, h: H * 0.5, name: "Event name" }),
+    hair(m, H * 0.8, W - m * 2, alpha("#ffffff", 0.2)),
+    ...[["Date", "{{event.date}}"], ["Doors", "{{event.time}}"], ["Venue", "{{event.venue_name}}"]].flatMap(([l, v], i) => { const cw = (W - m * 2) / 3, x = m + cw * i;
+      return [eyebrow(l, { size: u * 0.015, color: c.accent, x, y: H * 0.82, w: cw - u * 0.02 }), T(v, { font: "Inter", weight: 600, size: u * 0.024, color: "#ffffff", x, y: H * 0.82 + u * 0.032, w: cw - u * 0.03, h: u * 0.07, lh: 1.25, name: l })]; }),
+    ...pill("Tickets {{ticket.starting_price}}", { bg: c.accent, color: c.on ?? "#0b0b14", x: m, y: H - m * 0.8 - u * 0.075, w: u * 0.4, h: u * 0.075 })]; }, ["photo", "artist"]);
 
-// ── G. Venue screen 16:9 (split: identity left, running order right in glass)
-const screen = (name, cat, c, serif, tags) => add(name, cat, "screen", c, (W, H) => { const m = H * 0.09, u = H;
-  const run = [["19:00", "Doors & drinks reception"], ["19:45", "Opening remarks"], ["20:00", "Dinner is served"], ["21:30", "Awards"], ["22:30", "Dancing until late"]];
-  return [
-    orb(W * 0.1, H * 0.1, W * 0.45, c.orbs[0], 0.7), orb(W * 0.55, H * 1, W * 0.4, c.orbs[1], 0.5), orb(W * 0.95, H * 0.1, W * 0.3, c.orbs[2], 0.45),
-    eyebrow("Welcome to", { size: u * 0.03, color: c.accent, x: m, y: m, w: W * 0.45 }),
-    T("{{event.name}}", { bind: "event.name", font: serif, weight: serif === "Instrument Serif" || serif === "DM Serif Display" ? 400 : 600, size: u * 0.15, lh: 0.95, color: c.ink, x: m, y: H * 0.18, w: W * 0.5, h: H * 0.48, valign: "bottom", name: "Event name" }),
-    hair(m, H * 0.72, W * 0.42, alpha(c.ink, 0.2)),
-    T("Wi-Fi  Gala-Guests      Share  #yourevent", { font: "Inter", weight: 500, size: u * 0.032, color: c.sub, x: m, y: H * 0.76, w: W * 0.5, h: u * 0.06, name: "Info" }),
-    glass(W * 0.58, m, W * 0.42 - m, H - m * 2, u * 0.04),
-    eyebrow("Running order", { size: u * 0.026, color: c.accent, x: W * 0.58 + u * 0.06, y: m + u * 0.06, w: W * 0.3 }),
-    ...run.flatMap(([t, l], i) => { const y = m + u * 0.16 + i * u * 0.135; return [
-      T(t, { font: "Inter", weight: 600, size: u * 0.036, color: c.accent, x: W * 0.58 + u * 0.06, y, w: u * 0.2, h: u * 0.06, name: `Time ${i + 1}` }),
-      T(l, { font: "Inter", weight: 500, size: u * 0.036, color: c.ink, x: W * 0.58 + u * 0.22, y, w: W * 0.42 - m - u * 0.28, h: u * 0.06, name: `Item ${i + 1}` }),
-      ...(i < run.length - 1 ? [hair(W * 0.58 + u * 0.06, y + u * 0.09, W * 0.42 - m - u * 0.12, alpha(c.ink, 0.1), 1)] : [])]; }),
-  ]; }, tags);
+// 7 · Energy diagonal — bold colour field, slanted photo band, rotated headline, stripes
+const energy = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.accent, (W, H) => { const m = W * 0.07, u = W;
+  return [P(sample, { x: 0, y: H * 0.18, w: W, h: H * 0.5, ...focus }), R({ name: "Top cut", d: "M0 0 H100 V40 L0 100 Z", fill: solid(c.accent), x: 0, y: H * 0.17, w: W, h: H * 0.12 }),
+    R({ name: "Bottom cut", d: "M0 60 L100 0 V100 H0 Z", fill: solid(c.bg), x: 0, y: H * 0.6, w: W, h: H * 0.4 }),
+    ...[0, 1, 2, 3, 4, 5].map(i => R({ name: "Stripe", d: "M20 0 H100 L80 100 H0 Z", fill: solid(c.bg), x: m + i * u * 0.045, y: m, w: u * 0.03, h: u * 0.05 })),
+    eyebrow("{{event.city}}  ·  {{event.date}}", { size: u * 0.02, color: c.bg, x: m + u * 0.32, y: m + u * 0.01, w: W - m * 2 - u * 0.32, align: "right" }),
+    T("{{event.name}}", { bind: "event.name", font, weight: 400, size: u * (H / W < 1.1 ? 0.1 : 0.15), lh: 0.88, tt: "uppercase", color: "#ffffff", x: m, y: H * (H / W < 1.1 ? 0.62 : 0.64), w: W - m * 2, h: H * (H / W < 1.1 ? 0.14 : 0.2), r: -4, name: "Event name", fx: { textFx: { kind: "3d", color: c.accent, depth: 6, angle: 45 } } }),
+    T("{{event.venue_name}}  ·  Doors {{event.time}}", { font: "Inter", weight: 700, size: u * 0.026, color: alpha("#ffffff", 0.85), x: m, y: H * (H / W < 1.1 ? 0.8 : 0.86), w: W * 0.6, h: u * 0.05, name: "Details" }),
+    ...pill("{{ticket.starting_price}}", { bg: c.accent, color: c.bg, x: m, y: H - m * 0.9 - u * 0.075, w: u * 0.24, h: u * 0.075 }),
+    qr({ x: W - m - u * 0.14, y: H - m - u * 0.14, s: u * 0.14, fg: c.bg, bg: "#ffffff" })]; }, ["photo", "energy"]);
 
-// ── H. Menu (cream, centred serif, dish/price columns with hairlines)
-const menu = (name, cat, c, serif, tags) => add(name, cat, "poster", c, (W, H) => { const m = W * 0.11, u = W;
-  const sections = [["To start", [["Heritage tomato, burrata, basil oil", "9"], ["Cured salmon, cucumber, rye", "11"], ["Wild mushroom velouté (VG)", "8"]]],
-    ["Mains", [["Roast chicken, truffle jus, pommes purée", "24"], ["Sea bass, samphire, beurre blanc", "26"], ["Squash risotto, sage, parmesan (V)", "19"]]],
-    ["To finish", [["Dark chocolate délice, salted caramel", "9"], ["Lemon posset, shortbread", "8"]]]];
-  const out = [frame(W * 0.05, W, H, alpha(c.accent, 0.5), 1.5),
-    eyebrow("{{event.name}}", { size: u * 0.018, color: c.accent, x: m, y: H * 0.07, w: W - m * 2, align: "center" }),
-    T("Menu", { font: serif, weight: serif === "Instrument Serif" || serif === "DM Serif Display" ? 400 : 500, italic: true, size: u * 0.12, color: c.ink, x: m, y: H * 0.09, w: W - m * 2, h: u * 0.15, align: "center", name: "Title" })];
-  let y = H * 0.24;
-  for (const [title, dishes] of sections) {
-    out.push(eyebrow(title, { size: u * 0.018, color: c.accent, x: m, y, w: W - m * 2, align: "center" })); y += u * 0.05;
-    for (const [d, p] of dishes) { out.push(T(d, { font: serif, weight: 500, size: u * 0.03, color: c.ink, x: m, y, w: W - m * 2 - u * 0.1, h: u * 0.05, name: "Dish" }), T(p, { font: serif, weight: 600, size: u * 0.03, color: c.ink, x: W - m - u * 0.1, y, w: u * 0.1, h: u * 0.05, align: "right", name: "Price" }), hair(m, y + u * 0.058, W - m * 2, alpha(c.ink, 0.1), 1)); y += u * 0.075; }
-    y += u * 0.04;
+// 8 · Circle stamp — colour field, circular photo, rotated badge, playful type
+const circle = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.08, u = W, d = Math.min(W * 0.66, H * 0.5);
+  return [R({ name: "Ring", shape: "ellipse", fill: solid("transparent"), x: (W - d) / 2 - u * 0.025, y: H * 0.08 - u * 0.025, w: d + u * 0.05, h: d + u * 0.05, fx: { stroke: { width: 3, color: c.accent, dash: "dashed" } } }),
+    P(sample, { x: (W - d) / 2, y: H * 0.08, w: d, h: d, ...focus, effects: { radius: d / 2 } }),
+    R({ name: "Badge", d: "M50 0 L61 12 L77 7 L80 23 L96 28 L90 44 L100 57 L86 66 L88 83 L72 84 L64 98 L50 90 L36 98 L28 84 L12 83 L14 66 L0 57 L10 44 L4 28 L20 23 L23 7 L39 12 Z", fill: solid(c.accent), x: W * 0.68, y: H * 0.05, w: u * 0.22, h: u * 0.22, r: 12 }),
+    T("You’re\ninvited", { font, weight: 800, size: u * 0.034, lh: 1, color: c.on ?? "#ffffff", x: W * 0.68, y: H * 0.05, w: u * 0.22, h: u * 0.22, align: "center", valign: "middle", r: 12, name: "Badge text" }),
+    T("{{event.name}}", { bind: "event.name", font, weight: 800, size: u * (font === "Syne" ? 0.075 : 0.09), lh: 0.98, color: c.ink, x: m, y: H * 0.08 + d + u * 0.05, w: W - m * 2, h: H * 0.16, align: "center", valign: "middle", name: "Event name" }),
+    T("{{event.date}}  ·  {{event.time}}", { font: "Inter", weight: 700, size: u * 0.03, color: c.accent, x: m, y: H * 0.08 + d + u * 0.05 + H * 0.17, w: W - m * 2, h: u * 0.05, align: "center", name: "Date" }),
+    T("{{event.venue_name}}, {{event.city}}", { font: "Inter", weight: 500, size: u * 0.026, color: c.sub, x: m, y: H * 0.08 + d + u * 0.1 + H * 0.17, w: W - m * 2, h: u * 0.05, align: "center", name: "Venue" })]; }, ["photo", "party"]);
+
+// 9 · Photo ticket — photo top, perforated stub
+const ticket = (title, cat, size, sample, c, font, focus = {}) => add(title, cat, size, c.bg, (W, H) => { const m = W * 0.06, u = W, top = H * 0.6, sh = H - top - u * 0.04 - m;
+  return [P(sample, { x: 0, y: 0, w: W, h: top, ...focus }), scrim(0, top * 0.55, W, top * 0.45, "#000000", 0, 0.6),
+    T("{{event.name}}", { bind: "event.name", font, weight: condensed(font) ? 400 : 800, size: u * (condensed(font) ? 0.13 : 0.09), lh: 0.92, tt: "uppercase", color: "#ffffff", x: m, y: top * 0.45, w: W - m * 2, h: top * 0.5, valign: "bottom", name: "Event name" }),
+    R({ name: "Stub", fill: solid(c.paper), x: m, y: top + u * 0.04, w: W - m * 2, h: sh, fx: { radius: u * 0.03 } }),
+    ...[0, 1].map(i => R({ name: "Notch", shape: "ellipse", fill: solid(c.bg), x: (i ? W - m : m) - u * 0.03, y: top + u * 0.04 + sh * 0.6 - u * 0.03, w: u * 0.06, h: u * 0.06 })),
+    R({ name: "Perforation", fill: solid("transparent"), x: m + u * 0.05, y: top + u * 0.04 + sh * 0.6, w: W - m * 2 - u * 0.1, h: 0.5, fx: { stroke: { width: 2, color: alpha(c.ink, 0.3), dash: "dashed" } } }),
+    ...[["Date", "{{event.date}}"], ["Doors", "{{event.time}}"], ["Price", "{{ticket.starting_price}}"]].flatMap(([l, v], i) => { const cw = (W - m * 2 - u * 0.1) / 3, x = m + u * 0.05 + cw * i, y = top + u * 0.09;
+      return [eyebrow(l, { size: u * 0.016, color: c.accent, x, y, w: cw }), T(v, { font: "Inter", weight: 700, size: u * 0.03, color: c.ink, x, y: y + u * 0.035, w: cw - u * 0.02, h: u * 0.08, lh: 1.2, name: l })]; }),
+    eyebrow("Admit one  ·  {{event.venue_name}}", { size: u * 0.016, color: alpha(c.ink, 0.6), x: m + u * 0.05, y: top + u * 0.04 + sh * 0.6 + (sh * 0.4 - u * 0.03) / 2, w: W * 0.55 }),
+    qr({ x: W - m - u * 0.05 - u * 0.1, y: top + u * 0.04 + sh * 0.6 + (sh * 0.4 - u * 0.1) / 2, s: u * 0.1, fg: c.ink, bg: c.paper })]; }, ["photo", "ticket"]);
+
+// 10 · Photo story — full-bleed 9:16, scrim, glass detail card, QR
+const story = (title, cat, sample, c, font, line, focus = {}) => add(title, cat, "story", c.bg, (W, H) => { const m = W * 0.08, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H, ...focus }), scrim(0, H * 0.3, W, H * 0.7, c.bg, 0, 0.94), scrim(0, 0, W, H * 0.2, c.bg, 0.6, 0),
+    eyebrow(line, { size: u * 0.028, color: c.accent, x: m, y: H * 0.07, w: W - m * 2, align: "center" }),
+    T("{{event.name}}", { bind: "event.name", font, weight: font === "Instrument Serif" || condensed(font) ? 400 : 800, italic: font === "Instrument Serif", size: u * (condensed(font) ? 0.16 : 0.12), lh: 0.95, tt: condensed(font) ? "uppercase" : undefined, color: "#ffffff", x: m, y: H * 0.36, w: W - m * 2, h: H * 0.2, align: "center", valign: "bottom", name: "Event name" }),
+    R({ name: "Glass card", fill: solid("rgba(255,255,255,0.1)"), x: m, y: H * 0.585, w: W - m * 2, h: H * 0.13, fx: { radius: u * 0.04, stroke: { width: 1.5, color: "rgba(255,255,255,0.22)" } } }),
+    T("{{event.date}}", { font: "Inter", weight: 700, size: u * 0.042, color: "#ffffff", x: m, y: H * 0.6, w: W - m * 2, h: u * 0.07, align: "center", name: "Date" }),
+    T("{{event.time}}  ·  {{event.venue_name}}", { font: "Inter", weight: 500, size: u * 0.032, color: alpha("#ffffff", 0.8), x: m, y: H * 0.6 + u * 0.075, w: W - m * 2, h: u * 0.06, align: "center", name: "Details" }),
+    ...qrCard(W / 2 - u * 0.15, H * 0.76, u * 0.3),
+    T("Tickets from {{ticket.starting_price}}", { font: "Inter", weight: 700, size: u * 0.034, color: "#ffffff", x: m, y: H * 0.76 + u * 0.34, w: W - m * 2, h: u * 0.06, align: "center", name: "Price" })]; }, ["photo", "story"]);
+
+// 11 · Social square — full photo, badge, bottom title
+const social = (title, cat, sample, c, font, badge, focus = {}) => add(title, cat, "square", c.bg, (W, H) => { const m = W * 0.07, u = W;
+  return [P(sample, { x: 0, y: 0, w: W, h: H, ...focus }), scrim(0, H * 0.4, W, H * 0.6, c.bg, 0, 0.95),
+    ...pill(badge, { bg: c.accent, color: c.on ?? "#0b0b14", x: m, y: m, w: u * 0.36, h: u * 0.07 }),
+    T("{{event.name}}", { bind: "event.name", font, weight: condensed(font) ? 400 : 800, size: u * (condensed(font) ? 0.14 : 0.1), lh: 0.92, tt: condensed(font) ? "uppercase" : undefined, ls: -u * 0.002, color: "#ffffff", x: m, y: H * 0.5, w: W - m * 2 - u * 0.2, h: H * 0.26, valign: "bottom", name: "Event name" }),
+    T("{{event.date}}  ·  {{event.venue_name}}", { font: "Inter", weight: 600, size: u * 0.03, color: alpha("#ffffff", 0.85), x: m, y: H * 0.79, w: W * 0.66, h: u * 0.05, name: "Details" }),
+    T("galadock.com", { font: "Inter", weight: 600, size: u * 0.022, color: c.accent, x: m, y: H - m - u * 0.03, w: W * 0.5, h: u * 0.04, name: "Link" }),
+    ...qrCard(W - m - u * 0.16, H - m - u * 0.16, u * 0.16)]; }, ["photo", "social"]);
+
+// 12 · Welcome screen — photo fading into colour, running order
+const screen = (title, cat, sample, c, serif, focus = {}) => add(title, cat, "screen", c.bg, (W, H) => { const m = H * 0.09, u = H;
+  const run = [["19:00", "Arrival drinks"], ["19:45", "Welcome"], ["20:00", "Dinner is served"], ["21:30", "Awards"], ["22:30", "Dancing"]];
+  return [P(sample, { x: W * 0.38, y: 0, w: W * 0.62, h: H, ...focus }), scrim(W * 0.38, 0, W * 0.35, H, c.bg, 1, 0, 90),
+    eyebrow("Welcome to", { size: u * 0.03, color: c.accent, x: m, y: m, w: W * 0.4 }),
+    T("{{event.name}}", { bind: "event.name", font: serif, weight: serif === "Instrument Serif" ? 400 : 600, size: u * 0.13, lh: 0.95, color: "#ffffff", x: m, y: H * 0.14, w: W * 0.42, h: H * 0.38, valign: "bottom", name: "Event name" }),
+    hair(m, H * 0.56, W * 0.36, alpha("#ffffff", 0.25)),
+    ...run.flatMap(([t, l], i) => [T(t, { font: "Inter", weight: 700, size: u * 0.034, color: c.accent, x: m, y: H * 0.6 + i * u * 0.065, w: u * 0.16, h: u * 0.05, name: `Time ${i + 1}` }),
+      T(l, { font: "Inter", weight: 500, size: u * 0.034, color: "#ffffff", x: m + u * 0.17, y: H * 0.6 + i * u * 0.065, w: W * 0.3, h: u * 0.05, name: `Item ${i + 1}` })])]; }, ["photo", "screen"]);
+
+// 13 · Menu with photo header
+const menu = (title, cat, sample, c, serif, focus = {}) => add(title, cat, "poster", c.bg, (W, H) => { const m = W * 0.1, u = W;
+  const sections = [["To start", [["Heritage tomato, burrata, basil", "9"], ["Cured salmon, cucumber, rye", "11"]]], ["Mains", [["Roast chicken, truffle jus", "24"], ["Sea bass, samphire, beurre blanc", "26"], ["Squash risotto, sage (V)", "19"]]], ["To finish", [["Chocolate délice, salted caramel", "9"], ["Lemon posset, shortbread", "8"]]]];
+  const out = [P(sample, { x: 0, y: 0, w: W, h: H * 0.26, ...focus }), scrim(0, 0, W, H * 0.26, "#000000", 0.15, 0.55),
+    T("Menu", { font: serif, weight: 500, italic: true, size: u * 0.11, color: "#ffffff", x: m, y: H * 0.05, w: W - m * 2, h: H * 0.16, align: "center", valign: "middle", name: "Title" }),
+    eyebrow("{{event.name}}", { size: u * 0.018, color: c.accent, x: m, y: H * 0.29, w: W - m * 2, align: "center" })];
+  let y = H * 0.34;
+  for (const [s, dishes] of sections) {
+    out.push(eyebrow(s, { size: u * 0.017, color: c.accent, x: m, y, w: W - m * 2, align: "center" })); y += u * 0.05;
+    for (const [d, p] of dishes) { out.push(T(d, { font: serif, weight: 500, size: u * 0.03, color: c.ink, x: m, y, w: W - m * 2 - u * 0.1, h: u * 0.05, name: "Dish" }), T(p, { font: serif, weight: 600, size: u * 0.03, color: c.ink, x: W - m - u * 0.1, y, w: u * 0.1, h: u * 0.05, align: "right", name: "Price" }), hair(m, y + u * 0.058, W - m * 2, alpha(c.ink, 0.1), 1)); y += u * 0.074; }
+    y += u * 0.035;
   }
-  out.push(T("Please tell our team about any allergies before ordering. A discretionary 12.5% service charge is added to your bill.", { font: "Inter", weight: 400, size: u * 0.016, lh: 1.5, color: c.sub, x: m, y: H - H * 0.1, w: W - m * 2, h: u * 0.06, align: "center", name: "Footnote" }));
-  return out; }, tags);
+  out.push(T("Please tell our team about allergies before ordering.", { font: "Inter", weight: 400, size: u * 0.017, color: c.sub, x: m, y: H - H * 0.06, w: W - m * 2, h: u * 0.04, align: "center", name: "Footnote" }));
+  return out; }, ["photo", "menu"]);
 
-// ── I. Information board (icon rows, hairlines — refined signage)
-const info = (name, cat, size, c, tags) => add(name, cat, size, c, (W, H) => { const m = W * 0.08, u = W;
-  const rows = [["Toilet", "Toilets", "Ground floor, beside the main bar"], ["Lock", "Cloakroom", "£2 per item · open until close"], ["Cross", "First aid", "By the main stage — ask any steward"], ["Accessibility", "Accessibility", "Step-free entrance on the east side"], ["Wifi", "Wi-Fi", "Gala-Guests · password celebrate"], ["CigaretteOff", "No smoking", "Designated area in the garden"]];
-  const rowH = (H * 0.68) / rows.length, dark = c.bg < "#7";
-  return [
-    ...(dark ? [orb(W * 0.9, H * 0.05, W * 0.6, c.orbs[0], 0.55)] : [orb(W * 0.9, H * 0.05, W * 0.6, c.orbs[0], 0.9)]),
-    eyebrow("{{event.name}}", { size: u * 0.018, color: c.accent, x: m, y: m, w: W - m * 2 }),
-    T("Good to know", { font: "Instrument Serif", weight: 400, size: u * 0.09, color: c.ink, x: m, y: m + u * 0.04, w: W - m * 2, h: u * 0.12, name: "Title" }),
-    ...rows.flatMap(([ic, t, d], i) => { const y = H * 0.25 + i * rowH; return [
-      R({ name: "Icon tile", fill: solid(alpha(c.accent, dark ? 0.16 : 0.1)), x: m, y: y + rowH * 0.18, w: rowH * 0.64, h: rowH * 0.64, fx: { radius: rowH * 0.18 } }),
-      icon(ic, { color: c.accent, x: m + rowH * 0.17, y: y + rowH * 0.35, s: rowH * 0.3 }),
-      T(t, { font: "Inter", weight: 600, size: u * 0.032, color: c.ink, x: m + rowH * 0.85, y: y + rowH * 0.2, w: W - m * 2 - rowH, h: u * 0.05, name: t }),
-      T(d, { font: "Inter", weight: 400, size: u * 0.024, color: c.sub, x: m + rowH * 0.85, y: y + rowH * 0.2 + u * 0.045, w: W - m * 2 - rowH, h: u * 0.04, name: `${t} detail` }),
-      ...(i < rows.length - 1 ? [hair(m, y + rowH, W - m * 2, alpha(c.ink, 0.1), 1)] : [])]; }),
-  ]; }, tags);
+// ── palettes
+const C = {
+  night: { bg: "#06060f", accent: "#ff3d8b", on: "#ffffff", ink: "#ffffff", sub: "#b9bcd6", hot: "#ff3d8b" }, violet: { bg: "#0b0520", accent: "#c9a6ff", on: "#0b0520", ink: "#ffffff", sub: "#b9b0d9", hot: "#a46bff" },
+  gold: { bg: "#0a0806", accent: "#d8b878", on: "#0a0806", ink: "#ffffff", sub: "#c9bba3" }, ember: { bg: "#120604", accent: "#ff7a1a", on: "#120604", ink: "#ffffff", sub: "#d9b9a8", hot: "#ff7a1a" },
+  cyan: { bg: "#020f18", accent: "#32e6ff", on: "#02131c", ink: "#ffffff", sub: "#a5c3d1", hot: "#32e6ff" }, lime: { bg: "#0b0f05", accent: "#c6ff3d", on: "#0b0f05", ink: "#ffffff", sub: "#c2cfa8", hot: "#c6ff3d" },
+  cream: { bg: "#f7f2ea", accent: "#a8834e", ink: "#1d1a15", sub: "#6e665a" }, blush: { bg: "#fbf2ef", accent: "#b9667a", ink: "#2b1619", sub: "#7f6468" }, sage: { bg: "#f1f2ea", accent: "#4f7a63", ink: "#1b2a22", sub: "#5e6e64" },
+  navy: { bg: "#0b1230", accent: "#4f6bff", on: "#ffffff", ink: "#ffffff", sub: "#aab4dd" }, paperDark: { bg: "#101014", paper: "#f6f3ec", accent: "#e0533d", ink: "#16151a" }, paperBlue: { bg: "#0d1b3d", paper: "#f3f5fb", accent: "#3a57ff", ink: "#0d1b3d" },
+  sun: { bg: "#140b26", accent: "#ffcf3d", on: "#140b26", ink: "#ffffff", sub: "#cfc6e6" }, candy: { bg: "#fff6e9", accent: "#ff5c8a", on: "#ffffff", ink: "#26113a", sub: "#7a6a86" }, mint: { bg: "#effbf6", accent: "#11a37f", on: "#ffffff", ink: "#0f2a22", sub: "#5c7a70" },
+};
 
-// ── J. Announcement square (on-sale / sold-out / early-bird with pill)
-const announce = (name, cat, c, line, pill, display, tags) => add(name, cat, "square", c, (W, H) => { const m = W * 0.08, u = W;
-  return [
-    orb(W * 0.85, H * 0.15, W * 0.55, c.orbs[0], 0.75), orb(W * 0.1, H * 0.95, W * 0.5, c.orbs[1], 0.55),
-    eyebrow(line, { size: u * 0.02, color: c.accent, x: m, y: m, w: W - m * 2 }),
-    T("{{event.name}}", { bind: "event.name", font: display, weight: display === "Instrument Serif" ? 400 : 700, size: u * 0.12, lh: 0.95, ls: -u * 0.002, color: c.ink, x: m, y: H * 0.18, w: W - m * 2, h: H * 0.42, valign: "bottom", name: "Event name" }),
-    T("{{event.date}}  ·  {{event.venue_name}}", { font: "Inter", weight: 500, size: u * 0.03, color: c.sub, x: m, y: H * 0.63, w: W - m * 2, h: u * 0.05, name: "Details" }),
-    R({ name: "Pill", fill: solid(c.accent), x: m, y: H - m - u * 0.11, w: u * 0.46, h: u * 0.11, fx: { radius: u * 0.055 } }),
-    T(pill, { font: "Inter", weight: 700, size: u * 0.032, color: c.bg, x: m, y: H - m - u * 0.11, w: u * 0.46, h: u * 0.11, align: "center", valign: "middle", name: "Pill text" }),
-    qr({ x: W - m - u * 0.15, y: H - m - u * 0.15, s: u * 0.15, fg: c.bg === "#ffffff" ? "#000" : c.bg, bg: c.ink }),
-  ]; }, tags);
-
-// ── Catalogue
-editorial("Editorial — Midnight", "concert", "poster", DARK.Midnight, "Playfair Display", ["editorial"]);
-editorial("Editorial — Noir", "theatre", "poster", DARK.Noir, "Bodoni Moda", ["editorial"]);
-editorial("Editorial — Emerald", "corporate", "portrait", DARK.Emerald, "Instrument Serif", ["editorial"]);
-editorial("Editorial — Ocean", "conference", "portrait", DARK.Ocean, "Fraunces", ["editorial"]);
-swiss("Swiss — Porcelain", "conference", "poster", LIGHT.Porcelain, ["modern"]);
-swiss("Swiss — Ivory", "networking", "portrait", LIGHT.Ivory, ["modern"]);
-swiss("Swiss — Blush", "private_party", "square", LIGHT.Blush, ["modern"]);
-swiss("Swiss — Sage", "venue_hire", "poster", LIGHT.Sage, ["modern"]);
-gala("Black-tie gala — Gold", "corporate", "poster", DARK.Midnight, "Cinzel", ["luxury"]);
-gala("Black-tie gala — Emerald", "wedding", "portrait", DARK.Emerald, "Marcellus", ["luxury"]);
-gala("Wedding invitation — Noir", "wedding", "portrait", DARK.Noir, "Cormorant Garamond", ["luxury", "wedding"]);
-neon("Neon night — Ultraviolet", "nightclub", "poster", DARK.Ultraviolet, "Unbounded", ["nightlife"]);
-neon("Neon night — Ocean", "festival", "portrait", DARK.Ocean, "Anton", ["nightlife"]);
-neon("Neon night — Noir", "concert", "portrait", DARK.Noir, "Syne", ["nightlife"]);
-minimal("Minimal — Ivory", "wedding", "portrait", LIGHT.Ivory, "Instrument Serif", ["minimal"]);
-minimal("Minimal — Porcelain", "conference", "poster", LIGHT.Porcelain, "Fraunces", ["minimal"]);
-minimal("Minimal — Blush", "birthday", "square", LIGHT.Blush, "Gloock", ["minimal"]);
-minimal("Minimal — Sage", "private_party", "portrait", LIGHT.Sage, "DM Serif Display", ["minimal"]);
-story("Story — On sale now", "ticket_launch", DARK.Ultraviolet, "Unbounded", "Tickets on sale now", ["story"]);
-story("Story — Save the date", "wedding", DARK.Noir, "Instrument Serif", "Save the date", ["story"]);
-story("Story — Final release", "final_release", DARK.Midnight, "Syne", "Final release", ["story"]);
-story("Story — Tonight", "event_day", DARK.Ocean, "Unbounded", "Tonight", ["story"]);
-screen("Welcome screen — Midnight", "event_day", DARK.Midnight, "Playfair Display", ["screen"]);
-screen("Welcome screen — Emerald", "corporate", DARK.Emerald, "Instrument Serif", ["screen"]);
-screen("Welcome screen — Ocean", "conference", DARK.Ocean, "Fraunces", ["screen"]);
-menu("Menu — Ivory", "menu", LIGHT.Ivory, "Cormorant Garamond", ["food"]);
-menu("Menu — Sage", "catering", LIGHT.Sage, "Fraunces", ["food"]);
-menu("Drinks list — Blush", "drinks", LIGHT.Blush, "Instrument Serif", ["drinks"]);
-info("Information board — Porcelain", "event_day", "portrait", LIGHT.Porcelain, ["signage"]);
-info("Information board — Midnight", "event_day", "portrait", DARK.Midnight, ["signage"]);
-info("Information board — Ivory", "venue_hire", "poster", LIGHT.Ivory, ["signage"]);
-announce("Tickets on sale — Ultraviolet", "ticket_launch", DARK.Ultraviolet, "Tickets on sale now", "Book now", "Unbounded", ["announcement"]);
-announce("Early bird — Midnight", "early_bird", DARK.Midnight, "Early bird · limited release", "From {{ticket.starting_price}}", "Playfair Display", ["announcement"]);
-announce("Sold out — Noir", "sold_out", DARK.Noir, "Thank you — every ticket has gone", "Join the waitlist", "Instrument Serif", ["announcement"]);
-announce("Final tickets — Ocean", "final_release", DARK.Ocean, "Last few tickets", "Get yours", "Syne", ["announcement"]);
+// ── catalogue (original layouts × sample photography)
+headline("Concert headline — Neon", "concert", "poster", "concert-crowd", C.night, "Anton");
+headline("Festival headline — Ember", "festival", "poster", "festival-fire", C.ember, "Bebas Neue", { fy: 60 });
+headline("Carnival headline — Sun", "festival", "portrait", "carnival", C.sun, "Anton");
+headline("Fireworks headline — Gold", "private_party", "portrait", "fireworks", C.gold, "Syne");
+headline("Stage headline — Cyan", "concert", "poster", "stage-lights", C.cyan, "Unbounded");
+luxe("Gala dinner — Gold", "corporate", "poster", "gala-dinner", C.gold, "Cinzel");
+luxe("Banquet evening — Gold", "corporate", "portrait", "banquet", C.gold, "Italiana");
+luxe("Rooftop supper — Gold", "catering", "poster", "rooftop-dining", C.gold, "Bodoni Moda");
+luxe("Waterfront soirée — Ice", "venue_hire", "portrait", "venue-waterfront", { ...C.gold, accent: "#cfd8ff", bg: "#071026" }, "Marcellus");
+arch("Wedding arch — Cream", "wedding", "portrait", "brides", C.cream, "Cormorant Garamond", { fy: 40 });
+arch("Wedding arch — Blush", "wedding", "poster", "wedding-table", C.blush, "Playfair Display");
+arch("Garden ceremony — Sage", "wedding", "portrait", "garden-wedding", C.sage, "Instrument Serif");
+arch("Garden party — Sage", "private_party", "poster", "garden-lounge", C.sage, "Fraunces");
+split("Summit — Navy", "conference", "poster", "skyline-gathering", C.navy, "Inter Tight");
+split("Live session — Violet", "concert", "portrait", "stage-lights", C.violet, "Space Grotesk");
+split("Street culture — Lime", "festival", "poster", "street-art", C.lime, "Bricolage Grotesque");
+split("City night — Navy", "networking", "portrait", "london-night", C.navy, "Manrope");
+duo("Club night — Pink", "nightclub", "poster", "dj", C.night, "Anton");
+duo("Rave — Cyan", "nightclub", "portrait", "crowd-hands", C.cyan, "Bebas Neue");
+duo("Warehouse — Violet", "nightclub", "poster", "concert-silhouette", C.violet, "Anton");
+spotlight("Artist spotlight — Violet", "concert", "poster", "artist-woman", C.violet, "Bebas Neue", { fx: 45 });
+spotlight("Artist spotlight — Ember", "concert", "portrait", "artist-fire", C.ember, "Anton");
+spotlight("Artist spotlight — Gold", "comedy", "poster", "artist-man", C.gold, "Syne");
+spotlight("Performer — Pink", "theatre", "portrait", "performer", C.night, "Unbounded");
+energy("Festival energy — Sun", "festival", "poster", "festival-sunset", { bg: "#1b0c3a", accent: "#ffcf3d" }, "Anton");
+energy("Party energy — Coral", "private_party", "portrait", "party-smile", { bg: "#1a0f14", accent: "#ff6b5b" }, "Bebas Neue", { fy: 35 });
+energy("Crowd energy — Lime", "concert", "square", "crowd-hands", { bg: "#0b0f05", accent: "#c6ff3d" }, "Anton");
+circle("Birthday — Candy", "birthday", "portrait", "party-smile", C.candy, "Fredoka", { fy: 35 });
+circle("Summer party — Mint", "private_party", "square", "beach-sunset", C.mint, "Outfit");
+circle("New Year — Gold", "private_party", "portrait", "fireworks", { ...C.cream, bg: "#0c0a07", ink: "#ffffff", sub: "#cbbd9f", accent: "#d8b878", on: "#0c0a07" }, "Syne");
+ticket("Photo ticket — Coral", "ticket_launch", "portrait", "concert-crowd", C.paperDark, "Anton");
+ticket("Photo ticket — Blue", "ticket_launch", "poster", "fireworks", C.paperBlue, "Unbounded");
+story("Story — On sale now", "ticket_launch", "dj", C.night, "Anton", "Tickets on sale now");
+story("Story — Save the date", "wedding", "brides", C.gold, "Instrument Serif", "Save the date", { fy: 40 });
+story("Story — Tonight", "event_day", "stage-lights", C.cyan, "Unbounded", "Tonight");
+story("Story — Rooftop", "catering", "rooftop-dining", C.gold, "Instrument Serif", "Golden hour supper club");
+social("Social — On sale", "ticket_launch", "concert-crowd", C.night, "Anton", "On sale now");
+social("Social — Last tickets", "final_release", "festival-fire", C.ember, "Syne", "Last few tickets");
+social("Social — Sold out", "sold_out", "crowd-hands", C.violet, "Anton", "Sold out — thank you");
+social("Social — Early bird", "early_bird", "beach-sunset", C.sun, "Unbounded", "Early bird");
+screen("Welcome screen — Gala", "event_day", "gala-dinner", C.gold, "Playfair Display");
+screen("Welcome screen — Summit", "conference", "skyline-gathering", C.navy, "Instrument Serif");
+menu("Menu — Supper club", "menu", "dinner", C.cream, "Cormorant Garamond");
+menu("Menu — Garden", "catering", "garden-lounge", C.sage, "Fraunces");
 
 const { data: old } = await db.from("design_templates").select("id").is("workspace_id", null).is("owner_id", null).contains("tags", ["gala-starter"]);
 if (old?.length) await db.from("design_templates").delete().in("id", old.map(o => o.id));
-const rows = OUT.map(t => ({ ...t, description: "Gala Dock starter template", visibility: "public", status: "active", placeholders: ["event.name", "event.date", "event.time", "event.venue_name", "event.city", "event.public_url", "ticket.starting_price", "organizer.name"] }));
+const rows = OUT.map(t => ({ ...t, description: "Gala Dock starter template — the photo uses your event’s cover image", visibility: "public", status: "active",
+  placeholders: ["event.name", "event.date", "event.time", "event.venue_name", "event.city", "event.public_url", "event.cover_image", "ticket.starting_price", "organizer.name"] }));
 const { error } = await db.from("design_templates").insert(rows);
 if (error) { console.error(error.message); process.exit(1); }
 console.log(`Seeded ${rows.length} starter templates (replaced ${old?.length ?? 0}).`);

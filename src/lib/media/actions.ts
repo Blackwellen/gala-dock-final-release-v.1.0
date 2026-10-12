@@ -117,7 +117,7 @@ export async function reportTemplate(templateId: string, reason: string, detail:
 export async function eventDataFor(eventId: string | null): Promise<EventData> {
   if (!eventId || !UUID.test(eventId)) return {};
   const sb = await createClient();
-  const { data: e } = await sb.from("events").select("name,starts_at,venue_name,city,slug,timezone,workspace_id").eq("id", eventId).maybeSingle();
+  const { data: e } = await sb.from("events").select("name,starts_at,venue_name,city,slug,timezone,workspace_id,cover_image,settings").eq("id", eventId).maybeSingle();
   if (!e) return {};
   const { data: tiers } = await sb.from("ticket_tiers").select("price").eq("event_id", eventId).gt("price", 0).order("price").limit(1);
   const { data: ws } = e.workspace_id ? await sb.from("workspaces").select("name").eq("id", e.workspace_id).maybeSingle() : { data: null };
@@ -129,6 +129,7 @@ export async function eventDataFor(eventId: string | null): Promise<EventData> {
     "event.public_url": `https://www.galadock.com/events/${e.slug ?? eventId}`,
     "ticket.starting_price": tiers?.[0] ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(tiers[0].price)) : "Free",
     "organizer.name": ws?.name ?? "",
+    ...(() => { const img = ((e.settings ?? {}) as { hero_image?: string }).hero_image || e.cover_image; return img && /^(https:|\/)/.test(img) ? { "event.cover_image": img } : {}; })(),
   };
 }
 
