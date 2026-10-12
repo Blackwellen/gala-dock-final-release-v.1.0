@@ -29,6 +29,16 @@ try {
   const l = (await doc()).find(x => x.type === "text");
   check("Saved with canonical tokens", l.text === "Join us at {{event.venue_name}} — {{event.date}}", l.text);
   check("Canvas shows the real event values", (await p.locator(".st-page").first().innerText()).includes("Join us at"));
+  // Typing on the canvas: "{" opens the insert menu; picking inserts at the caret.
+  await p.locator(".st-page [data-layer]").filter({ hasText: "Join us at" }).first().dblclick();
+  const span = p.locator(".st-page [contenteditable=true]").first(); await span.waitFor();
+  check("Editing bar with Insert event detail appears", await p.locator(".st-editbar").getByRole("button", { name: /Insert event detail/ }).isVisible());
+  await span.press("End"); await p.keyboard.type(" in "); await p.keyboard.press("{");
+  await p.getByRole("menuitem", { name: /City/ }).click();
+  check("Pick inserts [City] at the caret", (await span.innerText()).includes("in [City]"), await span.innerText());
+  await p.locator(".st-stage").click({ position: { x: 10, y: 10 } });
+  await p.waitForTimeout(2500); await p.getByText("Saved", { exact: true }).waitFor({ timeout: 15000 });
+  check("Canvas edit saved with canonical token", (await doc()).some(x => x.type === "text" && x.text.includes("in {{event.city}}")), (await doc()).find(x => x.type === "text")?.text);
   check("No page errors", errs.length === 0, errs.slice(0, 2).join(" | "));
   await p.screenshot({ path: "artifacts/tmp/event-fields.png" });
 } catch (e) { await p.screenshot({ path: "artifacts/tmp/event-fields-fail.png" }); check("unexpected error", false, e.message.split("\n")[0]); }

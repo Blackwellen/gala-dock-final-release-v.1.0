@@ -14,3 +14,6 @@
 .ef-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
 .ef-grid button{display:flex;align-items:center;gap:8px;width:100%;padding:8px;border:1px solid #e6ecf8;border-radius:9px;background:#fff;text-align:left;cursor:pointer;color:#090a2e}
 .ef-grid button:hover{border-color:#0b08f8}.ef-grid svg{color:#0b08f8;flex-shrink:0}
+/* Floating bar while editing text on the canvas */
+.st-editbar{position:absolute;z-index:6;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 4px;border-radius:10px;background:#fff;border:1px solid #e3e8f5;box-shadow:0 10px 26px -12px rgba(9,10,46,.35);pointer-events:auto;white-space:nowrap}
+.st-editbar small{font:500 11px Inter,sans-serif;color:#5d63a6}

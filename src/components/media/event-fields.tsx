@@ -17,16 +17,20 @@ export const FIELD_HELP: Record<Key, string> = { "event.name": "Your event’s t
 export const fieldPreview = (k: Key, data: EventData) => data[k] || PLACEHOLDER_DEFAULTS[k] || "";
 
 /** Dropdown listing every event detail with its current value; calls onPick with the canonical key. */
-export function InsertField({ data, onPick, label = "Insert event detail", only }: { data: EventData; onPick: (key: Key) => void; label?: string; only?: Key[] }) {
-  const [open, setOpen] = useState(false), ref = useRef<HTMLDivElement>(null);
+export function InsertField({ data, onPick, label = "Insert event detail", only, keepFocus = false, open: openProp, onOpenChange }: { data: EventData; onPick: (key: Key) => void; label?: string; only?: Key[];
+  /** Don't take focus from the text being typed (canvas editing): the caret stays put and the pick is inserted there. */
+  keepFocus?: boolean; open?: boolean; onOpenChange?: (open: boolean) => void }) {
+  const [openState, setOpenState] = useState(false), ref = useRef<HTMLDivElement>(null);
+  const open = openProp ?? openState, setOpen = (v: boolean | ((o: boolean) => boolean)) => { const n = typeof v === "function" ? v(open) : v; setOpenState(n); onOpenChange?.(n); };
+  const hold = keepFocus ? { onPointerDown: (e: React.PointerEvent) => e.preventDefault(), onMouseDown: (e: React.MouseEvent) => e.preventDefault() } : {};
   useEffect(() => { if (!open) return; const off = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); }; const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("pointerdown", off); document.addEventListener("keydown", k); return () => { document.removeEventListener("pointerdown", off); document.removeEventListener("keydown", k); }; }, [open]);
   const keys = (only ?? PLACEHOLDERS) as readonly Key[];
   return <div className="ef" ref={ref}>
-    <button type="button" className="ef-trigger" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)}><Sparkles size={14} aria-hidden="true" />{label}<ChevronDown size={14} aria-hidden="true" /></button>
+    <button type="button" className="ef-trigger" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)} {...hold}><Sparkles size={14} aria-hidden="true" />{label}<ChevronDown size={14} aria-hidden="true" /></button>
     {open && <div className="ef-menu" role="menu" aria-label={label}>
       {!data["event.name"] && <p className="ef-note">Link this design to an event and these fill in automatically. Until then you’ll see sample details.</p>}
-      {keys.map(k => { const I = ICON[k]; return <button key={k} type="button" role="menuitem" onClick={() => { onPick(k); setOpen(false); }}>
+      {keys.map(k => { const I = ICON[k]; return <button key={k} type="button" role="menuitem" onClick={() => { onPick(k); setOpen(false); }} {...hold}>
         <I size={15} aria-hidden="true" /><span><b>{FIELD_LABELS[k]}</b><small>{fieldPreview(k, data)}</small></span></button>; })}
     </div>}
   </div>;

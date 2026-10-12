@@ -10,7 +10,7 @@ import { exportDesign } from "./export";
 import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-panel";
 import { CommentsPanel } from "./comments-panel";
 import { DesignMenu } from "./design-menu";
-import { FriendlyField, EventFieldButtons } from "./event-fields";
+import { FriendlyField, EventFieldButtons, InsertField } from "./event-fields";
 import { saveDesign, restoreVersion, deriveDesign, publishTemplate, listTemplates, templateUsed, type TemplateSummary } from "@/lib/media/actions";
 import { PRESETS, FIELD_LABELS, fontSpecs, googleFontHrefs, reflow, uid, type DesignDoc, type EventData, type Layer, type Page, type TextLayer, type Brush, type PathLayer, type WidgetLayer, type Effects, type TextFx } from "@/lib/media/document";
 import { loadFonts } from "@/lib/design-kit/assets";
@@ -53,6 +53,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const [save, setSave] = useState<"saved" | "dirty" | "saving" | "error" | "conflict">("saved");
   const [versions, setVersions] = useState(initialVersions);
   const [editingText, setEditingText] = useState<string | null>(null);
+  const [insertOpen, setInsertOpen] = useState(false);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [tool, setTool] = useState<Tool>("select");
   const [brush, setBrush] = useState<{ brush: Brush; color: string; width: number; opacity: number }>({ brush: "pen", color: "#0b08f8", width: 8, opacity: 1 });
@@ -415,7 +416,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             style={{ width: p.width, height: p.height, transform: `scale(${zoom})`, background: fillCss(p.background) || undefined, display: i === pageIdx ? "block" : "none", cursor }}
             onPointerDown={e => onDown(e)}>
             {p.background === null && <div className="st-checker" aria-hidden="true" />}
-            {p.layers.map(l => <div key={l.id} onPointerDown={e => onDown(e, l)} onDoubleClick={() => l.type === "text" && tool === "select" && design.canEdit && !l.locked && setEditingText(l.id)}>
+            {p.layers.map(l => <div key={l.id} onPointerDown={e => onDown(e, l)} onKeyDown={e => { if (editingText === l.id && e.key === "{") { e.preventDefault(); setInsertOpen(true); } }} onDoubleClick={() => l.type === "text" && tool === "select" && design.canEdit && !l.locked && setEditingText(l.id)}>
               <LayerView l={l} data={eventData} editing={editingText === l.id} onText={t => { updateLayers([l.id], x => ({ ...x, text: t, bind: undefined }) as Layer); setEditingText(null); }} /></div>)}
             {livePath && <svg className="st-live" viewBox={`0 0 ${p.width} ${p.height}`} aria-hidden="true"><path d={livePath} stroke={brush.color} strokeWidth={brush.width} strokeOpacity={brush.brush === "highlighter" ? 0.4 : brush.opacity} fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {lineDraft && <svg className="st-live" viewBox={`0 0 ${p.width} ${p.height}`} aria-hidden="true">
@@ -427,6 +428,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
               {one && !l.locked && design.canEdit && (tool === "select" || tool === "crop") && <>{handles.map(h => <span key={h} className={`st-h ${h}`} onPointerDown={e => onDown(e, l, h)} />)}{tool === "select" && <span className="st-h rot" onPointerDown={e => onDown(e, l, "rot")} />}</>}
               {one && l.type === "path" && tool === "select" && !l.locked && design.canEdit && l.pts.map((pt, j) => <span key={j} className="st-pt" style={{ left: pt.x * zoom, top: pt.y * zoom }} onPointerDown={e => onDown(e, l, `pt${j}`)} aria-label={`Point ${j + 1}`} />)}
             </div>)}
+            {(() => { const l = editingText ? page.layers.find(x => x.id === editingText) : null; return l ? <div className="st-editbar" style={{ left: l.x * zoom, top: Math.max(0, l.y * zoom - 40) }}>
+              <InsertField data={eventData} keepFocus open={insertOpen} onOpenChange={setInsertOpen} label="Insert event detail"
+                onPick={k => { document.execCommand("insertText", false, `[${FIELD_LABELS[k]}]`); }} /><small>or type {"{"}</small></div> : null; })()}
             {guides.x.map(g => <div key={`x${g}`} className="st-guide v" style={{ left: g * zoom }} />)}{guides.y.map(g => <div key={`y${g}`} className="st-guide h" style={{ top: g * zoom }} />)}
             {marquee && marquee.w > 0 && <div className="st-marquee" style={{ left: marquee.x * zoom, top: marquee.y * zoom, width: marquee.w * zoom, height: marquee.h * zoom }} />}
           </div>
