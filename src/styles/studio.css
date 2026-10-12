@@ -103,3 +103,26 @@
 .ml-sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .ml-sizes button{display:grid;gap:2px;text-align:left;padding:10px;border:1px solid var(--st-border);border-radius:10px;background:#fff;font:inherit;color:var(--st-ink);cursor:pointer}
 .ml-sizes button:hover{border-color:var(--st-blue)}.ml-sizes small{color:var(--st-muted)}
+
+/* Brand kit + comments (media spec §34–35, §46) */
+.st-brand{display:grid;gap:8px}
+.st-swatches{display:flex;flex-wrap:wrap;gap:8px}
+.st-swatch-wrap{position:relative;display:inline-block}
+.st-swatch{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--st-border);cursor:pointer;padding:0}
+.st-swatch:focus-visible{outline:2px solid var(--st-blue);outline-offset:2px}
+.st-swatch-x{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--st-border);background:#fff;display:grid;place-items:center;padding:0;cursor:pointer;color:#55607a}
+.st-assets .st-swatch-wrap button:first-child{width:100%;aspect-ratio:1}
+.st-fontlist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.st-fontlist li{display:flex;align-items:center;gap:4px}
+.st-fontbtn{flex:1;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 10px;border:1px solid var(--st-border);border-radius:8px;background:#fff;cursor:pointer;font-size:16px;text-align:left}
+.st-fontbtn small{font-family:Inter,system-ui,sans-serif;font-size:11px;color:#6b7590}
+.st-details summary{cursor:pointer;font-weight:600;color:var(--st-blue);padding:6px 0}
+.st-count{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--st-blue);color:#fff;font-size:11px;font-weight:700}
+.st-comments{display:grid;gap:10px;max-height:min(70vh,640px);overflow:auto}
+.st-threads{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.st-threads>li{border:1px solid var(--st-border);border-radius:10px;padding:10px;display:grid;gap:8px}
+.st-threads>li.resolved{opacity:.65}
+.st-cmt{display:grid;gap:2px}
+.st-cmt small{color:#6b7590;font-size:11px}
+.st-cmt p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.st-cmt.reply{margin-left:14px;padding-left:10px;border-left:2px solid var(--st-border)}

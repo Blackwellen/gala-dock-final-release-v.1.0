@@ -150,7 +150,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | Area | Status | Notes |
 |---|---|---|
 | §101–105 Map builder | PASS_WITH_NOTE | Venue structures/maps and event overlays exist (venue-plan); structural vs overlay separation is modelled. Map-media element detection and performance budgets were not separately audited. |
-| §106–108 Media Studio | PASS | Built this run: editor (pages, text/shape/image/QR/barcode/icon/drawing, effects, snapping, undo/redo, autosave with optimistic concurrency, versions), library, templates (bindings → placeholders, private images never published), community moderation, PNG/JPEG/WebP/PDF export, agent media drafts. Fixed: non-member save hole (see §5). Tests: `tests/marketplace/media.spec.ts` (4). Brand-kit UI, custom-font upload UI and design comments UI are non-blocking. |
+| §106–108 Media Studio | PASS | Built this run: editor (pages, text/shape/image/QR/barcode/icon/drawing, effects, snapping, undo/redo, autosave with optimistic concurrency, versions), library, templates (bindings → placeholders, private images never published), community moderation, PNG/JPEG/WebP/PDF export, agent media drafts. Fixed: non-member save hole (see §5). Tests: `tests/marketplace/media.spec.ts` (4). **Brand kit** (Brand tab: colours, fonts and logos applied in one click; owners and managers edit; validated in `save_brand_kit`). **Custom font upload** (WOFF2/WOFF/TTF/OTF identified by file signature, licence acknowledgement, malware scan, private storage, streamed only to workspace members). **Design comments** (threads, pinned to a layer, resolve/reopen, author-only delete, design owner and thread starter notified). `202610280008`, `tests/release/media-brand-comments.spec.ts` (4). |
 
 ## 12. Economics & promotion (§109–121)
 
@@ -194,7 +194,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Additional tour and help content; Turnstile keys (code ready); virtual-event API adapters (manual links work); Google OAuth client (code ready); calendar two-way sync; separate response-QA pass; further enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; Oracle ops VM (scanner, uptime, error tracking — instructions ready); restore test in staging.
+Additional tour and help content; Turnstile keys (code ready); virtual-event API adapters (manual links work); Google OAuth client (code ready); calendar two-way sync; separate response-QA pass; further enterprise agent tools; ad inventory targeting/charging; full WCAG audit; Oracle ops VM (scanner, uptime, error tracking — instructions ready); restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -203,6 +203,7 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | Migration | Purpose |
 |---|---|
 | 202610260001–0003 | Media Studio schema, template access fix, agent media tools (+ `design_access` NULL-guard fix) |
+| 202610280007–0008 | Agent planning tools (rank venues, break-even, seating); Media Studio brand kit, font storage, design comments |
 | 202610270002 | MFA recovery codes, workspace MFA policy |
 | 202610270003 | Maintenance windows M0–M5 (renamed from a colliding 0001) |
 | 202610270004 | Sessions list/revoke, new-device detection trigger on `auth.sessions` |

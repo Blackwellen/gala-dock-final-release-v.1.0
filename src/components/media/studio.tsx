@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
 import Link from "next/link";
 import { icons, ArrowLeft, Undo2, Redo2, ZoomIn, ZoomOut, Maximize, Type, Square, Circle, Triangle, Star, QrCode, Barcode, Layers, Pencil, Sparkles, Download, Eye, EyeOff, Lock, Unlock,
-  Trash2, Copy, ChevronUp, ChevronDown, History, Share2, Plus, Upload, Loader2, LayoutTemplate, Ruler } from "lucide-react";
+  Trash2, Copy, ChevronUp, ChevronDown, History, Share2, Plus, Upload, Loader2, LayoutTemplate, Ruler, Palette, MessageSquare } from "lucide-react";
 import { LayerView, fillCss, qrContrast } from "./layer-view";
 import { exportDesign } from "./export";
+import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-panel";
+import { CommentsPanel } from "./comments-panel";
 import { saveDesign, restoreVersion, deriveDesign, publishTemplate } from "@/lib/media/actions";
 import { FONTS, PRESETS, PLACEHOLDERS, googleFontHref, uid, type DesignDoc, type EventData, type Layer, type Page, type TextLayer, type Fill } from "@/lib/media/document";
 import "@/styles/studio.css";
@@ -13,7 +15,7 @@ import "@/styles/studio.css";
 type Version = { version: number; label: string; created_at: string };
 type Asset = { src: string; path?: string; title: string };
 const HISTORY = 80;
-const TABS = ["Design", "Elements", "Text", "Uploads", "Icons", "Draw", "Layers", "Resize"] as const;
+const TABS = ["Design", "Brand", "Elements", "Text", "Uploads", "Icons", "Draw", "Layers", "Resize"] as const;
 const BLENDS = ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"];
 const FILTERS: [string, Record<string, number>][] = [["Original", {}], ["Mono", { grayscale: 100 }], ["High contrast", { contrast: 140, saturate: 110 }], ["Warm", { sepia: 25, saturate: 120 }], ["Cool", { hue: 190, saturate: 90 }],
   ["Cinematic", { contrast: 120, saturate: 85, brightness: 95 }], ["Faded", { contrast: 80, brightness: 110, saturate: 80 }], ["Vintage", { sepia: 45, contrast: 90 }], ["Nightlife", { hue: 280, saturate: 150, contrast: 120 }], ["Matte", { contrast: 85, brightness: 105 }]];
@@ -22,9 +24,9 @@ const FILTERS: [string, Record<string, number>][] = [["Original", {}], ["Mono", 
  * Gala Dock Studio — the single design editor for posters, social, screens, menus and QR posters (media spec §4–54).
  * Every control edits the canonical document; autosave persists it with optimistic concurrency; exports render from it.
  */
-export function Studio({ design, versions: initialVersions, eventData, assets, back }: {
+export function Studio({ design, versions: initialVersions, eventData, assets, back, brand = null, openComments = false }: {
   design: { id: string; title: string; version: number; document: DesignDoc; canEdit: boolean; eventId: string | null };
-  versions: Version[]; eventData: EventData; assets: Asset[]; back: string;
+  versions: Version[]; eventData: EventData; assets: Asset[]; back: string; brand?: Brand | null; openComments?: boolean;
 }) {
   const [doc, setDoc] = useState<DesignDoc>(design.document);
   const [title, setTitle] = useState(design.title);
@@ -38,7 +40,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [pen, setPen] = useState<{ on: boolean; color: string; width: number }>({ on: false, color: "#0b08f8", width: 8 });
   const [marquee, setMarquee] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-  const [panel, setPanel] = useState<"" | "versions" | "export" | "publish">("");
+  const [panel, setPanel] = useState<"" | "versions" | "export" | "publish" | "comments">(openComments ? "comments" : "");
+  const [customFonts, setCustomFonts] = useState<CustomFont[]>(brand?.fonts ?? []);
+  const [openCount, setOpenCount] = useState<number | null>(null);
   const [notice, setNotice] = useState("");
   const inflight = useRef<Promise<void>>(Promise.resolve()), version = useRef(design.version), past = useRef<string[]>([]), future = useRef<string[]>([]);
   const stage = useRef<HTMLDivElement>(null), pageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -47,7 +51,8 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const one = selected.length === 1 ? selected[0]! : null;
 
   // Fonts used in the document load on demand (licensed open-source families via Google Fonts).
-  const fontHref = useMemo(() => googleFontHref(doc.pages.flatMap(p => p.layers).filter(l => l.type === "text").map(l => (l as TextLayer).font)), [doc]);
+  const fontHref = useMemo(() => googleFontHref([...doc.pages.flatMap(p => p.layers).filter(l => l.type === "text").map(l => (l as TextLayer).font), ...(brand?.kit.fonts ?? []).map(f => f.family)]), [doc, brand]);
+  const faces = useMemo(() => fontFaceCss(customFonts), [customFonts]);
 
   // ── history + mutation
   const [hist, setHist] = useState({ undo: 0, redo: 0 });
@@ -170,10 +175,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   };
 
   // ── elements
-  const addText = (preset: "heading" | "sub" | "body", text?: string, bind?: string) => {
+  const addText = (preset: "heading" | "sub" | "body", text?: string, bind?: string, font = "Inter") => {
     const size = { heading: unit * 0.09, sub: unit * 0.05, body: unit * 0.032 }[preset];
     add({ id: uid(), name: preset === "heading" ? "Heading" : preset === "sub" ? "Subheading" : "Text", type: "text", text: text ?? (preset === "heading" ? "Add a heading" : preset === "sub" ? "Add a subheading" : "Add body text"), bind,
-      font: "Inter", size, weight: preset === "body" ? 400 : preset === "sub" ? 600 : 800, color: "#090a2e", align: "center", lineHeight: 1.15, letterSpacing: 0, ...center(page.width * 0.7, size * 2.4) });
+      font, size, weight: preset === "body" ? 400 : preset === "sub" ? 600 : 800, color: "#090a2e", align: "center", lineHeight: 1.15, letterSpacing: 0, ...center(page.width * 0.7, size * 2.4) });
   };
   const addShape = (shape: "rect" | "ellipse" | "triangle" | "star" | "diamond" | "line" | "arrow" | "badge" | "speech") => add({ id: uid(), name: shape[0]!.toUpperCase() + shape.slice(1), type: "shape", shape, fill: { type: "solid", color: shape === "line" ? "#090a2e" : "#0b08f8" }, ...center(unit * 0.3, shape === "line" ? unit * 0.02 : unit * 0.3) });
   const addImage = (a: Asset) => { const w = page.width * 0.6; add({ id: uid(), name: a.title || "Image", type: "image", asset: { src: a.src, path: a.path }, fit: "cover", focusX: 50, focusY: 50, zoom: 1, ...center(w, w * 0.66) }); };
@@ -184,11 +189,27 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     addImage({ src: `/api/media/asset?path=${encodeURIComponent(j.path)}`, path: j.path, title: j.name });
   };
 
+  // ── brand kit: a colour goes to whatever is selected (by layer type), or to the page background; a font to selected text.
+  const applyColor = (hex: string) => {
+    if (!selected.length) { updatePage(p => ({ ...p, background: { type: "solid", color: hex } })); return; }
+    updateLayers(sel, l => (l.type === "text" ? { ...l, color: hex, fill: undefined } : l.type === "shape" ? { ...l, fill: { type: "solid", color: hex } } : l.type === "icon" ? { ...l, color: hex }
+      : l.type === "qr" || l.type === "barcode" ? { ...l, fg: hex } : l.type === "drawing" ? { ...l, paths: l.paths.map(p => ({ ...p, color: hex })) } : l) as Layer);
+  };
+  const applyFont = (family: string) => {
+    const texts = selected.filter(l => l.type === "text").map(l => l.id);
+    if (texts.length) updateLayers(texts, l => ({ ...l, font: family }) as Layer); else addText("heading", undefined, undefined, family);
+  };
+  const jumpTo = (pageId: string | null, layerId: string | null) => {
+    const i = doc.pages.findIndex(p => p.id === pageId || (layerId && p.layers.some(l => l.id === layerId)));
+    if (i >= 0) { setPageIdx(i); setSel(layerId && doc.pages[i]!.layers.some(l => l.id === layerId) ? [layerId] : []); }
+  };
+
   const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
   const status = { saved: "Saved", dirty: "Unsaved", saving: "Saving…", error: "Save failed", conflict: "Conflict" }[save];
 
   return <div className="st">
     {fontHref.includes("family=") && <link rel="stylesheet" href={fontHref} />}
+    {faces && <style>{faces}</style>}
     <header className="st-top">
       <Link href={back} className="st-icon" aria-label="Back"><ArrowLeft size={18} /></Link>
       <input className="st-title" value={title} onChange={e => { setTitle(e.target.value); setSave("dirty"); }} aria-label="Design name" maxLength={140} disabled={!design.canEdit} />
@@ -201,6 +222,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <button className="st-icon" onClick={() => setZoom(z => Math.min(4, z * 1.25))} aria-label="Zoom in"><ZoomIn size={17} /></button>
       <button className="st-icon" onClick={fit} aria-label="Fit to screen"><Maximize size={16} /></button>
       <button className="st-icon" onClick={() => setZoom(1)} aria-label="Actual size"><Ruler size={16} /></button>
+      <button className="st-btn" onClick={() => setPanel(panel === "comments" ? "" : "comments")} aria-pressed={panel === "comments"}><MessageSquare size={15} />Comments{openCount ? <span className="st-count">{openCount}</span> : null}</button>
       <button className="st-btn" onClick={() => setPanel(panel === "versions" ? "" : "versions")}><History size={15} />Versions</button>
       {design.canEdit && <button className="st-btn" onClick={() => setPanel(panel === "publish" ? "" : "publish")}><Share2 size={15} />Template</button>}
       <button className="st-btn primary" onClick={() => setPanel(panel === "export" ? "" : "export")}><Download size={15} />Export</button>
@@ -208,7 +230,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     {notice && <p className="st-notice" role="alert">{notice}{save === "conflict" && <button className="st-link" onClick={() => location.reload()}>Reload</button>}</p>}
 
     <div className="st-body">
-      <nav className="st-tabs" aria-label="Tools">{TABS.map(t => { const I = { Design: LayoutTemplate, Elements: Square, Text: Type, Uploads: Upload, Icons: Sparkles, Draw: Pencil, Layers, Resize: Ruler }[t]; return <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)} aria-pressed={tab === t}><I size={18} /><span>{t}</span></button>; })}</nav>
+      <nav className="st-tabs" aria-label="Tools">{TABS.filter(t => t !== "Brand" || brand).map(t => { const I = { Design: LayoutTemplate, Brand: Palette, Elements: Square, Text: Type, Uploads: Upload, Icons: Sparkles, Draw: Pencil, Layers, Resize: Ruler }[t]; return <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)} aria-pressed={tab === t}><I size={18} /><span>{t}</span></button>; })}</nav>
 
       <aside className="st-panel" aria-label={tab}>
         {tab === "Design" && <>
@@ -229,6 +251,8 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <p className="st-hint">Text and QR codes linked to the event update automatically when event details change.</p>
           <ul className="st-chips">{PLACEHOLDERS.map(k => <li key={k}><button onClick={() => addText("body", `{{${k}}}`, k)}>{k.replace("event.", "").replace("_", " ")}</button></li>)}</ul>
         </>}
+        {tab === "Brand" && brand && <BrandPanel brand={brand} canEdit={design.canEdit} onColor={applyColor} onFont={applyFont} onFontsChange={setCustomFonts}
+          onLogo={(src, path, name) => addImage({ src, path, title: name })} />}
         {tab === "Elements" && <>
           <h3>Shapes</h3>
           <div className="st-grid">{([["rect", Square], ["ellipse", Circle], ["triangle", Triangle], ["star", Star], ["diamond", Square], ["arrow", ChevronUp], ["badge", Star], ["speech", Square], ["line", Ruler]] as const).map(([s, I]) => <button key={s} onClick={() => addShape(s)} aria-label={s}><I size={22} /><span>{s}</span></button>)}</div>
@@ -305,7 +329,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             <div className="st-grid4">{(["x", "y", "w", "h"] as const).map(k => <label key={k} className="st-field"><span>{k.toUpperCase()}</span><input type="number" value={Math.round(one[k])} onChange={e => set({ [k]: Number(e.target.value) } as Partial<Layer>)} /></label>)}</div>
             <div className="st-row"><label className="st-field"><span>Rotate</span><input type="number" value={one.rotation} onChange={e => set({ rotation: Number(e.target.value) })} /></label>
               <button className="st-btn" onClick={() => set({ flipX: !one.flipX })}>Flip H</button><button className="st-btn" onClick={() => set({ flipY: !one.flipY })}>Flip V</button></div>
-            {one.type === "text" && <TextProps l={one} set={set} />}
+            {one.type === "text" && <TextProps l={one} set={set} custom={[...new Set(customFonts.map(f => f.family))]} />}
             {one.type === "image" && <>
               <h3>Image</h3>
               <div className="st-row"><label className="st-field"><span>Fit</span><select value={one.fit} onChange={e => set({ fit: e.target.value as "cover" | "contain" })}><option value="cover">Fill (crop)</option><option value="contain">Fit</option></select></label>
@@ -356,12 +380,15 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
         {design.canEdit && <button className="st-btn" onClick={async () => { const r = await restoreVersion(design.id, v.version); if (r.ok) location.reload(); else setNotice(r.error); }}>Restore</button>}</li>)}</ul>
       <p className="st-hint">Restoring saves your current state first, so nothing is lost.</p>
     </Popover>}
+    {panel === "comments" && <Popover onClose={() => setPanel("")} title="Comments">
+      <CommentsPanel designId={design.id} canEdit={design.canEdit} pageId={page.id} layer={one ? { id: one.id, name: one.name } : null} onJump={jumpTo} onCount={setOpenCount} />
+    </Popover>}
     {panel === "export" && <ExportPanel pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
     {panel === "publish" && <PublishPanel designId={design.id} title={title} onClose={() => setPanel("")} flush={async () => { if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (r.ok) { version.current = r.data!; setSave("saved"); } } }} />}
   </div>;
 }
 
-function TextProps({ l, set }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void }) {
+function TextProps({ l, set, custom }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void; custom: string[] }) {
   const [q, setQ] = useState("");
   const list = FONTS.filter(f => `${f.family} ${f.category}`.toLowerCase().includes(q.toLowerCase()));
   return <>
@@ -369,7 +396,9 @@ function TextProps({ l, set }: { l: TextLayer; set: (p: Partial<Layer>, record?:
     <label className="st-field"><span>Text</span><textarea rows={3} value={l.text} onChange={e => set({ text: e.target.value, bind: undefined } as Partial<Layer>, false)} /></label>
     {l.bind && <p className="st-hint">Linked to <b>{l.bind}</b> — updates with the event.</p>}
     <label className="st-field"><span>Font ({FONTS.length} licensed families)</span><input placeholder="Search fonts" value={q} onChange={e => setQ(e.target.value)} />
-      <select value={l.font} size={6} onChange={e => set({ font: e.target.value } as Partial<Layer>)}>{list.map(f => <option key={f.family} value={f.family} style={{ fontFamily: f.family }}>{f.family} · {f.category}</option>)}</select></label>
+      <select value={l.font} size={6} onChange={e => set({ font: e.target.value } as Partial<Layer>)}>
+        {custom.filter(f => f.toLowerCase().includes(q.toLowerCase())).map(f => <option key={`c${f}`} value={f} style={{ fontFamily: f }}>{f} · Brand upload</option>)}
+        {list.map(f => <option key={f.family} value={f.family} style={{ fontFamily: f.family }}>{f.family} · {f.category}</option>)}</select></label>
     <div className="st-grid4">
       <label className="st-field"><span>Size</span><input type="number" min={4} value={Math.round(l.size)} onChange={e => set({ size: Number(e.target.value) } as Partial<Layer>)} /></label>
       <label className="st-field"><span>Weight</span><select value={l.weight} onChange={e => set({ weight: Number(e.target.value) } as Partial<Layer>)}>{[300, 400, 500, 600, 700, 800, 900].map(w => <option key={w}>{w}</option>)}</select></label>
