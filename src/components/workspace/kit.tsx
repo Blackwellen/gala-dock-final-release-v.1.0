@@ -101,14 +101,15 @@ export function Thumb({ src, alt = "", w = 44, h = 44 }: { src?: string | null; 
   return src ? <img className="ws-thumb" src={src} alt={alt} width={w} height={h} style={{ width: w, height: h }} loading="lazy" /> : <span className="ws-thumb blank" style={{ width: w, height: h }} />;
 }
 
-export function Ring({ value, size = 36, tone }: { value: number; size?: number; tone?: Tone }) {
+/** Progress ring; the label is centred by the grid (pass `label` to show something other than the fill value, e.g. a raw rate). */
+export function Ring({ value, size = 36, tone, label }: { value: number; size?: number; tone?: Tone; label?: string }) {
   const t: Tone = tone ?? (value >= 85 ? "green" : value >= 70 ? "amber" : "red");
   const r = (size - 5) / 2, c = 2 * Math.PI * r;
-  return <span className="ws-ring" style={{ width: size, height: size }} role="img" aria-label={`${value}%`}>
+  return <span className="ws-ring" style={{ width: size, height: size }} role="img" aria-label={label ?? `${value}%`}>
     <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden="true">
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#edf0f8" strokeWidth="3.5" />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={toneHex[t]} strokeWidth="3.5" strokeDasharray={`${(value / 100) * c} ${c}`} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`} />
-    </svg><b>{value}%</b>
+    </svg><b>{label ?? `${value}%`}</b>
   </span>;
 }
 

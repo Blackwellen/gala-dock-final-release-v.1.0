@@ -64,8 +64,7 @@
 .ph-quick small{font-size:10px;color:var(--ws-muted)}
 .ph-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
 .ph-ring{display:grid;justify-items:center;gap:3px;position:relative}
-.ph-ring .ws-ring b{display:none}
-.ph-ring-val{position:absolute;top:17px;left:0;right:0;font-size:13px;font-weight:760;color:#02032e}
+.ph-ring .ws-ring b{display:block;font-size:13px;font-weight:760;color:#02032e;line-height:1;letter-spacing:-.2px}
 .ph-ring>span{font-size:10px;color:#22265e;margin-top:2px;white-space:nowrap}
 .ph-ring small{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:600}
 .ph-ring small.up{color:var(--ws-green)}.ph-ring small.down{color:var(--ws-red)}

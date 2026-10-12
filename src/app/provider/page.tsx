@@ -185,8 +185,7 @@ function RelRing({ value, label, tone, diff, pct, invert }: { value: number; lab
   const good = invert ? diff <= 0 : diff >= 0;
   const Icon = diff >= 0 ? ArrowUp : ArrowDown;
   return <div className="ph-ring">
-    <Ring value={pct ? Math.min(100, value * 10) : value} size={56} tone={tone} />
-    <b className="ph-ring-val">{value}%</b>
+    <Ring value={pct ? Math.min(100, value * 10) : value} size={56} tone={tone} label={`${value}%`} />
     <span>{label}</span>
     <small className={good ? "up" : "down"}><Icon aria-hidden="true" />{Math.abs(diff)}%</small>
   </div>;
