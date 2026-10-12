@@ -12,9 +12,11 @@ export const LEGAL = {
   law: "the laws of England and Wales",
   /** Platform-usage fee schedule (mirrors the published commerce settings, migration 202610280005). */
   fees: {
-    ticketBuyer: "£1.00 per paid ticket", ticketSeller: "5% of the face value of each ticket sold",
-    supplier: "8% on Starter, 7% on Pro and 6% on Business or Enterprise plans", bookingAdmin: "2.5% of each booking payment (minimum £1)",
+    ticketBuyer: "£1.00 per paid ticket (including VAT)", ticketSeller: "5% of the face value of each ticket sold, plus VAT",
+    supplier: "8% on Starter, 7% on Pro and 6% on Business or Enterprise plans, plus VAT", bookingAdmin: "2.5% of each booking payment (minimum £1), including VAT",
   },
+  /** Gala Dock fees carry UK VAT at 20% (business fees plus VAT; consumer fees VAT-inclusive). Mirrors commerce setting `vat`. */
+  vatRate: "20%",
   /** Business users' liability floor (Organizer, Provider, Venue and Partner terms). */
   liabilityFloor: "£1,000",
 } as const;

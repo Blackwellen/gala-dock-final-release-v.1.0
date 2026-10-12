@@ -64,7 +64,7 @@ export async function startPayment(kind: PayKind, ids: { itemId?: string; standb
       "line_items[0][price_data][product_data][name]": po.description.slice(0, 200),
       // Customer booking admin fee (platform usage): its own line so the customer sees it before paying.
       ...(po.customer_fee_minor ? { "line_items[1][quantity]": "1", "line_items[1][price_data][currency]": po.currency.toLowerCase(),
-        "line_items[1][price_data][unit_amount]": String(po.customer_fee_minor), "line_items[1][price_data][product_data][name]": "Gala Dock booking admin fee" } : {}),
+        "line_items[1][price_data][unit_amount]": String(po.customer_fee_minor), "line_items[1][price_data][product_data][name]": "Gala Dock booking admin fee (incl. VAT)" } : {}),
       "metadata[payment_order]": po.reference, "payment_intent_data[metadata][payment_order]": po.reference, "payment_intent_data[transfer_group]": po.reference,
       "payment_intent_data[description]": `${po.reference} · ${po.description}`.slice(0, 300),
     };

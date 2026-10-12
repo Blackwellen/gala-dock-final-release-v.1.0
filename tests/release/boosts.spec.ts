@@ -24,12 +24,13 @@ test.describe("promotion boosts", () => {
     expect(error).toBeNull();
     const { data: po, error: pe } = await c.rpc("create_boost_payment_order", { p_boost: boost });
     expect(pe).toBeNull();
-    const order = po as { reference: string; amount_minor: number; platform_fee_minor: number; kind: string; protected: boolean; payee_workspace_id: string | null };
-    expect(order).toMatchObject({ kind: "platform_boost", amount_minor: 4900, platform_fee_minor: 4900, protected: false, payee_workspace_id: null });
+    const order = po as { reference: string; amount_minor: number; platform_fee_minor: number; platform_fee_vat_minor: number; kind: string; protected: boolean; payee_workspace_id: string | null };
+    // £49 plus 20% VAT (Gala Dock VAT No. GB508480488): £58.80 charged, all of it Gala Dock's, £9.80 of it VAT.
+    expect(order).toMatchObject({ kind: "platform_boost", amount_minor: 5880, platform_fee_minor: 5880, platform_fee_vat_minor: 980, protected: false, payee_workspace_id: null });
     // Resuming returns the same open order.
     expect(((await c.rpc("create_boost_payment_order", { p_boost: boost })).data as { reference: string }).reference).toBe(order.reference);
     // Webhook confirmation (amount checked) activates the boost; it is never eligible for a provider transfer.
-    const r = await db.rpc("payment_order_succeeded", { p_ref: order.reference, p_pi: `pi_test_boost_${Date.now()}`, p_charge: `ch_test_boost_${Date.now()}`, p_amount_minor: 4900, p_livemode: false });
+    const r = await db.rpc("payment_order_succeeded", { p_ref: order.reference, p_pi: `pi_test_boost_${Date.now()}`, p_charge: `ch_test_boost_${Date.now()}`, p_amount_minor: 5880, p_livemode: false });
     expect(r.error).toBeNull();
     const { data: b } = await db.from("promotion_boosts").select("status,ends_at,starts_at").eq("id", boost).single();
     expect(b!.status).toBe("active");

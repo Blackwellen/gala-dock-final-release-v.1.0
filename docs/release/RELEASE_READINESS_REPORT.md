@@ -183,7 +183,12 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| §138 Tax/VAT | BLOCKED_LEGAL_REVIEW | Fees exclude VAT; the agent-vs-principal and invoicing model need a tax adviser. The questions and what changes afterwards (about a day's work) are in `docs/operations/vat-decisions.md`. |
+| §138 Tax/VAT | FIXED · adviser to confirm | VAT-registered as GB508480488 (shown in footers, terms and emails). VAT is applied to Gala Dock's own fees only, at 20% (`202610280020`, `tests/release/vat.spec.ts`):
+  * Consumer fees include VAT, so the £1 ticket booking fee and the 2.5% admin fee are unchanged and their VAT (one sixth) is recorded.
+  * Business fees are charged plus VAT: 5% ticket commission, supplier commission and boosts (£49 → £58.80).
+  * Every order stores its VAT, the ledger books it to `tax_payable` rather than revenue, and Admin → Commerce → VAT totals it for the return.
+  * One setting (`commerce.vat.consumer_fees_inclusive`) switches consumer fees to plus VAT.
+  * Checked on a real Stripe test checkout (9/9). Open points for the adviser are in `docs/operations/vat-decisions.md`. |
 | §139 Fraud/risk | PASS_WITH_NOTE | Amount-mismatch detection, idempotent orders, chargeback holds, new-device alerts, rate limits; no external fraud scoring. |
 | §140 Reconciliation | PASS | Immutable double-entry ledger, webhook-authoritative states, return-path reconcile. |
 

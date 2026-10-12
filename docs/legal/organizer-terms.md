@@ -87,13 +87,13 @@ You keep ownership of your content (event descriptions, images, designs and temp
 
 6.1 **All fees are platform usage fees** for using the Gala Dock software, payment tools and marketplace. They are not wages, a share of profits or payment for services you provide to us.
 
-6.2 **Ticket fees.** For each paid ticket sold: a booking fee of **£1.00**, paid by the buyer and shown at checkout; and a seller commission of **5% of the face value**, deducted from your proceeds. Free tickets carry no fees. Resale through Gala Dock carries the buyer booking fee only.
+6.2 **Ticket fees.** For each paid ticket sold: a booking fee of **£1.00**, paid by the buyer and shown at checkout; and a seller commission of **5% of the face value plus VAT**, deducted from your proceeds. The booking fee includes VAT. Free tickets carry no fees. Resale through Gala Dock carries the buyer booking fee only.
 
 6.3 **Marketplace bookings.** When you book venues or suppliers through Gala Dock, you pay a booking admin fee of **2.5% of each payment (minimum £1)**, shown as its own line before you pay. It is refunded if the provider cancels; otherwise it is not refundable.
 
 6.4 **Subscriptions** are billed in advance, monthly or annually, and are non-refundable except as required by law or where we fail to provide the service. Commission and fees are deducted from proceeds or invoiced. Amounts you owe us may be set off against amounts we hold for you.
 
-6.5 Prices exclude VAT, which is added where applicable.
+6.5 **VAT.** Blackwellen Limited is VAT-registered (GB508480488), and Gala Dock's fees are subject to UK VAT at the standard rate (currently 20%). Fees charged to you as a business (seller commission, supplier commission, subscriptions and promotion boosts) are shown excluding VAT, and VAT is added and collected with the fee. For commission, that means the commission plus VAT is deducted from your proceeds. Fees paid by consumers (the ticket booking fee and the booking admin fee) already include VAT. We show the VAT on your statements, together with our VAT number, so you can reclaim it where you're entitled to.
 
 6.6 We may change our fees with at least 30 days' notice. Changes don't apply to tickets already sold or bookings already made.
 

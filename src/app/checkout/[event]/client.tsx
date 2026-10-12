@@ -126,7 +126,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
 
       <aside className="co-side"><section className="co-card co-sum"><h2>Order summary</h2>
         {shown.lines.length ? <ul>{shown.lines.map((l, i) => <li key={i}><i style={{ background: l.color }} /><span>{l.q} × {l.name}</span><b>{gbp(l.unit * l.q)}</b></li>)}</ul> : <p className="co-empty">No tickets selected yet.</p>}
-        <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div><div><dt>Booking fee</dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
+        <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div><div><dt>Booking fee <small style={{ fontWeight: 400, opacity: .75 }}>(incl. VAT)</small></dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
         {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0 || inQueue || !buyable} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
           : <button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button>}
         <p className="co-trust"><ShieldCheck aria-hidden="true" />Payments by Stripe. Gala Dock never sees your card details.</p></section></aside>

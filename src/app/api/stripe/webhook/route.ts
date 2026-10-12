@@ -22,15 +22,18 @@ async function ledgerForPayment(db: ReturnType<typeof untyped>, pi: StripeEvent[
   const ref = pi.metadata?.order_ref;
   const amount = Number(pi.amount_received ?? 0);
   if (!ref || !amount) return;
-  const { data: order } = await db.from("checkout_orders").select("fee,commission,currency,event_id,buyer_id,kind").eq("order_ref", ref).maybeSingle();
+  const { data: order } = await db.from("checkout_orders").select("fee,commission,fee_vat,commission_vat,currency,event_id,buyer_id,kind").eq("order_ref", ref).maybeSingle();
   if (!order) return;
   const { data: event } = order.event_id ? await db.from("events").select("workspace_id,owner_id").eq("id", order.event_id).maybeSingle() : { data: null };
   // Platform revenue = buyer booking fee + seller commission; the rest is payable to the seller.
   const fee = Math.min(amount, Math.round((Number(order.fee ?? 0) + Number(order.commission ?? 0)) * 100));
+  // Gala Dock's VAT on those fees (GB508480488) is owed to HMRC, not revenue.
+  const vat = Math.min(fee, Math.round((Number(order.fee_vat ?? 0) + Number(order.commission_vat ?? 0)) * 100));
   const seller = event?.workspace_id ? { party_type: "workspace", party_id: event.workspace_id } : { party_type: "user", party_id: event?.owner_id ?? null };
   const lines = [
     { account: "cash_stripe", amount_minor: amount, party_type: "platform" },
-    ...(fee ? [{ account: "platform_fee", amount_minor: -fee, party_type: "platform" }] : []),
+    ...(fee - vat ? [{ account: "platform_fee", amount_minor: -(fee - vat), party_type: "platform" }] : []),
+    ...(vat ? [{ account: "tax_payable", amount_minor: -vat, party_type: "platform" }] : []),
     { account: "provider_payable", amount_minor: -(amount - fee), ...seller },
   ];
   const { error } = await db.rpc("post_ledger_transaction", {

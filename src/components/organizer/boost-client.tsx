@@ -16,7 +16,7 @@ export function BoostSelect({ eventId, product, defaultCity, defaultCategory }: 
   const price = `£${(product.price_minor / 100).toLocaleString("en-GB", { minimumFractionDigits: product.price_minor % 100 ? 2 : 0 })}`;
   return <>
     <button type="button" className="k-btn outline sm" onClick={() => setOpen(true)}>Select</button>
-    <Dialog open={open} onClose={() => setOpen(false)} title={product.label} sub={`${PLACEMENT[product.placement] ?? product.placement} for ${product.duration_days} days · ${price}. Shown with a “Sponsored” label.`}>
+    <Dialog open={open} onClose={() => setOpen(false)} title={product.label} sub={`${PLACEMENT[product.placement] ?? product.placement} for ${product.duration_days} days · ${price} plus VAT (${`£${(Math.round(product.price_minor * 1.2) / 100).toFixed(2)}`} total). Shown with a “Sponsored” label.`}>
       <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => buyBoost({ event_id: eventId, product: product.key, starts_at: start ? new Date(`${start}T09:00:00`).toISOString() : null, cities: list(cities), categories: list(cats) }), { refresh: false }); if (r.ok && typeof r.data === "string") window.location.assign(r.data); }}>
         <label className="k-field"><span>Start date</span><input className="k-input" type="date" required min={new Date().toISOString().slice(0, 10)} value={start} onChange={x => setStart(x.target.value)} /></label>
         <label className="k-field"><span>Target cities (optional, comma separated)</span><input className="k-input" maxLength={200} value={cities} onChange={x => setCities(x.target.value)} placeholder="London, Manchester" /></label>

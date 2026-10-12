@@ -73,7 +73,7 @@ test.describe("cancellation fees by cause", () => {
     await db.from("platform_admins").delete().eq("user_id", staff.id);
     await cleanup();
   });
-  // 2 tickets at £20: £2 booking fees (buyer) + £2 commission (5%) → £4 platform fees.
+  // 2 tickets at £20: £2 booking fees (buyer, incl. VAT) + £2 commission (5%) + £0.40 VAT on it → £4.40 platform fees.
   const sold = async (name: string) => {
     const ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name, status: "on_sale", starts_at: new Date(Date.now() + 10 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
     const ref = `CF${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
@@ -89,9 +89,9 @@ test.describe("cancellation fees by cause", () => {
     const c = await signedIn(owner.email) as unknown as SupabaseClient;
     const { data, error } = await c.rpc("cancel_event_with_refunds", { p_event: ev, p_reason: "Not enough tickets sold to run it.", p_cause: "organiser" });
     expect(error).toBeNull();
-    expect(data).toMatchObject({ fees_due: 4, fees_on_hold: 0, cause: "organiser" });
+    expect(data).toMatchObject({ fees_due: 4.4, fees_on_hold: 0, cause: "organiser" });
     expect(await refund(ev)).toBe("due");
-    expect(await charge(ev)).toEqual({ amount: 4, status: "due" });
+    expect(await charge(ev)).toEqual({ amount: 4.4, status: "due" });
   });
 
   test("force majeure: needs an explanation, fees on hold, waived when accepted", async () => {
@@ -102,14 +102,14 @@ test.describe("cancellation fees by cause", () => {
     const { data, error } = await c.rpc("cancel_event_with_refunds", { p_event: ev, p_reason: "The venue flooded overnight.", p_cause: "force_majeure",
       p_fm_detail: "River burst its banks; the council closed the venue. Closure notice: https://example.org/notice" });
     expect(error).toBeNull();
-    expect(data).toMatchObject({ fees_due: 0, fees_on_hold: 4, cause: "force_majeure" });
+    expect(data).toMatchObject({ fees_due: 0, fees_on_hold: 4.4, cause: "force_majeure" });
     expect(await refund(ev)).toBe("due");                       // buyers refunded regardless
-    expect(await charge(ev)).toEqual({ amount: 4, status: "on_hold" });
+    expect(await charge(ev)).toEqual({ amount: 4.4, status: "on_hold" });
     // The organiser can't decide their own claim; a Gala Dock reviewer can.
     expect((await c.rpc("admin_review_force_majeure", { p_event: ev, p_approve: true, p_reason: "self-approve" })).error?.message).toMatch(/not_authorized/);
     const s = await signedIn(staff.email) as unknown as SupabaseClient;
     expect((await s.rpc("admin_review_force_majeure", { p_event: ev, p_approve: true, p_reason: "Council closure notice checked." })).error).toBeNull();
-    expect(await charge(ev)).toEqual({ amount: 4, status: "waived" });
+    expect(await charge(ev)).toEqual({ amount: 4.4, status: "waived" });
     expect((await db.from("event_cancellations").select("fm_status").eq("event_id", ev).single()).data?.fm_status).toBe("approved");
     const { data: n } = await db.from("notifications").select("title").eq("user_id", owner.id).ilike("title", "Force majeure accepted%");
     expect(n?.length).toBe(1);
@@ -140,7 +140,7 @@ test.describe("cancellation fees by cause", () => {
     await c.rpc("cancel_event_with_refunds", { p_event: ev, p_reason: "Our headliner cancelled at short notice.", p_cause: "force_majeure", p_fm_detail: "The headline act cancelled their tour for personal reasons." });
     const s = await signedIn(staff.email) as unknown as SupabaseClient;
     expect((await s.rpc("admin_review_force_majeure", { p_event: ev, p_approve: false, p_reason: "A performer cancelling isn’t force majeure under 2.4(c)." })).error).toBeNull();
-    expect(await charge(ev)).toEqual({ amount: 4, status: "due" });
+    expect(await charge(ev)).toEqual({ amount: 4.4, status: "due" });
     const { data: n } = await db.from("notifications").select("body").eq("user_id", owner.id).ilike("title", "Force majeure not accepted%");
     expect(n?.[0]?.body).toMatch(/performer cancelling/);
   });

@@ -38,8 +38,9 @@ export async function POST(request: NextRequest) {
   if (admittedOk === false) return json({ error: "Your waiting-room slot has expired or hasn’t opened yet — please rejoin the queue.", queue: true }, 409);
   const orderRef = `GD-${randomBytes(5).toString("hex").toUpperCase()}`;
   await db.from("checkout_orders").update({ status: "expired", updated_at: new Date().toISOString() }).eq("token", token).eq("status", "pending");
-  const { error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode });
-  if (oe) return json({ error: "Couldn’t create your order. Please try again." }, 500);
+  const { data: saved, error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode }).select("fee,fee_vat").single();
+  if (oe || !saved) return json({ error: "Couldn’t create your order. Please try again." }, 500);
+  const fee = Number((saved as { fee: number }).fee ?? sum.fee);   // includes Gala Dock VAT (see migration 202610280020)
   const origin = new URL(request.url).origin, slug = ev.slug || ev.id;
   if (sum.total === 0) {
     const r = await finalise(orderRef);
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     };
     sum.lines.forEach((l, i) => { p[`line_items[${i}][quantity]`] = String(l.qty); p[`line_items[${i}][price_data][currency]`] = "gbp"; p[`line_items[${i}][price_data][unit_amount]`] = String(Math.round(l.unit * 100));
       p[`line_items[${i}][price_data][product_data][name]`] = `${ev.name} — ${l.name}`; if (l.seats.length) p[`line_items[${i}][price_data][product_data][description]`] = l.seats.join(", ").slice(0, 400); });
-    if (sum.fee > 0) { const i = sum.lines.length; p[`line_items[${i}][quantity]`] = "1"; p[`line_items[${i}][price_data][currency]`] = "gbp"; p[`line_items[${i}][price_data][unit_amount]`] = String(Math.round(sum.fee * 100)); p[`line_items[${i}][price_data][product_data][name]`] = "Booking fee"; }
+    if (fee > 0) { const i = sum.lines.length; p[`line_items[${i}][quantity]`] = "1"; p[`line_items[${i}][price_data][currency]`] = "gbp"; p[`line_items[${i}][price_data][unit_amount]`] = String(Math.round(fee * 100)); p[`line_items[${i}][price_data][product_data][name]`] = "Gala Dock booking fee (incl. VAT)"; }
     // Stripe sessions live ≥30 min, so the hold is extended to cover the payment window (a lapsed hold is refunded in finalise()).
     const until = new Date(Number(p.expires_at) * 1000 + 2 * 60_000).toISOString();
     await Promise.all([db.from("ticket_holds").update({ expires_at: until }).eq("token", token), db.from("event_seats").update({ hold_expires_at: until }).eq("hold_token", token).eq("status", "held"), db.from("resale_holds").update({ expires_at: until }).eq("token", token)]);

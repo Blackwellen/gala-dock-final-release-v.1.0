@@ -48,13 +48,13 @@ Contracting entity: Blackwellen Limited (company number 16482166, VAT number GB5
 
 5.2 Funds are held under the Marketplace Payment Protection Terms and **released to your connected payout account after delivery** (fulfilled/completed, or 48 hours after the event ends), provided there is no open dispute, chargeback or pending cancellation and your payout account is in good standing.
 
-5.3 **Commission** is a platform usage fee for using the Gala Dock software and payment tools. It is deducted from each payment at the rate recorded on the booking when the payment was made: **8% on the Starter plan, 7% on Pro and 6% on Business or Enterprise**, unless we have agreed a different rate with you in writing. Commission is not charged on amounts refunded to the customer.
+5.3 **Commission** is a platform usage fee for using the Gala Dock software and payment tools. It is deducted from each payment at the rate recorded on the booking when the payment was made: **8% on the Starter plan, 7% on Pro and 6% on Business or Enterprise, plus VAT**, unless we have agreed a different rate with you in writing. Commission is not charged on amounts refunded to the customer.
 
-5.3A **Customer admin fee.** Customers pay Gala Dock a separate booking admin fee of 2.5% of each payment (minimum £1). It is Gala Dock's fee, is shown to the customer before they pay, and is not deducted from your share.
+5.3A **Customer admin fee.** Customers pay Gala Dock a separate booking admin fee of 2.5% of each payment (minimum £1), including VAT. It is Gala Dock's fee, is shown to the customer before they pay, and is not deducted from your share.
 
 5.4 You must complete payout onboarding with our payment processor (Stripe) and keep it in good standing. If you don't, funds stay protected until you do.
 
-5.5 You're responsible for your own taxes, including VAT on your services. Gala Dock accounts for VAT on its commission and fees. [Tax adviser: confirm the invoicing model — self-billing or provider invoices — and VAT treatment.]
+5.5 You're responsible for your own taxes, including VAT on your services. **VAT.** Blackwellen Limited is VAT-registered (GB508480488), and Gala Dock's fees are subject to UK VAT at the standard rate (currently 20%). Fees charged to you as a business (commission, subscriptions and promotion boosts) are shown excluding VAT, and VAT is added and collected with the fee. For commission, that means the commission plus VAT is deducted from your proceeds. Fees paid by consumers (the ticket booking fee and the booking admin fee) already include VAT. We show the VAT on your statements, together with our VAT number, so you can reclaim it where you're entitled to. [Tax adviser: confirm the invoicing model, self-billing or provider invoices.]
 
 ## 6. Cancellations, refunds and disputes
 

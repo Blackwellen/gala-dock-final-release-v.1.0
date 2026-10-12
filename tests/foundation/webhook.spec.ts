@@ -59,7 +59,8 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
     expect(txs).toHaveLength(1);
     const { data: lines } = await admin.from("ledger_entries" as never).select("account,amount_minor").eq("transaction_id", (txs as { id: string }[])[0].id);
     const byAccount = Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]));
-    expect(byAccount).toEqual({ cash_stripe: 5000, platform_fee: -500, provider_payable: -4500 });
+    // £5.00 booking fee includes £0.83 Gala Dock VAT, which is owed to HMRC rather than revenue.
+    expect(byAccount).toEqual({ cash_stripe: 5000, platform_fee: -417, tax_payable: -83, provider_payable: -4500 });
   });
 
   test("charge.dispute.* mirrors the chargeback, opens one support case and posts funds movements once", async () => {

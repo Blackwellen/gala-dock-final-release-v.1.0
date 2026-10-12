@@ -47,6 +47,7 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
   const head = <Head title="Commerce" subtitle="Operate marketplace payments, commission, payouts, subscriptions and ticket fees."
     actions={<>
       <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="period" label="Period" value={period} options={Object.entries(PERIODS).map(([value, p]) => ({ value, label: p.label }))} /></Suspense></span>
+      <Link className="adb-btn" href="/admin/commerce/vat">VAT</Link>
       <Link className="adb-btn" href={`/admin/commerce/export?period=${period}`}><Upload aria-hidden="true" />Export</Link>
       <Link className="adb-btn primary" href={`/admin/commerce/export?period=${period}&kind=summary`}><Plus aria-hidden="true" />Generate report</Link>
     </>} />;
