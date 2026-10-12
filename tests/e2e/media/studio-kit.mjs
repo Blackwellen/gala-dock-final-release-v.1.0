@@ -18,7 +18,7 @@ try {
   await page.getByRole("heading", { name: /./ }).first().waitFor({ timeout: 5000 }).catch(() => {});
   await page.locator(".st-tabs").waitFor();
   // Templates tab loads (may be empty before starters are seeded).
-  await page.getByText(/Community templates are shared/).waitFor({ timeout: 15000 });
+  await page.getByLabel("Search templates").waitFor({ timeout: 15000 });
   check("Templates tab opens with search and sources", await page.getByRole("tab", { name: "Community" }).isVisible());
   // Elements → shape library
   await tab("Elements"); await page.getByLabel("Search shapes").fill("burst"); await page.locator(".dk-sgrid button").first().click();
