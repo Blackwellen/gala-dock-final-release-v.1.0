@@ -87,7 +87,7 @@ export default async function TicketsPage(props: PageProps<"/admin/tickets">) {
   return <div className="aa at">
     <header className="ws-page-head">
       <div><h1>Tickets</h1><p>Operate ticketed events, transactions and admission anomalies.</p></div>
-      <div className="aa-head-actions"><a className="ws-btn outline" href={qs(`${base}/export`, sp, { page: null, sel: null, per: null })}><Download aria-hidden="true" />Export</a></div>
+      <div className="aa-head-actions"><Link className="ws-btn outline" href="/admin/tickets/force-majeure">Force majeure reviews</Link><a className="ws-btn outline" href={qs(`${base}/export`, sp, { page: null, sel: null, per: null })}><Download aria-hidden="true" />Export</a></div>
     </header>
     <section className="aa-kpis at-kpis" aria-label="Ticketing metrics">
       <Kpi icon={Ticket} tone="blue" label={`Total Tickets Sold (${period.days}d)`} value={sold.toLocaleString("en-GB")} delta={delta(sold, sumK(prev, "sold"))} deltaSuffix={`vs last ${period.days} days`} series={cur.map(d => Number(d.sold))} />

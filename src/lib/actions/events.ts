@@ -44,18 +44,25 @@ export async function archiveEvent(eventId: string): Promise<ActionResult> {
   return { ok: true, message: `${e.name} archived.` };
 }
 
-/** Cancel an event (owners/managers): voids tickets, queues full refunds incl. fees, notifies buyers. Irreversible. */
-export async function cancelEvent(eventId: string, reason: string): Promise<ActionResult> {
+/**
+ * Cancel an event (owners/managers): voids tickets, queues full refunds incl. fees, notifies buyers. Irreversible.
+ * Cause decides the organiser's platform fees (Organizer Terms 2.4): own decision → payable; force majeure → on hold until reviewed, waived if accepted.
+ */
+export async function cancelEvent(eventId: string, reason: string, cause: "organiser" | "force_majeure" = "organiser", fmDetail = ""): Promise<ActionResult> {
   const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
   if (reason.trim().length < 10) return { ok: false, error: "Tell attendees why the event is cancelled (at least 10 characters)." };
+  if (cause !== "organiser" && cause !== "force_majeure") return { ok: false, error: "Choose why the event is cancelled." };
+  if (cause === "force_majeure" && fmDetail.trim().length < 30) return { ok: false, error: "Describe what happened and how it stops the event (at least 30 characters), with links to any evidence." };
   const ctx = await getOrganizer();
   const { data: e } = await ctx.supabase.from("events").select("id,name").eq("id", id.data).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) return { ok: false, error: "Event not found in this workspace." };
-  const { data, error } = await ctx.supabase.rpc("cancel_event_with_refunds" as never, { p_event: e.id, p_reason: reason } as never);
+  const { data, error } = await ctx.supabase.rpc("cancel_event_with_refunds" as never, { p_event: e.id, p_reason: reason, p_cause: cause, p_fm_detail: cause === "force_majeure" ? fmDetail : null } as never);
   if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can cancel events." : /already_happened|invalid_state/.test(error.message) ? "This event can’t be cancelled in its current state." : "Could not cancel the event." };
-  const r = data as unknown as { orders_to_refund: number; tickets_voided: number };
+  const r = data as unknown as { orders_to_refund: number; tickets_voided: number; fees_due: number; fees_on_hold: number };
+  const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(n);
+  const fees = r.fees_on_hold > 0 ? ` Platform fees of ${gbp(r.fees_on_hold)} are on hold while we review your force majeure claim.` : r.fees_due > 0 ? ` Platform fees of ${gbp(r.fees_due)} on the tickets sold remain payable.` : "";
   revalidatePath("/organizer/events"); revalidatePath(`/organizer/events/${e.id}`);
-  return { ok: true, message: `${e.name} cancelled. ${r.tickets_voided} ticket${r.tickets_voided === 1 ? "" : "s"} voided; ${r.orders_to_refund} order${r.orders_to_refund === 1 ? "" : "s"} will be refunded in full and buyers have been told.` };
+  return { ok: true, message: `${e.name} cancelled. ${r.tickets_voided} ticket${r.tickets_voided === 1 ? "" : "s"} voided; ${r.orders_to_refund} order${r.orders_to_refund === 1 ? "" : "s"} will be refunded in full and buyers have been told.${fees}` };
 }
 
 /** Consumer event duplicate (Customer App). */

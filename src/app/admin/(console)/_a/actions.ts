@@ -96,3 +96,11 @@ export async function setTicketSales(event: string, pause: boolean, reason: stri
   if (!reasonOk(reason)) return NEED_REASON;
   return run("admin_set_ticket_sales", { p_event: event, p_pause: !!pause, p_reason: reason.trim() }, pause ? "Ticket sales paused" : "Ticket sales resumed", ["/admin/tickets", "/admin/events"]);
 }
+
+/** Decide an organiser's force majeure claim (Organizer Terms 2.4(c)–(e)): approve → platform fees waived; reject → fees payable. */
+export async function reviewForceMajeure(event: string, approve: boolean, reason: string): Promise<ActionResult> {
+  if (!isUuid(event)) return NOT_FOUND;
+  if (!reasonOk(reason)) return NEED_REASON;
+  return run("admin_review_force_majeure", { p_event: event, p_approve: !!approve, p_reason: reason.trim() },
+    approve ? "Force majeure accepted — platform fees waived" : "Force majeure not accepted — platform fees now payable", ["/admin/tickets/force-majeure", "/admin/tickets"]);
+}

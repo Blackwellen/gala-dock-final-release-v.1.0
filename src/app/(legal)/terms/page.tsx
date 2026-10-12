@@ -41,7 +41,7 @@ export default function Terms() {
       <li><b>Tickets:</b> buyers pay a booking fee of {LEGAL.fees.ticketBuyer}. Ticket sellers pay {LEGAL.fees.ticketSeller}, deducted from their proceeds.</li>
       <li><b>Venue and supplier bookings:</b> providers pay commission of {LEGAL.fees.supplier}. Customers pay a booking admin fee of {LEGAL.fees.bookingAdmin}, shown as its own line at checkout.</li>
       <li>Plans may also carry a subscription, shown in workspace settings. Prices for business users exclude VAT.</li>
-      <li>If an organiser cancels an event after tickets have sold, buyers are refunded in full, but the organiser still owes the platform fees on the tickets sold.</li>
+      <li>If an organiser cancels an event after tickets have sold, buyers are always refunded in full, including the booking fee. The organiser still owes the platform fees on the tickets sold, unless Gala Dock accepts that the event couldn’t lawfully or safely go ahead for reasons outside the organiser’s control (force majeure), in which case the fees are waived.</li>
       <li>Payments are processed by Stripe. Payouts go to the provider’s or organiser’s connected Stripe account, after any holding period and minus fees, refunds and chargebacks.</li>
       <li>Members must not take payment outside the platform for bookings arranged through it.</li>
     </ul>

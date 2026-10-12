@@ -29,7 +29,33 @@ The contracting entity is Blackwellen Limited (company number 16482166), registe
 
 2.3 **Pricing.** You set face values. The price shown to buyers includes all compulsory fees. Gala Dock's ticket fees are set out in section 6.
 
-2.4 **Cancellation and changes.** If you cancel an event, you must cancel it through Gala Dock, which voids all tickets and refunds every buyer in full, including the booking fee, from the ticket proceeds. You can't cancel an event with paid orders in any other way. **Platform fees on tickets that have sold (the seller commission and the buyers' booking fees) remain payable by you when you cancel, however close to the event you cancel.** We deduct them from your proceeds or future payouts, or invoice you, payable within 14 days. If you materially change an event, you must offer refunds as required by the Cancellation & Refund Policy. You indemnify Gala Dock against refunds, chargebacks and claims arising from your event, cancellation or failure to deliver, except to the extent caused by our breach.
+2.4 **Cancellation and changes.**
+
+(a) **Buyers are always refunded in full.** If you cancel an event, you must cancel it through Gala Dock. This voids all tickets and refunds every buyer in full, including the booking fee, to their original payment method, whatever the reason for the cancellation. This is what the law requires for consumers, and you can't agree anything different with buyers. You can't cancel an event with paid orders in any other way.
+
+(b) **Platform fees when you cancel.** By the time you cancel, we have already provided our services for the tickets sold: listing, checkout, payment processing, fraud screening, issuing tickets, and processing the refunds. So, unless (c) or (d) applies, the **platform fees on tickets that have sold remain payable**. These are the 5% seller commission, and the £1.00 booking fees we refund to buyers on your behalf. This applies however close to the event you cancel. The fees are a charge for those services, not a penalty, and are never more than the fees set out in section 6.2 for the tickets sold. We deduct them from your proceeds or future payouts, or invoice you, payable within 14 days. We show you the amount before you confirm the cancellation, and again in Money.
+
+(c) **Force majeure: fees waived.** We waive all the platform fees in (b) if the event can't lawfully or safely take place because of an event outside your reasonable control that you couldn't reasonably have avoided or prevented. Examples include:
+* an order or restriction from a government, the police, a licensing authority or another public authority;
+* the venue being closed or made unsafe by fire, flood, structural failure or a utility failure;
+* a Met Office red or amber weather warning, or a declared emergency, affecting the event location;
+* war, terrorism or civil unrest; or
+* a national period of mourning or similar event that requires the cancellation.
+
+Force majeure **doesn't** include:
+* low ticket sales, higher costs or other commercial reasons;
+* a performer, supplier or venue cancelling, unless that was itself caused by a force majeure event;
+* a failure to obtain licences, permissions or insurance that you could reasonably have obtained;
+* circumstances you knew about, or should reasonably have expected, when you put the tickets on sale; or
+* a cancellation where the event could reasonably have gone ahead on the same date in a modified form or at a suitable alternative venue.
+
+(d) **Gala Dock cancellations.** No platform fees are payable if we cancel or suspend your event, unless we do so because you have breached these terms or the law.
+
+(e) **How a force majeure claim works.** Choose "Force majeure" when you cancel, explain what happened, and give us evidence such as an official notice, a letter from the venue or a weather warning. While we review it, the fees are on hold and aren't collected. We aim to decide within 5 working days, and we'll give you our reasons. If we accept, the fees are waived in full. If we don't, the fees become payable as in (b). You can send us further evidence within 14 days and we will look again. This doesn't affect any other rights you have under these terms or the law.
+
+(f) **Postponing instead of cancelling.** If you move the event to a new date, buyers keep their tickets. They can ask for a refund where the change is material, under the Cancellation & Refund Policy. No platform fees are charged on tickets refunded because of a postponement that was itself caused by a force majeure event.
+
+(g) If you materially change an event, you must offer refunds as required by the Cancellation & Refund Policy. You indemnify Gala Dock against refunds, chargebacks and claims arising from your event, cancellation or failure to deliver, except to the extent caused by our breach.
 
 2.5 **Settlement.** Ticket proceeds, less fees, refunds and chargebacks, are paid to your connected payout account under your settlement schedule. We may hold proceeds for an event until it has taken place where there is a material risk of refunds (for example a new organiser, a large event or a pattern of complaints). We'll tell you if we do.
 
@@ -98,4 +124,4 @@ Gala Agent acts only within the permissions of the person who started the task a
 These terms are governed by the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction. If any provision is unenforceable, the rest continue. We may assign these terms to an affiliate or successor. Notices to us go to legal@galadock.com.
 
 ---
-*Counsel review points:* agency structure for ticket sales and VAT on booking fees (2.1, 2.3); proceeds holding (2.5) and regulatory perimeter; non-circumvention period (3.4) under competition law; controller/processor split (4.1); liability cap amount and floor (9.3); fees retained on organiser cancellation (2.4) as a fair term; set-off (6.4).
+*Counsel review points:* agency structure for ticket sales and VAT on booking fees (2.1, 2.3); proceeds holding (2.5) and regulatory perimeter; non-circumvention period (3.4) under competition law; controller/processor split (4.1); liability cap amount and floor (9.3); fees retained on organiser cancellation and the force majeure waiver definition (2.4(b)–(e)), including whether retaining the refunded booking fees is reasonable under UCTA 1977 / penalty principles; set-off (6.4).
