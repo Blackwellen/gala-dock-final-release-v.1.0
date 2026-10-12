@@ -2,7 +2,7 @@
 
 > **Draft for specialist UK legal review before production publication.** None of these documents has been approved by a solicitor or barrister. They are working drafts that describe how the product actually behaves, written so counsel can review them efficiently.
 
-**Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, Herefordshire, HR5 3DJ** · VAT number **[VAT NUMBER — if registered]** · ICO registration **ZB905402**
+**Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, Herefordshire, HR5 3DJ** · VAT number **[VAT NUMBER — if registered]** · ICO registration **ZC160806**
 
 These placeholders must be completed from verified company records. `src/lib/legal.ts` holds the same fields for the published pages and currently leaves them empty.
 

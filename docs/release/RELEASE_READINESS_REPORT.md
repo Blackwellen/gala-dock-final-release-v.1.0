@@ -9,8 +9,8 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 0. Verdict (§150)
 
-> **NOT YET RELEASE-READY FOR LIVE MONEY. RELEASE CANDIDATE FOR A CONTROLLED BETA** once the three blockers in §16 are closed.
-> The platform is functionally complete across the in-scope areas and every security-critical path is server-enforced and tested. The remaining blockers are external configuration (email provider, PITR backups, successor AI model) and legal sign-off of the document pack — not missing engineering. (An earlier draft listed an Azure model deprecation; the deployments are gpt-5.4-mini/nano, so it does not apply. The price book was updated to those models.)
+> **NOT YET RELEASE-READY FOR LIVE MONEY. RELEASE CANDIDATE FOR A CONTROLLED BETA** once the two remaining blockers in §16 are closed.
+> The platform is functionally complete across the in-scope areas and every security-critical path is server-enforced and tested. The remaining blockers are external configuration (email provider) and legal sign-off of the document pack — not missing engineering. (An earlier draft listed an Azure model deprecation; the deployments are gpt-5.4-mini/nano, so it does not apply. The price book was updated to those models.)
 
 | Metric (11 Oct 2026) | Value |
 |---|---|
@@ -131,7 +131,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | §92 Cloudflare R2 | PASS | Dependency-free SigV4 client (`src/lib/r2.ts`) and storage→R2 replication every 15 min (`storage-backup` job: change detection, keys `storage/<bucket>/<path>`, deleted objects kept 35 days). The `galadock` bucket is in Cloudflare's **EU jurisdiction**, so it is served from `<account>.eu.r2.cloudflarestorage.com`; the client honours `CLOUDFLARE_R2_JURISDICTION` or auto-detects it. Verified 11 Oct 2026: write/read/delete round trip, health `ready`, and an end-to-end replication probe (upload → worker copied 1 → copy present in R2 → cleaned up). Vercel production verified 12 Oct 2026: all R2 variables present (`scripts/vercel-env-check.mjs`), production health reports R2 `ready` and the `storage-backup` job succeeding. |
 | §93 Stripe | PASS_WITH_NOTE | Payments orchestration, webhooks (authoritative), reconciliation, refunds, disputes, Connect transfers. **Local `.env` holds a LIVE secret key** — confirm intended environments; production uses the configured key. |
 | §94 MapTiler | PASS | Configured; maps and geocoding in listings/search. |
-| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
+| §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026), plus our own nightly logical backup to R2 (pg_cron → Edge Function `db-backup`; first run 12 Oct 2026, 167 tables). PITR not enabled by owner decision until there are users; RPO 24 h. Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
 | §133 Restore test | BLOCKED_EXTERNAL_CONFIGURATION | Needs a staging project; procedure in `docs/operations/runbook.md`. |
 | §134–135 DR / IR | PASS | Runbook with RTO/RPO table, secret-rotation steps, ICO 72-hour process. |
 | §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` + `/admin/health`. Error reporting: `src/instrumentation.ts` sends server errors to any Sentry-compatible DSN (`SENTRY_DSN`; self-hosted GlitchTip on Oracle) without headers/cookies/query strings. Uptime: Uptime Kuma on Oracle with monitors defined in `docs/operations/oracle-setup.md`. Both need the Oracle VM set up (≈45 min, free tier). |
