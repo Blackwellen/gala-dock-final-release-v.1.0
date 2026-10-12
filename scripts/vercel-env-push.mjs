@@ -1,20 +1,47 @@
-// Upserts named environment variables from the local env into the linked Vercel project (production + preview). Never prints values.
-//   node --env-file=.env --env-file=.env.local scripts/vercel-env-push.mjs NAME[=FROM_NAME] ...   e.g. RESEND_API_KEY=RESEND_API
-//   A literal value for a non-secret: NAME:=value (e.g. "EMAIL_FROM:=Gala Dock <no-reply@galadock.com>")
+// Pushes local env vars (.env, then .env.local overrides) to the linked Vercel project via the REST API.
+// Values are never printed. Existing entries for each key are replaced.
+// Usage: node scripts/vercel-env-push.mjs [--only NAME,...] [--dry-run]
 import fs from "node:fs";
 import path from "node:path";
 
+const parse = file => Object.fromEntries(fs.existsSync(file) ? fs.readFileSync(file, "utf8").split(/\r?\n/)
+  .filter(l => /^[A-Z0-9_]+=/.test(l)).map(l => { const i = l.indexOf("="); return [l.slice(0, i), l.slice(i + 1).trim().replace(/^["']|["']$/g, "")]; }) : []);
+const vars = { ...parse(".env"), ...parse(".env.local") };
+const EXCLUDE = new Set(["SUPABASE_PAT_KEY"]); // management token: local scripts only
+// Payout onboarding runs in Stripe test mode on Vercel until a live Connect key is deliberately configured.
+if (vars.STRIPE_SECRET_KEY_SANDBOX && !vars.STRIPE_CONNECT_SECRET_KEY) vars.STRIPE_CONNECT_SECRET_KEY = vars.STRIPE_SECRET_KEY_SANDBOX;
+// The app reads RESEND_API_KEY; .env names the Resend key RESEND_API.
+if (vars.RESEND_API && !vars.RESEND_API_KEY) vars.RESEND_API_KEY = vars.RESEND_API;
+
+const argIndex = process.argv.indexOf("--only");
+const only = argIndex > 0 ? process.argv[argIndex + 1].split(",") : null;
+const dryRun = process.argv.includes("--dry-run");
+
 const { projects: [project] } = JSON.parse(fs.readFileSync(".vercel/repo.json", "utf8"));
-const { token } = JSON.parse(fs.readFileSync(path.join(process.env.APPDATA ?? "", "xdg.data", "com.vercel.cli", "auth.json"), "utf8"));
-const args = process.argv.slice(2);
-if (!args.length) { console.error("Give at least one NAME, NAME=FROM_NAME or NAME:=value."); process.exit(1); }
-for (const a of args) {
-  let key, value, secret = true;
-  if (a.includes(":=")) { [key, value] = [a.slice(0, a.indexOf(":=")), a.slice(a.indexOf(":=") + 2)]; secret = false; }
-  else { const [k, from] = a.split("="); key = k; value = process.env[from ?? k]; }
-  if (!/^[A-Z0-9_]+$/.test(key) || !value) { console.error(`${key}: no value in the local env — skipped`); continue; }
-  const r = await fetch(`https://api.vercel.com/v10/projects/${project.id}/env?upsert=true&teamId=${project.orgId}`, {
-    method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ key, value, type: secret ? "encrypted" : "plain", target: ["production", "preview"] }) });
-  console.log(`${key}: ${r.ok ? "set" : `failed (${r.status} ${(await r.text()).slice(0, 160)})`}${secret ? " (encrypted)" : ` = ${value}`}`);
+const authFile = path.join(process.env.APPDATA ?? "", "xdg.data", "com.vercel.cli", "auth.json");
+const { token } = JSON.parse(fs.readFileSync(authFile, "utf8"));
+const api = async (method, url, body) => {
+  const response = await fetch(`https://api.vercel.com${url}${url.includes("?") ? "&" : "?"}teamId=${project.orgId}`, {
+    method, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data?.error?.message ?? `HTTP ${response.status}`);
+  return data;
+};
+
+const existing = (await api("GET", `/v10/projects/${project.id}/env`)).envs;
+let failed = 0;
+for (const [key, value] of Object.entries(vars)) {
+  if (EXCLUDE.has(key) || !value || (only && !only.includes(key))) continue;
+  if (dryRun) { console.log(`would set ${key}`); continue; }
+  try {
+    for (const env of existing.filter(e => e.key === key)) await api("DELETE", `/v9/projects/${project.id}/env/${env.id}`);
+    await api("POST", `/v10/projects/${project.id}/env`, { key, value, type: "sensitive", target: ["production", "preview"] });
+    await api("POST", `/v10/projects/${project.id}/env`, { key, value, type: "encrypted", target: ["development"] });
+    console.log(`ok   ${key}`);
+  } catch (error) {
+    failed++;
+    console.log(`FAIL ${key}: ${String(error instanceof Error ? error.message : error).replaceAll(value, "<value>")}`);
+  }
 }
+process.exitCode = failed ? 1 : 0;
