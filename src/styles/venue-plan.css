@@ -299,3 +299,12 @@ svg.sp-svg.panning{cursor:grabbing}
 .mb-canvas{overflow:hidden;min-height:0}
 svg.mb-svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;user-select:none;stroke-width:initial}
 svg.vm{stroke-width:initial}
+/* Design library panel (icons, emoji, symbols, shapes, fonts, signs) */
+.mb-design{padding:8px 10px;overflow:auto;min-height:0}
+.mb-design .dk-igrid,.mb-design .dk-egrid,.mb-design .dk-sgrid,.mb-design .dk-wgrid,.mb-design .dk-fonts{max-height:none}
+.mb-props .dk-picker{margin-top:4px}
+.mb-props .dk-check,.mb-design .dk-check{display:inline-flex;flex-direction:row;align-items:center;gap:5px}
+.mb-props .dk-mini,.mb-design .dk-mini{display:inline-flex;flex-direction:row;align-items:center;gap:5px}
+.mb-props .dk-field,.mb-design .dk-field{display:grid;gap:3px}
+.mb-props .dk-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mb-tabs button{white-space:nowrap}

@@ -8,6 +8,8 @@ import { resolveText, type EventData, type Layer, type Effects, type Fill, type 
 import { fillCss, assetSrc } from "@/lib/media/render";
 import { textFxShadow } from "@/lib/design-kit/effects";
 import { WidgetView } from "@/components/design-kit/widget-view";
+import { pathD } from "@/lib/media/path";
+export { pathD };
 
 export { fillCss, assetSrc, qrContrast } from "@/lib/media/render";
 
@@ -62,18 +64,6 @@ function Grad({ id, fill }: { id: string; fill: Fill }) {
   if (fill.type === "solid" || fill.type === "conic") return null;
   return <defs>{fill.type === "linear" ? <linearGradient id={id} gradientTransform={`rotate(${(fill.angle ?? 180) - 90} .5 .5)`}>{fill.stops.map((s, i) => <stop key={i} offset={s.offset} stopColor={s.color} />)}</linearGradient>
     : <radialGradient id={id}>{fill.stops.map((s, i) => <stop key={i} offset={s.offset} stopColor={s.color} />)}</radialGradient>}</defs>;
-}
-/** Smooth (Catmull-Rom → cubic Bézier) or straight path through points. */
-export function pathD(pts: { x: number; y: number }[], smooth: boolean, closed: boolean) {
-  if (pts.length < 2) return pts.length ? `M${pts[0]!.x} ${pts[0]!.y}` : "";
-  if (!smooth) return `M${pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L")}${closed ? " Z" : ""}`;
-  const P = closed ? [pts[pts.length - 1]!, ...pts, pts[0]!, pts[1]!] : [pts[0]!, ...pts, pts[pts.length - 1]!];
-  let d = `M${pts[0]!.x.toFixed(1)} ${pts[0]!.y.toFixed(1)}`;
-  for (let i = 1; i < P.length - 2; i++) {
-    const [p0, p1, p2, p3] = [P[i - 1]!, P[i]!, P[i + 1]!, P[i + 2]!];
-    d += ` C${(p1.x + (p2.x - p0.x) / 6).toFixed(1)} ${(p1.y + (p2.y - p0.y) / 6).toFixed(1)} ${(p2.x - (p3.x - p1.x) / 6).toFixed(1)} ${(p2.y - (p3.y - p1.y) / 6).toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-  }
-  return closed ? `${d} Z` : d;
 }
 function PathView({ l, box }: { l: PathLayer; box: CSSProperties }) {
   const s = l.stroke, gid = `pg${l.id}`, fill = l.closed && l.fill ? (l.fill.type === "solid" ? l.fill.color : `url(#${gid})`) : "none";

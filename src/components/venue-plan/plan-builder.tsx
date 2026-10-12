@@ -5,7 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type 
 import { MousePointer2, Hand, Square, Pentagon, Minus as WallIcon, Type, Ruler, Undo2, Redo2, Trash2, Copy, Eye, EyeOff, Lock, Unlock, ImagePlus, Map as MapIcon, Maximize2, Minimize2,
   ZoomIn, ZoomOut, Scan, Grid3x3, Magnet, Layers, Crosshair, ArrowUpToLine, ArrowDownToLine, Save, Upload, Shapes, Search, Keyboard, RotateCw, RotateCcw, AlignStartVertical, AlignCenterVertical,
   AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Satellite, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2,
-  Plus, Pencil, ChevronUp, ChevronDown, Download, FileUp, Printer, MapPin, LocateFixed, ClipboardPaste, Loader2 } from "lucide-react";
+  Plus, Pencil, ChevronUp, ChevronDown, Download, FileUp, Printer, MapPin, LocateFixed, ClipboardPaste, Loader2, Spline, Palette } from "lucide-react";
+import { DesignKitPanel, DesignElProps, DesignFonts, isDesignEl, type DesignEl } from "./design-layer";
 import type { LucideIcon } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { MapContent, MapDefs, mapBounds, elBounds, isPoly, FIXTURE_LABEL, UNITS_PER_M, MAP_ATTRIBUTION, type MapEl, type MapSpace } from "@/app/provider/venues/_components/venue-map";
@@ -13,7 +14,7 @@ import { MAP_STYLES } from "@/lib/maps/styles";
 import { ASSETS, ASSET, ASSET_CATS, ASSET_IMG, ASSET_SWATCH, KILL_SEATS_SWATCH, alpha, blockSeats, tableSeats, seatingSize, tableSize, type Seating, type TableSpec } from "./assets";
 import { AssetShape, assetDefaults, type SeatFlag } from "./asset-shape";
 
-type Tool = "select" | "hand" | "room" | "poly" | "wall" | "line" | "label" | "measure" | "calibrate" | "place";
+type Tool = "select" | "hand" | "room" | "poly" | "wall" | "line" | "label" | "measure" | "calibrate" | "place" | "curve";
 type View = { x: number; y: number; w: number; h: number };
 type Drag =
   | { kind: "pan"; sx: number; sy: number; view: View }
@@ -32,9 +33,10 @@ const GROUPS: [string, string, (e: MapEl) => boolean][] = [
   ["seating", "Seating & tables", e => e.type === "asset" && ["seating", "table"].includes(ASSET[e.asset ?? ""]?.kind)], ["areas", "Areas & assets", e => e.type === "asset" && ["area", "point"].includes(ASSET[e.asset ?? ""]?.kind)],
   ["routes", "Routes & barriers", e => (e.type === "asset" && ASSET[e.asset ?? ""]?.kind === "line") || e.type === "accessible_route"], ["walls", "Walls", e => e.type === "wall"],
   ["fixed", "Fixed features", e => ["stage", "bar", "exit", "entrance", "toilets", "loading", "water"].includes(e.type)], ["labels", "Labels", e => e.type === "label"],
+  ["design", "Design elements", e => isDesignEl(e)],
 ];
 const TOOLS: [Tool, LucideIcon, string, string][] = [["select", MousePointer2, "Select & move", "V"], ["hand", Hand, "Pan", "H"], ["room", Square, "Room", "R"], ["poly", Pentagon, "Polygon room", "P"],
-  ["wall", WallIcon, "Wall", "W"], ["label", Type, "Text", "T"], ["measure", Ruler, "Measure", "M"]];
+  ["wall", WallIcon, "Wall", "W"], ["label", Type, "Text", "T"], ["curve", Spline, "Bendy line", "C"], ["measure", Ruler, "Measure", "M"]];
 const SHORTCUTS: [string, string][] = [["V", "Select"], ["H / hold Space", "Pan"], ["R", "Room"], ["P", "Polygon room"], ["W", "Wall"], ["T", "Text"], ["M", "Measure"], ["A", "Assets library"],
   ["Shift + click", "Add to selection"], ["Shift + drag", "Box select"], ["Ctrl + A", "Select all"], ["Ctrl + C / V", "Copy / paste"], ["Ctrl + D", "Duplicate"], ["Q / E", "Rotate 15° (Shift = 1°)"],
   ["Drag ↻ handle", "Free rotate"], ["Shift + drag ↻", "Rotate in 15° steps"], ["Shift + H / Shift + V", "Flip horizontal / vertical"], ["L", "Legend / key"],
@@ -93,7 +95,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const [cursor, setCursor] = useState<number[] | null>(null);
   const [measure, setMeasure] = useState<number[][] | null>(null);
   const [marquee, setMarquee] = useState<number[][] | null>(null);
-  const [panel, setPanel] = useState<"assets" | "layers" | "map" | "inspect">("assets");
+  const [panel, setPanel] = useState<"assets" | "design" | "layers" | "map" | "inspect">("assets");
   const [query, setQuery] = useState("");
   const [help, setHelp] = useState(false);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
@@ -154,6 +156,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const finishDraft = useCallback(() => {
     if (tool === "poly" && draft.length >= 3) { commit(l => [...l, tag({ type: "room", id: newId("room"), label: "New room", points: draft })]); setSel([els.length]); setPanel("inspect"); }
     if (tool === "wall" && draft.length >= 2) commit(l => [...l, tag({ type: "wall", label: "Wall", points: draft, size: 4 })]);
+    if (tool === "curve" && draft.length >= 2) { commit(l => [...l, tag({ type: "curve", id: newId("curve"), label: "Curve", points: draft, smooth: true, endCap: "none", style: { color: "#2f6bff", strokeW: Math.max(2, Math.round(view.w / 240)) } })]); setSel([els.length]); setPanel("inspect"); setTool("select"); }
     if (tool === "line" && placing && draft.length >= 2) { commit(l => [...l, tag({ type: "asset", asset: placing, id: newId(placing), label: ASSET[placing].label, points: draft })]); setSel([els.length]); setPanel("inspect"); }
     setDraft([]);
   }, [tool, draft, commit, els.length, placing, activeLayer]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -225,7 +228,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
       if (e.shiftKey) { drag.current = { kind: "marquee", sx: x, sy: y }; svg.current?.setPointerCapture(e.pointerId); return; }
       setSel([]); setSeats(null); drag.current = { kind: "pan", sx: e.clientX, sy: e.clientY, view }; svg.current?.setPointerCapture(e.pointerId); return;
     }
-    if (tool === "poly" || tool === "wall" || tool === "line") {
+    if (tool === "poly" || tool === "wall" || tool === "line" || tool === "curve") {
       if (e.detail >= 2) { finishDraft(); return; }
       if (tool === "poly" && draft.length >= 3 && dist(p, draft[0]) < view.w / 80) { finishDraft(); return; }
       setDraft(d => [...d, p]); return;
@@ -464,6 +467,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const seatList = s?.seating ? blockSeats(s.seating) : s?.table ? tableSeats(s.table) : [];
 
   return <div ref={wrap} tabIndex={-1} className={`mb${full ? " full" : ""}${sideOpen ? " side-open" : ""}`} style={{ ["--mb-h" as string]: `${height}px` }} onContextMenu={e => { e.preventDefault(); if (sel.length) { const r = wrap.current!.getBoundingClientRect(); setMenu({ x: e.clientX - r.left, y: e.clientY - r.top }); } }}>
+    <DesignFonts elements={els} />
     <div className="mb-bar" role="toolbar" aria-label="Plan tools">
       {title && <b className="mb-title">{title}</b>}
       {TOOLS.map(([t, Icon, label, k]) => <button key={t} type="button" className={tool === t ? "on" : ""} aria-pressed={tool === t} aria-label={label} title={`${label} (${k})`} onClick={() => { setTool(t); setDraft([]); setPlacing(null); }}><Icon aria-hidden="true" /></button>)}
@@ -527,7 +531,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
             {sel.length > 1 && sel.map(i => { const b = elBounds(els[i]); return <rect key={`ms${i}`} x={b.x} y={b.y} width={b.w} height={b.h} className="mb-selbox" />; })}
             {draft.length === 2 && tool === "room" && <g className="mb-draft"><rect x={Math.min(draft[0][0], draft[1][0])} y={Math.min(draft[0][1], draft[1][1])} width={Math.abs(draft[1][0] - draft[0][0])} height={Math.abs(draft[1][1] - draft[0][1])} />
               <text x={(draft[0][0] + draft[1][0]) / 2} y={Math.min(draft[0][1], draft[1][1]) - 6} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(Math.abs(draft[1][0] - draft[0][0]))} m × {mm(Math.abs(draft[1][1] - draft[0][1]))} m</text></g>}
-            {draft.length > 0 && ["poly", "wall", "line", "calibrate"].includes(tool) && <g className="mb-draft">
+            {draft.length > 0 && ["poly", "wall", "line", "calibrate", "curve"].includes(tool) && <g className="mb-draft">
               <polyline points={[...draft, ...(cursor ? [[sn(cursor[0]), sn(cursor[1])]] : [])].map(p => p.join(",")).join(" ")} />
               {draft.map((p, v) => <circle key={v} cx={p[0]} cy={p[1]} r={view.w / 220} />)}
               {cursor && <text x={cursor[0] + 8} y={cursor[1] - 8} className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(dist(draft[draft.length - 1], cursor))} m</text>}</g>}
@@ -579,6 +583,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
       </div>
       <aside className="mb-side">
         <nav className="mb-tabs"><button type="button" className={panel === "assets" ? "on" : ""} onClick={() => setPanel("assets")}><Shapes aria-hidden="true" />Assets</button>
+          <button type="button" className={panel === "design" ? "on" : ""} onClick={() => setPanel("design")}><Palette aria-hidden="true" />Design</button>
           <button type="button" className={panel === "layers" ? "on" : ""} onClick={() => setPanel("layers")}><Layers aria-hidden="true" />Layers</button>
           <button type="button" className={panel === "map" ? "on" : ""} onClick={() => setPanel("map")}><MapIcon aria-hidden="true" />Map</button>
           <button type="button" className={panel === "inspect" ? "on" : ""} onClick={() => setPanel("inspect")}>Edit</button></nav>
@@ -637,6 +642,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
               <button type="button" className="mb-mini" aria-label={e.hidden ? `Show ${nm}` : `Hide ${nm}`} title={e.hidden ? "Show" : "Hide (hidden items aren’t published)"} onClick={() => commit(l => l.map((x, j) => j === i ? { ...x, hidden: x.hidden ? undefined : true } : x))}>{e.hidden ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
               <button type="button" className="mb-mini" aria-label={e.locked ? `Unlock ${nm}` : `Lock ${nm}`} onClick={() => commit(l => l.map((x, j) => j === i ? { ...x, locked: !x.locked } : x))}>{e.locked ? <Lock aria-hidden="true" /> : <Unlock aria-hidden="true" />}</button></li>; })}
               {g === "rooms" && mode === "venue" && spaces.filter(sp => !placed.has(sp.id)).map(sp => <li key={sp.id} className="mb-unplaced"><button type="button" onClick={() => { setTool("room"); toast(`Draw a rectangle, then link it to ${sp.name}`); }}>{sp.name}<em>Not on map</em></button></li>)}</ul></section>; })}</div>}
+        {panel === "design" && <div className="mb-design"><DesignKitPanel at={{ x: view.x + view.w / 2, y: view.y + view.h / 2 }} unit={Math.max(8, Math.round(view.w / 12))}
+          onAdd={d => { commit(l => [...l, tag({ ...(d as MapEl), id: newId(d.type) })]); setSel([els.length]); setPanel("inspect"); }} /></div>}
         {panel === "inspect" && (sel.length > 1 ? <div className="mb-props"><p className="mb-note">{sel.length} items selected</p>
           <div className="mb-align">{([["l", AlignStartVertical, "Align left"], ["c", AlignCenterVertical, "Align centre"], ["r", AlignEndVertical, "Align right"], ["t", AlignStartHorizontal, "Align top"], ["m", AlignCenterHorizontal, "Align middle"], ["b", AlignEndHorizontal, "Align bottom"],
             ["dh", AlignHorizontalSpaceAround, "Distribute horizontally"], ["dv", AlignVerticalSpaceAround, "Distribute vertically"]] as const).map(([k, I, t]) => <button key={k} type="button" title={t} aria-label={t} onClick={() => align(k)}><I aria-hidden="true" /></button>)}</div>
@@ -652,7 +659,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
               <div className="mb-flags">{FLAGS.map(([f, l]) => <button key={f} type="button" className={`f-${f}`} onClick={() => flagSeats(f)}>{l}</button>)}</div>
               {mode === "event" && tiers.length > 0 && <label>Ticket tier for these seats<select className="ws-select" value="" onChange={e => tierSeats(e.target.value)}><option value="">Use block tier</option>{tiers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>}
               <button type="button" className="ws-btn ghost sm" onClick={() => setSeats(null)}>Done</button></div> : null}
-            <label>{s.type === "label" ? "Text" : "Name"}<input ref={nameRef} value={s.label} maxLength={60} onChange={e => setS({ label: e.target.value })} /></label>
+            <label>{s.type === "label" || s.type === "text" ? "Text" : "Name"}<input ref={nameRef} value={s.label} maxLength={60} onChange={e => setS({ label: e.target.value })} /></label>
+            {isDesignEl(s) && <DesignElProps e={s as DesignEl} onChange={p => setS(p as Partial<MapEl>)} />}
             {layerDefs.length > 0 && s.type !== "basemap" && <label>Layer<select className="ws-select" value={s.layer ?? ""} onChange={e => setS({ layer: e.target.value || undefined })}><option value="">No layer</option>{layerDefs.map(L => <option key={L.id} value={L.id}>{L.label}</option>)}</select></label>}
             {s.type === "room" && mode === "venue" && <label>Linked space<select className="ws-select" value={s.space ?? ""} onChange={e => setS({ space: e.target.value || undefined, label: spaces.find(sp => sp.id === e.target.value)?.name ?? s.label })}>
               <option value="">Not linked (non-bookable area)</option>{spaces.filter(sp => sp.id === s.space || !placed.has(sp.id)).map(sp => <option key={sp.id} value={sp.id}>{sp.name}</option>)}</select></label>}

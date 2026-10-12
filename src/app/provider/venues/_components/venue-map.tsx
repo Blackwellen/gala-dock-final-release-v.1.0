@@ -3,6 +3,7 @@ import type { PointerEvent as ReactPointerEvent, Ref, ReactNode } from "react";
 import { AssetShape, PlanDefs, pointLabelHidden, type SeatFlag, type SeatState } from "@/components/venue-plan/asset-shape";
 import { tileUrl, styleMaxZoom, MAP_ATTRIBUTION } from "@/lib/maps/styles";
 import type { Seating, TableSpec } from "@/components/venue-plan/assets";
+import { DesignElView, isDesignEl, type DesignEl } from "@/components/venue-plan/design-el-view";
 
 /**
  * One element of a venue's structural map (venue_structures.elements). Units: 10 map units = 1 metre.
@@ -15,6 +16,9 @@ export type MapEl = {
   /** Plan assets (type "asset"): catalogue key, rotation, seating/table specs, capacity, ticket tier, per-seat flags/tiers. */
   /** Custom layer id (elements of type "layer" define layers: id + label; they draw nothing). Basemap: tile style. */
   layer?: string; mapStyle?: string;
+  /** Design elements (types glyph/shape/text/curve/widget — see design-el-view.tsx): icon/emoji/symbol, library shape, styled text, curve, widget. */
+  glyph?: DesignEl["glyph"]; d?: string; lineOnly?: boolean; font?: string; weight?: number; italic?: boolean; align?: DesignEl["align"];
+  smooth?: boolean; closed?: boolean; endCap?: DesignEl["endCap"]; widget?: DesignEl["widget"]; style?: DesignEl["style"];
   asset?: string; rot?: number; seating?: Seating; table?: TableSpec; capacity?: number; tier?: string | null; color?: string; seatFlags?: Record<string, SeatFlag>; seatTiers?: Record<string, string>;
 };
 export type MapSpace = { id: string; name: string; capacity: number; indoor: boolean };
@@ -105,6 +109,7 @@ export function MapContent({ elements, spaces, dim, selected, selectedIndex = nu
     })}
     {layer(e => e.type === "asset", (e, i) => <g key={`s${i}`} className={`vm-asset${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
       <AssetShape e={e} selected={on(i, e)} detail={detail} tierColor={tierColor} seatState={seatState} selectedSeats={selectedSeats} onSeat={onSeat ? (k, ev) => onSeat(i, k, ev) : undefined} scale={labelSize / 13} hideLabel={hiddenLabels.has(i)} /></g>)}
+    {layer(e => isDesignEl(e), (e, i) => <DesignElView key={`d${i}`} e={e as DesignEl} selected={on(i, e)} onDown={down(i)} />)}
     {layer(e => e.type === "label", (e, i) => <g key={`t${i}`} className={`vm-text${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
       <text x={e.x} y={e.y} className="vm-free" style={{ fontSize: e.size ?? 14 }}>{e.label}</text></g>)}
     {children}
