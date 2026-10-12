@@ -156,3 +156,17 @@
 @media (max-width: 600px) { .o-main .k-row, .o-main .k-between { flex-wrap: wrap; } .o-main { overflow-x: clip; } }
 /* Phones: grid/flex children may shrink so wide tables scroll inside their wrapper instead of widening the page. */
 @media (max-width: 900px) { .o-main :is(div, section, article) { min-width: 0; } .o-main .k-table-wrap { max-width: 100%; } }
+
+/* Top bar layout (same as the provider/admin bars): logo and workspace switcher left · search centred (up to 1,065px) ·
+   Create, messages, notifications and help grouped on the right beside the account menu. */
+.o-top { --top-side: 340px; display: grid; grid-template-columns: minmax(var(--top-side), 1fr) minmax(0, 1065px) minmax(var(--top-side), 1fr); column-gap: 20px; }
+.o-top .o-top-lbl { display: none; }
+@media (max-width: 1279px) { .o-top { grid-template-columns: minmax(max-content, auto) minmax(0, 1fr) max-content; } }
+.o-top-l, .o-top-r { display: flex; align-items: center; min-width: 0; }
+.o-top-r { justify-self: end; gap: 18px; }
+.o-top-r .o-create, .o-top-r .o-top-btn { margin: 0; }
+.o-top-r .o-top-help { margin-right: 0 !important; }
+.o-top .o-search { flex: none; width: 100%; max-width: none; }
+.o-top-l .o-ws { margin-right: 0; }
+@media (max-width: 1360px) { .o-top-r { gap: 12px; } }
+.o-top .o-gs .gs { max-width: none; }

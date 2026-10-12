@@ -178,13 +178,16 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
   ].filter(Boolean) as { href: string; label: string }[];
   const mobileMenu: NavEntry[] = nav.map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
   return <div className={`ws-app provider ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={mobileMenu} title={workspace.name} home="/provider" />
+    <MobileNav menu={mobileMenu} title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} />
     <ShellTools />
     <header className="ws-topbar pwa-hide-desktop-nav">
-      <MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
-      <div className="ws-brand"><BrandLogo href="/provider" /></div>
+      <div className="ws-top-l"><MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
+      <div className="ws-brand"><BrandLogo href="/provider" /></div></div>
       <div className="ws-gs"><GlobalSearch seat={activeId} placeholder="Search events, bookings, venues, services, or contacts..." /></div>
       <div className="ws-actions">
+        <Popover label="Create" className="ws-create" trigger={<span className="ws-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></span>}>
+          {create.map(c => <Link key={c.href} href={c.href} role="menuitem">{c.label}</Link>)}
+        </Popover>
         <Popover label={`Messages, ${counts.messages} unread`} className="ws-icon-pop" trigger={<><MessageSquareText aria-hidden="true" />{counts.messages > 0 && <b className="ws-count">{counts.messages}</b>}</>}>
           <div className="ws-pop-head"><b>Messages</b><small>{counts.messages} unread</small></div>
           <NoticeList items={messages} empty="No conversations yet." footer={{ href: "/provider/inbox", label: "Open inbox" }} />
@@ -192,9 +195,6 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
         <Popover label={`Notifications, ${counts.notifications} unread`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.notifications > 0 && <i className="ws-dot" />}</>}>
           <div className="ws-pop-head"><b>Notifications</b></div>
           <NoticeList items={notifications} empty="You’re all caught up." />
-        </Popover>
-        <Popover label="Create" className="ws-create" trigger={<span className="ws-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></span>}>
-          {create.map(c => <Link key={c.href} href={c.href} role="menuitem">{c.label}</Link>)}
         </Popover>
         <Link href="/help" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
         <AccountMenu name={user.name} subtitle={workspace.name} avatar={user.avatar} links={[{ href: "/provider/settings", label: "Workspace settings" }, { href: "/discover", label: "Switch to Customer" }]} />
@@ -257,11 +257,11 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
   const activeHref = [...nav].sort((a, b) => b.href.length - a.href.length).find(i => isActive(pathname, i))?.href;
   const mobileMenu: NavEntry[] = nav.filter(n => !n.locked).map(n => ({ href: n.href, label: n.label, icon: n.icon }));
   return <div className={`ws-app admin ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={mobileMenu} title="Platform Admin" home="/admin" />
+    <MobileNav menu={mobileMenu} title="Platform Admin" home="/admin" search={{ seat: null, placeholder: "Search users, events, orders, tickets…" }} />
     <ShellTools />
     <header className="ws-topbar pwa-hide-desktop-nav">
-      <MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
-      <div className="ws-brand"><BrandLogo href="/admin" /></div>
+      <div className="ws-top-l"><MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
+      <div className="ws-brand"><BrandLogo href="/admin" /></div></div>
       <div className="ws-gs"><GlobalSearch seat={null} placeholder="Search users, events, orders, tickets, venues, services, reports..." /></div>
       <div className="ws-actions">
         <Popover label={`Platform alerts, ${counts.alerts}`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.alerts > 0 && <b className="ws-count">{counts.alerts}</b>}</>}>

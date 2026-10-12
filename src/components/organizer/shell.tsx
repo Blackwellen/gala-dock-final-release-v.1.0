@@ -57,8 +57,9 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
 
   return <div className="k-root o-root">
     <a href="#main" className="k-sr" style={{ position: "absolute" }}>Skip to content</a>
-    <MobileNav home="/organizer" title={workspace.name} menu={ORG_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href }))} tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Money", "Gala Agent"].includes(n.label)).map(n => ({ href: n.href, label: n.label === "Gala Agent" ? "Agent" : n.label, icon: n.icon, match: n.href }))} />
+    <MobileNav home="/organizer" title={workspace.name} search={{ seat: workspace.id, placeholder: "Search events, venues, suppliers, clients…" }} menu={ORG_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href }))} tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Money", "Gala Agent"].includes(n.label)).map(n => ({ href: n.href, label: n.label === "Gala Agent" ? "Agent" : n.label, icon: n.icon, match: n.href }))} />
     <header className="o-top pwa-hide-desktop-nav">
+      <div className="o-top-l">
       <button className="o-burger k-icon-btn plain" aria-label="Open navigation" aria-expanded={navOpen} onClick={() => setNavOpen(true)}><MenuIcon size={20} /></button>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={170} height={44} /></Link>
@@ -73,22 +74,23 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <Link role="menuitem" className="k-menu-item" href="/discover" onClick={close}><User size={16} aria-hidden />Customer app</Link>
           <Link role="menuitem" className="k-menu-item" href="/onboarding" onClick={close}><Plus size={16} aria-hidden />Create a workspace</Link>
         </>}
-      </Menu>
+      </Menu></div>
       <div className="o-search o-gs"><GlobalSearch seat={workspace.id} placeholder="Search events, venues, suppliers, clients, or anything..." /></div>
+      <div className="o-top-r">
       <Menu label="Create" width={260} trigger={({ open, toggle, id }) => <div className="k-split o-create"><Link href="/organizer/events/new?step=1" className="k-btn primary"><Plus size={17} aria-hidden />Create</Link><button className="k-btn primary" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu" aria-label="More create options"><ChevronDown size={16} /></button></div>}>
         {close => CREATE.map(c => <Link key={c.href} role="menuitem" href={c.href} className="k-menu-item" onClick={close}><c.icon size={16} className="k-blue" aria-hidden /><span>{c.label}<small>{c.sub}</small></span></Link>)}
       </Menu>
-      <Menu label="Messages" width={330} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={toggle} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><MessageCircle size={21} aria-hidden />{threads.length > 0 && <i className="o-dot" />}</span><span className="o-top-lbl">Messages</span></button>}>
+      <Menu label="Messages" width={330} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><span className="o-badge-wrap"><MessageCircle size={21} aria-hidden />{threads.length > 0 && <i className="o-dot" />}</span><span className="o-top-lbl">Messages</span></button>}>
         {close => <><div className="k-between" style={{ padding: "6px 10px" }}><b>Recent conversations</b></div>
           {threads.length ? threads.map(t => <Link key={t.id} role="menuitem" href={t.href} className="k-menu-item" onClick={close}><MessageSquare size={15} aria-hidden className="k-blue" /><span className="k-grow">{t.title}<small>{t.event} · {relative(t.at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>No supplier conversations yet. Conversations start when you send an enquiry or request from Marketplace.</p>}
         </>}
       </Menu>
-      <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead(), { refresh: true }); }} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><Bell size={20} aria-hidden />{unread > 0 && <i className="o-dot" aria-label={`${unread} unread`} />}</span><span className="o-top-lbl">Notifications</span></button>}>
+      <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="o-top-btn" aria-label="Notifications" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead(), { refresh: true }); }} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><Bell size={20} aria-hidden />{unread > 0 && <i className="o-dot" aria-label={`${unread} unread`} />}</span><span className="o-top-lbl">Notifications</span></button>}>
         {close => <><div style={{ padding: "6px 10px" }}><b>Notifications</b></div>
           {notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} aria-hidden className={n.read_at ? "k-muted" : "k-blue"} /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}
         </>}
       </Menu>
-      <Link href="/help" className="o-top-btn o-top-help"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
+      <Link href="/help" className="o-top-btn o-top-help" aria-label="Help"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
       <Menu label="Account" width={240} trigger={({ open, toggle, id }) => <button className="o-avatar" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Account menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={user.avatar || "/assets/gd/av-alex-organizer.webp"} alt="" /><ChevronDown size={16} aria-hidden /></button>}>
@@ -98,7 +100,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <Link role="menuitem" className="k-menu-item" href="/discover" onClick={close}><Ticket size={15} aria-hidden />Customer app</Link>
           <div className="k-menu-sep" />
           <form action="/auth/signout" method="post"><button role="menuitem" className="k-menu-item" type="submit"><LogOut size={15} aria-hidden />Sign out</button></form></>}
-      </Menu>
+      </Menu></div>
     </header>
     <aside className={`o-side pwa-hide-desktop-nav ${navOpen ? "open" : ""}`} aria-label="Workspace navigation">
       <div className="o-side-mobile-head"><b>{workspace.name}</b><button className="k-icon-btn plain" aria-label="Close navigation" onClick={() => setNavOpen(false)}><X size={18} /></button></div>
