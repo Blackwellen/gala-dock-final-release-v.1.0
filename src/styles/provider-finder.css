@@ -1,0 +1,60 @@
+/* Customer "Add to your event" provider finder (components/customer/add-provider.tsx). Prefix pf- (ap- is used by Admin profiles). */
+.k-backdrop .k-dialog.wide:has(.pf) { width: min(1040px, calc(100vw - 32px)); max-width: none; }
+.pf { --pf-ink: #0b1033; --pf-muted: #5b6283; --pf-line: #e6eaf4; --pf-blue: #0038fd; display: grid; gap: 12px; color: var(--pf-ink); min-width: 0; }
+.pf-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pf .pf-search { flex: 1 1 260px; display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1px solid #d9e0ef; border-radius: 11px; background: #fff; color: var(--pf-muted); min-width: 0; }
+.pf .pf-search:focus-within { border-color: var(--pf-blue); box-shadow: 0 0 0 3px rgba(0, 56, 253, .12); }
+.pf .pf-search input, .pf .pf-search input:focus { flex: 1; width: 100%; min-width: 0; border: 0; outline: 0; box-shadow: none; height: auto; padding: 0; font: inherit; font-size: 14px; color: var(--pf-ink); background: none; }
+.pf .pf-cat select, .pf .pf-sort select { height: 42px; border: 1px solid #d9e0ef; border-radius: 11px; padding: 0 30px 0 12px; font: inherit; font-size: 13.5px; color: var(--pf-ink); background-color: #fff; cursor: pointer; }
+.pf .pf-cat select { font-weight: 650; }
+.pf .pf-more { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid #d9e0ef; border-radius: 11px; background: #fff; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--pf-ink); cursor: pointer; }
+.pf .pf-more.on, .pf .pf-more:hover { border-color: var(--pf-blue); color: var(--pf-blue); }
+.pf-more b { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--pf-blue); color: #fff; font-size: 11px; }
+.pf-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.pf .pf-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--pf-line); border-radius: 16px; background: #fff; font: inherit; font-size: 12.5px; font-weight: 600; color: #2a3060; cursor: pointer; }
+.pf .pf-chip:hover { border-color: #b9c7f2; }
+.pf .pf-chip.on { background: #edf1ff; border-color: var(--pf-blue); color: var(--pf-blue); }
+.pf-panel { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; padding: 12px; border: 1px solid var(--pf-line); border-radius: 12px; background: #f8f9fd; }
+.pf-panel label { display: grid; gap: 4px; }
+.pf-panel label span { font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .04em; color: var(--pf-muted); }
+.pf-panel select { height: 36px; border: 1px solid #d9e0ef; border-radius: 9px; padding: 0 10px; font: inherit; font-size: 13px; background: #fff; color: var(--pf-ink); }
+.pf-summary { margin: 0; font-size: 12.5px; color: var(--pf-muted); }
+.pf-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; transition: opacity .15s; }
+.pf-grid.busy { opacity: .55; }
+.pf-card { display: flex; flex-direction: column; border: 1px solid var(--pf-line); border-radius: 14px; overflow: hidden; background: #fff; transition: box-shadow .15s, border-color .15s; min-width: 0; }
+.pf-card:hover { border-color: #c9d4f2; box-shadow: 0 10px 26px rgba(11, 16, 51, .08); }
+.pf-img { position: relative; aspect-ratio: 16 / 10; background: #eef1f8; overflow: hidden; display: block; }
+.pf-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pf-avail { position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.pf-avail.ok { background: rgba(232, 250, 240, .95); color: #0f7a4f; }
+.pf-avail.warn { background: rgba(255, 246, 225, .95); color: #9a5b00; }
+.pf-avail.no { background: rgba(255, 236, 236, .95); color: #b42318; }
+.pf-badge { position: absolute; right: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(11, 16, 51, .78); color: #fff; font-size: 11px; font-weight: 650; }
+.pf-body { display: grid; gap: 4px; padding: 12px 12px 6px; flex: 1; align-content: start; min-width: 0; }
+.pf-title { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.pf-title h3 { margin: 0; font-size: 14.5px; font-weight: 700; color: var(--pf-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-ver { color: var(--pf-blue); flex: none; }
+.pf-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 0; font-size: 12px; color: var(--pf-muted); }
+.pf-meta b { color: var(--pf-ink); }
+.pf-tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 6px; background: #f1f4fb; color: #3a4170; font-size: 11px; font-weight: 600; }
+.pf-price { display: grid; margin-top: 4px; }
+.pf-price b { font-size: 15px; color: var(--pf-ink); }
+.pf-price small { font-size: 11.5px; color: var(--pf-muted); }
+.pf-price .pf-est { color: #0f7a4f; font-weight: 600; }
+.pf-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px 12px 12px; }
+.pf-acts .k-btn { justify-content: center; }
+.pf .pf-added, .pf .pf-added:disabled { background: #e8faf0; color: #0f7a4f; border-color: #b7ebcf; opacity: 1; }
+.pf-card.sk .pf-img { animation: pf-pulse 1.2s ease-in-out infinite; }
+.pf-card.sk .pf-l { display: block; height: 12px; margin: 12px 12px 0; border-radius: 6px; background: #eef1f8; animation: pf-pulse 1.2s ease-in-out infinite; }
+.pf-card.sk .pf-l.s { width: 50%; margin-bottom: 16px; }
+@keyframes pf-pulse { 50% { opacity: .55; } }
+.pf-empty { display: grid; justify-items: center; gap: 6px; padding: 28px 12px; text-align: center; border: 1px dashed #d4dcef; border-radius: 14px; color: var(--pf-muted); font-size: 13px; }
+.pf-empty b { color: var(--pf-ink); font-size: 14.5px; }
+.pf-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+.pf-done { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #0f7a4f; }
+@media (max-width: 900px) { .pf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .pf-grid { grid-template-columns: 1fr; }
+  .pf .pf-search { flex-basis: 100%; order: -1; } .pf-cat, .pf-sort { flex: 1 1 40%; } .pf .pf-cat select, .pf .pf-sort select { width: 100%; }
+  .pf .pf-more { flex: 1 1 100%; justify-content: center; }
+}

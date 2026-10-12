@@ -1,11 +1,11 @@
 "use client";
+import { AddProvider } from "./add-provider";
 import Link from "next/link";
-import { replaceWith } from "@/lib/actions/build-extra";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MoreHorizontal, ExternalLink, CalendarCog, Copy, XCircle, Plus, Search, Trash2, Clock, Star, ArrowRight, AlertTriangle, Check, Repeat, Shield } from "lucide-react";
+import { MoreHorizontal, ExternalLink, CalendarCog, Copy, XCircle, Trash2, Clock, ArrowRight, AlertTriangle, Check, Repeat, Shield } from "lucide-react";
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
-import { addToBuild, removeFromBuild, requestQuote, holdItem, setItemRole, dateChangeImpact, changeEventDate, type DateImpact } from "@/lib/actions/build";
+import { removeFromBuild, requestQuote, holdItem, setItemRole, dateChangeImpact, changeEventDate, type DateImpact } from "@/lib/actions/build";
 import { duplicateMyEvent } from "@/lib/actions/events";
 
 export function HeaderMenu({ id, name }: { id: string; name: string }) {
@@ -64,15 +64,8 @@ export function ItemMenu({ eventId, it, href }: { eventId: string; it: Item; hre
 }
 
 type L = { id: string; name: string; image: string; rating: number; review_count: number; price_from: number | null; price_unit: string; location: string; category: string };
-export function AddProviderDialog({ eventId, category, label, listings, trigger, replaceId, initialOpen = false }: { eventId: string; category: string; label: string; listings: L[]; trigger: "button" | "tile" | "link"; replaceId?: string; initialOpen?: boolean }) {
-  const { run, pending } = useAction(); const [open, setOpen] = useState(initialOpen); const [q, setQ] = useState("");
-  const shown = listings.filter(l => !q || `${l.name} ${l.category} ${l.location}`.toLowerCase().includes(q.toLowerCase())).slice(0, 12);
-  return <>
-    {trigger === "button" ? <button className="k-btn outline lg" onClick={() => setOpen(true)}><Plus size={16} />{label}</button> : trigger === "tile" ? <button className="cb-add-tile" aria-label={label} onClick={() => setOpen(true)}><Plus size={16} /></button> : <button className="k-link" onClick={() => setOpen(true)}>{label}</button>}
-    <Dialog open={open} onClose={() => setOpen(false)} title={label} sub={replaceId ? "Your current option is kept as a backup. Nothing is booked until you confirm." : "Add options to compare. Nothing is booked until you confirm."} wide>
-      <div className="k-input-icon" style={{ marginBottom: 12 }}><Search size={15} /><input className="k-input" value={q} onChange={e => setQ(e.target.value)} placeholder="Search providers…" aria-label="Search providers" /></div>
-      <div className="cb-pick">{shown.map(l => <div key={l.id} className="cb-pick-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || "/assets/gd/covers/summer-sessions.webp"} alt="" /><div className="k-grow"><b>{l.name}</b><div className="k-xs k-muted"><Star size={10} fill="#f59e0b" color="#f59e0b" /> {l.rating.toFixed(1)} ({l.review_count}) · {l.category} · {l.location}</div></div><b className="k-small">{l.price_from != null ? `From £${Number(l.price_from).toLocaleString()}` : "On request"}<div className="k-xs k-muted" style={{ fontWeight: 400 }}>{l.price_unit}</div></b><button className="k-btn primary sm" disabled={pending} onClick={async () => { const r = await run(() => replaceId ? replaceWith(eventId, replaceId, l.id, category) : addToBuild(eventId, l.id, category)); if (r.ok) setOpen(false); }}>{replaceId ? "Choose" : "Add"}</button></div>)}{!shown.length && <p className="k-small">No providers match.</p>}</div>
-      <Link className="k-link" href={`/discover?tab=${category === "venue" ? "venues" : "services"}&results=1`} style={{ marginTop: 10 }}>Browse all on Discover <ArrowRight size={12} /></Link>
-    </Dialog>
-  </>;
+/** Add (or replace) a provider for one build category. Searches the live marketplace with event-aware filters (see AddProvider);
+ *  `listings` is no longer needed and is kept only so existing callers keep compiling. */
+export function AddProviderDialog({ eventId, category, label, trigger, replaceId, initialOpen = false }: { eventId: string; category: string; label: string; listings?: L[]; trigger: "button" | "tile" | "link"; replaceId?: string; initialOpen?: boolean }) {
+  return <AddProvider eventId={eventId} category={category} label={label} trigger={trigger} replaceId={replaceId} initialOpen={initialOpen} />;
 }
