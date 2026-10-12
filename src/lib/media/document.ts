@@ -56,6 +56,14 @@ export type EventData = Partial<Record<(typeof PLACEHOLDERS)[number] | "event.co
 /** Shown for placeholders when a design isn't linked to an event yet, so templates read naturally instead of showing {{braces}}. */
 export const PLACEHOLDER_DEFAULTS: EventData = { "event.name": "Your Event Name", "event.date": "Sat 21 June", "event.time": "19:30", "event.venue_name": "Your Venue", "event.city": "London",
   "event.public_url": "https://www.galadock.com", "ticket.starting_price": "£25", "organizer.name": "Your Company" };
+/** Plain-English names for the placeholders. Editors show "[Event name]" instead of "{{event.name}}" (customers never see braces). */
+export const FIELD_LABELS: Record<(typeof PLACEHOLDERS)[number], string> = { "event.name": "Event name", "event.date": "Date", "event.time": "Start time", "event.venue_name": "Venue",
+  "event.city": "City", "event.public_url": "Ticket link", "ticket.starting_price": "Lowest ticket price", "organizer.name": "Organiser name" };
+const LABEL_TO_KEY = Object.fromEntries(Object.entries(FIELD_LABELS).map(([k, v]) => [v.toLowerCase(), k]));
+/** {{event.name}} → [Event name] for display/editing. */
+export const toFriendly = (text: string) => text.replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, k: string) => (FIELD_LABELS as Record<string, string>)[k] ? `[${(FIELD_LABELS as Record<string, string>)[k]}]` : m);
+/** [Event name] → {{event.name}} when saving (case-insensitive; unknown [brackets] are left as typed). */
+export const fromFriendly = (text: string) => text.replace(/\[([^\[\]{}]{2,40})\]/g, (m, label: string) => LABEL_TO_KEY[label.trim().toLowerCase()] ? `{{${LABEL_TO_KEY[label.trim().toLowerCase()]}}}` : m);
 export const fillPlaceholders = (text: string, data: EventData) => text.replace(/\{\{([a-z_]+\.[a-z_]+)\}\}/g, (m, k: string) => data[k as keyof EventData] ?? PLACEHOLDER_DEFAULTS[k as keyof EventData] ?? m);
 export const resolveText = (l: TextLayer | CodeLayer, data: EventData) => {
   const raw = l.type === "text" ? l.text : l.value;

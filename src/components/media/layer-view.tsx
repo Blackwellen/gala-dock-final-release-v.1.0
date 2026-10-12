@@ -4,7 +4,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import QRCode from "qrcode";
 import { icons } from "lucide-react";
 import { code128Svg } from "@/lib/tickets/code128";
-import { resolveText, fillPlaceholders, COVER_PLACEHOLDER, type EventData, type Layer, type Effects, type Fill, type EraseStroke, type PathLayer } from "@/lib/media/document";
+import { resolveText, fillPlaceholders, toFriendly, fromFriendly, COVER_PLACEHOLDER, type EventData, type Layer, type Effects, type Fill, type EraseStroke, type PathLayer } from "@/lib/media/document";
 import { fillCss, assetSrc } from "@/lib/media/render";
 import { textFxShadow } from "@/lib/design-kit/effects";
 import { WidgetView } from "@/components/design-kit/widget-view";
@@ -91,7 +91,7 @@ export function LayerView({ l, data, editing, onText }: { l: Layer; data: EventD
       const inner: CSSProperties = l.fill && l.fill.type !== "solid" ? { backgroundImage: fillCss(l.fill), WebkitBackgroundClip: "text", backgroundClip: "text" } : {};
       const txt = resolveText(l, data);
       return <div style={style} data-layer={l.id}><span style={{ ...inner, background: l.highlight ? l.highlight : inner.backgroundImage ? undefined : "none", backgroundImage: inner.backgroundImage, padding: l.highlight ? "0.05em 0.25em" : undefined, outline: "none" }}
-        contentEditable={editing} suppressContentEditableWarning onBlur={e => onText?.(e.currentTarget.innerText)}>{editing ? l.text : txt}</span></div>;
+        contentEditable={editing} suppressContentEditableWarning onBlur={e => onText?.(fromFriendly(e.currentTarget.innerText))}>{editing ? toFriendly(l.text) : txt}</span></div>;
     }
     case "image": {
       const r = l.mask === "circle" || l.mask === "ellipse" ? "50%" : l.mask === "rounded" ? Math.min(l.w, l.h) * 0.08 : radiusCss(l.effects);

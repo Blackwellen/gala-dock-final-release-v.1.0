@@ -1,0 +1,16 @@
+/* Event details (Media Studio): insert dropdown, friendly fields, add-detail buttons. */
+.ef{position:relative;display:inline-block}
+.ef-trigger{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px;border:1px solid #d9dff2;border-radius:8px;background:#f5f6ff;color:#0b08f8;font:600 12px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.ef-trigger:hover,.ef-trigger[aria-expanded="true"]{border-color:#0b08f8;background:#eef0ff}
+.ef-menu{position:absolute;z-index:140;right:0;top:calc(100% + 4px);width:260px;max-height:340px;overflow:auto;padding:5px;background:#fff;border:1px solid #e3e8f5;border-radius:12px;box-shadow:0 18px 40px -14px rgba(9,10,46,.35)}
+.ef-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:7px 8px;border:0;border-radius:8px;background:none;text-align:left;cursor:pointer;color:#090a2e}
+.ef-menu button:hover,.ef-menu button:focus-visible{background:#f2f4ff;outline:none}.ef-menu svg{color:#0b08f8;flex-shrink:0}
+.ef-menu span,.ef-grid span{display:grid;min-width:0}.ef-menu b,.ef-grid b{font-size:12.5px;font-weight:600}
+.ef-menu small,.ef-grid small{font-size:11px;color:#5d63a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ef-note{margin:4px 6px 6px;font-size:11.5px;line-height:1.45;color:#5d63a6}
+.ef-field{display:grid;gap:5px}.ef-head{display:flex;align-items:center;justify-content:space-between;gap:6px}.ef-head>span{font-size:11px;font-weight:600;color:#4a50a6}
+.ef-field textarea,.ef-field input{width:100%;box-sizing:border-box;border:1px solid #e6ecf8;border-radius:8px;padding:7px 9px;font:inherit;font-size:12.5px;color:#090a2e;resize:vertical}
+.ef-hint{margin:0;font-size:11px;line-height:1.45;color:#5d63a6}
+.ef-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.ef-grid button{display:flex;align-items:center;gap:8px;width:100%;padding:8px;border:1px solid #e6ecf8;border-radius:9px;background:#fff;text-align:left;cursor:pointer;color:#090a2e}
+.ef-grid button:hover{border-color:#0b08f8}.ef-grid svg{color:#0b08f8;flex-shrink:0}
