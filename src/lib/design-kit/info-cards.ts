@@ -1,4 +1,4 @@
-// Info cards: ~150 event topics × 40 card layouts (≈ 6,000 ready-made widgets before colour themes). Each topic carries a
+// Info cards: ~425 event topics × 60 card layouts (≈ 25,500 ready-made cards before colour themes). Each topic carries a
 // Lucide icon (bundled — no download), a title and starter wording; layouts vary icon placement, frame and emphasis.
 const TOPIC_SRC = `Arrival|DoorOpen|Doors open|Doors open at 19:00 — please arrive on time.
 Arrival|DoorClosed|Last entry|Last entry is at 22:00.
@@ -153,10 +153,11 @@ Business|Key|Badge collection|Collect your badge at registration.
 Business|Plug|Charging|Charging points in the lounge.
 Business|Battery|Low battery?|Power banks at the info desk.
 Business|Trash|Keep it clean|Please take litter home.`;
+import { MORE_TOPICS } from "./info-topics";
 export type CardTopic = { group: string; icon: string; title: string; text: string };
-export const CARD_TOPICS: CardTopic[] = TOPIC_SRC.split("\n").map(r => { const [group, icon, title, text] = r.split("|"); return { group: group!, icon: icon!, title: title!, text: text! }; });
+export const CARD_TOPICS: CardTopic[] = `${TOPIC_SRC}\n${MORE_TOPICS}`.split("\n").filter(Boolean).map(r => { const [group, icon, title, text] = r.split("|"); return { group: group!, icon: icon!, title: title!, text: text! }; });
 const ICON_POS = ["left", "top", "right", "badge", "none"] as const;
-const FRAMES = ["card", "rounded", "pill", "outline", "banner", "ticket", "sticker", "split"] as const;
+const FRAMES = ["card", "rounded", "pill", "outline", "banner", "ticket", "sticker", "split", "tile", "accent", "elevated", "minimal"] as const;
 export type CardLayout = { id: number; icon: (typeof ICON_POS)[number]; frame: (typeof FRAMES)[number]; name: string };
 export const CARD_LAYOUTS: CardLayout[] = ICON_POS.flatMap(icon => FRAMES.map(frame => ({ icon, frame }))).map((x, id) => ({ id, ...x, name: `${x.frame[0]!.toUpperCase()}${x.frame.slice(1)} · icon ${x.icon}` }));
 export const cardSize = (lay: CardLayout) => lay.frame === "pill" || lay.frame === "banner" ? { w: 760, h: 160 } : lay.icon === "top" || lay.icon === "badge" ? { w: 520, h: 420 } : { w: 760, h: 240 };

@@ -5,7 +5,8 @@ import { icons as lucide } from "lucide-react";
 import { loadFonts, loadEmoji, loadIndex, loadIconSet, iconOf, type FontMeta, type EmojiMeta, type IconSet, type IconSetMeta, type IconSvg } from "@/lib/design-kit/assets";
 import { symbolGroups } from "@/lib/design-kit/symbols";
 import { shapeLibrary, type ShapeDef } from "@/lib/design-kit/shapes";
-import { WIDGETS, VARIANTS, THEMES, type WidgetDef, type WidgetTheme } from "@/lib/design-kit/widgets";
+import { VARIANTS, THEMES, type WidgetTheme } from "@/lib/design-kit/widgets";
+import { widgetPresets, type WidgetPreset } from "@/lib/design-kit/widget-presets";
 import { CARD_TOPICS, CARD_LAYOUTS, cardSize, type CardTopic } from "@/lib/design-kit/info-cards";
 import { effectPresets, type EffectPreset } from "@/lib/design-kit/effects";
 import { WidgetView } from "./widget-view";
@@ -54,26 +55,32 @@ export function FontPicker({ value, onChange, custom = [] }: { value: FontChoice
   </div>;
 }
 
-// ── Icons
+// ── Icons (54k+: line, filled, colour and brand libraries)
 export type IconChoice = { name: string; set: string; svg?: IconSvg };
 const LUCIDE = Object.keys(lucide);
+const GROUPS = [["all", "All"], ["line", "Line"], ["filled", "Filled"], ["colour", "Colour"], ["brands", "Brands"]] as const;
 export function IconPicker({ onPick }: { onPick: (i: IconChoice) => void }) {
-  const [sets, setSets] = useState<IconSetMeta[]>([]), [setId, setSetId] = useState("lucide"), [data, setData] = useState<IconSet | null>(null), [q, setQ] = useState("");
+  const [sets, setSets] = useState<IconSetMeta[]>([]), [group, setGroup] = useState<(typeof GROUPS)[number][0]>("all"), [setId, setSetId] = useState("lucide"), [data, setData] = useState<IconSet | null>(null), [q, setQ] = useState("");
   useEffect(() => { void loadIndex().then(i => setSets(i.iconSets)).catch(() => setSets([])); }, []);
-  useEffect(() => { if (setId === "lucide") { queueMicrotask(() => setData(null)); return; } let live = true; queueMicrotask(() => setData(null)); void loadIconSet(setId).then(d => { if (live) setData(d); }); return () => { live = false; }; }, [setId]);
-  const names = useMemo(() => { const all = setId === "lucide" ? LUCIDE : data ? Object.keys(data.i) : []; const t = q.trim().toLowerCase().replace(/\s+/g, "-"); return t ? all.filter(n => n.toLowerCase().includes(t)) : all; }, [setId, data, q]);
-  const [n, more] = useMore(120, [setId, q]);
-  const total = 1 + sets.length, count = LUCIDE.length + sets.reduce((a, s) => a + s.count, 0);
+  const inGroup = sets.filter(s => group === "all" || s.group === group);
+  const options = [...(group === "all" || group === "line" ? [{ prefix: "lucide", name: "Lucide", count: LUCIDE.length } as Pick<IconSetMeta, "prefix" | "name" | "count">] : []), ...inGroup];
+  const current = options.some(o => o.prefix === setId) ? setId : options[0]?.prefix ?? "lucide";
+  useEffect(() => { if (current === "lucide") { queueMicrotask(() => setData(null)); return; } const meta = sets.find(s => s.prefix === current); if (!meta) return;
+    let live = true; queueMicrotask(() => setData(null)); void loadIconSet(meta).then(d => { if (live) setData(d); }); return () => { live = false; }; }, [current, sets]);
+  const all = current === "lucide" ? LUCIDE : data ? Object.keys(data.i) : [], term = q.trim().toLowerCase().replace(/\s+/g, "-");
+  const names = term ? all.filter(x => x.toLowerCase().includes(term)) : all;
+  const [n, more] = useMore(120, [current, q]);
+  const count = LUCIDE.length + sets.reduce((a, s) => a + s.count, 0);
   return <div className="dk-picker">
     <Search value={q} onChange={setQ} placeholder={`Search ${count.toLocaleString("en-GB")} icons`} label="Search icons" />
-    <label className="dk-mini wide"><span>Library ({total})</span><select aria-label="Icon library" value={setId} onChange={e => setSetId(e.target.value)}>
-      <option value="lucide">Lucide · {LUCIDE.length.toLocaleString("en-GB")}</option>{sets.map(s => <option key={s.prefix} value={s.prefix}>{s.name} · {s.count.toLocaleString("en-GB")}</option>)}</select></label>
-    {setId !== "lucide" && !data ? <Loading /> : <div className="dk-igrid">{names.slice(0, n).map(name => {
-      if (setId === "lucide") { const I = lucide[name as keyof typeof lucide]; return <button key={name} type="button" title={name} aria-label={name} onClick={() => onPick({ name, set: "lucide" })}><I size={22} strokeWidth={1.75} /></button>; }
-      const s = iconOf(data!, name)!; return <button key={name} type="button" title={name} aria-label={name} onClick={() => onPick({ name, set: setId, svg: s })}><svg viewBox={`0 0 ${s.w} ${s.h}`} width={22} height={22} dangerouslySetInnerHTML={{ __html: s.body }} /></button>;
+    <Tabs items={GROUPS.map(g => g[1])} value={GROUPS.find(g => g[0] === group)![1]} onChange={v => setGroup(GROUPS.find(g => g[1] === v)![0])} label="Icon style" />
+    <label className="dk-mini wide"><span>Library</span><select aria-label="Icon library" value={current} onChange={e => setSetId(e.target.value)}>
+      {options.map(o => <option key={o.prefix} value={o.prefix}>{o.name} · {o.count.toLocaleString("en-GB")}</option>)}</select></label>
+    {current !== "lucide" && !data ? <Loading /> : <div className={`dk-igrid ${group === "colour" || group === "brands" ? "big" : ""}`}>{names.slice(0, n).map(name => {
+      if (current === "lucide") { const I = lucide[name as keyof typeof lucide]; return <button key={name} type="button" title={name} aria-label={name} onClick={() => onPick({ name, set: "lucide" })}><I size={22} strokeWidth={1.75} /></button>; }
+      const s = iconOf(data!, name)!; return <button key={name} type="button" title={name.replace(/-/g, " ")} aria-label={name.replace(/-/g, " ")} onClick={() => onPick({ name, set: current, svg: s })}><svg viewBox={`0 0 ${s.w} ${s.h}`} width={24} height={24} dangerouslySetInnerHTML={{ __html: s.body }} /></button>;
     })}<div ref={more} /></div>}
-    {names.length === 0 && (setId === "lucide" || data) && <p className="dk-cap">No icons match “{q}”. Try another library.</p>}
-
+    {names.length === 0 && (current === "lucide" || data) && <p className="dk-cap">No icons match “{q}”. Try another library.</p>}
   </div>;
 }
 
@@ -121,23 +128,29 @@ function Thumb({ c, k }: { c: WidgetChoice; k: string }) {
   return <span className="dk-wthumb" style={{ width: 132, height: Math.max(48, c.h * s) }}><WidgetView l={mini(c, k)} style={{ width: c.w * s, height: c.h * s, display: "block" }} /></span>;
 }
 export function WidgetPicker({ onPick }: { onPick: (w: WidgetChoice) => void }) {
-  const [mode, setMode] = useState("Info cards"), [q, setQ] = useState(""), [theme, setTheme] = useState(0), [variant, setVariant] = useState(0), [layout, setLayout] = useState(0);
+  const [mode, setMode] = useState("Widgets"), [q, setQ] = useState(""), [theme, setTheme] = useState(0), [variant, setVariant] = useState(0), [layout, setLayout] = useState(0), [group, setGroup] = useState("All");
   const th = THEMES[theme]!.theme;
-  const cards = useMemo(() => CARD_TOPICS.filter(t => !q || `${t.title} ${t.group} ${t.text}`.toLowerCase().includes(q.toLowerCase())), [q]);
-  const widgets = WIDGETS.filter(w => !q || `${w.name} ${w.group}`.toLowerCase().includes(q.toLowerCase()));
-  const [n, more] = useMore(24, [q, mode, layout]);
+  const presets = useMemo(() => widgetPresets(), []);
+  const groups = useMemo(() => ["All", ...new Set((mode === "Widgets" ? presets.map(p => p.group) : CARD_TOPICS.map(t => t.group)))], [mode, presets]);
+  const term = q.trim().toLowerCase();
+  const cards = useMemo(() => CARD_TOPICS.filter(t => (group === "All" || t.group === group) && (!term || `${t.title} ${t.group} ${t.text}`.toLowerCase().includes(term))), [term, group]);
+  const widgets = useMemo(() => presets.filter(w => (group === "All" || w.group === group) && (!term || `${w.name} ${w.group}`.toLowerCase().includes(term))), [presets, term, group]);
+  const [n, more] = useMore(24, [q, mode, layout, group]);
   const lay = CARD_LAYOUTS[layout]!, size = cardSize(lay);
   const fromCard = (t: CardTopic): WidgetChoice => ({ widget: "card", variant, theme: th, props: { icon: t.icon, title: t.title, text: t.text, layout }, w: size.w, h: size.h, name: t.title });
-  const fromDef = (d: WidgetDef): WidgetChoice => ({ widget: d.id, variant, theme: th, props: { ...d.props }, w: d.w, h: d.h, name: d.name });
+  const fromPreset = (d: WidgetPreset): WidgetChoice => ({ widget: d.widget, variant: d.variant ?? variant, theme: th, props: { ...d.props }, w: d.w, h: d.h, name: d.name });
+  const total = mode === "Widgets" ? presets.length : CARD_TOPICS.length * CARD_LAYOUTS.length;
   return <div className="dk-picker">
-    <Tabs items={["Info cards", "Widgets"]} value={mode} onChange={setMode} label="Widget type" />
-    <Search value={q} onChange={setQ} placeholder={mode === "Info cards" ? `Search ${CARD_TOPICS.length} topics — parking, dress code, menu…` : `Search ${WIDGETS.length} widgets`} label="Search widgets" />
+    <Tabs items={["Widgets", "Info cards"]} value={mode} onChange={v => { setMode(v); setGroup("All"); }} label="Widget type" />
+    <Search value={q} onChange={setQ} placeholder={mode === "Widgets" ? `Search ${total.toLocaleString("en-GB")} widgets — badge, sign, table…` : `Search ${total.toLocaleString("en-GB")} info cards — parking, allergens…`} label="Search widgets" />
+    <label className="dk-mini wide"><span>Category</span><select aria-label="Widget category" value={group} onChange={e => setGroup(e.target.value)}>{groups.map(g => <option key={g}>{g}</option>)}</select></label>
     <div className="dk-row"><label className="dk-mini"><span>Colours</span><select value={theme} onChange={e => setTheme(Number(e.target.value))}>{THEMES.map((t, i) => <option key={t.name} value={i}>{t.name}</option>)}</select></label>
       <label className="dk-mini"><span>Style</span><select value={variant} onChange={e => setVariant(Number(e.target.value))}>{VARIANTS.map((v, i) => <option key={v} value={i}>{v}</option>)}</select></label>
       {mode === "Info cards" && <label className="dk-mini"><span>Layout</span><select value={layout} onChange={e => setLayout(Number(e.target.value))}>{CARD_LAYOUTS.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>}</div>
     <div className="dk-wgrid">{mode === "Info cards"
       ? cards.slice(0, n).map((t, i) => { const c = fromCard(t); return <button key={`${t.group}${t.title}${i}`} type="button" onClick={() => onPick(c)} title={t.title}><Thumb c={c} k={`wc${i}`} /><small>{t.title}</small></button>; })
-      : widgets.slice(0, n).map((d, i) => { const c = fromDef(d); return <button key={d.id} type="button" onClick={() => onPick(c)} title={d.name}><Thumb c={c} k={`wd${i}`} /><small>{d.name}</small></button>; })}<div ref={more} /></div>
+      : widgets.slice(0, n).map((d, i) => { const c = fromPreset(d); return <button key={d.id} type="button" onClick={() => onPick(c)} title={d.name}><Thumb c={c} k={`wd${i}`} /><small>{d.name}</small></button>; })}<div ref={more} /></div>
+    {(mode === "Widgets" ? widgets : cards).length === 0 && <p className="dk-cap">Nothing matches “{q}”.</p>}
   </div>;
 }
 

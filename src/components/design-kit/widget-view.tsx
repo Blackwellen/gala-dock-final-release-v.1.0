@@ -135,14 +135,16 @@ export function WidgetView({ l, style }: { l: WidgetLayer; style: CSSProperties 
       break;
     }
     case "card": {
-      // Info card: icon placement (left/top/right/badge/none) × frame (card, rounded, pill, outline, banner, ticket, sticker, split).
+      // Info card: icon placement (left/top/right/badge/none) × 12 frames (card, rounded, pill, outline, banner, ticket, sticker, split, tile, accent, elevated, minimal).
       const lay = CARD_LAYOUTS[Number(p.layout) % CARD_LAYOUTS.length] ?? CARD_LAYOUTS[0]!, I = icons[String(p.icon) as keyof typeof icons] ?? icons.Info;
-      const fr = lay.frame, solid = fr === "card" || fr === "rounded" || fr === "pill" || fr === "banner" || fr === "sticker";
-      const bg = fr === "outline" ? "none" : fr === "sticker" ? accent : panel === "none" ? t.bg : panel, fg = fr === "sticker" ? "#ffffff" : ink;
-      const rr = fr === "pill" || fr === "sticker" ? Math.min(W, H) / 2 : fr === "rounded" ? Math.min(W, H) * 0.16 : fr === "banner" ? 0 : Math.min(W, H) * 0.06;
+      const fr = lay.frame, solid = ["card", "rounded", "pill", "banner", "sticker", "tile", "accent", "elevated"].includes(fr);
+      const bg = fr === "outline" || fr === "minimal" ? "none" : fr === "sticker" ? accent : fr === "elevated" ? (t.bg === "#ffffff" || panel === "none" ? "#ffffff" : panel) : panel === "none" ? t.bg : panel, fg = fr === "sticker" ? "#ffffff" : ink;
+      const rr = fr === "pill" || fr === "sticker" ? Math.min(W, H) / 2 : fr === "rounded" || fr === "elevated" || fr === "tile" ? Math.min(W, H) * 0.14 : fr === "banner" ? 0 : Math.min(W, H) * 0.06;
+      const tiled = !["sticker", "split", "pill"].includes(fr); // icon sits in a tinted rounded tile
       const vertical = lay.icon === "top" || lay.icon === "badge", isz = vertical ? H * 0.26 : H * 0.42, pad = Math.min(W, H) * 0.1;
       const iconBox = (x: number, y: number) => lay.icon === "none" ? null : lay.icon === "badge"
         ? <g><circle cx={x + isz / 2} cy={y + isz / 2} r={isz * 0.62} fill={fr === "sticker" ? "#ffffff" : accent} /><I x={x + isz * 0.18} y={y + isz * 0.18} width={isz * 0.64} height={isz * 0.64} color={fr === "sticker" ? accent : "#ffffff"} strokeWidth={2} /></g>
+        : tiled ? <g><rect x={x} y={y} width={isz} height={isz} rx={isz * 0.26} fill={accent} fillOpacity={fr === "tile" ? 1 : 0.14} /><I x={x + isz * 0.22} y={y + isz * 0.22} width={isz * 0.56} height={isz * 0.56} color={fr === "tile" ? (v === 5 ? t.bg : "#ffffff") : accent} strokeWidth={2} /></g>
         : <I x={x} y={y} width={isz} height={isz} color={fr === "sticker" ? "#ffffff" : accent} strokeWidth={1.8} />;
       const split = fr === "split" && !vertical && lay.icon !== "none";
       let ix = pad, iy = (H - isz) / 2, tx = pad + (lay.icon === "none" ? 0 : isz + pad * 0.8), anchor: "start" | "middle" | "end" = "start", tw = W - tx - pad;
@@ -150,7 +152,10 @@ export function WidgetView({ l, style }: { l: WidgetLayer; style: CSSProperties 
       if (vertical) { ix = (W - isz) / 2; iy = pad * 0.9; tx = W / 2; anchor = "middle"; tw = W - pad * 2; }
       const ty = vertical ? iy + isz + pad * 1.1 : H * 0.32, ts = vertical ? H * 0.1 : H * 0.17;
       body = <>
-        {fr !== "ticket" && <rect x={strokeW / 2} y={strokeW / 2} width={W - strokeW} height={H - strokeW} rx={rr} fill={bg} stroke={!solid ? accent : "none"} strokeWidth={!solid ? strokeW : 0} />}
+        {fr === "elevated" && <defs><filter id={`es${l.id}`} x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy={H * 0.04} stdDeviation={H * 0.05} floodColor="#090a2e" floodOpacity="0.18" /></filter></defs>}
+        {fr !== "ticket" && fr !== "minimal" && <rect x={strokeW / 2} y={strokeW / 2} width={W - strokeW} height={H - strokeW} rx={rr} fill={bg} stroke={!solid ? accent : fr === "elevated" ? "#e6e9f5" : "none"} strokeWidth={!solid ? strokeW : fr === "elevated" ? 1 : 0} filter={fr === "elevated" ? `url(#es${l.id})` : undefined} />}
+        {fr === "accent" && <rect x={0} y={0} width={Math.max(6, W * 0.022)} height={H} rx={Math.max(3, W * 0.011)} fill={accent} />}
+        {fr === "minimal" && <line x1={vertical ? W * 0.3 : tx} x2={vertical ? W * 0.7 : W - pad} y1={H - strokeW} y2={H - strokeW} stroke={accent} strokeOpacity={0.4} strokeWidth={strokeW / 2} />}
         {fr === "ticket" && <path d={`M0 0 H${W} V${H * 0.38} A${H * 0.12} ${H * 0.12} 0 0 0 ${W} ${H * 0.62} V${H} H0 V${H * 0.62} A${H * 0.12} ${H * 0.12} 0 0 0 0 ${H * 0.38} Z`} fill={panel === "none" ? t.bg : panel} stroke={accent} strokeWidth={strokeW} />}
         {split && <rect x={0} y={0} width={isz + pad * 1.6} height={H} rx={rr} fill={accent} />}
         {fr === "banner" && <rect x={0} y={0} width={W * 0.02} height={H} fill={accent} />}
@@ -161,8 +166,57 @@ export function WidgetView({ l, style }: { l: WidgetLayer; style: CSSProperties 
             <div style={{ fontSize: ts * 0.72, fontWeight: 500, opacity: 0.9 }}>{p.text}</div></div></foreignObject></>;
       break;
     }
+    case "badge": {
+      // Label badge in one of seven shapes.
+      const shape = String(p.shape ?? "pill"), fillC = v === 1 || v === 2 ? "none" : accent, txtC = v === 1 || v === 2 ? accent : v === 5 ? t.bg : "#ffffff";
+      const outline = { stroke: accent, strokeWidth: strokeW * 1.5 };
+      const S = Math.min(W, H);
+      body = <>{shape === "circle" ? <circle cx={W / 2} cy={H / 2} r={S * 0.46} fill={fillC} {...outline} />
+        : shape === "seal" ? <path d={`M${Array.from({ length: 48 }, (_, i) => { const a = (i * Math.PI) / 24, r = (i % 2 ? 0.44 : 0.49) * S; return `${(W / 2 + r * Math.cos(a)).toFixed(1)} ${(H / 2 + r * Math.sin(a)).toFixed(1)}`; }).join(" L")} Z`} fill={fillC} {...outline} />
+        : shape === "ribbon" ? <path d={`M0 ${H * 0.15} H${W} L${W * 0.93} ${H / 2} L${W} ${H * 0.85} H0 L${W * 0.07} ${H / 2} Z`} fill={fillC} {...outline} />
+        : shape === "tag" ? <path d={`M${W * 0.12} 0 H${W} V${H} H${W * 0.12} L0 ${H / 2} Z`} fill={fillC} {...outline} />
+        : shape === "hex" ? <path d={`M${W * 0.15} 0 H${W * 0.85} L${W} ${H / 2} L${W * 0.85} ${H} H${W * 0.15} L0 ${H / 2} Z`} fill={fillC} {...outline} />
+        : shape === "star" ? <path d={`M${Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = (i % 2 ? 0.22 : 0.48) * S; return `${(W / 2 + r * Math.cos(a)).toFixed(1)} ${(H / 2 + r * Math.sin(a)).toFixed(1)}`; }).join(" L")} Z`} fill={fillC} {...outline} />
+        : <rect x={strokeW} y={strokeW} width={W - strokeW * 2} height={H - strokeW * 2} rx={shape === "rect" ? H * 0.12 : (H - strokeW * 2) / 2} fill={fillC} {...outline} />}
+        {txt(W / 2, p.sub ? H * 0.42 : H / 2, (shape === "circle" || shape === "seal" || shape === "star" ? S * 0.2 : H * 0.42) * Math.min(1, 9 / Math.max(4, String(p.text).length)), txtC, String(p.text).toUpperCase(), { w: 800, ls: 1 })}
+        {p.sub && txt(W / 2, H * 0.66, S * 0.1, txtC, p.sub, { w: 600 })}</>;
+      break;
+    }
+    case "sign": {
+      // Directional sign: destination + arrow (left/right/up/down/none).
+      const dir = String(p.arrow ?? "right"), aw = H * 0.62, ax = dir === "left" ? W * 0.06 : W * 0.94 - aw, ay = (H - aw) / 2;
+      const rot = { right: 0, down: 90, left: 180, up: -90 }[dir as "right"] ?? 0;
+      body = <>{frame}{dir !== "none" && <g transform={`translate(${ax + aw / 2} ${ay + aw / 2}) rotate(${rot})`}><circle r={aw / 2} fill={accent} /><path d={`M${-aw * 0.2} 0 H${aw * 0.18} M${aw * 0.04} ${-aw * 0.16} L${aw * 0.2} 0 L${aw * 0.04} ${aw * 0.16}`} stroke={v === 5 ? t.bg : "#ffffff"} strokeWidth={aw * 0.09} fill="none" strokeLinecap="round" strokeLinejoin="round" /></g>}
+        {txt(dir === "left" ? W * 0.12 + aw : W * 0.06, H / 2, H * 0.36, ink, p.text, { a: "start", w: 800 })}</>;
+      break;
+    }
+    case "table": body = <>{frame}{txt(W / 2, H * 0.24, H * 0.08, accent, String(p.label ?? "Table").toUpperCase(), { w: 700, ls: 4 })}
+      {txt(W / 2, H * 0.53, H * (String(p.number).length > 4 ? 0.2 : 0.34), ink, p.number, { w: 800 })}{p.sub && txt(W / 2, H * 0.82, H * 0.07, ink, p.sub, { w: 500, i: true })}</>; break;
+    case "namebadge": body = <>{frame}<rect x={0} y={0} width={W} height={H * 0.24} rx={r} fill={accent} />{txt(W / 2, H * 0.12, H * 0.09, v === 5 ? t.bg : "#ffffff", String(p.role).toUpperCase(), { w: 800, ls: 3 })}
+      {txt(W / 2, H * 0.5, H * 0.13, ink, p.name, { w: 800 })}{txt(W / 2, H * 0.68, H * 0.07, ink, p.company, { w: 500 })}{txt(W / 2, H * 0.88, H * 0.06, accent, p.event, { w: 600 })}</>; break;
+    case "tier": {
+      const perks = listItems(p.items);
+      body = <>{frame}{txt(W * 0.08, H * 0.12, H * 0.06, accent, String(p.name).toUpperCase(), { a: "start", w: 800, ls: 2 })}{txt(W * 0.08, H * 0.26, H * 0.13, ink, p.price, { a: "start", w: 800 })}
+        <line x1={W * 0.08} x2={W * 0.92} y1={H * 0.37} y2={H * 0.37} stroke={accent} strokeOpacity={0.35} strokeWidth={strokeW / 2} />
+        {perks.map((x, i) => <g key={i}><path d={`M${W * 0.08} ${H * (0.46 + i * 0.09)} l${H * 0.018} ${H * 0.018} l${H * 0.034} ${-H * 0.034}`} stroke={accent} strokeWidth={H * 0.012} fill="none" strokeLinecap="round" />{txt(W * 0.08 + H * 0.08, H * (0.46 + i * 0.09), H * 0.045, ink, x, { a: "start", w: 500 })}</g>)}</>;
+      break;
+    }
+    case "hours": {
+      const rows = pairItems(p.items), rh = (H * 0.72) / Math.max(1, rows.length);
+      body = <>{frame}{txt(W * 0.08, H * 0.12, H * 0.07, ink, p.title, { a: "start", w: 800 })}{rows.map(([d, h2], i) => <g key={i}>{txt(W * 0.08, H * 0.26 + rh * (i + 0.5), rh * 0.38, ink, d, { a: "start", w: 600 })}{txt(W * 0.92, H * 0.26 + rh * (i + 0.5), rh * 0.38, accent, h2, { a: "end", w: 700 })}</g>)}</>;
+      break;
+    }
+    case "menuitem": body = <>{frame}{txt(W * 0.06, H * 0.3, H * 0.2, ink, p.dish, { a: "start", w: 700 })}{txt(W * 0.94, H * 0.3, H * 0.2, accent, p.price, { a: "end", w: 800 })}
+      <foreignObject x={W * 0.06} y={H * 0.48} width={W * 0.74} height={H * 0.45}><div style={{ font: `500 ${H * 0.13}px/1.3 ${font}`, color: ink, opacity: 0.8 }}>{p.desc}</div></foreignObject>
+      {p.tags && txt(W * 0.94, H * 0.72, H * 0.12, accent, p.tags, { a: "end", w: 700 })}</>; break;
+    case "speaker": {
+      const initials = String(p.name).split(/\s+/).map(x => x[0]).join("").slice(0, 2).toUpperCase(), d = H * 0.56;
+      body = <>{frame}<circle cx={W * 0.06 + d / 2} cy={H / 2} r={d / 2} fill={accent} />{txt(W * 0.06 + d / 2, H / 2, d * 0.36, v === 5 ? t.bg : "#ffffff", initials, { w: 800 })}
+        {txt(W * 0.1 + d, H * 0.3, H * 0.13, ink, p.name, { a: "start", w: 800 })}{txt(W * 0.1 + d, H * 0.5, H * 0.08, accent, p.role, { a: "start", w: 600 })}{txt(W * 0.1 + d, H * 0.7, H * 0.08, ink, p.talk, { a: "start", w: 500 })}</>;
+      break;
+    }
     case "divider": body = <><line x1={W * 0.04} x2={W * 0.44} y1={H / 2} y2={H / 2} stroke={accent} strokeWidth={strokeW} /><line x1={W * 0.56} x2={W * 0.96} y1={H / 2} y2={H / 2} stroke={accent} strokeWidth={strokeW} />
       {txt(W / 2, H / 2, H * 0.5, accent, p.text, { w: 700 })}</>; break;
   }
-  return <svg style={style} viewBox={`0 0 ${W} ${H}`} data-layer={l.id} role="img" aria-label={l.name}>{l.widget !== "divider" && l.widget !== "stamp" && l.widget !== "card" && frame}{body}</svg>;
+  return <svg style={style} viewBox={`0 0 ${W} ${H}`} data-layer={l.id} role="img" aria-label={l.name}>{!["divider", "stamp", "card", "badge", "sign", "table", "namebadge", "tier", "hours", "menuitem", "speaker"].includes(l.widget) && frame}{body}</svg>;
 }

@@ -28,7 +28,7 @@ try {
   await tab("Emoji"); await page.locator(".dk-egrid button").first().waitFor({ timeout: 15000 }); await page.getByLabel("Search emoji").fill("party"); await page.locator(".dk-egrid button").first().click();
   await page.getByRole("tab", { name: "Symbols" }).click(); await page.locator(".dk-egrid.sym button").nth(5).click();
   // Widgets: info card + countdown
-  await tab("Widgets"); await page.getByLabel("Search widgets").fill("parking"); await page.locator(".dk-wgrid button").first().click();
+  await tab("Widgets"); await page.getByRole("tab", { name: "Info cards" }).click(); await page.getByLabel("Search widgets").fill("parking"); await page.locator(".dk-wgrid button").first().click();
   await page.getByRole("tab", { name: "Widgets" }).click(); await page.getByLabel("Search widgets").fill("countdown"); await page.locator(".dk-wgrid button").first().click();
   // Text style with effect
   await tab("Text"); await page.locator(".st-tstyles button", { hasText: "Neon sign" }).click();
@@ -58,7 +58,7 @@ try {
   check("Airbrush stroke saved", ls.some(l => l.type === "drawing" && l.paths[0].brush === "airbrush"));
   // Colour picker: select the countdown, change accent via HEX input
   await page.locator(".st-tabs").getByRole("button", { name: "Layers", exact: true }).click();
-  await page.locator(".st-lname", { hasText: "Countdown" }).click();
+  await page.locator(".st-lname", { hasText: /Countdown|Doors open in/ }).first().click();
   await page.getByRole("button", { name: /^Accent:/ }).click(); await page.getByRole("tab", { name: "RGB" }).click();
   await page.getByLabel("R", { exact: true }).fill("255"); await page.getByLabel("G", { exact: true }).fill("0"); await page.getByLabel("B", { exact: true }).fill("0");
   await page.keyboard.press("Escape"); await page.waitForTimeout(2500); await page.getByText("Saved", { exact: true }).waitFor({ timeout: 15000 });

@@ -2,7 +2,7 @@
 // (built by scripts/build-design-assets.mjs) and is fetched only when a picker opens, then cached for the session.
 export type FontMeta = { f: string; c: string; w: number[]; i: boolean; p: number };
 export type EmojiMeta = { e: string; n: string; g: string; t: string[] };
-export type IconSetMeta = { prefix: string; iconify: string; name: string; license: string; count: number };
+export type IconSetMeta = { prefix: string; iconify: string; name: string; license: string; count: number; group: "line" | "filled" | "colour" | "brands"; chunks?: number };
 export type IconSet = { p: string; w: number; h: number; i: Record<string, string | [string, number, number]> };
 export type IconSvg = { body: string; w: number; h: number };
 
@@ -15,7 +15,13 @@ const load = <T,>(path: string): Promise<T> => {
 export const loadIndex = () => load<{ fonts: number; emoji: number; iconSets: IconSetMeta[] }>("index.json");
 export const loadFonts = () => load<FontMeta[]>("fonts.json");
 export const loadEmoji = () => load<EmojiMeta[]>("emoji.json");
-export const loadIconSet = (prefix: string) => load<IconSet>(`icons/${prefix}.json`);
+/** A set may be split into chunk files (icons/<id>.0.json …); they load in parallel and merge. */
+export const loadIconSet = async (meta: Pick<IconSetMeta, "prefix" | "chunks">): Promise<IconSet> => {
+  const n = meta.chunks ?? 1;
+  if (n <= 1) return load<IconSet>(`icons/${meta.prefix}.json`);
+  const parts = await Promise.all(Array.from({ length: n }, (_, i) => load<IconSet>(`icons/${meta.prefix}.${i}.json`)));
+  return { ...parts[0]!, i: Object.assign({}, ...parts.map(x => x.i)) };
+};
 
 export const iconOf = (set: IconSet, name: string): IconSvg | null => {
   const v = set.i[name]; if (!v) return null;
