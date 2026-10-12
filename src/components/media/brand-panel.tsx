@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 import { saveBrandKit, type BrandKit } from "@/lib/media/collab";
 import { FONTS } from "@/lib/media/document";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 export type CustomFont = { id: string; family: string; weight: number; style: "normal" | "italic" };
 export type Brand = { workspaceId: string; canManage: boolean; kit: BrandKit; fonts: CustomFont[] };
@@ -45,7 +46,7 @@ export function BrandPanel({ brand, canEdit, onColor, onFont, onLogo, onFontsCha
     const next = [...fonts, j as CustomFont]; setFonts(next); onFontsChange(next); form.reset(); setMsg(`${j.family} added. It’s now in every font list in this workspace.`);
   };
   const removeFont = async (f: CustomFont) => {
-    if (!confirm(`Remove ${f.family} ${f.weight}? Designs using it will fall back to a standard font.`)) return;
+    if (!(await confirmDialog({ title: `Remove ${f.family} ${f.weight}? Designs using it will fall back to a standard font.`, confirmLabel: "Remove", danger: true }))) return;
     const r = await fetch(`/api/media/font?id=${f.id}`, { method: "DELETE" });
     if (!r.ok) { setMsg("You can’t remove this font."); return; }
     const next = fonts.filter(x => x.id !== f.id); setFonts(next); onFontsChange(next);

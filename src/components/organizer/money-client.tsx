@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CalendarDays, Download, MoreVertical, Eye, Send, Bell, FileX, Wallet, Link2, Loader2 } from "lucide-react";
 import { Dialog, Menu, useAction, useKitToast } from "@/components/kit/client";
 import { issueInvoice, remindInvoice, creditInvoice, recordPayment, paymentLink } from "@/lib/actions/money";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 export function MoneyFilters({ from, to, event, events, exportHref }: { from: string; to: string; event: string; events: { id: string; name: string }[]; exportHref: string }) {
   const router = useRouter(); const sp = useSearchParams();
@@ -32,6 +33,6 @@ export function InvoiceRowMenu({ id, status }: { id: string; status: string }) {
     {open && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => remindInvoice(id)); }}><Bell size={14} />Send reminder</button>}
     {open && <button role="menuitem" className="k-menu-item" onClick={() => { close(); setPay(true); }}><Wallet size={14} />Record payment</button>}
     {open && <button role="menuitem" className="k-menu-item" onClick={async () => { close(); const r = await run(() => paymentLink(id), { refresh: false }); if (r.ok && r.data) { try { await navigator.clipboard.writeText(`${location.origin}${(r.data as { url: string }).url}`); toast("Payment link copied"); } catch { toast("Couldn't copy the link", "error"); } } }}><Link2 size={14} />Copy payment link</button>}
-    {open && <button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); if (confirm("Issue a credit note for this invoice?")) void run(() => creditInvoice(id)); }}><FileX size={14} />Create credit note</button>}</>}</Menu>
+    {open && <button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: "Issue a credit note for this invoice?", confirmLabel: "Issue credit note" }))) void run(() => creditInvoice(id)); }}><FileX size={14} />Create credit note</button>}</>}</Menu>
     {open && <PaymentDialog open={pay} onClose={() => setPay(false)} id={id} due={0} />}</>;
 }

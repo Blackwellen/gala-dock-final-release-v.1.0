@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Check, Loader2, MessageSquare, RotateCcw, Trash2 } from "lucide-react";
 import { addComment, deleteComment, listComments, resolveComment, type Comment } from "@/lib/media/collab";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 /**
  * Design comments (media spec §46): threads on a design, optionally pinned to a layer. Anyone who can open the design can comment;
@@ -51,7 +52,7 @@ export function CommentsPanel({ designId, canEdit, pageId, layer, onJump, onCoun
             {(c.layer_id || c.page_id) && <button className="st-link" onClick={() => onJump(c.page_id, c.layer_id)}>{c.layer_id ? "Show layer" : "Show page"}</button>}
             {(canEdit || c.mine) && <button className="st-icon sm" aria-label={c.resolved ? "Reopen" : "Resolve"} title={c.resolved ? "Reopen" : "Resolve"}
               onClick={async () => { const r = await resolveComment(c.id, !c.resolved); if (r.ok) await load(); else setErr(r.error); }}>{c.resolved ? <RotateCcw size={13} /> : <Check size={13} />}</button>}
-            {c.mine && <button className="st-icon sm" aria-label="Delete comment" onClick={async () => { if (!confirm("Delete this comment and its replies?")) return; const r = await deleteComment(c.id); if (r.ok) await load(); else setErr(r.error); }}><Trash2 size={13} /></button>}
+            {c.mine && <button className="st-icon sm" aria-label="Delete comment" onClick={async () => { if (!(await confirmDialog({ title: "Delete this comment and its replies?", confirmLabel: "Delete", danger: true }))) return; const r = await deleteComment(c.id); if (r.ok) await load(); else setErr(r.error); }}><Trash2 size={13} /></button>}
           </div>
         </div>
         {replies(c.id).map(x => <div key={x.id} className="st-cmt reply"><b>{x.author}</b><small>{when(x.created_at)}</small><p>{x.body}</p>

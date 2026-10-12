@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Copy, Check, Search, Menu, X, Share2 } from "lucide-react";
+import { copyText } from "@/lib/ui/dialogs";
 
 /** In-page search: filters rows marked with data-q (case-insensitive) and hides panels left with no matches. */
 export function PortalSearch({ placeholder }: { placeholder: string }) {
@@ -43,7 +44,7 @@ export function CopyButton({ value, label = "Copy", className = "pt-copy", child
   const [done, setDone] = useState(false);
   return <button type="button" className={className} aria-label={label} title={done ? "Copied" : label} onClick={async () => {
     const text = value.startsWith("/") ? `${location.origin}${value}` : value;
-    try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1600); } catch { window.prompt("Copy this:", text); }
+    if (await copyText(text)) { setDone(true); setTimeout(() => setDone(false), 1600); }
   }}>{done ? <Check aria-hidden="true" /> : children ?? <Copy aria-hidden="true" />}</button>;
 }
 
@@ -58,7 +59,7 @@ export function ShareButton({ path, title, text, label = "Share", primary = fals
   return <button type="button" className={`pt-btn ${primary ? "primary" : "outline"} pt-share`} onClick={async () => {
     const url = `${location.origin}${path}`;
     if (navigator.share) { try { await navigator.share({ title, text, url }); } catch { /* dismissed */ } return; }
-    try { await navigator.clipboard.writeText(url); setMsg("Link copied"); setTimeout(() => setMsg(""), 1600); } catch { window.prompt("Copy this:", url); }
+    if (await copyText(url)) { setMsg("Link copied"); setTimeout(() => setMsg(""), 1600); }
   }}><Share2 aria-hidden="true" />{msg || label}</button>;
 }
 
@@ -70,6 +71,6 @@ export function SocialLink({ network, path, text, label, children }: { network: 
     const target = { whatsapp: `https://wa.me/?text=${t}%20${u}`, facebook: `https://www.facebook.com/sharer/sharer.php?u=${u}`, x: `https://twitter.com/intent/tweet?text=${t}&url=${u}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`, email: `mailto:?subject=${t}&body=${u}`, copy: "" }[network];
     if (target) { window.open(target, "_blank", "noopener,noreferrer"); return; }
-    try { await navigator.clipboard.writeText(`${text} ${url}`); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { window.prompt("Copy this:", url); }
+    if (await copyText(`${text} ${url}`)) { setCopied(true); setTimeout(() => setCopied(false), 1600); }
   }}>{children}</button>;
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Plus, Flag } from "lucide-react";
 import { createDesign, reportTemplate } from "@/lib/media/actions";
 import { PRESETS } from "@/lib/media/document";
+import { promptDialog } from "@/lib/ui/dialogs";
 
 export function NewDesign({ workspaceId, events }: { workspaceId: string; events: { id: string; name: string }[] }) {
   const router = useRouter();
@@ -35,7 +36,12 @@ export function TemplateCard({ id, title, meta, workspaceId, community, children
     <button style={{ all: "unset", cursor: "pointer", display: "grid", gap: 6 }} disabled={busy} onClick={async () => { setBusy(true); const r = await createDesign({ workspaceId, templateId: id, title }); if (r.ok) router.push(`/studio/${r.data}`); else { setMsg(r.error); setBusy(false); } }}>
       {children}<b>{busy ? "Opening…" : title}</b><small>{meta}</small></button>
     {community && <button className="st-icon sm" style={{ position: "absolute", top: 12, right: 12, background: "#fff" }} aria-label="Report template"
-      onClick={async () => { const reason = prompt("Why are you reporting this template? (copyright, offensive, misleading, spam)"); if (!reason) return; const r = await reportTemplate(id, reason.slice(0, 40), ""); setMsg(r.ok ? "Thanks — our team will review it." : r.error); }}><Flag size={13} /></button>}
+      onClick={async () => {
+        const r0 = await promptDialog({ title: "Report this template", message: "Tell us what’s wrong. Our trust and safety team reviews every report; repeated reports hide a template until it’s checked.",
+          choiceLabel: "Reason", choices: [{ value: "copyright", label: "Copyright or trademark infringement" }, { value: "inappropriate", label: "Offensive or inappropriate" }, { value: "impersonation", label: "Impersonates a person or brand" },
+            { value: "spam", label: "Spam or misleading" }, { value: "unsafe", label: "Unsafe or harmful" }, { value: "malicious", label: "Malicious links or codes" }, { value: "other", label: "Something else" }],
+          label: "Details", multiline: true, maxLength: 2000, placeholder: "Anything that helps us review it (optional)", confirmLabel: "Send report", danger: true });
+        if (!r0) return; const r = await reportTemplate(id, r0.choice ?? "other", r0.value); setMsg(r.ok ? "Thanks — our team will review it." : r.error); }}><Flag size={13} /></button>}
     {msg && <small role="status">{msg}</small>}
   </div>;
 }

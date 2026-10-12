@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui";
 
 import type { MenuEntry } from "./row-menu";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 /** Menu with a custom trigger (e.g. "Add listing ▾"); same behaviour as RowMenu. */
 export function MenuButton({ label, entries, trigger, className }: { label: string; entries: MenuEntry[]; trigger: ReactNode; className?: string }) {
@@ -25,9 +26,9 @@ export function MenuButton({ label, entries, trigger, className }: { label: stri
     <button type="button" className={className} aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)} disabled={pending}>{trigger}</button>
     {open && <div className="pv-menu-panel" role="menu">{entries.map(e => e.kind === "link"
       ? <Link key={e.label} href={e.href} role="menuitem" onClick={() => setOpen(false)}>{e.label}</Link>
-      : <button key={e.label} type="button" role="menuitem" className={e.danger ? "danger" : ""} onClick={() => {
-        if (e.confirm && !window.confirm(e.confirm)) return;
+      : <button key={e.label} type="button" role="menuitem" className={e.danger ? "danger" : ""} onClick={async () => {
         setOpen(false);
+        if (e.confirm && !(await confirmDialog({ title: e.confirm, confirmLabel: e.label, danger: !!e.danger }))) return;
         start(async () => { const r = await e.run(); toast(r.ok ? (r.message ?? "Done") : r.error); if (r.ok) router.refresh(); });
       }}>{e.label}</button>)}</div>}
   </div>;

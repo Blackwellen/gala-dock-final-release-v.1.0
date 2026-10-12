@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui";
 import { GripVertical, X, Plus, Building2, Wrench, Speaker, UserRound, ChevronLeft, ChevronRight } from "lucide-react";
 import type { PkgItem } from "../actions";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 type Opt = { kind: PkgItem["kind"]; ref?: string; name: string; sub: string; image?: string };
 const KIND: Record<PkgItem["kind"], { label: string; icon: typeof Building2; chip: string }> = {
@@ -73,7 +74,7 @@ export function PackageLiveToggle({ id, live, run }: { id: string; live: boolean
   const toast = useToast(), router = useRouter();
   return <div className="pv-live">
     <button type="button" role="switch" aria-checked={on} aria-label={on ? "Pause package" : "Publish package"} className={`pv-switch${on ? " on" : ""}`} disabled={pending}
-      onClick={async () => { if (on && !window.confirm("Pause this package? Existing bookings are unaffected.")) return; setPending(true); const r = await run(id, !on); setPending(false); toast(r.ok ? (r.message ?? "Updated") : (r.error ?? "Couldn’t update")); if (r.ok) { setOn(!on); router.refresh(); } }}><i /></button>
+      onClick={async () => { if (on && !(await confirmDialog({ title: "Pause this package? Existing bookings are unaffected.", confirmLabel: "Pause" }))) return; setPending(true); const r = await run(id, !on); setPending(false); toast(r.ok ? (r.message ?? "Updated") : (r.error ?? "Couldn’t update")); if (r.ok) { setOn(!on); router.refresh(); } }}><i /></button>
     <span><b className={on ? "ok" : ""}>{on ? "Published" : "Not live"}</b><small>{on ? "Live on marketplace" : "Hidden from the marketplace"}</small></span>
   </div>;
 }

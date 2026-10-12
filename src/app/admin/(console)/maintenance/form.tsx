@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { MODULES } from "@/lib/maintenance-modules";
 import { startMaintenance, endMaintenance } from "./actions";
+import { promptDialog } from "@/lib/ui/dialogs";
 
 const field: React.CSSProperties = { display: "grid", gap: 4, fontSize: 12, fontWeight: 600 };
 const input: React.CSSProperties = { height: 34, border: "1px solid #dbe3f5", borderRadius: 7, padding: "0 8px", font: "inherit", fontWeight: 400 };
@@ -49,7 +50,7 @@ export function MaintenanceForm() {
 export function EndWindow({ id }: { id: string }) {
   const [pending, start] = useTransition(); const [err, setErr] = useState("");
   return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-    <button className="adb-btn" disabled={pending} onClick={() => start(async () => { const note = prompt("Closing note (what was done / outcome)") ?? ""; const r = await endMaintenance(id, note); if (!r.ok) setErr(r.error); })}>{pending ? "Ending…" : "End now"}</button>
+    <button className="adb-btn" disabled={pending} onClick={async () => { const res = await promptDialog({ title: "End maintenance now", message: "Customers will see the service as available again straight away.", label: "Closing note — what was done and the outcome", multiline: true, maxLength: 1000, confirmLabel: "End maintenance" }); if (!res) return; start(async () => { const r = await endMaintenance(id, res.value); if (!r.ok) setErr(r.error); }); }}>{pending ? "Ending…" : "End now"}</button>
     {err && <span role="alert" style={{ color: "#c4142b", fontSize: 12.5 }}>{err}</span>}
   </div>;
 }

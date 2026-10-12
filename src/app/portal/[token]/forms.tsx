@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { decideApproval, postComment } from "./actions";
+import { confirmDialog } from "@/lib/ui/dialogs";
+import { alertDialog } from "@/lib/ui/dialogs";
 
 export function ApprovalButtons({ token, id, title, viewHref }: { token: string; id: string; title: string; viewHref?: string }) {
   const router = useRouter();
@@ -25,7 +27,7 @@ export function ApprovalButtons({ token, id, title, viewHref }: { token: string;
   </form>;
   return <div className="pc-decide">
     {viewHref && <a className="pt-btn outline" href={viewHref}>View</a>}
-    <button type="button" className="pt-btn primary" disabled={pending} onClick={() => { if (window.confirm(`Approve "${title}"? The organiser will be notified and can proceed.`)) run("approved"); }}>{pending ? "Saving…" : "Approve"}</button>
+    <button type="button" className="pt-btn primary" disabled={pending} onClick={async () => { if ((await confirmDialog({ title: `Approve "${title}"? The organiser will be notified and can proceed.`, confirmLabel: "Approve" }))) run("approved"); }}>{pending ? "Saving…" : "Approve"}</button>
     <button type="button" className="pt-btn danger" disabled={pending} onClick={() => setMode("reject")}>Reject</button>
     {error && <p className="pc-err" role="alert">{error}</p>}
   </div>;
@@ -53,6 +55,6 @@ export function RequestPayment({ token, number, amount }: { token: string; numbe
   const [pending, start] = useTransition();
   const [done, setDone] = useState(false);
   return <button type="button" className="pt-btn outline pc-pay" disabled={pending || done} title="Ask your organiser for a secure payment link"
-    onClick={() => start(async () => { const r = await postComment(token, `Please send me a secure payment link for ${number} (${amount}).`); if (r.ok) { setDone(true); router.refresh(); } else window.alert(r.error); })}>
+    onClick={() => start(async () => { const r = await postComment(token, `Please send me a secure payment link for ${number} (${amount}).`); if (r.ok) { setDone(true); router.refresh(); } else void alertDialog({ title: "Couldn’t send your request", message: r.error, danger: true }); })}>
     {done ? "Requested" : pending ? "Sending…" : "Request link"}</button>;
 }

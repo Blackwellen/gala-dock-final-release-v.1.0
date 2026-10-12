@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { FlaskConical } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 type W = { id: string; name: string; kind: string; settings: { demo_persona?: string } };
 const PERSONAS: [string, string, string][] = [["organizer", "Organizer demo", "Events, tickets, suppliers, tasks and a sales pipeline"], ["venue", "Venue demo", "A venue listing and a booked wedding"], ["supplier", "Supplier demo", "A catering service and an upcoming job"]];
@@ -29,8 +30,8 @@ export function DemoCard() {
     {rows && rows.length > 0 && <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>{rows.map(w => <li key={w.id} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "8px 10px", border: "1px solid #eef2fb", borderRadius: 8 }}>
       <b style={{ flex: 1 }}>{w.name}</b>
       <a className="k-btn outline sm" href={`/${w.kind}`}>Open</a>
-      <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => { if (confirm(`Reset “${w.name}” to fresh sample data?`)) act(() => sb.rpc("reset_demo_workspace" as never, { p_workspace: w.id } as never), "Demo reset."); }}>Reset demo data</button>
-      <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => { if (confirm(`Delete “${w.name}” and all its sample data?`)) act(() => sb.rpc("delete_demo_workspace" as never, { p_workspace: w.id } as never), "Demo deleted."); }}>Delete</button>
+      <button type="button" className="k-btn outline sm" disabled={pending} onClick={async () => { if ((await confirmDialog({ title: `Reset “${w.name}” to fresh sample data?`, confirmLabel: "Reset", danger: true }))) act(() => sb.rpc("reset_demo_workspace" as never, { p_workspace: w.id } as never), "Demo reset."); }}>Reset demo data</button>
+      <button type="button" className="k-btn outline sm" disabled={pending} onClick={async () => { if ((await confirmDialog({ title: `Delete “${w.name}” and all its sample data?`, confirmLabel: "Delete", danger: true }))) act(() => sb.rpc("delete_demo_workspace" as never, { p_workspace: w.id } as never), "Demo deleted."); }}>Delete</button>
     </li>)}</ul>}
     {msg && <p role="status" className="k-small" style={{ margin: 0 }}>{msg}</p>}{err && <p role="alert" style={{ margin: 0, color: "#c4142b" }}>{err}</p>}
   </section>;

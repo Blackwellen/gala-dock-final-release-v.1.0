@@ -6,6 +6,7 @@ import { Plus, ChevronDown, Layers, Check, Bookmark, AlertTriangle, CalendarPlus
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { createCalendarEntry, rescheduleEntry, type Impact } from "@/lib/actions/calendar";
 import type { CalEntry, LayerKey } from "@/lib/data/calendar";
+import { promptDialog } from "@/lib/ui/dialogs";
 
 type Layer = { key: string; label: string; color: string };
 const TZ = "Europe/London";
@@ -29,7 +30,7 @@ export function SavedViews() {
   const router = useRouter(); const params = useSearchParams(); const pathname = usePathname(); const toast = useKitToast();
   const [views, setViews] = useState<{ name: string; query: string }[]>([]);
   useEffect(() => { queueMicrotask(() => { try { setViews(JSON.parse(localStorage.getItem("gd-cal-views") ?? "[]")); } catch { setViews([]); } }); }, []);
-  const save = () => { const name = prompt("Name this view", "My view"); if (!name) return; const next = [...views.filter(v => v.name !== name), { name, query: params.toString() }].slice(-8); setViews(next); try { localStorage.setItem("gd-cal-views", JSON.stringify(next)); toast("View saved on this device"); } catch { toast("Couldn't save view in this browser", "error"); } };
+  const save = async () => { const name = (await promptDialog({ title: "Save this calendar view", message: "Saves the current filters on this device so you can switch back to them quickly.", label: "View name", defaultValue: "My view", required: true, maxLength: 40, confirmLabel: "Save view" }))?.value; if (!name) return; const next = [...views.filter(v => v.name !== name), { name, query: params.toString() }].slice(-8); setViews(next); try { localStorage.setItem("gd-cal-views", JSON.stringify(next)); toast("View saved on this device"); } catch { toast("Couldn't save view in this browser", "error"); } };
   return <Menu label="Saved views" width={220} trigger={({ toggle, open, id }) => <button className="k-btn ghost lg" onClick={toggle} aria-expanded={open} aria-controls={id}><Bookmark size={15} />Saved views<ChevronDown size={14} /></button>}>
     {close => <>{views.map(v => <button key={v.name} role="menuitem" className="k-menu-item" onClick={() => { close(); router.push(`${pathname}?${v.query}`); }}>{v.name}</button>)}{!views.length && <p className="k-small" style={{ padding: 10 }}>No saved views yet.</p>}<div className="k-menu-sep" /><button role="menuitem" className="k-menu-item" onClick={() => { close(); save(); }}><Plus size={14} />Save current view</button></>}
   </Menu>;

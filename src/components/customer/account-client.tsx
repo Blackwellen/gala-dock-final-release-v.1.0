@@ -9,6 +9,7 @@ import { passwordChecks, passwordStrength } from "@/lib/password";
 import { createClient } from "@/lib/supabase/client";
 import type { SavedCard } from "@/lib/payments";
 import { BrandLogo } from "@/components/kit/brand-logo";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 /** Small inline flag (emoji flags don't render on Windows). */
 function Flag({ cc }: { cc: string }) {
@@ -90,7 +91,7 @@ export function CardsPanel({ cards, compact }: { cards: SavedCard[]; compact?: b
     <ul className="ac-pms">{cards.slice(0, compact ? 4 : 10).map(c => <li key={c.id}><span className={`ac-brand ${c.brand}`}>{c.wallet === "apple_pay" ? "Pay" : BRAND[c.brand] ?? <CreditCard size={18} />}</span><span className="k-grow"><b>{c.wallet === "apple_pay" ? "Apple Pay" : c.wallet === "google_pay" ? "Google Pay" : `${c.brand[0]!.toUpperCase()}${c.brand.slice(1)} ending in ${c.last4}`}</b><small>Expires {c.exp}</small></span>{c.isDefault && <span className="ac-default">Default</span>}
       <Menu label={`Options for card ending ${c.last4}`} width={200} trigger={({ toggle, open, id }) => <button className="k-icon-btn ac-pm-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Options for card ending ${c.last4}`}><MoreHorizontal size={17} /></button>}>{close => <>
         {!c.isDefault && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setDefaultCard(c.id)); }}><Check size={14} />Make default</button>}
-        <button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); if (confirm(`Remove card ending ${c.last4}?`)) void run(() => removeCard(c.id)); }}><Trash2 size={14} />Remove card</button></>}</Menu></li>)}
+        <button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: `Remove card ending ${c.last4}?`, confirmLabel: "Remove", danger: true }))) void run(() => removeCard(c.id)); }}><Trash2 size={14} />Remove card</button></>}</Menu></li>)}
       {!cards.length && <li className="ac-pm-empty"><CreditCard size={20} /><span>No saved cards yet. Add one for faster bookings and ticket checkout.</span></li>}</ul>
     <AddCard open={add} onClose={() => setAdd(false)} />
   </section>;

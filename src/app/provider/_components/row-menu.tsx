@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { useToast } from "@/components/ui";
 import type { ActionResult } from "@/components/workspace/actions";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 export type MenuEntry =
   | { kind: "link"; label: string; href: string }
@@ -29,9 +30,9 @@ export function RowMenu({ label, entries }: { label: string; entries: MenuEntry[
     <button type="button" className="pv-menu-btn" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)} disabled={pending}><MoreHorizontal aria-hidden="true" /></button>
     {open && <div className="pv-menu-panel" role="menu">{entries.map(e => e.kind === "link"
       ? <Link key={e.label} href={e.href} role="menuitem" onClick={() => setOpen(false)}>{e.label}</Link>
-      : <button key={e.label} type="button" role="menuitem" className={e.danger ? "danger" : ""} onClick={() => {
-        if (e.confirm && !window.confirm(e.confirm)) return;
+      : <button key={e.label} type="button" role="menuitem" className={e.danger ? "danger" : ""} onClick={async () => {
         setOpen(false);
+        if (e.confirm && !(await confirmDialog({ title: e.confirm, confirmLabel: e.label, danger: !!e.danger }))) return;
         start(async () => { const r = await e.run(); toast(r.ok ? (r.message ?? "Done") : r.error); if (r.ok) router.refresh(); });
       }}>{e.label}</button>)}</div>}
   </div>;

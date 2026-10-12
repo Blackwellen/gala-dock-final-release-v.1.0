@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CalendarDays, ChevronDown, Plus, MoreVertical, UserPlus, CalendarPlus, Download, Loader2, CheckCircle2, Ban, Eye, Clock } from "lucide-react";
 import { Dialog, Menu, useAction } from "@/components/kit/client";
 import { savePerson, setPersonStatus, assignShift, setShiftStatus, requestAvailability } from "@/lib/actions/team";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 type Ev = { id: string; name: string; starts_at: string | null; ends_at: string | null };
 type P = { id: string; name: string };
@@ -56,7 +57,7 @@ export function PersonRowMenu({ id, name, status }: { id: string; name: string; 
     <Link role="menuitem" className="k-menu-item" href={`/organizer/team/${id}`} onClick={close}><Eye size={14} />View profile</Link>
     {status !== "available" && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setPersonStatus(id, "available")); }}><CheckCircle2 size={14} />Mark available</button>}
     {status !== "unavailable" && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setPersonStatus(id, "unavailable")); }}><Ban size={14} />Mark unavailable</button>}
-    <div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); if (confirm(`Revoke ${name}'s access? Their history is kept.`)) void run(() => setPersonStatus(id, "deactivated")); }}>Deactivate / revoke access</button></>}</Menu>;
+    <div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: `Revoke ${name}'s access? Their history is kept.`, confirmLabel: "Revoke", danger: true }))) void run(() => setPersonStatus(id, "deactivated")); }}>Deactivate / revoke access</button></>}</Menu>;
 }
 
 export function ShiftMenu({ id, status, eventId }: { id: string; status: string; eventId: string | null }) {

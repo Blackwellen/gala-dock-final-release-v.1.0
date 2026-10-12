@@ -5,6 +5,7 @@ import { MessageSquare, ChevronDown, MoreHorizontal, Pencil, UserCog, CalendarPl
 import { Dialog, Menu, useAction } from "@/components/kit/client";
 import { savePerson, setPersonStatus, addNote, setShiftStatus } from "@/lib/actions/team";
 import { AssignDialog, RequestAvailabilityButton } from "./team-client";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 type Ev = { id: string; name: string; starts_at: string | null; ends_at: string | null };
 
@@ -29,7 +30,7 @@ export function QuickActionsCard({ crew, name, status, events, profile }: { crew
     <li><RequestAvailabilityButton crew={crew} className="tp-ql" /></li>
     <li><Link href={`/organizer/team/${crew}?tab=activity`}><Send size={16} />Send message</Link></li>
     <li><Link href={`/organizer/calendar?crew=${crew}`}><CalendarDays size={16} />View in calendar</Link></li>
-    <li><button className="k-red" disabled={pending || status === "deactivated"} onClick={() => { if (confirm(`Revoke ${name}'s access?`)) void run(() => setPersonStatus(crew, "deactivated")); }}><Ban size={16} />Deactivate / revoke access</button></li></ul>
+    <li><button className="k-red" disabled={pending || status === "deactivated"} onClick={async () => { if ((await confirmDialog({ title: `Revoke ${name}'s access?`, confirmLabel: "Revoke", danger: true }))) void run(() => setPersonStatus(crew, "deactivated")); }}><Ban size={16} />Deactivate / revoke access</button></li></ul>
     <AssignDialog open={assign} onClose={() => setAssign(false)} events={events} people={[]} crew={crew} />
     <Dialog open={edit} onClose={() => setEdit(false)} title="Edit profile"><form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => savePerson(crew, { name: v.name, role: v.role, phone: v.phone, location: v.location, skills: v.skills.split(",").map(s => s.trim()).filter(Boolean), bio: v.bio })); if (r.ok) setEdit(false); }}>
       <label className="k-field"><span>Name</span><input className="k-input" value={v.name} onChange={e => setV(p => ({ ...p, name: e.target.value }))} /></label><label className="k-field"><span>Role</span><input className="k-input" value={v.role} onChange={e => setV(p => ({ ...p, role: e.target.value }))} /></label>

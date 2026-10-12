@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createApiKey, revokeApiKey, createWebhook, setWebhookStatus, testWebhook, replayDelivery } from "@/lib/developer/actions";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 const row: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px 12px", alignItems: "center" };
 const chk: React.CSSProperties = { display: "flex", gap: 4, alignItems: "center", fontSize: 12.5 };
@@ -29,7 +30,7 @@ export function KeyForm({ workspaceId, scopes }: { workspaceId: string; scopes: 
 export function KeyRow({ k }: { k: { id: string; name: string; prefix: string; scopes: string[]; revoked_at: string | null; last: string; exp: string } }) {
   const [pending, start] = useTransition();
   return <tr style={k.revoked_at ? { opacity: 0.55 } : undefined}><td>{k.name}</td><td><code>gd_live_{k.prefix}_…</code></td><td>{k.scopes.join(", ")}</td><td>{k.last}</td><td>{k.revoked_at ? "Revoked" : k.exp}</td>
-    <td>{!k.revoked_at && <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => { if (confirm(`Revoke “${k.name}”? Integrations using it stop working immediately.`)) start(async () => { await revokeApiKey(k.id); }); }}>Revoke</button>}</td></tr>;
+    <td>{!k.revoked_at && <button type="button" className="k-btn outline sm" disabled={pending} onClick={async () => { if ((await confirmDialog({ title: `Revoke “${k.name}”? Integrations using it stop working immediately.`, confirmLabel: "Revoke", danger: true }))) start(async () => { await revokeApiKey(k.id); }); }}>Revoke</button>}</td></tr>;
 }
 
 export function WebhookForm({ workspaceId, events }: { workspaceId: string; events: string[] }) {
@@ -53,7 +54,7 @@ export function WebhookRow({ h }: { h: { id: string; url: string; description: s
     <div style={row}>
       <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => act(() => testWebhook(h.id), "Test delivery queued — it arrives within a minute.")}>Send test</button>
       <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => act(() => setWebhookStatus(h.id, h.status === "active" ? "disabled" : "active"), "Updated.")}>{h.status === "active" ? "Disable" : "Enable"}</button>
-      <button type="button" className="k-btn outline sm" disabled={pending} onClick={() => { if (confirm("Delete this endpoint and its delivery history?")) act(() => setWebhookStatus(h.id, "deleted"), "Deleted."); }}>Delete</button>
+      <button type="button" className="k-btn outline sm" disabled={pending} onClick={async () => { if ((await confirmDialog({ title: "Delete this endpoint and its delivery history?", confirmLabel: "Delete", danger: true }))) act(() => setWebhookStatus(h.id, "deleted"), "Deleted."); }}>Delete</button>
       {msg && <small role="status">{msg}</small>}
     </div>
   </li>;

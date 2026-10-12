@@ -7,6 +7,7 @@ import { Share2, Plus, Minus, Maximize2, ChevronRight, ChevronLeft } from "lucid
 import { useToast } from "@/components/ui";
 import { publishListing, pauseListing } from "../../listings/actions";
 import { VenueMap, type MapEl, type MapSpace } from "../_components/venue-map";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 export function ShareVenue({ path }: { path: string }) {
   const toast = useToast();
@@ -21,8 +22,8 @@ export function LiveToggle({ venueId, live }: { venueId: string; live: boolean }
   const toast = useToast(), router = useRouter();
   return <div className="pv-live">
     <button type="button" role="switch" aria-checked={live} aria-label={live ? "Pause listing" : "Publish listing"} className={`pv-switch${live ? " on" : ""}`} disabled={pending}
-      onClick={() => {
-        if (live && !window.confirm("Pause this venue? It stops taking new requests; existing bookings are unaffected.")) return;
+      onClick={async () => {
+        if (live && !(await confirmDialog({ title: "Pause this venue? It stops taking new requests; existing bookings are unaffected.", confirmLabel: "Pause" }))) return;
         start(async () => { // Going live from paused must clear the pause too, or the listing stays hidden (published but paused_at set).
         const r = live ? await pauseListing(venueId, true) : await (async () => { const u = await pauseListing(venueId, false); return u.ok ? publishListing(venueId) : u; })(); toast(r.ok ? (r.message ?? "Done") : r.error); if (r.ok) router.refresh(); });
       }}><i /></button>

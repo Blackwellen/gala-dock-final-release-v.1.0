@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Star, MapPin, CalendarDays, ImagePlus, Plus, X, ArrowRight, MoreHorizontal, Loader2, Sparkles, MessageSquare, Flag, Pencil, Trash2 } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
 import { submitReview, deleteReview } from "@/lib/actions/reviews";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 type R = { overall: number; quality: number; communication: number; value: number; reliability: number };
 const LABELS: [keyof R, string][] = [["overall", "Overall experience"], ["quality", "Quality"], ["communication", "Communication"], ["value", "Value for money"], ["reliability", "Reliability / Punctuality"]];
@@ -71,5 +72,5 @@ export function SubmittedMenu({ id, editable, compact }: { id: string; editable:
   const { run } = useAction();
   return <Menu label="Review options" width={200} trigger={({ toggle, open, id: mid }) => <button className={`k-icon-btn ${compact ? "rv-dots sm" : "rv-dots"}`} onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="Review options"><MoreHorizontal size={18} /></button>}>{close => <>
     {editable && <Link role="menuitem" className="k-menu-item" href={`/account/reviews?edit=${id}#write`} onClick={close}><Pencil size={14} />Edit review</Link>}
-    <button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); if (confirm("Delete this review? This can't be undone.")) void run(() => deleteReview(id)); }}><Trash2 size={14} />Delete review</button></>}</Menu>;
+    <button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: "Delete this review? This can't be undone.", confirmLabel: "Delete", danger: true }))) void run(() => deleteReview(id)); }}><Trash2 size={14} />Delete review</button></>}</Menu>;
 }

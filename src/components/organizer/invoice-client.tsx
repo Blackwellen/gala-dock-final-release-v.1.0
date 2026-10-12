@@ -5,6 +5,7 @@ import { Pencil, Send, Download, ChevronDown, ChevronLeft, ChevronRight, Printer
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
 import { issueInvoice, remindInvoice, creditInvoice, paymentLink, saveInvoiceNotes } from "@/lib/actions/money";
 import { PaymentDialog } from "./money-client";
+import { confirmDialog } from "@/lib/ui/dialogs";
 
 export function InvoiceHeaderActions({ id, status, prev, next }: { id: string; status: string; prev: string | null; next: string | null }) {
   const { run, pending } = useAction();
@@ -14,7 +15,7 @@ export function InvoiceHeaderActions({ id, status, prev, next }: { id: string; s
     <Menu label="Download" width={200} trigger={({ toggle, open, id: m }) => <button className="k-btn outline" onClick={toggle} aria-expanded={open} aria-controls={m}><Download size={15} />Download <ChevronDown size={14} /></button>}>{close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); window.print(); }}><Printer size={14} />Print / Save as PDF</button><a role="menuitem" className="k-menu-item" href="/api/export/invoices" download onClick={close}><Download size={14} />All invoices (CSV)</a></>}</Menu>
     <Menu label="More actions" width={210} trigger={({ toggle, open, id: m }) => <button className="k-btn outline" onClick={toggle} aria-expanded={open} aria-controls={m}>More actions <ChevronDown size={14} /></button>}>{close => <>
       <Link role="menuitem" className="k-menu-item" href={`/organizer/money/invoices/new?from=${id}&duplicate=1`} onClick={close}><Copy size={14} />Duplicate</Link>
-      {["sent", "viewed", "partial", "overdue"].includes(status) && <button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); if (confirm("Issue a credit note?")) void run(() => creditInvoice(id)); }}><FileX size={14} />Create credit note</button>}</>}</Menu>
+      {["sent", "viewed", "partial", "overdue"].includes(status) && <button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: "Issue a credit note?", confirmLabel: "Issue credit note" }))) void run(() => creditInvoice(id)); }}><FileX size={14} />Create credit note</button>}</>}</Menu>
     {prev ? <Link className="k-icon-btn iv-nav" href={`/organizer/money/invoices/${prev}`} aria-label="Previous invoice"><ChevronLeft size={17} /></Link> : <span className="k-icon-btn iv-nav" aria-disabled><ChevronLeft size={17} /></span>}
     {next ? <Link className="k-icon-btn iv-nav" href={`/organizer/money/invoices/${next}`} aria-label="Next invoice"><ChevronRight size={17} /></Link> : <span className="k-icon-btn iv-nav" aria-disabled><ChevronRight size={17} /></span>}
   </div>;
@@ -37,7 +38,7 @@ export function InvoiceSideActions({ id, status, due }: { id: string; status: st
   return <section className="k-card iv-c"><h2>Actions</h2><div className="iv-sacts">
     <button className="k-btn outline" disabled={!open || pending} onClick={() => void run(() => remindInvoice(id))}><Bell size={14} />Send reminder</button>
     <button className="k-btn outline" disabled={!open} onClick={() => setPay(true)}><Wallet size={14} />Record payment</button>
-    <button className="k-btn outline iv-cancel" disabled={!open || pending} onClick={() => { if (confirm("Cancel this invoice with a credit note?")) void run(() => creditInvoice(id)); }}><FileX size={14} />Cancel invoice</button></div>
+    <button className="k-btn outline iv-cancel" disabled={!open || pending} onClick={async () => { if ((await confirmDialog({ title: "Cancel this invoice with a credit note?", confirmLabel: "Cancel invoice", danger: true, cancelLabel: "Keep it" }))) void run(() => creditInvoice(id)); }}><FileX size={14} />Cancel invoice</button></div>
     {open && <PaymentDialog open={pay} onClose={() => setPay(false)} id={id} due={due} />}</section>;
 }
 
