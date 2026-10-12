@@ -14,8 +14,8 @@ const fromAddress = () => process.env.EMAIL_FROM || "Gala Dock <no-reply@mail.ga
 const replyTo = () => process.env.EMAIL_REPLY_TO || "support@galadock.com";
 export const emailConfigured = () => Boolean(apiKey());
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.galadock.com").replace(/\/+$/, "");
-const EYEBROW: Record<string, string> = { security: "Account security", payments: "Payments", bookings: "Bookings", tickets: "Tickets", messages: "Messages", team: "Your team", marketing: "News from Gala Dock" };
-const CTA: Record<string, string> = { security: "Review your account", payments: "View payment", bookings: "View booking", tickets: "View tickets", messages: "Open conversation" };
+const EYEBROW: Record<string, string> = { security: "Account security", payments: "Payments", tickets: "Tickets", quotes: "Bookings & quotes", messages: "Messages", reminders: "Reminder", event_updates: "Event update" };
+const CTA: Record<string, string> = { security: "Review your account", payments: "View payment details", tickets: "View tickets", quotes: "Open in Gala Dock", messages: "Reply in Gala Dock", reminders: "Take a look", event_updates: "View in Gala Dock" };
 
 export function render(o: { subject: string; body: string; link?: string | null; category: string }) {
   const url = o.link ? (o.link.startsWith("http") ? o.link : `${site()}${o.link}`) : null;

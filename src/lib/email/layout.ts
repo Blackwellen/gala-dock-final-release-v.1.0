@@ -61,7 +61,7 @@ export function emailHtml(p: EmailParts) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="gd-card" style="padding:36px 40px 34px;font-family:${font};color:${b.ink}">
 ${p.eyebrow ? `<p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${b.blue}">${escapeHtml(p.eyebrow)}</p>` : ""}
 <h1 class="gd-h1" style="margin:0 0 14px;font-size:25px;line-height:1.25;font-weight:800;letter-spacing:-.01em;color:${b.ink}">${escapeHtml(p.heading)}</h1>
-<div style="font-size:15px;line-height:1.7;color:${b.body}">${p.bodyHtml}</div>
+<div style="font-size:15px;line-height:1.7;color:${b.body};word-break:break-word;overflow-wrap:anywhere">${p.bodyHtml}</div>
 ${code}${button}
 ${p.note ? `<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid ${b.line};font-size:13px;line-height:1.6;color:${b.muted}">${p.note}</p>` : ""}
 </td></tr></table>
