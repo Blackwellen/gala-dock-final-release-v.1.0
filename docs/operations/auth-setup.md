@@ -20,7 +20,11 @@ How people use them:
 
 Passkeys only work on the production domains. On localhost the browser refuses them, because the relying party is `galadock.com`.
 
-## Bot protection (Cloudflare Turnstile): about 5 minutes
+## Bot protection (Cloudflare Turnstile): done
+
+Set up on 12 Oct 2026 through the Cloudflare API, with the widget "Gala Dock" in managed mode for galadock.com, www.galadock.com, the Vercel production domain and localhost. The domain stays at IONOS, because Turnstile doesn't need Cloudflare DNS. The site key is in Vercel and `.env`, and the secret key is in `.env` and Supabase Auth.
+
+To set it up again by hand:
 
 1. Open Cloudflare dashboard → **Turnstile** → **Add widget**:
    - Name: Gala Dock
