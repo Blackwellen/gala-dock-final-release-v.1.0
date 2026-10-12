@@ -58,7 +58,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
       <div className="pl-main">
         <section className={`pl-gal ${kind}`}>
           <a href="#photos" className="pl-gal-main">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[0] ?? "/assets/gd/v-riverside-park.webp"} alt={l.name} />{l.verified && kind === "venue" && <span className="pl-ver"><BadgeCheck size={14} />Verified venue</span>}<span className="pl-count"><Camera size={14} />1 / {photos.length}</span></a>
-          {photos.slice(1, 5).map((p, i) => <a key={p + i} href="#photos" className="pl-gal-s">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 3 && <span className="pl-all"><Camera size={14} />View all photos ({photos.length})</span>}</a>)}
+          {photos.slice(1, 5).map((p, i) => <a key={p + i} href="#photos" className="pl-gal-s" aria-label={`View photo ${i + 2}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 3 && <span className="pl-all"><Camera size={14} />View all photos ({photos.length})</span>}</a>)}
         </section>
         <section className="pl-head">
           {kind === "service" && d.logo ? /* eslint-disable-next-line @next/next/no-img-element */ <img className="pl-logo" src={String(d.logo)} alt="" /> : null}

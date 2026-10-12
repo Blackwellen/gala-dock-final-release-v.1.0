@@ -8,7 +8,7 @@ import { MonthCalendar, MiniMonth, londonYmd } from "@/components/organizer/mont
 import { LayerBar, LayerList, SavedViews, AddEntry, TimeGrid } from "@/components/organizer/calendar-client";
 import { PhaseChip } from "@/components/organizer/event-bits";
 import { money, num, dateShort, timeRange, time, eventTypeLabel } from "@/lib/format";
-import { CalendarConnect } from "@/components/customer/account-client";
+import { CalendarConnectSection } from "@/components/shared/calendar-connect-section";
 import { TeamConflicts } from "@/components/ops/readiness-panel";
 
 export const metadata = { title: "Calendar" };
@@ -45,7 +45,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
       <div className="k-row k-wrap" style={{ gap: 10 }}>
         <Link className="k-btn ghost lg" href={qs({ date: null })}>Today</Link>
         <div className="k-row cal-nav"><Link className="k-icon-btn plain" href={qs({ date: prev })} aria-label="Previous"><ChevronLeft size={17} /></Link><Link className="k-icon-btn plain" href={qs({ date: next })} aria-label="Next"><ChevronRight size={17} /></Link><span className="cal-range">{label}</span></div>
-        <div className="k-seg cal-views" role="tablist">{(["month", "week", "day", "agenda"] as const).map(v => <Link key={v} role="tab" aria-selected={view === v} href={qs({ view: v === "week" ? null : v })}>{v[0]!.toUpperCase() + v.slice(1)}</Link>)}</div>
+        <div className="k-seg cal-views" role="group" aria-label="Calendar view">{(["month", "week", "day", "agenda"] as const).map(v => <Link key={v} aria-current={(view === v) ? "page" : undefined} href={qs({ view: v === "week" ? null : v })}>{v[0]!.toUpperCase() + v.slice(1)}</Link>)}</div>
         <SavedViews />
         <AddEntry events={events.map(e => ({ id: e.id, name: e.name }))} defaultDate={anchor} />
       </div>
@@ -73,7 +73,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
         <Card><div className="k-between" style={{ marginBottom: 6 }}><h2 style={{ fontSize: 15 }}>{fmtD(anchor, { month: "long", year: "numeric" })}</h2><div className="k-row"><Link className="k-icon-btn plain" href={qs({ date: `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, "0")}-01` })} aria-label="Previous month"><ChevronLeft size={15} /></Link><Link className="k-icon-btn plain" href={qs({ date: `${m === 12 ? y + 1 : y}-${String(m === 12 ? 1 : m + 1).padStart(2, "0")}-01` })} aria-label="Next month"><ChevronRight size={15} /></Link></div></div>
           <MiniMonth year={y} month={m} marked={all.map(e => londonYmd(new Date(e.start)))} selected={anchor} hrefFor={d => qs({ date: d })} /></Card>
         <Card id="layers"><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 15 }}>Calendar layers</h2><Link className="k-link" href="/organizer/settings?tab=integrations">Manage <ArrowRight size={12} /></Link></div><LayerList layers={LAYERS.map(l => ({ ...l }))} active={active} counts={counts} />
-          <div className="oc-sync"><b>Sync to your calendar</b><small>Subscribe once — your events stay up to date in Google, Outlook or Apple Calendar.</small><CalendarConnect /></div></Card>
+          <div className="oc-sync"><b>Sync to your calendar</b><small>Subscribe once — your events stay up to date in Google, Outlook or Apple Calendar.</small><CalendarConnectSection returnTo="/organizer/calendar" /></div></Card>
         <Card><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 15 }}>Upcoming</h2><Link className="k-link" href="/organizer/events?tab=upcoming">View all <ArrowRight size={12} /></Link></div>
           <div className="k-list">{upcoming.map(e => <Link key={e.id} href={qs({ sel: `ev-${e.id}`, date: e.starts_at!.slice(0, 10) })} className="k-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" className="k-thumb" /><div className="k-grow"><b className="k-small k-strong">{e.name}</b><div className="k-xs k-muted">{dateShort(e.starts_at)} · {time(e.starts_at)}</div><div className="k-xs k-muted k-row" style={{ gap: 3 }}><MapPin size={10} />{e.venue_name}</div></div><PhaseChip e={e} /></Link>)}</div></Card>
       </div>

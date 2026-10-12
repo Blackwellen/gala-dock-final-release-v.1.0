@@ -38,7 +38,7 @@ export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false,
   const t = tiers.find(x => x.id === sel); const max = Math.min(10, t?.left ?? 1);
   const href = `/checkout/${slug}?tier=${sel}&qty=${n}`;
   return <>
-    <ul className="pe-tiers" role="radiogroup" aria-label="Ticket type">{tiers.map(x => { const off = x.status !== "on_sale" || x.left === 0; const low = !off && x.qty > 0 && x.left / x.qty < 0.15; return <li key={x.id}>
+    <ul className="pe-tiers" aria-label="Ticket type">{tiers.map(x => { const off = x.status !== "on_sale" || x.left === 0; const low = !off && x.qty > 0 && x.left / x.qty < 0.15; return <li key={x.id}>
       <label className={`pe-tier ${sel === x.id ? "on" : ""} ${off ? "off" : ""}`}><input type="radio" name="tier" checked={sel === x.id} disabled={off} onChange={() => { setSel(x.id); setN(1); }} /><span className="pe-radio" />
         <span className="k-grow"><b>{x.name}</b><small>{x.sub}</small></span>
         <span className="pe-price">{off ? <em className="gray">{x.status === "scheduled" ? "Coming soon" : "Sold out"}</em> : low ? <em>Almost gone</em> : null}<b>{x.price === 0 ? "Free" : `£${x.price.toLocaleString("en-GB")}`}</b></span>

@@ -19,16 +19,14 @@
 .cp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 386px; gap: 14px; align-items: start; }
 .cp-main { padding: 12px 14px; }
 .cp-tabs { display: inline-flex; background: #f5f7fc; border-radius: 10px; padding: 3px; gap: 2px; }
-.cp-tabs a { display: inline-flex; gap: 9px; align-items: center; height: 32px; padding: 0 18px; border-radius: 8px; font-size: 12.5px; font-weight: 500; color: var(--k-ink-2); }
-.cp-tabs a[aria-selected="true"] { background: #fff; color: var(--k-blue); box-shadow: 0 1px 3px #0000001a; border: 1px solid var(--k-blue-line); }
+.cp-tabs a { display: inline-flex; gap: 9px; align-items: center; height: 32px; padding: 0 18px; border-radius: 8px; font-size: 12.5px; font-weight: 500; color: var(--k-ink-2); }.cp-tabs a[aria-selected="true"], .cp-tabs a[aria-current="page"] { background: #fff; color: var(--k-blue); box-shadow: 0 1px 3px #0000001a; border: 1px solid var(--k-blue-line); }
 .cp-cols { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 22px; }
 .cp-cols.checklist, .cp-cols.day { grid-template-columns: minmax(0, 1fr); }
 .cp-tl h3, .cp-check h3 { font-size: 15px; font-weight: 700; }
 .cp-month { margin-top: 10px; } .cp-month-h { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12.5px; }
 .cp-month ul { list-style: none; margin: 4px 0 0; padding: 4px 10px; border: 1px solid var(--k-line-2); border-radius: 8px; }
 .cp-month li { display: flex; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; } .cp-month li b { font-weight: 500; color: var(--k-ink); display: block; } .cp-month li small { display: block; font-size: 11px; color: var(--k-muted); }
-.cp-filters { display: flex; gap: 6px; } .cp-filters a { display: inline-flex; gap: 5px; align-items: center; height: 28px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--k-line); font-size: 11.5px; color: var(--k-ink-2); }
-.cp-filters a[aria-pressed="true"] { background: var(--k-blue); border-color: var(--k-blue); color: #fff; }
+.cp-filters { display: flex; gap: 6px; } .cp-filters a { display: inline-flex; gap: 5px; align-items: center; height: 28px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--k-line); font-size: 11.5px; color: var(--k-ink-2); }.cp-filters a[aria-pressed="true"], .cp-filters a[aria-current="page"] { background: var(--k-blue); border-color: var(--k-blue); color: #fff; }
 .cp-cat { margin-top: 12px; } .cp-cat > div b { font-size: 12.5px; }
 .cp-cat ul { list-style: none; margin: 6px 0 0 26px; padding: 4px 12px; border: 1px solid var(--k-line-2); border-radius: 8px; }
 .cp-cat li { display: flex; gap: 10px; align-items: center; padding: 4px 0; font-size: 11.5px; color: var(--k-ink-2); }

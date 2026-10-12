@@ -3,7 +3,7 @@
 .op-ready header{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .op-ready h2{font-size:14px;margin:0;font-weight:700}.op-ready h3{font-size:12.5px;margin:0 0 6px;font-weight:650}
 .op-state{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11.5px;font-weight:650}
-.op-state.ready{background:#dffaec;color:#0f8a4e}.op-state.attention{background:#fff2df;color:#b45f00}.op-state.blocked{background:#feeaee;color:#c4142b}.op-state.not_required{background:#f1f3f8;color:#5b6189}
+.op-state.ready{background:#dffaec;color:#0a7a49}.op-state.attention{background:#fff2df;color:#8f5100}.op-state.blocked{background:#feeaee;color:#c4142b}.op-state.not_required{background:#f1f3f8;color:#5b6189}
 .op-domains{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .op-domains li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:start;gap:8px;padding:8px 10px;border-radius:9px;background:#f8faff}
 .op-domains li div{display:grid;gap:2px}.op-domains li small{color:#5157a4}

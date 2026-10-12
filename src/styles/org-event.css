@@ -192,3 +192,13 @@
 .pl-prog li { padding: 3px 0; min-height: 40px; }
 .pl-prog b { font-size: 12px; line-height: 1.25; } .pl-prog small { font-size: 10.5px; }
 .pl-prog .k-icon-btn { width: 26px; height: 26px; }
+.ov-readiness { margin-top: 11px; padding: 16px 18px; }
+.ov-readiness .op-ready { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-items: start; }
+.ov-readiness .op-ready > header, .ov-readiness .op-ready > .mk-note { grid-column: 1 / -1; }
+@media (max-width: 900px) { .ov-readiness .op-ready { grid-template-columns: minmax(0, 1fr); } }
+.ov-readiness:empty { display: none; }
+/* Summary row: keep Budget / Revenue / Forecast side by side on phones, and let cards grow rather than clip. */
+.ov-row1 .k-card .k-grid.k-g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 720px) { .ov-row1 .k-card { height: auto; min-height: 136px; } }
+.sl-map-empty { display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center; padding: 16px; color: var(--k-ink-2); background: #f6f9fc; }
+.sl-map-empty b { color: var(--k-ink); font-size: 13.5px; } .sl-map-empty span { font-size: 12px; max-width: 320px; } .sl-map-empty svg { color: var(--k-blue); }

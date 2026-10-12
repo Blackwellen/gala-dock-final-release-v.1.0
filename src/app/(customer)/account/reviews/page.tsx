@@ -27,7 +27,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
   const editItem = editing ? all.find(i => i.id === editing.build_item_id) : null;
   const target = editItem ?? sel;
   const subs = (mine ?? []) as unknown as { id: string; rating: number; ratings: Record<string, number>; body: string; created_at: string; photos: string[]; build_item_id: string; build_items: { title: string; category: string; image: string } | null }[];
-  const stars = (n: number) => <span className="rv-stars" aria-label={`${n} out of 5`}>{[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className={i <= n ? "on" : ""} />)}</span>;
+  const stars = (n: number) => <span className="rv-stars" role="img" aria-label={`${n} out of 5`}>{[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className={i <= n ? "on" : ""} />)}</span>;
 
   return <div className="rv">
     <div className="rv-grid">

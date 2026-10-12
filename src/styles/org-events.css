@@ -30,7 +30,7 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 .ev-card-img { position: relative; height: 106px; display: block; }
 .ev-card-img img { width: 100%; height: 100%; object-fit: cover; }
 .ev-card-chips { position: absolute; left: 10px; bottom: 8px; display: flex; gap: 5px; }
-.ev-chip-red { background: #e5364f !important; color: #fff !important; } .ev-chip-amber { background: #f59e0b !important; color: #fff !important; }
+.ev-chip-red { background: #c8243d !important; color: #fff !important; } .ev-chip-amber { background: #9a5800 !important; color: #fff !important; }
 .ev-card-btns { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
 .ev-card-btn { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: #0d103a55; }
 .ev-card-btn.sq { border-radius: 7px; background: #fff; color: var(--k-ink); }
@@ -54,7 +54,7 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 .mc-body { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .mc-day { min-height: 116px; border-right: 1px solid var(--k-line-2); border-bottom: 1px solid var(--k-line-2); padding: 8px 6px 6px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .mc-day:nth-child(7n) { border-right: 0; }
-.mc-day.out .mc-num { color: #b0b6cc; }
+.mc-day.out .mc-num { color: #6b7190; }
 .mc-num { font-size: 12.5px; font-weight: 600; color: var(--k-ink); padding-left: 4px; }
 .mc-day.today { box-shadow: inset 0 0 0 2px var(--k-blue); border-radius: 8px; }
 .mc-item { display: flex; gap: 6px; padding: 6px; border-radius: 6px; border-left: 3px solid; font-size: 10.5px; background: #f3f6ff; border-color: var(--k-blue); min-width: 0; }
@@ -73,7 +73,7 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 .mm-head, .mm-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
 .mm-head span { color: var(--k-muted); font-size: 10.5px; padding: 6px 0; }
 .mm-grid a { position: relative; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--k-ink); font-weight: 500; }
-.mm-grid a.out { color: #b3b9cd; }
+.mm-grid a.out { color: #6b7190; }
 .mm-grid a.mark::after { content: ""; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--k-blue); }
 .mm-grid a.today { color: var(--k-blue); font-weight: 700; }
 .mm-grid a.sel { background: var(--k-blue); color: #fff; } .mm-grid a.sel::after { background: #fff; }

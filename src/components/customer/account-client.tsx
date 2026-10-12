@@ -96,12 +96,28 @@ export function CardsPanel({ cards, compact }: { cards: SavedCard[]; compact?: b
   </section>;
 }
 
-export function CalendarConnect() {
-  const [url, setUrl] = useState<string | null>(null); const [which, setWhich] = useState<string | null>(null); const { run, pending } = useAction(); const toast = useKitToast();
+export type CalendarSyncState = { providers: string[]; connections: { provider: string; account_email: string | null; status: string; last_error: string | null; last_synced_at: string | null }[]; returnTo: string };
+const SYNC_KEY: Record<string, string> = { google: "google", outlook: "microsoft" };
+
+/** Two-way sync row state: connected account, last sync, errors; Sync now / Disconnect. */
+function SyncStatus({ c, onBusy }: { c: CalendarSyncState["connections"][number]; onBusy: (b: boolean) => void }) {
+  const toast = useKitToast(); const router = useRouter(); const [now] = useState(() => Date.now());
+  const ago = c.last_synced_at ? Math.max(0, Math.round((now - Date.parse(c.last_synced_at)) / 6e4)) : null;
+  const when = ago === null ? "Not synced yet" : ago < 1 ? "Synced just now" : ago < 60 ? `Synced ${ago} min ago` : `Synced ${Math.round(ago / 60)} h ago`;
+  const sync = async () => { onBusy(true); const r = await fetch("/api/calendar/sync", { method: "POST" }).catch(() => null); const j = await r?.json().catch(() => null); onBusy(false); if (r?.ok && j?.ok) toast("Calendar synced"); else toast(j?.error ?? "Sync failed. We'll retry automatically.", "error"); router.refresh(); };
+  const disconnect = async () => { onBusy(true); const { error } = await createClient().rpc("disconnect_my_calendar", { p_provider: c.provider }); onBusy(false); if (error) toast("Couldn't disconnect", "error"); else { toast("Calendar disconnected. The Gala Dock calendar stays in your account until you delete it."); router.refresh(); } };
+  return <><small className={c.status === "active" ? "ac-sync-ok" : "ac-sync-err"}>{c.status === "active" ? `Two-way sync on${c.account_email ? ` · ${c.account_email}` : ""} · ${when}` : c.last_error ?? "Sync paused"}</small>
+    <span className="k-row ac-sync-actions" style={{ gap: 6 }}><button type="button" className="k-btn outline sm" onClick={() => void sync()}>Sync now</button><button type="button" className="k-btn ghost sm" onClick={() => void disconnect()}>Disconnect</button></span></>;
+}
+
+export function CalendarConnect({ sync }: { sync?: CalendarSyncState } = {}) {
+  const [url, setUrl] = useState<string | null>(null); const [which, setWhich] = useState<string | null>(null); const { run, pending } = useAction(); const toast = useKitToast(); const [busy, setBusy] = useState(false);
   const open = async (w: string) => { setWhich(w); if (!url) { const r = await run(() => calendarFeed(), { refresh: false }); if (r.ok && r.data) setUrl(`${location.origin}${(r.data as { url: string }).url}`); } };
   const webcal = url?.replace(/^https?:/, "webcal:");
   const go: Record<string, string> = { google: `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal ?? "")}`, outlook: `https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(url ?? "")}&name=Gala%20Dock`, apple: webcal ?? "" };
-  return <><ul className="ac-cals">{([["google", "Google Calendar", "gcal"], ["outlook", "Outlook Calendar", "ocal"], ["apple", "Apple Calendar", "acal"]] as const).map(([k, l]) => <li key={k}><BrandLogo brand={k === "google" ? "google-calendar" : k} size={40} tile /><span className="k-grow"><b>{l}</b><small>Sync your events and bookings</small></span><button className="k-btn outline ac-connect" onClick={() => void open(k)}>Connect</button></li>)}</ul>
+  return <><ul className="ac-cals">{([["google", "Google Calendar", "gcal"], ["outlook", "Outlook Calendar", "ocal"], ["apple", "Apple Calendar", "acal"]] as const).map(([k, l]) => { const pk = SYNC_KEY[k]; const conn = pk ? sync?.connections.find(c => c.provider === pk) : undefined; const oauth = !!pk && !!sync?.providers.includes(pk);
+    return <li key={k} aria-busy={busy || undefined}><BrandLogo brand={k === "google" ? "google-calendar" : k} size={40} tile /><span className="k-grow"><b>{l}</b>{conn ? <SyncStatus c={conn} onBusy={setBusy} /> : <small>{oauth ? "Two-way sync: your events go in, your busy times come back" : "Sync your events and bookings"}</small>}</span>
+      {conn ? (conn.status !== "active" && <a className="k-btn outline ac-connect" href={`/api/calendar/oauth/${pk}/start?return=${encodeURIComponent(sync!.returnTo)}`}>Reconnect</a>) : oauth ? <span className="k-row" style={{ gap: 6 }}><a className="k-btn outline ac-connect" href={`/api/calendar/oauth/${pk}/start?return=${encodeURIComponent(sync!.returnTo)}`}>Connect</a><button type="button" className="k-btn ghost sm" onClick={() => void open(k)}>Use link</button></span> : <button className="k-btn outline ac-connect" onClick={() => void open(k)}>Connect</button>}</li>; })}</ul>
     <Dialog open={!!which} onClose={() => setWhich(null)} title={`Subscribe in ${which === "google" ? "Google Calendar" : which === "outlook" ? "Outlook" : "Apple Calendar"}`} sub="Your events and tickets stay in sync automatically. This private link is your key — don't share it.">
       {pending || !url ? <p className="k-small"><Loader2 size={14} className="k-spin" /> Creating your private link…</p> : <div className="k-col" style={{ gap: 10 }}>
         <a className="k-btn primary" href={go[which ?? "google"]} target="_blank" rel="noopener noreferrer">Open {which === "google" ? "Google Calendar" : which === "outlook" ? "Outlook" : "Calendar app"}</a>

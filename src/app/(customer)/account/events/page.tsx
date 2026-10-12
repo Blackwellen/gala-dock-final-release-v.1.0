@@ -11,7 +11,7 @@ import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "My Events" };
 const STEPS = ["Details", "Venue", "Providers", "Payments", "Ready"];
-const TYPE_BADGE: Record<string, string> = { wedding: "#e5364f", birthday: "#8b5cf6", party: "#0f172a", private_dinner: "#f59e0b" };
+const TYPE_BADGE: Record<string, string> = { wedding: "#c8243d", birthday: "#6d28d9", party: "#0f172a", private_dinner: "#9a5800" }; // white text ≥ 4.5:1 (WCAG AA)
 
 export default async function MyEvents({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams; const ctx = await getCustomer("/account/events");
@@ -41,7 +41,7 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
       <div className="me-agent"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="k-blue" /><b style={{ fontSize: 14 }}>Gala Agent</b><Beta /></div><b className="me-agent-q">Need help with your event?</b><p>I can suggest next steps, find venues, or draft messages to your providers.</p><Link className="k-btn outline block" href="/plan?step=1">Get planning help <ArrowRight size={14} /></Link></div>
     </section>
     <div className="me-tabs-row">
-      <div className="me-tabs" role="tablist">{([["upcoming", "Upcoming", upcoming.length, CalendarDays], ["past", "Past", past.length, Clock], ["drafts", "Drafts", drafts.length, FileText]] as const).map(([k, l, n, I]) => <Link key={k} role="tab" aria-selected={tab === k} href={k === "upcoming" ? "/account/events" : `/account/events?tab=${k}`}><I size={17} />{l} ({n})</Link>)}</div>
+      <div className="me-tabs" role="group" aria-label="Filter events">{([["upcoming", "Upcoming", upcoming.length, CalendarDays], ["past", "Past", past.length, Clock], ["drafts", "Drafts", drafts.length, FileText]] as const).map(([k, l, n, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={k === "upcoming" ? "/account/events" : `/account/events?tab=${k}`}><I size={17} />{l} ({n})</Link>)}</div>
       <Link className="k-btn primary lg" href="/plan?step=1"><Plus size={17} />Create Event</Link>
     </div>
     <div className="me-grid">

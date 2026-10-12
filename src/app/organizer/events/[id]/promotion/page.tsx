@@ -7,6 +7,7 @@ import { DistToggle, PromoterButton, PromoMenu } from "@/components/organizer/pr
 import { money } from "@/lib/format";
 import { BrandLogo } from "@/components/kit/brand-logo";
 import { requestTime } from "@/lib/workspace/format";
+import { BoostSelect } from "@/components/organizer/boost-client";
 
 export const metadata = { title: "Promotion" };
 const TZ = "Europe/London";
@@ -15,8 +16,13 @@ const PST: Record<string, [string, string]> = { draft: ["Draft", "gray"], ready:
 export default async function PromotionPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]); if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const ctx = await getOrganizer(); const sb = ctx.supabase;
-  const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,cover_image,visibility,settings").eq("id", id).eq("workspace_id", ctx.workspace.id).maybeSingle();
+  const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,city,event_type,cover_image,visibility,settings").eq("id", id).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) notFound();
+  // Paid placements: live catalogue + this event's boosts with delivery stats.
+  const [{ data: products }, { data: myBoosts }] = await Promise.all([
+    sb.from("boost_products" as never).select("key,label,placement,price_minor,duration_days").order("price_minor") as unknown as Promise<{ data: { key: string; label: string; placement: string; price_minor: number; duration_days: number }[] | null }>,
+    sb.from("promotion_boosts").select("id,product_key,placement,status,starts_at,ends_at,impressions,clicks,amount_minor").eq("event_id", id).order("created_at", { ascending: false }),
+  ]);
   const tab = ["calendars", "promoters", "audience", "boosts", "performance"].includes(sp.tab ?? "") ? sp.tab! : "discover";
   const [{ data: tiers }, { data: promos }, { data: promoters }, { data: media }, { data: tk }] = await Promise.all([
     sb.from("ticket_tiers").select("quantity,sold").eq("event_id", id),
@@ -34,7 +40,6 @@ export default async function PromotionPage({ params, searchParams }: { params: 
   const dirs = [["gala", "Gala Dock Directory", "Music · London · Featured eligible", live], ["london", "London Events Feed", "City guide · Events calendar", !!dist.london], ["ukfest", "UK Festival Guide", "Apply for listing", !!dist.ukfest], ["student", "Student Events", "University & student audience", !!dist.student], ["family", "Family & Culture", "Family friendly events", !!dist.family]] as const;
   const cals = [["galacal", "Gala Dock Calendar", "Automatically listed", live, false], ["google", "Google Calendar", "Syncing events", !!dist.google, true], ["apple", "Apple Calendar", "Live via ICS", !!dist.apple, true], ["outlook", "Outlook Calendar", "Connect account", !!dist.outlook, true], ["ics", "iCal / ICS Feed", "Public link generated", !!dist.ics, true]] as const;
   const campaigns = (promos ?? []).filter(p => /email|reminder|announcement/i.test(`${p.channel} ${p.title}`));
-  const boosts = [["Featured Event", "Top placement on directory homepage", 49], ["Category Spotlight", "Featured in Music category", 35], ["City Weekend Spotlight", "Featured in London this weekend", 45], ["Venue Page Placement", `Show on ${e.venue_name || "venue"} page`, 25]] as const;
   const fmtD = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "—";
   const base = `/organizer/events/${id}/promotion`;
 
@@ -58,8 +63,9 @@ export default async function PromotionPage({ params, searchParams }: { params: 
     <div className="pr-r3">
       <section className="k-card pr-c"><div className="k-between"><div><h2>Audience campaigns</h2><p className="pr-sub">Send announcements, reminders and updates to interested attendees.</p></div><Link className="k-btn outline sm" href={`/organizer/promotions/new?event=${id}`}>Create campaign</Link></div>
         <table className="mn-t"><thead><tr><th>Campaign</th><th>Audience</th><th>Send date</th><th>Status</th><th>Results</th><th /></tr></thead><tbody>{(tab === "audience" ? promos ?? [] : campaigns).slice(0, 6).map(p => { const [sl, st] = PST[p.status] ?? [p.status, "gray"]; const m = (p.metrics ?? {}) as Record<string, number>; return <tr key={p.id}><td>{p.channel}</td><td>{p.audience}</td><td>{fmtD(p.scheduled_at)}</td><td><span className={`mn-st ${st}`}>{sl}</span></td><td>{m.opens ? `${(m.opens / 1000).toFixed(1)}K opens` : "—"}</td><td><PromoMenu id={p.id} status={p.status} /></td></tr>; })}{!campaigns.length && tab !== "audience" && <tr><td colSpan={6} className="k-small">No email campaigns yet.</td></tr>}</tbody></table></section>
-      <section className="k-card pr-c"><div className="k-between"><div><h2>Boosts &amp; paid placements</h2><p className="pr-sub">Increase visibility across key surfaces.</p></div><Link className="k-btn primary sm" href={`/organizer/promotions/new?event=${id}&boost=1`}>Buy boost</Link></div>
-        <ul className="pr-boost">{boosts.map(([t, d, p]) => <li key={t}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-grow"><b>{t}</b><small>{d}</small></span><small>From {money(p)}</small><Link className="k-btn outline sm" href={`/organizer/promotions/new?event=${id}&boost=${encodeURIComponent(t)}`}>Select</Link></li>)}</ul></section>
+      <section className="k-card pr-c"><div className="k-between"><div><h2>Boosts &amp; paid placements</h2><p className="pr-sub">Increase visibility across key surfaces.</p></div><Link className="k-btn primary sm" href={`/organizer/events/${id}/promotion?tab=boosts`}>Buy boost</Link></div>
+        <ul className="pr-boost">{(products ?? []).map(pr => <li key={pr.key}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/covers/neon-nights.webp"} alt="" /><span className="k-grow"><b>{pr.label}</b><small>{{ discover: "Featured on Discover", category: "Spotlight in its category", homepage: "Homepage hero", search: "Boosted in search results" }[pr.placement] ?? pr.placement}</small></span><small>{money(pr.price_minor / 100)}</small><BoostSelect eventId={id} product={pr} defaultCity={(e.city ?? "").toLowerCase()} defaultCategory={(e.event_type ?? "").replace(/_/g, " ")} /></li>)}</ul>
+        {(myBoosts ?? []).length > 0 && <table className="mn-t pr-bt"><thead><tr><th>Boost</th><th>Status</th><th>Runs</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Spend</th></tr></thead><tbody>{(myBoosts ?? []).map(b => <tr key={b.id}><td>{(products ?? []).find(p => p.key === b.product_key)?.label ?? b.product_key}</td><td><span className={`mn-st ${b.status === "active" ? "green" : b.status === "scheduled" ? "blue" : b.status === "pending_payment" ? "amber" : "gray"}`}>{b.status.replace(/_/g, " ")}</span></td><td>{b.starts_at ? fmtD(b.starts_at) : "—"} → {b.ends_at ? fmtD(b.ends_at) : "—"}</td><td>{Number(b.impressions).toLocaleString("en-GB")}</td><td>{Number(b.clicks).toLocaleString("en-GB")}</td><td>{b.impressions ? `${((Number(b.clicks) / Number(b.impressions)) * 100).toFixed(1)}%` : "—"}</td><td>{money(b.amount_minor / 100)}</td></tr>)}</tbody></table>}</section>
       <section className="k-card pr-c"><div className="k-between"><div><h2>Promotion assets</h2><p className="pr-sub">Event posters, images, videos and media pack.</p></div><Link className="k-link" href={`/organizer/events/${id}/media`}>View all <ArrowRight size={13} /></Link></div>
         <div className="pr-assets">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="big" src={(media ?? [])[0]?.url || (s.poster as string) || "/assets/gd/builder/poster/poster-main.webp"} alt="" />{(media ?? []).slice(1, 5).map(m => /* eslint-disable-next-line @next/next/no-img-element */ <img key={m.id} src={m.url} alt={m.title} />)}{((s.gallery as string[]) ?? []).slice(0, Math.max(0, 4 - Math.max(0, (media ?? []).length - 1))).map(g => /* eslint-disable-next-line @next/next/no-img-element */ <img key={g} src={g} alt="" />)}<Link href={`/organizer/events/${id}/media`} className="pr-add"><Plus size={20} />Add media</Link></div></section>
     </div>

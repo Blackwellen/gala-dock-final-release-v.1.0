@@ -4,9 +4,7 @@
 .cal-views > * { height: 32px; padding: 0 14px; }
 .cal-layers { display: flex; gap: 8px; flex-wrap: wrap; }
 .cal-layer { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 9px; border-radius: 8px; border: 1px solid var(--k-line) !important; background: #fff !important; font-size: 12px; font-weight: 550; color: var(--k-ink-2) !important; }
-.cal-box { width: 15px; height: 15px; border-radius: 4px; display: grid; place-items: center; border: 1.5px solid var(--c); color: #fff; }
-.cal-layer[aria-pressed="true"] .cal-box { background: var(--c); }
-.cal-layer[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 7%, #fff) !important; }
+.cal-box { width: 15px; height: 15px; border-radius: 4px; display: grid; place-items: center; border: 1.5px solid var(--c); color: #fff; }.cal-layer[aria-pressed="true"] .cal-box, .cal-layer[aria-current="page"] .cal-box { background: var(--c); }.cal-layer[aria-pressed="true"], .cal-layer[aria-current="page"] { background: color-mix(in srgb, var(--c) 7%, #fff) !important; }
 .cal-grid { display: grid; grid-template-columns: minmax(0, 1fr) 278px; gap: 14px; align-items: start; }
 .cal-layer-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .cal-layer-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

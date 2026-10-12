@@ -57,7 +57,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
     </div>
     <div className="k-between ev-tabs-row">
       <nav className="k-tabs" aria-label="Event lists" style={{ borderBottom: 0 }}>{([["all", "All", counts.all], ["upcoming", "Upcoming", counts.upcoming], ["live", "Live", counts.live], ["completed", "Completed", counts.completed], ["templates", "Templates", templates?.length ?? 0]] as const).map(([k, l, c]) => <Link key={k} href={qs({ tab: k === "all" ? null : k, page: null })} className="k-tab" aria-current={tab === k ? "page" : undefined}>{l}<span className="ev-count">{c}</span></Link>)}</nav>
-      <div className="k-seg" role="tablist" aria-label="View">{([["list", "List", List], ["cards", "Cards", LayoutGrid], ["calendar", "Calendar", CalendarDays]] as const).map(([k, l, I]) => <Link key={k} href={qs({ view: k === "list" ? null : k })} role="tab" aria-selected={view === k}><I size={15} />{l}</Link>)}</div>
+      <div className="k-seg" role="group" aria-label="View">{([["list", "List", List], ["cards", "Cards", LayoutGrid], ["calendar", "Calendar", CalendarDays]] as const).map(([k, l, I]) => <Link key={k} href={qs({ view: k === "list" ? null : k })} aria-current={(view === k) ? "page" : undefined}><I size={15} />{l}</Link>)}</div>
     </div>
     {tab === "templates" ? <TemplatesGrid templates={templates ?? []} /> : <>
       <EventFilters clients={[...new Set(all.map(e => e.client_name).filter(Boolean))]} venues={[...new Set(all.map(e => e.venue_name).filter(Boolean))]} types={types} owners={[ctx.name]} />
@@ -137,7 +137,7 @@ async function CalendarView({ events, sp, qs, supabase, workspaceId, counts, tot
     <Card flush>
       <div className="k-between" style={{ padding: "10px 12px", borderBottom: "1px solid var(--k-line-2)" }}>
         <div className="k-row" style={{ gap: 8 }}><Link className="k-icon-btn" href={qs({ month: prev })} aria-label="Previous month"><ChevronLeft size={16} /></Link><Link className="k-icon-btn" href={qs({ month: next })} aria-label="Next month"><ChevronRight size={16} /></Link><Link className="k-btn outline" href={qs({ month: null, day: null })}>Today</Link><h2 style={{ fontSize: 19, marginLeft: 10 }}>{label}</h2></div>
-        <div className="k-seg" role="tablist"><span role="tab" aria-selected>Month</span><Link role="tab" aria-selected={false} href="/organizer/calendar?view=week">Week</Link><Link role="tab" aria-selected={false} href="/organizer/calendar?view=day">Day</Link><Link role="tab" aria-selected={false} href="/organizer/calendar?view=agenda">Agenda</Link></div>
+        <div className="k-seg"><span aria-current="page">Month</span><Link aria-current={(false) ? "page" : undefined} href="/organizer/calendar?view=week">Week</Link><Link aria-current={(false) ? "page" : undefined} href="/organizer/calendar?view=day">Day</Link><Link aria-current={(false) ? "page" : undefined} href="/organizer/calendar?view=agenda">Agenda</Link></div>
       </div>
       <MonthCalendar year={year} month={month} items={items} maxPerDay={1} />
     </Card>

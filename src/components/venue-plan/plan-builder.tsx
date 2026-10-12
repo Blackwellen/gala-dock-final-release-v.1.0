@@ -4,10 +4,12 @@ import "@/styles/venue-plan.css";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type PointerEvent as RPE } from "react";
 import { MousePointer2, Hand, Square, Pentagon, Minus as WallIcon, Type, Ruler, Undo2, Redo2, Trash2, Copy, Eye, EyeOff, Lock, Unlock, ImagePlus, Map as MapIcon, Maximize2, Minimize2,
   ZoomIn, ZoomOut, Scan, Grid3x3, Magnet, Layers, Crosshair, ArrowUpToLine, ArrowDownToLine, Save, Upload, Shapes, Search, Keyboard, RotateCw, RotateCcw, AlignStartVertical, AlignCenterVertical,
-  AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Sparkles, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2 } from "lucide-react";
+  AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Satellite, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2,
+  Plus, Pencil, ChevronUp, ChevronDown, Download, FileUp, Printer, MapPin, LocateFixed, ClipboardPaste, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useToast } from "@/components/ui";
-import { MapContent, MapDefs, mapBounds, elBounds, isPoly, FIXTURE_LABEL, UNITS_PER_M, type MapEl, type MapSpace } from "@/app/provider/venues/_components/venue-map";
+import { MapContent, MapDefs, mapBounds, elBounds, isPoly, FIXTURE_LABEL, UNITS_PER_M, MAP_ATTRIBUTION, type MapEl, type MapSpace } from "@/app/provider/venues/_components/venue-map";
+import { MAP_STYLES } from "@/lib/maps/styles";
 import { ASSETS, ASSET, ASSET_CATS, ASSET_IMG, ASSET_SWATCH, KILL_SEATS_SWATCH, alpha, blockSeats, tableSeats, seatingSize, tableSize, type Seating, type TableSpec } from "./assets";
 import { AssetShape, assetDefaults, type SeatFlag } from "./asset-shape";
 
@@ -70,8 +72,8 @@ function shift(e: MapEl, dx: number, dy: number): MapEl {
 /**
  * Enterprise venue/event plan builder. Venue mode edits the structural plan; event mode edits an event overlay above a locked base plan and assigns ticket tiers.
  */
-export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title }: {
-  initial: MapEl[]; spaces?: MapSpace[]; version: number; geo: { lat: number; lng: number } | null; height?: number; onSave: SaveFn; mode?: "venue" | "event"; base?: MapEl[]; tiers?: Tier[]; title?: string;
+export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title }: {
+  initial: MapEl[]; spaces?: MapSpace[]; version: number; draftVersion?: number; geo: { lat: number; lng: number } | null; height?: number; onSave: SaveFn; mode?: "venue" | "event"; base?: MapEl[]; tiers?: Tier[]; title?: string;
 }) {
   const toast = useToast();
   const [pending, start] = useTransition();
@@ -91,7 +93,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
   const [cursor, setCursor] = useState<number[] | null>(null);
   const [measure, setMeasure] = useState<number[][] | null>(null);
   const [marquee, setMarquee] = useState<number[][] | null>(null);
-  const [panel, setPanel] = useState<"assets" | "layers" | "inspect">("assets");
+  const [panel, setPanel] = useState<"assets" | "layers" | "map" | "inspect">("assets");
   const [query, setQuery] = useState("");
   const [help, setHelp] = useState(false);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
@@ -103,6 +105,20 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
   const [rotating, setRotating] = useState(false);
   const [ghost, setGhost] = useState<{ key: string; x: number; y: number } | null>(null);
   const dragKey = useRef<string | null>(null);
+  const [step, setStep] = useState(5);
+  const [activeLayer, setActiveLayer] = useState<string | null>(null);
+  const [hiddenLayers, setHiddenLayers] = useState<string[]>([]);
+  const [lockedLayers, setLockedLayers] = useState<string[]>([]);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [calib, setCalib] = useState<{ a: number[]; b: number[]; m: string } | null>(null);
+  const [confirmPub, setConfirmPub] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [geoQ, setGeoQ] = useState("");
+  const [geoHits, setGeoHits] = useState<{ label: string; lat: number; lng: number }[]>([]);
+  const [geoBusy, setGeoBusy] = useState(false);
+  const [focusName, setFocusName] = useState(0);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const importRef = useRef<HTMLInputElement>(null);
   const all = useMemo(() => [...base, ...initial], [base, initial]);
   const [view, setView] = useState<View>(() => { const b = mapBounds(all.length ? all : [{ type: "room", label: "", x: 0, y: 0, w: 600, h: 360 }]); return { x: -20, y: -20, w: b.w + 40, h: b.h + 40 }; });
   const svg = useRef<SVGSVGElement>(null);
@@ -122,8 +138,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
   const undo = useCallback(() => setPast(p => { if (!p.length) return p; const last = p[p.length - 1]; setEls(cur => { setFuture(f => [cur, ...f]); return last; }); setSel([]); return p.slice(0, -1); }), []);
   const redo = useCallback(() => setFuture(f => { if (!f.length) return f; const [n, ...rest] = f; setEls(cur => { setPast(p => [...p, cur]); return n; }); return rest; }), []);
   const groupOf = (e: MapEl) => GROUPS.find(g => g[2](e))?.[0] ?? "fixed";
-  const editable = (e: MapEl) => !!e && !e.locked && !lockedGroups.includes(groupOf(e));
-  const sn = (v: number) => (snap ? Math.round(v / 5) * 5 : Math.round(v));
+  const editable = (e: MapEl) => !!e && e.type !== "layer" && !e.locked && !lockedGroups.includes(groupOf(e)) && !(e.layer && lockedLayers.includes(e.layer));
+  const sn = (v: number) => (snap ? Math.round(v / step) * step : Math.round(v));
+  const layerDefs = els.filter(e => e.type === "layer");
+  /** New items go on the active custom layer. */
+  const tag = (e: MapEl): MapEl => (activeLayer && !e.layer && e.type !== "basemap" ? { ...e, layer: activeLayer } : e);
   const world = (e: { clientX: number; clientY: number }) => { const c = svg.current?.getScreenCTM(); if (!c) return [0, 0]; const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(c.inverse()); return [p.x, p.y]; };
   const s = sel.length === 1 ? els[sel[0]] : null;
   const removeSel = useCallback(() => {
@@ -133,11 +152,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     commit(l => l.filter((_, j) => !drop.has(j))); setSel([]);
   }, [sel, els, commit, toast]);
   const finishDraft = useCallback(() => {
-    if (tool === "poly" && draft.length >= 3) { commit(l => [...l, { type: "room", id: newId("room"), label: "New room", points: draft }]); setSel([els.length]); setPanel("inspect"); }
-    if (tool === "wall" && draft.length >= 2) commit(l => [...l, { type: "wall", label: "Wall", points: draft, size: 4 }]);
-    if (tool === "line" && placing && draft.length >= 2) { commit(l => [...l, { type: "asset", asset: placing, id: newId(placing), label: ASSET[placing].label, points: draft }]); setSel([els.length]); setPanel("inspect"); }
+    if (tool === "poly" && draft.length >= 3) { commit(l => [...l, tag({ type: "room", id: newId("room"), label: "New room", points: draft })]); setSel([els.length]); setPanel("inspect"); }
+    if (tool === "wall" && draft.length >= 2) commit(l => [...l, tag({ type: "wall", label: "Wall", points: draft, size: 4 })]);
+    if (tool === "line" && placing && draft.length >= 2) { commit(l => [...l, tag({ type: "asset", asset: placing, id: newId(placing), label: ASSET[placing].label, points: draft })]); setSel([els.length]); setPanel("inspect"); }
     setDraft([]);
-  }, [tool, draft, commit, els.length, placing]);
+  }, [tool, draft, commit, els.length, placing, activeLayer]); // eslint-disable-line react-hooks/exhaustive-deps
   const rotate = useCallback((deg: number) => { if (!sel.length) return; commit(l => l.map((x, j) => sel.includes(j) && x.type === "asset" && !x.points && editable(x) ? { ...x, rot: (((x.rot ?? 0) + deg) % 360 + 360) % 360 } : x)); }, [sel, commit]); // eslint-disable-line react-hooks/exhaustive-deps
   const flip = useCallback((axis: "h" | "v") => {
     if (!sel.length) return;
@@ -167,7 +186,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       if (mod && k === "v") { if (clip.length) { const c = clip.map(x => shift({ ...x, id: newId("paste"), protected: false }, 30, 30)); commit(l => [...l, ...c]); setSel(c.map((_, j) => els.length + j)); } return; }
       if (mod && k === "d") { e.preventDefault(); duplicate(); return; }
       if ((e.key === "Delete" || e.key === "Backspace") && sel.length) { e.preventDefault(); removeSel(); return; }
-      if (e.key === "Escape") { setDraft([]); setMeasure(null); setSel([]); setSeats(null); setTool("select"); setPlacing(null); setMenu(null); setHelp(false); setLegend(false); return; }
+      if (e.key === "Escape") { setCalib(null); setConfirmPub(false); setExportOpen(false); setDraft([]); setMeasure(null); setSel([]); setSeats(null); setTool("select"); setPlacing(null); setMenu(null); setHelp(false); setLegend(false); return; }
       if (e.key === "Enter") { finishDraft(); return; }
       if (e.key === "?") { setHelp(h => !h); return; }
       if (e.key.startsWith("Arrow") && sel.length) { e.preventDefault(); const d = e.shiftKey ? 10 : 1;
@@ -190,14 +209,14 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     const a = asset(key, 0, 0), w = a.w ?? 20, h = a.h ?? 20;
     const n = d.kind === "table" ? String(els.filter(e => ASSET[e.asset ?? ""]?.kind === "table").length + 1) : "";
     const el: MapEl = d.kind === "table" ? { ...a, table: { ...a.table!, number: n }, label: `Table ${n}` } : d.kind === "seating" ? { ...a, seating: { ...a.seating!, prefix: alphaNext(els) }, label: `Block ${alphaNext(els)}` } : a;
-    commit(l => [...l, { ...el, x: sn(x - w / 2), y: sn(y - h / 2) }]); setSel([els.length]); setPanel("inspect");
+    commit(l => [...l, tag({ ...el, x: sn(x - w / 2), y: sn(y - h / 2) })]); setSel([els.length]); setPanel("inspect");
   };
   const onWheel = (e: React.WheelEvent) => {
     const [x, y] = world(e), f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
     setView(v => { const w = Math.min(12000, Math.max(40, v.w * f)), h = (w / v.w) * v.h; return { x: x - ((x - v.x) * w) / v.w, y: y - ((y - v.y) * h) / v.h, w, h }; });
   };
   const onCanvasDown = (e: RPE<SVGSVGElement>) => {
-    setMenu(null); wrap.current?.focus();
+    setMenu(null); setExportOpen(false); setConfirmPub(false); wrap.current?.focus();
     if (e.button === 2) return;
     if (e.button === 1 || tool === "hand" || space.current) { drag.current = { kind: "pan", sx: e.clientX, sy: e.clientY, view }; svg.current?.setPointerCapture(e.pointerId); return; }
     const [x, y] = world(e), p = [sn(x), sn(y)];
@@ -211,16 +230,10 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       if (tool === "poly" && draft.length >= 3 && dist(p, draft[0]) < view.w / 80) { finishDraft(); return; }
       setDraft(d => [...d, p]); return;
     }
-    if (tool === "label") { const text = window.prompt("Label text"); if (text?.trim()) commit(l => [...l, { type: "label", label: text.trim().slice(0, 60), x: p[0], y: p[1], size: Math.round(view.w / 50) }]); setTool("select"); return; }
+    if (tool === "label") { commit(l => [...l, tag({ type: "label", label: "Text", x: p[0], y: p[1], size: Math.round(view.w / 50) })]); setSel([els.length]); setPanel("inspect"); setSideOpen(true); setFocusName(n => n + 1); setTool("select"); return; }
     if (tool === "calibrate") {
       const next = [...draft, p]; setDraft(next);
-      if (next.length === 2) {
-        const real = Number(window.prompt("Real distance between these two points (metres)?") ?? "");
-        const u = s;
-        if (real > 0 && u?.type === "underlay") { const f = (real * UNITS_PER_M) / dist(next[0], next[1]), ox = u.x ?? 0, oy = u.y ?? 0;
-          commit(l => l.map((q, j) => j === sel[0] ? { ...q, w: (q.w ?? 0) * f, h: (q.h ?? 0) * f, x: next[0][0] - (next[0][0] - ox) * f, y: next[0][1] - (next[0][1] - oy) * f } : q)); toast("Drawing scaled to real-world metres"); }
-        setDraft([]); setTool("select");
-      }
+      if (next.length === 2) setCalib({ a: next[0], b: next[1], m: "" });
       return;
     }
     drag.current = tool === "measure" ? { kind: "measure", sx: p[0], sy: p[1] } : { kind: "draft", sx: p[0], sy: p[1] };
@@ -256,7 +269,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       const sx = d.corner === 1 || d.corner === 2 ? 1 : -1, sy = d.corner >= 2 ? 1 : -1, lx = (-sx * ow) / 2, ly = (-sy * oh) / 2;
       const ax = ccx + lx * co - ly * si, ay = ccy + lx * si + ly * co, qx = x - ax, qy = y - ay;
       let lw = (qx * co + qy * si) * sx, lh = (-qx * si + qy * co) * sy;
-      lw = Math.max(5, snap ? Math.round(lw / 5) * 5 : Math.round(lw)); lh = Math.max(5, snap ? Math.round(lh / 5) * 5 : Math.round(lh));
+      lw = Math.max(5, snap ? Math.round(lw / step) * step : Math.round(lw)); lh = Math.max(5, snap ? Math.round(lh / step) * step : Math.round(lh));
       if (o.type === "underlay" && !e.shiftKey) lh = lw / ((o.w ?? 1) / (o.h ?? 1));
       const hx = (sx * lw) / 2, hy = (sy * lh) / 2, ncx = ax + hx * co - hy * si, ncy = ay + hx * si + hy * co;
       setEls(l => l.map((el, j) => j === d.i ? { ...el, x: Math.round((ncx - lw / 2) * 10) / 10, y: Math.round((ncy - lh / 2) * 10) / 10, w: lw, h: lh } : el)); setDirty(true); return;
@@ -283,7 +296,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     }
     if (d.kind === "draft" && draft.length === 2) {
       const [[a, b], [c, dd]] = draft, x = Math.min(a, c), y = Math.min(b, dd), w = Math.abs(c - a), h = Math.abs(dd - b);
-      if (w >= 10 && h >= 5) { commit(l => [...l, { type: "room", id: newId("room"), label: "New room", x, y, w, h }], before.current ?? undefined); setSel([els.length]); setPanel("inspect"); }
+      if (w >= 10 && h >= 5) { commit(l => [...l, tag({ type: "room", id: newId("room"), label: "New room", x, y, w, h })], before.current ?? undefined); setSel([els.length]); setPanel("inspect"); }
       setDraft([]);
     }
     before.current = null;
@@ -295,17 +308,12 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     if (!res.ok) { toast(j.error ?? "Upload failed"); return; }
     const img = new Image(); img.src = j.url; await img.decode().catch(() => null);
     const w = Math.max(200, view.w * 0.8), h = img.naturalWidth ? (w * img.naturalHeight) / img.naturalWidth : w * 0.6;
-    commit(l => [{ type: "underlay", label: `${kind === "aerial" ? "Aerial · " : ""}${f.name.replace(/\.[^.]+$/, "").slice(0, 50) || "Drawing"}`, url: j.url, x: view.x + view.w * 0.1, y: view.y + view.h * 0.1, w, h, opacity: kind === "aerial" ? 0.85 : 0.6 }, ...l]);
+    commit(l => [tag({ type: "underlay", label: `${kind === "aerial" ? "Aerial · " : ""}${f.name.replace(/\.[^.]+$/, "").slice(0, 50) || "Drawing"}`, url: j.url, x: view.x + view.w * 0.1, y: view.y + view.h * 0.1, w, h, opacity: kind === "aerial" ? 0.85 : 0.6 }), ...l]);
     setSel([0]); setPanel("inspect"); setSideOpen(true); toast("Added — use Calibrate to set its real-world scale, then draw on top");
   };
   const uploadKind = useRef<"plan" | "aerial">("plan");
-  const addBasemap = () => {
-    if (!geo) { toast("Add the venue address first so we can place the street map."); return; }
-    if (els.some(e => e.type === "basemap")) { setHiddenGroups(g => g.filter(x => x !== "base")); return; }
-    const b = mapBounds(els); commit(l => [{ type: "basemap", label: "Street map", lat: geo.lat, lng: geo.lng, x: b.w / 2, y: b.h / 2, opacity: 0.55, locked: true }, ...l]);
-  };
   const save = (publish: boolean) => start(async () => {
-    if (publish && !window.confirm(mode === "event" ? "Publish this event layout? Seat and area inventory for ticketing will update." : "Publish this map? Organisers planning events here will see the new version.")) return;
+    setConfirmPub(false);
     const r = await onSave(els, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) setDirty(false);
   });
   const setS = (patch: Partial<MapEl>) => s && commit(l => l.map((x, j) => j === sel[0] ? { ...x, ...patch } : x));
@@ -348,7 +356,93 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
     commit(l => l.map((x, j) => j === seats.el ? { ...x, seatTiers: t } : x));
   };
 
-  const visible = els.map(e => ({ ...e, hidden: e.hidden || hiddenGroups.includes(groupOf(e)) }));
+  // ── Custom layers ────────────────────────────────────────────────────────
+  const layerCount = (id: string | null) => els.filter(e => e.type !== "layer" && e.type !== "basemap" && (id ? e.layer === id : !e.layer)).length;
+  const newLayer = () => { const id = newId("layer"); commit(l => [...l, { type: "layer", id, label: `Layer ${layerDefs.length + 1}` }]); setActiveLayer(id); setRenaming(id); setPanel("layers"); setSideOpen(true); };
+  const renameLayer = (id: string, label: string) => { const v = label.trim().slice(0, 40); if (v) commit(l => l.map(x => x.type === "layer" && x.id === id ? { ...x, label: v } : x)); setRenaming(null); };
+  const deleteLayer = (id: string) => {
+    const n = layerCount(id);
+    commit(l => l.filter(x => !(x.type === "layer" && x.id === id)).map(x => x.layer === id ? { ...x, layer: undefined } : x));
+    if (activeLayer === id) setActiveLayer(null); setSel([]);
+    toast(n ? `Layer deleted. Its ${n} item${n === 1 ? "" : "s"} moved to No layer (Undo restores it).` : "Layer deleted");
+  };
+  /** Layer order sets stacking: items on later layers draw above earlier ones within each kind of element. */
+  const moveLayer = (id: string, dir: -1 | 1) => {
+    const ids = layerDefs.map(L => L.id!), i = ids.indexOf(id), j = i + dir; if (i < 0 || j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+    const rank = (e: MapEl) => (e.type === "layer" ? ids.indexOf(e.id!) : e.layer ? ids.indexOf(e.layer) : -1);
+    commit(l => l.map((e, k) => ({ e, k })).sort((a, b) => rank(a.e) - rank(b.e) || a.k - b.k).map(x => x.e)); setSel([]);
+  };
+  const moveToLayer = (id: string) => commit(l => l.map((x, j) => sel.includes(j) && x.type !== "layer" && x.type !== "basemap" ? { ...x, layer: id || undefined } : x));
+
+  // ── Street map ───────────────────────────────────────────────────────────
+  const bmi = els.findIndex(e => e.type === "basemap"), bm = bmi >= 0 ? els[bmi] : null;
+  const setBm = (patch: Partial<MapEl>) => bmi >= 0 && commit(l => l.map((x, j) => j === bmi ? { ...x, ...patch } : x));
+  const placeBasemap = (h: { label: string; lat: number; lng: number }) => {
+    setHiddenGroups(g => g.filter(x => x !== "base"));
+    if (bm) setBm({ lat: h.lat, lng: h.lng });
+    else { const cx = view.x + view.w / 2, cy = view.y + view.h / 2; commit(l => [{ type: "basemap", label: "Street map", lat: h.lat, lng: h.lng, x: Math.round(cx), y: Math.round(cy), opacity: 0.6, mapStyle: "streets", locked: true }, ...l]); }
+    setGeoHits([]); toast(`Street map centred on ${h.label.split(",")[0]}`);
+  };
+  const findPlace = async () => {
+    if (geoQ.trim().length < 3) return; setGeoBusy(true);
+    const r = await fetch(`/api/maps/geocode?q=${encodeURIComponent(geoQ.trim())}`).catch(() => null); const j = await r?.json().catch(() => null); setGeoBusy(false);
+    if (!r?.ok) { toast(j?.error ?? "Location search is unavailable right now."); return; }
+    setGeoHits(j.results ?? []); if (!(j.results ?? []).length) toast("No matching places. Try a postcode or full address.");
+  };
+  const addBasemap = () => { setPanel("map"); setSideOpen(true); if (!bm && geo) placeBasemap({ label: "the venue address", ...geo }); };
+
+  // ── Export / import ──────────────────────────────────────────────────────
+  const download = (blob: Blob, name: string) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+  const fileBase = (title || (mode === "event" ? "event-layout" : "venue-plan")).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  /** Standalone SVG of the whole plan: editor chrome removed, plan styles and images inlined so it renders anywhere. */
+  const exportSvg = async () => {
+    const el = svg.current; if (!el) return "";
+    const c = el.cloneNode(true) as SVGSVGElement;
+    c.querySelectorAll(".mb-handle,.mb-selbox,.mb-rot-handle,.mb-rot-stem,.mb-draft,.mb-ghost,.mb-ghost-box,.mb-marquee,.mb-measure,.mb-gridbg,.mb-dim").forEach(n => n.remove());
+    const all = [...base, ...els].filter(e => e.type !== "basemap" && e.type !== "layer" && !e.hidden);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const e of all) { const b = elBounds(e); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
+    if (!Number.isFinite(x0)) { x0 = view.x; y0 = view.y; x1 = view.x + view.w; y1 = view.y + view.h; }
+    const pad = 20, vb = [x0 - pad, y0 - pad, x1 - x0 + pad * 2, y1 - y0 + pad * 2];
+    c.setAttribute("viewBox", vb.join(" ")); c.setAttribute("xmlns", "http://www.w3.org/2000/svg"); c.setAttribute("width", String(Math.round(vb[2] * 2))); c.setAttribute("height", String(Math.round(vb[3] * 2)));
+    c.querySelectorAll("rect").forEach(r => { if (r.getAttribute("x") === String(view.x) && r.getAttribute("width") === String(view.w)) { r.setAttribute("x", String(vb[0])); r.setAttribute("y", String(vb[1])); r.setAttribute("width", String(vb[2])); r.setAttribute("height", String(vb[3])); } });
+    const css: string[] = []; for (const sh of Array.from(document.styleSheets)) { let rules: CSSRuleList; try { rules = sh.cssRules; } catch { continue; } for (const r of Array.from(rules)) if (r instanceof CSSStyleRule && /\.vm|vm-|\.ps-|\.sb-/.test(r.selectorText)) css.push(r.cssText); }
+    const st = document.createElementNS("http://www.w3.org/2000/svg", "style"); st.textContent = css.join("\n"); c.insertBefore(st, c.firstChild);
+    await Promise.all(Array.from(c.querySelectorAll("image")).map(async img => { const href = img.getAttribute("href"); if (!href || href.startsWith("data:")) return;
+      try { const b = await (await fetch(href)).blob(); const d = await new Promise<string>(res => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.readAsDataURL(b); }); img.setAttribute("href", d); } catch { img.remove(); } }));
+    return new XMLSerializer().serializeToString(c);
+  };
+  const doExport = async (kind: "svg" | "png" | "json" | "print") => {
+    setExportOpen(false);
+    if (kind === "json") { download(new Blob([JSON.stringify({ format: "gala-plan", version: 1, mode, elements: els }, null, 2)], { type: "application/json" }), `${fileBase}.json`); return; }
+    toast("Preparing export…"); const markup = await exportSvg(); if (!markup) return;
+    if (kind === "svg") { download(new Blob([markup], { type: "image/svg+xml" }), `${fileBase}.svg`); return; }
+    if (kind === "print") { const w = window.open("", "_blank", "noopener=no"); if (!w) { toast("Allow pop-ups to print"); return; }
+      w.document.write(`<!doctype html><title>${fileBase}</title><style>@page{size:landscape;margin:12mm}body{margin:0}svg{width:100%;height:auto}</style>${markup}`); w.document.close(); w.focus(); setTimeout(() => w.print(), 400); return; }
+    const img = new Image(); img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`; await img.decode().catch(() => null);
+    const cv = document.createElement("canvas"); cv.width = Math.min(8000, img.naturalWidth || 2000); cv.height = Math.round(cv.width * ((img.naturalHeight || 1200) / (img.naturalWidth || 2000)));
+    const g = cv.getContext("2d"); if (!g) return; g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(img, 0, 0, cv.width, cv.height);
+    cv.toBlob(b => { if (b) download(b, `${fileBase}.png`); else toast("Couldn’t create the image"); }, "image/png");
+  };
+  const importJson = async (f: File) => {
+    try {
+      const j = JSON.parse(await f.text()) as { format?: string; elements?: unknown };
+      const list = Array.isArray(j) ? j : j.elements;
+      if (!Array.isArray(list) || list.length > 2000 || !list.every(x => x && typeof x === "object" && typeof (x as MapEl).type === "string" && typeof (x as MapEl).label === "string")) throw new Error("bad");
+      commit((list as MapEl[]).map(x => ({ ...x, label: String(x.label).slice(0, 60) }))); setSel([]); toast(`Imported ${list.length} items. Undo reverts the import.`);
+    } catch { toast("That file isn’t a Gala Dock plan export (.json)."); }
+  };
+
+  useEffect(() => { if (!dirty) return; const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; }; window.addEventListener("beforeunload", h); return () => window.removeEventListener("beforeunload", h); }, [dirty]);
+  useEffect(() => { if (focusName) { nameRef.current?.focus(); nameRef.current?.select(); } }, [focusName]);
+  const applyCalib = () => {
+    if (!calib) return; const real = Number(calib.m), u = s;
+    if (real > 0 && u?.type === "underlay") { const f = (real * UNITS_PER_M) / Math.max(1e-6, dist(calib.a, calib.b)), ox = u.x ?? 0, oy = u.y ?? 0, a = calib.a;
+      commit(l => l.map((q, j) => j === sel[0] ? { ...q, w: (q.w ?? 0) * f, h: (q.h ?? 0) * f, x: a[0] - (a[0] - ox) * f, y: a[1] - (a[1] - oy) * f } : q)); toast("Drawing scaled to real-world metres"); }
+    setCalib(null); setDraft([]); setTool("select");
+  };
+
+  const visible = els.map(e => ({ ...e, hidden: e.hidden || hiddenGroups.includes(groupOf(e)) || (!!e.layer && hiddenLayers.includes(e.layer)) }));
   const placed = new Set(els.filter(e => e.type === "room" && e.space).map(e => e.space));
   const totals = useMemo(() => {
     let seatN = 0, tableSeatN = 0, tables = 0, standing = 0, blocked = 0;
@@ -372,24 +466,38 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
   return <div ref={wrap} tabIndex={-1} className={`mb${full ? " full" : ""}${sideOpen ? " side-open" : ""}`} style={{ ["--mb-h" as string]: `${height}px` }} onContextMenu={e => { e.preventDefault(); if (sel.length) { const r = wrap.current!.getBoundingClientRect(); setMenu({ x: e.clientX - r.left, y: e.clientY - r.top }); } }}>
     <div className="mb-bar" role="toolbar" aria-label="Plan tools">
       {title && <b className="mb-title">{title}</b>}
-      {TOOLS.map(([t, Icon, label, k]) => <button key={t} type="button" className={tool === t ? "on" : ""} aria-pressed={tool === t} title={`${label} (${k})`} onClick={() => { setTool(t); setDraft([]); setPlacing(null); }}><Icon aria-hidden="true" /></button>)}
-      <button type="button" className={panel === "assets" && sideOpen ? "on" : ""} title="Assets library (A)" onClick={() => { setPanel("assets"); setSideOpen(o => panel !== "assets" || !o); }}><Shapes aria-hidden="true" /></button>
+      {TOOLS.map(([t, Icon, label, k]) => <button key={t} type="button" className={tool === t ? "on" : ""} aria-pressed={tool === t} aria-label={label} title={`${label} (${k})`} onClick={() => { setTool(t); setDraft([]); setPlacing(null); }}><Icon aria-hidden="true" /></button>)}
+      <button type="button" className={panel === "assets" && sideOpen ? "on" : ""} aria-label="Assets library" title="Assets library (A)" onClick={() => { setPanel("assets"); setSideOpen(o => panel !== "assets" || !o); }}><Shapes aria-hidden="true" /></button>
       <span className="mb-sep" />
-      <button type="button" title="Upload floor plan or layout drawing" onClick={() => { uploadKind.current = "plan"; fileRef.current?.click(); }}><ImagePlus aria-hidden="true" /></button>
-      <button type="button" title="Upload aerial / bird’s-eye image" onClick={() => { uploadKind.current = "aerial"; fileRef.current?.click(); }}><Sparkles aria-hidden="true" /></button>
-      <button type="button" title="Overlay street map" onClick={addBasemap} disabled={!geo}><MapIcon aria-hidden="true" /></button>
-      <button type="button" title="Calibrate selected drawing (click two points, enter distance)" disabled={s?.type !== "underlay"} className={tool === "calibrate" ? "on" : ""} onClick={() => { setTool("calibrate"); setDraft([]); toast("Click two points a known distance apart"); }}><Crosshair aria-hidden="true" /></button>
+      <button type="button" aria-label="Upload floor plan or drawing" title="Upload floor plan or layout drawing" onClick={() => { uploadKind.current = "plan"; fileRef.current?.click(); }}><ImagePlus aria-hidden="true" /></button>
+      <button type="button" aria-label="Upload aerial image" title="Upload aerial / bird’s-eye image" onClick={() => { uploadKind.current = "aerial"; fileRef.current?.click(); }}><Satellite aria-hidden="true" /></button>
+      <button type="button" aria-label="Street map and location" title="Street map & location finder" className={panel === "map" && sideOpen ? "on" : ""} onClick={addBasemap}><MapIcon aria-hidden="true" /></button>
+      <button type="button" aria-label="Calibrate drawing scale" title="Calibrate selected drawing (click two points, enter distance)" disabled={s?.type !== "underlay"} className={tool === "calibrate" ? "on" : ""} onClick={() => { setTool("calibrate"); setDraft([]); toast("Click two points a known distance apart"); }}><Crosshair aria-hidden="true" /></button>
       <span className="mb-sep" />
-      <button type="button" title="Undo (Ctrl+Z)" disabled={!past.length} onClick={undo}><Undo2 aria-hidden="true" /></button>
-      <button type="button" title="Redo (Ctrl+Y)" disabled={!future.length} onClick={redo}><Redo2 aria-hidden="true" /></button>
-      <button type="button" title="Snap to grid" className={snap ? "on" : ""} aria-pressed={snap} onClick={() => setSnap(v => !v)}><Magnet aria-hidden="true" /></button>
-      <button type="button" title="Show grid" className={grid ? "on" : ""} aria-pressed={grid} onClick={() => setGrid(v => !v)}><Grid3x3 aria-hidden="true" /></button>
-      <button type="button" title="Legend / key (L)" className={legend ? "on" : ""} aria-pressed={legend} onClick={() => setLegend(v => !v)}><BookOpen aria-hidden="true" /></button>
-      <button type="button" title="Keyboard shortcuts (?)" onClick={() => setHelp(h => !h)}><Keyboard aria-hidden="true" /></button>
+      <button type="button" aria-label="Undo" title="Undo (Ctrl+Z)" disabled={!past.length} onClick={undo}><Undo2 aria-hidden="true" /></button>
+      <button type="button" aria-label="Redo" title="Redo (Ctrl+Y)" disabled={!future.length} onClick={redo}><Redo2 aria-hidden="true" /></button>
+      <button type="button" aria-label="Snap to grid" title="Snap to grid" className={snap ? "on" : ""} aria-pressed={snap} onClick={() => setSnap(v => !v)}><Magnet aria-hidden="true" /></button>
+      <select className="mb-step" aria-label="Grid and snap size" title="Grid / snap size" value={step} onChange={e => setStep(Number(e.target.value))}><option value={1}>0.1 m</option><option value={5}>0.5 m</option><option value={10}>1 m</option><option value={50}>5 m</option></select>
+      <button type="button" aria-label="Show grid" title="Show grid" className={grid ? "on" : ""} aria-pressed={grid} onClick={() => setGrid(v => !v)}><Grid3x3 aria-hidden="true" /></button>
+      <button type="button" aria-label="Legend" title="Legend / key (L)" className={legend ? "on" : ""} aria-pressed={legend} onClick={() => setLegend(v => !v)}><BookOpen aria-hidden="true" /></button>
+      <button type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" onClick={() => setHelp(h => !h)}><Keyboard aria-hidden="true" /></button>
+      <span className="mb-sep" />
+      <span className="mb-pop-wrap"><button type="button" aria-label="Export or import" title="Export / import" aria-expanded={exportOpen} className={exportOpen ? "on" : ""} onClick={() => setExportOpen(o => !o)}><Download aria-hidden="true" /></button>
+        {exportOpen && <div className="mb-menu mb-export" role="menu" onPointerDown={e => e.stopPropagation()}>
+          <button type="button" role="menuitem" onClick={() => void doExport("png")}><Download aria-hidden="true" />Export PNG image</button>
+          <button type="button" role="menuitem" onClick={() => void doExport("svg")}><Download aria-hidden="true" />Export SVG (vector)</button>
+          <button type="button" role="menuitem" onClick={() => void doExport("print")}><Printer aria-hidden="true" />Print / save as PDF</button>
+          <hr />
+          <button type="button" role="menuitem" onClick={() => void doExport("json")}><Download aria-hidden="true" />Export plan file (.json)</button>
+          <button type="button" role="menuitem" onClick={() => { setExportOpen(false); importRef.current?.click(); }}><FileUp aria-hidden="true" />Import plan file…</button></div>}</span>
       <span className="ws-spacer" />
-      <span className="mb-status">{dirty ? "Unsaved changes" : version ? `Version ${version} live` : "Not published"}</span>
-      <button type="button" className="mb-txt" disabled={pending || !dirty} onClick={() => save(false)}><Save aria-hidden="true" />Save draft</button>
-      <button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0)} onClick={() => save(true)}><Upload aria-hidden="true" />Publish</button>
+      <span className="mb-status" aria-live="polite">{dirty ? "Unsaved changes" : draftVersion ? `Draft v${draftVersion} saved${version ? ` · v${version} live` : ""}` : version ? `Version ${version} live` : "Not published"}</span>
+      <button type="button" className="mb-txt" disabled={pending || !dirty} onClick={() => save(false)}>{pending ? <Loader2 aria-hidden="true" className="k-spin" /> : <Save aria-hidden="true" />}Save draft</button>
+      <span className="mb-pop-wrap"><button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0 && !draftVersion)} aria-expanded={confirmPub} onClick={() => setConfirmPub(v => !v)}><Upload aria-hidden="true" />Publish</button>
+        {confirmPub && <div className="mb-pop right" role="dialog" aria-label="Publish layout"><b>{mode === "event" ? "Publish this event layout?" : "Publish this venue plan?"}</b>
+          <p>{mode === "event" ? "Seat and area inventory for ticketing updates to match. Sold or held seats must stay on the plan." : "Organisers planning events here will see the new version."}</p>
+          <div className="mb-pop-acts"><button type="button" className="ws-btn ghost sm" onClick={() => setConfirmPub(false)}>Cancel</button><button type="button" className="ws-btn primary sm" disabled={pending} onClick={() => save(true)}>Publish</button></div></div>}</span>
+      <input ref={importRef} type="file" accept="application/json,.json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void importJson(f); e.target.value = ""; }} />
       <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, uploadKind.current); e.target.value = ""; }} />
     </div>
     <div className="mb-body">
@@ -401,9 +509,9 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
           onWheel={onWheel} onDoubleClick={() => finishDraft()} role="application" aria-label="Plan editor">
           <MapDefs />
           <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#f6f9fc" />
-          {grid && <><rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid)" /><rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid-m)" /></>}
-          {base.length > 0 && <g className="mb-base" opacity={0.85} pointerEvents="none"><MapContent elements={base} spaces={spaces} labelSize={13 / scale} span={view} detail={detail} tierColor={tierColor} /></g>}
-          <MapContent elements={visible} spaces={spaces} selectedSet={new Set(sel)} labelSize={13 / scale} onElDown={onElDown} span={view} detail={detail} tierColor={tierColor}
+          {grid && <><rect className="mb-gridbg" x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid)" /><rect className="mb-gridbg" x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid-m)" /></>}
+          {base.length > 0 && <g className="mb-base" opacity={0.85} pointerEvents="none"><MapContent px={px} elements={base} spaces={spaces} labelSize={13 / scale} span={view} detail={detail} tierColor={tierColor} /></g>}
+          <MapContent px={px} elements={visible} spaces={spaces} selectedSet={new Set(sel)} labelSize={13 / scale} onElDown={onElDown} span={view} detail={detail} tierColor={tierColor}
             selectedSeats={seats?.keys} onSeat={onSeat}>
             {s && !s.hidden && (() => { const b = elBounds(s);
               if (isPoly(s)) return <g>{s.points!.map((p, v) => <Handle key={`v${v}`} x={p[0]} y={p[1]} r={hr} cursor="move" kind="vertex" n={v} onDown={onHandleDown} />)}</g>;
@@ -429,7 +537,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
             {tool === "place" && placing && cursor && !ghost && <Ghost k={placing} x={cursor[0]} y={cursor[1]} sn={sn} scale={scale} detail={detail} />}
             {ghost && <Ghost k={ghost.key} x={ghost.x} y={ghost.y} sn={sn} scale={scale} detail={detail} />}
           </MapContent>
-          {[...base, ...els].some(e => e.type === "basemap" && !e.hidden) && !hiddenGroups.includes("base") && <text x={view.x + view.w - 6} y={view.y + view.h - 6} textAnchor="end" className="vm-attr" style={{ fontSize: view.w / 110 }}>© OpenStreetMap contributors</text>}
+          {[...base, ...els].some(e => e.type === "basemap" && !e.hidden) && !hiddenGroups.includes("base") && <text x={view.x + view.w - view.w / 80} y={view.y + view.h - view.h / 14} textAnchor="end" className="vm-attr" style={{ fontSize: view.w / 110 }}>{MAP_ATTRIBUTION}</text>}
         </svg>
         <div className="mb-zoom"><button type="button" aria-label="Zoom in" title="Zoom in (+)" onClick={() => zoomBy(1 / 1.25)}><ZoomIn aria-hidden="true" /></button><button type="button" aria-label="Zoom out" title="Zoom out (−)" onClick={() => zoomBy(1.25)}><ZoomOut aria-hidden="true" /></button>
           <button type="button" aria-label="Fit to plan" title="Fit (0)" onClick={fit}><Scan aria-hidden="true" /></button><button type="button" aria-label={full ? "Exit full screen" : "Full screen"} title="Full screen (F)" onClick={() => setFull(f => !f)}>{full ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}</button>
@@ -438,7 +546,12 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
           {cursor && <span>{mm(cursor[0])} m, {mm(cursor[1])} m</span>}
           <span className="mb-totals">{totals.seatN + totals.tableSeatN > 0 && <>{(totals.seatN + totals.tableSeatN - totals.blocked).toLocaleString("en-GB")} sellable seats{totals.tables ? ` · ${totals.tables} tables` : ""}</>}{totals.standing > 0 && <> · {totals.standing.toLocaleString("en-GB")} standing</>}</span>
           <span className="mb-hint">{tool === "place" ? "Click to place · Shift-click to place several" : tool === "poly" ? "Click corners · click first point or double-click to close" : tool === "wall" || tool === "line" ? "Click points · double-click or Enter to finish" : tool === "select" ? (detail ? "Click seats to select · Shift+click for more · drag to move" : "Drag to move · Shift+drag box-selects · zoom in to edit seats") : tool === "measure" ? "Drag to measure" : "Drag to draw"}</span></div>
+        {calib && <form className="mb-pop mb-calib" onSubmit={e => { e.preventDefault(); applyCalib(); }} onPointerDown={e => e.stopPropagation()}><b>Set drawing scale</b>
+          <label>Real distance between the two points (metres)<input type="number" min={0.1} step={0.1} required autoFocus value={calib.m} onChange={e => setCalib(c => c && { ...c, m: e.target.value })} /></label>
+          <div className="mb-pop-acts"><button type="button" className="ws-btn ghost sm" onClick={() => { setCalib(null); setDraft([]); setTool("select"); }}>Cancel</button><button className="ws-btn primary sm">Apply scale</button></div></form>}
         {menu && s !== undefined && <div className="mb-menu" style={{ left: menu.x, top: menu.y }} role="menu" onPointerDown={e => e.stopPropagation()}>
+          <button type="button" role="menuitem" onClick={() => { setClip(sel.map(i => els[i])); toast(`${sel.length} copied`); setMenu(null); }}><Copy aria-hidden="true" />Copy<kbd>Ctrl C</kbd></button>
+          <button type="button" role="menuitem" disabled={!clip.length} onClick={() => { const c = clip.map(x => shift({ ...x, id: newId("paste"), protected: false }, 30, 30)); commit(l => [...l, ...c]); setSel(c.map((_, j) => els.length + j)); setMenu(null); }}><ClipboardPaste aria-hidden="true" />Paste<kbd>Ctrl V</kbd></button>
           <button type="button" role="menuitem" onClick={() => { duplicate(); setMenu(null); }}><Copy aria-hidden="true" />Duplicate<kbd>Ctrl D</kbd></button>
           <button type="button" role="menuitem" onClick={() => { rotate(90); setMenu(null); }}><RotateCw aria-hidden="true" />Rotate 90° right</button>
           <button type="button" role="menuitem" onClick={() => { rotate(-90); setMenu(null); }}><RotateCcw aria-hidden="true" />Rotate 90° left</button>
@@ -448,6 +561,7 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
           <button type="button" role="menuitem" onClick={() => { commit(l => [...l.filter((_, j) => !sel.includes(j)), ...sel.map(i => l[i])]); setSel(sel.map((_, k) => els.length - sel.length + k)); setMenu(null); }}><ArrowUpToLine aria-hidden="true" />Bring to front</button>
           <button type="button" role="menuitem" onClick={() => { commit(l => [...sel.map(i => l[i]), ...l.filter((_, j) => !sel.includes(j))]); setSel(sel.map((_, k) => k)); setMenu(null); }}><ArrowDownToLine aria-hidden="true" />Send to back</button>
           <button type="button" role="menuitem" onClick={() => { commit(l => l.map((x, j) => sel.includes(j) ? { ...x, locked: !x.locked } : x)); setMenu(null); }}><Lock aria-hidden="true" />Lock / unlock</button>
+          <button type="button" role="menuitem" onClick={() => { commit(l => l.map((x, j) => sel.includes(j) ? { ...x, hidden: true } : x)); setSel([]); setMenu(null); toast("Hidden. Show it again from Layers."); }}><EyeOff aria-hidden="true" />Hide</button>
           {sel.some(i => ASSET[els[i]?.asset ?? ""]?.kind === "table") && <button type="button" role="menuitem" onClick={() => { renumberTables(); setMenu(null); }}><ListOrdered aria-hidden="true" />Renumber tables</button>}
           {sel.some(i => !!els[i]?.seating) && <button type="button" role="menuitem" onClick={() => { renumberBlocks(); setMenu(null); }}><ListOrdered aria-hidden="true" />Rename blocks A, B, C…</button>}
           <hr />
@@ -466,10 +580,11 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
       <aside className="mb-side">
         <nav className="mb-tabs"><button type="button" className={panel === "assets" ? "on" : ""} onClick={() => setPanel("assets")}><Shapes aria-hidden="true" />Assets</button>
           <button type="button" className={panel === "layers" ? "on" : ""} onClick={() => setPanel("layers")}><Layers aria-hidden="true" />Layers</button>
+          <button type="button" className={panel === "map" ? "on" : ""} onClick={() => setPanel("map")}><MapIcon aria-hidden="true" />Map</button>
           <button type="button" className={panel === "inspect" ? "on" : ""} onClick={() => setPanel("inspect")}>Edit</button></nav>
         {panel === "assets" && <div className="mb-assets">
           <label className="mb-search"><Search aria-hidden="true" /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search assets…" aria-label="Search assets" /></label>
-          {!query && <section className="mb-presets"><h4>Quick layouts</h4><ul>{PRESETS.map(p => <li key={p.key}><button type="button" onClick={() => { const cx = view.x + view.w / 2, cy = view.y + view.h / 2, add = p.build(cx, cy); commit(l => [...l, ...add]); setSel(add.map((_, k) => els.length + k)); setPanel("inspect"); toast(`${p.label} added — drag to position`); }}>
+          {!query && <section className="mb-presets"><h4>Quick layouts</h4><ul>{PRESETS.map(p => <li key={p.key}><button type="button" onClick={() => { const cx = view.x + view.w / 2, cy = view.y + view.h / 2, add = p.build(cx, cy).map(tag); commit(l => [...l, ...add]); setSel(add.map((_, k) => els.length + k)); setPanel("inspect"); toast(`${p.label} added — drag to position`); }}>
             <b>{p.label}</b><small>{p.sub}</small></button></li>)}</ul></section>}
           {ASSET_CATS.map(cat => { const items = shownAssets.filter(a => a.cat === cat); if (!items.length) return null; return <section key={cat}><h4>{cat}</h4><ul className="mb-tiles">{items.map(a => <li key={a.key}>
             <button type="button" draggable onDragStart={e => { e.dataTransfer.setData("text/x-plan-asset", a.key); e.dataTransfer.effectAllowed = "copy"; dragKey.current = a.key; }}
@@ -477,19 +592,56 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
               onClick={() => { if (a.kind === "line") placeAt(a.key, 0, 0); else { setTool("place"); setPlacing(a.key); } }} title={`${a.label} — drag onto the plan or click then place`}>
               <span style={{ background: a.fill, color: a.stroke }}>{ASSET_IMG[a.key] ? <img src={ASSET_IMG[a.key]} alt="" className="mb-gd-ic" /> : <a.icon aria-hidden="true" />}</span>{a.label}</button></li>)}</ul></section>; })}
         </div>}
-        {panel === "layers" && <div className="mb-layers">{GROUPS.map(([g, label, pred]) => { const items = els.map((e, i) => ({ e, i })).filter(x => pred(x.e)); if (!items.length && g !== "rooms") return null;
+        {panel === "map" && <div className="mb-props mb-mappanel">
+          <h4>Find a location</h4>
+          <form className="mb-search" role="search" onSubmit={e => { e.preventDefault(); void findPlace(); }}><Search aria-hidden="true" /><input value={geoQ} onChange={e => setGeoQ(e.target.value)} placeholder="Address, place or postcode" aria-label="Search for a location" />{geoBusy && <Loader2 aria-hidden="true" className="k-spin" />}</form>
+          {geoHits.length > 0 && <ul className="mb-geo" aria-label="Search results">{geoHits.map(h => <li key={`${h.lat},${h.lng}`}><button type="button" onClick={() => placeBasemap(h)}><MapPin aria-hidden="true" /><span>{h.label}</span></button></li>)}</ul>}
+          {geo && <button type="button" className="ws-btn outline sm" onClick={() => placeBasemap({ label: "the venue address", ...geo })}><LocateFixed aria-hidden="true" />Use venue address</button>}
+          {bm ? <>
+            <h4>Street map</h4>
+            <p className="mb-note">Centred on {bm.lat?.toFixed(5)}, {bm.lng?.toFixed(5)}. Drawn at true scale: 1 m on the map is 1 m on your plan.</p>
+            <label>Map style<select className="ws-select" value={bm.mapStyle ?? "streets"} onChange={e => setBm({ mapStyle: e.target.value })}>{MAP_STYLES.map(m => <option key={m.key} value={m.key}>{m.label}</option>)}</select></label>
+            <label>Opacity<span className="mb-rot"><input type="range" min={0.1} max={1} step={0.05} value={bm.opacity ?? 0.6} onChange={e => setBm({ opacity: Number(e.target.value) })} /><em>{Math.round((bm.opacity ?? 0.6) * 100)}%</em></span></label>
+            <label>Rotate map to match the plan<span className="mb-rot"><input type="range" min={-180} max={180} value={bm.rot ?? 0} onChange={e => setBm({ rot: Number(e.target.value) || undefined })} /><em>{bm.rot ?? 0}°</em></span></label>
+            <label className="mb-check"><input type="checkbox" checked={!hiddenGroups.includes("base")} onChange={e => setHiddenGroups(g => e.target.checked ? g.filter(x => x !== "base") : [...g, "base"])} />Show street map</label>
+            <label className="mb-check"><input type="checkbox" checked={!!bm.locked && lockedGroups.includes("base")} onChange={e => { setBm({ locked: e.target.checked }); setLockedGroups(g => e.target.checked ? [...new Set([...g, "base"])] : g.filter(x => x !== "base")); if (!e.target.checked) toast("Map unlocked: drag it to line it up with your plan, then lock it again."); }} />Lock map position</label>
+            <div className="mb-acts"><button type="button" className="danger" title="Remove street map" aria-label="Remove street map" onClick={() => { commit(l => l.filter((_, j) => j !== bmi)); setSel([]); }}><Trash2 aria-hidden="true" /></button></div>
+          </> : <p className="mb-empty">Search for the site, or use the venue address, to place a street map under your plan. Then add stages, zones and facilities on top at real-world scale.</p>}
+          <p className="mb-attr">{MAP_ATTRIBUTION}</p>
+        </div>}
+        {panel === "layers" && <div className="mb-layers">
+          <section className="mb-ulayers"><header><b>Your layers</b><small>{layerDefs.length}</small><button type="button" aria-label="New blank layer" title="New blank layer" onClick={newLayer}><Plus aria-hidden="true" /></button></header>
+            <ul>
+              <li className={!activeLayer ? "on" : ""}><button type="button" className="mb-lname" aria-pressed={!activeLayer} onClick={() => setActiveLayer(null)}>No layer<em>{layerCount(null)}</em></button></li>
+              {layerDefs.map((L, k) => { const id = L.id!, hid = hiddenLayers.includes(id), lock = lockedLayers.includes(id);
+                return <li key={id} className={activeLayer === id ? "on" : ""}>
+                  {renaming === id ? <input className="mb-lrename" autoFocus defaultValue={L.label} maxLength={40} aria-label="Layer name" onBlur={e => renameLayer(id, e.target.value)} onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); if (e.key === "Escape") setRenaming(null); }} />
+                    : <button type="button" className="mb-lname" aria-pressed={activeLayer === id} title="Click to add new items to this layer · double-click to rename" onClick={() => setActiveLayer(id)} onDoubleClick={() => setRenaming(id)}>{L.label}<em>{layerCount(id)}</em></button>}
+                  <button type="button" className="mb-mini" aria-label={hid ? `Show ${L.label}` : `Hide ${L.label}`} onClick={() => setHiddenLayers(h => hid ? h.filter(x => x !== id) : [...h, id])}>{hid ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
+                  <button type="button" className="mb-mini" aria-label={lock ? `Unlock ${L.label}` : `Lock ${L.label}`} onClick={() => setLockedLayers(h => lock ? h.filter(x => x !== id) : [...h, id])}>{lock ? <Lock aria-hidden="true" /> : <Unlock aria-hidden="true" />}</button>
+                  <button type="button" className="mb-mini" aria-label={`Rename ${L.label}`} onClick={() => setRenaming(id)}><Pencil aria-hidden="true" /></button>
+                  <button type="button" className="mb-mini" aria-label={`Move ${L.label} down (behind)`} disabled={k === 0} onClick={() => moveLayer(id, -1)}><ChevronUp aria-hidden="true" /></button>
+                  <button type="button" className="mb-mini" aria-label={`Move ${L.label} up (in front)`} disabled={k === layerDefs.length - 1} onClick={() => moveLayer(id, 1)}><ChevronDown aria-hidden="true" /></button>
+                  <button type="button" className="mb-mini danger" aria-label={`Delete ${L.label}`} onClick={() => deleteLayer(id)}><Trash2 aria-hidden="true" /></button></li>; })}
+            </ul>
+            <p className="mb-note">{activeLayer ? <>New items go on “{layerDefs.find(L => L.id === activeLayer)?.label}”.</> : layerDefs.length ? "Pick a layer to draw on it. Later layers draw on top." : "Add blank layers to organise the plan, e.g. Production, Catering, Security."}</p>
+          </section>
+          {GROUPS.map(([g, label, pred]) => { const items = els.map((e, i) => ({ e, i })).filter(x => pred(x.e)); if (!items.length && g !== "rooms") return null;
           if (g === "rooms" && mode === "event" && !items.length) return null;
           const hid = hiddenGroups.includes(g), lock = lockedGroups.includes(g);
           return <section key={g}><header><b>{label}</b><small>{items.length}</small>
             <button type="button" aria-label={hid ? `Show ${label}` : `Hide ${label}`} onClick={() => setHiddenGroups(h => hid ? h.filter(x => x !== g) : [...h, g])}>{hid ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
             <button type="button" aria-label={lock ? `Unlock ${label}` : `Lock ${label}`} onClick={() => setLockedGroups(h => lock ? h.filter(x => x !== g) : [...h, g])}>{lock ? <Lock aria-hidden="true" /> : <Unlock aria-hidden="true" />}</button></header>
-            <ul>{items.map(({ e, i }) => <li key={i}><button type="button" className={sel.includes(i) ? "on" : ""} onClick={ev => { setSel(ev.shiftKey ? [...sel, i] : [i]); setPanel("inspect"); }}>
-              {e.type === "room" ? spaces.find(sp => sp.id === e.space)?.name ?? e.label : e.label}{e.protected ? <ShieldAlert aria-label="Protected" /> : e.locked ? <Lock aria-label="Fixed" /> : null}</button></li>)}
+            <ul>{items.map(({ e, i }) => { const nm = e.type === "room" ? spaces.find(sp => sp.id === e.space)?.name ?? e.label : e.label; return <li key={i} className="mb-item"><button type="button" className={`${sel.includes(i) ? "on" : ""}${e.hidden ? " off" : ""}`} onClick={ev => { setSel(ev.shiftKey ? [...sel, i] : [i]); setPanel("inspect"); }}>
+              {nm}{e.protected ? <ShieldAlert aria-label="Protected" /> : null}</button>
+              <button type="button" className="mb-mini" aria-label={e.hidden ? `Show ${nm}` : `Hide ${nm}`} title={e.hidden ? "Show" : "Hide (hidden items aren’t published)"} onClick={() => commit(l => l.map((x, j) => j === i ? { ...x, hidden: x.hidden ? undefined : true } : x))}>{e.hidden ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
+              <button type="button" className="mb-mini" aria-label={e.locked ? `Unlock ${nm}` : `Lock ${nm}`} onClick={() => commit(l => l.map((x, j) => j === i ? { ...x, locked: !x.locked } : x))}>{e.locked ? <Lock aria-hidden="true" /> : <Unlock aria-hidden="true" />}</button></li>; })}
               {g === "rooms" && mode === "venue" && spaces.filter(sp => !placed.has(sp.id)).map(sp => <li key={sp.id} className="mb-unplaced"><button type="button" onClick={() => { setTool("room"); toast(`Draw a rectangle, then link it to ${sp.name}`); }}>{sp.name}<em>Not on map</em></button></li>)}</ul></section>; })}</div>}
         {panel === "inspect" && (sel.length > 1 ? <div className="mb-props"><p className="mb-note">{sel.length} items selected</p>
           <div className="mb-align">{([["l", AlignStartVertical, "Align left"], ["c", AlignCenterVertical, "Align centre"], ["r", AlignEndVertical, "Align right"], ["t", AlignStartHorizontal, "Align top"], ["m", AlignCenterHorizontal, "Align middle"], ["b", AlignEndHorizontal, "Align bottom"],
             ["dh", AlignHorizontalSpaceAround, "Distribute horizontally"], ["dv", AlignVerticalSpaceAround, "Distribute vertically"]] as const).map(([k, I, t]) => <button key={k} type="button" title={t} aria-label={t} onClick={() => align(k)}><I aria-hidden="true" /></button>)}</div>
-          {mode === "event" && tiers.length > 0 && <label>Ticket tier<select className="ws-select" defaultValue="" onChange={e => commit(l => l.map((x, j) => sel.includes(j) && x.type === "asset" ? { ...x, tier: e.target.value || null } : x))}><option value="">No tier</option>{tiers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>}
+          {mode === "event" && tiers.length > 0 && (() => { const ts = new Set(sel.map(i => els[i]?.tier ?? "")); const v = ts.size === 1 ? [...ts][0] : "__mixed"; return <label>Ticket tier<select className="ws-select" value={v} onChange={e => commit(l => l.map((x, j) => sel.includes(j) && x.type === "asset" ? { ...x, tier: e.target.value || null } : x))}>{v === "__mixed" && <option value="__mixed" disabled>Mixed</option>}<option value="">No tier</option>{tiers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>; })()}
+          {layerDefs.length > 0 && (() => { const ls = new Set(sel.map(i => els[i]?.layer ?? "")); const v = ls.size === 1 ? [...ls][0] : "__mixed"; return <label>Layer<select className="ws-select" value={v} onChange={e => moveToLayer(e.target.value)}>{v === "__mixed" && <option value="__mixed" disabled>Mixed</option>}<option value="">No layer</option>{layerDefs.map(L => <option key={L.id} value={L.id}>{L.label}</option>)}</select></label>; })()}
           <div className="mb-acts"><button type="button" title="Rotate −15° (Q)" onClick={() => rotate(-15)}><RotateCcw aria-hidden="true" /></button><button type="button" title="Rotate 15° (E)" onClick={() => rotate(15)}><RotateCw aria-hidden="true" /></button>
             <button type="button" title="Duplicate (Ctrl+D)" onClick={() => duplicate()}><Copy aria-hidden="true" /></button>
             {sel.some(i => ASSET[els[i]?.asset ?? ""]?.kind === "table") && <button type="button" title="Renumber tables" onClick={renumberTables}><ListOrdered aria-hidden="true" /></button>}
@@ -500,7 +652,8 @@ export function PlanBuilder({ initial, spaces = [], version, geo, height = 520, 
               <div className="mb-flags">{FLAGS.map(([f, l]) => <button key={f} type="button" className={`f-${f}`} onClick={() => flagSeats(f)}>{l}</button>)}</div>
               {mode === "event" && tiers.length > 0 && <label>Ticket tier for these seats<select className="ws-select" value="" onChange={e => tierSeats(e.target.value)}><option value="">Use block tier</option>{tiers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>}
               <button type="button" className="ws-btn ghost sm" onClick={() => setSeats(null)}>Done</button></div> : null}
-            <label>Name<input value={s.label} maxLength={60} onChange={e => setS({ label: e.target.value })} /></label>
+            <label>{s.type === "label" ? "Text" : "Name"}<input ref={nameRef} value={s.label} maxLength={60} onChange={e => setS({ label: e.target.value })} /></label>
+            {layerDefs.length > 0 && s.type !== "basemap" && <label>Layer<select className="ws-select" value={s.layer ?? ""} onChange={e => setS({ layer: e.target.value || undefined })}><option value="">No layer</option>{layerDefs.map(L => <option key={L.id} value={L.id}>{L.label}</option>)}</select></label>}
             {s.type === "room" && mode === "venue" && <label>Linked space<select className="ws-select" value={s.space ?? ""} onChange={e => setS({ space: e.target.value || undefined, label: spaces.find(sp => sp.id === e.target.value)?.name ?? s.label })}>
               <option value="">Not linked (non-bookable area)</option>{spaces.filter(sp => sp.id === s.space || !placed.has(sp.id)).map(sp => <option key={sp.id} value={sp.id}>{sp.name}</option>)}</select></label>}
             {s.seating && <fieldset className="mb-fs"><legend>Seating &amp; numbering</legend>

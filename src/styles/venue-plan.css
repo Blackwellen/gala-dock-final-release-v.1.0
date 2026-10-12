@@ -250,3 +250,52 @@ svg.sp-svg.panning{cursor:grabbing}
 .mb-legend li .mb-gd-sw{margin-left:2px}
 .mb-legend li .mb-gd-sw{margin-left:auto}
 .mb-legend li .mb-gd-sw+em{margin-left:8px}
+/* Side panel must scroll inside the fixed-height editor: the grid row is capped and each panel body can shrink. */
+.mb-body{grid-template-rows:minmax(0,1fr)}
+.mb-side{overflow:hidden}
+.mb-side>:not(.mb-tabs){flex:1 1 auto;min-height:0;overflow:auto}
+
+/* ── Editor enrichment: map panel, custom layers, export menu, inline popovers ── */
+.mb-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.mb-step{height:28px;margin:0 2px;padding:0 20px 0 7px;border:1px solid var(--ws-border);border-radius:7px;background-color:#fff;font-size:10.5px;color:#1d2068}
+.mb-pop-wrap{position:relative;display:inline-flex}
+.mb-pop-wrap>button{width:30px;height:30px;display:grid;place-items:center;border:1px solid transparent;border-radius:7px;background:none;color:#1d2068;cursor:pointer}
+.mb-pop-wrap>button.on,.mb-pop-wrap>button:hover{background:#eef2fe}
+.mb-pop-wrap>button svg{width:16px!important;height:16px!important}
+.mb-pop-wrap>.mb-txt{width:auto;height:30px;padding:0 10px;gap:5px;display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;background:var(--ws-blue)!important;color:#fff!important;border-color:var(--ws-blue)!important}
+.mb-pop-wrap>.mb-txt:disabled{opacity:.45;cursor:not-allowed}
+.mb-export{top:34px;left:0}
+.mb-menu hr{border:0;border-top:1px solid var(--ws-border);margin:4px 2px}
+.mb-menu button:disabled{opacity:.4;cursor:not-allowed}
+.mb-pop{position:absolute;z-index:40;width:270px;padding:12px;background:#fff;border:1px solid var(--ws-border);border-radius:10px;box-shadow:0 16px 44px #0d0d6326;display:grid;gap:8px;font-size:11px;color:#1d2068}
+.mb-pop.right{top:36px;right:0}
+.mb-pop b{font-size:12px;color:#02032e}.mb-pop p{margin:0;line-height:1.45;color:#3f4596}
+.mb-pop label{display:grid;gap:4px;font-size:10.5px}
+.mb-pop input{height:30px;border:1px solid #e2e8fb;border-radius:6px;padding:0 8px;font-size:11px}
+.mb-pop-acts{display:flex;justify-content:flex-end;gap:6px}
+.mb-calib{left:50%;top:16px;transform:translateX(-50%)}
+.mb-mappanel h4{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5d60a8;margin:4px 0 0}
+.mb-mappanel .mb-search input{font-size:11px}
+.mb-geo{list-style:none;margin:0;padding:0;display:grid;gap:3px;max-height:180px;overflow:auto}
+.mb-geo button{width:100%;display:flex;gap:6px;align-items:flex-start;padding:6px 7px;border:1px solid var(--ws-border);border-radius:7px;background:#fff;font-size:10.5px;color:#1d2068;text-align:left;cursor:pointer;line-height:1.35}
+.mb-geo button:hover{border-color:#c5d2fb;background:#f6f8ff}
+.mb-geo svg{width:12px!important;height:12px!important;flex-shrink:0;margin-top:2px;color:var(--ws-blue-2)}
+.mb-attr{font-size:9px;color:#5d60a8;margin:4px 0 0}
+.mb-ulayers{display:grid;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--ws-border)}
+.mb-ulayers ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.mb-ulayers li{display:flex;align-items:center;gap:1px;border-radius:6px;padding-right:2px}
+.mb-ulayers li.on{background:#e9eeff}
+.mb-ulayers .mb-lname{flex:1;min-width:0;display:flex;justify-content:space-between;gap:6px;height:26px;padding:0 6px;border:0;background:none;font-size:10.5px;color:#1d2068;text-align:left;cursor:pointer;border-radius:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mb-ulayers li.on .mb-lname{color:var(--ws-blue-2);font-weight:600}
+.mb-ulayers em,.mb-layers li em{font-style:normal;font-size:9.5px;color:#5d60a8}
+.mb-lrename{flex:1;min-width:0;height:26px;border:1px solid #c5d2fb;border-radius:6px;padding:0 6px;font-size:10.5px}
+.mb-mini{width:22px;height:22px;flex-shrink:0;display:grid;place-items:center;border:0;border-radius:5px;background:none;color:#5157a4;cursor:pointer}
+.mb-mini:hover:not(:disabled){background:#f1f4fd}.mb-mini:disabled{opacity:.3;cursor:not-allowed}.mb-mini.danger{color:#b42318}
+.mb-mini svg{width:12px!important;height:12px!important}
+.mb-layers li.mb-item{display:flex;align-items:center;gap:1px}
+.mb-layers li.mb-item>button:first-child{flex:1;min-width:0}
+.mb-layers li.mb-item>button.off{color:#5d60a8!important;font-style:italic}
+/* The canvas fills its frame in every shell (organizer, provider, admin), not only inside .ws-app. */
+.mb-canvas{overflow:hidden;min-height:0}
+svg.mb-svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;user-select:none;stroke-width:initial}
+svg.vm{stroke-width:initial}

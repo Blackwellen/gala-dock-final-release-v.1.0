@@ -24,8 +24,7 @@
 .mk-count { position: absolute; right: 10px; bottom: 10px; display: inline-flex; gap: 4px; align-items: center; height: 22px; padding: 0 7px; border-radius: 6px; background: #0d103a8c; color: #fff; font-size: 10.5px; font-weight: 600; }
 .mk-dots { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 4px; }
 .mk-dots i { width: 5px; height: 5px; border-radius: 50%; background: #ffffff8a; } .mk-dots i.on { background: #fff; }
-.mk-heart { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 50%; color: #fff !important; display: grid; place-items: center; z-index: 2; }
-.mk-heart[aria-pressed="true"] { color: var(--k-red) !important; background: #fff !important; }
+.mk-heart { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 50%; color: #fff !important; display: grid; place-items: center; z-index: 2; }.mk-heart[aria-pressed="true"], .mk-heart[aria-current="page"] { color: var(--k-red) !important; background: #fff !important; }
 .mk-card-body { padding: 12px 12px 12px; display: flex; flex-direction: column; gap: 7px; }
 .mk-name { font-size: 13px; font-weight: 700; color: var(--k-ink); }
 .mk-price { font-size: 11px; color: var(--k-muted); text-align: right; line-height: 1.2; } .mk-price b { font-size: 13px; color: var(--k-ink); font-weight: 700; } .mk-price small { display: block; font-size: 10px; }
@@ -85,8 +84,7 @@
 .rf-ring b { position: relative; font-size: 11px; }
 .rf-role { height: 30px; font-size: 11px; width: 92px; background-color: var(--k-blue-soft); color: var(--k-blue); border-color: transparent; }
 .rf-n { width: 22px; height: 22px; border-radius: 50%; background: var(--k-soft); display: grid; place-items: center; font-size: 10.5px; font-weight: 700; color: var(--k-ink-2); flex-shrink: 0; }
-.rf-hours button { height: 38px; border: 1px solid var(--k-line) !important; border-radius: 8px; background: #fff !important; font-size: 11.5px; color: var(--k-ink-2) !important; }
-.rf-hours button[aria-pressed="true"] { border-color: var(--k-blue) !important; background: var(--k-blue-soft) !important; color: var(--k-blue) !important; font-weight: 600; }
+.rf-hours button { height: 38px; border: 1px solid var(--k-line) !important; border-radius: 8px; background: #fff !important; font-size: 11.5px; color: var(--k-ink-2) !important; }.rf-hours button[aria-pressed="true"], .rf-hours button[aria-current="page"] { border-color: var(--k-blue) !important; background: var(--k-blue-soft) !important; color: var(--k-blue) !important; font-weight: 600; }
 @media (max-width: 1280px) { .rf-grid { grid-template-columns: minmax(0, 1fr); } }
 
 .qc-top { height: 206px; display: flex; flex-direction: column; gap: 6px; }

@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { Ticket, Map, Globe, CalendarDays, Image as ImageIcon, Users, UserRound, BarChart3, Plus, ArrowRight, Eye, Percent, MoreHorizontal, PenLine, Sparkles, CheckCircle2, Link2, Camera as Instagram, ThumbsUp as Facebook, Music2, Mail, Megaphone, Search, Maximize2, Crosshair } from "lucide-react";
+import { Ticket, Map, Globe, CalendarDays, Image as ImageIcon, Users, UserRound, BarChart3, Plus, ArrowRight, Eye, Percent, MoreHorizontal, PenLine, Sparkles, CheckCircle2, Link2, Camera as Instagram, ThumbsUp as Facebook, Music2, Mail, Megaphone, Search } from "lucide-react";
 import { Card, Chip, Bar, Spark, Beta, Donut, Legend, LineChart, BarChart } from "@/components/kit";
 import { money, num, dateShort, timeRange, pct } from "@/lib/format";
 import type { ProEvent, EventData } from "@/lib/data/event";
-import { defaultStructure, defaultOverlay, type MapStructure, type OverlayEl } from "@/lib/venue-map";
-import { VenueMapSvg } from "../venue-map/render";
+import { EventPlanCard } from "./plan-card";
 import { SubTabs } from "./header";
 import { PublicPageToggles, CopyLink } from "./controls";
 
@@ -29,9 +28,6 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
   const lastWeekSales = d.series.slice(-7).reduce((s, x) => s + Number(x.gross), 0), prevWeekSales = d.series.slice(-14, -7).reduce((s, x) => s + Number(x.gross), 0);
   const revDelta = prevWeekSales ? Math.round(((lastWeekSales - prevWeekSales) / prevWeekSales) * 100) : 0;
   const conv = views ? (100 * d.series.reduce((s, x) => s + Number(x.tickets), 0)) / views : 0;
-  const structure = (d.vmap?.structure && Object.keys(d.vmap.structure as object).length ? d.vmap.structure : defaultStructure(e.capacity ?? 2000)) as MapStructure;
-  const overlay = (Array.isArray(d.vmap?.overlay) && (d.vmap!.overlay as unknown[]).length ? d.vmap!.overlay : defaultOverlay(d.tiers)) as OverlayEl[];
-  const zones = overlay.filter(o => o.type === "zone");
   const page = (e.settings.public_page ?? { details: true, tickets: true, map: true, faqs: true, lineup: true, terms: true }) as Record<string, boolean>;
   const listings = (e.settings.listings as string[] | undefined) ?? [];
   const isPublic = e.visibility === "public" && ["published", "on_sale", "live"].includes(e.status);
@@ -55,8 +51,7 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
             {!d.tiers.length && <p className="k-small" style={{ padding: 12 }}>No ticket tiers yet. <Link className="k-link" href={`${base}/tickets/setup?step=1`}>Set up tickets</Link></p>}
             <div style={{ textAlign: "right", marginTop: 10 }}><Link className="k-link" href={`${base}/tickets/setup?step=3`}>Manage ticket settings <ArrowRight size={12} /></Link></div></Card>
           <Card><div className="k-between"><h3 className="ov-h" style={{ fontSize: 15 }}>Venue map & ticketing</h3><Link href={`${base}/map`} className="k-btn outline sm"><PenLine size={13} />Edit map</Link></div>
-            <div className="sl-map"><VenueMapSvg structure={structure} overlay={overlay} height={180} /><div className="sl-map-tools"><Link href={`${base}/map`} className="k-icon-btn" aria-label="Open full map"><Maximize2 size={14} /></Link><Link href={`${base}/map?tab=preview`} className="k-icon-btn" aria-label="Preview map"><Crosshair size={14} /></Link></div></div>
-            <div className="k-grid k-g3" style={{ gap: 8, marginTop: 8 }}>{zones.slice(0, 3).map(z => { const t = d.tiers.find(x => x.id === z.tierId); return <div key={z.id} className="sl-zone"><i className="k-dot" style={{ background: z.color }} /><div><b className="k-small">{z.label === "General Admission" ? "General" : z.label}</b><div className="k-xs k-muted">{t ? `${num(t.sold)} / ${num(t.quantity)}` : `cap ${num(z.capacity ?? 0)}`}</div></div></div>; })}</div></Card>
+            <EventPlanCard eventId={e.id} venueListingId={(e as { venue_listing_id?: string | null }).venue_listing_id} tiers={d.tiers.map(t => ({ id: t.id, name: t.name, color: (t as { color?: string | null }).color, sold: Number(t.sold ?? 0), quantity: Number(t.quantity ?? 0) }))} height={180} /></Card>
         </div>
         <div className="sl-row3">
           <Card><div className="k-row" style={{ gap: 8 }}><h3 className="ov-h" style={{ fontSize: 15 }}>Public event page</h3>{isPublic ? <Chip tone="green" icon={CheckCircle2}>Live</Chip> : <Chip tone="gray">Not published</Chip>}</div>

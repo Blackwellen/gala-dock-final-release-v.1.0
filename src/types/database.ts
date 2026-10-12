@@ -1714,6 +1714,42 @@ export type Database = {
           },
         ]
       }
+      boost_products: {
+        Row: {
+          active: boolean
+          currency: string
+          description: string
+          duration_days: number
+          key: string
+          label: string
+          placement: string
+          price_minor: number
+          sort: number
+        }
+        Insert: {
+          active?: boolean
+          currency?: string
+          description?: string
+          duration_days: number
+          key: string
+          label: string
+          placement: string
+          price_minor: number
+          sort?: number
+        }
+        Update: {
+          active?: boolean
+          currency?: string
+          description?: string
+          duration_days?: number
+          key?: string
+          label?: string
+          placement?: string
+          price_minor?: number
+          sort?: number
+        }
+        Relationships: []
+      }
       brand_kits: {
         Row: {
           colors: Json
@@ -1987,6 +2023,80 @@ export type Database = {
           },
         ]
       }
+      calendar_busy_blocks: {
+        Row: {
+          connection_id: string
+          ends_at: string
+          id: number
+          starts_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_id: string
+          ends_at: string
+          id?: never
+          starts_at: string
+          user_id: string
+        }
+        Update: {
+          connection_id?: string
+          ends_at?: string
+          id?: never
+          starts_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_busy_blocks_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_connections: {
+        Row: {
+          account_email: string | null
+          calendar_id: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          provider: string
+          status: string
+          token_enc: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_email?: string | null
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          provider: string
+          status?: string
+          token_enc: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_email?: string | null
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          status?: string
+          token_enc?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_entries: {
         Row: {
           detail: string
@@ -2034,6 +2144,35 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_sync_links: {
+        Row: {
+          connection_id: string
+          content_hash: string
+          external_id: string
+          source_uid: string
+        }
+        Insert: {
+          connection_id: string
+          content_hash: string
+          external_id: string
+          source_uid: string
+        }
+        Update: {
+          connection_id?: string
+          content_hash?: string
+          external_id?: string
+          source_uid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_sync_links_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_connections"
             referencedColumns: ["id"]
           },
         ]
@@ -2181,6 +2320,7 @@ export type Database = {
         Row: {
           amount: number
           buyer_id: string | null
+          commission: number
           created_at: string
           currency: string
           event_id: string
@@ -2201,6 +2341,7 @@ export type Database = {
         Insert: {
           amount: number
           buyer_id?: string | null
+          commission?: number
           created_at?: string
           currency?: string
           event_id: string
@@ -2221,6 +2362,7 @@ export type Database = {
         Update: {
           amount?: number
           buyer_id?: string | null
+          commission?: number
           created_at?: string
           currency?: string
           event_id?: string
@@ -2852,6 +2994,77 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "workspaces"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      db_backup_runs: {
+        Row: {
+          attempts: number
+          bytes: number | null
+          error: string | null
+          finished_at: string | null
+          rows: number | null
+          run_date: string
+          started_at: string
+          status: string
+          tables: number | null
+        }
+        Insert: {
+          attempts?: number
+          bytes?: number | null
+          error?: string | null
+          finished_at?: string | null
+          rows?: number | null
+          run_date: string
+          started_at?: string
+          status?: string
+          tables?: number | null
+        }
+        Update: {
+          attempts?: number
+          bytes?: number | null
+          error?: string | null
+          finished_at?: string | null
+          rows?: number | null
+          run_date?: string
+          started_at?: string
+          status?: string
+          tables?: number | null
+        }
+        Relationships: []
+      }
+      db_backup_tables: {
+        Row: {
+          bytes: number
+          rows: number
+          run_date: string
+          schema_name: string
+          table_name: string
+          uploaded_at: string
+        }
+        Insert: {
+          bytes: number
+          rows: number
+          run_date: string
+          schema_name: string
+          table_name: string
+          uploaded_at?: string
+        }
+        Update: {
+          bytes?: number
+          rows?: number
+          run_date?: string
+          schema_name?: string
+          table_name?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "db_backup_tables_run_date_fkey"
+            columns: ["run_date"]
+            isOneToOne: false
+            referencedRelation: "db_backup_runs"
+            referencedColumns: ["run_date"]
           },
         ]
       }
@@ -3804,6 +4017,77 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_virtual: {
+        Row: {
+          capacity: number | null
+          closes_minutes_after: number
+          event_id: string
+          external_id: string | null
+          format: string
+          host_notes: string | null
+          host_url: string | null
+          join_url: string | null
+          opens_minutes_before: number
+          provider: string
+          recording_url: string | null
+          replay_available: boolean
+          replay_until: string | null
+          session_id: string | null
+          ticket_required: boolean
+          timezone: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          capacity?: number | null
+          closes_minutes_after?: number
+          event_id: string
+          external_id?: string | null
+          format?: string
+          host_notes?: string | null
+          host_url?: string | null
+          join_url?: string | null
+          opens_minutes_before?: number
+          provider?: string
+          recording_url?: string | null
+          replay_available?: boolean
+          replay_until?: string | null
+          session_id?: string | null
+          ticket_required?: boolean
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          capacity?: number | null
+          closes_minutes_after?: number
+          event_id?: string
+          external_id?: string | null
+          format?: string
+          host_notes?: string | null
+          host_url?: string | null
+          join_url?: string | null
+          opens_minutes_before?: number
+          provider?: string
+          recording_url?: string | null
+          replay_available?: boolean
+          replay_until?: string | null
+          session_id?: string | null
+          ticket_required?: boolean
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_virtual_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -5334,12 +5618,14 @@ export type Database = {
           details: Json
           earned: number
           eligible_revenue: number
+          grade: number
           id: string
           kind: string
           logo: string
           name: string
           paid: number
           quality_score: number | null
+          rate_locked: boolean
           referral_code: string | null
           referrals: number
           status: string
@@ -5352,12 +5638,14 @@ export type Database = {
           details?: Json
           earned?: number
           eligible_revenue?: number
+          grade?: number
           id?: string
           kind: string
           logo?: string
           name: string
           paid?: number
           quality_score?: number | null
+          rate_locked?: boolean
           referral_code?: string | null
           referrals?: number
           status?: string
@@ -5370,12 +5658,14 @@ export type Database = {
           details?: Json
           earned?: number
           eligible_revenue?: number
+          grade?: number
           id?: string
           kind?: string
           logo?: string
           name?: string
           paid?: number
           quality_score?: number | null
+          rate_locked?: boolean
           referral_code?: string | null
           referrals?: number
           status?: string
@@ -5390,6 +5680,7 @@ export type Database = {
           commission: Json
           created_at: string
           currency: string
+          customer_fee_minor: number
           description: string
           event_id: string | null
           failure_reason: string | null
@@ -5421,6 +5712,7 @@ export type Database = {
           commission?: Json
           created_at?: string
           currency?: string
+          customer_fee_minor?: number
           description: string
           event_id?: string | null
           failure_reason?: string | null
@@ -5452,6 +5744,7 @@ export type Database = {
           commission?: Json
           created_at?: string
           currency?: string
+          customer_fee_minor?: number
           description?: string
           event_id?: string | null
           failure_reason?: string | null
@@ -5612,6 +5905,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      platform_charges: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          description: string
+          event_id: string | null
+          id: string
+          kind: string
+          metadata: Json
+          settled_at: string | null
+          status: string
+          workspace_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          description: string
+          event_id?: string | null
+          id?: string
+          kind: string
+          metadata?: Json
+          settled_at?: string | null
+          status?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          event_id?: string | null
+          id?: string
+          kind?: string
+          metadata?: Json
+          settled_at?: string | null
+          status?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_charges_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platform_charges_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_settings: {
         Row: {
@@ -6358,6 +6708,95 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promotion_boosts: {
+        Row: {
+          amount_minor: number
+          clicks: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          ends_at: string
+          event_id: string
+          id: string
+          impressions: number
+          payment_order_id: string | null
+          placement: string
+          product_key: string
+          starts_at: string
+          status: string
+          targeting: Json
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          amount_minor: number
+          clicks?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          ends_at: string
+          event_id: string
+          id?: string
+          impressions?: number
+          payment_order_id?: string | null
+          placement: string
+          product_key: string
+          starts_at: string
+          status?: string
+          targeting?: Json
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          amount_minor?: number
+          clicks?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          ends_at?: string
+          event_id?: string
+          id?: string
+          impressions?: number
+          payment_order_id?: string | null
+          placement?: string
+          product_key?: string
+          starts_at?: string
+          status?: string
+          targeting?: Json
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotion_boosts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promotion_boosts_payment_order_id_fkey"
+            columns: ["payment_order_id"]
+            isOneToOne: false
+            referencedRelation: "payment_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promotion_boosts_product_key_fkey"
+            columns: ["product_key"]
+            isOneToOne: false
+            referencedRelation: "boost_products"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "promotion_boosts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -7635,6 +8074,77 @@ export type Database = {
         }
         Relationships: []
       }
+      storage_attribution: {
+        Row: {
+          bucket: string
+          created_at: string
+          name: string
+          scan_detail: string | null
+          scan_status: string
+          scanned_at: string | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          bucket: string
+          created_at?: string
+          name: string
+          scan_detail?: string | null
+          scan_status?: string
+          scanned_at?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          bucket?: string
+          created_at?: string
+          name?: string
+          scan_detail?: string | null
+          scan_status?: string
+          scanned_at?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storage_attribution_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      storage_backups: {
+        Row: {
+          backed_up_at: string
+          bucket: string
+          name: string
+          object_updated_at: string | null
+          r2_etag: string | null
+          size: number | null
+          source_deleted_at: string | null
+        }
+        Insert: {
+          backed_up_at?: string
+          bucket: string
+          name: string
+          object_updated_at?: string | null
+          r2_etag?: string | null
+          size?: number | null
+          source_deleted_at?: string | null
+        }
+        Update: {
+          backed_up_at?: string
+          bucket?: string
+          name?: string
+          object_updated_at?: string | null
+          r2_etag?: string | null
+          size?: number | null
+          source_deleted_at?: string | null
+        }
+        Relationships: []
+      }
       stripe_disputes: {
         Row: {
           amount_minor: number
@@ -8584,6 +9094,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_tours: {
+        Row: {
+          status: string
+          step: number
+          tour_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          status?: string
+          step?: number
+          tour_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          status?: string
+          step?: number
+          tour_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       venue_alternatives: {
         Row: {
           build_item_id: string
@@ -9144,6 +9678,7 @@ export type Database = {
         Row: {
           capabilities: string[]
           commission_bps: number
+          commission_custom: boolean
           cover_image: string
           created_at: string
           id: string
@@ -9162,6 +9697,7 @@ export type Database = {
         Insert: {
           capabilities?: string[]
           commission_bps?: number
+          commission_custom?: boolean
           cover_image?: string
           created_at?: string
           id?: string
@@ -9180,6 +9716,7 @@ export type Database = {
         Update: {
           capabilities?: string[]
           commission_bps?: number
+          commission_custom?: boolean
           cover_image?: string
           created_at?: string
           id?: string
@@ -9227,6 +9764,31 @@ export type Database = {
       activate_standby: {
         Args: { p_reason: string; p_standby: string }
         Returns: undefined
+      }
+      active_boosts: {
+        Args: {
+          p_category?: string
+          p_city?: string
+          p_limit?: number
+          p_placement: string
+        }
+        Returns: {
+          boost_id: string
+          event_id: string
+          placement: string
+        }[]
+      }
+      add_design_comment: {
+        Args: {
+          p_body: string
+          p_design: string
+          p_layer?: string
+          p_page?: string
+          p_parent?: string
+          p_x?: number
+          p_y?: number
+        }
+        Returns: string
       }
       add_dispute_entry: {
         Args: {
@@ -9596,6 +10158,7 @@ export type Database = {
         Args: { p_approval: string; p_result: string }
         Returns: undefined
       }
+      agent_retention_purge: { Args: never; Returns: Json }
       ai_credit_status: { Args: { p_workspace: string }; Returns: Json }
       ai_preflight: {
         Args: {
@@ -9619,8 +10182,24 @@ export type Database = {
       bg_expire: { Args: never; Returns: undefined }
       bg_purge: { Args: never; Returns: number }
       bg_step_up_ok: { Args: never; Returns: boolean }
+      booking_admin_fee_minor: {
+        Args: { p_amount_minor: number }
+        Returns: number
+      }
+      boost_lifecycle: { Args: never; Returns: number }
       calendar_feed: {
         Args: { p_token: string }
+        Returns: {
+          ends_at: string
+          kind: string
+          location: string
+          starts_at: string
+          title: string
+          uid: string
+        }[]
+      }
+      calendar_feed_for_user: {
+        Args: { p_user: string }
         Returns: {
           ends_at: string
           kind: string
@@ -9762,6 +10341,7 @@ export type Database = {
         Returns: {
           amount: number
           buyer_id: string | null
+          commission: number
           created_at: string
           currency: string
           event_id: string
@@ -9812,6 +10392,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      commerce_setting: { Args: { p_key: string }; Returns: Json }
       complete_customer_onboarding: { Args: never; Returns: undefined }
       complete_workspace_onboarding: {
         Args: { p_workspace: string }
@@ -9840,30 +10421,15 @@ export type Database = {
         }
         Returns: string
       }
-      create_design: {
-        Args: {
-          p_document: Json
-          p_event: string
-          p_link_hash?: string
-          p_source?: string
-          p_template?: string
-          p_title: string
-          p_workspace: string
-        }
-        Returns: string
-      }
-      create_emergency_request: {
-        Args: { p: Json; p_event: string }
-        Returns: string
-      }
-      create_payment_order: {
-        Args: { p_item?: string; p_kind: string; p_standby?: string }
+      create_boost_payment_order: {
+        Args: { p_boost: string }
         Returns: {
           amount_minor: number
           build_item_id: string | null
           commission: Json
           created_at: string
           currency: string
+          customer_fee_minor: number
           description: string
           event_id: string | null
           failure_reason: string | null
@@ -9895,6 +10461,73 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      create_demo_workspace: { Args: { p_persona: string }; Returns: string }
+      create_design: {
+        Args: {
+          p_document: Json
+          p_event: string
+          p_link_hash?: string
+          p_source?: string
+          p_template?: string
+          p_title: string
+          p_workspace: string
+        }
+        Returns: string
+      }
+      create_emergency_request: {
+        Args: { p: Json; p_event: string }
+        Returns: string
+      }
+      create_payment_order: {
+        Args: { p_item?: string; p_kind: string; p_standby?: string }
+        Returns: {
+          amount_minor: number
+          build_item_id: string | null
+          commission: Json
+          created_at: string
+          currency: string
+          customer_fee_minor: number
+          description: string
+          event_id: string | null
+          failure_reason: string | null
+          id: string
+          idempotency_key: string | null
+          kind: string
+          livemode: boolean | null
+          payee_workspace_id: string | null
+          payer_id: string | null
+          platform_fee_minor: number
+          protected: boolean
+          reference: string
+          refunded_minor: number
+          release_eligible_at: string | null
+          released_at: string | null
+          standby_id: string | null
+          status: string
+          strategy: string
+          stripe_charge: string | null
+          stripe_checkout_session: string | null
+          stripe_payment_intent: string | null
+          stripe_transfer: string | null
+          transferred_minor: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_promotion_boost: {
+        Args: {
+          p_event: string
+          p_product: string
+          p_starts_at?: string
+          p_targeting?: Json
+        }
+        Returns: string
       }
       create_webhook_endpoint: {
         Args: {
@@ -9984,6 +10617,11 @@ export type Database = {
         Args: { p_accept: boolean; p_alt: string }
         Returns: undefined
       }
+      delete_demo_workspace: {
+        Args: { p_workspace: string }
+        Returns: undefined
+      }
+      delete_design_comment: { Args: { p_comment: string }; Returns: undefined }
       delete_my_review: { Args: { p_review: string }; Returns: undefined }
       deletion_blockers: {
         Args: { p_user?: string }
@@ -9993,6 +10631,11 @@ export type Database = {
         }[]
       }
       design_access: { Args: { p_design: string }; Returns: string }
+      disconnect_my_calendar: {
+        Args: { p_provider: string }
+        Returns: undefined
+      }
+      dispatch_db_backup: { Args: never; Returns: number }
       dispatch_worker: { Args: { p_path: string }; Returns: number }
       dispute_party: {
         Args: { d: Database["public"]["Tables"]["booking_disputes"]["Row"] }
@@ -10041,6 +10684,10 @@ export type Database = {
           text: string
         }[]
       }
+      event_break_even: {
+        Args: { p_event: string; p_extra_costs?: number; p_fee_pct?: number }
+        Returns: Json
+      }
       event_build_budget: { Args: { p_event: string }; Returns: Json }
       event_feasibility: { Args: { p_event: string }; Returns: Json }
       event_launch_state: { Args: { p_event: string }; Returns: string }
@@ -10049,6 +10696,7 @@ export type Database = {
         Returns: string
       }
       event_readiness: { Args: { p_event: string }; Returns: Json }
+      event_virtual_public: { Args: { p_event: string }; Returns: Json }
       expire_checkout_holds: { Args: never; Returns: number }
       expire_provider_documents: { Args: never; Returns: number }
       expire_seat_holds: { Args: { p_event?: string }; Returns: number }
@@ -10294,6 +10942,16 @@ export type Database = {
         Args: { p_action: string; p_note: string; p_template: string }
         Returns: undefined
       }
+      my_calendar_connections: {
+        Args: never
+        Returns: {
+          account_email: string
+          last_error: string
+          last_synced_at: string
+          provider: string
+          status: string
+        }[]
+      }
       my_contacts: {
         Args: { p_workspace?: string }
         Returns: {
@@ -10340,6 +10998,7 @@ export type Database = {
           user_agent: string
         }[]
       }
+      my_storage_usage: { Args: { p_workspace?: string }; Returns: Json }
       my_workspace_access: {
         Args: never
         Returns: {
@@ -10404,10 +11063,12 @@ export type Database = {
       }
       owns_partner: { Args: { p_partner: string }; Returns: boolean }
       owns_promoter: { Args: { p_promoter: string }; Returns: boolean }
+      partner_apply_grade: { Args: { p_partner: string }; Returns: undefined }
       partner_contact_support: {
         Args: { p_body: string; p_subject: string }
         Returns: string
       }
+      partner_grade_for: { Args: { p_active: number }; Returns: number }
       payment_order_disputed: {
         Args: { p_open: boolean; p_pi: string }
         Returns: undefined
@@ -10441,6 +11102,7 @@ export type Database = {
       payment_release_scan: { Args: never; Returns: number }
       payout_eligible: { Args: { p_workspace: string }; Returns: boolean }
       plan_catalog: { Args: never; Returns: Json }
+      plan_commission_bps: { Args: { p_plan: string }; Returns: number }
       portal_comment: {
         Args: { p_body: string; p_token_hash: string }
         Returns: string
@@ -10773,6 +11435,10 @@ export type Database = {
           total: number
         }[]
       }
+      rank_venues_for_event: {
+        Args: { p_event: string; p_limit?: number }
+        Returns: Json
+      }
       recompute_reliability: {
         Args: { p_workspace: string }
         Returns: undefined
@@ -10789,6 +11455,10 @@ export type Database = {
           p_workspace: string
         }
         Returns: Json
+      }
+      record_boost_event: {
+        Args: { p_boost: string; p_kind: string }
+        Returns: undefined
       }
       record_invoice_payment: {
         Args: {
@@ -10855,6 +11525,7 @@ export type Database = {
       }
       resale_holds_for: { Args: { p_token: string }; Returns: Json }
       resale_listings: { Args: { p_event: string }; Returns: Json }
+      reset_demo_workspace: { Args: { p_workspace: string }; Returns: string }
       resolve_api_key: {
         Args: { p_hash: string; p_ip: string }
         Returns: {
@@ -10874,6 +11545,10 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_design_comment: {
+        Args: { p_comment: string; p_resolved: boolean }
+        Returns: undefined
+      }
       respond_to_invite: {
         Args: { p_accept: boolean; p_invite_id: string; p_token_hash: string }
         Returns: Json
@@ -10886,6 +11561,7 @@ export type Database = {
         Args: { p_design: string; p_version: number }
         Returns: number
       }
+      retention_purge_security_logs: { Args: never; Returns: Json }
       review_provider_document: {
         Args: { p_document: string; p_reason?: string; p_status: string }
         Returns: undefined
@@ -10894,6 +11570,15 @@ export type Database = {
       revoke_api_key: { Args: { p_key: string }; Returns: undefined }
       revoke_other_sessions: { Args: never; Returns: number }
       rotate_calendar_token: { Args: never; Returns: string }
+      save_brand_kit: {
+        Args: {
+          p_colors: Json
+          p_fonts: Json
+          p_logos: Json
+          p_workspace: string
+        }
+        Returns: undefined
+      }
       save_catering_selection: {
         Args: {
           p_accept_change?: boolean
@@ -10934,6 +11619,21 @@ export type Database = {
           p_send: boolean
         }
         Returns: string
+      }
+      save_event_virtual: {
+        Args: { p: Json; p_event: string }
+        Returns: undefined
+      }
+      scan_candidates: {
+        Args: { p_limit?: number }
+        Returns: {
+          bucket: string
+          mimetype: string
+          name: string
+          size: number
+          user_id: string
+          workspace_id: string
+        }[]
       }
       scan_lookup: {
         Args: { p_event: string; p_query: string }
@@ -11047,6 +11747,38 @@ export type Database = {
         Returns: string
       }
       start_maintenance: { Args: { p: Json }; Returns: string }
+      storage_backup_candidates: {
+        Args: { p_limit?: number }
+        Returns: {
+          bucket: string
+          mimetype: string
+          name: string
+          size: number
+          updated_at: string
+        }[]
+      }
+      storage_backup_expired: {
+        Args: { p_limit?: number }
+        Returns: {
+          bucket: string
+          name: string
+        }[]
+      }
+      storage_owner_of: {
+        Args: { p_bucket: string; p_name: string; p_uploader: string }
+        Returns: {
+          user_id: string
+          workspace_id: string
+        }[]
+      }
+      storage_usage: {
+        Args: { p_user?: string; p_workspace: string }
+        Returns: Json
+      }
+      storage_usage_internal: {
+        Args: { p_user?: string; p_workspace: string }
+        Returns: Json
+      }
       submit_privacy_request: {
         Args: { p_detail: string; p_kind: string }
         Returns: string
@@ -11060,6 +11792,14 @@ export type Database = {
           p_ratings: Json
         }
         Returns: string
+      }
+      suggest_seating: {
+        Args: {
+          p_event: string
+          p_include_pending?: boolean
+          p_table_size?: number
+        }
+        Returns: Json
       }
       team_conflicts: {
         Args: { p_from?: string; p_to?: string; p_workspace: string }
@@ -11196,6 +11936,7 @@ export type Database = {
         }
         Returns: Json
       }
+      virtual_join: { Args: { p_ticket: string }; Returns: Json }
       waitlist_offer_for: { Args: { p_offer: string }; Returns: Json }
       webhook_event_type: { Args: { p_audit: string }; Returns: string }
       withdraw_proposal: { Args: { p_proposal: string }; Returns: undefined }

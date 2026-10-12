@@ -18,11 +18,11 @@ export function MonthCalendar({ year, month, items, maxPerDay = 2, compact }: { 
     const s = new Date(it.start), e = it.end ? new Date(it.end) : s;
     for (let d = new Date(s); d <= e && byDay.size < 400; d.setUTCDate(d.getUTCDate() + 1)) { const k = ymd(d); byDay.set(k, [...(byDay.get(k) ?? []), it]); if (!it.end) break; }
   }
-  return <div className={`mc ${compact ? "compact" : ""}`} role="grid" aria-label={first.toLocaleString("en-GB", { month: "long", year: "numeric" })}>
-    <div className="mc-head" role="row">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => <div key={d} role="columnheader">{d}</div>)}</div>
+  return <div className={`mc ${compact ? "compact" : ""}`} role="group" aria-label={first.toLocaleString("en-GB", { month: "long", year: "numeric" })}>
+    <div className="mc-head" aria-hidden="true">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => <div key={d}>{d}</div>)}</div>
     <div className="mc-body" style={{ gridTemplateRows: `repeat(${weeks}, minmax(0, 1fr))` }}>
       {days.slice(0, weeks * 7).map(d => { const k = ymd(d); const list = byDay.get(k) ?? []; const out = d.getUTCMonth() !== month - 1;
-        return <div key={k} role="gridcell" className={`mc-day ${out ? "out" : ""} ${k === today ? "today" : ""}`} aria-label={k}>
+        return <div key={k} role="group" className={`mc-day ${out ? "out" : ""} ${k === today ? "today" : ""}`} aria-label={k}>
           <span className="mc-num">{d.getUTCDate()}</span>
           {list.slice(0, maxPerDay).map(it => <Link key={it.id + k} href={it.href} className={`mc-item tone-${it.tone}`} title={it.title}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

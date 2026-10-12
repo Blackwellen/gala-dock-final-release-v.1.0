@@ -1,6 +1,6 @@
 # Accessibility Statement
 
-> **Draft for specialist UK legal review before production publication.** Version 2026-10. **The conformance status below must be updated from a full WCAG 2.2 AA audit before publication.**
+> **Draft for specialist UK legal review before production publication.** Version 2026-10. Conformance status below reflects the internal WCAG 2.2 AA audit of 12 October 2026 (docs/compliance/wcag-audit.md); an independent audit is still recommended before production launch.
 
 Blackwellen Limited wants as many people as possible to be able to use Gala Dock: the website, the installable app (PWA), digital tickets, and the tools organisers and providers use. This statement covers galadock.com and its sub-pages.
 
@@ -15,16 +15,17 @@ Blackwellen Limited wants as many people as possible to be able to use Gala Dock
 
 ## How accessible this website is
 
-We test against **WCAG 2.2 level AA**. Testing during the October 2026 release included:
-* automated checks;
+We test against **WCAG 2.2 level AA**. This website is **partially compliant**, because of the exceptions listed below. Testing during the October 2026 release included:
+* an automated axe-core audit of all 79 main routes: 72 pass with no violations, and the rest are listed below;
 * a 390px mobile audit of all 79 main routes (one navigation per breakpoint, no horizontal scroll);
 * keyboard and focus checks on core flows;
 * text and touch-target sizing.
 
-**Known issues, to be confirmed by the full audit:**
+**Known issues:**
 * The **Media Studio** design canvas and the **venue map builder** rely on pointer drag for positioning. Keyboard alternatives exist for moving selected elements (arrow keys) and editing properties through form fields, but complex layout is harder without a pointer.
 * Some **charts** in analytics pages don't yet have full text alternatives; the underlying numbers are shown in nearby tables.
 * **Third-party content:** event images and descriptions uploaded by organisers may lack alt text or captions.
+* **Map pins** on Discover, Plan and the organiser Marketplace are smaller than 24px. Every pin has the same item in the list beside the map, which you can use instead.
 * The **check-in scanner** needs a camera. Manual code entry is available as an alternative.
 
 ## Feedback and alternative formats
@@ -37,4 +38,4 @@ If you're not happy with our response, you can contact the Equality Advisory and
 
 ## Preparation of this statement
 
-Prepared on 11 October 2026, based on internal testing. A full independent audit will be scheduled before production launch, and this statement will be updated with its date and findings.
+Prepared on 11 October 2026 and last reviewed on 12 October 2026, after an internal WCAG 2.2 AA audit. A full independent audit will be scheduled before production launch, and this statement will be updated with its date and findings.

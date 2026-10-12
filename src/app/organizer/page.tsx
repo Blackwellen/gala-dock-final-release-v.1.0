@@ -51,7 +51,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
     <div className="k-page-head" style={{ alignItems: "center" }}>
       <div><h1 style={{ fontSize: 30 }}>Command Centre</h1><p className="sub" style={{ fontSize: 15 }}>Everything you need to run successful events, all in one place.</p></div>
       <div className="k-row" style={{ gap: 18 }}><span className="k-muted" style={{ fontSize: 13 }}>{today}</span>
-        <div className="k-seg solid" role="tablist" aria-label="Time range">{(["today", "week", "month"] as const).map(r => <Link key={r} href={`/organizer?range=${r}`} role="tab" aria-selected={range === r} scroll={false}>{r === "today" ? "Today" : r === "week" ? "This Week" : "This Month"}</Link>)}</div>
+        <div className="k-seg solid" role="group" aria-label="Time range">{(["today", "week", "month"] as const).map(r => <Link key={r} href={`/organizer?range=${r}`} aria-current={(range === r) ? "page" : undefined} scroll={false}>{r === "today" ? "Today" : r === "week" ? "This Week" : "This Month"}</Link>)}</div>
       </div>
     </div>
     <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />

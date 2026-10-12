@@ -3,11 +3,14 @@
 // Usage: node --env-file=.env --env-file=.env.local scripts/design/audit-p2.mjs
 import fs from "node:fs";
 import { chromium } from "playwright";
+import AxeBuilder from "@axe-core/playwright";
 import { createClient } from "@supabase/supabase-js";
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 // MOBILE=1: 390px PWA shell check (§66) — one nav only, no sideways scroll.
 const MOBILE = process.env.MOBILE === "1";
+// AXE=1: WCAG 2.2 A/AA scan per route (axe-core); writes artifacts/visual/axe-p2.json and a per-rule summary.
+const AXE = process.env.AXE === "1"; const axeAll = [];
 const first = async (q) => (await q).data?.[0] ?? null;
 const neon = (await first(sb.from("events").select("id,slug").eq("name", "Neon Nights Festival").is("settings->>demo_copy_of", null).limit(1)));
 const wed = (await first(sb.from("events").select("id").eq("management", "consumer").is("settings->>demo_copy_of", null).ilike("name", "%wedding%").order("created_at").limit(1))).id;
@@ -148,6 +151,11 @@ for (const [role, path, designs] of R) {
     if (/This page could not be found|404\b.*not found/i.test(body)) errs.push("renders 404");
     if (/Application error|Something went wrong/i.test(body)) errs.push("renders error boundary");
     if (url.startsWith("/login")) errs.push("redirected to login");
+    if (AXE && !url.startsWith("/login")) {
+      const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).exclude("nextjs-portal").analyze();
+      for (const v of r.violations) { axeAll.push({ route: path, role, id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.slice(0, 6).map(n => ({ target: n.target.join(" "), html: n.html.slice(0, 160), summary: n.failureSummary?.slice(0, 200) })) , count: v.nodes.length }); }
+      if (r.violations.length) errs.push(`axe: ${r.violations.map(v => `${v.id}(${v.nodes.length})`).join(", ")}`);
+    }
     if (MOBILE && role !== "anon") {
       const m = await page.evaluate(() => { const t = document.querySelector(".pwa-top"); return { top: !!t && getComputedStyle(t).display !== "none",
         desk: [...document.querySelectorAll(".pwa-hide-desktop-nav")].some(e => getComputedStyle(e).display !== "none"),
@@ -162,5 +170,10 @@ for (const [role, path, designs] of R) {
   await page.close();
 }
 await browser.close();
+if (AXE) {
+  fs.writeFileSync("artifacts/visual/axe-p2.json", JSON.stringify(axeAll, null, 1));
+  const by = new Map(); for (const v of axeAll) { const k = `${v.impact} ${v.id}`; const e = by.get(k) ?? { routes: 0, nodes: 0, help: v.help }; e.routes++; e.nodes += v.count; by.set(k, e); }
+  console.log("\n— axe violations by rule —"); for (const [k, e] of [...by].sort((a, b) => b[1].nodes - a[1].nodes)) console.log(`${k.padEnd(40)} routes=${e.routes} nodes=${e.nodes}  ${e.help}`);
+}
 console.log(`\n${rows.filter(r => r.ok).length}/${rows.length} routes clean. Designs: ${files.length}, uncovered by any audited route: ${uncovered.length}`);
 for (const f of uncovered) console.log("  uncovered:", f);

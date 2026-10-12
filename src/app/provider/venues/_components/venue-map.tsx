@@ -1,6 +1,7 @@
 import "@/styles/venue-plan.css";
 import type { PointerEvent as ReactPointerEvent, Ref, ReactNode } from "react";
 import { AssetShape, PlanDefs, pointLabelHidden, type SeatFlag, type SeatState } from "@/components/venue-plan/asset-shape";
+import { tileUrl, styleMaxZoom, MAP_ATTRIBUTION } from "@/lib/maps/styles";
 import type { Seating, TableSpec } from "@/components/venue-plan/assets";
 
 /**
@@ -12,6 +13,8 @@ export type MapEl = {
   id?: string; label: string; x?: number; y?: number; w?: number; h?: number; space?: string; points?: number[][]; locked?: boolean; protected?: boolean;
   url?: string; opacity?: number; lat?: number; lng?: number; hidden?: boolean; size?: number;
   /** Plan assets (type "asset"): catalogue key, rotation, seating/table specs, capacity, ticket tier, per-seat flags/tiers. */
+  /** Custom layer id (elements of type "layer" define layers: id + label; they draw nothing). Basemap: tile style. */
+  layer?: string; mapStyle?: string;
   asset?: string; rot?: number; seating?: Seating; table?: TableSpec; capacity?: number; tier?: string | null; color?: string; seatFlags?: Record<string, SeatFlag>; seatTiers?: Record<string, string>;
 };
 export type MapSpace = { id: string; name: string; capacity: number; indoor: boolean };
@@ -29,29 +32,37 @@ export function elBounds(e: MapEl) {
 }
 export function mapBounds(els: MapEl[]) {
   let maxX = 0, maxY = 0;
-  for (const e of els) { if (e.type === "basemap" || e.hidden) continue; const b = elBounds(e); maxX = Math.max(maxX, b.x + b.w); maxY = Math.max(maxY, b.y + b.h); }
+  for (const e of els) { if (e.type === "basemap" || e.type === "layer" || e.hidden) continue; const b = elBounds(e); maxX = Math.max(maxX, b.x + b.w); maxY = Math.max(maxY, b.y + b.h); }
   return { w: Math.max(maxX + 20, 400), h: Math.max(maxY + 20, 240) };
 }
 export const centroid = (pts: number[][]) => { const n = pts.length; return [pts.reduce((a, p) => a + p[0], 0) / n, pts.reduce((a, p) => a + p[1], 0) / n]; };
 
-/** Web-Mercator tiles covering the plan, anchored so the venue's lat/lng sits at map (x, y). */
-export function basemapTiles(e: MapEl, span: { x?: number; y?: number; w: number; h: number }) {
+/** Web-Mercator tiles covering the visible span, anchored so the basemap's lat/lng sits at map (x, y). The zoom level follows the view
+ *  (≈256–512 screen px per tile for a canvas `px` wide) so zooming out never loads hundreds of street-level tiles. */
+export function basemapTiles(e: MapEl, span: { x?: number; y?: number; w: number; h: number }, px = 1000) {
   if (e.lat === undefined || e.lng === undefined) return [];
-  const z = 18, n = 2 ** z, mpp = (156543.03392 * Math.cos((e.lat * Math.PI) / 180)) / n, tileU = 256 * mpp * UNITS_PER_M;
+  const cos = Math.cos((e.lat * Math.PI) / 180), unitsPerPx = span.w / Math.max(200, px);
+  const z = Math.max(3, Math.min(styleMaxZoom(e.mapStyle ?? "streets"), Math.round(Math.log2((156543.03392 * cos * UNITS_PER_M) / unitsPerPx / 1.4))));
+  const n = 2 ** z, mpp = (156543.03392 * cos) / n, tileU = 256 * mpp * UNITS_PER_M;
   const fx = ((e.lng + 180) / 360) * n, latR = (e.lat * Math.PI) / 180, fy = ((1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2) * n;
-  const ax = e.x ?? 0, ay = e.y ?? 0, sx = span.x ?? 0, sy = span.y ?? 0, out: { href: string; x: number; y: number; s: number }[] = [];
-  const minTx = Math.floor(fx + (sx - ax) / tileU), maxTx = Math.floor(fx + (sx + span.w - ax) / tileU), minTy = Math.floor(fy + (sy - ay) / tileU), maxTy = Math.floor(fy + (sy + span.h - ay) / tileU);
-  for (let tx = minTx; tx <= maxTx; tx++) for (let ty = minTy; ty <= maxTy; ty++)
-    out.push({ href: `https://tile.openstreetmap.org/${z}/${tx}/${ty}.png`, x: ax + (tx - fx) * tileU, y: ay + (ty - fy) * tileU, s: tileU });
-  return out.slice(0, 80);
+  const ax = e.x ?? 0, ay = e.y ?? 0, out: { href: string; x: number; y: number; s: number }[] = [];
+  // A rotated basemap covers the span's bounding circle so no corner is left blank.
+  let sx = span.x ?? 0, sy = span.y ?? 0, sw = span.w, sh = span.h;
+  if (e.rot) { const r = Math.hypot(sw, sh) / 2, cx = sx + sw / 2, cy = sy + sh / 2, th = (-e.rot * Math.PI) / 180, dx = cx - ax, dy = cy - ay;
+    const rcx = ax + dx * Math.cos(th) - dy * Math.sin(th), rcy = ay + dx * Math.sin(th) + dy * Math.cos(th); sx = rcx - r; sy = rcy - r; sw = sh = r * 2; }
+  const minTx = Math.floor(fx + (sx - ax) / tileU), maxTx = Math.floor(fx + (sx + sw - ax) / tileU), minTy = Math.floor(fy + (sy - ay) / tileU), maxTy = Math.floor(fy + (sy + sh - ay) / tileU);
+  for (let tx = Math.max(0, minTx); tx <= Math.min(n - 1, maxTx); tx++) for (let ty = Math.max(0, minTy); ty <= Math.min(n - 1, maxTy); ty++)
+    out.push({ href: tileUrl(e.mapStyle ?? "streets", z, tx, ty), x: ax + (tx - fx) * tileU, y: ay + (ty - fy) * tileU, s: tileU });
+  return out.slice(0, 160);
 }
+export { MAP_ATTRIBUTION };
 
 /** Map content (no <svg>) so the read-only map and the builder share one renderer. */
-export function MapContent({ elements, spaces, dim, selected, selectedIndex = null, selectedSet, labelSize = 13, onElDown, span, children, detail = false, tierColor, seatState, selectedSeats, onSeat }: {
+export function MapContent({ elements, spaces, dim, selected, selectedIndex = null, selectedSet, labelSize = 13, onElDown, span, children, detail = false, tierColor, seatState, selectedSeats, onSeat, px }: {
   elements: MapEl[]; spaces: MapSpace[]; dim?: (spaceId: string | undefined) => boolean; selected?: string | null; selectedIndex?: number | null; selectedSet?: Set<number>; labelSize?: number;
   onElDown?: (e: ReactPointerEvent<SVGGElement>, index: number) => void; span: { x?: number; y?: number; w: number; h: number }; children?: ReactNode;
   detail?: boolean; tierColor?: (tier?: string | null) => string | undefined; seatState?: (key: string) => SeatState | undefined; selectedSeats?: Set<string>;
-  onSeat?: (elIndex: number, key: string, ev: ReactPointerEvent<SVGCircleElement>) => void;
+  onSeat?: (elIndex: number, key: string, ev: ReactPointerEvent<SVGCircleElement>) => void; px?: number;
 }) {
   const rooms = elements.filter(e => e.type === "room");
   const toneOf = (el: MapEl) => ROOM_TONES[Math.max(0, rooms.indexOf(el)) % ROOM_TONES.length];
@@ -62,8 +73,8 @@ export function MapContent({ elements, spaces, dim, selected, selectedIndex = nu
   const layer = (pred: (e: MapEl) => boolean, draw: (e: MapEl, i: number) => ReactNode) => elements.map((e, i) => (!e.hidden && pred(e) ? draw(e, i) : null));
   const pts = (p: number[][]) => p.map(q => q.join(",")).join(" ");
   return <>
-    {layer(e => e.type === "basemap", (e, i) => <g key={`b${i}`} opacity={e.opacity ?? 0.6} className="vm-base" onPointerDown={down(i)}>
-      {basemapTiles(e, span).map(t => <image key={t.href} href={t.href} x={t.x} y={t.y} width={t.s + 0.6} height={t.s + 0.6} preserveAspectRatio="none" />)}</g>)}
+    {layer(e => e.type === "basemap", (e, i) => <g key={`b${i}`} opacity={e.opacity ?? 0.6} className="vm-base" onPointerDown={down(i)} transform={e.rot ? `rotate(${e.rot} ${e.x ?? 0} ${e.y ?? 0})` : undefined}>
+      {basemapTiles(e, span, px).map(t => <image key={t.href} href={t.href} x={t.x} y={t.y} width={t.s + 0.6} height={t.s + 0.6} preserveAspectRatio="none" />)}</g>)}
     {layer(e => e.type === "underlay", (e, i) => <g key={`u${i}`} className={`vm-under${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
       <image href={e.url} x={e.x} y={e.y} width={e.w} height={e.h} opacity={e.opacity ?? 0.7} preserveAspectRatio="none" />
       {on(i, e) && <rect x={e.x} y={e.y} width={e.w} height={e.h} fill="none" stroke="#1a1af2" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />}</g>)}
@@ -122,6 +133,6 @@ export function VenueMap({ elements, spaces, dim, selected, selectedIndex = null
     <MapDefs />
     <rect x={vx} y={vy} width={vw} height={vh} fill="#f6f9fc" /><rect x={vx} y={vy} width={vw} height={vh} fill="url(#vm-grid)" />
     <MapContent elements={elements} spaces={spaces} dim={dim} selected={selected} selectedIndex={selectedIndex} labelSize={labelSize} onElDown={onElDown} span={{ x: vx, y: vy, w: vw, h: vh }} />
-    {hasBase && <text x={vx + vw - 6} y={vy + vh - 6} textAnchor="end" className="vm-attr">© OpenStreetMap contributors</text>}
+    {hasBase && <text x={vx + vw - 6} y={vy + vh - 6} textAnchor="end" className="vm-attr">{MAP_ATTRIBUTION}</text>}
   </svg>;
 }

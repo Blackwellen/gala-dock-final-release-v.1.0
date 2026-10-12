@@ -27,7 +27,7 @@
 .cb-card .ce-tags span { height: 22px; font-size: 10.5px; padding: 0 8px; }
 .cb-price { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
 .cb-st { display: inline-flex; gap: 5px; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 10.5px; font-weight: 550; margin-bottom: 4px; }
-.cb-st.green { background: #e7f8ef; color: #047857; } .cb-st.blue { background: #fff4e3; color: #b45309; } .cb-st.purple { background: #f3edff; color: #6d28d9; } .cb-st.gray { background: #f3f5fa; color: var(--k-ink-2); } .cb-st.red { background: var(--k-red-soft); color: var(--k-red); }
+.cb-st.green { background: #e7f8ef; color: #047857; } .cb-st.blue { background: #fff4e3; color: #9a5800; } .cb-st.purple { background: #f3edff; color: #6d28d9; } .cb-st.gray { background: #f3f5fa; color: var(--k-ink-2); } .cb-st.red { background: var(--k-red-soft); color: var(--k-red); }
 .cb-price b { font-size: 14px; font-weight: 700; } .cb-price b small { font-size: 11px; font-weight: 400; } .cb-price > small { font-size: 11px; color: var(--k-muted); }
 .cb-price .cb-cta { width: 100%; margin-top: 6px; }
 .cb-card .cb-dots { margin-top: 0; width: 30px !important; height: 30px !important; }
@@ -44,8 +44,8 @@
 .cb-legend span { display: flex; align-items: center; gap: 6px; } .cb-legend i { width: 8px; height: 8px; border-radius: 50%; } .cb-legend b { margin-left: auto; font-weight: 600; color: var(--k-ink); }
 .cb-ready { display: flex; gap: 16px; align-items: center; } .cb-ready ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; font-size: 11.5px; color: var(--k-ink-2); } .cb-ready li { display: flex; gap: 7px; align-items: center; }
 .cb-miss-ic { width: 22px; height: 22px; border-radius: 50%; background: #ef4444; color: #fff; display: grid; place-items: center; }
-.cb-miss-ic.soft { width: 30px; height: 30px; border-radius: 8px; background: #fdeef1; color: #e11d48; }
-.cb-badge { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #fca5a5; color: #e11d48; font-size: 11px; display: grid; place-items: center; }
+.cb-miss-ic.soft { width: 30px; height: 30px; border-radius: 8px; background: #fdeef1; color: #c8243d; }
+.cb-badge { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #fca5a5; color: #c8243d; font-size: 11px; display: grid; place-items: center; }
 .cb-ask { display: inline-flex; gap: 5px; align-items: center; padding: 6px 10px; border: 1px solid var(--k-line); border-radius: 8px; font-size: 11px; color: var(--k-ink-2); }
 .cb-ask:first-child { color: var(--k-blue); border-color: var(--k-blue-line); }
 @media (max-width: 1400px) { .cb-grid { grid-template-columns: 240px minmax(0, 1fr); } .cb-grid > :last-child { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .cb-row { grid-template-columns: 18px minmax(0, 1fr); } .cb-cat-col { display: none; } .cb-more-it:nth-of-type(n+4) { display: none; } }
@@ -64,7 +64,7 @@ button.cb-grip { background: none !important; border: 0 !important; padding: 0; 
 button.cb-grip:focus-visible { outline: 2px solid var(--k-blue); color: var(--k-blue); }
 .cb-row-in.backup .cb-card { border-style: dashed; background: #fbfcff; }
 .cb-backup-note { grid-column: 3; margin: -4px 0 4px 2px; font-size: 11px; color: #6b7489; }
-.cb-due { display: inline-flex !important; align-items: center; gap: 4px; color: #b45309 !important; font-size: 11px !important; } .cb-due.red { color: #c81e3a !important; }
+.cb-due { display: inline-flex !important; align-items: center; gap: 4px; color: #9a5800 !important; font-size: 11px !important; } .cb-due.red { color: #c81e3a !important; }
 .cb-banner, .cb-over { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .cb-over { margin: 8px 0 4px; font-size: 12px; }
 .cb-compare { border: 1px solid var(--k-line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: #fbfdff; }

@@ -6,7 +6,8 @@ import { PrivacyCard } from "@/components/security/privacy-card";
 import { User, CreditCard, Bell, ShieldCheck, CalendarDays, Bookmark, Sparkles, Crown, ArrowRight, ChevronRight, CheckCircle2, CalendarCheck, Ticket, MessageSquare, Megaphone, FileText, Clock4 } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { savedCards } from "@/lib/payments";
-import { ProfileDetails, AvatarButton, CardsPanel, CalendarConnect, IdentityList, NotificationPrefs, QuickActions, PasswordCard, DeletionCard } from "@/components/customer/account-client";
+import { ProfileDetails, AvatarButton, CardsPanel, IdentityList, NotificationPrefs, QuickActions, PasswordCard, DeletionCard } from "@/components/customer/account-client";
+import { CalendarConnectSection } from "@/components/shared/calendar-connect-section";
 
 export const metadata = { title: "My Account" };
 const COUNTRIES: Record<string, string> = { GB: "United Kingdom", IE: "Ireland", US: "United States", FR: "France", DE: "Germany", ES: "Spain", IT: "Italy", NL: "Netherlands", PT: "Portugal", AE: "United Arab Emirates" };
@@ -53,7 +54,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
         <CardsPanel cards={cards} compact />
       </div>
       <div className="ac-col">
-        <section className="ce-card ac-card"><h2>Connected accounts &amp; calendar</h2><p className="ac-hint">Link your calendar and other accounts to make planning easier.</p><CalendarConnect /><h3 className="ac-h3">Connected accounts</h3><IdentityList identities={identities} /></section>
+        <section className="ce-card ac-card"><h2>Connected accounts &amp; calendar</h2><p className="ac-hint">Link your calendar and other accounts to make planning easier.</p><CalendarConnectSection returnTo="/account?tab=profile" /><h3 className="ac-h3">Connected accounts</h3><IdentityList identities={identities} /></section>
         <NotificationPrefs prefs={prefs} rows={notifRows.map(([k, , t, d]) => ({ key: k, title: t, desc: d }))} />
         <QuickActions />
       </div>

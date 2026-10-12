@@ -62,7 +62,7 @@
 .pw-insight { padding: 0; overflow: hidden; } .pw-insight > div { padding: 18px 16px 16px; }
 .pw-insight dl { margin: 14px 0 0; display: flex; flex-direction: column; gap: 16px; } .pw-insight dl > div { display: flex; gap: 14px; align-items: flex-start; }
 .pw-insight dt { color: var(--k-ink-2); padding-top: 2px; } .pw-insight dd { margin: 0; flex: 1; } .pw-insight dd b { display: block; font-size: 13.5px; font-weight: 600; color: var(--k-ink); } .pw-insight dd small { font-size: 13px; color: var(--k-muted); display: inline-flex; gap: 6px; align-items: center; }
-.pw-avail { height: 26px; padding: 0 10px; border-radius: 5px; background: #dcf7e8; color: #0b8a54; font-size: 12.5px; display: inline-flex; align-items: center; white-space: nowrap; } .pw-avail.amber { background: #fff3dc; color: #b45309; } .pw-avail.red { background: #ffe6e9; color: #c81e3a; }
+.pw-avail { height: 26px; padding: 0 10px; border-radius: 5px; background: #dcf7e8; color: #0a7a49; font-size: 12.5px; display: inline-flex; align-items: center; white-space: nowrap; } .pw-avail.amber { background: #fff3dc; color: #9a5800; } .pw-avail.red { background: #ffe6e9; color: #c81e3a; }
 .pw-tips { padding: 18px 14px 16px; background: #f8fafe; display: flex; flex-direction: column; gap: 10px; } .pw-tips > p { margin: 4px 0 2px; font-size: 13px; color: var(--k-ink-2); }
 .pw-tip { display: flex; gap: 16px; padding: 12px 14px; border-radius: 8px; background: #fff; border: 1px solid #edf1f8; } .pw-tip svg { color: var(--k-blue); flex-shrink: 0; }
 .pw-tip b { display: block; font-size: 13px; font-weight: 600; color: var(--k-ink); } .pw-tip small { display: block; font-size: 12.5px; line-height: 1.5; color: var(--k-muted); margin-top: 2px; }
@@ -77,7 +77,7 @@
 .pw-cal-g { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; margin-top: 12px; text-align: center; }
 .pw-cal-h { font-size: 12.5px; color: var(--k-ink-2); padding-bottom: 6px; }
 .pw-day { height: 30px; width: 30px; justify-self: center; border-radius: 50%; font-size: 13px; color: var(--k-ink); display: grid; place-items: center; }
-.pw-day.out, .pw-day:disabled { color: #a8b0c4; } .pw-day:not(:disabled):hover { background: #eef4ff; }
+.pw-day.out, .pw-day:disabled { color: #6b7190; } .pw-day:not(:disabled):hover { background: #eef4ff; }
 .pw-day.sel { background: var(--k-blue); color: #fff; font-weight: 600; } .pw-day.range { background: #e3ecff; border-radius: 6px; width: 100%; }
 .pw-when-f { border-left: 1px solid #e6ecf5; padding-left: 18px; }
 .pw-flabel { display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--k-ink); margin: 6px 0 10px; } .pw-flabel svg { color: var(--k-ink-2); }
@@ -99,7 +99,7 @@
 .pw-step .k-stepper-num { flex: 1; border: 0; height: 40px; } .pw-step .k-stepper-num input { text-align: left; font-size: 13.5px; }
 .pw-break { border: 1px solid #e6ecf5; border-radius: 8px; padding: 6px 12px 10px; } .pw-break .pw-flabel { margin: 4px 0 6px; font-weight: 500; }
 .pw-break-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } .pw-break-row small { display: block; font-size: 12px; color: var(--k-muted); margin-bottom: 4px; } .pw-break-row .k-stepper-num { height: 36px; }
-.pw-note { display: flex; gap: 10px; align-items: center; margin-top: 14px; padding: 10px 12px; border-radius: 6px; background: #f2f6fd; font-size: 12.5px; color: var(--k-ink-2); } .pw-note svg { color: var(--k-blue); flex-shrink: 0; } .pw-note.warn { background: #fff7e8; } .pw-note.warn svg { color: #b45309; }
+.pw-note { display: flex; gap: 10px; align-items: center; margin-top: 14px; padding: 10px 12px; border-radius: 6px; background: #f2f6fd; font-size: 12.5px; color: var(--k-ink-2); } .pw-note svg { color: var(--k-blue); flex-shrink: 0; } .pw-note.warn { background: #fff7e8; } .pw-note.warn svg { color: #9a5800; }
 /* step 3 */
 .pw-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
 .pw-mode { display: flex; align-items: center; gap: 14px; height: 56px; padding: 0 14px 0 22px; border: 1px solid #dfe6f1 !important; border-radius: 6px; background: #fff !important; text-align: left; }
