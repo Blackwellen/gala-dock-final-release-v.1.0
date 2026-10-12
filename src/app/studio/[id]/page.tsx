@@ -38,7 +38,7 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
   const back = ws?.kind === "provider" ? "/provider/media" : "/organizer/media";
   const brand = d.workspace_id ? { workspaceId: d.workspace_id as string, canManage: ["owner", "manager"].includes(member?.role ?? ""),
     kit: { colors: kit?.colors ?? [], fonts: kit?.fonts ?? [], logos: kit?.logos ?? [] } as BrandKit, fonts: (fonts ?? []) as CustomFont[] } : null;
-  return <Studio back={back} brand={brand} openComments={openComments} eventData={eventData} assets={gallery.map((src, i) => ({ src, title: `Event image ${i + 1}` }))}
+  return <Studio back={back} brand={brand} openComments={openComments} workspaceId={(d.workspace_id as string | null) ?? null} eventData={eventData} assets={gallery.map((src, i) => ({ src, title: `Event image ${i + 1}` }))}
     versions={(versions ?? []) as { version: number; label: string; created_at: string }[]}
     design={{ id: d.id, title: d.title, version: d.version, document: d.document as DesignDoc, canEdit: access === "owner" || access === "edit", eventId: d.event_id }} />;
 }

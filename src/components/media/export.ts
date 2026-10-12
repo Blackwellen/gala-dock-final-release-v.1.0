@@ -1,6 +1,7 @@
 "use client";
 
-import { googleFontHref, type Page } from "@/lib/media/document";
+import { fontSpecs, googleFontHrefs, type Page } from "@/lib/media/document";
+import { loadFonts } from "@/lib/design-kit/assets";
 
 /**
  * Exports a rendered page (media spec §50). Images and fonts are inlined as data URLs, the page DOM is wrapped in an SVG
@@ -12,11 +13,13 @@ const toDataUrl = async (url: string) => {
   return await new Promise<string>((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b); });
 };
 
-async function fontCss(families: string[]) {
-  if (!families.length) return "";
+async function fontCss(page: Page) {
+  const specs = fontSpecs({ unit: "px", dpi: 150, pages: [page] });
+  if (!specs.length) return "";
   try {
-    const css = await (await fetch(googleFontHref(families))).text();
-    const urls = [...new Set([...css.matchAll(/url\((https:[^)]+)\)/g)].map(m => m[1]!))].slice(0, 40);
+    const catalogue = await loadFonts().then(list => new Map(list.map(f => [f.f, { w: f.w, i: f.i }]))).catch(() => null);
+    const css = (await Promise.all(googleFontHrefs(specs, catalogue).map(h => fetch(h).then(r => (r.ok ? r.text() : "")).catch(() => "")))).join("\n");
+    const urls = [...new Set([...css.matchAll(/url\((https:[^)]+)\)/g)].map(m => m[1]!))].slice(0, 60);
     let out = css;
     for (const u of urls) { try { out = out.replaceAll(u, await toDataUrl(u)); } catch { /* keep remote url */ } }
     return out;
@@ -28,8 +31,7 @@ export async function renderPage(el: HTMLElement, page: Page, scale = 1, transpa
   clone.style.transform = "none"; clone.style.position = "relative"; clone.style.left = "0"; clone.style.top = "0";
   if (transparent) clone.style.background = "transparent";
   for (const img of [...clone.querySelectorAll("img")]) { try { img.src = await toDataUrl(img.src); } catch { img.remove(); } }
-  const families = page.layers.filter(l => l.type === "text").map(l => (l as { font: string }).font);
-  const css = await fontCss(families);
+  const css = await fontCss(page);
   const xhtml = new XMLSerializer().serializeToString(clone);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${page.width}" height="${page.height}"><defs><style>${css.replace(/</g, "")}</style></defs><foreignObject width="100%" height="100%">${xhtml}</foreignObject></svg>`;
   const img = new Image();

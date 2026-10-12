@@ -1,19 +1,34 @@
 // Media Studio canonical design document (media spec §11). Pure data, shared by editor, server actions, Agent tools and export.
-export type Fill = { type: "solid"; color: string } | { type: "linear" | "radial"; angle?: number; stops: { offset: number; color: string }[] };
+export type Fill = { type: "solid"; color: string } | { type: "linear" | "radial" | "conic"; angle?: number; stops: { offset: number; color: string }[] };
+export type Shadow = { x: number; y: number; blur: number; color: string };
+export type TextFx = { kind: "neon" | "outline" | "hollow" | "double-outline" | "3d" | "long-shadow" | "lifted" | "echo" | "glitch" | "retro" | "emboss" | "splice"; color: string; color2?: string; depth?: number; angle?: number };
+export type EraseStroke = { d: string; width: number };
 export type Effects = {
   opacity?: number; blend?: string; shadow?: { x: number; y: number; blur: number; color: string } | null; glow?: { blur: number; color: string } | null;
   stroke?: { width: number; color: string; dash?: "solid" | "dashed" | "dotted" } | null; radius?: number;
   brightness?: number; contrast?: number; saturate?: number; hue?: number; blur?: number; grayscale?: number; sepia?: number; invert?: number;
+  /** Extra drop shadows stacked after `shadow`; inner shadow (images/boxes); text effect; per-corner radii [tl, tr, br, bl]; duotone [shadows, highlights]; vignette 0–100. */
+  shadows?: Shadow[] | null; innerShadow?: Shadow | null; textFx?: TextFx | null; radii?: [number, number, number, number] | null; duotone?: [string, string] | null; vignette?: number;
 };
 type Base = { id: string; name: string; x: number; y: number; w: number; h: number; rotation: number; flipX?: boolean; flipY?: boolean; hidden?: boolean; locked?: boolean; effects?: Effects };
 export type TextLayer = Base & { type: "text"; text: string; bind?: string; font: string; size: number; weight: number; italic?: boolean; color: string; fill?: Fill; align: "left" | "center" | "right";
   valign?: "top" | "middle" | "bottom"; lineHeight: number; letterSpacing: number; transform?: "none" | "uppercase" | "lowercase"; underline?: boolean; highlight?: string | null; curve?: number };
-export type ImageLayer = Base & { type: "image"; asset: { src: string; path?: string; public?: boolean; width?: number; height?: number }; fit: "cover" | "contain"; focusX: number; focusY: number; zoom: number; mask?: "none" | "circle" | "rounded" | "ellipse" };
-export type ShapeLayer = Base & { type: "shape"; shape: "rect" | "ellipse" | "triangle" | "star" | "diamond" | "line" | "arrow" | "badge" | "speech"; fill: Fill; };
+export type ImageLayer = Base & { type: "image"; asset: { src: string; path?: string; public?: boolean; width?: number; height?: number }; fit: "cover" | "contain"; focusX: number; focusY: number; zoom: number; mask?: "none" | "circle" | "rounded" | "ellipse";
+  /** Crop window as fractions of the source image (0–1); erased strokes in layer pixels (rubber tool). */
+  crop?: { x: number; y: number; w: number; h: number } | null; erase?: EraseStroke[] };
+/** Built-in shapes by name, or any library shape via `d` (SVG path in a 0–100 box; `lineOnly` = stroked, not filled). */
+export type ShapeLayer = Base & { type: "shape"; shape: "rect" | "ellipse" | "triangle" | "star" | "diamond" | "line" | "arrow" | "badge" | "speech" | "custom"; fill: Fill; d?: string; lineOnly?: boolean };
 export type CodeLayer = Base & { type: "qr" | "barcode"; value: string; bind?: string; fg: string; bg: string; label?: string };
-export type DrawLayer = Base & { type: "drawing"; paths: { d: string; color: string; width: number; opacity: number }[] };
-export type IconLayer = Base & { type: "icon"; icon: string; color: string };
-export type Layer = TextLayer | ImageLayer | ShapeLayer | CodeLayer | DrawLayer | IconLayer;
+export type Brush = "pen" | "marker" | "highlighter" | "airbrush";
+export type DrawLayer = Base & { type: "drawing"; paths: { d: string; color: string; width: number; opacity: number; brush?: Brush }[]; erase?: EraseStroke[] };
+/** Lucide icon by name (legacy), or a library icon with its SVG embedded so it renders and exports without the icon set. */
+export type IconLayer = Base & { type: "icon"; icon: string; color: string; svg?: { body: string; w: number; h: number } };
+/** Bendy line / curve: points in layer pixels, smoothed (Catmull-Rom) or straight, optional closed fill and end caps. */
+export type PathLayer = Base & { type: "path"; pts: { x: number; y: number }[]; smooth: boolean; closed: boolean; stroke: { color: string; width: number; dash?: "solid" | "dashed" | "dotted" };
+  fill?: Fill | null; startCap?: "none" | "arrow" | "dot" | "bar"; endCap?: "none" | "arrow" | "dot" | "bar" };
+/** Parametric widget (countdown, timeline, ticket stub, rating…): `variant` picks the style, `theme` the colours. */
+export type WidgetLayer = Base & { type: "widget"; widget: string; variant: number; props: Record<string, string | number>; theme: { a: string; b: string; text: string; bg: string }; font?: string };
+export type Layer = TextLayer | ImageLayer | ShapeLayer | CodeLayer | DrawLayer | IconLayer | PathLayer | WidgetLayer;
 export type Page = { id: string; name: string; width: number; height: number; background: Fill | null; layers: Layer[] };
 export type DesignDoc = { unit: "px" | "mm"; dpi: number; pages: Page[]; bleedMm?: number };
 
@@ -83,3 +98,27 @@ export const FONTS: { family: string; category: string }[] = [
 ].map(([family, category]) => ({ family: family!, category: category! }));
 export const googleFontHref = (families: string[]) =>
   `https://fonts.googleapis.com/css2?${[...new Set(families)].filter(f => FONTS.some(x => x.family === f)).map(f => `family=${encodeURIComponent(f).replace(/%20/g, "+")}`).join("&")}&display=swap`;
+
+/** Font families, weights and italics actually used by a document (text and widget layers). */
+export function fontSpecs(doc: DesignDoc): { family: string; weights: number[]; italic: boolean }[] {
+  const m = new Map<string, { w: Set<number>; i: boolean }>();
+  for (const l of doc.pages.flatMap(p => p.layers)) {
+    const fam = l.type === "text" ? l.font : l.type === "widget" ? l.font ?? "Inter" : null; if (!fam) continue;
+    const e = m.get(fam) ?? { w: new Set<number>([400, 700]), i: false };
+    if (l.type === "text") { e.w.add(l.weight); if (l.italic) e.i = true; }
+    m.set(fam, e);
+  }
+  return [...m].map(([family, e]) => ({ family, weights: [...e.w].sort((a, b) => a - b), italic: e.i }));
+}
+/** One Google Fonts URL per family. With the catalogue (fonts.json) weights/italics are clamped to what the family has and
+ *  unknown names (uploaded brand fonts) are skipped; without it, only the regular style is requested. Per-family links mean one
+ *  bad name can't break every font on the page. */
+export const googleFontHrefs = (specs: { family: string; weights: number[]; italic: boolean }[], catalogue?: Map<string, { w: number[]; i: boolean }> | null) =>
+  specs.flatMap(({ family, weights, italic }) => {
+    const name = encodeURIComponent(family).replace(/%20/g, "+");
+    if (!catalogue) return [`https://fonts.googleapis.com/css2?family=${name}&display=swap`];
+    const meta = catalogue.get(family); if (!meta) return [];
+    const nearest = (w: number) => meta.w.reduce((a, b) => (Math.abs(b - w) < Math.abs(a - w) ? b : a), meta.w[0] ?? 400);
+    const ws = [...new Set((weights.length ? weights : [400]).map(nearest))].sort((a, b) => a - b), ital = italic && meta.i;
+    return [`https://fonts.googleapis.com/css2?family=${name}:${ital ? `ital,wght@${[...ws.map(w => `0,${w}`), ...ws.map(w => `1,${w}`)].join(";")}` : `wght@${ws.join(";")}`}&display=swap`];
+  });

@@ -2,7 +2,7 @@ import type { Fill } from "./document";
 
 // Pure render helpers shared by server (library thumbnails) and client (editor, exporter).
 export const fillCss = (f: Fill | null | undefined): string => !f ? "transparent" : f.type === "solid" ? f.color
-  : `${f.type === "linear" ? `linear-gradient(${f.angle ?? 180}deg` : "radial-gradient(circle"},${f.stops.map(s => `${s.color} ${Math.round(s.offset * 100)}%`).join(",")})`;
+  : `${f.type === "linear" ? `linear-gradient(${f.angle ?? 180}deg` : f.type === "conic" ? `conic-gradient(from ${f.angle ?? 0}deg` : "radial-gradient(circle"},${f.stops.map(s => `${s.color} ${Math.round(s.offset * 100)}%`).join(",")})`;
 export const assetSrc = (a: { src: string; path?: string }) => a.path ? `/api/media/asset?path=${encodeURIComponent(a.path)}` : a.src;
 
 /** Contrast ratio guard for QR scannability (§43). */

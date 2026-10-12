@@ -131,3 +131,28 @@ export async function eventDataFor(eventId: string | null): Promise<EventData> {
     "organizer.name": ws?.name ?? "",
   };
 }
+
+export type TemplateSummary = { id: string; title: string; category: string; usage_count: number; scope: "starter" | "community" | "workspace" | "mine"; document: DesignDoc };
+/** Templates the reader may use, for the editor's Templates tab: platform starters, public community, their workspace's and their own. */
+export async function listTemplates(scope: "all" | "starter" | "community" | "workspace", q: string, workspaceId: string | null): Promise<R<TemplateSummary[]>> {
+  const sb = await createClient();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return { ok: false, error: "Please sign in again." };
+  const term = String(q ?? "").replace(/[%_,()]/g, " ").trim().slice(0, 60);
+  let query = untyped(sb as never).from("design_templates").select("id,title,category,usage_count,document,workspace_id,owner_id,visibility").eq("status", "active").order("usage_count", { ascending: false }).limit(48);
+  if (scope === "starter") query = query.is("workspace_id", null).is("owner_id", null);
+  else if (scope === "community") query = query.eq("visibility", "public").not("owner_id", "is", null);
+  else if (scope === "workspace") query = workspaceId && UUID.test(workspaceId) ? query.or(`workspace_id.eq.${workspaceId},owner_id.eq.${user.id}`) : query.eq("owner_id", user.id);
+  if (term) query = query.or(`title.ilike.%${term}%,category.ilike.%${term}%`);
+  const { data, error } = await query;
+  if (error) return fail(error.message);
+  return { ok: true, data: ((data ?? []) as (TemplateSummary & { workspace_id: string | null; owner_id: string | null; visibility: string })[]).map(t => ({
+    id: t.id, title: t.title, category: t.category, usage_count: t.usage_count, document: t.document,
+    scope: !t.workspace_id && !t.owner_id ? "starter" : t.owner_id === user.id ? "mine" : t.visibility === "public" ? "community" : "workspace" })) };
+}
+export async function templateUsed(id: string): Promise<R> {
+  if (!UUID.test(id)) return { ok: false, error: "Not found." };
+  const sb = await createClient();
+  const { error } = await sb.rpc("template_used" as never, { p_template: id } as never);
+  return error ? fail(error.message) : { ok: true };
+}
