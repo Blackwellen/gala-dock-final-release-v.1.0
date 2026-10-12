@@ -64,6 +64,17 @@ export default function PrivacyPolicy() {
     </ul>
     <p>We do not sell your personal data.</p>
 
+    <h3 id="calendar">Calendar integrations</h3>
+    <p>If you choose to connect a Google or Microsoft 365 calendar, we use it only to keep your schedule in sync. You can disconnect at any time, or use a calendar subscription link instead.</p>
+    <ul>
+      <li><b>What we write:</b> a separate calendar called “Gala Dock” in your account, containing your Gala Dock events and tickets (name, time and location). We don’t change your other calendars.</li>
+      <li><b>What we read:</b> only when you’re busy (start and end times), so we can show your availability. We don’t read the titles, attendees, descriptions or contents of your other events.</li>
+      <li><b>What we store:</b> the email address of the connected account, your busy time ranges, and the access tokens. The tokens are encrypted (AES-256-GCM) and can’t be read by any part of the app you or other members use.</li>
+      <li><b>Permissions requested:</b> Google: access to calendars the app creates (<code>calendar.app.created</code>) and free/busy information (<code>calendar.freebusy</code>). Microsoft: <code>Calendars.ReadWrite</code>.</li>
+      <li><b>Retention:</b> deleted when you disconnect the calendar or delete your Gala Dock account.</li>
+    </ul>
+    <p>{LEGAL.service}’s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener noreferrer" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements. We use Google user data only to provide calendar sync, we don’t sell it or use it for advertising, we don’t use it to train AI models, and we don’t share it with anyone except as needed to provide the sync, to comply with the law, or with your permission. People at Gala Dock don’t read it unless you ask us to, for security, or where the law requires.</p>
+
     <h2 id="transfers">6. International transfers</h2>
     <p>Some of our service providers process data outside the UK, including in the United States. Where they do, we rely on UK adequacy regulations (including the UK Extension to the EU–US Data Privacy Framework, where the provider is certified), or the ICO’s International Data Transfer Agreement or Addendum together with a transfer risk assessment.</p>
 
