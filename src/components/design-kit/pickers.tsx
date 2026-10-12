@@ -44,7 +44,7 @@ export function FontPicker({ value, onChange, custom = [] }: { value: FontChoice
     <Search value={q} onChange={setQ} placeholder={`Search ${list?.length ?? "1,700+"} fonts`} label="Search fonts" />
     <Tabs items={CATS} value={cat} onChange={setCat} label="Font category" />
     {meta && <div className="dk-row"><label className="dk-mini"><span>Weight</span><select value={value.weight} onChange={e => onChange({ ...value, weight: Number(e.target.value) })}>{meta.w.map(w => <option key={w} value={w}>{w}</option>)}</select></label>
-      {meta.i && <label className="dk-check"><input type="checkbox" checked={value.italic} onChange={e => onChange({ ...value, italic: e.target.checked })} />Italic</label>}<small className="dk-cap">{meta.w.length} weights{meta.i ? " · italics" : ""}</small></div>}
+      {meta.i && <label className="dk-check"><input type="checkbox" checked={value.italic} onChange={e => onChange({ ...value, italic: e.target.checked })} />Italic</label>}</div>}
     {!list ? <Loading /> : <ul className="dk-fonts" aria-label="Fonts">
       {custom.filter(f => f.toLowerCase().includes(q.toLowerCase())).map(f => <li key={`c${f}`}><button type="button" className={value.family === f ? "on" : ""} style={{ fontFamily: `'${f}'` }} onClick={() => onChange({ ...value, family: f })}>{f}<small>Brand upload</small></button></li>)}
       {page.map(f => <li key={f.f}><button type="button" className={value.family === f.f ? "on" : ""} style={{ fontFamily: `'${f.f}', Inter` }} onClick={() => onChange({ family: f.f, weight: f.w.includes(value.weight) ? value.weight : f.w.includes(400) ? 400 : f.w[0]!, italic: value.italic && f.i })}>{f.f}<small>{f.c} · {f.w.length} weight{f.w.length === 1 ? "" : "s"}{f.i ? " · italic" : ""}</small></button></li>)}
@@ -73,7 +73,7 @@ export function IconPicker({ onPick }: { onPick: (i: IconChoice) => void }) {
       const s = iconOf(data!, name)!; return <button key={name} type="button" title={name} aria-label={name} onClick={() => onPick({ name, set: setId, svg: s })}><svg viewBox={`0 0 ${s.w} ${s.h}`} width={22} height={22} dangerouslySetInnerHTML={{ __html: s.body }} /></button>;
     })}<div ref={more} /></div>}
     {names.length === 0 && (setId === "lucide" || data) && <p className="dk-cap">No icons match “{q}”. Try another library.</p>}
-    <p className="dk-cap">Licences: Lucide ISC · Tabler, Phosphor MIT · Material Design, Remix Apache-2.0.</p>
+
   </div>;
 }
 
@@ -135,7 +135,6 @@ export function WidgetPicker({ onPick }: { onPick: (w: WidgetChoice) => void }) 
     <div className="dk-row"><label className="dk-mini"><span>Colours</span><select value={theme} onChange={e => setTheme(Number(e.target.value))}>{THEMES.map((t, i) => <option key={t.name} value={i}>{t.name}</option>)}</select></label>
       <label className="dk-mini"><span>Style</span><select value={variant} onChange={e => setVariant(Number(e.target.value))}>{VARIANTS.map((v, i) => <option key={v} value={i}>{v}</option>)}</select></label>
       {mode === "Info cards" && <label className="dk-mini"><span>Layout</span><select value={layout} onChange={e => setLayout(Number(e.target.value))}>{CARD_LAYOUTS.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>}</div>
-    <p className="dk-cap">{mode === "Info cards" ? `${CARD_TOPICS.length} topics × ${CARD_LAYOUTS.length} layouts × ${VARIANTS.length} styles × ${THEMES.length} colour sets` : `${WIDGETS.length} widget types × ${VARIANTS.length} styles × ${THEMES.length} colour sets`} — every word and colour stays editable.</p>
     <div className="dk-wgrid">{mode === "Info cards"
       ? cards.slice(0, n).map((t, i) => { const c = fromCard(t); return <button key={`${t.group}${t.title}${i}`} type="button" onClick={() => onPick(c)} title={t.title}><Thumb c={c} k={`wc${i}`} /><small>{t.title}</small></button>; })
       : widgets.slice(0, n).map((d, i) => { const c = fromDef(d); return <button key={d.id} type="button" onClick={() => onPick(c)} title={d.name}><Thumb c={c} k={`wd${i}`} /><small>{d.name}</small></button>; })}<div ref={more} /></div>

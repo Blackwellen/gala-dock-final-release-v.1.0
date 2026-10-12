@@ -26,7 +26,7 @@ export function DesignKitPanel({ at, unit, onAdd }: { at: { x: number; y: number
   const box = (w: number, h: number) => ({ x: Math.round(at.x - w / 2), y: Math.round(at.y - h / 2), w: Math.round(w), h: Math.round(h) });
   const s = unit;
   return <div className="dk-picker">
-    <div className="dk-tabs" role="tablist" aria-label="Design library">{["Icons", "Emoji", "Symbols", "Shapes", "Text", "Signs", "Lines"].map(t =>
+    <div className="dk-tabs" role="tablist" aria-label="Design library">{["Icons", "Emoji", "Symbols", "Shapes", "Text", "Signs"].map(t =>
       <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}>{t}</button>)}</div>
     {tab === "Icons" && <IconPicker onPick={i => onAdd({ type: "glyph", label: i.name, glyph: i.svg ? { kind: "icon", name: `${i.set}:${i.name}`, body: i.svg.body, vw: i.svg.w, vh: i.svg.h } : { kind: "icon", name: i.name }, style: { color: "#090a2e" }, ...box(s, s) })} />}
     {tab === "Emoji" && <EmojiPicker onPick={(e, n) => onAdd({ type: "glyph", label: n, glyph: { kind: "emoji", char: e }, ...box(s, s) })} />}
@@ -34,7 +34,6 @@ export function DesignKitPanel({ at, unit, onAdd }: { at: { x: number; y: number
     {tab === "Shapes" && <ShapePicker onPick={sh => onAdd({ type: "shape", label: sh.name, d: sh.d, lineOnly: sh.stroke, style: { fill: { type: "solid", color: sh.stroke ? "#090a2e" : "#2f6bff" }, strokeW: 3 }, ...box(s * 2, sh.group === "Lines" ? s * 0.8 : s * 2) })} />}
     {tab === "Text" && <TextAdd onAdd={(font, weight) => onAdd({ type: "text", label: "Label", font, weight, size: Math.round(s * 0.6), style: { color: "#090a2e" }, ...box(s * 4, s) })} />}
     {tab === "Signs" && <WidgetPicker onPick={w => { const k = (s * 6) / w.w; onAdd({ type: "widget", label: w.name, widget: { widget: w.widget, variant: w.variant, theme: w.theme, props: w.props }, ...box(w.w * k, w.h * k) }); }} />}
-    {tab === "Lines" && <p className="dk-cap">Choose the curve tool in the toolbar, click to place points and double-click to finish. Drag a point to bend the line. Arrows, dots, dashes and colours are in the element’s properties.</p>}
   </div>;
 }
 function TextAdd({ onAdd }: { onAdd: (font: string, weight: number) => void }) {

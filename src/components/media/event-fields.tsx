@@ -29,7 +29,7 @@ export function InsertField({ data, onPick, label = "Insert event detail", only,
   return <div className="ef" ref={ref}>
     <button type="button" className="ef-trigger" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)} {...hold}><Sparkles size={14} aria-hidden="true" />{label}<ChevronDown size={14} aria-hidden="true" /></button>
     {open && <div className="ef-menu" role="menu" aria-label={label}>
-      {!data["event.name"] && <p className="ef-note">Link this design to an event and these fill in automatically. Until then you’ll see sample details.</p>}
+
       {keys.map(k => { const I = ICON[k]; return <button key={k} type="button" role="menuitem" onClick={() => { onPick(k); setOpen(false); }} {...hold}>
         <I size={15} aria-hidden="true" /><span><b>{FIELD_LABELS[k]}</b><small>{fieldPreview(k, data)}</small></span></button>; })}
     </div>}

@@ -61,7 +61,7 @@ export function BrandPanel({ brand, canEdit, onColor, onFont, onLogo, onFontsCha
     </span>)}</div> : <p className="st-hint">No brand colours yet.</p>}
     {manage && <div className="st-row"><input type="color" value={hex} onChange={e => setHex(e.target.value)} aria-label="New brand colour" />
       <button className="st-btn" disabled={busy === "kit" || kit.colors.length >= 24} onClick={() => persist({ ...kit, colors: [...kit.colors, { hex }] })}><Plus size={13} />Add colour</button></div>}
-    <p className="st-hint">Click a colour to apply it to the selected layer, or to the page background when nothing is selected.</p>
+
 
     <h3>Fonts</h3>
     {kit.fonts.length + families.length ? <ul className="st-fontlist">
@@ -95,7 +95,7 @@ export function BrandPanel({ brand, canEdit, onColor, onFont, onLogo, onFontsCha
     </span>)}</div> : <p className="st-hint">No logos yet.</p>}
     {manage && <label className="st-drop"><Upload size={18} /><span>{busy === "logo" ? "Uploading…" : "Add a logo (PNG, JPG or WebP)"}</span>
       <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void uploadLogo(f); }} /></label>}
-    {!manage && <p className="st-hint">Workspace owners and managers can change the brand kit.</p>}
+
     {msg && <p className="st-hint" role="status">{msg}</p>}
   </div>;
 }

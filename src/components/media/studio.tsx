@@ -54,6 +54,13 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const [versions, setVersions] = useState(initialVersions);
   const [editingText, setEditingText] = useState<string | null>(null);
   const [insertOpen, setInsertOpen] = useState(false);
+  // Entering text editing (double-click or "Edit text") puts the caret at the end of the text.
+  useEffect(() => {
+    if (!editingText) return;
+    const t = setTimeout(() => { const el = document.querySelector<HTMLElement>(`[data-layer="${editingText}"] [contenteditable="true"]`); if (!el || el.contains(document.activeElement)) return;
+      el.focus(); const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const sel = getSelection(); sel?.removeAllRanges(); sel?.addRange(r); }, 30);
+    return () => clearTimeout(t);
+  }, [editingText]);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [tool, setTool] = useState<Tool>("select");
   const [brush, setBrush] = useState<{ brush: Brush; color: string; width: number; opacity: number }>({ brush: "pen", color: "#0b08f8", width: 8, opacity: 1 });
@@ -335,7 +342,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <button className="st-textbtn s" onClick={() => addText("sub")}>Add a subheading</button>
           <button className="st-textbtn b" onClick={() => addText("body")}>Add body text</button>
           <h3>Event details</h3>
-          <p className="st-hint">Adds text that fills in from your event automatically.</p>
+
           <EventFieldButtons data={eventData} onAdd={k => addText("body", `{{${k}}}`, k, "Inter", { name: FIELD_LABELS[k] })} />
           <h3>Text styles</h3>
           <div className="st-tstyles">{TEXT_STYLES.map(s => <button key={s.name} style={{ fontFamily: `'${s.font}', Inter`, fontWeight: s.weight, fontStyle: s.italic ? "italic" : undefined }} onClick={() => addText("heading", s.name, undefined, s.font,
@@ -357,7 +364,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
         </>}
         {tab === "Uploads" && <>
           {design.canEdit && <label className="st-drop"><Upload size={20} /><span>Upload JPG, PNG or WebP</span><input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f); }} /></label>}
-          <p className="st-hint">Uploads stay private to you and your workspace.</p>
+
           <div className="st-assets">{assets.map(a => <button key={a.src} onClick={() => addImage(a)} title={a.title}>{/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={a.src} alt={a.title} loading="lazy" /></button>)}</div>
           {!assets.length && <p className="st-hint">No event media yet.</p>}
@@ -371,7 +378,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <label className="dk-field"><span>Opacity {Math.round(brush.opacity * 100)}%</span><input type="range" min={5} max={100} value={Math.round(brush.opacity * 100)} onChange={e => setBrush(x => ({ ...x, opacity: Number(e.target.value) / 100 }))} /></label>
           <h3>Bendy lines</h3>
           <button className={`st-btn ${tool === "line" ? "primary" : ""}`} onClick={() => { setTool(tool === "line" ? "select" : "line"); setLineDraft(null); }}><Spline size={15} />{tool === "line" ? "Drawing a line — click points" : "Draw a line or curve"}</button>
-          <p className="st-hint">Click to add points, double-click or press Enter to finish. Drag the round handles afterwards to bend it.</p>
+
           <div className="dk-row"><label className="dk-check"><input type="checkbox" checked={lineOpts.smooth} onChange={e => setLineOpts(o => ({ ...o, smooth: e.target.checked }))} />Smooth curve</label>
             <label className="dk-mini"><span>End</span><select value={lineOpts.endCap} onChange={e => setLineOpts(o => ({ ...o, endCap: e.target.value as "none" }))}><option value="none">Plain</option><option value="arrow">Arrow</option><option value="dot">Dot</option><option value="bar">Bar</option></select></label></div>
           <ColorButton label="Line colour" value={lineOpts.color} onChange={c => setLineOpts(o => ({ ...o, color: c }))} docColors={docColors} />
@@ -401,7 +408,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <FillButton label="Background" fill={page.background ?? { type: "solid", color: "#ffffff" }} onChange={f => updatePage(p => ({ ...p, background: f }))} docColors={docColors} />
           <button className="st-btn" onClick={() => updatePage(p => ({ ...p, background: null }))}>Transparent background</button>
           <h3>Event details</h3>
-          <p className="st-hint">Text and QR codes linked to the event update automatically when event details change.</p>
+
           <EventFieldButtons data={eventData} onAdd={k => addText("body", `{{${k}}}`, k, "Inter", { name: FIELD_LABELS[k] })} />
         </>}
         {tab === "Resize" && <ResizePanel designId={design.id} />}
@@ -428,9 +435,16 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
               {one && !l.locked && design.canEdit && (tool === "select" || tool === "crop") && <>{handles.map(h => <span key={h} className={`st-h ${h}`} onPointerDown={e => onDown(e, l, h)} />)}{tool === "select" && <span className="st-h rot" onPointerDown={e => onDown(e, l, "rot")} />}</>}
               {one && l.type === "path" && tool === "select" && !l.locked && design.canEdit && l.pts.map((pt, j) => <span key={j} className="st-pt" style={{ left: pt.x * zoom, top: pt.y * zoom }} onPointerDown={e => onDown(e, l, `pt${j}`)} aria-label={`Point ${j + 1}`} />)}
             </div>)}
-            {(() => { const l = editingText ? page.layers.find(x => x.id === editingText) : null; return l ? <div className="st-editbar" style={{ left: l.x * zoom, top: Math.max(0, l.y * zoom - 40) }}>
-              <InsertField data={eventData} keepFocus open={insertOpen} onOpenChange={setInsertOpen} label="Insert event detail"
-                onPick={k => { document.execCommand("insertText", false, `[${FIELD_LABELS[k]}]`); }} /><small>or type {"{"}</small></div> : null; })()}
+            {(() => {
+              // Shown whenever one text layer is selected (or being typed in): insert at the caret while typing, otherwise add to the end.
+              const l = page.layers.find(x => x.id === (editingText ?? (one?.type === "text" ? one.id : null)));
+              if (!l || l.type !== "text" || l.locked || !design.canEdit || tool !== "select") return null;
+              return <div className="st-editbar" style={{ left: l.x * zoom, top: Math.max(0, l.y * zoom - 44) }}>
+                <InsertField data={eventData} keepFocus open={insertOpen} onOpenChange={setInsertOpen} label="Insert event detail"
+                  onPick={k => { if (editingText === l.id) document.execCommand("insertText", false, `[${FIELD_LABELS[k]}]`);
+                    else updateLayers([l.id], x => ({ ...x, text: `${(x as TextLayer).text}${(x as TextLayer).text.endsWith(" ") || !(x as TextLayer).text ? "" : " "}{{${k}}}`, bind: undefined }) as Layer); }} />
+                {editingText === l.id ? <small>or type {"{"}</small> : <button type="button" className="st-editbar-edit" onClick={() => setEditingText(l.id)}>Edit text</button>}</div>;
+            })()}
             {guides.x.map(g => <div key={`x${g}`} className="st-guide v" style={{ left: g * zoom }} />)}{guides.y.map(g => <div key={`y${g}`} className="st-guide h" style={{ top: g * zoom }} />)}
             {marquee && marquee.w > 0 && <div className="st-marquee" style={{ left: marquee.x * zoom, top: marquee.y * zoom, width: marquee.w * zoom, height: marquee.h * zoom }} />}
           </div>
@@ -519,7 +533,7 @@ function TemplatesPanel({ workspaceId, canEdit, onUse }: { workspaceId: string |
     <input className="dk-in" type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Search templates — wedding, nightclub, menu…" aria-label="Search templates" />
     <div className="dk-tabs" role="tablist" aria-label="Template source">{([["all", "All"], ["starter", "Starters"], ["community", "Community"], ["workspace", "Mine & team"]] as const).map(([k, l]) =>
       <button key={k} type="button" role="tab" aria-selected={scope === k} className={scope === k ? "on" : ""} onClick={() => setScope(k)}>{l}</button>)}</div>
-    <p className="dk-cap">Community templates are shared by other Gala Dock users. Using one gives you your own copy — the original never changes. Share yours with “Share template”.</p>
+
     {err && <p className="st-warn">{err}</p>}
     {!list ? <p className="dk-cap">Loading templates…</p> : !list.length ? <p className="dk-cap">No templates found{q ? ` for “${q}”` : ""}.</p>
       : <div className="st-tgrid">{list.map(t => <div key={t.id} className="st-tcard"><MiniThumb doc={t.document} /><b title={t.title}>{t.title}</b><small>{t.scope === "starter" ? "Gala Dock" : t.scope === "community" ? "Community" : t.scope === "mine" ? "Yours" : "Your team"} · used {t.usage_count}×</small>
@@ -642,7 +656,7 @@ function EffectsSection({ one, setFx, unit, docColors }: { one: Layer | null; se
 function ResizePanel({ designId }: { designId: string }) {
   const [picked, setPicked] = useState<string[]>([]); const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   return <>
-    <p className="st-hint">Create resized copies. Layers are reflowed proportionally (never stretched) — review each copy before publishing.</p>
+
     {["Print", "Social", "Event"].map(g => <div key={g}><h3>{g}</h3><div className="st-chips">{PRESETS.filter(p => p.group === g).map(p => <label key={p.id} className="st-check"><input type="checkbox" checked={picked.includes(p.id)} onChange={e => setPicked(x => (e.target.checked ? [...x, p.id] : x.filter(y => y !== p.id)))} />{p.label}</label>)}</div></div>)}
     <button className="st-btn primary" disabled={!picked.length || busy} onClick={async () => { setBusy(true); const r = await deriveDesign(designId, "variant", picked); setBusy(false); setMsg(r.ok ? `Created ${r.data!.length} variant${r.data!.length === 1 ? "" : "s"} in your library.` : r.error); }}>{busy && <Loader2 size={14} className="mk-spin" />}Create variants</button>
     <button className="st-btn" onClick={async () => { const r = await deriveDesign(designId, "duplicate"); setMsg(r.ok ? "Duplicate created in your library." : r.error); }}>Duplicate design</button>

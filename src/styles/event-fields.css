@@ -17,3 +17,4 @@
 /* Floating bar while editing text on the canvas */
 .st-editbar{position:absolute;z-index:6;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 4px;border-radius:10px;background:#fff;border:1px solid #e3e8f5;box-shadow:0 10px 26px -12px rgba(9,10,46,.35);pointer-events:auto;white-space:nowrap}
 .st-editbar small{font:500 11px Inter,sans-serif;color:#5d63a6}
+.st-editbar-edit{height:28px;padding:0 9px;border:1px solid #e3e8f5;border-radius:8px;background:#fff;color:#090a2e;font:600 12px Inter,sans-serif;cursor:pointer}.st-editbar-edit:hover{border-color:#0b08f8}

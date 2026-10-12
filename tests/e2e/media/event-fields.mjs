@@ -29,8 +29,16 @@ try {
   const l = (await doc()).find(x => x.type === "text");
   check("Saved with canonical tokens", l.text === "Join us at {{event.venue_name}} — {{event.date}}", l.text);
   check("Canvas shows the real event values", (await p.locator(".st-page").first().innerText()).includes("Join us at"));
+  // Selecting text shows the bar straight away; picking appends to the text.
+  await p.locator(".st-tabs").getByRole("button", { name: "Text", exact: true }).click();
+  await p.locator(".ef-grid").getByRole("button", { name: /Event name/ }).click();
+  check("Selecting text shows the Insert event detail bar", await p.locator(".st-editbar").getByRole("button", { name: /Insert event detail/ }).isVisible());
+  await p.locator(".st-editbar").getByRole("button", { name: /Insert event detail/ }).click(); await p.getByRole("menuitem", { name: /Start time/ }).click();
+  await p.waitForTimeout(2500); await p.getByText("Saved", { exact: true }).waitFor({ timeout: 15000 });
+  check("Picking without typing appends the detail", (await doc()).some(x => x.type === "text" && x.text === "{{event.name}} {{event.time}}"), (await doc()).map(x => x.text).join(" | "));
+  await p.keyboard.press("Escape");
   // Typing on the canvas: "{" opens the insert menu; picking inserts at the caret.
-  await p.locator(".st-page [data-layer]").filter({ hasText: "Join us at" }).first().dblclick();
+  await p.locator(".st-tabs").getByRole("button", { name: "Layers", exact: true }).click(); await p.locator(".st-lname").filter({ hasText: "Venue" }).first().click(); await p.locator(".st-editbar-edit").click();
   const span = p.locator(".st-page [contenteditable=true]").first(); await span.waitFor();
   check("Editing bar with Insert event detail appears", await p.locator(".st-editbar").getByRole("button", { name: /Insert event detail/ }).isVisible());
   await span.press("End"); await p.keyboard.type(" in "); await p.keyboard.press("{");
