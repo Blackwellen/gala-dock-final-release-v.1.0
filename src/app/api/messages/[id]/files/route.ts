@@ -15,10 +15,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
-  const { data: entries } = await supabase.from("conversation_messages" as never).select("attachments").eq("conversation_id", id).contains("attachments", [{ path }] as never).limit(1);
+  const { data: entries } = await supabase.from("conversation_messages" as never).select("attachments").eq("conversation_id", id).filter("attachments", "cs", JSON.stringify([{ path }])).limit(1);
   const file = ((entries ?? []) as { attachments: { path: string; name: string }[] }[])[0]?.attachments.find(f => f.path === path);
   if (!file) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const { data, error } = await createAdminClient().storage.from("workspace-files").createSignedUrl(path, 60, { download: file.name.replace(/[^\w .()-]/g, "_") });
+  const { data, error } = await createAdminClient().storage.from("workspace-files").createSignedUrl(path, 60, /\.(png|jpe?g|webp)$/i.test(path) && new URL(req.url).searchParams.get("view") === "1" ? {} : { download: file.name.replace(/[^\w .()-]/g, "_") });
   if (error || !data) return NextResponse.json({ error: "File unavailable" }, { status: 404 });
   return NextResponse.redirect(data.signedUrl, { headers: { "Cache-Control": "private, no-store" } });
 }

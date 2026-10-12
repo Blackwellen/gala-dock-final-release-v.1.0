@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { RecentMessages } from "@/components/messaging/avatar";
+import type { RecentConversation } from "@/lib/messaging/recent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { promoFor } from "./promo-copy";
 import { MobileNav, type NavEntry } from "@/components/pwa/mobile-nav";
@@ -132,7 +134,7 @@ export type ProviderShellProps = {
   workspace: { name: string; capabilityLabel: string; capabilities: string[]; cover: string };
   user: { name: string; avatar: string };
   counts: { opportunities: number; bookings: number; messages: number; notifications: number };
-  messages: Notice[]; notifications: Notice[];
+  messages: RecentConversation[]; notifications: Notice[];
   workspaces: { id: string; name: string }[]; activeId: string;
   switchWorkspace: (id: string) => Promise<{ ok: boolean; error?: string; redirect?: string }>;
 };
@@ -190,7 +192,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
         </Popover>
         <Popover label={`Messages, ${counts.messages} unread`} className="ws-icon-pop" trigger={<><MessageSquareText aria-hidden="true" />{counts.messages > 0 && <b className="ws-count">{counts.messages}</b>}</>}>
           <div className="ws-pop-head"><b>Messages</b><small>{counts.messages} unread</small></div>
-          <NoticeList items={messages} empty="No conversations yet." footer={{ href: "/provider/inbox", label: "Open inbox" }} />
+          <RecentMessages items={messages} inbox="/provider/inbox" empty="No conversations yet." />
         </Popover>
         <Popover label={`Notifications, ${counts.notifications} unread`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.notifications > 0 && <i className="ws-dot" />}</>}>
           <div className="ws-pop-head"><b>Notifications</b></div>

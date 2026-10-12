@@ -7,6 +7,8 @@ import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { markNotificationsRead } from "@/lib/actions/shell";
 import { relative } from "@/lib/format";
+import { RecentMessages } from "@/components/messaging/avatar";
+import type { RecentConversation } from "@/lib/messaging/recent";
 import { MobileNav } from "@/components/pwa/mobile-nav";
 import { GlobalSearch } from "@/components/search/global-search";
 
@@ -18,7 +20,7 @@ export const CU_NAV = [
   { href: "/account/saved", label: "Saved", icon: Heart },
 ] as const;
 
-type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; unread: number; notifications: { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string }[]; threads: { id: string; title: string; href: string; at: string; unread: boolean }[]; hasWorkspace: boolean };
+type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; unread: number; notifications: { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string }[]; threads: RecentConversation[]; hasWorkspace: boolean };
 
 export function CustomerShell({ children, user, unread, notifications, threads, hasWorkspace }: Props) {
   const pathname = usePathname(); const router = useRouter(); const { run } = useAction();
@@ -37,7 +39,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
       <nav className="c-nav" aria-label="Main">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</Link>)}</nav>
       <div className="c-icons">
         <Menu label="Messages" width={320} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><MessagePulse />{threads.some(t => t.unread) && <i className="o-dot" />}</button>}>
-          {close => <><div style={{ padding: "6px 10px" }}><b>Messages</b></div>{threads.length ? threads.map(t => <Link key={t.id} role="menuitem" href={t.href} className="k-menu-item" onClick={close}><MessageSquare size={15} className={t.unread ? "k-blue" : "k-muted"} aria-hidden /><span className="k-grow" style={{ fontWeight: t.unread ? 650 : 500 }}>{t.title}<small>{relative(t.at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>No conversations yet. Messages with venues and suppliers appear here once you send a request.</p>}</>}
+          {close => <><div style={{ padding: "6px 10px" }}><b>Messages</b></div><RecentMessages items={threads} inbox="/account/inbox" onPick={close} empty="No conversations yet. Messages with venues, suppliers and organisers appear here." /></>}
         </Menu>
         <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead()); }} aria-expanded={open} aria-controls={id} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}><Bell size={21} />{unread > 0 && <i className="o-dot" />}</button>}>
           {close => <><div style={{ padding: "6px 10px" }}><b>Notifications</b></div>{notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} className={n.read_at ? "k-muted" : "k-blue"} aria-hidden /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}</>}

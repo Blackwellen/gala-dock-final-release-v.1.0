@@ -35,3 +35,31 @@ export async function markRead(conversationId: string): Promise<void> {
   const sb = await createClient();
   await sb.rpc("mark_conversation_read" as never, { p_conv: conversationId } as never);
 }
+
+export type ContactProfile = { type: "user" | "workspace"; id: string; name: string; avatar: string | null; about: string; since: string; saved: boolean;
+  kind?: string; cover?: string | null; location?: string; verified?: boolean; roles?: string[];
+  listings?: { id: string; name: string; kind: string; slug: string | null }[]; events?: { id: string; name: string; slug: string | null; starts_at: string }[] };
+
+/** Profile card for someone you're allowed to message (the database checks the relationship). */
+export async function contactProfile(type: "user" | "workspace", id: string, seat?: string | null): Promise<ContactProfile | null> {
+  if (!UUID.test(id) || (seat && !UUID.test(seat)) || (type !== "user" && type !== "workspace")) return null;
+  const sb = await createClient();
+  const { data } = await sb.rpc("contact_profile" as never, { p_type: type, p_id: id, p_seat: seat ?? null } as never);
+  return (data as ContactProfile | null) ?? null;
+}
+
+/** Saves someone to the seat's contacts (personal, or the workspace's shared list), or removes them. */
+export async function setSavedContact(type: "user" | "workspace", id: string, label: string, save: boolean, seat?: string | null): Promise<R> {
+  if (!UUID.test(id) || (seat && !UUID.test(seat)) || (type !== "user" && type !== "workspace")) return { ok: false, error: "Contact not found." };
+  const sb = await createClient();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return { ok: false, error: "Sign in again." };
+  const t = sb.from("saved_contacts" as never);
+  const owner = seat ? { owner_workspace: seat } : { owner_user: user.id };
+  const { error } = save
+    ? await t.insert({ ...owner, target_type: type, target_id: id, label: label.slice(0, 120) } as never)
+    : await t.delete().match({ ...owner, target_type: type, target_id: id } as never);
+  if (error && !/duplicate|23505/.test(error.message)) return { ok: false, error: "Couldn’t update your contacts — try again." };
+  for (const p of INBOXES) revalidatePath(p, "page");
+  return { ok: true };
+}

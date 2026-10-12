@@ -41,7 +41,7 @@ export const getOrganizer = cache(async (next = "/organizer") => {
   enforceWorkspaceMfa({ settings: workspace?.settings, role: ws.role, aal, workspaceName: ws.name, next });
   const name = profile?.full_name || user.email?.split("@")[0] || "Organizer";
   const canMoney = ["owner", "manager", "finance"].includes(ws.role);
-  return { supabase, user, name, role: ws.role, canMoney, workspace: { ...ws, ...(workspace ?? {}) }, workspaces: access.filter(w => w.member_status === "active"), unread: unread ?? 0, notifications: notes ?? [] };
+  return { supabase, user, name, avatar: (profile?.avatar_url as string | null | undefined) ?? null, role: ws.role, canMoney, workspace: { ...ws, ...(workspace ?? {}) }, workspaces: access.filter(w => w.member_status === "active"), unread: unread ?? 0, notifications: notes ?? [] };
 });
 export type OrganizerCtx = Awaited<ReturnType<typeof getOrganizer>>;
 export type CustomerCtx = Awaited<ReturnType<typeof getCustomer>>;
