@@ -1,0 +1,64 @@
+# Gala Dock operations stack for one Oracle Cloud "Always Free" Ampere A1 VM (4 OCPU / 24 GB RAM, Ubuntu 22.04/24.04 arm64).
+# Services: ClamAV + scanner API (malware scanning), Uptime Kuma (uptime + alerts), GlitchTip (Sentry-compatible error tracking),
+# Caddy (automatic HTTPS). See docs/operations/oracle-setup.md. Copy env.example to .env and fill it in first.
+services:
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data", "caddy_config:/config"]
+    env_file: .env
+
+  clamav:
+    image: clamav/clamav:1.4          # multi-arch (arm64); freshclam updates signatures automatically
+    restart: unless-stopped
+    volumes: ["clamav_db:/var/lib/clamav"]
+    healthcheck: { test: ["CMD", "clamdcheck.sh"], interval: 60s, timeout: 30s, retries: 5, start_period: 300s }
+
+  av-scanner:
+    image: node:22-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command: ["node", "server.mjs"]
+    volumes: ["../av-scanner/server.mjs:/app/server.mjs:ro"]
+    environment: { SCAN_TOKEN: "${SCAN_TOKEN}", CLAMD_HOST: clamav, CLAMD_PORT: "3310", PORT: "8080", MAX_BYTES: "26214400" }
+    depends_on: [clamav]
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    volumes: ["kuma_data:/app/data"]
+
+  glitchtip-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment: { POSTGRES_USER: glitchtip, POSTGRES_PASSWORD: "${GLITCHTIP_DB_PASSWORD}", POSTGRES_DB: glitchtip }
+    volumes: ["glitchtip_pg:/var/lib/postgresql/data"]
+  glitchtip-redis:
+    image: valkey/valkey:8
+    restart: unless-stopped
+  glitchtip-web:
+    image: glitchtip/glitchtip:v4
+    restart: unless-stopped
+    depends_on: [glitchtip-db, glitchtip-redis]
+    environment: &gt
+      DATABASE_URL: "postgres://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip"
+      REDIS_URL: "redis://glitchtip-redis:6379/0"
+      SECRET_KEY: "${GLITCHTIP_SECRET_KEY}"
+      GLITCHTIP_DOMAIN: "https://${ERRORS_HOST}"
+      DEFAULT_FROM_EMAIL: "${GLITCHTIP_FROM_EMAIL}"
+      ENABLE_USER_REGISTRATION: "false"
+      GLITCHTIP_MAX_EVENT_LIFE_DAYS: "90"
+  glitchtip-worker:
+    image: glitchtip/glitchtip:v4
+    restart: unless-stopped
+    command: ./bin/run-celery-with-beat.sh
+    depends_on: [glitchtip-db, glitchtip-redis]
+    environment: *gt
+  glitchtip-migrate:
+    image: glitchtip/glitchtip:v4
+    depends_on: [glitchtip-db]
+    command: ./bin/run-migrate.sh
+    environment: *gt
+
+volumes: { caddy_data: {}, caddy_config: {}, clamav_db: {}, kuma_data: {}, glitchtip_pg: {} }

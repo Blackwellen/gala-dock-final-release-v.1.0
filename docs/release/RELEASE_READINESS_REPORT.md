@@ -90,7 +90,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | Definer-function grant audit | FIXED | Supabase's default privileges grant EXECUTE on new functions to `authenticated`, so `revoke … from public, anon` isn't enough. Found and fixed: `storage_usage` readable for any workspace/user (reported by session -22), `deletion_blockers(p_user)` revealed another user's workspace names and dispute refs, and internal helpers (`storage_owner_of`, `queue_admit_check`, `entitlement`, `has_capability`) were client-callable. All now guarded or service-only; regression tests in `privacy.spec.ts` and `storage-quota.spec.ts`. |
 | §72 Rate limits | PASS | Per-user/IP limits on auth recovery, uploads, exports, agent, queue, API keys (120/min), MCP. |
 | §73 Bot & abuse | BLOCKED_EXTERNAL_CONFIGURATION | Rate limits + waiting room + purchase limits exist; **no CAPTCHA/Turnstile** (needs a site key) on sign-up/checkout. |
-| §74 File malware | BLOCKED_EXTERNAL_CONFIGURATION | Uploads are magic-byte sniffed (PNG/JPEG/WebP/PDF only), size-capped, private by default, served via short signed URLs. No AV scanning service is configured. |
+| §74 File malware / sanitising | PASS (sanitising) · BLOCKED_EXTERNAL until the Oracle scanner is up | Every upload route now strips image metadata losslessly (EXIF incl. GPS, XMP, IPTC; PNG text chunks; WebP EXIF/XMP) and refuses PDFs with active content (JavaScript, launch actions, embedded files, XFA). ClamAV scanning (`src/lib/upload-safety.ts`) runs inline when `CLAMAV_SCAN_URL`/`CLAMAV_SCAN_TOKEN` are set and fails closed. A `scan-uploads` job (every 5 min, Supabase cron) sanitises/scans files uploaded straight from browsers, deleting and reporting infected ones. Scanner service + setup: `ops/av-scanner`, `ops/oracle`, `docs/operations/oracle-setup.md`. Test: `tests/release/upload-safety.spec.ts`. |
 | §75 Dependencies | PASS | `npm audit --omit=dev`: 0 vulnerabilities. |
 | Lint | FIXED | ESLint: **0 errors** across `src` (was 65 in legacy Customer/Organizer UI). 59 fixed in d6e76d1 without behaviour change (incl. one real bug: the budget split mutated memoized rows each render; a fabricated "Updated 2 hours ago" label removed); the last 6 fixed by session 0b. |
 
@@ -134,7 +134,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026). **PITR disabled → RPO 24 h** (blocker for live money). Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
 | §133 Restore test | BLOCKED_EXTERNAL_CONFIGURATION | Needs a staging project; procedure in `docs/operations/runbook.md`. |
 | §134–135 DR / IR | PASS | Runbook with RTO/RPO table, secret-rotation steps, ICO 72-hour process. |
-| §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` (public liveness; authenticated readiness, cron freshness, backlogs) and `/admin/health`. External uptime monitor and error tracking not configured (BLOCKED_EXTERNAL). |
+| §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` + `/admin/health`. Error reporting: `src/instrumentation.ts` sends server errors to any Sentry-compatible DSN (`SENTRY_DSN`; self-hosted GlitchTip on Oracle) without headers/cookies/query strings. Uptime: Uptime Kuma on Oracle with monitors defined in `docs/operations/oracle-setup.md`. Both need the Oracle VM set up (≈45 min, free tier). |
 
 ## 10. API, MCP, webhooks (§95–100)
 
@@ -189,11 +189,11 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 |---|---|---|---|
 | 1 | **Transactional email provider** — `RESEND_API_KEY`, `EMAIL_FROM` on a verified domain (receipts, refunds, security alerts depend on it) | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
 | 2 | **Enable Supabase PITR** (RPO 24 h today) before live payments | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
-| 3 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh. Filled: company (Blackwellen Limited, 16482166, 61 Bridge Street, Kington, HR5 3DJ), ICO ZB905402, safeguarding lead (Jamahl Thomas, Director), liability floor £100, provider insurance £2,000,000, partner fees (per signed order form), contacts support@ / legal@galadock.com, break-glass DPIA signed off by the DPO. Still open: VAT number, deputy safeguarding lead, accessibility audit date. | Legal / Owner | BLOCKED_LEGAL_REVIEW |
+| 3 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh. Filled: company (Blackwellen Limited, 16482166, 61 Bridge Street, Kington, HR5 3DJ), ICO ZC160806, safeguarding lead (Jamahl Thomas, Director), liability floor £100, provider insurance £2,000,000, partner fees (per signed order form), contacts support@ / legal@galadock.com, break-glass DPIA signed off by the DPO. Still open: VAT number, deputy safeguarding lead, accessibility audit date. | Legal / Owner | BLOCKED_LEGAL_REVIEW |
 
 ## 17. Non-blocking items (§149)
 
-Additional tour and help content; CAPTCHA (needs key); AV scanning (needs service); virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; external uptime/error monitoring; restore test in staging.
+Additional tour and help content; CAPTCHA (needs key); virtual-event API adapters (manual links work); Google OAuth client; calendar two-way sync; WebAuthn; separate response-QA pass; additional advanced/enterprise agent tools; ad inventory targeting/charging; brand-kit/font/comments UI in Media Studio; full WCAG audit; Oracle ops VM (scanner, uptime, error tracking — instructions ready); restore test in staging.
 
 ## 18. Migration report (§147) — this run
 
@@ -222,6 +222,9 @@ All applied to the production database (eu-west-2) via the Management API on 11 
 | 202610270019 | Demo workspaces: create / reset / delete |
 | 202610270020 | Storage attribution, quota enforcement trigger, usage + warnings |
 | 202610270021–0022 | Security: guarded `storage_usage`, `deletion_blockers`; internal helpers made service-only |
+| 202610270023 | Promotion boosts: catalogue, `platform_boost` orders, activation, lifecycle job |
+| 202610270024 | Members can delete their own event/listing images |
+| 202610270025 | Background upload sanitising/scanning (`scan-uploads` job) |
 | (peer) 202610250002/3, 202610270001, 202610280001 | Break-glass access, DPO policy, admin cron status wrapper |
 
 ## 19. Release artefacts (§146)

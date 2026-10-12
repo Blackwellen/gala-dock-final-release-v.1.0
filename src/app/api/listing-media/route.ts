@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
+import { checkUpload, verdictMessage } from "@/lib/upload-safety";
 import { getProvider } from "@/lib/provider/context";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -32,8 +33,10 @@ export async function POST(request: Request) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind = sniff(bytes);
   if (!kind) return json({ error: "Upload a PNG, JPG or WebP image." }, 415);
+  const safe = await checkUpload(bytes, kind.type);
+  if (!safe.ok) return json({ error: verdictMessage(safe) }, safe.reason === "scanner_unavailable" ? 503 : 422);
   const path = `${workspace.id}/${randomUUID()}.${kind.ext}`;
-  const { error } = await supabase.storage.from("listing-media").upload(path, bytes, { contentType: kind.type, upsert: false });
+  const { error } = await supabase.storage.from("listing-media").upload(path, safe.bytes, { contentType: kind.type, upsert: false });
   if (error && /quota|P0001/i.test(error.message)) return json({ error: "Storage is full for this workspace. Delete files or upgrade your plan in Settings → Payments & Billing." }, 413);
   if (error) return json({ error: "Upload failed. Please try again." }, 500);
   return json({ url: supabase.storage.from("listing-media").getPublicUrl(path).data.publicUrl });

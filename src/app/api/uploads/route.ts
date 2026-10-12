@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
+import { checkUpload, verdictMessage } from "@/lib/upload-safety";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -33,8 +34,10 @@ export async function POST(request: Request) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind = sniff(bytes);
   if (!kind || (purpose === "image" && kind.type === "application/pdf")) return json({ error: purpose === "image" ? "Upload a PNG, JPG or WebP image." : "Upload a PDF, PNG or JPG document." }, 415);
+  const safe = await checkUpload(bytes, kind.type);   // strip metadata, refuse active PDFs, malware scan when configured
+  if (!safe.ok) return json({ error: verdictMessage(safe) }, safe.reason === "scanner_unavailable" ? 503 : 422);
   const path = `${user.id}/${randomUUID()}.${kind.ext}`;
-  const { error } = await supabase.storage.from("workspace-files").upload(path, bytes, { contentType: kind.type, upsert: false });
+  const { error } = await supabase.storage.from("workspace-files").upload(path, safe.bytes, { contentType: kind.type, upsert: false });
   if (error && /quota|P0001/i.test(error.message)) return json({ error: "Storage is full for this workspace. Delete files or upgrade your plan in Settings → Payments & Billing." }, 413);
   if (error) return json({ error: "Upload failed. Please try again." }, 500);
   const { data } = kind.type.startsWith("image/") ? await supabase.storage.from("workspace-files").createSignedUrl(path, 3600) : { data: null };
