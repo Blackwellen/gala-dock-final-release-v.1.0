@@ -8,6 +8,7 @@ import { ArrowRight, Calendar, Lock, CalendarDays, Users, Sparkles, Mail, LockKe
 import { Logo, Button, IconTile } from "./ui";
 import { PeopleGroup, SparkleSolid } from "./icons";
 import { createClient, setRememberDevice } from "@/lib/supabase/client";
+import { Turnstile, TURNSTILE_SITE_KEY } from "./turnstile";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
 import { InvitationSummary, type InvitePreview } from "./invitation-details";
 import { passwordChecks, passwordStrength } from "@/lib/password";
@@ -118,6 +119,9 @@ export function AuthPage(props: AuthProps) {
   const [factorId, setFactorId] = useState(props.factors?.[0]?.id ?? "");
   const [enrolment, setEnrolment] = useState<{ id: string; qr: string; secret: string } | null>(null);
   const [code, setCode] = useState("");
+  // Bot protection (Turnstile) for sign-in, sign-up and reset; inactive until NEXT_PUBLIC_TURNSTILE_SITE_KEY is set.
+  const [captcha, setCaptcha] = useState(""), [captchaReset, setCaptchaReset] = useState(0);
+  const needsCaptcha = !!TURNSTILE_SITE_KEY && ["login", "register", "forgot-password"].includes(screen);
   const errorRef = useRef<HTMLParagraphElement>(null);
   const continueHref = `/continue${next ? `?next=${encodeURIComponent(next)}` : ""}`;
   const withNext = (path: string) => `${path}${next ? `${path.includes("?") ? "&" : "?"}next=${encodeURIComponent(next)}` : ""}`;
@@ -145,7 +149,9 @@ export function AuthPage(props: AuthProps) {
         if (!form.get("password")) fields.password = "Enter your password.";
         if (Object.keys(fields).length) return fail("Please check the highlighted fields.", fields);
         setRememberDevice(form.get("remember") === "on");
-        const { error } = await supabase.auth.signInWithPassword({ email, password: String(form.get("password")) });
+        if (needsCaptcha && !captcha) return fail("Please complete the security check.");
+        const { error } = await supabase.auth.signInWithPassword({ email, password: String(form.get("password")), options: needsCaptcha ? { captchaToken: captcha } : undefined });
+        if (needsCaptcha) setCaptchaReset(n => n + 1);
         if (error) {
           if (/not confirmed/i.test(error.message)) return router.push(withNext(`/verify-email?email=${encodeURIComponent(email)}`));
           return fail(resetErrors(error.message) ?? "The email or password you entered is incorrect.");
@@ -162,9 +168,11 @@ export function AuthPage(props: AuthProps) {
         if (!passwordChecks(password).every(c => c.met)) fields.password = "Your password doesn’t meet all the requirements yet.";
         if (form.get("terms") !== "on") fields.terms = "You need to agree to the Terms of Service and Privacy Policy.";
         if (Object.keys(fields).length) return fail("Please check the highlighted fields.", fields);
+        if (needsCaptcha && !captcha) return fail("Please complete the security check.");
         const { data, error } = await supabase.auth.signUp({
           email, password,
           options: {
+            ...(needsCaptcha ? { captchaToken: captcha } : {}),
             data: { full_name: fullName.slice(0, 100), terms_version: TERMS_VERSION, marketing_opt_in: form.get("marketing") === "on" },
             emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(withNext("/verify-email"))}`,
           },
@@ -175,7 +183,9 @@ export function AuthPage(props: AuthProps) {
       } else if (screen === "forgot-password") {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fail("Enter a valid email address.", { email: "Enter a valid email address." });
         if (cooldown > 0) return;
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/reset-password` });
+        if (needsCaptcha && !captcha) return fail("Please complete the security check.");
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/reset-password`, ...(needsCaptcha ? { captchaToken: captcha } : {}) });
+        if (needsCaptcha) setCaptchaReset(n => n + 1);
         const limited = error && resetErrors(error.message);
         if (limited) return fail(limited);
         setCooldown(60);
@@ -353,6 +363,7 @@ export function AuthPage(props: AuthProps) {
             <p className="form-error" role="alert" tabIndex={-1} ref={errorRef} hidden={!error}><AlertCircle size={18} aria-hidden="true" />{error}</p>
             {notice && <p className="form-success" role="status"><Check size={18} aria-hidden="true" />{notice}</p>}
 
+            {needsCaptcha && showForm && <Turnstile onToken={setCaptcha} resetKey={captchaReset} />}
             {showForm && !inviteBlocked && <Button type="submit" disabled={!hydrated || busy || (screen === "forgot-password" && cooldown > 0)} arrow className="full-width">
               {busy ? "Please wait…" : screen === "forgot-password" && cooldown > 0 ? `Resend available in ${cooldown}s` : submitLabel[screen]}
             </Button>}
@@ -361,6 +372,7 @@ export function AuthPage(props: AuthProps) {
           {screen === "reset-password" && state === "complete" && <Button href="/login" arrow className="full-width"><LogIn size={18} aria-hidden="true" />Log in with new password</Button>}
           {screen === "reset-password" && state === "expired" && <div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>This reset link is invalid or has expired</b><small>Reset links can be used once and expire after a short time. Request a new link to continue.</small></span></div>}
           {screen === "verify-email" && state === "expired" && <><div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>Verification link expired</b><small>This link is no longer valid. Sign in to request a new verification email.</small></span></div><Button href={withNext("/login")} arrow className="full-width">Sign in to resend</Button></>}
+          {screen === "login" && <PasskeySignIn next={next} captcha={needsCaptcha ? captcha : undefined} onError={setError} />}
           {["login", "register"].includes(screen) && providers.length > 0 && <><div className="auth-divider">{screen === "login" ? "Use another method" : "Or continue with"}</div><SocialButtons next={next} providers={providers} onError={setError} /></>}
           {screen === "reset-password" && state !== "complete" && <><div className="auth-divider">or</div><Link className="request-new-link" href="/forgot-password">Request new link</Link></>}
           {screen === "forgot-password" && <Link className="auth-back" href="/login">← Back to Log in</Link>}
@@ -428,4 +440,24 @@ function RecoveryCode() {
     <Button type="button" onClick={submit} disabled={busy || value.length < 8} className="full-width">{busy ? "Checking…" : "Use recovery code"}</Button>
     {err && <small role="alert" style={{ color: "#c4142b" }}>{err}</small>}
     <small>No codes? Contact support — we’ll verify your identity before restoring access.</small></span></div>;
+}
+
+/** Passkey sign-in (release spec §7). Same post-login path as a password sign-in, including the MFA step when it applies. */
+function PasskeySignIn({ next, captcha, onError }: { next: string; captcha?: string; onError: (m: string) => void }) {
+  const router = useRouter(); const [busy, setBusy] = useState(false);
+  if (typeof window !== "undefined" && !("PublicKeyCredential" in window)) return null;
+  const go = async () => {
+    setBusy(true); onError("");
+    try {
+      const sb = createClient();
+      const { error } = await sb.auth.signInWithPasskey(captcha ? { options: { captchaToken: captcha } } : undefined);
+      if (error) { onError(/abort|cancel|NotAllowed/i.test(error.message) ? "Passkey sign-in was cancelled." : "That passkey didn’t work. Use your password, then add a passkey in Account → Privacy & Security."); return; }
+      await sb.rpc("log_auth_event", { p_event: "auth.login_passkey" });
+      const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+      const target = next ? `/continue?next=${encodeURIComponent(next)}` : "/continue";
+      router.replace(aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2" ? `/mfa${next ? `?next=${encodeURIComponent(next)}` : ""}` : target);
+      router.refresh();
+    } finally { setBusy(false); }
+  };
+  return <Button type="button" variant="outline" className="full-width" onClick={go} disabled={busy}>{busy ? "Waiting for your device…" : "Sign in with a passkey"}</Button>;
 }
