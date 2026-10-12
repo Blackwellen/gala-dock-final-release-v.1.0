@@ -82,7 +82,7 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
             <span className="adb-btn adp-fbtn"><Filter aria-hidden="true" />Filters</span>
           </div>
           <div className="adb-table-wrap"><table className="adb-table adp-table">
-            <colgroup>{[34, 158, 70, 84, 86, 102, 72, 92, 92, 70].map((w, i) => <col key={i} style={{ width: `${(w / 860) * 100}%` }} />)}</colgroup>
+            <colgroup>{[34, 158, 70, 94, 86, 96, 72, 88, 92, 70].map((w, i) => <col key={i} style={{ width: `${(w / 860) * 100}%` }} />)}</colgroup>
             <thead><tr><th><RowCheck label="Select all" /></th><th>Partner</th><th>Type</th><th>Status</th><th>Revenue (30d)</th><th>Commission</th><th>Conversion</th><th>Joined</th><th>Payout status</th><th className="r">Actions</th></tr></thead>
             <tbody>{list.slice((page - 1) * per, page * per).map(p => { const t = typeOf(p), [pk, pl] = PAYOUT[p.details.payout_status ?? ""] ?? ["pending", "Pending"], r = rev(p);
               return <tr key={p.id} className={sel?.id === p.id ? "sel" : ""}>

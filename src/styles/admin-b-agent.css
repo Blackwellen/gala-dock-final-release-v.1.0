@@ -74,3 +74,5 @@
 .ws-app .adag-qa a svg{width:14px;height:14px}
 @media (max-width:1360px){.adag-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.adag-grid{grid-template-columns:1fr}.adag-bottom{grid-template-columns:1fr 1fr}.adag-filters{grid-template-columns:1fr 1fr 1fr}}
 @media (max-width:860px){.adag-kpis,.adag-bottom,.adag-filters{grid-template-columns:1fr}.adag-table{min-width:860px}}
+/* Five KPI cards only fit from ~1520px; below that the label/value column was squeezed to ~60px. */
+@media (max-width:1520px) and (min-width:1361px){.adag-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
