@@ -1,0 +1,29 @@
+/* Provider forms and data views retain their full content on phone and tablet. */
+@media(max-width:1279px) {
+.ws-app.provider .ws-table-wrap { overflow-x:auto;max-width:100%; }
+.ws-app.provider .ws-panel-head, .ws-app.provider .ws-page-actions { flex-wrap:wrap;gap:10px; }
+.ws-app.provider .ws-panel-head>* { min-width:0; }
+.ws-app.provider .ws-panel-head .ws-link { white-space:normal;overflow-wrap:anywhere;min-height:44px;display:inline-flex;align-items:center; }
+.ws-app.provider .ws-kpi { overflow:visible;min-width:0; }.ws-app.provider .ws-kpi-text { min-width:0; }.ws-app.provider .ws-kpi-text :is(b, small, span) { white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider .qw-rail { grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
+.ws-app.provider .wz-rail { grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); }
+.ws-app.provider .qr-opt>div { min-width:0; }.ws-app.provider .qr-opt label { flex-wrap:wrap; }.ws-app.provider .qr-switch { white-space:normal;flex-wrap:wrap; }
+.ws-app.provider :is(.ws-btn, .pv-menu-btn, .po-more, .vw-add, .vw-manage, .pl-add-btn, .qw-steps a, .wz-steps a) { min-height:44px; }.ws-app.provider .pv-menu-btn { min-width:44px; }
+.ws-app.provider input:not([type=checkbox]):not([type=radio]), .ws-app.provider select { min-height:44px;font-size:16px;max-width:100%; }
+.ws-app.provider .pm-tx { overflow-x:auto; }.ws-app.provider .pm-tx table { min-width:640px; }
+.ws-app.provider .pt-members, .ws-app.provider .ptm-asg, .ws-app.provider .ptm-week { overflow-x:auto;max-width:100%; }
+.ws-app.provider .qw-agent h2 i { color:#08713f; }.ws-app.provider .pcal-free,.ws-app.provider .pcal-mini-grid a.out { color:#515779; }.ws-app.provider .pcal-entry.block em { color:#515779; }
+.ws-app.provider .pa-runs li { min-width:0;flex-wrap:wrap; }.ws-app.provider .pa-runs a { overflow-wrap:anywhere;min-width:0; }
+.ws-app.provider .pb-grid .ws-cell-text { overflow:visible; }.ws-app.provider .pb-grid .ws-cell-text small { white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider .qb-foot, .ws-app.provider .wz-foot { bottom:var(--pwa-bottom,70px); }
+}
+@media(max-width:860px) {
+.ws-app.provider .vw-location, .ws-app.provider .vw-acc-grid, .ws-app.provider .vw-acc .vw-tg, .ws-app.provider .vw-doc-others>div { grid-template-columns:minmax(0,1fr); }
+.ws-app.provider .vw-map { min-width:0;max-width:100%; }.ws-app.provider .vw-map-search { min-width:0; }.ws-app.provider .vw-map-search span { min-width:0; }.ws-app.provider .vw-map>p { flex-wrap:wrap; }
+.ws-app.provider .vw-preview .ws-panel-head { flex-wrap:wrap; }.ws-app.provider .vw-add { height:auto;white-space:normal;overflow:visible; }
+.ws-app.provider .svw-s1, .ws-app.provider .svw-s2, .ws-app.provider .svw-s3 { grid-template-columns:minmax(0,1fr);grid-template-areas:none; }.ws-app.provider .svw-s1>*, .ws-app.provider .svw-s2>*, .ws-app.provider .svw-s3>* { grid-area:auto;grid-column:auto;grid-row:auto; }
+.ws-app.provider .svw-cov, .ws-app.provider .svw-buffer, .ws-app.provider .svp-key dl { grid-template-columns:minmax(0,1fr); }.ws-app.provider .svw-models, .ws-app.provider .svw-bmodes, .ws-app.provider .svp-inc { grid-template-columns:minmax(0,1fr); }
+.ws-app.provider .pv-insights li { min-width:0; }.ws-app.provider .pv-insights li>div { min-width:0; }.ws-app.provider .pv-insights :is(b, p) { overflow-wrap:anywhere; }.ws-app.provider .pv-insights .ws-btn { white-space:normal;height:auto; }
+.ws-app.provider .vw-acc .vw-switch b, .ws-app.provider .vw-docs .vw-doc { white-space:normal; }
+.ws-app.provider .svw-week li { grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding-bottom:8px;border-bottom:1px solid var(--ws-border); }.ws-app.provider .svw-week li>span:nth-child(4) { display:none; }.ws-app.provider .svw-week input[type=time] { min-width:0; }
+}

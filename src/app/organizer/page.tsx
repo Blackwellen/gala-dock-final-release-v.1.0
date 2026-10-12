@@ -6,6 +6,7 @@ import { Card, Chip, Tile, Spark, Bar, DateBox, Avatar, Beta } from "@/component
 import { dateBadge, money, num, relative, dateShort } from "@/lib/format";
 import { TeamConflicts } from "@/components/ops/readiness-panel";
 import { requestTime } from "@/lib/workspace/format";
+import { OrganizerMobileHome } from "@/components/organizer/mobile-home";
 
 export const metadata = { title: "Command Centre" };
 const RANGES = { today: 1, week: 7, month: 31 } as const;
@@ -48,6 +49,8 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
   const statusOf = (r: number) => r >= 80 ? ["On track", "green"] : r >= 60 ? ["In progress", "blue"] : r >= 45 ? ["At risk", "amber"] : ["Needs attention", "red"];
 
   return <>
+    <OrganizerMobileHome range={range} today={today} role={ctx.role} attention={attention} upcoming={upcoming} leadCount={leadCount} bookingCount={confirmed.data?.length ?? 0} revenue={ticketRevenue} forecast={forecastProfit} amountsDue={amountsDue} completed={runStats.done} waiting={runStats.waiting} approvals={approvals.count ?? 0} conflicts={<TeamConflicts workspaceId={ctx.workspace.id} limit={4} headingId="omh-conflicts" />} />
+    <div className="oh-desktop-home">
     <div className="k-page-head" style={{ alignItems: "center" }}>
       <div><h1 style={{ fontSize: 30 }}>Command Centre</h1><p className="sub" style={{ fontSize: 15 }}>Everything you need to run successful events, all in one place.</p></div>
       <div className="k-row" style={{ gap: 18 }}><span className="k-muted" style={{ fontSize: 13 }}>{today}</span>
@@ -130,6 +133,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
         <h3 style={{ fontSize: 12.5, margin: "10px 0 4px" }}>Today&apos;s key assignments</h3>
         <ul className="k-list" style={{ listStyle: "none", padding: 0, margin: 0 }}>{(tasks.data ?? []).slice(0, 4).map(t => <li key={t.id} className="k-li"><span className="k-check"><input type="checkbox" defaultChecked={t.status === "done"} disabled aria-label={t.title} /></span><span className="k-grow k-small" style={{ textDecoration: t.status === "done" ? "line-through" : undefined, color: t.status === "done" ? "var(--k-muted)" : "var(--k-ink-2)" }}>{t.title}</span><Avatar src={avatarOf(t.assignee_name)} name={t.assignee_name || "Unassigned"} size="sm" /><span className="k-xs k-muted" style={{ width: 70 }}>{t.assignee_name.split(" ")[0]}</span><span className="k-xs k-muted" style={{ width: 44, textAlign: "right" }}>{t.due_at ? (t.due_at.slice(0, 10) === now.slice(0, 10) ? "Today" : dateShort(t.due_at).replace(/ \d{4}$/, "")) : "—"}</span></li>)}</ul>
       </Card>
+    </div>
     </div>
   </>;
 }

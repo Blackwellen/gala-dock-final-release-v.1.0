@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ChevronRight, CheckCircle2, Clock4, CalendarDays, MessagesSquare, Wallet, Sparkles, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, CheckCircle2, Clock4, CalendarDays, MessagesSquare, Wallet, Users, ShieldCheck } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { questionsFor } from "@/lib/booking-questions";
@@ -54,7 +54,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
           </div>
           {deadline && !done && <p className="k-small bk-done-note"><Clock4 size={13} />Not answered in time? The request expires — that never counts as a decline, and you can request again or pick an alternative.</p>}
         </section>
-        <aside className="ce-card bk-agent"><div className="k-row" style={{ gap: 8 }}><Sparkles size={18} className="k-blue" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p className="k-small">While you wait, I can line up a backup so your date stays safe.</p><Link className="k-btn outline block" href={`/account/events/${e.id}/build?cat=${it.category}`}>Find a backup {kindLabel.toLowerCase()}</Link></aside>
+        <aside className="ce-card bk-agent"><div className="k-row" style={{ gap: 8 }}><ShieldCheck size={18} className="k-blue" /><b>Keep your date safe</b></div><p className="k-small">While you wait for a reply, line up a backup option.</p><Link className="k-btn outline block" href={`/account/events/${e.id}/build?cat=${it.category}`}>Find a backup {kindLabel.toLowerCase()}</Link></aside>
       </div>
     </div>;
   }

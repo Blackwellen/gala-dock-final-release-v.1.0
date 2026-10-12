@@ -120,12 +120,14 @@ const uncovered = files.filter(f => !claimed.some(c => strip(f) === c || strip(f
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: true });
 const ctxs = {};
 for (const role of ["customer", "organizer", "anon"]) {
-  const st = `artifacts/visual/state-${role}.json`;
-  ctxs[role] = await browser.newContext(MOBILE ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : { viewport: { width: 1536, height: 1024 } });
+  const st = process.env.PWA_AUTH_FIXTURE === "1" ? `artifacts/auth/pwa-resume-${role}.json` : null;
+  const auth = st && role !== "anon" ? { storageState: st } : {};
+  ctxs[role] = await browser.newContext(MOBILE ? { ...auth, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : { ...auth, viewport: { width: 1536, height: 1024 } });
 }
 // Sign each role in fresh (other test runs rotate the demo users' refresh tokens).
 const CREDS = { customer: ["alex.thompson@example.com", process.env.DEMO_CUSTOMER_PASSWORD], organizer: ["alex.events@example.com", process.env.DEMO_ORGANIZER_PASSWORD] };
 for (const role of ["customer", "organizer"]) {
+  if (process.env.PWA_AUTH_FIXTURE === "1") continue;
   const p = await ctxs[role].newPage(); await p.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
   if (new URL(p.url()).pathname.startsWith("/login")) {
     await p.fill('input[name="email"]', CREDS[role][0]); await p.fill('input[name="password"]', CREDS[role][1]);

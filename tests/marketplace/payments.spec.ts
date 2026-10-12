@@ -13,7 +13,7 @@ const send = async (event: object) => {
   const res = await fetch(`${BASE}/api/stripe/webhook`, { method: "POST", headers: { "stripe-signature": `t=${t},v1=${createHmac("sha256", secret).update(`${t}.${body}`).digest("hex")}`, "content-type": "application/json" }, body });
   return { status: res.status, body: await res.json() };
 };
-type PO = { reference: string; amount_minor: number; platform_fee_minor: number; status: string; commission: { rate_bps: number; source: string } };
+type PO = { reference: string; amount_minor: number; customer_fee_minor: number; platform_fee_minor: number; status: string; commission: { rate_bps: number; source: string } };
 
 test.describe.configure({ mode: "serial" });
 test.describe("payment orchestration", () => {
@@ -47,7 +47,8 @@ test.describe("payment orchestration", () => {
     const { data, error } = await orgC.rpc("create_payment_order", { p_kind: "deposit", p_item: item });
     expect(error).toBeNull();
     po = data as PO;
-    expect(po).toMatchObject({ amount_minor: 50000, platform_fee_minor: 6000, status: "amount_due" });
+    // £60 commission plus the configured £12 VAT is deducted from the provider's share.
+    expect(po).toMatchObject({ amount_minor: 50000, platform_fee_minor: 7200, status: "amount_due" });
     expect(po.commission).toMatchObject({ rate_bps: 1200, source: "workspace" });
     // Same request again resumes the same order (idempotent), not a second charge.
     expect(((await orgC.rpc("create_payment_order", { p_kind: "deposit", p_item: item })).data as PO).reference).toBe(po.reference);
@@ -61,8 +62,20 @@ test.describe("payment orchestration", () => {
   test("a redirect never confirms; the signed webhook does — once, with a balanced ledger and protection", async () => {
     expect(((await db.from("build_items").select("status").eq("id", item).single()).data as { status: string }).status).toBe("quoted");
     const ev = (amount: number) => ({ id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", livemode: false, data: { object: { id: pi, amount_received: amount, latest_charge: `ch_${pi}`, currency: "gbp", metadata: { payment_order: po.reference } } } });
-    expect((await send(ev(50000))).status).toBe(200);
-    expect((await send(ev(50000))).status).toBe(200); // redelivery with a new event id
+    // The fee schedule adds the server-calculated customer fee to the Stripe charge.
+    // Underpaying by that fee must fail; a browser total cannot authorize settlement.
+    const { data: priced } = await db.from("payment_orders").select("customer_fee_minor,customer_fee_vat_minor,platform_fee_vat_minor").eq("reference", po.reference).single();
+    const customerFee = Number(priced!.customer_fee_minor);
+    const customerVat = Number(priced!.customer_fee_vat_minor);
+    expect(Number(priced!.platform_fee_vat_minor)).toBe(1200);
+    expect(customerFee).toBeGreaterThanOrEqual(0);
+    if (customerFee > 0) {
+      expect((await send(ev(po.amount_minor))).status).toBe(200);
+      expect((await db.from("payment_orders").select("status,failure_reason").eq("reference", po.reference).single()).data).toEqual({ status: "failed", failure_reason: `amount_mismatch:${po.amount_minor}` });
+    }
+    const total = po.amount_minor + customerFee;
+    expect((await send(ev(total))).status).toBe(200);
+    expect((await send(ev(total))).status).toBe(200); // redelivery with a new event id
     const order = (await db.from("payment_orders").select("status,stripe_payment_intent").eq("reference", po.reference).single()).data;
     expect(order).toEqual({ status: "protected_pending_delivery", stripe_payment_intent: pi });
     const b = (await db.from("build_items").select("status,terms_snapshot").eq("id", item).single()).data as { status: string; terms_snapshot: { payment_order: string; commission: { rate_bps: number } } };
@@ -71,7 +84,7 @@ test.describe("payment orchestration", () => {
     const { data: txs } = await db.from("ledger_transactions").select("id").eq("stripe_ref", pi);
     expect(txs).toHaveLength(1);
     const { data: lines } = await db.from("ledger_entries").select("account,amount_minor").eq("transaction_id", (txs as { id: string }[])[0].id);
-    expect(Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]))).toEqual({ cash_stripe: 50000, platform_fee: -6000, provider_payable: -44000 });
+    expect(Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]))).toEqual({ cash_stripe: total, platform_fee: -(6000 + customerFee - customerVat), tax_payable: -(1200 + customerVat), provider_payable: -42800 });
   });
 
   test("§70 build budget keeps committed, paid and due separate from estimates", async () => {

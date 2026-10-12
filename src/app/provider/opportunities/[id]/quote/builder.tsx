@@ -62,9 +62,9 @@ export function QuoteBuilder(props: {
       <div className="qb-col">
       <section className="ws-panel qb-scope">
         <h2>1. Define scope</h2><p className="qb-sub">Select what you are offering for this event.</p>
-        <div className="qb-modes" role="tablist" aria-label="Scope source">
-          <button type="button" role="tab" aria-selected={mode === "package"} className={mode === "package" ? "on" : ""} onClick={() => { setMode("package"); setPicker("package"); }}><FileStack aria-hidden="true" />Use existing package</button>
-          <button type="button" role="tab" aria-selected={mode === "custom"} className={mode === "custom" ? "on" : ""} onClick={() => setMode("custom")}><PenLine aria-hidden="true" />Custom quote</button>
+        <div className="qb-modes" role="group" aria-label="Scope source">
+          <button type="button" aria-pressed={mode === "package"} className={mode === "package" ? "on" : ""} onClick={() => { setMode("package"); setPicker("package"); }}><FileStack aria-hidden="true" />Use existing package</button>
+          <button type="button" aria-pressed={mode === "custom"} className={mode === "custom" ? "on" : ""} onClick={() => setMode("custom")}><PenLine aria-hidden="true" />Custom quote</button>
           <button type="button" className="qb-agent" onClick={() => { const add = props.catalog.filter(c => props.suggested.includes(c.key) && !lines.some(l => l.ref === c.key)); if (!add.length) { toast("No further suggestions for this request"); return; }
             setLines(ls => [...ls, ...add.map(c => ({ label: c.label, detail: c.detail, qty: c.qty, unit: c.unit, unit_price: c.unit_price, kind: c.kind, ref: c.key, image: c.image }))]); toast(`Added ${add.length} suggested item${add.length > 1 ? "s" : ""}`); }}><Sparkles aria-hidden="true" />Suggest with Gala Agent</button>
         </div>

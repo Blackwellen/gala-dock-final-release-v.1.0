@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, Building2, Brush, Search, MapPin, Star, Sparkles, Columns3, Wand2, ArrowRight, Heart } from "lucide-react";
+import { CalendarDays, Building2, Brush, Search, MapPin, Star, Columns3, Wand2, ArrowRight, Heart } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { SaveHeart } from "@/components/kit/client";
 import { SavedSort, SavedEventActions, SavedListingActions, CompareSaved } from "@/components/customer/saved-client";
@@ -65,7 +65,7 @@ export default async function SavedPage({ searchParams }: { searchParams: Promis
       <section className="ce-card sv-col" data-col="venues"><h2>Venues</h2><p className="sv-sub">Venues you&apos;ve saved for future events.</p>{venues.map(listCard)}{!venues.length && <div className="sv-empty"><Heart size={22} />{q ? "No saved venues match." : <>Save venues while you browse. <Link href="/discover?tab=venues&results=1">Find venues</Link></>}</div>}</section>
       <section className="ce-card sv-col" data-col="services"><h2>Services</h2><p className="sv-sub">Suppliers and services you&apos;ve saved.</p>{services.map(listCard)}{!services.length && <div className="sv-empty"><Heart size={22} />{q ? "No saved services match." : <>Save suppliers while you browse. <Link href="/discover?tab=services&results=1">Find services</Link></>}</div>}</section>
       <aside className="sv-side">
-        <section className="ce-card sv-agent"><div className="k-row" style={{ gap: 8 }}><Sparkles size={22} className="pw-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p>I can help you compare your saved items, check availability or suggest the best options for your event.</p>
+        <section className="ce-card sv-agent"><div className="k-row" style={{ gap: 8 }}><Columns3 size={22} className="pw-spark" /><b>Compare &amp; decide</b></div><p>Put your saved options side by side, or find similar ones nearby.</p>
           <Link className="k-btn primary sv-ab" href={`/account/saved?tab=${tab}&compare=${tab === "services" ? "services" : "venues"}`}><Columns3 size={16} />Compare saved items</Link>
           <Link className="k-btn outline sv-ab" href={`/discover?tab=${tab === "events" ? "events" : tab}&results=1`}><Search size={16} />Find similar options</Link>
           <Link className="k-btn outline sv-ab" href="/plan"><Wand2 size={16} />Help me plan an event</Link></section>

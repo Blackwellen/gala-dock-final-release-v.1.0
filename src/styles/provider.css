@@ -7,3 +7,4 @@
 .pv-menu-panel a,.pv-menu-panel button{display:block;text-align:left;width:100%;padding:9px 11px;border-radius:7px;font-size:12px;color:var(--ws-ink)}
 .pv-menu-panel a:hover,.pv-menu-panel button:hover{background:#f3f6fd}
 .pv-menu-panel .danger{color:var(--ws-red)}
+.pv-mapbox .vm-room{cursor:pointer}

@@ -127,3 +127,20 @@
   .pcal-dayhead{padding:3px 4px}
   .pcal-group{padding:4px 10px 2px}
 }
+/* More filters / View settings dialogs */
+.pcal-dlg{width:min(520px,100%)}
+.pcal-fs{border:0;margin:0;padding:0;display:grid;gap:8px}
+.pcal-fs legend{font-size:11.5px;font-weight:600;color:var(--ws-ink-2);margin-bottom:6px}
+.pcal-checks{display:flex;flex-wrap:wrap;gap:6px}
+.pcal-checks label{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;border:1px solid #dfe5f4;border-radius:8px;font-size:12px;color:var(--ws-ink);cursor:pointer;background:#fff}
+.pcal-checks label:has(input:checked){border-color:#a9bdf7;background:#eef3ff;color:var(--ws-blue-2)}
+.pcal-checks input,.pcal-check input,.pcal-set input[type=checkbox]{accent-color:var(--ws-blue);width:16px;height:16px}
+.pcal-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pcal-check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ws-ink)}
+.pcal-set{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:6px 0;border-bottom:1px solid #eef2fa;font-size:12.5px;color:var(--ws-ink)}
+.pcal-set select{height:36px;min-width:150px;padding:0 30px 0 10px;border:1px solid #dfe5f4;border-radius:7px;font-size:12.5px;background-color:#fff}
+@media (max-width:560px){.pcal-two{grid-template-columns:1fr}}
+/* Compact rows */
+.pcal.compact .pcal-grid > *{padding-top:4px;padding-bottom:4px}
+.pcal.compact .pcal-free{min-height:34px}
+.pcal.compact .pcal-mcell{min-height:78px}

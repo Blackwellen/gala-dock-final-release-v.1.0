@@ -28,7 +28,7 @@ export function StepReview({ data, base }: { data: ProSetup; base: string }) {
     ["Event page published", pagePublished ? "Event page is public and optimised." : "Your page goes live when tickets activate.", pagePublished, `/organizer/events/${e.id}/page`, false],
   ];
   const blocking = checks.filter(c => c[4] && !c[2]); const ready = !blocking.length;
-  const editHref = (h: number | string) => typeof h === "number" ? `${base}?step=${h}` : h;
+  const editHref = (h: number | string) => typeof h === "number" ? h === 4 ? `${base}?step=3&section=policies` : h === 3 ? `${base}?step=1&section=seating` : `${base}?step=${h}` : h;
   const fee = feeExample(from?.price ?? 0, a.fee_display);
 
   return <>
@@ -39,11 +39,11 @@ export function StepReview({ data, base }: { data: ProSetup; base: string }) {
           {p.sections.length > 0 && <ul className="tp-secl">{p.sections.map(s => <li key={s.id}><i style={{ background: s.color }} />{s.name}<small>{SECTION_TYPES[s.type]} · {num(s.capacity)}{s.holds ? ` · ${num(s.holds)} held` : ""}</small></li>)}</ul>}
         </Card>
         <Card title="Ticket tiers" sub={`${num(total)} tickets · projected ${gbp(Math.round(revenue))}`} action={<Link className="k-btn outline sm" href={`${base}?step=2`}><Pencil size={13} />Edit</Link>}>
-          <div className="tp-tw"><table className="tp-t"><thead><tr><th>Tier</th><th>Type</th><th>Price</th><th>Quantity</th><th>Sales window</th><th>Sections</th></tr></thead>
+          <div className="tp-tw" tabIndex={0} role="region" aria-label="Ticket tier summary; scroll to view all columns"><table className="tp-t"><thead><tr><th>Tier</th><th>Type</th><th>Price</th><th>Quantity</th><th>Sales window</th><th>Sections</th></tr></thead>
             <tbody>{data.tiers.map(t => <tr key={t.id} data-off={["hidden", "paused"].includes(t.status) || undefined}><td><span className="tp-sn2"><i style={{ background: t.color }} />{t.name}</span></td><td>{TIER_KINDS[t.kind] ?? t.kind}</td><td>{gbp2(t.price)}</td><td>{num(t.quantity)}</td>
               <td>{t.after_tier ? `After ${data.tiers.find(x => x.id === t.after_tier)?.name ?? "previous tier"} sells out` : `${dt(t.sale_start)} → ${dt(t.sale_end)}`}{t.release_name && <small className="tp-ph"> · {t.release_name.split(" – ")[0]}</small>}{(t.valid_from || t.valid_to) && <small className="tp-sess">Entry {dt(t.valid_from)} → {dt(t.valid_to)}</small>}</td><td className="k-muted">{["hidden", "paused"].includes(t.status) ? "Hidden" : t.allocation ?? "General"}</td></tr>)}</tbody></table></div>
         </Card>
-        <Card title="Access & controls" action={<Link className="k-btn outline sm" href={`${base}?step=4`}><Pencil size={13} />Edit</Link>}>
+        <Card title="Access & controls" action={<Link className="k-btn outline sm" href={`${base}?step=3&section=policies`}><Pencil size={13} />Edit</Link>}>
           <dl className="tp-dl">{([["Transfers", a.transfers ? "Allowed" : "Not allowed"], ["Resale", a.resale ? `Official marketplace · ${a.resale_cap === 100 ? "face value" : `up to ${a.resale_cap}%`}` : "Not allowed"], ["Refunds", { none: "No refunds", date: `${a.refund_amount}% until ${dt(a.refund_cutoff)}`, flexible: "Up to 24 hours before", cancel: "Only if cancelled" }[a.refund]], ["Fees", { upfront: "Shown upfront", included: "Included in price", checkout: "Shown at checkout" }[a.fee_display]], ["Order limit", `${p.sales.order_limit} per order`], ["Terms", `${TERMS_TEMPLATES.includes(a.terms_template as typeof TERMS_TEMPLATES[number]) ? a.terms_template : "Custom"}${a.require_terms ? " · required" : ""}`], ["Comps", num(a.comps)], ["Discount codes", `${data.promos.length}`]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         </Card>
       </div>
@@ -65,7 +65,7 @@ export function StepReview({ data, base }: { data: ProSetup; base: string }) {
           <button className="k-btn primary tp-pub" disabled={pending || !ready || !agree} onClick={() => void run(() => activateTickets(e.id, agree))}>{pending && <Loader2 size={16} className="k-spin" />}{data.live ? "Update ticket sales" : "Publish tickets"}<ArrowRight size={17} /></button>
           <small>Your event will be visible in search, on your event page and available for promotion. {paid && `Tickets from ${gbp2(from!.price)}.`} {pct(total, p.capacity, 0)} of capacity on sale.</small>
         </section>
-        <Link className="k-btn outline tp-back" href={`${base}?step=4`}><ArrowLeft size={16} />Back</Link>
+        <Link className="k-btn outline tp-back" href={`${base}?step=3&section=policies`}><ArrowLeft size={16} />Back</Link>
       </div>
     </div>
   </>;

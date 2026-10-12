@@ -13,6 +13,8 @@ const noStore = [{ key: "Cache-Control", value: "private, no-store, max-age=0" }
 const privatePaths = ["/login", "/register", "/verify-email", "/forgot-password", "/reset-password", "/mfa", "/access", "/invite/:path*", "/onboarding/:path*", "/onboarding", "/continue", "/auth/:path*", "/api/:path*"];
 
 const nextConfig: NextConfig = {
+  // Isolated release verification leaves the shared development server's cache intact.
+  distDir: process.env.GALA_PWA_BUILD === "1" ? ".next-pwa-release" : ".next",
   poweredByHeader: false,
   async headers() {
     return [

@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, MapPin, Clock, ChevronRight, ChevronLeft, CalendarDays, Sparkles, Star, Lightbulb, BellRing, Users, Utensils, Video, ListChecks, Ticket } from "lucide-react";
+import { ArrowRight, MapPin, Clock, ChevronRight, ChevronLeft, CalendarDays, Star, Lightbulb, BellRing, Users, Utensils, Video, ListChecks, Ticket, Compass, ClipboardList } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { myTickets } from "@/lib/data/customer-tickets";
-import { SaveHeart, AgentAsk } from "@/components/kit/client";
+import { SaveHeart } from "@/components/kit/client";
 import { HomeCarousel } from "@/components/customer/home-client";
 import { listingHref } from "@/lib/links";
 import { eventTypeLabel } from "@/lib/format";
@@ -72,8 +72,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       <section className="ce-card hm-sched"><div className="k-between hm-h"><h2>My Schedule</h2><span className="hm-day"><Link href={`/home?day=${shift(-1)}`} aria-label="Previous day"><ChevronLeft size={18} /></Link><b>{isToday ? "Today" : new Date(`${day}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</b><Link href={`/home?day=${shift(1)}`} aria-label="Next day"><ChevronRight size={18} /></Link></span></div>
         <ul>{schedule.map((s, i) => { const I = KIND[s.kind] ?? ListChecks; return <li key={s.id}><time>{t12(s.at)}</time><i className={`hm-dot c${i % 3}`} /><Link href={s.href} className="hm-slot"><I size={17} /><span className="k-grow"><b>{s.title}</b><em>{s.sub}</em></span><ChevronRight size={16} /></Link></li>; })}{!schedule.length && <li className="hm-free"><CalendarDays size={18} />Nothing scheduled {isToday ? "today" : "this day"}.</li>}</ul></section>
     </div>
-    <section className="hm-agent"><div className="hm-agent-id"><span className="hm-agent-ic"><Sparkles size={26} /></span><div><b>Gala Agent</b><span>Your personal event assistant.</span><small>Get tailored event recommendations, manage your bookings, and discover new experiences — all in one place.</small></div></div>
-      <div className="hm-agent-main"><div className="hm-prompts">{([[Star, "Find events near me this weekend", `/discover?tab=events&results=1&when=weekend`], [Lightbulb, `Show rooftop venues in ${city}`, `/discover?tab=venues&results=1&q=rooftop`], [BellRing, "Alert me when tickets for popular events drop", "/account/saved?tab=events"], [Users, "Suggest events for my interests", "/discover?tab=events&results=1"]] as const).map(([I, t, h]) => <Link key={t} href={h} className="hm-prompt"><I size={20} /><span>{t}</span><ArrowRight size={16} /></Link>)}</div>
-        <AgentAsk scope="customer" placeholder="Ask Gala Agent anything..." compact /></div></section>
+    <section className="hm-agent"><div className="hm-agent-id"><span className="hm-agent-ic"><Compass size={26} /></span><div><b>Get started</b><span>Shortcuts to what people do most.</span><small>Find something to go to, plan your own event, or pick up where you left off.</small></div></div>
+      <div className="hm-agent-main"><div className="hm-prompts">{([[Star, "Find events near me this weekend", `/discover?tab=events&results=1&when=weekend`], [Lightbulb, `Rooftop venues in ${city}`, `/discover?tab=venues&results=1&q=rooftop`], [ClipboardList, "Plan an event", "/plan?step=1"], [BellRing, "Your saved events", "/account/saved?tab=events"]] as const).map(([I, t, h]) => <Link key={t} href={h} className="hm-prompt"><I size={20} /><span>{t}</span><ArrowRight size={16} /></Link>)}</div></div></section>
   </div>;
 }

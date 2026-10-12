@@ -448,3 +448,4 @@
   .lp *, .lp *::before, .lp *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
   .lp .lp-exp-card:hover { transform: none; }
 }
+.lp-footer-bottom small { color:#b6bfdf; }

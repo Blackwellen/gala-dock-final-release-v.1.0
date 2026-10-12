@@ -59,3 +59,4 @@
 .cp-dl { gap: 4px; }
 .cp-dl-card { padding: 4px 8px; }
 .cp-grid { margin-top: -2px; }
+.cp-win{min-width:110px;text-align:center;color:var(--k-ink)}

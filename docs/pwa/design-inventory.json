@@ -1,0 +1,1039 @@
+[
+  {
+    "index": 1,
+    "file": "Designs/PWA/Bookings Dashboard Overview.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-005",
+    "route": "/provider/bookings",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 2,
+    "file": "Designs/PWA/Emma’s Birthday Budget Overview.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-007",
+    "route": "/account/events/[id]/money",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 3,
+    "file": "Designs/PWA/Emma’s Birthday Event Builder.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-004",
+    "route": "/account/events/[id]/build",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 4,
+    "file": "Designs/PWA/Emma’s Birthday Party Messages.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-008",
+    "route": "/account/events/[id]/messages",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 5,
+    "file": "Designs/PWA/Emma’s Birthday Party Timeline.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-005",
+    "route": "/account/events/[id]/plan",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 6,
+    "file": "Designs/PWA/Emma’s Garden Party Dashboard.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-003",
+    "route": "/account/events/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 7,
+    "file": "Designs/PWA/Event Lead CRM Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-006",
+    "route": "/organizer/sales/leads/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 8,
+    "file": "Designs/PWA/Event Management Dashboard Mockup.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-002",
+    "route": "/organizer/events",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 9,
+    "file": "Designs/PWA/Event Messages Dashboard Mockup.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-008",
+    "route": "/account/events/[id]/messages",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 10,
+    "file": "Designs/PWA/Event Quote Comparison Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-010",
+    "route": "/organizer/marketplace/requests/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 11,
+    "file": "Designs/PWA/Event Ticketing and Promotion Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-011",
+    "route": "/organizer/tickets-promotion",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 12,
+    "file": "Designs/PWA/Event Venue Map Editor UI.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-013",
+    "route": "/organizer/events/[id]/map",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 13,
+    "file": "Designs/PWA/Gala Agent Event Management Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-020",
+    "route": "/organizer/agent",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 14,
+    "file": "Designs/PWA/Gala Agent Mobile Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-016",
+    "route": "/provider/agent",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 15,
+    "file": "Designs/PWA/Gala Dock Event Command Center.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-001",
+    "route": "/organizer",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 16,
+    "file": "Designs/PWA/Gala Dock Event Discovery App.png",
+    "width": 850,
+    "height": 1851,
+    "mapping": "visually inspected",
+    "crop": "Nine-screen montage: split Discover cards/list/map, filters, Planner and listing detail into separately reviewed app surfaces. No single-page metric.",
+    "pageId": "CU-001",
+    "route": "/discover",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 17,
+    "file": "Designs/PWA/Gala Dock Organizer Settings Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-021",
+    "route": "/organizer/settings",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 18,
+    "file": "Designs/PWA/Gala·Dock Event Discovery App.png",
+    "width": 851,
+    "height": 1848,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-001",
+    "route": "/discover",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 19,
+    "file": "Designs/PWA/Grand Ballroom Venue Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-010",
+    "route": "/provider/venues/[venue]/spaces/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 20,
+    "file": "Designs/PWA/Guests & Tickets Event Dashboard.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-006",
+    "route": "/account/events/[id]/guests-tickets",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 21,
+    "file": "Designs/PWA/London Event Marketplace Discovery.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-008",
+    "route": "/organizer/marketplace",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 22,
+    "file": "Designs/PWA/Maya Patel Crew Profile Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-017",
+    "route": "/organizer/team/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 23,
+    "file": "Designs/PWA/Mobile Event Reviews Dashboard.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-012",
+    "route": "/account/reviews",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 24,
+    "file": "Designs/PWA/Mobile Finance Dashboard Overview.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-015",
+    "route": "/provider/money",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 25,
+    "file": "Designs/PWA/Modern DJ Night Ticket Details UI.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-010",
+    "route": "/account/tickets/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 26,
+    "file": "Designs/PWA/Modern Event App Account Dashboard.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-013",
+    "route": "/account",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 27,
+    "file": "Designs/PWA/Modern Event Reviews App Interface.png",
+    "width": 1025,
+    "height": 1535,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-012",
+    "route": "/account/reviews",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 28,
+    "file": "Designs/PWA/Modern Events Finance Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-018",
+    "route": "/organizer/money",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 29,
+    "file": "Designs/PWA/Modern My Tickets App Interface.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-009",
+    "route": "/account/tickets",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 30,
+    "file": "Designs/PWA/My Events Co Team Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-016",
+    "route": "/organizer/team",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 31,
+    "file": "Designs/PWA/My Events Planning Dashboard.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-002",
+    "route": "/account/events",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 32,
+    "file": "Designs/PWA/Organizer Command Centre Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-001",
+    "route": "/organizer",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 33,
+    "file": "Designs/PWA/Organizer Dashboard Overview.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-001",
+    "route": "/organizer",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 34,
+    "file": "Designs/PWA/Organizer Workspace Settings Dashboard(1).png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-021",
+    "route": "/organizer/settings",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 35,
+    "file": "Designs/PWA/Organizer Workspace Settings Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-021",
+    "route": "/organizer/settings",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 36,
+    "file": "Designs/PWA/Paid Invoice Dashboard for Summer Garden Party.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-019",
+    "route": "/organizer/money/invoices/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 37,
+    "file": "Designs/PWA/Pastel Week Calendar Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-004",
+    "route": "/organizer/calendar?view=week",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 38,
+    "file": "Designs/PWA/Premium Event Discovery App Mockup.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-001",
+    "route": "/discover",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 39,
+    "file": "Designs/PWA/Promotion & Distribution Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-014",
+    "route": "/organizer/events/[id]/promotion",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 40,
+    "file": "Designs/PWA/Provider Calendar Week View.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-007",
+    "route": "/provider/calendar?view=week",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 41,
+    "file": "Designs/PWA/Provider Command Centre Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-001",
+    "route": "/provider",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 42,
+    "file": "Designs/PWA/Riverside Venue Listings Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-008",
+    "route": "/provider/listings",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 43,
+    "file": "Designs/PWA/Riverside Venue Management Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-009",
+    "route": "/provider/venues/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 44,
+    "file": "Designs/PWA/Riverside Venue Opportunities Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-002",
+    "route": "/provider/opportunities",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 45,
+    "file": "Designs/PWA/Riverside Venue Provider Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-001",
+    "route": "/provider",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 46,
+    "file": "Designs/PWA/Riverside Venue Quote Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-004",
+    "route": "/provider/quotes/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 47,
+    "file": "Designs/PWA/Riverside Venue Settings Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-017",
+    "route": "/provider/settings",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 48,
+    "file": "Designs/PWA/Riverside Venue Team Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-013",
+    "route": "/provider/team",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 49,
+    "file": "Designs/PWA/Riverside Wedding Booking Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-006",
+    "route": "/provider/bookings/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 50,
+    "file": "Designs/PWA/Riverside Wedding Venue Booking App.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-003",
+    "route": "/provider/opportunities/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 51,
+    "file": "Designs/PWA/Sales Pipeline Dashboard Mockup.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-005",
+    "route": "/organizer/sales",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 52,
+    "file": "Designs/PWA/Sarah Mitchell Team Profile Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-014",
+    "route": "/provider/team/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 53,
+    "file": "Designs/PWA/Saved Events, Venues & Services.png",
+    "width": 794,
+    "height": 1981,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "CU-011",
+    "route": "/account/saved",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 54,
+    "file": "Designs/PWA/Summer Garden Party Creator Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-015",
+    "route": "/organizer/events/[id]/media",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 55,
+    "file": "Designs/PWA/Summer Garden Party CRM Overview.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-006",
+    "route": "/organizer/sales/leads/[id]",
+    "primary": false,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 56,
+    "file": "Designs/PWA/Summer Garden Party Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-003",
+    "route": "/organizer/events/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 57,
+    "file": "Designs/PWA/Summer Garden Party Event Editor.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-012",
+    "route": "/organizer/events/[id]/page",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 58,
+    "file": "Designs/PWA/Summer Garden Party Proposal Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-007",
+    "route": "/organizer/sales/proposals/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 59,
+    "file": "Designs/PWA/The Garden Rooms Venue Listing.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "ORG-009",
+    "route": "/organizer/marketplace/venue/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 60,
+    "file": "Designs/PWA/Wedding DJ Provider Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-011",
+    "route": "/provider/services/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  },
+  {
+    "index": 61,
+    "file": "Designs/PWA/Wedding Package Management Dashboard.png",
+    "width": 850,
+    "height": 1850,
+    "mapping": "visually inspected",
+    "crop": "Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.",
+    "pageId": "PROV-012",
+    "route": "/provider/packages/[id]",
+    "primary": true,
+    "fidelity": "not-tested",
+    "overrides": [
+      "Exactly four primary links + rightmost Menu; no sidebar on tablet/phone",
+      "Readable type and 44px touch controls replace miniature artwork",
+      "Real authorized records replace screenshot sample data"
+    ]
+  }
+]

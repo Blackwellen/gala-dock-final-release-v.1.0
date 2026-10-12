@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Share2, Plus, Minus, Maximize2, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { publishListing, pauseListing } from "../../listings/actions";
-import { VenueMap, type MapEl, type MapSpace } from "../_components/venue-map";
+import { VenueMap, elBounds, type MapEl, type MapSpace } from "../_components/venue-map";
 import { confirmDialog } from "@/lib/ui/dialogs";
 
 export function ShareVenue({ path }: { path: string }) {
@@ -45,7 +45,9 @@ export function OverviewMap({ elements, spaces, venueId }: { elements: MapEl[]; 
         <button key={k} type="button" aria-pressed={filter === k} className={filter === k ? "active" : ""} onClick={() => setFilter(k)}>{l}</button>)}
     </nav>
     <div className="pv-mapbox">
-      {elements.length ? <VenueMap elements={elements} spaces={spaces} zoom={zoom} selected={sel} dim={id => !shown.some(s => s.id === id)} labelSize={24} />
+      {elements.length ? <VenueMap elements={elements} spaces={spaces} zoom={zoom} selected={sel} dim={id => !shown.some(s => s.id === id)} labelSize={24}
+        focus={(() => { const r = sel ? elements.find(e => e.type === "room" && e.space === sel) : null; if (!r) return null; const b = elBounds(r); return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; })()}
+        onElDown={(_, i) => { const sp = elements[i]?.space; if (sp) { setSel(v => v === sp ? null : sp); if (zoom < 1.5) setZoom(1.5); } }} />
         : <div className="pv-nomap"><b>No map yet</b><Link href={`/provider/venues/${venueId}?tab=spaces`} className="ws-link">Draw your venue map</Link></div>}
       {elements.length > 0 && <div className="pv-mapctl">
         <button type="button" aria-label="Zoom in" onClick={() => setZoom(z => Math.min(2.5, +(z + 0.25).toFixed(2)))}><Plus aria-hidden="true" /></button>

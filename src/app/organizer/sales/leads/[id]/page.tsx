@@ -83,7 +83,7 @@ export default async function LeadPage({ params, searchParams }: PageProps<"/org
               {d.potential_profit != null && <div className="k-kpi" style={{ padding: 10 }}><span className="k-tile"><BarChart3 size={16} /></span><div><div className="lbl">Potential profit</div><div className="val" style={{ fontSize: 15.5 }}>{money(d.potential_profit)}</div></div></div>}
             </div></Card>
             <Card><div className="k-between" style={{ marginBottom: 10 }}><h2 className="ov-h" style={{ fontSize: 15 }}>Location & area</h2><Link className="k-link" href={`/organizer/marketplace?tab=venues&city=${city}`}>Venues nearby <ArrowRight size={12} /></Link></div>
-              <MapView pins={[{ id: "lead", lat: coord[0], lng: coord[1], label: l.location }]} center={{ lat: coord[0], lng: coord[1] }} zoom={11} height={150} mapKey={process.env.MAP_TILER_API_KEY} ariaLabel={`Map of ${l.location}`} /></Card>
+              <MapView pins={[{ id: "lead", lat: coord[0], lng: coord[1], label: l.location }]} center={{ lat: coord[0], lng: coord[1] }} zoom={11} height={150} ariaLabel={`Map of ${l.location}`} /></Card>
           </div>
           <div className="ld-two">
             <Card><div className="k-between" style={{ marginBottom: 10 }}><h2 className="ov-h" style={{ fontSize: 15 }}>Suggested venues</h2><Link className="k-link" href="/organizer/marketplace?tab=venues">View all <ArrowRight size={12} /></Link></div><p className="k-xs k-muted" style={{ marginBottom: 8 }}>Ranked by capacity fit for {l.guests || "the expected attendance"} and rating.</p>

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 /** Every dropdown / popover surface in the app (kit Menu, shell menus, admin, studio, search, plan editor). */
 const SELECTOR = [
   ".k-pop", ".pv-menu-panel", ".ws-pop-panel", ".pt-pop-panel", ".aa-menu-panel", ".adb-menu-panel", ".adb-pop-body", ".gs-panel",
-  ".pb-menu", ".dm-menu", ".dk-pop", ".mb-menu", ".mb-pop", ".st-pop", "[data-popover]",
+  ".pb-menu", ".dm-menu", ".dk-pop", ".mb-menu", ".mb-pop", "[data-popover]",
 ].join(",");
 const GAP = 8, MIN_H = 140;
 

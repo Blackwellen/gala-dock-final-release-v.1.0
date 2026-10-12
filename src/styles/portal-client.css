@@ -178,3 +178,4 @@
 }
 
 .pc-timeline .pt-panel-head{margin-bottom:6px}
+/* The divider trick (negative right margin) must not spill past the panel at the shared zoom. */ .pc-tl{overflow:hidden}

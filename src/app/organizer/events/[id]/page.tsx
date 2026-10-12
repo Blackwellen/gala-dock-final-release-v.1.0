@@ -1,3 +1,4 @@
+import { parseRange } from "@/components/organizer/event/range-links";
 import type { Metadata } from "next";
 import { getOrganizer } from "@/lib/data/context";
 import { getProEvent, loadEventData } from "@/lib/data/event";
@@ -22,13 +23,13 @@ export default async function EventProfile({ params, searchParams }: PageProps<"
   let tab = (tabs.includes(sp.tab as EventTab) ? sp.tab : "overview") as EventTab;
   if (tab === "money" && !ctx.canMoney) tab = "overview";
   const section = typeof sp.section === "string" ? sp.section : "";
-  const d = await loadEventData(ctx, e.id);
+  const d = await loadEventData(ctx, e.id, parseRange(sp.range));
   return <>
     <EventHeader e={e} tab={tab} canMoney={ctx.canMoney} />
     {tab === "overview" && <Overview e={e} d={d} me={{ name: ctx.name }} canMoney={ctx.canMoney} />}
     {tab === "plan" && <PlanTab e={e} d={d} section={section} role={ctx.role} />}
     {tab === "sell" && <SellTab e={e} d={d} section={section} />}
-    {tab === "operations" && <OpsTab e={e} d={d} section={section} />}
+    {tab === "operations" && <OpsTab e={e} d={d} section={section} phase={["pre", "live", "post"].includes(String(sp.phase)) ? String(sp.phase) : "all"} />}
     {tab === "money" && <MoneyTab e={e} d={d} section={section} />}
   </>;
 }

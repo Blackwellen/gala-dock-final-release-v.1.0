@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Star, BadgeCheck, MapPin, Users, Home, Tag, Clock, Sparkles, Award, Briefcase, Calendar, CheckCircle2, ChevronRight, ArrowRight, Building2, Utensils, Car, Accessibility, Layers, Camera, ShieldCheck, Leaf, Scaling, Salad, Package2 } from "lucide-react";
+import { Star, BadgeCheck, MapPin, Users, Home, Tag, Clock, Sparkles, Award, Briefcase, Calendar, CheckCircle2, ChevronRight, ArrowRight, Building2, Utensils, Car, Accessibility, Layers, Camera, ShieldCheck, Leaf, Scaling, Salad, Package2, Compass } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MapView } from "@/components/kit/client";
 import { ListingActions, PlanWithListing, RecordView } from "./public-listing-client";
@@ -103,8 +103,8 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
         <section className="ce-card pl-quick"><div className="k-between"><h2>{kind === "venue" ? "Quick details" : "Response & availability"}</h2></div>
           <dl><div><dt><Tag size={15} />Price from</dt><dd><b>{money(l.price_from)}</b> {l.price_unit}</dd></div><div><dt><Clock size={15} />Response time</dt><dd>Typically {l.response_hours ?? 24} hours</dd></div><div><dt><Calendar size={15} />Booking mode</dt><dd>{l.instant_book ? "Instant book or quote" : l.booking_mode === "enquiry" ? "Enquiry first" : "Request a quote"}</dd></div>{policies.cancellation && <div><dt><ShieldCheck size={15} />Cancellation policy</dt><dd>{policies.cancellation}</dd></div>}</dl></section>
         <section id="location" className="ce-card pl-loc"><div className="k-between"><h2>Location</h2><a className="k-link" href={maps} target="_blank" rel="noopener noreferrer">View on Google Maps <ChevronRight size={13} /></a></div>
-          {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={130} mapKey={process.env.MAP_TILER_API_KEY ?? ""} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>
-        <section className="ce-card pl-agent"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="pw-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p>Get AI-powered insights, compare options and find the best match for your event.</p>
+          {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={130} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>
+        <section className="ce-card pl-agent"><div className="k-row" style={{ gap: 8 }}><Compass size={20} className="pw-spark" /><b>Plan with this {kind === "venue" ? "venue" : "supplier"}</b></div><p>Check your dates, compare similar options, or start planning around it.</p>
           {[[`Is ${l.name} available for my dates?`, user ? `/plan` : `/login?next=${href}`], [`Compare with similar ${kind === "venue" ? "venues" : "suppliers"}`, "#similar"], ["Plan an event around it", "/plan"]].map(([t, h]) => <Link key={t} href={h} className="pl-ask">{t}<ArrowRight size={14} /></Link>)}</section>
       </aside>
     </div>

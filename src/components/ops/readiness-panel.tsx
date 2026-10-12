@@ -34,13 +34,13 @@ type Conflict = { kind: string; severity: "blocker" | "warning"; shift_id: strin
 const KIND: Record<string, string> = { overlap: "Double-booked", travel: "Travel time", unavailable: "Unavailable", unfilled: "Unfilled", unconfirmed: "Not confirmed", qualification: "Qualification", missing_role: "Missing role" };
 
 /** Team conflict engine output (§85) for Team, Home, Plan and the Agent. */
-export async function TeamConflicts({ workspaceId, eventId, limit = 20 }: { workspaceId: string; eventId?: string; limit?: number }) {
+export async function TeamConflicts({ workspaceId, eventId, limit = 20, headingId = "tc-h" }: { workspaceId: string; eventId?: string; limit?: number; headingId?: string }) {
   const sb = await createClient();
   const { data, error } = await sb.rpc("team_conflicts" as never, { p_workspace: workspaceId } as never);
   if (error) return null;
   const rows = ((data ?? []) as Conflict[]).filter(c => !eventId || c.event_id === eventId).sort((a, b) => Number(b.severity === "blocker") - Number(a.severity === "blocker")).slice(0, limit);
-  return <section className="op-ready" aria-labelledby="tc-h">
-    <header><h2 id="tc-h">Team conflicts</h2><span className={`op-state ${rows.some(r => r.severity === "blocker") ? "blocked" : rows.length ? "attention" : "ready"}`}>{rows.length ? `${rows.length} found` : "None"}</span></header>
+  return <section className="op-ready" aria-labelledby={headingId}>
+    <header><h2 id={headingId}>Team conflicts</h2><span className={`op-state ${rows.some(r => r.severity === "blocker") ? "blocked" : rows.length ? "attention" : "ready"}`}>{rows.length ? `${rows.length} found` : "None"}</span></header>
     {!rows.length ? <p className="mk-note">No overlapping shifts, travel clashes, unfilled roles or availability conflicts.</p> :
     <ul className="op-domains">{rows.map((c, i) => <li key={`${c.kind}-${c.shift_id ?? c.event_id}-${i}`} className={c.severity === "blocker" ? "blocked" : "attention"}>
       {c.severity === "blocker" ? <XCircle size={15} aria-hidden="true" /> : <AlertTriangle size={15} aria-hidden="true" />}

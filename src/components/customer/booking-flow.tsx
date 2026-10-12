@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Clock, Users, MapPin, Star, Info, Truck, CheckCircle2, AlertTriangle, XCircle, Sparkles, Wand2, CalendarSearch, Lightbulb, Lock, ShieldCheck, FileText, CreditCard, ArrowRight, ArrowLeft, Check, Home, UtensilsCrossed, ChevronRight, Save, Loader2, Building2, MoreHorizontal, X } from "lucide-react";
+import { CalendarDays, Clock, Users, MapPin, Star, Info, Truck, CheckCircle2, AlertTriangle, XCircle, Sparkles, Wand2, CalendarSearch, Lightbulb, Lock, ShieldCheck, FileText, CreditCard, ArrowRight, ArrowLeft, Check, Home, UtensilsCrossed, ChevronRight, Save, Loader2, Building2, MoreHorizontal, X, LifeBuoy, Search } from "lucide-react";
 import { VSteps } from "@/components/kit";
 import { NumberStepper, SaveHeart, useAction, useKitToast, Menu } from "@/components/kit/client";
 import { saveBookingDraft, submitBooking, acceptQuote, checkAvailability, type Availability, type BookingRequirements } from "@/lib/actions/booking";
@@ -94,12 +94,12 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
   return <div className="bk-grid">
     <aside className="bk-rail">
       <VSteps steps={steps} current={step} hrefFor={n => n === 1 ? `${base}&step=1` : n === 2 && step > 1 ? `${base}&step=2` : ""} />
-      <section className="bk-agent-card"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="bk-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div>
-        <p>{step === 1 ? "I can help you complete this booking request using your event details and suggest the best options." : "I can explain the differences between request, hold and standby, and help you choose the best option for your event."}</p>
+      <section className="bk-agent-card"><div className="k-row" style={{ gap: 8 }}><LifeBuoy size={20} className="bk-spark" /><b>Booking help</b></div>
+        <p>{step === 1 ? "Fill this request from your event details, check the date, or look at alternatives." : "Compare request, hold and standby, and see what each one costs."}</p>
         {step === 1 ? <>
           <button className="bk-agent-btn" onClick={fillFromEvent}><Wand2 size={16} />Fill in from my event</button>
           <button className="bk-agent-btn" onClick={() => void check()} disabled={checking}>{checking ? <Loader2 size={16} className="k-spin" /> : <CalendarSearch size={16} />}Check availability</button>
-          <Link className="bk-agent-btn" href={`/account/events/${data.event.id}/build?cat=${data.item.category}`}><Sparkles size={16} />Suggest alternatives</Link>
+          <Link className="bk-agent-btn" href={`/account/events/${data.event.id}/build?cat=${data.item.category}`}><Search size={16} />See alternatives</Link>
         </> : <>
           <button className="bk-agent-btn" onClick={() => setTip(tip === "best" ? null : "best")} aria-expanded={tip === "best"}><Sparkles size={16} />Which option is best?</button>
           <button className="bk-agent-btn" onClick={() => setTip(tip === "costs" ? null : "costs")} aria-expanded={tip === "costs"}><Sparkles size={16} />Explain the costs</button>
@@ -161,7 +161,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <label className="bk-check"><input type="checkbox" checked={r.alt_dates} onChange={e => set("alt_dates", e.target.checked)} />Yes, I&apos;m interested in alternative dates</label>
           <label className="bk-check"><input type="checkbox" checked={r.standby_interest} onChange={e => set("standby_interest", e.target.checked)} />Yes, I&apos;m interested in a standby option</label>
           <div className="bk-note"><Info size={14} />Standby options can help secure a {kind} if your preferred date becomes available due to cancellations.</div></section>
-        <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="bk-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p>Based on your event and this {kind}, here are a few tips:</p>
+        <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="bk-spark" /><b>Tips</b></div><p>Based on your event and this {kind}, here are a few tips:</p>
           <ul>{tips.map(t => <li key={t}><Lightbulb size={18} />{t}</li>)}</ul></section>
         <button className="k-btn primary bk-continue" onClick={() => void save("next")} disabled={pending}>{pending ? <Loader2 size={16} className="k-spin" /> : null}Continue to Review &amp; Quote <ArrowRight size={17} /></button>
       </> : <>
@@ -171,7 +171,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <div><dt><Clock size={15} />Cancellation</dt><dd>{data.item.quote.terms?.cancellation ?? "Free until you approve a quote"}</dd></div>
           <div><dt><CreditCard size={15} />Payment</dt><dd>{quoted ? `${gbp(depositOf(data))} deposit + ${gbpPence(bookingAdminFee(depositOf(data)))} admin fee on booking` : "Refundable authorisation"}</dd></div>
           <div><dt><FileText size={15} />Full terms</dt><dd>{L ? <Link className="k-link" href={`${L.href}#terms`}>View {kind} terms <ArrowRight size={13} /></Link> : "Shared with your quote"}</dd></div></dl></section>
-        <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="bk-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p>Here&apos;s what will happen when you submit:</p>
+        <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="bk-spark" /><b>Tips</b></div><p>Here&apos;s what will happen when you submit:</p>
           <ol className="bk-steps4">{whatHappens(opt, data).map((t, i) => <li key={t}><span>{i + 1}</span>{t}</li>)}</ol></section>
       </>}
     </aside>

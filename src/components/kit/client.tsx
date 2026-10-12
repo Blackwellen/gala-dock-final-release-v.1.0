@@ -1,6 +1,6 @@
 "use client";
 // Interactive UI primitives (menus, dialogs, toasts, toggles, map, agent ask box).
-import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -55,7 +55,7 @@ export function Menu({ trigger, children, align = "right", width, label }: { tri
   // and stays inside the window horizontally. Coordinates are divided by the shell's CSS zoom (--k-zoom).
   const place = useCallback(() => {
     const t = ref.current; if (!t) return;
-    const host = (t.closest(".k-root") as HTMLElement | null) ?? document.body;
+    const host = (t.closest(".k-root, .ws-app, .pt-app") as HTMLElement | null) ?? document.body;
     const z = parseFloat(getComputedStyle(host).zoom || "1") || 1, r = t.getBoundingClientRect(), vw = document.documentElement.clientWidth || innerWidth, vh = document.documentElement.clientHeight || innerHeight, gap = 8;
     const h = pop.current ? pop.current.scrollHeight * z : 0, w = pop.current ? pop.current.offsetWidth * z : (width ?? 220) * z;
     const below = vh - r.bottom - gap - 6, above = r.top - gap - 6, up = h > below && above > below;
@@ -66,7 +66,7 @@ export function Menu({ trigger, children, align = "right", width, label }: { tri
     setBox({ host, style });
   }, [align, width]);
   useEffect(() => {
-    if (!open) { setBox(null); return; }
+    if (!open) return;
     place(); const raf = requestAnimationFrame(place); // second pass once the list has its real size
     const onMove = (e: Event) => { if (e.target instanceof Node && pop.current?.contains(e.target)) return; place(); };
     addEventListener("resize", onMove); addEventListener("scroll", onMove, true);
@@ -75,7 +75,7 @@ export function Menu({ trigger, children, align = "right", width, label }: { tri
   const close = () => setOpen(false);
   return <div ref={ref} style={{ position: "relative", display: "inline-flex" }}>
     {trigger({ open, toggle: () => setOpen(o => !o), id })}
-    {box && createPortal(<AnimatePresence>{open && <motion.div ref={pop} id={id} role="menu" aria-label={label} className="k-pop" data-portal="" style={box.style} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .12 }}>
+    {open && box && createPortal(<AnimatePresence>{open && <motion.div ref={pop} id={id} role="menu" aria-label={label} className="k-pop" data-portal="" style={box.style} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .12 }}>
       {typeof children === "function" ? children(close) : children}
     </motion.div>}</AnimatePresence>, box.host)}
   </div>;
@@ -151,7 +151,7 @@ export function Countdown({ to, compact }: { to: string; compact?: boolean }) {
 export function useTabs<T extends string>(initial: T) { const [tab, setTab] = useState<T>(initial); return { tab, setTab, props: (k: T) => ({ role: "tab" as const, "aria-selected": tab === k, onClick: () => setTab(k) }) }; }
 
 // ── Gala Agent ask box (server-side model call via /api/agent/ask) ────────
-export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", suggestions = [], compact }: { scope: "customer" | "organizer"; eventId?: string; placeholder?: string; suggestions?: string[]; compact?: boolean }) {
+export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", suggestions = [], compact }: { scope: "organizer"; eventId?: string; placeholder?: string; suggestions?: string[]; compact?: boolean }) {
   const [q, setQ] = useState(""); const [busy, setBusy] = useState(false); const [reply, setReply] = useState<string | null>(null); const toast = useKitToast();
   async function ask(text: string) {
     if (!text.trim() || busy) return; setBusy(true); setReply(null);
@@ -171,32 +171,5 @@ export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", sugg
   </div>;
 }
 
-// ── Map (MapTiler raster tiles, Web Mercator) ─────────────────────────────
-export type MapPin = { id: string; lat: number; lng: number; label?: string; price?: string; href?: string };
-const TILE = 256;
-const project = (lat: number, lng: number, z: number) => { const s = Math.sin((lat * Math.PI) / 180), sc = TILE * 2 ** z; return { x: ((lng + 180) / 360) * sc, y: (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * sc }; };
-const unproject = (x: number, y: number, z: number) => { const sc = TILE * 2 ** z, lng = (x / sc) * 360 - 180, n = Math.PI - (2 * Math.PI * y) / sc; return { lat: (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))), lng }; };
-export function MapView({ pins, center, zoom: z0 = 11, height = 220, mapKey, selected, onSelect, style = "streets-v2-light", showPrices, ariaLabel = "Map of results" }: { pins: MapPin[]; center?: { lat: number; lng: number }; zoom?: number; height?: number | string; mapKey?: string; selected?: string | null; onSelect?: (id: string) => void; style?: string; showPrices?: boolean; ariaLabel?: string }) {
-  const ref = useRef<HTMLDivElement>(null); const [size, setSize] = useState({ w: 400, h: 220 }); const [zoom, setZoom] = useState(z0);
-  const initialCenter = useMemo(() => center ?? (pins.length ? { lat: pins.reduce((s, p) => s + p.lat, 0) / pins.length, lng: pins.reduce((s, p) => s + p.lng, 0) / pins.length } : { lat: 51.5072, lng: -0.1276 }), [center, pins]);
-  const [c, setC] = useState(initialCenter); const drag = useRef<{ x: number; y: number; c: { lat: number; lng: number } } | null>(null);
-  useEffect(() => { const el = ref.current; if (!el) return; const ro = new ResizeObserver(([e]) => setSize({ w: e!.contentRect.width, h: e!.contentRect.height })); ro.observe(el); return () => ro.disconnect(); }, []);
-  const cp = project(c.lat, c.lng, zoom), ox = Math.round(cp.x - size.w / 2), oy = Math.round(cp.y - size.h / 2); // whole pixels: identical SSR + client style values
-  const tiles: { x: number; y: number; key: string }[] = [];
-  const max = 2 ** zoom;
-  for (let tx = Math.floor(ox / TILE); tx <= Math.floor((ox + size.w) / TILE); tx++) for (let ty = Math.floor(oy / TILE); ty <= Math.floor((oy + size.h) / TILE); ty++) if (ty >= 0 && ty < max) tiles.push({ x: tx, y: ty, key: `${zoom}/${tx}/${ty}` });
-  return <div ref={ref} className="k-map" style={{ height }} role="application" aria-label={ariaLabel}
-    onPointerDown={e => { (e.target as HTMLElement).setPointerCapture?.(e.pointerId); drag.current = { x: e.clientX, y: e.clientY, c }; }}
-    onPointerMove={e => { const d = drag.current; if (!d) return; const p = project(d.c.lat, d.c.lng, zoom); setC(unproject(p.x - (e.clientX - d.x), p.y - (e.clientY - d.y), zoom)); }}
-    onPointerUp={() => { drag.current = null; }} onWheel={e => { setZoom(zz => Math.max(3, Math.min(17, zz + (e.deltaY < 0 ? 1 : -1)))); }}
-    onKeyDown={e => { const step = 60, p = project(c.lat, c.lng, zoom); const m: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }; if (m[e.key]) { e.preventDefault(); setC(unproject(p.x + m[e.key]![0], p.y + m[e.key]![1], zoom)); } if (e.key === "+") setZoom(zz => Math.min(17, zz + 1)); if (e.key === "-") setZoom(zz => Math.max(3, zz - 1)); }} tabIndex={0}>
-    <div className="tiles" aria-hidden>{mapKey && tiles.map(t => { const wx = ((t.x % max) + max) % max;
-      // eslint-disable-next-line @next/next/no-img-element
-      return <img key={t.key} alt="" draggable={false} src={`https://api.maptiler.com/maps/${style}/256/${zoom}/${wx}/${t.y}.png?key=${mapKey}`} style={{ left: t.x * TILE - ox, top: t.y * TILE - oy }} />; })}</div>
-    {!mapKey && <div className="k-empty" style={{ position: "absolute", inset: 0 }}><small>Map tiles unavailable — MAP_TILER_API_KEY is not configured.</small></div>}
-    {pins.map(p => { const pp = project(p.lat, p.lng, zoom); const left = Math.round(pp.x - ox), top = Math.round(pp.y - oy); if (left < -40 || top < -40 || left > size.w + 40 || top > size.h + 40) return null;
-      return <button key={p.id} type="button" className="pin" style={{ left, top }} aria-pressed={selected === p.id} aria-label={p.label ?? "Location"} onPointerDown={e => e.stopPropagation()} onClick={() => onSelect?.(p.id)}>{showPrices && p.price ? <span className="price">{p.price}</span> : <span className="dot"><span style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} /></span>}</button>; })}
-    <div className="zoom"><button type="button" aria-label="Zoom in" onPointerDown={e => e.stopPropagation()} onClick={() => setZoom(zz => Math.min(17, zz + 1))}><Plus size={14} /></button><button type="button" aria-label="Zoom out" onPointerDown={e => e.stopPropagation()} onClick={() => setZoom(zz => Math.max(3, zz - 1))}><Minus size={14} /></button></div>
-    <span className="attr">© MapTiler © OpenStreetMap contributors</span>
-  </div>;
-}
+// ── Map: implementation in ./map-view (interactive, clustered, zoom-aware, proxied tiles) ──
+export { MapView, type MapPin } from "./map-view";

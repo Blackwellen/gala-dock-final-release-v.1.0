@@ -99,7 +99,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
             <div className="k-between"><b>{venue?.name ?? e.venue_name}</b>{venue && <span className="pe-vr"><Star size={13} fill="#f59e0b" color="#f59e0b" />{Number(venue.rating).toFixed(1)} <small>({venue.review_count} reviews)</small></span>}</div>
             <small className="pe-vsub">{[e.city, venue?.capacity_max ? `${venue.capacity_max.toLocaleString("en-GB")} capacity` : null].filter(Boolean).join(" • ")}</small>
             <div className="pe-vtags">{(venue?.tags ?? []).slice(0, 6).map(tg => <span key={tg}>{tg}</span>)}</div></section>}
-          <section className="ce-card pe-map"><h2>Location &amp; Map</h2>{pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={150} mapKey={process.env.MAP_TILER_API_KEY ?? ""} ariaLabel={`Map of ${e.venue_name}`} /> : <div className="pe-nomap">{e.location}</div>}
+          <section className="ce-card pe-map"><h2>Location &amp; Map</h2>{pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={150} ariaLabel={`Map of ${e.venue_name}`} /> : <div className="pe-nomap">{e.location}</div>}
             <a className="k-btn outline pe-dir" href={maps} target="_blank" rel="noopener noreferrer"><Navigation size={15} />Get directions</a></section>
           {on("gallery") && <section id="gallery" className="ce-card pe-gal"><h2>Event Gallery</h2><div className="pe-gal-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6} more</b>}</span>)}</div></section>}
         </div>

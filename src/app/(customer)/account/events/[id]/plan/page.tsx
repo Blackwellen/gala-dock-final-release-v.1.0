@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { UrlSelect } from "@/components/customer/url-select";
 import { CalendarClock, CalendarDays, CheckSquare, ClipboardList, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, CheckCircle2, Circle, Sun, MapPin, Utensils, Music2, Ticket, CreditCard, MoreHorizontal, ArrowRight, Sparkles, Send, Building2, Flower2, Clock, PartyPopper, Wand2, MessageSquareMore } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { CuEventHeader } from "@/components/customer/event-header";
 import { TaskCheck } from "@/components/organizer/event/controls";
 import { AddTaskBtn, AddDayItem, SharePlan } from "@/components/customer/plan-client";
-import { Avatar, Beta } from "@/components/kit";
-import { AgentAsk } from "@/components/kit/client";
+import { Avatar } from "@/components/kit";
+
 import { dayMonth, time12 } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
 
@@ -31,8 +33,18 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
   const phases = [["6+ weeks", "Foundation", "Venue, key providers"], ["4–6 weeks", "Details", "Catering, entertainment"], ["2–4 weeks", "Finalise", "Guests, remaining suppliers"], ["1 week", "Confirm", "Final checks & balances"], ["Event day", "Enjoy!", "Everything comes together"]] as const;
   const cur = weeks >= 6 ? (d.s.venueOk ? 1 : 0) : weeks >= 4 ? 1 : weeks >= 2 ? 2 : weeks >= 1 ? 3 : 4;
   const curIdx = Math.max(cur, d.s.venueOk && d.s.confirmed >= 3 ? 2 : cur);
+  // Timeline window: all dates, or a week / month you can step through (‹ ›) and jump back to with Today.
+  const win = sp.win === "week" || sp.win === "month" ? sp.win : "all";
+  const today0 = new Date(requestTime()); today0.setUTCHours(0, 0, 0, 0);
+  const winStart = (() => { const d = /^\d{4}-\d{2}-\d{2}$/.test(sp.from ?? "") ? new Date(`${sp.from}T00:00:00Z`) : new Date(today0);
+    if (win === "week") d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); if (win === "month") d.setUTCDate(1); return d; })();
+  const winEnd = new Date(winStart); if (win === "week") winEnd.setUTCDate(winEnd.getUTCDate() + 7); else winEnd.setUTCMonth(winEnd.getUTCMonth() + 1);
+  const shift = (dir: -1 | 1) => { const d = new Date(winStart); if (win === "week") d.setUTCDate(d.getUTCDate() + 7 * dir); else d.setUTCMonth(d.getUTCMonth() + dir); return d.toISOString().slice(0, 10); };
+  const pq = (patch: Record<string, string | null>) => { const n = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [k, v] of Object.entries(patch)) { if (v === null) n.delete(k); else n.set(k, v); } return `/account/events/${e.id}/plan${n.size ? `?${n}` : ""}`; };
+  const inWin = (at: string | null) => win === "all" || (!!at && at >= winStart.toISOString() && at < winEnd.toISOString());
+  const winLabel = win === "week" ? `${dayMonth(winStart.toISOString())} – ${dayMonth(new Date(winEnd.getTime() - 864e5).toISOString())}` : win === "month" ? winStart.toLocaleString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }) : "";
   const byMonth = new Map<string, typeof tasks>();
-  for (const t of tasks.filter(t => t.due_at)) { const k = new Date(t.due_at!).toLocaleString("en-GB", { month: "short", year: "numeric" }); byMonth.set(k, [...(byMonth.get(k) ?? []), t]); }
+  for (const t of tasks.filter(t => t.due_at && inWin(t.due_at))) { const k = new Date(t.due_at!).toLocaleString("en-GB", { month: "short", year: "numeric" }); byMonth.set(k, [...(byMonth.get(k) ?? []), t]); }
   const stat = (t: typeof tasks[number]) => t.status === "done" ? <span className="cp-done">Completed</span> : t.due_at ? <span className="cp-due">Due {dayMonth(t.due_at)}</span> : null;
   const supplierAvatar = (n: string) => d.items.find(i => i.title.toLowerCase().startsWith(n.toLowerCase().split(" ")[0]!))?.image;
   return <div className="ce">
@@ -45,9 +57,9 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
     <div className="cp-grid">
       <section className="ce-card cp-main">
         <div className="k-between" style={{ marginBottom: 12 }}><div className="cp-tabs" role="group" aria-label="Plan views">{([["timeline", "Timeline", CalendarDays], ["checklist", "Checklist", CheckSquare], ["day", "Day Plan", ClipboardList]] as const).map(([k, l, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={`/account/events/${e.id}/plan${k === "timeline" ? "" : `?tab=${k}`}`}><I size={16} />{l}</Link>)}</div>
-          <div className="k-row" style={{ gap: 8 }}><span className="k-btn ghost">Today</span><span className="k-icon-btn"><ChevronLeft size={15} /></span><span className="k-icon-btn"><ChevronRight size={15} /></span><span className="k-btn ghost">Week <ChevronDown size={13} /></span><SharePlan eventId={e.id} /></div></div>
+          <div className="k-row" style={{ gap: 8 }}><Link className="k-btn ghost" href={pq({ from: null })} scroll={false}>Today</Link>{win !== "all" && <><Link className="k-icon-btn" href={pq({ from: shift(-1) })} aria-label={`Previous ${win}`} scroll={false}><ChevronLeft size={15} /></Link><b className="k-small cp-win">{winLabel}</b><Link className="k-icon-btn" href={pq({ from: shift(1) })} aria-label={`Next ${win}`} scroll={false}><ChevronRight size={15} /></Link></>}<Suspense><UrlSelect param="win" value={win === "all" ? "" : win} label="Timeline range" options={[{ value: "", label: "All dates" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} /></Suspense><SharePlan eventId={e.id} /></div></div>
         <div className={`cp-cols ${tab}`}>
-          {tab !== "checklist" && tab !== "day" && <div className="cp-tl"><h3>Planning timeline</h3><p className="k-small">Key milestones and upcoming tasks.</p>
+          {tab !== "checklist" && tab !== "day" && <div className="cp-tl"><h3>Planning timeline</h3><p className="k-small">{win === "all" ? "Key milestones and upcoming tasks." : `Tasks due ${win === "week" ? "this week" : "this month"} of the range shown.`}</p>
             {[...byMonth.entries()].map(([m, list], i) => <div key={m} className="cp-month"><div className="cp-month-h">{i === 1 ? <ChevronDown size={14} /> : <ChevronDown size={14} />}<b>{m}</b>{i === 1 ? <ChevronDown size={14} className="k-muted" style={{ marginLeft: "auto" }} /> : <ChevronUp size={14} className="k-muted" style={{ marginLeft: "auto" }} />}</div>
               <ul>{list.map(t => <li key={t.id}>{t.status === "done" ? <CheckCircle2 size={18} fill="#10b981" color="#fff" /> : <Circle size={18} className="k-muted" />}<span className="k-grow"><b>{t.title}</b>{t.assignee_name && t.assignee_name !== "You" && <small>{t.assignee_name}</small>}</span><span className="k-xs k-muted">{dayMonth(t.due_at)}</span></li>)}</ul></div>)}
             {e.starts_at && <div className="cp-month"><ul><li><Sun size={18} color="#f59e0b" /><b className="k-grow">Event day</b><span className="k-xs k-muted">{dayMonth(e.starts_at)}</span></li></ul></div>}</div>}
@@ -64,9 +76,8 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
           return <li key={p.id} data-first={i === 0}><span className="cp-dl-t">{time12(p.starts_at)}</span><i /><div className="cp-dl-card"><span className="cp-dl-ic" style={{ color: col, background: `color-mix(in srgb, ${col} 10%, #fff)` }}><I size={15} /></span><span className="k-grow"><b>{p.title}</b><small>{p.detail}</small></span>{/* eslint-disable-next-line @next/next/no-img-element */}{img && <img src={img} alt="" />}<MoreHorizontal size={14} className="k-muted" /></div></li>; })}</ol>
         <AddDayItem eventId={e.id} /></section>
     </div>
-    <section className="ce-card cp-agent"><span className="cp-agent-ic"><Sparkles size={22} /></span><div><div className="k-row" style={{ gap: 8 }}><b style={{ fontSize: 17, color: "var(--k-blue)" }}>Gala Agent</b><Beta /></div><p className="k-xs">I can help you plan your timeline, chase providers, and suggest what to do next.</p></div>
-      <div className="cp-agent-ask"><AgentAsk scope="customer" eventId={e.id} placeholder="Ask me anything about your event..." compact /></div>
-      {([[Wand2, "Suggest a timeline for my wedding"], [Sparkles, "What should I do this week?"], [MessageSquareMore, "Chase my pending quotes"], [Send, "Help me finalise the menu"]] as const).map(([I, l]) => <Link key={l} className="cp-chip" href={`/account/events/${e.id}/plan?ask=${encodeURIComponent(l)}`}><I size={13} />{l}</Link>)}</section>
+    <section className="ce-card cp-agent"><span className="cp-agent-ic"><ClipboardList size={22} /></span><div><div className="k-row" style={{ gap: 8 }}><b style={{ fontSize: 17, color: "var(--k-blue)" }}>What to do next</b></div><p className="k-xs">Jump straight to the parts of your plan that usually need attention.</p></div>
+      {([[Wand2, "Book your essentials", `/account/events/${e.id}/build`], [Sparkles, "This week’s checklist", `/account/events/${e.id}/plan?tab=checklist`], [MessageSquareMore, "Message your providers", `/account/events/${e.id}/messages`], [Send, "Guests & invitations", `/account/events/${e.id}/guests-tickets`]] as const).map(([I, l, h]) => <Link key={l} className="cp-chip" href={h}><I size={13} />{l}</Link>)}</section>
   </div>;
 }
 function DayPlan({ e, day, eventId }: { e: { starts_at: string | null }; day: { id: string; title: string; detail: string; starts_at: string }[]; eventId: string }) {

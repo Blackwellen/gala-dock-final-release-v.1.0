@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Layers, X, Eye, EyeOff } from "lucide-react";
+import { pwaDesignFor } from "@/lib/pwa/design-references";
 
 // Route → reference (first match wins). Used to preselect the right design.
 const MAP: [RegExp, string, string?][] = [
@@ -40,9 +41,11 @@ const KEY = "gd-overlay";
 /** Dev-only pixel overlay: reference image over the live page, opacity / difference blend, width-matched. Toggle: Alt+O. */
 export function DesignOverlay() {
   const pathname = usePathname(); const params = useSearchParams();
+  const [pwa,setPwa]=useState(false);
+  useEffect(()=>{const media=matchMedia('(max-width:1279px)');const update=()=>setPwa(media.matches);update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[]);
   const [files, setFiles] = useState<string[]>([]); const [open, setOpen] = useState(false); const [show, setShow] = useState(false);
   const [file, setFile] = useState(""); const [opacity, setOpacity] = useState(.5); const [diff, setDiff] = useState(false); const [dy, setDy] = useState(0); const [mounted, setMounted] = useState(false);
-  const suggested = useMemo(() => { const m = MAP.find(([re]) => re.test(pathname)); return m ? `customer & Organizer workspace/${m[1]}` : ""; }, [pathname]);
+  const suggested = useMemo(() => { const mobile=pwa ? pwaDesignFor(pathname,new URLSearchParams(params.toString())) : null;if(mobile)return mobile.file;const m = MAP.find(([re]) => re.test(pathname)); return m ? `customer & Organizer workspace/${m[1]}` : ""; }, [pathname,params,pwa]);
   useEffect(() => { queueMicrotask(() => { setMounted(true); try { const s = JSON.parse(localStorage.getItem(KEY) ?? "{}"); if (s.opacity) setOpacity(s.opacity); if (s.diff) setDiff(s.diff); } catch { /* ignore */ } }); }, []);
   useEffect(() => { if (!open || files.length) return; fetch("/api/dev/designs").then(r => r.json()).then(j => setFiles(j.files ?? [])).catch(() => setFiles([])); }, [open, files.length]);
   useEffect(() => { const next = params.get("ref") ? `customer & Organizer workspace/${params.get("ref")}` : suggested; queueMicrotask(() => setFile(next)); }, [suggested, params]);

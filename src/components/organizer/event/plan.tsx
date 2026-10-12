@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AreaFilter } from "./area-filter";
 import { FileText, CalendarRange, Building2, Users, UserCheck, CalendarDays, ListChecks, Folder, PenLine, CheckCircle2, Circle, Sparkles, MoreHorizontal, Wand2, Search, Layers, UtensilsCrossed, Wine, Shield, Tent, CreditCard, User, Volume2, ArrowRight, Clock3, MapPin, Store, AlertTriangle, Download, Upload, Ticket } from "lucide-react";
 import { Card, Chip, Bar, Avatar, Beta, Empty } from "@/components/kit";
 import { money, num, dateShort, time, dayMonth, relative, eventTypeLabel } from "@/lib/format";
@@ -102,9 +103,9 @@ export function ProgrammeList({ e, d, full }: { e: ProEvent; d: EventData; full?
   const areas = [...new Set(rows.map(r => r.area).filter(Boolean))];
   return <>
     <div className="k-between" style={{ marginBottom: 10 }}><div><h2 className="ov-h" style={{ fontSize: 15.5 }}>Programme</h2><p className="k-small">{m.hint}</p></div>
-      <div className="k-row" style={{ gap: 8 }}><span className="k-small k-muted">View by:</span><span className="k-btn ghost sm">{areas[0] ?? m.defaults[0]}</span><AddProgrammeButton eventId={e.id} kind="programme" defaultDate={e.starts_at} label={m.addLabel} /><Link className="k-btn outline sm" href={`/organizer/agent?event=${e.id}&goal=${encodeURIComponent(`Import and structure the programme for ${e.name}`)}`}><Download size={13} />Import</Link></div></div>
+      <div className="k-row" style={{ gap: 8 }}>{areas.length > 1 && <><span className="k-small k-muted">View by:</span><AreaFilter areas={areas as string[]} label={m.areaLabel} target="prog" /></>}<AddProgrammeButton eventId={e.id} kind="programme" defaultDate={e.starts_at} label={m.addLabel} /><Link className="k-btn outline sm" href={`/organizer/agent?event=${e.id}&goal=${encodeURIComponent(`Import and structure the programme for ${e.name}`)}`}><Download size={13} />Import</Link></div></div>
     {rows.length === 0 ? <Empty icon={CalendarRange} title="No programme yet" text={`Add ${m.areaLabel.toLowerCase()} timings, or ask Gala Agent to draft a ${eventTypeLabel(e.event_type).toLowerCase()} programme.`} /> :
-      <ol className="pl-prog">{rows.slice(0, full ? 100 : 7).map(p => <li key={p.id}><span className="pl-time">{time(p.starts_at)}</span><i className="pl-node" />{/* eslint-disable-next-line @next/next/no-img-element */}{p.image ? <img src={p.image} alt="" /> : <span className="pl-img-ph" />}<div className="k-grow"><b>{p.title}</b><small>{p.detail}</small></div><Chip tone={p.area === "Public" ? "green" : p.area === "Operations" ? "green" : "purple"}>{p.area || "—"}</Chip><span className="pl-dur">{p.area === "Public" || p.area === "Operations" ? "" : `${p.duration_minutes} min`}</span><ProgrammeItemMenu eventId={e.id} itemId={p.id} title={p.title} /></li>)}</ol>}
+      <ol className="pl-prog" data-areas="prog">{rows.slice(0, full ? 100 : 7).map(p => <li key={p.id} data-area={p.area ?? ""}><span className="pl-time">{time(p.starts_at)}</span><i className="pl-node" />{/* eslint-disable-next-line @next/next/no-img-element */}{p.image ? <img src={p.image} alt="" /> : <span className="pl-img-ph" />}<div className="k-grow"><b>{p.title}</b><small>{p.detail}</small></div><Chip tone={p.area === "Public" ? "green" : p.area === "Operations" ? "green" : "purple"}>{p.area || "—"}</Chip><span className="pl-dur">{p.area === "Public" || p.area === "Operations" ? "" : `${p.duration_minutes} min`}</span><ProgrammeItemMenu eventId={e.id} itemId={p.id} title={p.title} /></li>)}</ol>}
   </>;
 }
 

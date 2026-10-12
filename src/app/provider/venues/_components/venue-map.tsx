@@ -126,13 +126,15 @@ export function MapDefs() {
 }
 
 /** Read-only venue map (overview, space location). Pointer props are optional for light interactivity. */
-export function VenueMap({ elements, spaces, dim, selected, selectedIndex = null, zoom = 1, className = "", onElDown, onCanvasDown, onCanvasMove, onCanvasUp, labelSize = 13, svgRef }: {
+export function VenueMap({ elements, spaces, dim, selected, selectedIndex = null, zoom = 1, className = "", onElDown, onCanvasDown, onCanvasMove, onCanvasUp, labelSize = 13, svgRef, focus }: {
   elements: MapEl[]; spaces: MapSpace[]; dim?: (spaceId: string | undefined) => boolean; selected?: string | null; selectedIndex?: number | null; zoom?: number; className?: string; labelSize?: number;
   svgRef?: Ref<SVGSVGElement>; onElDown?: (e: ReactPointerEvent<SVGGElement>, index: number) => void; onCanvasDown?: (e: ReactPointerEvent<SVGSVGElement>) => void;
   onCanvasMove?: (e: ReactPointerEvent<SVGSVGElement>) => void; onCanvasUp?: () => void;
+  /** Point to keep in the middle when zoomed in (e.g. the selected space), clamped to the plan. */ focus?: { x: number; y: number } | null;
 }) {
   const span = mapBounds(elements);
-  const vw = span.w / zoom, vh = span.h / zoom, vx = (span.w - vw) / 2, vy = (span.h - vh) / 2;
+  const vw = span.w / zoom, vh = span.h / zoom;
+  const vx = focus ? Math.min(Math.max(0, focus.x - vw / 2), span.w - vw) : (span.w - vw) / 2, vy = focus ? Math.min(Math.max(0, focus.y - vh / 2), span.h - vh) : (span.h - vh) / 2;
   const hasBase = elements.some(e => e.type === "basemap" && !e.hidden);
   return <svg ref={svgRef} className={`vm ${className}`} viewBox={`${vx} ${vy} ${vw} ${vh}`} role="img" aria-label="Venue floor plan" onPointerDown={onCanvasDown} onPointerMove={onCanvasMove} onPointerUp={onCanvasUp} onPointerCancel={onCanvasUp} preserveAspectRatio="xMidYMid meet">
     <MapDefs />

@@ -11,12 +11,12 @@ import { Card, Footer, gbp2, toLocal, fromLocal, uid } from "./ui";
 
 type A = ProSettings["access"];
 
-export function StepAccess({ data, base }: { data: ProSetup; base: string }) {
+export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref = `${base}?step=3` }: { data: ProSetup; base: string; nextHref?: string; backHref?: string }) {
   const router = useRouter(); const { run, pending } = useAction(); const e = data.event;
   const [a, setA] = useState<A>(() => ({ ...data.pro.access, refund_cutoff: data.pro.access.refund_cutoff ?? (e.starts_at ? new Date(Date.parse(e.starts_at) - 864e5).toISOString() : null), age_text: data.pro.access.age_text || (data.pro.sales.min_age ? `${data.pro.sales.min_age}+ only` : "") }));
   const set = (p: Partial<A>) => setA(x => ({ ...x, ...p }));
   const ex = data.tiers.find(t => t.price > 0); const f = feeExample(ex?.price ?? 35, a.fee_display);
-  const save = async (next: boolean) => { const r = await run(() => saveAccess(e.id, a), { refresh: false }); if (r.ok) router.push(next ? `${base}?step=5` : `/organizer/events/${e.id}?tab=sell`); };
+  const save = async (next: boolean) => { const r = await run(() => saveAccess(e.id, a), { refresh: false }); if (r.ok) router.push(next ? nextHref : `/organizer/events/${e.id}?tab=sell`); };
   const accessibleSecs = data.pro.sections.filter(s => s.type === "accessible").reduce((n, s) => n + s.capacity, 0);
   const holdSecs = data.pro.sections.filter(s => s.type === "hold").reduce((n, s) => n + s.capacity, 0);
 
@@ -76,6 +76,6 @@ export function StepAccess({ data, base }: { data: ProSetup; base: string }) {
         {a.age_message && <small className="tp-hint">This event is {a.age_text || "age restricted"}. Valid ID may be required on entry.</small>}</div>
         <label className="tp-f"><span>Important event information</span><div className="tp-rte"><textarea maxLength={2000} placeholder="Please arrive early, bring valid ID and check the event FAQ for full details on entry, security and accessibility." value={a.info_text} onChange={x => set({ info_text: x.target.value })} /><small>{a.info_text.length}/2000</small></div></label></div>
     </Card>
-    <Footer backHref={`${base}?step=3`} pending={pending} onDraft={() => void save(false)} onNext={() => void save(true)} />
+    <Footer backHref={backHref} pending={pending} onDraft={() => void save(false)} onNext={() => void save(true)} />
   </>;
 }

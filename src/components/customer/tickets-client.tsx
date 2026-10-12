@@ -54,10 +54,9 @@ export function TransferDialog({ open, onClose, ticketId, name }: { open: boolea
   </Dialog>;
 }
 export function ResaleDialog({ open, onClose, ticketId, name }: { open: boolean; onClose: () => void; ticketId: string; name: string }) {
-  const { run, pending } = useAction();
   return <Dialog open={open} onClose={onClose} title={`Sell on official resale`} sub={`List your ${name} ticket at face value. Your QR code is paused while it's listed.`}>
-    <ul className="tk-rules">{["Sold at face value — no mark-ups, no touting", "You're paid to your original payment method when it sells", "Cancel any time before it sells and get a fresh QR code", "If it doesn't sell, your ticket stays yours"].map(t => <li key={t}><CheckCircle2 size={16} />{t}</li>)}</ul>
-    <div className="k-row" style={{ justifyContent: "flex-end", marginTop: 14 }}><button className="k-btn ghost" onClick={onClose}>Not now</button><button className="k-btn primary" disabled={pending} onClick={async () => { const r = await run(() => resaleTicket(ticketId, false)); if (r.ok) onClose(); }}>{pending && <Loader2 size={15} className="k-spin" />}List for resale</button></div>
+    <ul className="tk-rules">{["Sold at the price you paid — no mark-ups", "Proceeds are recorded as a pending payout after a completed sale", "Withdraw while no buyer has an active reservation; a fresh QR code is issued", "Your QR code is paused while the ticket is listed"].map(t => <li key={t}><CheckCircle2 size={16} />{t}</li>)}</ul>
+    <div className="k-row" style={{ justifyContent: "flex-end", marginTop: 14 }}><button className="k-btn ghost" onClick={onClose}>Not now</button><Link className="k-btn primary" href={`/account/tickets/${ticketId}/resale?step=1`} onClick={onClose}>Review eligibility and price</Link></div>
   </Dialog>;
 }
 

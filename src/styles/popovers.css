@@ -29,3 +29,34 @@
 .k-pop .k-menu-sep { margin: 5px 6px; background: #eef1f8; }
 
 @media (prefers-reduced-motion: reduce) { .k-pop .k-menu-item { transition: none; } }
+
+/* ── Premium select list (src/components/shared/select-upgrade.tsx) ── */
+.sx-pop { display: flex; flex-direction: column; min-width: 200px; padding: 6px; background: #fff; border: 1px solid rgba(20, 28, 74, .09); border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16, 24, 64, .05), 0 8px 24px -6px rgba(16, 24, 64, .14), 0 24px 48px -12px rgba(16, 24, 64, .16); font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  animation: sx-in .12s ease-out; }
+@keyframes sx-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+.sx-search { display: flex; align-items: center; gap: 8px; height: 36px; margin: 0 0 6px; padding: 0 10px; border: 1px solid #e4e9f6; border-radius: 9px; background: #f8faff; color: #5157a4; flex-shrink: 0; }
+.sx-search:focus-within { border-color: #a9bdf7; background: #fff; box-shadow: 0 0 0 3px #e6edff; }
+.sx-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 13px; color: #0d0d63; }
+.sx-pop ul { list-style: none; margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; outline: none; scrollbar-width: thin; scrollbar-color: #cdd5eb transparent; }
+.sx-pop ul::-webkit-scrollbar { width: 10px; } .sx-pop ul::-webkit-scrollbar-thumb { background: #d3daee; border-radius: 10px; border: 3px solid #fff; }
+.sx-group { display: block; padding: 10px 10px 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #6a70b0; }
+.sx-opt { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 34px; padding: 7px 10px; border-radius: 8px; font-size: 13px; line-height: 1.3; color: #1d2068; cursor: pointer; }
+.sx-opt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sx-opt.on { background: #f2f5ff; color: #0a0d5e; }
+.sx-opt.sel { font-weight: 600; color: #1d40e8; } .sx-opt.sel svg { flex-shrink: 0; color: #1d40e8; }
+.sx-opt[aria-disabled] { color: #a3a8cc; cursor: not-allowed; background: none; }
+.sx-empty { padding: 14px 10px; font-size: 12.5px; color: #6a70b0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .sx-pop { animation: none; } }
+
+/* ── Closed select boxes: one arrow, hover and focus treatment everywhere ── */
+select:not([multiple]):not([size]) { cursor: pointer; transition: border-color .12s, box-shadow .12s; }
+select:not([multiple]):not([size]):hover:not(:disabled) { border-color: #b9c8f4; }
+select:not([multiple]):not([size]):focus-visible { outline: none; border-color: #7f9cf5; box-shadow: 0 0 0 3px #e3eaff; }
+select:disabled { cursor: not-allowed; opacity: .6; }
+/* Selects without a designed arrow get the house chevron. */
+select.k-input:not([multiple]), select.ce2-in, select:not([class]):not([multiple]):not([size]) {
+  appearance: none; -webkit-appearance: none; padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232a3157' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 11px center; background-size: 12px;
+}

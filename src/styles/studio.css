@@ -176,3 +176,32 @@
 .sc-acts{display:flex;justify-content:flex-end;gap:8px}
 .sc-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid #e3e8f5;border-radius:8px;background:#fff;font:inherit;font-weight:600;color:inherit;cursor:pointer}
 .sc-btn.primary{background:#0038fd;border-color:#0038fd;color:#fff}.sc-btn:disabled{opacity:.55;cursor:default}
+/* The inspector is explicitly opened on touch layouts so it cannot cover the canvas or library tabs. */
+.st-properties-toggle,.st-properties-close{display:none}
+@media (max-width:1100px){
+ .st .st-properties-toggle,.st .st-properties-close{display:inline-flex;min-height:44px}
+ .st .st-props{display:none;max-height:60dvh;padding-bottom:max(16px,env(safe-area-inset-bottom));box-sizing:border-box}
+ .st .st-props.open{display:flex}
+ .st .st-icon,.st .st-btn{min-height:44px}.st .st-icon{min-width:44px}
+ .st .st-top{flex-wrap:wrap;padding-top:max(8px,env(safe-area-inset-top))}
+ .st .st-tabs{padding-bottom:max(6px,env(safe-area-inset-bottom))}.st .st-tabs button{min-height:44px}
+ .st .st-tools{display:flex;overflow-x:auto;max-width:100%}
+}
+@media (max-width:720px){
+ .st .st-title{display:block;flex:1;min-width:120px;max-width:none;font-size:16px}
+ .st .st-top .st-save{max-width:100%;white-space:normal}
+ .st .st-tools{order:2;width:100%}
+ .st .st-panel{max-height:30dvh}.st .st-stage{min-height:120px}
+}
+@media (max-width:1100px) and (max-height:500px){
+ .st .st-body{grid-template-columns:60px 200px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+ .st .st-tabs{order:0;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+ .st .st-panel{order:0;max-height:none}.st .st-stage{order:0;min-height:0;padding:8px}
+}
+/* Native create dialog: viewport-safe, keyboard-contained and independent of editor popovers. */
+dialog.st-new-design { position:fixed;inset:0;margin:auto;width:min(540px,calc(100vw - 24px));max-height:calc(100dvh - 32px);height:fit-content;box-sizing:border-box;border:1px solid #e4e8f1;border-radius:18px;transform:none;overflow:auto;padding:18px;background:#fff;color:#090a52; }
+dialog.st-new-design:not([open]) { display:none; }
+dialog.st-new-design::backdrop { background:#090a286b; }
+.st-new-design button,.st-new-design input,.st-new-design select { min-height:44px; }
+.st-new-design .st-icon { min-width:44px; }.st-new-design :focus-visible { outline:2px solid #0b08f8;outline-offset:2px; }
+@media(max-width:600px){.st-new-design input,.st-new-design select{font-size:16px}}

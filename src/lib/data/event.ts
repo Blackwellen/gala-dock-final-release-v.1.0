@@ -17,8 +17,9 @@ export async function getProEvent(ctx: OrganizerCtx, id: string) {
 }
 
 /** Everything the five tabs need, loaded in parallel (each tab reads what it uses). */
-export async function loadEventData(ctx: OrganizerCtx, eventId: string) {
+export async function loadEventData(ctx: OrganizerCtx, eventId: string, days = 30) {
   const sb = ctx.supabase;
+  const since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 10);
   const [tiers, items, programme, tasks, guests, shifts, payments, txs, incidents, promos, promoters, media, metrics, series, checkins, crew, invoices, codes, requests] = await Promise.all([
     sb.from("ticket_tiers").select("*").eq("event_id", eventId).order("sort"),
     sb.from("build_items").select("*").eq("event_id", eventId).order("sort"),
@@ -32,8 +33,8 @@ export async function loadEventData(ctx: OrganizerCtx, eventId: string) {
     sb.from("promotions").select("*").eq("event_id", eventId).order("scheduled_at"),
     sb.from("promoters").select("*").eq("event_id", eventId).order("tickets_sold", { ascending: false }),
     sb.from("media_assets").select("*").eq("event_id", eventId).order("created_at", { ascending: false }),
-    sb.from("event_metrics_daily").select("*").eq("event_id", eventId).order("day"),
-    sb.rpc("ticket_sales_series", { p_event: eventId, p_days: 30 }),
+    sb.from("event_metrics_daily").select("*").eq("event_id", eventId).gte("day", since).order("day"),
+    sb.rpc("ticket_sales_series", { p_event: eventId, p_days: days }),
     sb.from("check_ins").select("result,created_at").eq("event_id", eventId),
     sb.from("crew_members").select("id,name,role,avatar,status,member_type").eq("workspace_id", ctx.workspace.id),
     ctx.canMoney ? sb.from("invoices").select("id,number,client_name,total,amount_paid,status,due_date").eq("event_id", eventId) : Promise.resolve({ data: [] }),
@@ -63,7 +64,7 @@ export async function loadEventData(ctx: OrganizerCtx, eventId: string) {
   return {
     tiers: T, items: B, primary, programme: programme.data ?? [], tasks: tasks.data ?? [], guests: guests.data ?? [], shifts: S, crewMap,
     payments: payments.data ?? [], txs: txs.data ?? [], incidents: incidents.data ?? [], promos: promos.data ?? [], promoters: promoters.data ?? [],
-    media: media.data ?? [], metrics: metrics.data ?? [], series: (series.data ?? []) as { day: string; tickets: number; gross: number }[],
+    rangeDays: days, media: media.data ?? [], metrics: metrics.data ?? [], series: (series.data ?? []) as { day: string; tickets: number; gross: number }[],
     checkins: checkins.data ?? [], invoices: invoices.data ?? [], codes: codes.data ?? [], requests: requests.data ?? [],
     sold, cap, ticketRevenue, potential, committed, estimated, costsActual, otherIncome, assigned, crewNeeded,
     vmap: vmap ?? null, activity: (activity ?? []) as { id: number; event: string; text: string; actor: string; created_at: string }[],

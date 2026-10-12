@@ -5,8 +5,8 @@ import { getMyEvent, type MyEventFull } from "@/lib/data/customer-events";
 import { LISTING_COLS, type Listing } from "@/lib/data/marketplace";
 import { CuEventHeader } from "@/components/customer/event-header";
 import { ItemCta, ItemMenu, AddProviderDialog } from "@/components/customer/build-client";
-import { Beta } from "@/components/kit";
-import { AgentAsk } from "@/components/kit/client";
+
+
 import { CU_STATUS } from "../page";
 import { money } from "@/lib/format";
 import { buildCategoryOf } from "@/lib/build-categories";
@@ -112,9 +112,8 @@ export default async function BuildCanvas({ params, searchParams }: { params: Pr
         <section className="ce-card"><h2 className="ce-h2 sm">Event readiness</h2><div className="cb-ready"><span className="ce-ring" style={{ ["--v" as string]: score, width: 86, height: 86 }}><b style={{ fontSize: 18 }}>{score}%</b></span><div><b className="k-small" style={{ color: "var(--k-ink)" }}>{score >= 60 ? "You're making great progress!" : "Let's get the essentials in place"}</b><ul>{checks.map(([l, ok]) => <li key={l}>{ok ? <CheckCircle2 size={15} className="k-green" fill="#10b981" color="#fff" /> : <Circle size={15} className="k-muted" />}{l}</li>)}</ul></div></div></section>
         <section className="ce-card"><div className="k-between" style={{ marginBottom: 6 }}><h2 className="ce-h2 sm k-row" style={{ margin: 0, gap: 8 }}><span className="cb-miss-ic"><AlertCircle size={14} /></span>Missing essentials <span className="cb-badge">{missing.length}</span></h2><Link className="k-link" href={`/account/events/${e.id}/plan?tab=checklist`}>View all</Link></div>
           <div className="k-list">{missing.slice(0, 3).map(m => <Link key={m.title} href={m.href} className="k-li"><span className="cb-miss-ic soft"><AlertCircle size={13} /></span><span className="k-grow"><b className="k-small" style={{ color: "var(--k-ink)", fontWeight: 550 }}>{m.title}</b><div className="k-xs k-muted">{m.sub}</div></span><ChevronRight size={14} className="k-muted" /></Link>)}{!missing.length && <p className="k-small">All essentials are covered.</p>}</div></section>
-        <section className="ce-card"><div className="k-row" style={{ gap: 8, marginBottom: 6 }}><Sparkles size={20} className="k-blue" /><b style={{ fontSize: 15 }}>Gala Agent</b><Beta /></div><p className="k-small">I can help you build your event package, compare options and keep you on track.</p>
-          <div className="k-row k-wrap" style={{ gap: 6, margin: "10px 0" }}><Link className="cb-ask" href={`/plan?step=4&event=${e.id}`}><Wand2 size={12} />Build a full package for my budget</Link><Link className="cb-ask" href={`/account/events/${e.id}/build?cat=media`}>Find a wedding photographer</Link><Link className="cb-ask" href={`/account/events/${e.id}/build?cat=entertainment`}>Suggest entertainment options</Link></div>
-          <AgentAsk scope="customer" eventId={e.id} placeholder="Ask me anything about your event..." compact /></section>
+        <section className="ce-card"><div className="k-row" style={{ gap: 8, marginBottom: 6 }}><Lightbulb size={20} className="k-blue" /><b style={{ fontSize: 15 }}>Need ideas?</b></div><p className="k-small">Start from a package that fits your budget, or browse a category.</p>
+          <div className="k-row k-wrap" style={{ gap: 6, margin: "10px 0" }}><Link className="cb-ask" href={`/plan?step=4&event=${e.id}`}><Wand2 size={12} />Build a full package for my budget</Link><Link className="cb-ask" href={`/account/events/${e.id}/build?cat=media`}>Find a wedding photographer</Link><Link className="cb-ask" href={`/account/events/${e.id}/build?cat=entertainment`}>Suggest entertainment options</Link></div></section>
       </div>
     </div>
   </div>;

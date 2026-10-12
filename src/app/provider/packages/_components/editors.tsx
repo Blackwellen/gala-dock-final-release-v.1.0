@@ -48,7 +48,7 @@ export type DayState = "available" | "partial" | "unavailable" | "blocked";
 export function AvailabilityCalendar({ days, blocked: initial, editable = false, months = 1, side }: { days: Record<string, DayState>; blocked: string[]; editable?: boolean; months?: number; side?: ReactNode }) {
   const [blocked, setBlocked] = useState<string[]>(initial);
   const [offset, setOffset] = useState(0);
-  const first = useMemo(() => { const k = Object.keys(days).sort()[0] ?? "2026-10-01"; return new Date(`${k.slice(0, 7)}-01T12:00:00Z`); }, [days]);
+  const first = useMemo(() => { const k = Object.keys(days).sort()[0] ?? new Date().toISOString().slice(0, 8) + "01"; return new Date(`${k.slice(0, 7)}-01T12:00:00Z`); }, [days]);
   const month = (o: number) => { const d = new Date(first); d.setUTCMonth(d.getUTCMonth() + o); return d; };
   const grid = (m: Date) => { const y = m.getUTCFullYear(), mo = m.getUTCMonth(), lead = (new Date(Date.UTC(y, mo, 1)).getUTCDay() + 6) % 7, len = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate();
     return [...Array(lead).fill(null), ...Array.from({ length: len }, (_, i) => `${y}-${String(mo + 1).padStart(2, "0")}-${String(i + 1).padStart(2, "0")}`)]; };

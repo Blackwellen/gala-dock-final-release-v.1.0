@@ -17,14 +17,16 @@ import {
 import { Suspense } from "react";
 import { DesignScale, DensityPicker } from "./design-scale";
 import { DesignOverlay } from "./design-overlay";
+import { switchWorkspace as switchAnyWorkspace } from "@/lib/actions/shell";
+import { markNotificationsRead } from "@/lib/actions/shell";
 
 const DEV = process.env.NODE_ENV === "development";
 
-/** Official Gala Dock lockup from /public/brand. The PNG carries transparent padding; it is offset so the artwork sits on the design's 174 px footprint. */
+/** The primary app header uses the official circular symbol alone. */
 export function BrandLogo({ href = "/" }: { href?: string }) {
-  return <Link href={href} className="ws-logo" aria-label="Gala Dock home">
+  return <Link href={href} className="ws-logo ws-logo-mark" aria-label="Gala Dock home">
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={202} height={52} />
+    <img src="/brand/favicon-48.png" alt="" width={44} height={44} />
   </Link>;
 }
 function ShellTools() {
@@ -135,19 +137,26 @@ export type ProviderShellProps = {
   user: { name: string; avatar: string };
   counts: { opportunities: number; bookings: number; messages: number; notifications: number };
   messages: RecentConversation[]; notifications: Notice[];
-  workspaces: { id: string; name: string }[]; activeId: string;
+  workspaces: { id: string; name: string; kind?: string; role?: string }[]; activeId: string;
   switchWorkspace: (id: string) => Promise<{ ok: boolean; error?: string; redirect?: string }>;
+  canManage: boolean;
+  canFinance: boolean;
+  canDesign: boolean;
 };
 
-function WorkspaceOption({ id, name, active, onSwitch }: { id: string; name: string; active: boolean; onSwitch: (id: string) => Promise<{ ok: boolean; error?: string }> }) {
-  const [pending, start] = useTransition();
+const KIND_LABEL: Record<string, string> = { organizer: "Organizer", provider: "Provider", partner: "Partner", promoter: "Promoter" };
+/** One workspace row. Provider workspaces switch in place (Provider cookie + last used); any other kind switches through the
+ *  shared action and opens that workspace's home, exactly like the Organizer switcher. */
+function WorkspaceOption({ id, name, kind = "provider", role, active, onSwitch }: { id: string; name: string; kind?: string; role?: string; active: boolean; onSwitch: (id: string) => Promise<{ ok: boolean; error?: string; redirect?: string }> }) {
+  const [pending, start] = useTransition(); const [err, setErr] = useState("");
   const router = useRouter();
-  return <button type="button" role="menuitemradio" aria-checked={active} disabled={active || pending}
-    onClick={() => start(async () => { const r = await onSwitch(id); if (r.ok) { router.push("/provider"); router.refresh(); } })}>
-    <Building2 aria-hidden="true" /><span>{name}</span>{active && <Check className="ws-check" aria-hidden="true" />}</button>;
+  return <button type="button" role="menuitemradio" aria-checked={active} disabled={active || pending} title={err || undefined}
+    onClick={() => start(async () => { setErr(""); const r = kind === "provider" ? await onSwitch(id) : await switchAnyWorkspace(id);
+      if (r.ok) { router.push(r.redirect ?? "/provider"); router.refresh(); } else setErr(r.error ?? "Couldn’t switch workspace"); })}>
+    <Building2 aria-hidden="true" /><span className="ws-ws-name">{name}<small>{KIND_LABEL[kind] ?? kind}{role ? ` · ${role}` : ""}{err ? ` · ${err}` : ""}</small></span>{active && <Check className="ws-check" aria-hidden="true" />}</button>;
 }
 
-export function ProviderShell({ children, workspace, user, counts, messages, notifications, workspaces, activeId, switchWorkspace }: ProviderShellProps) {
+export function ProviderShell({ children, workspace, user, counts, messages, notifications, workspaces, activeId, switchWorkspace, canManage, canFinance, canDesign }: ProviderShellProps) {
   const pathname = usePathname();
   // The drawer belongs to the page it was opened on, so navigating closes it without an effect.
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -178,13 +187,26 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/packages/new?step=1", label: "Package" },
     { href: "/provider/calendar?action=block", label: "Availability block" },
   ].filter(Boolean) as { href: string; label: string }[];
-  const mobileMenu: NavEntry[] = nav.map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
+  const mobileMenu: NavEntry[] = nav.filter(n => n.label !== "Money" || canFinance).map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
   return <div className={`ws-app provider ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={mobileMenu} title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} />
+    <MobileNav menu={[...mobileMenu, { href: "/provider/inbox", label: "Messages", icon: MessageSquareText }, ...listingChildren, { href: "/help", label: "Help", icon: CircleHelp }]} tabs={nav.filter(n => ["Home", "Bookings", "Calendar", "Listings"].includes(n.label)).map(n => n.href === "/provider/listings" ? { ...n, match: /^\/provider\/(listings|venues|services|packages)(\/|$)/ } : n)}
+      title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} create={[...(canManage ? create : []), ...(canDesign ? [{ href: "/provider/media?create=1", label: "New design", icon: Palette }] : [])]}
+      messagesHref="/provider/inbox" unreadMessages={messages.some(t => t.unread)} notifications={notifications.map(n => ({ ...n, link: n.href }))} unread={counts.notifications} onReadNotifications={() => { if (counts.notifications) void markNotificationsRead(); }}
+      workspaceSwitcher={<div role="menu" aria-label="Switch workspace">{workspaces.map(w => <WorkspaceOption key={w.id} {...w} active={w.id === activeId} onSwitch={switchWorkspace} />)}</div>} />
     <ShellTools />
     <header className="ws-topbar pwa-hide-desktop-nav">
       <div className="ws-top-l"><MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
-      <div className="ws-brand"><BrandLogo href="/provider" /></div></div>
+      <div className="ws-brand"><BrandLogo href="/provider" /></div>
+      <Popover label="Switch workspace" className="ws-switcher ws-switcher-top" align="left" trigger={<>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {workspace.cover ? <img src={workspace.cover} alt="" width={28} height={28} /> : <span className="ws-switcher-blank"><Building2 aria-hidden="true" /></span>}
+        <span><b>{workspace.name}</b><small>{workspace.capabilityLabel}</small></span><ChevronDown aria-hidden="true" /></>}>
+        <div className="ws-pop-head"><b>Your workspaces</b><small>{workspaces.length} available</small></div>
+        {workspaces.map(w => <WorkspaceOption key={w.id} id={w.id} name={w.name} kind={w.kind} role={w.role} active={w.id === activeId} onSwitch={switchWorkspace} />)}
+        <Link href="/discover" role="menuitem">Customer app</Link>
+        <Link href="/provider/settings?tab=capabilities" role="menuitem">Manage capabilities</Link>
+        <Link href="/onboarding" role="menuitem">Create a workspace</Link>
+      </Popover></div>
       <div className="ws-gs"><GlobalSearch seat={activeId} placeholder="Search events, bookings, venues, services, or contacts..." /></div>
       <div className="ws-actions">
         <Popover label="Create" className="ws-create" trigger={<span className="ws-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></span>}>
@@ -203,15 +225,6 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
       </div>
     </header>
     <nav className="ws-sidebar pwa-hide-desktop-nav" aria-label="Provider workspace">
-      <Popover label="Switch workspace" className="ws-switcher" align="left" trigger={<>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {workspace.cover ? <img src={workspace.cover} alt="" width={52} height={52} /> : <span className="ws-switcher-blank"><Building2 aria-hidden="true" /></span>}
-        <span><b>{workspace.name}</b><small>{workspace.capabilityLabel}</small></span><ChevronDown aria-hidden="true" /></>}>
-        <div className="ws-pop-head"><b>Provider workspaces</b><small>{workspaces.length} available</small></div>
-        {workspaces.map(w => <WorkspaceOption key={w.id} id={w.id} name={w.name} active={w.id === activeId} onSwitch={switchWorkspace} />)}
-        <Link href="/provider/settings?tab=capabilities" role="menuitem">Manage capabilities</Link>
-        <Link href="/onboarding" role="menuitem">Add another workspace</Link>
-      </Popover>
       <NavList items={nav} pathname={pathname} />
       <Suspense fallback={<PromoCard title={<>Let Gala Agent<br />handle the admin</>} text="Get AI-powered confirmations, reminders, team assignments and more." href="/provider/agent" />}><ProviderPromo pathname={pathname} /></Suspense>
     </nav>
@@ -258,8 +271,9 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
   const nav = all.map(({ perm, ...item }) => ({ ...item, label: item.label, locked: perm ? ![perm].flat().some(p => permissions.includes(p)) : false }));
   const activeHref = [...nav].sort((a, b) => b.href.length - a.href.length).find(i => isActive(pathname, i))?.href;
   const mobileMenu: NavEntry[] = nav.filter(n => !n.locked).map(n => ({ href: n.href, label: n.label, icon: n.icon }));
+  const mobilePrimary: NavEntry[] = [...mobileMenu, { href: "/account", label: "Account", icon: Users }, { href: "/help", label: "Help", icon: CircleHelp }].slice(0, 4).map(n => ({ ...n, exact: n.href === "/admin" || n.href === "/account" }));
   return <div className={`ws-app admin ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={mobileMenu} title="Platform Admin" home="/admin" search={{ seat: null, placeholder: "Search users, events, orders, tickets…" }} />
+    <MobileNav menu={mobileMenu} tabs={mobilePrimary} title="Platform Admin" home="/admin" search={{ seat: null, placeholder: "Search users, events, orders, tickets…" }} notifications={alerts.map(n => ({ ...n, link: n.href }))} unread={counts.alerts} />
     <ShellTools />
     <header className="ws-topbar pwa-hide-desktop-nav">
       <div className="ws-top-l"><MobileToggle open={mobileOpen} setOpen={setMobileOpen} />

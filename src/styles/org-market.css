@@ -100,3 +100,5 @@
 .rq-top .pr-terms { gap: 4px; }
 .rq-grid .rs-flow { gap: 12px; }
 .qc-col { padding: 8px; }
+/* Map controls clear of the "View all in this area" bar; the pin card replaces the fixed centre card. */
+.mk-map .k-map .zoom { top: 56px; bottom: auto; }

@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { designFor, designMap } from "@/lib/workspace/design-map";
+import { pwaDesignFor, pwaDesignMap } from "@/lib/pwa/design-references";
 
 /**
  * Development-only design overlay. Ctrl+Shift+O (or the floating button) lays the reference design for the
@@ -11,7 +12,9 @@ import { designFor, designMap } from "@/lib/workspace/design-map";
  */
 export function DesignOverlay() {
   const pathname = usePathname(), sp = useSearchParams();
-  const auto = designFor(pathname, new URLSearchParams(sp.toString()));
+  const [pwa,setPwa]=useState(false);
+  useEffect(()=>{const media=matchMedia('(max-width:1279px)');const update=()=>setPwa(media.matches);update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[]);
+  const auto = (pwa ? pwaDesignFor(pathname,new URLSearchParams(sp.toString())) : null) ?? designFor(pathname, new URLSearchParams(sp.toString()));
   const [on, setOn] = useState(false);
   const [opacity, setOpacity] = useState(50);
   const [blend, setBlend] = useState<"normal" | "difference">("normal");
@@ -38,7 +41,7 @@ export function DesignOverlay() {
       {on && <>
         <select value={pick} onChange={e => setPick(e.target.value)} aria-label="Reference design">
           <option value="">{auto ? `Auto: ${auto.label}` : "No design mapped — pick one"}</option>
-          {designMap.map(d => <option key={d.label} value={d.file}>{d.label}</option>)}
+          {[...pwaDesignMap,...designMap].map(d => <option key={d.label} value={d.file}>{d.label}</option>)}
         </select>
         <label>Opacity <input type="range" min={0} max={100} value={opacity} onChange={e => setOpacity(Number(e.target.value))} /> {opacity}%</label>
         <label><input type="checkbox" checked={blend === "difference"} onChange={e => setBlend(e.target.checked ? "difference" : "normal")} /> Difference</label>

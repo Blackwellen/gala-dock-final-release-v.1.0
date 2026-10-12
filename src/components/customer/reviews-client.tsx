@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Star, MapPin, CalendarDays, ImagePlus, Plus, X, ArrowRight, MoreHorizontal, Loader2, Sparkles, MessageSquare, Flag, Pencil, Trash2 } from "lucide-react";
+import { Star, MapPin, CalendarDays, ImagePlus, Plus, X, ArrowRight, MoreHorizontal, Loader2, MessageSquare, Flag, Pencil, Trash2, FileText } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
 import { submitReview, deleteReview } from "@/lib/actions/reviews";
 import { confirmDialog } from "@/lib/ui/dialogs";
@@ -53,7 +53,7 @@ export function ReviewForm({ item, initial, draft }: { item: { id: string; title
       <div className="rv-item">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={item.image || "/assets/gd/oe-neon.webp"} alt="" /><span><b>{item.title}</b><small><MapPin size={13} />{item.location}</small><small><CalendarDays size={13} />{item.date}</small></span></div>
       {LABELS.map(([k, l]) => <div key={k} className="rv-dim"><span>{l}</span><Stars value={r[k]} onChange={n => setR(p => ({ ...p, [k]: n }))} label={l} /><small>{WORD[r[k]] || " "}</small></div>)}
     </div>
-    <div className="k-between" style={{ marginTop: 14 }}><label htmlFor="rv-body" className="rv-label">Your review</label><button type="button" className="k-link rv-draft" onClick={makeDraft}><Sparkles size={13} />Draft with Gala Agent</button></div>
+    <div className="k-between" style={{ marginTop: 14 }}><label htmlFor="rv-body" className="rv-label">Your review</label><button type="button" className="k-link rv-draft" onClick={makeDraft}><FileText size={13} />Start from a template</button></div>
     <span className="rv-ta"><textarea id="rv-body" value={body} maxLength={1000} onChange={e => setBody(e.target.value)} placeholder="Share your experience... What did you love? What could be improved? This helps other people plan their events." /><small>{body.length.toLocaleString()}/1,000</small></span>
     <div className="rv-photos"><button type="button" className="rv-add" onClick={() => file.current?.click()} disabled={uploading || photos.length >= 5}>{uploading ? <Loader2 size={16} className="k-spin" /> : <ImagePlus size={16} />}Add photos</button><small>You can add up to 5 photos.</small>
       <div className="rv-thumbs">{photos.map(p => <span key={p.path}>{p.url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.url} alt="" /> : null}<button type="button" aria-label="Remove photo" onClick={() => setPhotos(x => x.filter(y => y.path !== p.path))}><X size={12} /></button></span>)}{photos.length > 0 && photos.length < 5 && <button type="button" className="rv-more" aria-label="Add another photo" onClick={() => file.current?.click()}><Plus size={18} /></button>}</div>

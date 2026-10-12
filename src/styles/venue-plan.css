@@ -308,3 +308,12 @@ svg.vm{stroke-width:initial}
 .mb-props .dk-field,.mb-design .dk-field{display:grid;gap:3px}
 .mb-props .dk-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .mb-tabs button{white-space:nowrap}
+@media (max-width:1279px){
+ .mb .mb-bar>button,.mb .mb-zoom button,.mb .mb-acts button{min-width:44px;min-height:44px}
+ .mb .mb-bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .mb .mb-bar>button,.mb .mb-bar .mb-sep{flex-shrink:0}
+ .mb .mb-body{height:min(var(--mb-h,640px),65dvh);min-height:240px}
+ .mb.full{inset:8px 8px calc(var(--pwa-bottom,70px) + 8px)}
+ .mb .mb-side input,.mb .mb-side select{min-height:44px;font-size:16px}
+ .ep .ep-stats{flex-wrap:wrap}.ep .ep-stats>div{flex:1;min-width:110px}
+}

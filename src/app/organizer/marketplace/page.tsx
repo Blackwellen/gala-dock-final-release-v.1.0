@@ -30,6 +30,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   if (str(sp.verified) === "1") q = q.eq("verified", true);
   if (str(sp.instant) === "1") q = q.eq("instant_book", true);
   if (str(sp.emergency) === "1") q = q.eq("emergency_supply", true);
+  // Map area ("Search as I move the map"): south,west,north,east.
+  const bbox = str(sp.bbox).split(",").map(Number); const hasBox = bbox.length === 4 && bbox.every(Number.isFinite);
+  if (hasBox) q = q.gte("lat", bbox[0]!).lte("lat", bbox[2]!).gte("lng", bbox[1]!).lte("lng", bbox[3]!);
   const [{ data: rows }, { data: catsRaw }, { data: saved }, { data: myItems }] = await Promise.all([
     q.limit(200), sb.from("listings").select("category").eq("published", true).eq("kind", tab === "venues" ? "venue" : "service"),
     sb.from("saved_items").select("item_key").eq("user_id", ctx.user.id),
@@ -90,7 +93,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                 </div>
               </article>; })}</div>}
         </div>
-        <MarketMap center={CITY[(str(sp.city) || ev?.city || "london").toLowerCase()] ?? CITY.london} pins={pins} mapKey={process.env.MAP_TILER_API_KEY} total={list.length} label={label} />
+        <MarketMap center={hasBox ? { lat: (bbox[0]! + bbox[2]!) / 2, lng: (bbox[1]! + bbox[3]!) / 2 } : CITY[(str(sp.city) || ev?.city || "london").toLowerCase()] ?? CITY.london} pins={pins} total={list.length} label={label} />
       </div>
     </>}
   </>;

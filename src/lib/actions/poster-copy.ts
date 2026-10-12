@@ -20,7 +20,7 @@ export async function suggestPosterCopy(input: unknown): Promise<{ ok: true; cop
   if (!agentConfigured()) return { ok: true, copy: fallback };
   try {
     const r = await chat([{ role: "system", content: `${SAFETY}\nYou write short, punchy event poster copy. Reply as JSON {"tagline": string (2-5 words separated by " • ", max 45 chars), "strap": string (up to 4 areas or highlights separated by " • ", max 50 chars)}.` },
-      { role: "user", content: `<data>${JSON.stringify({ name: e.name, description: (e.description ?? "").slice(0, 600), tags: e.tags, venue: e.venue_name, areas })}</data>` }], { model: "nano", maxTokens: 200, json: true });
+      { role: "user", content: `<data>${JSON.stringify({ name: e.name, description: (e.description ?? "").slice(0, 600), tags: e.tags, venue: e.venue_name, areas })}</data>` }], { model: "nano", maxTokens: 200, meter: { workspaceId: ctx.workspace.id, userId: ctx.user.id, purpose: "poster_copy" }, json: true });
     const j = JSON.parse(r.text) as Partial<PosterCopy>;
     const clean = (s: unknown, n: number) => typeof s === "string" ? s.replace(/[<>]/g, "").trim().slice(0, n) : "";
     return { ok: true, copy: { tagline: clean(j.tagline, 60) || fallback.tagline, strap: clean(j.strap, 60) || fallback.strap } };

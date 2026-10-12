@@ -39,6 +39,8 @@ export async function finalise(orderRef: string) {
   const db = untyped(createAdminClient() as never);
   const { data: o } = await db.from("checkout_orders").select("*").eq("order_ref", orderRef).maybeSingle();
   if (!o) return { ok: false as const, error: "order_not_found" };
+  if (o.status === "refunded" || o.refund_status === "refunded") return { ok: false as const, error: "hold_expired_refunded" };
+  if (["due", "processing", "failed"].includes(o.refund_status)) return { ok: false as const, error: "hold_expired_refund_pending" };
   if (o.status === "issued") return { ok: true as const, order: o };
   if (o.amount > 0) {
     if (!o.stripe_session) return { ok: false as const, error: "not_paid" };
@@ -51,10 +53,11 @@ export async function finalise(orderRef: string) {
   if (error) {
     // Paid but the hold had lapsed: refund automatically rather than keep money without tickets.
     if (o.amount > 0 && /hold_expired|seat_unavailable/.test(error.message)) {
-      const s = await stripe<{ payment_intent: string }>(`checkout/sessions/${o.stripe_session}`);
-      await stripe("refunds", { payment_intent: s.payment_intent, "metadata[order_ref]": orderRef }).catch(() => null);
-      await db.from("checkout_orders").update({ status: "refunded", updated_at: new Date().toISOString() }).eq("order_ref", orderRef);
-      return { ok: false as const, error: "hold_expired_refunded" };
+      // Durable queue first. A failed or pending Stripe request must never look like a completed refund.
+      // The existing worker owns retries and the stable per-order idempotency key.
+      const queued = await db.from("checkout_orders").update({ refund_status: "due", refund_reason: "hold_expired", updated_at: new Date().toISOString() }).eq("order_ref", orderRef).eq("refund_status", "none");
+      if (queued.error) throw new Error("Could not queue the expired reservation refund.");
+      return { ok: false as const, error: "hold_expired_refund_pending" };
     }
     await db.from("checkout_orders").update({ status: "failed", updated_at: new Date().toISOString() }).eq("order_ref", orderRef);
     return { ok: false as const, error: error.message };

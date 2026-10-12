@@ -113,8 +113,9 @@ function londonMidnight(y: number, m: number, d: number) {
 }
 /** Start of a Europe/London calendar day — business days are London days regardless of server time zone. */
 export function startOfDay(offsetDays = 0, now = Date.now()) {
-  const p = londonYMD(now + offsetDays * 864e5);
-  return londonMidnight(+p.year, +p.month - 1, +p.day);
+  // Step in calendar days, not 24-hour blocks: London days are 23 or 25 hours long when the clocks change.
+  const p = londonYMD(now);
+  return londonMidnight(+p.year, +p.month - 1, +p.day + offsetDays);
 }
 /** Start of the London calendar month `offsetMonths` from the current one. */
 export function startOfMonth(offsetMonths = 0, now = Date.now()) {

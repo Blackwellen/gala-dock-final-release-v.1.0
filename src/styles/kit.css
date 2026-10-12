@@ -331,3 +331,30 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
 :is(.o-root, .c-root, .pub-root) .ac-cals small.ac-sync-err { color: #c8243d; }
 :is(.o-root, .c-root, .pub-root) .ac-cals .ac-sync-actions { margin-top: 6px; }
 :is(.o-root, .c-root, .pub-root) .ac-cals li[aria-busy] { opacity: .7; pointer-events: none; }
+
+/* Interactive map: clusters, selected-pin card, grab cursor. */
+.k-map { cursor: grab; }
+.k-map.dragging { cursor: grabbing; }
+.k-map:focus-visible { outline: 2px solid #7f9cf5; outline-offset: 2px; }
+.k-map .cluster { position: absolute; transform: translate(-50%, -50%); z-index: 2; min-width: 34px; height: 34px; padding: 0 8px; border-radius: 17px; border: 2px solid #fff; background: #1d40e8; color: #fff; font-weight: 700; font-size: 12.5px; box-shadow: 0 3px 10px #1d40e866; cursor: pointer; }
+.k-map .cluster:hover, .k-map .pin:hover .dot { filter: brightness(1.08); transform-origin: center; }
+.k-map .card { position: absolute; z-index: 5; transform: translate(-50%, -100%); width: 210px; padding: 10px 28px 10px 12px; border-radius: 10px; background: #fff; box-shadow: 0 1px 2px rgba(16,24,64,.06), 0 10px 28px -6px rgba(16,24,64,.25); display: grid; gap: 3px; cursor: default; }
+.k-map .card::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px; background: #fff; transform: translateX(-50%) rotate(45deg); box-shadow: 3px 3px 6px rgba(16,24,64,.08); }
+.k-map .card b { font-size: 12.5px; color: #0a0d5e; line-height: 1.3; }
+.k-map .card small { font-size: 11px; color: #5157a4; }
+.k-map .card a { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 12px; font-weight: 600; color: #1d40e8; }
+.k-map .card-x { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; color: #5157a4; }
+.k-map .card-x:hover { background: #f2f5ff; }
+/* Hit boxes on map results remain usable independently of the marker artwork. */
+.k-root .k-map .pin { min-width:44px; min-height:44px; }
+.k-root .k-map .cluster { min-width:44px; min-height:44px; }
+@media (max-width:600px){
+ .k-root .gt-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; box-sizing:border-box; }
+ .k-root .gt-tabs a { min-width:0; padding:8px 4px; min-height:44px; height:auto; justify-content:center; font-size:12px; }
+ .k-root .cb-price .cb-cta { min-height:44px; min-width:44px; height:auto; padding:8px 12px; }
+}
+.k-map .card-img { width: 100%; height: 84px; object-fit: cover; border-radius: 7px; margin-bottom: 4px; }
+.o-top .o-logo { width:44px;min-width:44px; }
+.o-top .o-logo img { width:44px;height:44px;object-fit:contain; }
+.c-top .c-logo { width:44px;min-width:44px; }
+.c-top .c-logo img { width:44px;height:44px;object-fit:contain; }

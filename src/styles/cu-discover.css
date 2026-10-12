@@ -87,3 +87,9 @@
 .ds-ev-body { padding: 8px 12px 10px; }
 .ds-ev-foot { padding-top: 8px; }
 .ds-sponsored { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: #eef1f6; color: #3d4466; font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; vertical-align: 1px; }
+/* Compact discovery tabs reflow rather than forcing the page wider on 320px phones. */
+@media (max-width:480px) {
+ .ds .ds-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; box-sizing:border-box; }
+ .ds .ds-tabs a { justify-content:center; min-width:0; min-height:44px; height:auto; padding:8px 4px; gap:5px; font-size:12px; }
+ .ds .ds-tabs svg { flex-shrink:0; }
+}

@@ -59,12 +59,17 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
 
   return <div className="k-root o-root">
     <a href="#main" className="k-sr" style={{ position: "absolute" }}>Skip to content</a>
-    <MobileNav home="/organizer" title={workspace.name} search={{ seat: workspace.id, placeholder: "Search events, venues, suppliers, clients…" }} menu={ORG_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href }))} tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Money", "Gala Agent"].includes(n.label)).map(n => ({ href: n.href, label: n.label === "Gala Agent" ? "Agent" : n.label, icon: n.icon, match: n.href }))} />
+    <MobileNav home="/organizer" title={workspace.name} search={{ seat: workspace.id, placeholder: "Search events, venues, suppliers, clients…" }}
+      tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Marketplace"].includes(n.label))}
+      menu={[...ORG_NAV.filter(n => n.label !== "Money" || ["owner", "manager", "finance"].includes(workspace.role)), { href: "/organizer/inbox", label: "Messages", icon: MessageCircle }, { href: "/organizer/help", label: "Help", icon: CircleHelp }]}
+      create={[...CREATE.filter(c => ["owner", "manager"].includes(workspace.role) || (workspace.role === "finance" && c.label === "Create invoice")), ...(["owner","manager","member"].includes(workspace.role) ? [{ href: "/organizer/media?create=1", label: "New design", icon: Palette }] : []), ...(["owner","manager","member","finance"].includes(workspace.role) ? [{ href: "/organizer/agent#compose", label: "Agent run", icon: Sparkles }] : [])]}
+      messagesHref="/organizer/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }}
+      workspaceSwitcher={<>{workspaces.map(w => <button key={w.id} type="button" disabled={w.id === workspace.id} onClick={async () => { await run(() => switchWorkspace(w.id)); }}><Building2 size={18} aria-hidden /><span>{w.name} · {w.kind} · {w.role}</span>{w.id === workspace.id && <Check size={16} aria-hidden />}</button>)}<Link href="/discover">Customer app</Link></>} />
     <header className="o-top pwa-hide-desktop-nav">
       <div className="o-top-l">
       <button className="o-burger k-icon-btn plain" aria-label="Open navigation" aria-expanded={navOpen} onClick={() => setNavOpen(true)}><MenuIcon size={20} /></button>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={170} height={44} /></Link>
+      <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><img src="/brand/favicon-48.png" alt="" width={44} height={44} /></Link>
       <Menu label="Switch workspace" align="left" width={280} trigger={({ open, toggle, id }) => <button className="o-ws" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={workspace.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-ellipsis">{workspace.name}</span><ChevronDown size={16} aria-hidden /></button>}>

@@ -10,7 +10,7 @@ import "@/styles/studio.css";
 type Tab = "designs" | "templates" | "community";
 
 /** Media library (media spec §5, §8–9): the workspace's designs, its templates and the public community gallery. */
-export async function MediaLibrary({ db, workspaceId, base, tab, q, deleted }: { db: Db; workspaceId: string; base: string; tab: Tab; q?: string; deleted?: string }) {
+export async function MediaLibrary({ db, workspaceId, base, tab, q, deleted, create = false, canCreate = false }: { db: Db; workspaceId: string; base: string; tab: Tab; q?: string; deleted?: string; create?: boolean; canCreate?: boolean }) {
   const u = untyped(db as never);
   const { data: events } = await db.from("events").select("id,name").eq("workspace_id", workspaceId).order("starts_at", { ascending: false }).limit(50);
   const term = (q ?? "").replace(/[%_,()]/g, " ").trim().slice(0, 60);
@@ -27,7 +27,7 @@ export async function MediaLibrary({ db, workspaceId, base, tab, q, deleted }: {
     templates = ((await query).data ?? []) as typeof templates;
   }
   return <div className="ml">
-    <div className="ml-head"><h1>Media Studio</h1><NewDesign workspaceId={workspaceId} events={(events ?? []).map(e => ({ id: e.id, name: e.name }))} /></div>
+    <div className="ml-head"><h1>Media Studio</h1>{canCreate && <NewDesign key={workspaceId} workspaceId={workspaceId} initialOpen={create} events={(events ?? []).map(e => ({ id: e.id, name: e.name }))} />}</div>
     {deleted && /^[0-9a-f-]{36}$/i.test(deleted) && <DeletedBanner id={deleted} library={base} />}
     <nav className="ml-tabs" aria-label="Library">{([["designs", "My designs"], ["templates", "Templates"], ["community", "Community"]] as const).map(([k, l]) => <Link key={k} href={`${base}?tab=${k}`} className={tab === k ? "on" : ""}>{l}</Link>)}</nav>
     <form className="st-row" action={base}><input type="hidden" name="tab" value={tab} /><input className="st-input" name="q" defaultValue={term} placeholder="Search by name" style={{ maxWidth: 320 }} /><button className="st-btn">Search</button></form>

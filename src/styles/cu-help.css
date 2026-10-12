@@ -1,0 +1,15 @@
+/* Customer helper cards (replaced the customer Gala Agent panels). */
+.cu-help { display: grid; gap: 12px; align-content: start; }
+.cu-help-head { display: flex; gap: 11px; align-items: flex-start; }
+.cu-help-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: #eef3ff; color: #1d40e8; }
+.cu-help-head b { display: block; font-size: 14.5px; font-weight: 650; color: var(--k-ink, #0a0d5e); }
+.cu-help-head p { margin: 3px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--k-ink-2, #3f4596); }
+.cu-help-tips { margin: 0; padding: 0 0 0 18px; display: grid; gap: 6px; font-size: 12.5px; line-height: 1.45; color: var(--k-ink-2, #3f4596); }
+.cu-help-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cu-help-links a { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 12px; border: 1px solid #e6ebf6; border-radius: 10px; background: #fff; font-size: 12.5px; font-weight: 550; color: #1d2068; text-decoration: none; transition: border-color .12s, background .12s; }
+.cu-help-links a:hover { border-color: #c5d2fb; background: #f6f8ff; }
+.cu-help-links a > svg:first-child { color: #1d40e8; flex-shrink: 0; }
+.cu-help-links a > svg:last-child { margin-left: auto; color: #6a70b0; flex-shrink: 0; }
+.cu-help-links span { display: grid; min-width: 0; }
+.cu-help-links small { font-weight: 400; font-size: 11.5px; color: #5d60a8; }
+@media (prefers-reduced-motion: reduce) { .cu-help-links a { transition: none; } }

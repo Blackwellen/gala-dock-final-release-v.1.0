@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Calendar, Users2, CreditCard, CalendarDays, MapPin, Users, Clock, FileText, Plus, ArrowRight, ChevronRight, Sparkles, Network, Database, Wallet, AlarmClock, Building2, Utensils, ListChecks } from "lucide-react";
+import { Calendar, Users2, CreditCard, CalendarDays, MapPin, Users, Clock, FileText, Plus, ArrowRight, ChevronRight, Network, Database, Wallet, AlarmClock, Building2, Utensils, ListChecks, ClipboardList, Compass } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { listMyEvents, type MyEvent, type Summary } from "@/lib/data/customer-events";
 import { listWorkspaceAccess } from "@/lib/auth";
-import { Beta, Empty } from "@/components/kit";
-import { SaveHeart, AgentAsk } from "@/components/kit/client";
+import { Empty } from "@/components/kit";
+import { SaveHeart } from "@/components/kit/client";
 import { EventMenu, StatusPill, UpgradeButton, TaskCircle } from "@/components/customer/events-client";
 import { dateLong, money, relative, eventTypeLabel } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
@@ -38,7 +38,7 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
       <img src="/assets/gd/hero-myevents.webp" alt="" className="me-hero-bg" />
       <div className="me-hero-text"><h1>My Events</h1><p>Plan, manage and bring your events to life.</p>
         <div className="me-stats"><span><Calendar size={30} strokeWidth={1.6} /><span><b>{all.filter(x => x.e.status !== "cancelled").length}</b><small>Total events</small></span></span><span><Users2 size={30} strokeWidth={1.6} /><span><b>{providers}</b><small>Confirmed providers</small></span></span><span><CreditCard size={30} strokeWidth={1.6} /><span><b>{money(totalSpend)}</b><small>Total spend</small></span></span></div></div>
-      <div className="me-agent"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="k-blue" /><b style={{ fontSize: 14 }}>Gala Agent</b><Beta /></div><b className="me-agent-q">Need help with your event?</b><p>I can suggest next steps, find venues, or draft messages to your providers.</p><Link className="k-btn outline block" href="/plan?step=1">Get planning help <ArrowRight size={14} /></Link></div>
+      <div className="me-agent"><div className="k-row" style={{ gap: 8 }}><ClipboardList size={20} className="k-blue" /><b style={{ fontSize: 14 }}>Planner</b></div><b className="me-agent-q">Planning something new?</b><p>Pick a date, set a budget and line up venues and suppliers in a few steps.</p><Link className="k-btn outline block" href="/plan?step=1">Start planning <ArrowRight size={14} /></Link></div>
     </section>
     <div className="me-tabs-row">
       <div className="me-tabs" role="group" aria-label="Filter events">{([["upcoming", "Upcoming", upcoming.length, CalendarDays], ["past", "Past", past.length, Clock], ["drafts", "Drafts", drafts.length, FileText]] as const).map(([k, l, n, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={k === "upcoming" ? "/account/events" : `/account/events?tab=${k}`}><I size={17} />{l} ({n})</Link>)}</div>
@@ -46,14 +46,14 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
     </div>
     <div className="me-grid">
       <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
-        {list.length ? list.map(({ e, s }) => <EventRow key={e.id} e={e} s={s} saved={savedSet.has(`event:${e.id}`)} />) : <div className="k-card"><Empty icon={CalendarDays} title={tab === "past" ? "No past events yet" : tab === "drafts" ? "No drafts" : "No upcoming events"} text="Start planning — Gala Agent can suggest venues and services for your budget." action={<Link className="k-btn primary" href="/plan?step=1"><Plus size={15} />Plan an event</Link>} /></div>}
+        {list.length ? list.map(({ e, s }) => <EventRow key={e.id} e={e} s={s} saved={savedSet.has(`event:${e.id}`)} />) : <div className="k-card"><Empty icon={CalendarDays} title={tab === "past" ? "No past events yet" : tab === "drafts" ? "No drafts" : "No upcoming events"} text="Start planning — we&apos;ll suggest venues and services that fit your budget." action={<Link className="k-btn primary" href="/plan?step=1"><Plus size={15} />Plan an event</Link>} /></div>}
       </div>
       <div className="k-col" style={{ gap: 14 }}>
         <section className="me-side me-create"><span className="k-tile lg"><CalendarDays size={22} /></span><div><b>Create a new event</b><p>Start planning a new event. You can keep it private or make it public later.</p><Link className="k-btn outline sm" href="/plan?step=1">Create Event <ArrowRight size={13} /></Link></div></section>
         <section className="me-side"><div className="k-between" style={{ marginBottom: 6 }}><h2 style={{ fontSize: 14.5 }}>Upcoming tasks</h2><Link className="k-link" href={upcoming[0] ? `/account/events/${upcoming[0].e.id}/plan?tab=checklist` : "/account/events"}>View all <ArrowRight size={12} /></Link></div>
           <ul className="me-tasks">{(tasks ?? []).map(t => { const I = taskIcon(t.title); const days = t.due_at ? Math.ceil((new Date(t.due_at).getTime() - requestTime()) / 864e5) : null; return <li key={t.id}><TaskCircle id={t.id} done={false} label={t.title} /><span className="me-task-ic"><I size={15} /></span><Link href={`/account/events/${t.event_id}/plan?tab=checklist`} className="k-grow"><b>{t.title}</b><small>{evName.get(t.event_id!) ?? ""}</small></Link><span className={`me-due ${days != null && days <= 2 ? "soon" : ""}`}>{days == null ? "" : days <= 0 ? "Due today" : days < 7 ? `Due in ${days} days` : `Due in ${Math.round(days / 7)} week${Math.round(days / 7) === 1 ? "" : "s"}`}</span><ChevronRight size={14} className="k-muted" /></li>; })}{!tasks?.length && <li className="k-small k-muted">No open tasks.</li>}</ul></section>
         {complex && <section className="me-side me-upgrade"><span className="k-tile lg"><Building2 size={22} /></span><div><b>Need more control?</b><p>This event is getting complex. Switch to <b>Organizer</b> mode for advanced planning tools, team collaboration and full event management.</p><UpgradeButton eventId={complex.e.id} workspaces={orgWs} /></div></section>}
-        <section className="me-side"><div className="k-row" style={{ gap: 8, marginBottom: 8 }}><Sparkles size={18} className="k-blue" /><b style={{ fontSize: 14 }}>Gala Agent</b><Beta /></div><AgentAsk scope="customer" placeholder="Ask me anything about your events..." compact /><div className="k-row k-wrap" style={{ gap: 6, marginTop: 10 }}><Link className="me-pill" href="/discover?tab=venues&results=1">Find a venue</Link><Link className="me-pill" href={upcoming[0] ? `/account/events/${upcoming[0].e.id}/build` : "/discover"}>Compare quotes</Link><Link className="me-pill" href={upcoming[0] ? `/account/events/${upcoming[0].e.id}/plan` : "/plan?step=1"}>Suggest a timeline</Link></div></section>
+        <section className="me-side"><div className="k-row" style={{ gap: 8, marginBottom: 8 }}><Compass size={18} className="k-blue" /><b style={{ fontSize: 14 }}>Shortcuts</b></div><div className="k-row k-wrap" style={{ gap: 6 }}><Link className="me-pill" href="/discover?tab=venues&results=1">Find a venue</Link><Link className="me-pill" href={upcoming[0] ? `/account/events/${upcoming[0].e.id}/build` : "/discover"}>Compare quotes</Link><Link className="me-pill" href={upcoming[0] ? `/account/events/${upcoming[0].e.id}/plan` : "/plan?step=1"}>Suggest a timeline</Link></div></section>
       </div>
     </div>
   </div>;

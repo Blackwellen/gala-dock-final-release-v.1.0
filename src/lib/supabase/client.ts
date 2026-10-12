@@ -6,6 +6,8 @@ import { getSupabaseConfig } from "./config";
 import { REMEMBER_COOKIE, sessionCookieOptions } from "./session-cookies";
 
 function readCookies() {
+  // Client components also render on the server. Their browser client must not access DOM cookies there.
+  if (typeof document === "undefined") return [];
   return document.cookie.split(";").filter(Boolean).map(part => {
     const index = part.indexOf("=");
     return { name: decodeURIComponent(part.slice(0, index).trim()), value: decodeURIComponent(part.slice(index + 1).trim()) };
@@ -18,6 +20,7 @@ export function createClient() {
     cookies: {
       getAll: readCookies,
       setAll(cookies) {
+        if (typeof document === "undefined") return;
         const remember = readCookies().find(c => c.name === REMEMBER_COOKIE)?.value;
         for (const { name, value, options } of cookies) {
           const o = sessionCookieOptions(options, remember);

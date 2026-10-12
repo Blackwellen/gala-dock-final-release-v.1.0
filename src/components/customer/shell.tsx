@@ -31,10 +31,14 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
   const active = (href: string) => pathname === href || pathname.startsWith(href + "/") || (href === "/plan" && pathname.startsWith("/plan"));
   return <div className="k-root c-root">
     <a href="#main" className="k-sr">Skip to content</a>
-    <MobileNav home="/home" title="Gala Dock" search={{ seat: null, placeholder: "Search events, venues, artists…" }} tabs={CU_NAV.map(n => ({ href: n.href, label: n.label === "Plan an Event" ? "Plan" : n.label, icon: n.icon, match: n.href }))} menu={[...CU_NAV.map(n => ({ href: n.href, label: n.label, icon: n.icon, match: n.href })), { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "My Account", icon: User, match: "/account$" }, { href: "/account/help", label: "Help", icon: CircleHelp }]} />
+    <MobileNav home="/discover" title="Gala Dock" search={{ seat: null, placeholder: "Search events, venues, artists…" }}
+      tabs={CU_NAV.slice(0, 4).map(n => ({ ...n, label: n.label === "Plan an Event" ? "Plan" : n.label }))}
+      menu={[...CU_NAV, { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "Account", icon: User, exact: true }, { href: "/account?tab=security", label: "Security", icon: User, exact: true }, { href: "/account/help", label: "Help", icon: CircleHelp }]}
+      create={[{ href: "/plan?step=1", label: "Plan an event", icon: CalendarDays }]}
+      messagesHref="/account/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }} />
     <header className="c-top pwa-hide-desktop-nav">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={178} height={46} /></Link>
+      <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><img src="/brand/favicon-48.png" alt="" width={44} height={44} /></Link>
       <div className="c-search c-gs"><GlobalSearch seat={null} placeholder="Search events, venues, artists, or experiences..." /></div>
       <nav className="c-nav" aria-label="Main">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</Link>)}</nav>
       <div className="c-icons">

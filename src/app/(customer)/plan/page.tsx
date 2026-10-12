@@ -59,7 +59,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
     insights: { city, areas, priceLow: q(0.25), priceHigh: q(0.75), venues: pool.length, open, checked, pins: pool.filter(v => v.lat && v.lng).slice(0, 25).map(v => ({ id: v.id, lat: v.lat!, lng: v.lng!, label: v.name, href: listingHref(v.kind, v.slug, v.id) })) },
     bench, budget, alloc,
     venues: fitVenues.slice(0, 3).map(v => ({ id: v.id, name: v.name, image: v.image, location: v.location, price_from: v.price_from == null ? null : Number(v.price_from), price_hi: v.price_from == null ? null : Math.round(Number(v.price_from) * 1.6 / 100) * 100, cap: [v.capacity_min, v.capacity_max], rating: Number(v.rating), reviews: v.review_count, href: listingHref(v.kind, v.slug, v.id), saved: savedSet.has(`listing:${v.id}`) })),
-    mapKey: process.env.MAP_TILER_API_KEY ?? "",
+    mapKey: "", // tiles are proxied (/api/maps/tile); the key never reaches the browser
     occasionTitle: occasionLabel(type),
   };
   return <div className="pw">

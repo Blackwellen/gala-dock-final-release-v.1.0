@@ -76,3 +76,8 @@
 .me { gap: 10px; }
 .me-grid { margin-top: 2px; }
 .me-grid > .k-col { gap: 11px !important; }
+@media (max-width:720px){
+ .me .me-card.draft { grid-template-columns:minmax(0,1fr); }
+ .me .me-steps { display:flex; flex-wrap:wrap; gap:8px; }
+ .me .me-meta { gap:10px; }
+}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { CalendarCheck, LockKeyhole, Users, Clock4, TriangleAlert, ChevronLeft, ChevronRight, ChevronDown, RefreshCw, CalendarCog, SlidersHorizontal, Settings2,
+import { CalendarCheck, LockKeyhole, Users, Clock4, TriangleAlert, ChevronLeft, ChevronRight, ChevronDown, RefreshCw, CalendarCog,
   CalendarX, CalendarPlus, Siren, Sparkles, ArrowRight, CircleCheck, Zap, ChartColumn, UserX, MapPin, Square, SquareCheck } from "lucide-react";
 import "@/styles/provider-calendar.css";
 import { Kpi, Thumb, Avatar, Tabs, Empty } from "@/components/workspace/kit";
@@ -12,6 +12,9 @@ import { RowMenu } from "../_components/row-menu";
 import { releaseHold } from "../opportunities/actions";
 import { calendarData, LAYERS, type Entry, type Layer, type Row } from "./data";
 import { AvailabilityDialog } from "./availability-dialog";
+import { MoreFilters, ViewSettings } from "./calendar-controls";
+import { PREFS_COOKIE, parsePrefs } from "./prefs";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = { title: "Calendar" };
 type View = "month" | "week" | "day" | "agenda";
@@ -23,23 +26,30 @@ const kindLayer: Record<Entry["kind"], Layer> = { booking: "bookings", hold: "ho
 export default async function CalendarPage(props: PageProps<"/provider/calendar">) {
   const sp = await props.searchParams;
   const str = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
-  const view = (["month", "week", "day", "agenda"].includes(str("view")) ? str("view") : "week") as View;
+  const prefs = parsePrefs((await cookies()).get(PREFS_COOKIE)?.value);
+  const view = (["month", "week", "day", "agenda"].includes(str("view")) ? str("view") : prefs.defaultView) as View;
   const now = requestTime();
   const anchor = /^\d{4}-\d{2}-\d{2}$/.test(str("date")) ? startOfDay(0, new Date(`${str("date")}T12:00:00Z`).getTime()) : startOfDay(0, now);
-  const dow = (new Date(anchor + 12 * 36e5).getUTCDay() + 6) % 7; // Monday = 0
+  const offset = prefs.weekStart === "sun" ? 0 : 6; // days back to the week's first day: Sunday- or Monday-start
+  const dow = (new Date(anchor + 12 * 36e5).getUTCDay() + offset) % 7;
   const weekStart = startOfDay(-dow, anchor);
   const monthFirst = (() => { const d = new Date(anchor + 12 * 36e5); return startOfDay(0, Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1, 12)); })();
-  const monthGridStart = startOfDay(-((new Date(monthFirst + 12 * 36e5).getUTCDay() + 6) % 7), monthFirst);
+  const monthGridStart = startOfDay(-((new Date(monthFirst + 12 * 36e5).getUTCDay() + offset) % 7), monthFirst);
   const [from, to] = view === "day" ? [anchor, startOfDay(1, anchor)] : view === "month" ? [monthGridStart, startOfDay(42, monthGridStart)] : view === "agenda" ? [anchor, startOfDay(30, anchor)] : [weekStart, startOfDay(7, weekStart)];
   const d = await calendarData(from, to);
   const layerParam = str("layers");
   const layers = new Set<Layer>(layerParam ? layerParam.split(",").filter((l): l is Layer => LAYERS.some(x => x.key === l)) : LAYERS.map(l => l.key));
   const allOn = layers.size === LAYERS.length;
   const spaceFilter = str("space"), crewFilter = str("crew");
-  const entries = d.entries.filter(e => layers.has(kindLayer[e.kind]));
+  // More filters: status, text search and hiding finished items (layers / space / crew are handled below).
+  const statusSet = new Set(str("status").split(",").filter(Boolean)), q = str("q").toLowerCase(), hidePast = str("hidepast") === "1";
+  const entries = d.entries.filter(e => layers.has(kindLayer[e.kind]) && (!statusSet.size || statusSet.has(e.status)) && (!q || `${e.title} ${e.sub}`.toLowerCase().includes(q)) && (!hidePast || e.end > now));
+  const activeFilters = [!allOn, !!str("space"), !!str("crew"), statusSet.size > 0, !!q, hidePast].filter(Boolean).length;
   const venueRows = layers.has("resources") || layers.has("bookings") || layers.has("holds") ? d.rows.venue.filter(r => !spaceFilter || r.key === spaceFilter) : [];
   const teamRows = layers.has("team") ? d.rows.team.filter(r => !crewFilter || r.key === crewFilter) : [];
-  const days = Array.from({ length: view === "day" ? 1 : 7 }, (_, i) => startOfDay(i, view === "day" ? anchor : weekStart));
+  const days = Array.from({ length: view === "day" ? 1 : 7 }, (_, i) => startOfDay(i, view === "day" ? anchor : weekStart))
+    .filter(t => view !== "week" || prefs.weekends || ![0, 6].includes(new Date(t + 12 * 36e5).getUTCDay()));
+  const dayNames = prefs.weekStart === "sun" ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const today = startOfDay(0, now);
 
   const qs = (patch: Record<string, string | null>) => {
@@ -69,7 +79,7 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
     return list.slice(0, 2).map(e => <CalEntry key={e.id} e={e} now={now} />);
   };
 
-  return <div className="pcal">
+  return <div className={`pcal${prefs.compact ? " compact" : ""}`}>
     <header className="ws-page-head pcal-head">
       <div><h1>Calendar</h1><p>Control your availability, holds, bookings and team capacity.</p></div>
       <div className="ws-page-actions">
@@ -81,16 +91,16 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
       <div className="pcal-main">
         <Tabs base="/provider/calendar" param="view" active={view} tabs={[{ key: "month", label: "Month" }, { key: "week", label: "Week" }, { key: "day", label: "Day" }, { key: "agenda", label: "Agenda" }]} />
         <nav className="pcal-chips" aria-label="Layers">
-          <Link href={toggleLayer("all")} className={allOn ? "on" : ""} aria-pressed={allOn}>All</Link>
-          {LAYERS.map(l => <Link key={l.key} href={toggleLayer(l.key)} className={!allOn && layers.has(l.key) ? "on" : ""} aria-pressed={!allOn && layers.has(l.key)}>{l.label}</Link>)}
+          <Link href={toggleLayer("all")} className={allOn ? "on" : ""} aria-label={allOn ? "All layers visible" : "Show all layers"}>All</Link>
+          {LAYERS.map(l => <Link key={l.key} href={toggleLayer(l.key)} className={!allOn && layers.has(l.key) ? "on" : ""} aria-label={`${l.label} layer, ${layers.has(l.key) ? "visible" : "hidden"}`}>{l.label}</Link>)}
         </nav>
-        <section className="ws-kpis pcal-kpis" aria-label="Calendar figures">
+        {prefs.kpis && <section className="ws-kpis pcal-kpis" aria-label="Calendar figures">
           <Kpi icon={CalendarCheck} tone="blue" label="Confirmed Bookings" value={d.kpi.confirmed} series={sparkFor(d.entries, "booking", from, to)} />
           <Kpi icon={LockKeyhole} tone="pink" label="Conditional Holds" value={d.kpi.holds} series={sparkFor(d.entries, "hold", from, to)} />
           <Kpi icon={Users} tone="purple" label="Standby Commitments" value={d.kpi.standby} series={sparkFor(d.entries, "standby", from, to)} />
           <div className="ws-kpi"><span className="ws-tile blue" style={{ width: 44, height: 44 }}><Clock4 aria-hidden="true" /></span><div className="ws-kpi-text"><span>Available Time</span><strong>{d.kpi.available}%</strong><small className="pcal-kpi-sub">Space hours free this {view === "month" ? "month" : view === "day" ? "day" : "week"}</small></div></div>
           <div className="ws-kpi"><span className="ws-tile red" style={{ width: 44, height: 44 }}><TriangleAlert aria-hidden="true" /></span><div className="ws-kpi-text"><span>Emergency Windows</span><strong>{d.kpi.emergency}</strong><small className="pcal-kpi-sub">Published and upcoming</small></div></div>
-        </section>
+        </section>}
         <section className="ws-panel pcal-board">
           <div className="pcal-toolbar">
             <Link className="pcal-nav" href={qs({ date: prev })} aria-label="Previous"><ChevronLeft aria-hidden="true" /></Link>
@@ -102,8 +112,8 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
               <ParamSelect param="space" label="Venue or service" value={spaceFilter} options={[{ value: "", label: "All venues & services" }, ...d.rows.venue.map(r => ({ value: r.key, label: r.title }))]} />
               <ParamSelect param="crew" label="Team member" value={crewFilter} options={[{ value: "", label: "All team members" }, ...d.rows.team.map(r => ({ value: r.key, label: r.title }))]} />
             </Suspense>
-            <Link className="ws-btn outline sm" href={qs({ space: null, crew: null, layers: null })}><SlidersHorizontal aria-hidden="true" />{spaceFilter || crewFilter || !allOn ? "Reset filters" : "More filters"}</Link>
-            <Link className="ws-btn outline sm" href="/provider/settings?tab=notifications"><Settings2 aria-hidden="true" />View settings</Link>
+            <Suspense><MoreFilters active={activeFilters} layers={LAYERS.map(l => ({ value: l.key, label: l.label }))} spaces={d.rows.venue.map(r => ({ value: r.key, label: r.title }))} crew={d.rows.team.map(r => ({ value: r.key, label: r.title }))} /></Suspense>
+            <ViewSettings prefs={prefs} />
           </div>
 
           {(view === "week" || view === "day") && <div className="pcal-grid" style={{ ["--cols" as string]: days.length }}>
@@ -117,7 +127,7 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
           </div>}
 
           {view === "month" && <div className="pcal-month">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(n => <b key={n}>{n}</b>)}
+            {dayNames.map(n => <b key={n}>{n}</b>)}
             {Array.from({ length: 42 }, (_, i) => startOfDay(i, monthGridStart)).map(t => {
               const list = entries.filter(e => e.start < startOfDay(1, t) && e.end > t && e.kind !== "shift");
               const out = new Date(t + 12 * 36e5).getUTCMonth() !== new Date(monthFirst + 12 * 36e5).getUTCMonth();
@@ -152,7 +162,7 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
       <aside className="pcal-rail">
         <MiniMonth anchor={anchor} today={today} hrefFor={t => qs({ date: ymd(t) })} prevHref={qs({ date: ymd(startOfDay(-1, monthFirst)) })} nextHref={qs({ date: ymd(startOfDay(32, monthFirst)) })} busy={new Set(d.entries.filter(e => e.kind === "booking").map(e => startOfDay(0, e.start)))} weekStart={view === "week" ? weekStart : null} />
         <section className="ws-panel pcal-layers"><h2>Calendars &amp; layers</h2><ul>
-          {LAYERS.map(l => { const on = layers.has(l.key); return <li key={l.key}><Link href={toggleLayer(l.key)} aria-pressed={on}>{on ? <SquareCheck aria-hidden="true" className="on" /> : <Square aria-hidden="true" />}<i className={`pcal-dot ${l.key}`} />{l.label === "Spaces/Resources" ? "Spaces / resources" : l.label}</Link></li>; })}
+          {LAYERS.map(l => { const on = layers.has(l.key); return <li key={l.key}><Link href={toggleLayer(l.key)} aria-label={`${l.label} layer, ${on ? "visible; hide layer" : "hidden; show layer"}`}>{on ? <SquareCheck aria-hidden="true" className="on" /> : <Square aria-hidden="true" />}<i className={`pcal-dot ${l.key}`} />{l.label === "Spaces/Resources" ? "Spaces / resources" : l.label}</Link></li>; })}
           <li><Link href="/provider/settings?tab=integrations"><Square aria-hidden="true" /><i className="pcal-dot ext" />External calendars</Link></li>
         </ul></section>
         <section className="ws-panel pcal-quick"><h2>Quick actions</h2><ul>

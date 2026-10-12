@@ -1,0 +1,27 @@
+"""Mappings established by visual inspection of all 61 reference images."""
+import json
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+DOC=ROOT/'docs/pwa'
+data=json.loads((DOC/'design-inventory.json').read_text(encoding='utf-8'))
+mapping={
+1:('PROV-005','/provider/bookings'),2:('CU-007','/account/events/[id]/money'),3:('CU-004','/account/events/[id]/build'),4:('CU-008','/account/events/[id]/messages'),5:('CU-005','/account/events/[id]/plan'),6:('CU-003','/account/events/[id]'),7:('ORG-006','/organizer/sales/leads/[id]'),8:('ORG-002','/organizer/events'),9:('CU-008','/account/events/[id]/messages'),10:('ORG-010','/organizer/marketplace/requests/[id]'),11:('ORG-011','/organizer/tickets-promotion'),12:('ORG-013','/organizer/events/[id]/map'),13:('ORG-020','/organizer/agent'),14:('PROV-016','/provider/agent'),15:('ORG-001','/organizer'),16:('CU-001','/discover'),17:('ORG-021','/organizer/settings'),18:('CU-001','/discover'),19:('PROV-010','/provider/venues/[venue]/spaces/[id]'),20:('CU-006','/account/events/[id]/guests-tickets'),21:('ORG-008','/organizer/marketplace'),22:('ORG-017','/organizer/team/[id]'),23:('CU-012','/account/reviews'),24:('PROV-015','/provider/money'),25:('CU-010','/account/tickets/[id]'),26:('CU-013','/account'),27:('CU-012','/account/reviews'),28:('ORG-018','/organizer/money'),29:('CU-009','/account/tickets'),30:('ORG-016','/organizer/team'),31:('CU-002','/account/events'),32:('ORG-001','/organizer'),33:('ORG-001','/organizer'),34:('ORG-021','/organizer/settings'),35:('ORG-021','/organizer/settings'),36:('ORG-019','/organizer/money/invoices/[id]'),37:('ORG-004','/organizer/calendar?view=week'),38:('CU-001','/discover'),39:('ORG-014','/organizer/events/[id]/promotion'),40:('PROV-007','/provider/calendar?view=week'),41:('PROV-001','/provider'),42:('PROV-008','/provider/listings'),43:('PROV-009','/provider/venues/[id]'),44:('PROV-002','/provider/opportunities'),45:('PROV-001','/provider'),46:('PROV-004','/provider/quotes/[id]'),47:('PROV-017','/provider/settings'),48:('PROV-013','/provider/team'),49:('PROV-006','/provider/bookings/[id]'),50:('PROV-003','/provider/opportunities/[id]'),51:('ORG-005','/organizer/sales'),52:('PROV-014','/provider/team/[id]'),53:('CU-011','/account/saved'),54:('ORG-015','/organizer/events/[id]/media'),55:('ORG-006','/organizer/sales/leads/[id]'),56:('ORG-003','/organizer/events/[id]'),57:('ORG-012','/organizer/events/[id]/page'),58:('ORG-007','/organizer/sales/proposals/[id]'),59:('ORG-009','/organizer/marketplace/venue/[id]'),60:('PROV-011','/provider/services/[id]'),61:('PROV-012','/provider/packages/[id]')}
+primary={1,2,3,4,5,6,7,8,10,11,12,13,14,19,20,21,22,24,25,26,27,28,29,30,31,32,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,56,57,58,59,60,61}
+for row in data:
+    ident,route=mapping[row['index']]
+    row.update(pageId=ident,route=route,mapping='visually inspected',primary=row['index'] in primary,crop='Exclude outer bezel, OS status/notch and home indicator. Preserve all app content. Crop coordinates require explicit per-image review before fidelity gate.',fidelity='not-tested')
+    if row['index']==16:
+        row['crop']='Nine-screen montage: split Discover cards/list/map, filters, Planner and listing detail into separately reviewed app surfaces. No single-page metric.'
+    row['overrides']=['Exactly four primary links + rightmost Menu; no sidebar on tablet/phone','Readable type and 44px touch controls replace miniature artwork','Real authorized records replace screenshot sample data']
+(DOC/'design-inventory.json').write_text(json.dumps(data,indent=2,ensure_ascii=False),encoding='utf-8')
+text=['# PWA design reference map','','All 61 images inspected visually; mappings use visible page headings, tabs and composition. Primary references are selected per route; alternates remain available. No reference comparison has passed yet.','','| Image | Page ID | Canonical route/state | Dimensions | Reference |','|---|---|---|---|---|']
+for r in data:
+    text.append(f"| {r['file'].split('/')[-1]} | {r['pageId']} | `{r['route']}` | {r['width']}×{r['height']} | {'Primary' if r['primary'] else 'Alternate/montage'} |")
+text+=['','## Comparison rules','','Crop only design-only phone hardware and OS chrome, record exact coordinates in the comparison manifest and retain the original. Never downscale the actual screenshot or use page-wide masks to improve metrics. Record mandated shell changes separately. The discovery montage requires nine distinct captures. Stock media may differ; compare their dimensions/crops separately. Media Studio uses its existing canonical media specification and the ORG-015 asset-builder reference; no standalone Studio reference was supplied. Event Map Studio uses ORG-013 and the shared venue-plan engine. Unpictured wizard states inherit shared tokens and require functional/a11y/responsive checks; a quantified reference pass is unavailable.']
+(DOC/'design-reference-map.md').write_text('\n'.join(text)+'\n',encoding='utf-8')
+manifest=json.loads((DOC/'route-state-manifest.json').read_text(encoding='utf-8'))
+for r in manifest:
+    r['references']=[d['file'] for d in data if d['pageId']==r['id']]
+    if not r['references']: r['gates']['visual']='no-PWA-reference; shared-system-audit-required'
+(DOC/'route-state-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False),encoding='utf-8')
+print(f'Mapped {len(data)} references to {len(set(r[0] for r in mapping.values()))} page IDs')

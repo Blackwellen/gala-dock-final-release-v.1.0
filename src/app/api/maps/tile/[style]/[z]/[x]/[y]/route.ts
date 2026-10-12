@@ -14,9 +14,14 @@ const MT: Record<string, (z: number, x: number, y: number, k: string) => string>
 export async function GET(req: Request, { params }: { params: Promise<{ style: string; z: string; x: string; y: string }> }) {
   const p = await params; const z = Number(p.z), x = Number(p.x), y = Number(p.y.replace(/\.(png|jpg)$/, ""));
   if (!isMapStyle(p.style) || !Number.isInteger(z) || !Number.isInteger(x) || !Number.isInteger(y) || z < 0 || z > 20 || x < 0 || y < 0 || x >= 2 ** z || y >= 2 ** z) return new NextResponse(null, { status: 404 });
+  // Other websites can't use our map key: browsers send Sec-Fetch-Site (unforgeable from page script). Without it (older
+  // clients), fall back to comparing the Referer with the host the request was actually addressed to (works behind proxies,
+  // on 127.0.0.1 / LAN addresses and custom domains — req.url can carry an internal host).
   const site = req.headers.get("sec-fetch-site"), ref = req.headers.get("referer");
-  const own = new URL(req.url).host;
-  if ((site && !["same-origin", "same-site", "none"].includes(site)) || (ref && new URL(ref).host !== own)) return new NextResponse(null, { status: 403 });
+  const host = (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? new URL(req.url).host).split(",")[0]!.trim();
+  const refHost = (() => { try { return ref ? new URL(ref).host : null; } catch { return null; } })();
+  const blocked = site ? !["same-origin", "same-site", "none"].includes(site) : !!refHost && refHost !== host;
+  if (blocked) return new NextResponse(null, { status: 403 });
   const key = process.env.MAP_TILER_API_KEY;
   if (!key) {
     // Development fallback: OpenStreetMap standard tiles (streets only). Production should set MAP_TILER_API_KEY.

@@ -25,6 +25,7 @@ try {
   await page.screenshot({ path: `${S}/2-review.png` });
   await page.getByRole("button", { name: /^Pay / }).click();
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 60000 });
+  if (!page.url().includes("cs_test_")) throw new Error("Refusing payment: this is not a Stripe test-mode Checkout session.");
   check("Redirected to Stripe Checkout", true);
   await page.getByTestId("card-accordion-item").click();
   await page.locator("#cardNumber").fill("4242424242424242");

@@ -1,0 +1,15 @@
+/* One display scale for every workspace, taken from the Organizer rule (kit.css): the shell root is zoomed by --k-zoom.
+   Desktop (≥1100px) renders at .8 (.75 on short screens); Compact .72, Comfortable .9, Design size 1; phones and tablets 1:1.
+   Organizer, Customer, Provider, Admin and the portals all read the same variable and the same saved "gd-density" choice,
+   so switching workspace never changes the size of text, navigation or cards. Loaded app-wide from the root layout. */
+:root { --k-zoom: 1; }
+@media (min-width: 1100px) { :root { --k-zoom: .8; } }
+@media (min-width: 1100px) and (max-height: 820px) { :root { --k-zoom: .75; } }
+@media (min-width: 1100px) { html[data-density="compact"] { --k-zoom: .72; } html[data-density="comfortable"] { --k-zoom: .9; } }
+html[data-density="reference"] { --k-zoom: 1 !important; }
+
+/* Provider & Admin workspaces (.ws-app) and client / partner portals (.pt-app). Heights that fill the window divide by the zoom
+   so they still reach the bottom of the screen. --ws-vh is the window height in zoomed CSS px. */
+.ws-app { zoom: var(--k-zoom); --ws-vh: calc(100dvh / var(--k-zoom)); }
+.pt-app { zoom: var(--k-zoom); min-height: calc(100dvh / var(--k-zoom)); }
+.pt-app .pt-side { height: calc(100dvh / var(--k-zoom) - var(--pt-top)); }

@@ -70,7 +70,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
             <thead><tr><th style={{ width: 36 }}><input type="checkbox" aria-label="Select all events on this page" /></th><th>Event</th><th>Type</th><th>Date</th><th>Venue</th><th>Owner</th><th>Readiness</th><th>Tickets</th><th>Budget</th><th>Forecast</th><th>Status</th><th>Next action</th><th style={{ width: 44 }}><span className="k-sr">Actions</span></th></tr></thead>
             <tbody>{pageRows.map(e => { const na = nextAction(e); const tp = e.ticketCap ? Math.round((100 * e.sold) / e.ticketCap) : 0; return <tr key={e.id}>
               <td><input type="checkbox" aria-label={`Select ${e.name}`} /></td>
-              <td><Link href={`/organizer/events/${e.id}`} className="k-row" style={{ gap: 12 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" className="ev-thumb" /><span><b className="ev-name">{e.name}</b><span className="k-small k-muted">{e.client_name || ctx.workspace.name}</span></span></Link></td>
+              <td><Link href={`/organizer/events/${e.id}`} className="k-row" style={{ gap: 12 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" className="ev-thumb" /><span><b className="ev-name">{e.name}</b>{e.client_name && <span className="k-small k-muted">{e.client_name}</span>}</span></Link></td>
               <td><TypeChip type={e.event_type} /></td>
               <td className="k-nowrap"><div style={{ color: "var(--k-ink)" }}>{dateShort(e.starts_at)}</div><div className="k-small k-muted">{timeRange(e.starts_at, e.ends_at)}</div></td>
               <td><div className="k-ellipsis" style={{ color: "var(--k-ink)", maxWidth: 130 }}>{e.venue_name || "TBC"}</div><div className="k-small k-muted">{e.city || "—"}</div></td>
@@ -110,7 +110,7 @@ function EventCard({ e, me }: { e: EventStats; me: { name: string; avatar: strin
       <span className="ev-card-btns"><span className="ev-card-btn" aria-hidden><Heart size={14} /></span><span className="ev-card-btn sq" aria-hidden><MoreHorizontal size={14} /></span></span>
     </Link>
     <div className="ev-card-body">
-      <Link href={`/organizer/events/${e.id}`}><b className="ev-card-name">{e.name}</b></Link><span className="k-small k-muted">{e.client_name || "Alex Events"}</span>
+      <Link href={`/organizer/events/${e.id}`}><b className="ev-card-name">{e.name}</b></Link>{e.client_name && <span className="k-small k-muted">{e.client_name}</span>}
       <div className="ev-card-meta"><span><Calendar size={13} />{dateShort(e.starts_at)} <span style={{ marginLeft: 8 }}>{timeRange(e.starts_at, e.ends_at)}</span></span><span><MapPin size={13} />{e.venue_name ? `${e.venue_name}, ${e.city}` : "Venue TBC"}</span><span><Users size={13} />{e.ticketCap ? `${num(e.sold)} / ${num(e.ticketCap)} tickets` : "Not ticketed"}<b style={{ marginLeft: "auto" }}>{e.ticketCap ? `${tp}%` : ""}</b></span></div>
       {e.ticketCap > 0 && <Bar value={tp} label={`${e.name} tickets sold`} />}
       <div className="ev-card-fin"><div><b>{e.budget_total ? money(e.budget_total) : "—"}</b><small>Budget</small></div><div><b className="k-green">{e.target_profit ? money(e.target_profit) : "—"}</b><small>Forecast profit</small></div><div className="k-row" style={{ gap: 6 }}><Ring value={e.readiness} size={30} stroke={4} color={e.readiness >= 75 ? "var(--k-green)" : e.readiness >= 50 ? "var(--k-amber)" : "var(--k-red)"} label="" /><span><b>{e.readiness}%</b><small>Readiness</small></span></div></div>

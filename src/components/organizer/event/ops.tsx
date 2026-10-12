@@ -11,13 +11,13 @@ import { TicketScanner } from "@/components/tickets/scanner";
 
 const RS: Record<string, [string, "green" | "amber" | "blue"]> = { done: ["Done", "green"], in_progress: ["In progress", "amber"], upcoming: ["Upcoming", "blue"] };
 
-export function OpsTab({ e, d, section }: { e: ProEvent; d: EventData; section: string }) {
+export function OpsTab({ e, d, section, phase = "all" }: { e: ProEvent; d: EventData; section: string; phase?: string }) {
   const base = `/organizer/events/${e.id}?tab=operations`;
   const items = [["runsheet", "Run Sheet", ClipboardList], ["team", "Team/Crew", Users], ["checkin", "Check-in", ScanLine], ["floor", "Floor & Map", Map], ["hospitality", "Hospitality", Coffee], ["logistics", "Logistics", Truck], ["risk", "Risk", AlertTriangle], ["incidents", "Incidents", ShieldAlert], ["live", "Live Event Mode", Radio]] as const;
   const s = items.some(i => i[0] === section) ? section : "runsheet";
   return <>
     <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: k === "floor" ? `/organizer/events/${e.id}/map?tab=operations` : `${base}${k === "runsheet" ? "" : `&section=${k}`}` }))} />
-    {s === "runsheet" && <RunSheetView e={e} d={d} />}
+    {s === "runsheet" && <RunSheetView e={e} d={d} phase={phase} />}
     {s === "team" && <TeamView e={e} d={d} />}
     {s === "checkin" && <div className="o-grid-main"><Card><div className="k-between" style={{ marginBottom: 10 }}><h2 className="ov-h" style={{ fontSize: 15.5 }}>Ticket check-in</h2><span className="k-row" style={{ gap: 8 }}><Link className="k-btn outline sm" href={`/organizer/events/${e.id}/scan`}>Full-screen scanner</Link><Link className="k-btn primary sm" href={`/organizer/events/${e.id}/live`}>Live mode</Link></span></div><TicketScanner eventId={e.id} eventName={e.name} /></Card><CheckinStats d={d} /></div>}
     {(s === "hospitality" || s === "logistics" || s === "risk") && <TaskBoard e={e} d={d} category={s} />}
@@ -35,8 +35,14 @@ function opsKpis(e: ProEvent, d: EventData) {
   return { doors, checkedCrew, confirmed, open, high: open.filter(i => ["high", "critical"].includes(i.severity)).length };
 }
 
-function RunSheetView({ e, d }: { e: ProEvent; d: EventData }) {
-  const k = opsKpis(e, d); const rs = d.programme.filter(p => p.kind === "run_sheet");
+function RunSheetView({ e, d, phase }: { e: ProEvent; d: EventData; phase: string }) {
+  const k = opsKpis(e, d);
+  // Run-sheet phase filter: before doors (pre), during the event (live), after it ends (post).
+  const evStart = e.starts_at ?? "", evEnd = e.ends_at ?? e.starts_at ?? "";
+  const phaseOf = (at: string | null) => !at || !evStart ? "live" : at < evStart ? "pre" : evEnd && at > evEnd ? "post" : "live";
+  const allRs = d.programme.filter(p => p.kind === "run_sheet");
+  const rs = phase === "all" ? allRs : allRs.filter(p => phaseOf(p.starts_at) === phase);
+  const phaseHref = (p: string) => `/organizer/events/${e.id}?tab=operations${p === "all" ? "" : `&phase=${p}`}`;
   const opsTasks = d.tasks.filter(t => ["operations", "hospitality", "risk", "logistics"].includes(t.category));
   const live = [["Run sheet finalised", rs.length > 0 && rs.every(r => r.status !== "upcoming" || true) && rs.length >= 5], ["Team checked in", k.checkedCrew >= d.crewNeeded && d.crewNeeded > 0], ["Key suppliers confirmed", k.confirmed === d.primary.length && d.primary.length > 0], ["Venue ready", !!e.readiness.checks.find(c => c.key === "venue")?.ok], ["Check-in system active", d.tiers.length > 0], ["All critical tasks complete", !!e.readiness.checks.find(c => c.key === "tasks")?.ok]] as [string, boolean][];
   const crewIds = [...new Set(d.shifts.filter(s => s.crew_id).map(s => s.crew_id!))];
@@ -52,7 +58,7 @@ function RunSheetView({ e, d }: { e: ProEvent; d: EventData }) {
     </div>
     <div className="op-row2">
       <Card><div className="k-between"><h3 className="ov-h" style={{ fontSize: 15 }}>Run sheet</h3><Link className="k-link" href={`/organizer/events/${e.id}?tab=operations&section=live`}>View full run sheet <ArrowRight size={12} /></Link></div>
-        <div className="k-between" style={{ margin: "10px 0" }}><div className="k-seg"><span>All</span><span>Pre-Event</span><span aria-current="page">Live Event</span><span>Post Event</span></div><AddProgrammeButton eventId={e.id} kind="run_sheet" defaultDate={e.starts_at} label="Add item" /></div>
+        <div className="k-between" style={{ margin: "10px 0" }}><div className="k-seg" role="group" aria-label="Run sheet phase">{([["all", "All"], ["pre", "Pre-Event"], ["live", "Live Event"], ["post", "Post Event"]] as const).map(([p, l]) => <Link key={p} href={phaseHref(p)} scroll={false} aria-current={phase === p ? "page" : undefined}>{l}{p !== "all" ? ` (${allRs.filter(x => phaseOf(x.starts_at) === p).length})` : ""}</Link>)}</div><AddProgrammeButton eventId={e.id} kind="run_sheet" defaultDate={e.starts_at} label="Add item" /></div>
         {rs.length ? <table className="k-table"><thead><tr><th>Time</th><th>Activity</th><th>Area</th><th>Owner</th><th>Status</th><th /></tr></thead><tbody>{rs.map(r => { const [l, t] = RS[r.status] ?? ["Upcoming", "blue"]; return <tr key={r.id} className={r.status === "in_progress" ? "op-now" : ""}><td><span className="k-row" style={{ gap: 6 }}><i className={`k-dot tone-dot-${t === "green" ? "green" : t === "amber" ? "amber" : "purple"}`} />{time(r.starts_at)}</span></td><td style={{ color: "var(--k-ink)" }}>{r.title}</td><td>{r.area}</td><td><span className="k-row" style={{ gap: 6 }}><Avatar name={r.owner_name || "—"} size="sm" />{r.owner_name}</span></td><td><Chip tone={t}>{l}</Chip></td><td><RunSheetStatus eventId={e.id} itemId={r.id} status={r.status} /></td></tr>; })}</tbody></table> : <Empty icon={ClipboardList} title="No run sheet yet" text="Add timed operational items, or ask Gala Agent to build one from the programme." />}</Card>
       <Card><div className="k-between"><h3 className="ov-h" style={{ fontSize: 15 }}>Venue map & live overview</h3><div className="k-seg"><Link href={`/organizer/events/${e.id}/map`}>Edit layout</Link><Link href={`/events/${e.slug}`}>Public view</Link></div></div>
         <div style={{ marginTop: 10 }}><EventPlanCard eventId={e.id} venueListingId={(e as { venue_listing_id?: string | null }).venue_listing_id} tiers={d.tiers.map(t => ({ id: t.id, name: t.name, color: (t as { color?: string | null }).color, sold: Number(t.sold ?? 0), quantity: Number(t.quantity ?? 0) }))} height={300} /></div></Card>

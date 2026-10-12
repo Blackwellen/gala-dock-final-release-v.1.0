@@ -75,7 +75,7 @@ export default async function AgentPage(props: PageProps<"/provider/agent">) {
         <div className="pa-mid">
           <section className="ws-panel pa-runs"><div className="ws-panel-head"><h2>Active runs</h2><Link className="ws-link" href={`${base}?tab=history`}>View all <ArrowRight aria-hidden="true" /></Link></div>
             {active.length ? <ul>{active.slice(0, 4).map(r => { const I = rIcon(r); return <li key={r.id}><span className="pa-ric"><I aria-hidden="true" /></span>
-              <span className="pa-rtxt"><b>{r.goal.split(":")[0].slice(0, 60)}</b><small>{r.waiting_reason || r.goal.split(":").slice(1).join(":").trim().slice(0, 70) || "Working…"}</small><span className="pa-bar"><i style={{ width: `${r.progress}%` }} /></span></span>
+              <span className="pa-rtxt"><b><Link href={`/provider/agent/runs/${r.id}`}>{r.goal.split(":")[0]}</Link></b><small>{r.waiting_reason || r.goal.split(":").slice(1).join(":").trim() || "Working…"}</small><span className="pa-bar"><i style={{ width: `${r.progress}%` }} /></span></span>
               <span className="pa-rmeta">{statusChip(r)}<small>{r.progress}%</small><small>Started {time(r.created_at)}</small></span>
               {r.status === "paused" ? <ActionButton action={controlRun} args={[r.id, "resume"]} variant="ghost">Resume</ActionButton> : <ActionButton action={controlRun} args={[r.id, "pause"]} variant="ghost">Pause</ActionButton>}</li>; })}</ul>
               : <Empty icon={Sparkles} title="No active runs" text="Start one from the chat or a quick tool below." />}</section>

@@ -53,7 +53,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const [sel, setSel] = useState<string[]>([]);
   const [zoom, setZoom] = useState(0.4);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Templates");
+  const [propertiesOpen, setPropertiesOpen] = useState(false);
   const [save, setSave] = useState<"saved" | "dirty" | "saving" | "error" | "conflict">("saved");
+  const [online, setOnline] = useState(true);
+  const [localDraft, setLocalDraft] = useState<{ doc: DesignDoc; title?: string; version: number } | null>(null);
   const [versions, setVersions] = useState(initialVersions);
   const [editingText, setEditingText] = useState<string | null>(null);
   const [insertOpen, setInsertOpen] = useState(false);
@@ -109,19 +112,31 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
 
   // ── autosave (debounced) with conflict detection; offline drafts are kept locally until they can be saved
   useEffect(() => {
+    if (!design.canEdit) return;
+    try { const raw = localStorage.getItem(`gd_design_${design.id}`); if (!raw) return;
+      const draft = JSON.parse(raw);
+      if (draft.version === design.version && Array.isArray(draft.doc?.pages) && draft.doc.pages.length && draft.doc.pages.every((p: Page) => Number.isFinite(p.width) && Number.isFinite(p.height) && Array.isArray(p.layers))) {
+        queueMicrotask(() => setLocalDraft(draft));
+      }
+    } catch { /* An unavailable or corrupt local draft never replaces the server document. */ }
+  }, [design.id, design.version, design.canEdit]);
+  useEffect(() => {
     if (save !== "dirty") return;
+    try { localStorage.setItem(`gd_design_${design.id}`, JSON.stringify({ doc, title, version: version.current })); } catch { /* storage unavailable */ }
+    if (!online) { queueMicrotask(() => setNotice("Offline — your changes are kept on this device and will save when you reconnect.")); return; }
     const t = setTimeout(() => { inflight.current = inflight.current.then(async () => {
       setSave("saving");
-      try { localStorage.setItem(`gd_design_${design.id}`, JSON.stringify({ doc, version: version.current })); } catch { /* storage unavailable */ }
+      try {
       if (!navigator.onLine) { setSave("dirty"); setNotice("Offline — your changes are kept on this device and will save when you reconnect."); return; }
       const r = await saveDesign(design.id, doc, version.current, title);
       if (r.ok) { version.current = r.data!; setSave(s => (s === "saving" ? "saved" : s)); setNotice(""); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }
       else if (/another tab/.test(r.error)) { setSave("conflict"); setNotice(r.error); }
       else { setSave(s => (s === "saving" ? "error" : s)); setNotice(r.error); }
+      } catch { setSave(s => s === "saving" ? "error" : s); setNotice("Could not save. Your changes are kept on this device; reconnect and try again."); }
     }); }, 1200);
     return () => clearTimeout(t);
-  }, [save, doc, title, design.id]);
-  useEffect(() => { const on = () => setSave(s => (s === "dirty" || s === "error" ? "dirty" : s)); addEventListener("online", on); return () => removeEventListener("online", on); }, []);
+  }, [save, doc, title, design.id, online]);
+  useEffect(() => { const sync = () => { setOnline(navigator.onLine); if (navigator.onLine) setSave(s => s === "error" ? "dirty" : s); }; sync(); addEventListener("online", sync); addEventListener("offline", sync); return () => { removeEventListener("online", sync); removeEventListener("offline", sync); }; }, []);
 
   const fit = useCallback(() => { const el = stage.current; if (!el) return; setZoom(Math.max(0.05, Math.min((el.clientWidth - 64) / page.width, (el.clientHeight - 64) / page.height, 2))); }, [page.width, page.height]);
   useEffect(() => { const t = setTimeout(fit, 0); return () => clearTimeout(t); }, [fit, pageIdx]);
@@ -329,12 +344,14 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <span className="st-zoom">{Math.round(zoom * 100)}%</span>
       <button className="st-icon" onClick={() => setZoom(z => Math.min(4, z * 1.25))} aria-label="Zoom in"><ZoomIn size={17} /></button>
       <button className="st-icon" onClick={fit} aria-label="Fit to screen"><Maximize size={16} /></button>
+      <button type="button" className="st-btn st-properties-toggle" aria-expanded={propertiesOpen} aria-controls="studio-properties" onClick={() => setPropertiesOpen(v => !v)}>Properties</button>
       <button className="st-btn" onClick={() => setPanel(panel === "comments" ? "" : "comments")} aria-pressed={panel === "comments"}><MessageSquare size={15} />Comments{openCount ? <span className="st-count">{openCount}</span> : null}</button>
       <button className="st-btn" onClick={() => setPanel(panel === "versions" ? "" : "versions")}><History size={15} />Versions</button>
       {design.canEdit && <button className="st-btn" onClick={() => setPanel(panel === "publish" ? "" : "publish")}><Share2 size={15} />Share template</button>}
       <button className="st-btn primary" onClick={() => setPanel(panel === "export" ? "" : "export")}><Download size={15} />Export</button>
       <DesignMenu id={design.id} title={title} library={back} inEditor canEdit={design.canEdit} />
     </header>
+    {localDraft && <div className="st-notice" role="status">Unsaved changes from this device are available.<button type="button" className="st-link" onClick={() => { setDoc(localDraft.doc); setPageIdx(0); if (localDraft.title) setTitle(localDraft.title); setLocalDraft(null); setSave("dirty"); }}>Restore local draft</button><button type="button" className="st-link" onClick={() => { setLocalDraft(null); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }}>Discard local draft</button></div>}
     {notice && <p className="st-notice" role="alert">{notice}{save === "conflict" && <button className="st-link" onClick={() => location.reload()}>Reload</button>}<button className="st-link" onClick={() => setNotice("")} aria-label="Dismiss"><X size={13} /></button></p>}
 
     <div className="st-body">
@@ -466,7 +483,8 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
         </div>
       </main>
 
-      <aside className="st-props" aria-label="Properties">
+      <aside id="studio-properties" className={`st-props${propertiesOpen ? " open" : ""}`} aria-label="Properties">
+        <button type="button" className="st-btn st-properties-close" onClick={() => setPropertiesOpen(false)}>Close properties</button>
         {!selected.length ? <><p className="st-hint">Select a layer to edit it. Shift-click to multi-select, drag on empty canvas to box-select. Double-click text to edit.</p>
           <h3>Page background</h3><FillButton label="Background" fill={page.background ?? { type: "solid", color: "#ffffff" }} onChange={f => updatePage(p => ({ ...p, background: f }))} docColors={docColors} /></> : <>
           <div className="st-row">
@@ -528,7 +546,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <CommentsPanel designId={design.id} canEdit={design.canEdit} pageId={page.id} layer={one ? { id: one.id, name: one.name } : null} onJump={jumpTo} onCount={setOpenCount} />
     </Popover>}
     {panel === "export" && <ExportPanel pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
-    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (r.ok) { version.current = r.data!; setSave("saved"); } } }} />}
+    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (!navigator.onLine) throw new Error("Reconnect before publishing a template."); await inflight.current; if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (!r.ok) throw new Error(r.error); version.current = r.data!; setSave("saved"); } }} />}
   </div>;
 }
 
@@ -721,9 +739,9 @@ function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; p
 function PublishPanel({ designId, title, onClose, flush, portal }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void>; portal: "organiser" | "provider" }) {
   const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   return <Popover title="Share as a template" onClose={onClose}>
-    <form className="st-form" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); await flush();
+    <form className="st-form" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); setMsg(""); try { await flush();
       const r = await publishTemplate(designId, { title: String(f.get("title")), description: String(f.get("description") ?? ""), category: String(f.get("category")), tags: String(f.get("tags") ?? "").split(",").map(s => s.trim()).filter(Boolean), visibility: f.get("visibility") as "private", ...facetsFrom(f) });
-      setBusy(false); setMsg(r.ok ? "Template saved." : r.error); }}>
+      setMsg(r.ok ? "Template saved." : r.error); } catch(error) { setMsg(error instanceof Error ? error.message : "Could not publish the template. Try again online."); } finally { setBusy(false); } }}>
       <label className="st-field"><span>Title</span><input name="title" defaultValue={title} required minLength={2} maxLength={120} /></label>
       <label className="st-field"><span>Description</span><textarea name="description" rows={2} maxLength={1000} /></label>
       <TemplateFacetFields defaultAudience={portal} />

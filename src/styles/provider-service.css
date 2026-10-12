@@ -274,3 +274,9 @@
 .svw-bmodes label{padding-left:32px!important;position:relative}
 .svw-bmodes label::after{content:"";position:absolute;left:10px;top:11px;width:13px;height:13px;border-radius:50%;border:1.5px solid #c3c9dc;background:#fff}
 .svw-bmodes label:has(input:checked)::after{border:4px solid var(--ws-blue-2)}
+/* Step 3 at laptop widths: two columns so the weekly hours and capacity panels keep room for their controls. */
+.svw-week input[type=time]{min-width:0;width:100%}
+@media (max-width:1365px){
+  .svw-s3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"avail cap" "avail resp" "holds sync" "ready verify" "side side" "foot foot"}
+  .svw-side3{grid-row:auto}
+}

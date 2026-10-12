@@ -1,0 +1,3793 @@
+[
+  {
+    "id": "CU-001",
+    "name": "Discover",
+    "route": "/discover",
+    "role": "customer",
+    "views": "Events | Venues | Services; List | Cards | Map where geographically relevant.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Gala Dock Event Discovery App.png",
+      "Designs/PWA/Gala·Dock Event Discovery App.png",
+      "Designs/PWA/Premium Event Discovery App Mockup.png"
+    ],
+    "sourceId": "CU-001",
+    "sourceFile": "src/app/(customer)/discover/page.tsx"
+  },
+  {
+    "id": "CU-002",
+    "name": "My Events",
+    "route": "/account/events",
+    "role": "customer",
+    "views": "Upcoming | Past | Drafts.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/My Events Planning Dashboard.png"
+    ],
+    "sourceId": "CU-002",
+    "sourceFile": "src/app/(customer)/account/events/page.tsx"
+  },
+  {
+    "id": "CU-003",
+    "name": "Customer Event Profile",
+    "route": "/account/events/[id]",
+    "role": "customer",
+    "views": "Build | Plan | Guests & Tickets | Money | Messages.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Emma’s Garden Party Dashboard.png"
+    ],
+    "sourceId": "CU-003",
+    "sourceFile": "src/app/(customer)/account/events/[id]/page.tsx"
+  },
+  {
+    "id": "CU-004",
+    "name": "Event Build Canvas",
+    "route": "/account/events/[id]/build",
+    "role": "customer",
+    "views": "Category rail | Build canvas | Budget/readiness rail.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Emma’s Birthday Event Builder.png"
+    ],
+    "sourceId": "CU-004",
+    "sourceFile": "src/app/(customer)/account/events/[id]/build/page.tsx"
+  },
+  {
+    "id": "CU-005",
+    "name": "Customer Event Plan",
+    "route": "/account/events/[id]/plan",
+    "role": "customer",
+    "views": "Timeline | Checklist | Day Plan.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Emma’s Birthday Party Timeline.png"
+    ],
+    "sourceId": "CU-005",
+    "sourceFile": "src/app/(customer)/account/events/[id]/plan/page.tsx"
+  },
+  {
+    "id": "CU-006",
+    "name": "Customer Guests & Tickets",
+    "route": "/account/events/[id]/guests-tickets",
+    "role": "customer",
+    "views": "Guests | Tickets | Check-in.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Guests & Tickets Event Dashboard.png"
+    ],
+    "sourceId": "CU-006",
+    "sourceFile": "src/app/(customer)/account/events/[id]/guests-tickets/page.tsx"
+  },
+  {
+    "id": "CU-007",
+    "name": "Customer Event Money",
+    "route": "/account/events/[id]/money",
+    "role": "customer",
+    "views": "Overview | Payments | Refunds.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Emma’s Birthday Budget Overview.png"
+    ],
+    "sourceId": "CU-007",
+    "sourceFile": "src/app/(customer)/account/events/[id]/money/page.tsx"
+  },
+  {
+    "id": "CU-008",
+    "name": "Customer Event Messages",
+    "route": "/account/events/[id]/messages",
+    "role": "customer",
+    "views": "All | Venue | Suppliers.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Emma’s Birthday Party Messages.png",
+      "Designs/PWA/Event Messages Dashboard Mockup.png"
+    ],
+    "sourceId": "CU-008",
+    "sourceFile": "src/app/(customer)/account/events/[id]/messages/page.tsx"
+  },
+  {
+    "id": "CU-009",
+    "name": "My Tickets",
+    "route": "/account/tickets",
+    "role": "customer",
+    "views": "Upcoming | Past | Resale/Transferred.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Modern My Tickets App Interface.png"
+    ],
+    "sourceId": "CU-009",
+    "sourceFile": "src/app/(customer)/account/tickets/page.tsx"
+  },
+  {
+    "id": "CU-010",
+    "name": "Ticket Detail",
+    "route": "/account/tickets/[id]",
+    "role": "customer",
+    "views": "Single record.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Modern DJ Night Ticket Details UI.png"
+    ],
+    "sourceId": "CU-010",
+    "sourceFile": "src/app/(customer)/account/tickets/[id]/page.tsx"
+  },
+  {
+    "id": "CU-011",
+    "name": "Saved",
+    "route": "/account/saved",
+    "role": "customer",
+    "views": "Events | Venues | Services.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Saved Events, Venues & Services.png"
+    ],
+    "sourceId": "CU-011",
+    "sourceFile": "src/app/(customer)/account/saved/page.tsx"
+  },
+  {
+    "id": "CU-012",
+    "name": "Reviews",
+    "route": "/account/reviews",
+    "role": "customer",
+    "views": "To review | Submitted.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Mobile Event Reviews Dashboard.png",
+      "Designs/PWA/Modern Event Reviews App Interface.png"
+    ],
+    "sourceId": "CU-012",
+    "sourceFile": "src/app/(customer)/account/reviews/page.tsx"
+  },
+  {
+    "id": "CU-013",
+    "name": "Customer Account",
+    "route": "/account",
+    "role": "customer",
+    "views": "Profile | Payments | Notifications | Privacy & Security.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Modern Event App Account Dashboard.png"
+    ],
+    "sourceId": "CU-013",
+    "sourceFile": "src/app/(customer)/account/page.tsx"
+  },
+  {
+    "id": "CU-W01-01",
+    "name": "Plan an Event - Occasion & Goal",
+    "route": "/plan?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W01-01",
+    "sourceFile": "src/app/(customer)/plan/page.tsx"
+  },
+  {
+    "id": "CU-W01-02",
+    "name": "Plan an Event - Date, Area & Guests",
+    "route": "/plan?step=2",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W01-02",
+    "sourceFile": "src/app/(customer)/plan/page.tsx"
+  },
+  {
+    "id": "CU-W01-03",
+    "name": "Plan an Event - Budget & Priorities",
+    "route": "/plan?step=3",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W01-03",
+    "sourceFile": "src/app/(customer)/plan/page.tsx"
+  },
+  {
+    "id": "CU-W01-04",
+    "name": "Plan an Event - Recommended Build",
+    "route": "/plan?step=4",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W01-04",
+    "sourceFile": "src/app/(customer)/plan/page.tsx"
+  },
+  {
+    "id": "CU-W02-01",
+    "name": "Booking Request - Requirements",
+    "route": "/account/events/[id]/book?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W02-01",
+    "sourceFile": "src/app/(customer)/account/events/[id]/book/page.tsx"
+  },
+  {
+    "id": "CU-W02-02",
+    "name": "Booking Request - Terms, Hold & Payment",
+    "route": "/account/events/[id]/book?step=2",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W02-02",
+    "sourceFile": "src/app/(customer)/account/events/[id]/book/page.tsx"
+  },
+  {
+    "id": "CU-W03-01",
+    "name": "Customer Ticket Setup - Ticket Model",
+    "route": "/account/events/[id]/tickets/setup?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W03-01",
+    "sourceFile": "src/app/(customer)/account/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "CU-W03-02",
+    "name": "Customer Ticket Setup - Sales & Rules",
+    "route": "/account/events/[id]/tickets/setup?step=2",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W03-02",
+    "sourceFile": "src/app/(customer)/account/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "CU-W03-03",
+    "name": "Customer Ticket Setup - Review & Publish",
+    "route": "/account/events/[id]/tickets/setup?step=3",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "CU-W03-03",
+    "sourceFile": "src/app/(customer)/account/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "ORG-001",
+    "name": "Home / Command Centre",
+    "route": "/organizer",
+    "role": "organizer",
+    "views": "Today | This Week emphasis.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "FAIL: raw baseline 16.2%; approved stable-region comparison pending",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/org-001-visual-final.json"
+    ],
+    "references": [
+      "Designs/PWA/Gala Dock Event Command Center.png",
+      "Designs/PWA/Organizer Command Centre Dashboard.png",
+      "Designs/PWA/Organizer Dashboard Overview.png"
+    ],
+    "sourceId": "ORG-001",
+    "sourceFile": "src/app/organizer/page.tsx"
+  },
+  {
+    "id": "ORG-002",
+    "name": "Events",
+    "route": "/organizer/events",
+    "role": "organizer",
+    "views": "All | Upcoming | Live | Completed | Templates; List | Cards | Calendar.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Event Management Dashboard Mockup.png"
+    ],
+    "sourceId": "ORG-002",
+    "sourceFile": "src/app/organizer/events/page.tsx"
+  },
+  {
+    "id": "ORG-003",
+    "name": "Professional Event Profile",
+    "route": "/organizer/events/[id]",
+    "role": "organizer",
+    "views": "Overview | Plan | Sell & Promote | Operations | Money.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Summer Garden Party Dashboard.png"
+    ],
+    "sourceId": "ORG-003",
+    "sourceFile": "src/app/organizer/events/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-004",
+    "name": "Calendar",
+    "route": "/organizer/calendar",
+    "role": "organizer",
+    "views": "Month | Week | Day | Agenda; saved layer sets.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Pastel Week Calendar Dashboard.png"
+    ],
+    "sourceId": "ORG-004",
+    "sourceFile": "src/app/organizer/calendar/page.tsx"
+  },
+  {
+    "id": "ORG-005",
+    "name": "Sales",
+    "route": "/organizer/sales",
+    "role": "organizer",
+    "views": "Pipeline | Proposals; List | Board.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Sales Pipeline Dashboard Mockup.png"
+    ],
+    "sourceId": "ORG-005",
+    "sourceFile": "src/app/organizer/sales/page.tsx"
+  },
+  {
+    "id": "ORG-006",
+    "name": "Lead Profile",
+    "route": "/organizer/sales/leads/[id]",
+    "role": "organizer",
+    "views": "Overview | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Event Lead CRM Dashboard.png",
+      "Designs/PWA/Summer Garden Party CRM Overview.png"
+    ],
+    "sourceId": "ORG-006",
+    "sourceFile": "src/app/organizer/sales/leads/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-007",
+    "name": "Proposal Profile",
+    "route": "/organizer/sales/proposals/[id]",
+    "role": "organizer",
+    "views": "Proposal | Commercial | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Summer Garden Party Proposal Dashboard.png"
+    ],
+    "sourceId": "ORG-007",
+    "sourceFile": "src/app/organizer/sales/proposals/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-008",
+    "name": "Marketplace",
+    "route": "/organizer/marketplace",
+    "role": "organizer",
+    "views": "Venues | Services; List | Cards | Map; Saved | Requests.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/London Event Marketplace Discovery.png"
+    ],
+    "sourceId": "ORG-008",
+    "sourceFile": "src/app/organizer/marketplace/page.tsx"
+  },
+  {
+    "id": "ORG-009",
+    "name": "Provider Marketplace Profile",
+    "route": "/organizer/marketplace/[type]/[id]",
+    "role": "organizer",
+    "views": "Overview | Availability | Packages/Spaces | Reviews/Performance; adaptive.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/The Garden Rooms Venue Listing.png"
+    ],
+    "sourceId": "ORG-009",
+    "sourceFile": "src/app/organizer/marketplace/[type]/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-010",
+    "name": "Request & Quote Comparison",
+    "route": "/organizer/marketplace/requests/[id]",
+    "role": "organizer",
+    "views": "Requirement | Responses | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Event Quote Comparison Dashboard.png"
+    ],
+    "sourceId": "ORG-010",
+    "sourceFile": "src/app/organizer/marketplace/requests/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-011",
+    "name": "Tickets & Promotion Hub",
+    "route": "/organizer/tickets-promotion",
+    "role": "organizer",
+    "views": "Ticketing | Promotion | Directory | Promoters | Media | Performance.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Event Ticketing and Promotion Dashboard.png"
+    ],
+    "sourceId": "ORG-011",
+    "sourceFile": "src/app/organizer/tickets-promotion/page.tsx"
+  },
+  {
+    "id": "ORG-012",
+    "name": "Public Event Page Editor",
+    "route": "/organizer/events/[id]/page",
+    "role": "organizer",
+    "views": "Edit | Preview | SEO & Sharing.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Summer Garden Party Event Editor.png"
+    ],
+    "sourceId": "ORG-012",
+    "sourceFile": "src/app/organizer/events/[id]/page/page.tsx"
+  },
+  {
+    "id": "ORG-013",
+    "name": "Venue Map & Ticket Layout Builder",
+    "route": "/organizer/events/[id]/map",
+    "role": "organizer",
+    "views": "Design | Ticketing | Operations | Preview.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: editor reflow/run refresh; full interactions pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/editors-final.json",
+      "artifacts/pwa/editors-otp-final.json"
+    ],
+    "references": [
+      "Designs/PWA/Event Venue Map Editor UI.png"
+    ],
+    "sourceId": "ORG-013",
+    "sourceFile": "src/app/organizer/events/[id]/map/page.tsx"
+  },
+  {
+    "id": "ORG-014",
+    "name": "Promotion & Distribution",
+    "route": "/organizer/events/[id]/promotion",
+    "role": "organizer",
+    "views": "Discover | Calendars | Promoters | Audience | Boosts | Performance.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Promotion & Distribution Dashboard.png"
+    ],
+    "sourceId": "ORG-014",
+    "sourceFile": "src/app/organizer/events/[id]/promotion/page.tsx"
+  },
+  {
+    "id": "ORG-015",
+    "name": "Poster & Media Builder",
+    "route": "/organizer/events/[id]/media",
+    "role": "organizer",
+    "views": "Create | Library | Previous Events.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Summer Garden Party Creator Dashboard.png"
+    ],
+    "sourceId": "ORG-015",
+    "sourceFile": "src/app/organizer/events/[id]/media/page.tsx"
+  },
+  {
+    "id": "ORG-016",
+    "name": "Team",
+    "route": "/organizer/team",
+    "role": "organizer",
+    "views": "People | Availability | Assignments | Shifts.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/My Events Co Team Dashboard.png"
+    ],
+    "sourceId": "ORG-016",
+    "sourceFile": "src/app/organizer/team/page.tsx"
+  },
+  {
+    "id": "ORG-017",
+    "name": "Team Member / Crew Profile",
+    "route": "/organizer/team/[id]",
+    "role": "organizer",
+    "views": "Overview | Availability | Assignments | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Maya Patel Crew Profile Dashboard.png"
+    ],
+    "sourceId": "ORG-017",
+    "sourceFile": "src/app/organizer/team/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-018",
+    "name": "Money",
+    "route": "/organizer/money",
+    "role": "organizer",
+    "views": "Overview | Receivables | Payables | Transactions | Settlements | Reports.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/money-audit-retest.log"
+    ],
+    "references": [
+      "Designs/PWA/Modern Events Finance Dashboard.png"
+    ],
+    "sourceId": "ORG-018",
+    "sourceFile": "src/app/organizer/money/page.tsx"
+  },
+  {
+    "id": "ORG-019",
+    "name": "Invoice Profile",
+    "route": "/organizer/money/invoices/[id]",
+    "role": "organizer",
+    "views": "Invoice | Schedule | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/money-audit-retest.log"
+    ],
+    "references": [
+      "Designs/PWA/Paid Invoice Dashboard for Summer Garden Party.png"
+    ],
+    "sourceId": "ORG-019",
+    "sourceFile": "src/app/organizer/money/invoices/[id]/page.tsx"
+  },
+  {
+    "id": "ORG-020",
+    "name": "Gala Agent",
+    "route": "/organizer/agent",
+    "role": "organizer",
+    "views": "Work | Approvals | Routines | History.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: production modal/page axe; full manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/agent-production-axe.json"
+    ],
+    "references": [
+      "Designs/PWA/Gala Agent Event Management Dashboard.png"
+    ],
+    "sourceId": "ORG-020",
+    "sourceFile": "src/app/organizer/agent/page.tsx"
+  },
+  {
+    "id": "ORG-021",
+    "name": "Settings",
+    "route": "/organizer/settings",
+    "role": "organizer",
+    "views": "Workspace | Team & Access | Brand | Payments & Billing | Communications | Integrations | Agent | Notifications.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [
+      "Designs/PWA/Gala Dock Organizer Settings Dashboard.png",
+      "Designs/PWA/Organizer Workspace Settings Dashboard(1).png",
+      "Designs/PWA/Organizer Workspace Settings Dashboard.png"
+    ],
+    "sourceId": "ORG-021",
+    "sourceFile": "src/app/organizer/settings/page.tsx"
+  },
+  {
+    "id": "ORG-W01-01",
+    "name": "Create Event - Event Basics",
+    "route": "/organizer/events/new?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W01-01",
+    "sourceFile": "src/app/organizer/events/new/page.tsx"
+  },
+  {
+    "id": "ORG-W01-02",
+    "name": "Create Event - Date, Venue & Capacity",
+    "route": "/organizer/events/new?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W01-02",
+    "sourceFile": "src/app/organizer/events/new/page.tsx"
+  },
+  {
+    "id": "ORG-W01-03",
+    "name": "Create Event - Commercial Model",
+    "route": "/organizer/events/new?step=3",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W01-03",
+    "sourceFile": "src/app/organizer/events/new/page.tsx"
+  },
+  {
+    "id": "ORG-W01-04",
+    "name": "Create Event - Setup & Review",
+    "route": "/organizer/events/new?step=4",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W01-04",
+    "sourceFile": "src/app/organizer/events/new/page.tsx"
+  },
+  {
+    "id": "ORG-W02-01",
+    "name": "Create Proposal - Client & Event",
+    "route": "/organizer/proposals/new?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W02-01",
+    "sourceFile": "src/app/organizer/proposals/new/page.tsx"
+  },
+  {
+    "id": "ORG-W02-02",
+    "name": "Create Proposal - Offer & Pricing",
+    "route": "/organizer/proposals/new?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W02-02",
+    "sourceFile": "src/app/organizer/proposals/new/page.tsx"
+  },
+  {
+    "id": "ORG-W02-03",
+    "name": "Create Proposal - Review & Send",
+    "route": "/organizer/proposals/new?step=3",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W02-03",
+    "sourceFile": "src/app/organizer/proposals/new/page.tsx"
+  },
+  {
+    "id": "ORG-W03-01",
+    "name": "Ticket Setup - Model & Capacity",
+    "route": "/organizer/events/[id]/tickets/setup?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W03-01",
+    "sourceFile": "src/app/organizer/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "ORG-W03-02",
+    "name": "Ticket Setup - Tiers, Releases & Pricing",
+    "route": "/organizer/events/[id]/tickets/setup?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W03-02",
+    "sourceFile": "src/app/organizer/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "ORG-W03-03",
+    "name": "Ticket Setup - Rules & Publish",
+    "route": "/organizer/events/[id]/tickets/setup?step=3",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W03-03",
+    "sourceFile": "src/app/organizer/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "ORG-W04-01",
+    "name": "Marketplace Request - Requirement",
+    "route": "/organizer/marketplace/requests/new?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W04-01",
+    "sourceFile": "src/app/organizer/marketplace/requests/new/page.tsx"
+  },
+  {
+    "id": "ORG-W04-02",
+    "name": "Marketplace Request - Recipients, Hold & Send",
+    "route": "/organizer/marketplace/requests/new?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W04-02",
+    "sourceFile": "src/app/organizer/marketplace/requests/new/page.tsx"
+  },
+  {
+    "id": "ORG-W05-01",
+    "name": "Owned Promotion - Goal & Inventory",
+    "route": "/organizer/events/[id]/promotion/new?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W05-01",
+    "sourceFile": "src/app/organizer/events/[id]/promotion/new/page.tsx"
+  },
+  {
+    "id": "ORG-W05-02",
+    "name": "Owned Promotion - Assets & Schedule",
+    "route": "/organizer/events/[id]/promotion/new?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W05-02",
+    "sourceFile": "src/app/organizer/events/[id]/promotion/new/page.tsx"
+  },
+  {
+    "id": "ORG-W05-03",
+    "name": "Owned Promotion - Review & Approve",
+    "route": "/organizer/events/[id]/promotion/new?step=3",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W05-03",
+    "sourceFile": "src/app/organizer/events/[id]/promotion/new/page.tsx"
+  },
+  {
+    "id": "ORG-W06-01",
+    "name": "Create Invoice - Details & Items",
+    "route": "/organizer/money/invoices/new?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W06-01",
+    "sourceFile": "src/app/organizer/money/invoices/new/page.tsx"
+  },
+  {
+    "id": "ORG-W06-02",
+    "name": "Create Invoice - Schedule & Send",
+    "route": "/organizer/money/invoices/new?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/money-audit-retest.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W06-02",
+    "sourceFile": "src/app/organizer/money/invoices/new/page.tsx"
+  },
+  {
+    "id": "ORG-W07-01",
+    "name": "Save Event as Template - Scope",
+    "route": "/organizer/events/[id]/template?step=1",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ORG-W07-01",
+    "sourceFile": "src/app/organizer/events/[id]/template/page.tsx"
+  },
+  {
+    "id": "ORG-W07-02",
+    "name": "Save Event as Template - Review",
+    "route": "/organizer/events/[id]/template?step=2",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "ORG-W07-02",
+    "sourceFile": "src/app/organizer/events/[id]/template/page.tsx"
+  },
+  {
+    "id": "PROV-001",
+    "name": "Home / Provider Command Centre",
+    "route": "/provider",
+    "role": "provider",
+    "views": "Today | Upcoming emphasis.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Provider Command Centre Dashboard.png",
+      "Designs/PWA/Riverside Venue Provider Dashboard.png"
+    ],
+    "sourceId": "PROV-001",
+    "sourceFile": "src/app/provider/page.tsx"
+  },
+  {
+    "id": "PROV-002",
+    "name": "Opportunities",
+    "route": "/provider/opportunities",
+    "role": "provider",
+    "views": "Requests | Quotes | Holds | Emergency.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Opportunities Dashboard.png"
+    ],
+    "sourceId": "PROV-002",
+    "sourceFile": "src/app/provider/opportunities/page.tsx"
+  },
+  {
+    "id": "PROV-003",
+    "name": "Opportunity Profile",
+    "route": "/provider/opportunities/[id]",
+    "role": "provider",
+    "views": "Overview | Response | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Wedding Venue Booking App.png"
+    ],
+    "sourceId": "PROV-003",
+    "sourceFile": "src/app/provider/opportunities/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-004",
+    "name": "Quote Profile",
+    "route": "/provider/quotes/[id]",
+    "role": "provider",
+    "views": "Quote | Terms | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Quote Dashboard.png"
+    ],
+    "sourceId": "PROV-004",
+    "sourceFile": "src/app/provider/quotes/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-005",
+    "name": "Bookings",
+    "route": "/provider/bookings",
+    "role": "provider",
+    "views": "Upcoming | Active | Past | Cancelled.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Bookings Dashboard Overview.png"
+    ],
+    "sourceId": "PROV-005",
+    "sourceFile": "src/app/provider/bookings/page.tsx"
+  },
+  {
+    "id": "PROV-006",
+    "name": "Booking / Job Profile",
+    "route": "/provider/bookings/[id]",
+    "role": "provider",
+    "views": "Overview | Delivery/Operations | Team & Schedule | Commercial | Files & Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Wedding Booking Dashboard.png"
+    ],
+    "sourceId": "PROV-006",
+    "sourceFile": "src/app/provider/bookings/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-007",
+    "name": "Calendar",
+    "route": "/provider/calendar",
+    "role": "provider",
+    "views": "Month | Week | Day | Agenda; Availability | Holds | Bookings | Team layers.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Provider Calendar Week View.png"
+    ],
+    "sourceId": "PROV-007",
+    "sourceFile": "src/app/provider/calendar/page.tsx"
+  },
+  {
+    "id": "PROV-008",
+    "name": "Listings",
+    "route": "/provider/listings",
+    "role": "provider",
+    "views": "Venues | Spaces | Services | Packages as enabled; Draft | Published | Paused.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Listings Dashboard.png"
+    ],
+    "sourceId": "PROV-008",
+    "sourceFile": "src/app/provider/listings/[[...type]]/page.tsx"
+  },
+  {
+    "id": "PROV-009",
+    "name": "Venue Profile",
+    "route": "/provider/venues/[id]",
+    "role": "provider",
+    "views": "Overview | Spaces & Map | Packages | Operations | Commercial.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Management Dashboard.png"
+    ],
+    "sourceId": "PROV-009",
+    "sourceFile": "src/app/provider/venues/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-010",
+    "name": "Space Profile",
+    "route": "/provider/venues/[venue]/spaces/[id]",
+    "role": "provider",
+    "views": "Overview | Layouts | Availability & Rules.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Grand Ballroom Venue Dashboard.png"
+    ],
+    "sourceId": "PROV-010",
+    "sourceFile": "src/app/provider/venues/[id]/spaces/[spaceId]/page.tsx"
+  },
+  {
+    "id": "PROV-011",
+    "name": "Service Profile",
+    "route": "/provider/services/[id]",
+    "role": "provider",
+    "views": "Overview | Pricing & Packages | Availability & Requirements | Media & Performance.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Wedding DJ Provider Dashboard.png"
+    ],
+    "sourceId": "PROV-011",
+    "sourceFile": "src/app/provider/services/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-012",
+    "name": "Package Profile",
+    "route": "/provider/packages/[id]",
+    "role": "provider",
+    "views": "Package | Availability/Rules | Performance.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Wedding Package Management Dashboard.png"
+    ],
+    "sourceId": "PROV-012",
+    "sourceFile": "src/app/provider/packages/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-013",
+    "name": "Team",
+    "route": "/provider/team",
+    "role": "provider",
+    "views": "People | Availability | Assignments.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Team Dashboard.png"
+    ],
+    "sourceId": "PROV-013",
+    "sourceFile": "src/app/provider/team/page.tsx"
+  },
+  {
+    "id": "PROV-014",
+    "name": "Team Member Profile",
+    "route": "/provider/team/[id]",
+    "role": "provider",
+    "views": "Overview | Availability | Assignments | Activity.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Sarah Mitchell Team Profile Dashboard.png"
+    ],
+    "sourceId": "PROV-014",
+    "sourceFile": "src/app/provider/team/[id]/page.tsx"
+  },
+  {
+    "id": "PROV-015",
+    "name": "Money",
+    "route": "/provider/money",
+    "role": "provider",
+    "views": "Overview | Earnings | Payouts | Fees | Statements.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Mobile Finance Dashboard Overview.png"
+    ],
+    "sourceId": "PROV-015",
+    "sourceFile": "src/app/provider/money/page.tsx"
+  },
+  {
+    "id": "PROV-016",
+    "name": "Gala Agent",
+    "route": "/provider/agent",
+    "role": "provider",
+    "views": "Work | Approvals | Routines | History.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Gala Agent Mobile Dashboard.png"
+    ],
+    "sourceId": "PROV-016",
+    "sourceFile": "src/app/provider/agent/page.tsx"
+  },
+  {
+    "id": "PROV-017",
+    "name": "Settings",
+    "route": "/provider/settings",
+    "role": "provider",
+    "views": "Workspace | Capabilities | Team & Access | Marketplace & Booking Rules | Payments & Billing | Communications | Integrations | Agent | Notifications.",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "not-tested",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [
+      "Designs/PWA/Riverside Venue Settings Dashboard.png"
+    ],
+    "sourceId": "PROV-017",
+    "sourceFile": "src/app/provider/settings/page.tsx"
+  },
+  {
+    "id": "PROV-W01-01",
+    "name": "Add Venue - Identity & Location",
+    "route": "/provider/venues/new?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W01-01",
+    "sourceFile": "src/app/provider/venues/new/page.tsx"
+  },
+  {
+    "id": "PROV-W01-02",
+    "name": "Add Venue - Spaces, Capacity & Map",
+    "route": "/provider/venues/new?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W01-02",
+    "sourceFile": "src/app/provider/venues/new/page.tsx"
+  },
+  {
+    "id": "PROV-W01-03",
+    "name": "Add Venue - Commercial & Booking Rules",
+    "route": "/provider/venues/new?step=3",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W01-03",
+    "sourceFile": "src/app/provider/venues/new/page.tsx"
+  },
+  {
+    "id": "PROV-W01-04",
+    "name": "Add Venue - Operations & Publish",
+    "route": "/provider/venues/new?step=4",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W01-04",
+    "sourceFile": "src/app/provider/venues/new/page.tsx"
+  },
+  {
+    "id": "PROV-W02-01",
+    "name": "Add Space - Space & Layouts",
+    "route": "/provider/venues/[id]/spaces/new?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W02-01",
+    "sourceFile": "src/app/provider/venues/[id]/spaces/new/page.tsx"
+  },
+  {
+    "id": "PROV-W02-02",
+    "name": "Add Space - Availability & Commercial",
+    "route": "/provider/venues/[id]/spaces/new?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W02-02",
+    "sourceFile": "src/app/provider/venues/[id]/spaces/new/page.tsx"
+  },
+  {
+    "id": "PROV-W03-01",
+    "name": "Add Service - Service & Coverage",
+    "route": "/provider/services/new?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W03-01",
+    "sourceFile": "src/app/provider/services/new/page.tsx"
+  },
+  {
+    "id": "PROV-W03-02",
+    "name": "Add Service - Pricing & Requirements",
+    "route": "/provider/services/new?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W03-02",
+    "sourceFile": "src/app/provider/services/new/page.tsx"
+  },
+  {
+    "id": "PROV-W03-03",
+    "name": "Add Service - Availability & Publish",
+    "route": "/provider/services/new?step=3",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W03-03",
+    "sourceFile": "src/app/provider/services/new/page.tsx"
+  },
+  {
+    "id": "PROV-W04-01",
+    "name": "Create Package - Offer",
+    "route": "/provider/packages/new?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W04-01",
+    "sourceFile": "src/app/provider/packages/new/page.tsx"
+  },
+  {
+    "id": "PROV-W04-02",
+    "name": "Create Package - Pricing, Rules & Publish",
+    "route": "/provider/packages/new?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W04-02",
+    "sourceFile": "src/app/provider/packages/new/page.tsx"
+  },
+  {
+    "id": "PROV-W05-01",
+    "name": "Respond with Quote - Scope & Price",
+    "route": "/provider/opportunities/[id]/quote?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W05-01",
+    "sourceFile": "src/app/provider/opportunities/[id]/quote/page.tsx"
+  },
+  {
+    "id": "PROV-W05-02",
+    "name": "Respond with Quote - Review & Send",
+    "route": "/provider/opportunities/[id]/quote?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W05-02",
+    "sourceFile": "src/app/provider/opportunities/[id]/quote/page.tsx"
+  },
+  {
+    "id": "PROV-W06-01",
+    "name": "Create Venue Booking - Event & Client",
+    "route": "/provider/bookings/new?step=1",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W06-01",
+    "sourceFile": "src/app/provider/bookings/new/page.tsx"
+  },
+  {
+    "id": "PROV-W06-02",
+    "name": "Create Venue Booking - Space & Package",
+    "route": "/provider/bookings/new?step=2",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W06-02",
+    "sourceFile": "src/app/provider/bookings/new/page.tsx"
+  },
+  {
+    "id": "PROV-W06-03",
+    "name": "Create Venue Booking - Commercial & Confirm",
+    "route": "/provider/bookings/new?step=3",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "PROV-W06-03",
+    "sourceFile": "src/app/provider/bookings/new/page.tsx"
+  },
+  {
+    "id": "BUY-W01-01",
+    "name": "Tickets",
+    "route": "/checkout/[event]?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "partial-pass: ticket/payment/resale domain checks; settlement pending",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/domain-retest-2.json"
+    ],
+    "references": [],
+    "sourceId": "BUY-W01-01",
+    "sourceFile": "src/app/checkout/[event]/page.tsx"
+  },
+  {
+    "id": "BUY-W01-02",
+    "name": "Attendee Details",
+    "route": "/checkout/[event]?step=2",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "partial-pass: ticket/payment/resale domain checks; settlement pending",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/domain-retest-2.json"
+    ],
+    "references": [],
+    "sourceId": "BUY-W01-02",
+    "sourceFile": "src/app/checkout/[event]/page.tsx"
+  },
+  {
+    "id": "BUY-W01-03",
+    "name": "Pay & Confirm",
+    "route": "/checkout/[event]?step=3",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "partial-pass: ticket/payment/resale domain checks; settlement pending",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/domain-retest-2.json"
+    ],
+    "references": [],
+    "sourceId": "BUY-W01-03",
+    "sourceFile": "src/app/checkout/[event]/page.tsx"
+  },
+  {
+    "id": "BUY-W02-01",
+    "name": "Resale Eligibility & Price",
+    "route": "/account/tickets/[id]/resale?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "partial-pass: ticket/payment/resale domain checks; settlement pending",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/domain-retest-2.json"
+    ],
+    "references": [],
+    "sourceId": "BUY-W02-01",
+    "sourceFile": "src/app/(customer)/account/tickets/[id]/resale/page.tsx"
+  },
+  {
+    "id": "BUY-W02-02",
+    "name": "Review & List",
+    "route": "/account/tickets/[id]/resale?step=2",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "partial-pass: ticket/payment/resale domain checks; settlement pending",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/domain-retest-2.json"
+    ],
+    "references": [],
+    "sourceId": "BUY-W02-02",
+    "sourceFile": "src/app/(customer)/account/tickets/[id]/resale/page.tsx"
+  },
+  {
+    "id": "AG-001-ORGANIZER",
+    "name": "Work",
+    "route": "/organizer/agent",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: production modal/page axe; full manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log",
+      "artifacts/pwa/agent-production-axe.json"
+    ],
+    "references": [],
+    "sourceId": "AG-001",
+    "sourceFile": "src/app/organizer/agent/page.tsx"
+  },
+  {
+    "id": "AG-002-ORGANIZER",
+    "name": "Run Detail",
+    "route": "/organizer/agent/runs/[id]",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "partial-pass: unknown ID and stale-control membership revocation denied; full matrix pending",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "partial-pass: editor reflow/run refresh; full interactions pending"
+    },
+    "evidence": [
+      "artifacts/pwa/editors-final.json",
+      "artifacts/pwa/editors-otp-final.json"
+    ],
+    "references": [],
+    "sourceId": "AG-002",
+    "sourceFile": "src/app/organizer/agent/runs/[id]/page.tsx"
+  },
+  {
+    "id": "AG-003-ORGANIZER",
+    "name": "Routines",
+    "route": "/organizer/agent/routines",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-003",
+    "sourceFile": "src/app/organizer/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AG-004-ORGANIZER",
+    "name": "Approvals",
+    "route": "/organizer/agent/approvals",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-004",
+    "sourceFile": "src/app/organizer/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AG-005-ORGANIZER",
+    "name": "History",
+    "route": "/organizer/agent/history",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-005",
+    "sourceFile": "src/app/organizer/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AG-001-PROVIDER",
+    "name": "Work",
+    "route": "/provider/agent",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-001",
+    "sourceFile": "src/app/provider/agent/page.tsx"
+  },
+  {
+    "id": "AG-002-PROVIDER",
+    "name": "Run Detail",
+    "route": "/provider/agent/runs/[id]",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-002",
+    "sourceFile": "src/app/provider/agent/runs/[id]/page.tsx"
+  },
+  {
+    "id": "AG-003-PROVIDER",
+    "name": "Routines",
+    "route": "/provider/agent/routines",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-003",
+    "sourceFile": "src/app/provider/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AG-004-PROVIDER",
+    "name": "Approvals",
+    "route": "/provider/agent/approvals",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-004",
+    "sourceFile": "src/app/provider/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AG-005-PROVIDER",
+    "name": "History",
+    "route": "/provider/agent/history",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-005",
+    "sourceFile": "src/app/provider/agent/[section]/page.tsx"
+  },
+  {
+    "id": "AUTH-001",
+    "name": "/login",
+    "route": "/login",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-001",
+    "sourceFile": "src/app/login/page.tsx"
+  },
+  {
+    "id": "AUTH-002",
+    "name": "/register",
+    "route": "/register",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-002",
+    "sourceFile": "src/app/register/page.tsx"
+  },
+  {
+    "id": "AUTH-003",
+    "name": "/verify-email",
+    "route": "/verify-email",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-003",
+    "sourceFile": "src/app/verify-email/page.tsx"
+  },
+  {
+    "id": "AUTH-004",
+    "name": "/forgot-password",
+    "route": "/forgot-password",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-004",
+    "sourceFile": "src/app/forgot-password/page.tsx"
+  },
+  {
+    "id": "AUTH-005",
+    "name": "/reset-password",
+    "route": "/reset-password",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-005",
+    "sourceFile": "src/app/reset-password/page.tsx"
+  },
+  {
+    "id": "AUTH-006",
+    "name": "/mfa",
+    "route": "/mfa",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-006",
+    "sourceFile": "src/app/mfa/page.tsx"
+  },
+  {
+    "id": "AUTH-007",
+    "name": "/invite/[token]",
+    "route": "/invite/[token]",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-007",
+    "sourceFile": "src/app/invite/[token]/page.tsx"
+  },
+  {
+    "id": "AUTH-008",
+    "name": "/access",
+    "route": "/access",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AUTH-008",
+    "sourceFile": "src/app/access/page.tsx"
+  },
+  {
+    "id": "AD-001",
+    "name": "/admin",
+    "route": "/admin",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-001",
+    "sourceFile": "src/app/admin/(console)/page.tsx"
+  },
+  {
+    "id": "AD-002",
+    "name": "/admin/users",
+    "route": "/admin/users",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-002",
+    "sourceFile": "src/app/admin/(console)/users/page.tsx"
+  },
+  {
+    "id": "AD-003",
+    "name": "/admin/users/[id]",
+    "route": "/admin/users/[id]",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-003",
+    "sourceFile": "src/app/admin/(console)/users/[id]/page.tsx"
+  },
+  {
+    "id": "AD-004",
+    "name": "/admin/workspaces",
+    "route": "/admin/workspaces",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-004",
+    "sourceFile": "src/app/admin/(console)/workspaces/page.tsx"
+  },
+  {
+    "id": "AD-005",
+    "name": "/admin/workspaces/[id]",
+    "route": "/admin/workspaces/[id]",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-005",
+    "sourceFile": "src/app/admin/(console)/workspaces/[id]/page.tsx"
+  },
+  {
+    "id": "AD-006",
+    "name": "/admin/events",
+    "route": "/admin/events",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-006",
+    "sourceFile": "src/app/admin/(console)/events/page.tsx"
+  },
+  {
+    "id": "AD-007",
+    "name": "/admin/marketplace",
+    "route": "/admin/marketplace",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-007",
+    "sourceFile": "src/app/admin/(console)/marketplace/page.tsx"
+  },
+  {
+    "id": "AD-008",
+    "name": "/admin/marketplace/listings/[id]",
+    "route": "/admin/marketplace/listings/[id]",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-008",
+    "sourceFile": "src/app/admin/(console)/marketplace/listings/[id]/page.tsx"
+  },
+  {
+    "id": "AD-009",
+    "name": "/admin/tickets",
+    "route": "/admin/tickets",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-009",
+    "sourceFile": "src/app/admin/(console)/tickets/page.tsx"
+  },
+  {
+    "id": "AD-010",
+    "name": "/admin/commerce",
+    "route": "/admin/commerce",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-010",
+    "sourceFile": "src/app/admin/(console)/commerce/page.tsx"
+  },
+  {
+    "id": "AD-011",
+    "name": "/admin/commerce/transactions/[id]",
+    "route": "/admin/commerce/transactions/[id]",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-011",
+    "sourceFile": "src/app/admin/(console)/commerce/transactions/[id]/page.tsx"
+  },
+  {
+    "id": "AD-012",
+    "name": "/admin/trust",
+    "route": "/admin/trust",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-012",
+    "sourceFile": "src/app/admin/(console)/trust/page.tsx"
+  },
+  {
+    "id": "AD-013",
+    "name": "/admin/support",
+    "route": "/admin/support",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-013",
+    "sourceFile": "src/app/admin/(console)/support/page.tsx"
+  },
+  {
+    "id": "AD-014",
+    "name": "/admin/support/[id]",
+    "route": "/admin/support/[id]",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-014",
+    "sourceFile": "src/app/admin/(console)/support/[id]/page.tsx"
+  },
+  {
+    "id": "AD-015",
+    "name": "/admin/partners",
+    "route": "/admin/partners",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-015",
+    "sourceFile": "src/app/admin/(console)/partners/page.tsx"
+  },
+  {
+    "id": "AD-016",
+    "name": "/admin/agent-integrations",
+    "route": "/admin/agent-integrations",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-016",
+    "sourceFile": "src/app/admin/(console)/agent-integrations/page.tsx"
+  },
+  {
+    "id": "AD-017",
+    "name": "/admin/analytics",
+    "route": "/admin/analytics",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-017",
+    "sourceFile": "src/app/admin/(console)/analytics/page.tsx"
+  },
+  {
+    "id": "AD-018",
+    "name": "/admin/settings",
+    "route": "/admin/settings",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AD-018",
+    "sourceFile": "src/app/admin/(console)/settings/page.tsx"
+  },
+  {
+    "id": "ONB-001",
+    "name": "/onboarding",
+    "route": "/onboarding",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-001",
+    "sourceFile": "src/app/onboarding/page.tsx"
+  },
+  {
+    "id": "ONB-CU-01",
+    "name": "/onboarding/customer?step=1",
+    "route": "/onboarding/customer?step=1",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-CU-01",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-ORG-01",
+    "name": "/onboarding/organizer?step=1",
+    "route": "/onboarding/organizer?step=1",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-ORG-01",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-ORG-02",
+    "name": "/onboarding/organizer?step=2",
+    "route": "/onboarding/organizer?step=2",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-ORG-02",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-ORG-03",
+    "name": "/onboarding/organizer?step=3",
+    "route": "/onboarding/organizer?step=3",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-ORG-03",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-ORG-04",
+    "name": "/onboarding/organizer?step=4",
+    "route": "/onboarding/organizer?step=4",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-ORG-04",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-PROV-01",
+    "name": "/onboarding/provider?step=1",
+    "route": "/onboarding/provider?step=1",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-PROV-01",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-PROV-02",
+    "name": "/onboarding/provider?step=2",
+    "route": "/onboarding/provider?step=2",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-PROV-02",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-PROV-03",
+    "name": "/onboarding/provider?step=3",
+    "route": "/onboarding/provider?step=3",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-PROV-03",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "ONB-PROV-04",
+    "name": "/onboarding/provider?step=4",
+    "route": "/onboarding/provider?step=4",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "ONB-PROV-04",
+    "sourceFile": "src/app/onboarding/[flow]/page.tsx"
+  },
+  {
+    "id": "MEDIA-ORG",
+    "name": "MEDIA-ORG",
+    "route": "/organizer/media",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "partial-pass: production modal/page axe; full manual/variants pending",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [
+      "artifacts/pwa/media-modal-production-axe.json"
+    ],
+    "references": [],
+    "sourceId": "MEDIA-ORG",
+    "sourceFile": "src/app/organizer/media/page.tsx"
+  },
+  {
+    "id": "MEDIA-PROV",
+    "name": "MEDIA-PROV",
+    "route": "/provider/media",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "MEDIA-PROV",
+    "sourceFile": "src/app/provider/media/page.tsx"
+  },
+  {
+    "id": "MEDIA-STUDIO",
+    "name": "MEDIA-STUDIO",
+    "route": "/studio/[id]",
+    "role": "shared",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "partial-pass: editor reflow/run refresh; full interactions pending"
+    },
+    "evidence": [
+      "artifacts/pwa/editors-final.json",
+      "artifacts/pwa/editors-otp-final.json"
+    ],
+    "references": [],
+    "sourceId": "MEDIA-STUDIO",
+    "sourceFile": "src/app/studio/[id]/page.tsx"
+  },
+  {
+    "id": "MAP-PROV",
+    "name": "MAP-PROV",
+    "route": "/provider/venues/[id]?tab=spaces",
+    "role": "provider",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "MAP-PROV",
+    "sourceFile": "src/app/provider/venues/[id]/page.tsx"
+  },
+  {
+    "id": "AG-001-ADMIN",
+    "name": "AG-001-ADMIN",
+    "route": "/admin/agent-integrations",
+    "role": "admin",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "AG-001",
+    "sourceFile": "src/app/admin/(console)/agent-integrations/page.tsx"
+  },
+  {
+    "id": "PLANNER-CU",
+    "name": "PLANNER-CU",
+    "route": "/plan?step=1",
+    "role": "customer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "partial-pass: sampled mobile route geometry; full matrix pending",
+      "accessibility": "partial-pass: sampled route axe; manual/variants pending",
+      "performance": "not-tested",
+      "test": "partial-pass: authenticated route smoke; workflows pending"
+    },
+    "evidence": [
+      "artifacts/pwa/customer-organizer-route-audit-final.log"
+    ],
+    "references": [],
+    "sourceId": "PLANNER-CU",
+    "sourceFile": "src/app/(customer)/plan/page.tsx"
+  },
+  {
+    "id": "TICKET-ALLOCATION",
+    "name": "TICKET-ALLOCATION",
+    "route": "/organizer/events/[id]/tickets/setup?step=1&section=seating",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "TICKET-ALLOCATION",
+    "sourceFile": "src/app/organizer/events/[id]/tickets/setup/page.tsx"
+  },
+  {
+    "id": "TICKET-REVIEW",
+    "name": "TICKET-REVIEW",
+    "route": "/organizer/events/[id]/tickets/setup?step=3&section=review",
+    "role": "organizer",
+    "views": "",
+    "implementation": "route-present; unverified",
+    "gates": {
+      "visual": "no-PWA-reference; shared-system-audit-required",
+      "functional": "not-tested",
+      "backend": "not-tested",
+      "auth-RLS": "not-tested",
+      "Agent": "not-tested",
+      "responsive": "not-tested",
+      "accessibility": "not-tested",
+      "performance": "not-tested",
+      "test": "not-tested"
+    },
+    "evidence": [],
+    "references": [],
+    "sourceId": "TICKET-REVIEW",
+    "sourceFile": "src/app/organizer/events/[id]/tickets/setup/page.tsx"
+  }
+]

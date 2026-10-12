@@ -316,7 +316,7 @@ html[data-ws-h=tiny] .ws-switcher img,html[data-ws-h=tiny] .ws-switcher-blank{wi
 .ws-overlay-ctl input[type=range]{width:90px}
 .ws-overlay-ctl small{opacity:.7}
 .ws-overlay-off button{padding:3px 6px;margin-left:4px}
-.ws-overlay-ctl:not(.open){opacity:.55}.ws-overlay-ctl:not(.open):hover{opacity:1}
+.ws-overlay-ctl:not(.open){opacity:1}
 @media print{.ws-overlay,.ws-overlay-ctl{display:none!important}}
 
 /* Official logo lockup (public/brand/gala-dock-logo.png: 500×129 with padding; artwork spans 41–472 × 8–124) */
@@ -385,7 +385,7 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
    messages, notifications and help grouped on the right beside the account menu. The outer columns share the leftover
    space equally, so the search stays centred in the window and only shrinks when the sides need the room. ── */
 .ws-topbar{--top-side:400px;display:grid;grid-template-columns:minmax(var(--top-side),1fr) minmax(0,1065px) minmax(var(--top-side),1fr);column-gap:16px}
-.ws-app.provider .ws-topbar{--top-side:360px}
+.ws-app.provider .ws-topbar{--top-side:calc(var(--ws-side) + 232px)}
 /* Below 1280px there isn't room to reserve equal sides, so the search takes whatever space is left. */
 @media (max-width:1279px){.ws-topbar{grid-template-columns:minmax(max-content,auto) minmax(0,1fr) max-content}}
 .ws-top-l{display:flex;align-items:center;align-self:stretch;min-width:0}
@@ -393,3 +393,26 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 .ws-actions{margin-left:0;justify-self:end;gap:2px}
 .ws-create .ws-pop-trigger{margin:0 8px 0 0}
 .ws-account .ws-pop-trigger{margin-left:6px}
+/* Workspace switcher in the top bar (matches the Organizer pill). Scoped to the top bar so the old sidebar rules can't size it. */
+.ws-app .ws-topbar .ws-switcher-top{margin:0 0 0 14px;position:relative;flex-shrink:0}
+.ws-app .ws-topbar .ws-switcher-top .ws-pop-trigger{width:200px;height:42px;padding:0 10px 0 7px;gap:9px;box-shadow:none;border-radius:10px}
+.ws-app .ws-topbar .ws-switcher-top img,.ws-app .ws-topbar .ws-switcher-top .ws-switcher-blank{width:30px;height:28px;border-radius:6px}
+.ws-app .ws-topbar .ws-switcher-top .ws-switcher-blank svg{width:16px;height:16px}
+.ws-app .ws-topbar .ws-switcher-top b{font-size:12.5px}
+.ws-app .ws-topbar .ws-switcher-top small{font-size:10.5px;overflow:hidden;text-overflow:ellipsis}
+.ws-app .ws-topbar .ws-switcher-top .ws-pop-trigger>svg{margin-left:auto}
+.ws-app .ws-topbar .ws-switcher-top .ws-pop-panel{min-width:280px}
+.ws-app .ws-topbar .ws-switcher-top .ws-pop-panel button{display:flex;align-items:center;gap:9px;width:100%;text-align:left}
+.ws-ws-name{display:grid;flex:1;min-width:0;line-height:1.3}
+.ws-ws-name small{display:block;font-size:10.5px;color:#5157a4;text-transform:capitalize}
+@media (max-width:1280px){.ws-app .ws-topbar .ws-switcher-top .ws-pop-trigger{width:170px}}
+/* Semantic foregrounds meet AA on their pale KPI and status backgrounds. */
+.ws-app .ws-delta.up,.ws-app .ph-trend.up,.ws-app .ph-ring small.up,.ws-app .ao-d.up { color:#086a3a; }
+.ws-app .ws-delta.down,.ws-app .ph-trend.down,.ws-app .ph-ring small.down { color:#b11931; }
+.ws-app .ws-delta-wrap small,.ws-app .ph-elig-chip.off { color:#515779; }
+.ws-app .ws-chip.amber,.ws-app .ws-chip.orange { color:#834600; }
+.ws-overlay-ctl>button { color:#090a52; background:#fff; }
+.ws-app .ao-pri.high,.ws-app .ao-pri.urgent,.ws-app .ao-cs { color:#b11931; }
+/* App branding: the circular symbol occupies the far-left slot. */
+.ws-topbar .ws-logo-mark { width:44px;height:44px;margin:0 12px;display:grid;place-items:center;overflow:visible; }
+.ws-topbar .ws-logo-mark img { width:44px;height:44px;position:static;transform:none;object-fit:contain; }

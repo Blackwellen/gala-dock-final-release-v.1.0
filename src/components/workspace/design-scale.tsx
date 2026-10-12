@@ -3,19 +3,20 @@
 import { useEffect, useState } from "react";
 
 /**
- * Workspace display scale (same "gd-density" key and html[data-density] values as the Customer/Organizer kit).
- * Workspace type is calibrated to the reference designs, so "default" renders at design size; compact .86, comfortable 1.08,
- * reference 1 (the 1536×1024 design canvas exactly, for 1:1 checks).
- * On desktop windows narrower than the design canvas the layout additionally scales to fit it. Mobile/tablet layouts run at 1:1.
- * The inline script applies the scale before first paint; the effect keeps it in sync and clears it when leaving the workspace.
+ * Workspace display scale: the same rule as Organizer/Customer (src/styles/density.css). The shell root (.ws-app) is zoomed by
+ * --k-zoom, driven by the shared "gd-density" choice. This script only publishes the window height in zoomed CSS px (--ws-vh)
+ * and a short/tall hint for layouts; it no longer zooms the whole page, so switching workspace keeps one consistent size.
  */
 export const DENSITIES = [{ key: "compact", label: "Compact" }, { key: "default", label: "Default" }, { key: "comfortable", label: "Comfortable" }, { key: "reference", label: "Design size" }] as const;
 const KEY = "gd-density";
-const compute = `(function(){var k="default";try{k=localStorage.getItem("${KEY}")||"default"}catch(e){}
-var w=innerWidth,h=innerHeight,s=1;if(w>=1181){var d=k==="compact"?.86:k==="comfortable"?1.08:k==="reference"?1:1;s=k==="reference"?1:Math.max(.78,Math.min(w/1536,1)*d);}
-var r=document.documentElement;r.style.zoom=s===1?"":String(s);var eh=h/s;r.style.setProperty("--ws-vh",eh+"px");
-r.dataset.wsH=eh<700?"tiny":eh<860?"short":"tall";r.dataset.wsScale=String(Math.round(s*100));r.dataset.density=k;})()`;
-const apply = () => new Function(compute)();
+/** Applies the saved density and publishes a short/tall hint for layouts. Window height (--ws-vh) comes from CSS (density.css). */
+function apply() {
+  let k = "default"; try { k = localStorage.getItem(KEY) || "default"; } catch { /* storage unavailable */ }
+  const r = document.documentElement;
+  if (k === "default") r.removeAttribute("data-density"); else r.dataset.density = k;
+  const z = parseFloat(getComputedStyle(r).getPropertyValue("--k-zoom")) || 1, eh = innerHeight / z;
+  r.dataset.wsH = eh < 700 ? "tiny" : eh < 860 ? "short" : "tall"; r.dataset.wsScale = String(Math.round(z * 100));
+}
 
 export function DesignScale() {
   useEffect(() => {
@@ -24,10 +25,10 @@ export function DesignScale() {
     return () => {
       window.removeEventListener("resize", apply);
       const r = document.documentElement;
-      r.style.zoom = ""; r.style.removeProperty("--ws-vh"); delete r.dataset.wsH; delete r.dataset.wsScale; 
+      delete r.dataset.wsH; delete r.dataset.wsScale;
     };
   }, []);
-  return <script dangerouslySetInnerHTML={{ __html: compute }} />;
+  return null;
 }
 
 /** Display size control for the account menu (per-device preference). */

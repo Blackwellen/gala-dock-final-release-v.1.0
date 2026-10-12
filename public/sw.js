@@ -1,17 +1,18 @@
 // Gala Dock service worker.
 // Caches only public, versioned static assets. Pages, auth flows and API responses are never
 // cached, so private data never lands in the cache; navigations fall back to /offline.html.
-const VERSION = "gd-static-v1";
+const VERSION = "gd-static-v2";
 const OFFLINE = "/offline.html";
 const STATIC = [/^\/_next\/static\//, /^\/assets\//, /^\/icons\//, /^\/offline\.html$/];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(VERSION).then(cache => cache.addAll([OFFLINE, "/icons/icon-192.png"])).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(VERSION).then(cache => cache.addAll([OFFLINE, "/icons/icon-192.png"])));
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("gd-static-") && k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
+self.addEventListener("message", event => { if (event.data?.type === "ACTIVATE_UPDATE") self.skipWaiting(); });
 
 self.addEventListener("fetch", event => {
   const { request } = event;
@@ -29,7 +30,7 @@ self.addEventListener("fetch", event => {
       const hit = await cache.match(request);
       if (hit) return hit;
       const response = await fetch(request);
-      if (response.ok && response.type === "basic") cache.put(request, response.clone());
+      if (response.ok && response.type === "basic") { try { await cache.put(request, response.clone()); } catch { /* Quota/storage failure must not block a successful network response. */ } }
       return response;
     }));
   }

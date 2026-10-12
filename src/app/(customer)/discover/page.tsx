@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Calendar, MapPin, Clock, ChevronRight, ArrowRight, Star, Sparkles, LayoutGrid, List, Map as MapIcon, Music, Wine, Utensils, Laugh, Users, Briefcase, Heart as HeartIcon, MoreHorizontal, Flame, BadgeCheck, Ticket, Building2, Wrench } from "lucide-react";
+import { Calendar, MapPin, Clock, ChevronRight, ArrowRight, Star, LayoutGrid, List, Map as MapIcon, Music, Wine, Utensils, Laugh, Users, Briefcase, Heart as HeartIcon, MoreHorizontal, Flame, BadgeCheck, Ticket, Building2, Wrench, Compass } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { publicEvents, savedKeys, CATEGORY_CHIPS, type PublicEvent } from "@/lib/data/customer";
 import { LISTING_COLS, type Listing } from "@/lib/data/marketplace";
-import { Chip, Tag, Beta, Empty } from "@/components/kit";
+import { Chip, Tag, Empty } from "@/components/kit";
 import { SaveHeart, MapView } from "@/components/kit/client";
 import { DiscoverSearch, AgentBrief } from "@/components/customer/discover-client";
 import { dateBadge, time12, money, num, dateShort } from "@/lib/format";
@@ -69,8 +69,8 @@ export default async function Discover({ searchParams }: { searchParams: Promise
       </div>
       <div className="k-col" style={{ gap: 14 }}>
         <section className="ds-card ds-map-card"><div className="k-between" style={{ marginBottom: 10 }}><h2 style={{ fontSize: 14 }}>Events near {s(sp.city) ? s(sp.city)[0]!.toUpperCase() + s(sp.city).slice(1) : "London"}</h2><div className="k-seg"><Link aria-current="page" href={qs({ results: "1", view: "map" })}><MapIcon size={13} />Map</Link><Link aria-current={(false) ? "page" : undefined} href={qs({ results: "1", view: "list" })}><List size={13} />List</Link></div></div>
-          <MapView pins={events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name }))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height={210} mapKey={process.env.MAP_TILER_API_KEY} ariaLabel="Map of events near you" /></section>
-        <section className="ds-card"><div className="k-row" style={{ gap: 10, marginBottom: 10 }}><Sparkles size={22} className="k-blue" /><h2 style={{ fontSize: 16 }}>Gala Agent</h2><Beta /></div><AgentBrief /></section>
+          <MapView pins={events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name }))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height={210} ariaLabel="Map of events near you" /></section>
+        <section className="ds-card"><div className="k-row" style={{ gap: 10, marginBottom: 10 }}><Compass size={22} className="k-blue" /><h2 style={{ fontSize: 16 }}>Plan something</h2></div><AgentBrief /></section>
       </div>
     </div> : <div className={`ds-results ${view === "map" ? "with-map" : ""}`}>
       <div className="k-col" style={{ gap: 12, minWidth: 0 }}>
@@ -78,7 +78,7 @@ export default async function Discover({ searchParams }: { searchParams: Promise
         {tab === "events" ? (events.length ? (view === "list" ? <div className="ds-list">{events.map(e => <Link key={e.id} href={resultHref(e)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" /><span className="k-grow"><b>{e.name}</b><span className="k-xs k-muted"><Calendar size={11} /> {dateShort(e.starts_at)} · {time12(e.starts_at)}</span><span className="k-xs k-muted"><MapPin size={11} /> {e.location}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b><Chip tone={e.remaining < 100 ? "red" : "green"}>{e.remaining < 100 ? `${e.remaining} left` : "Available"}</Chip></span></Link>)}</div> : <div className="ds-events ds-events-grid">{events.map(e => <EventCard key={e.id} e={e} saved={saved.has(`event:${e.id}`)} href={resultHref(e)} sponsored={sponsored.has(e.id)} />)}</div>) : <Empty title="No events match" text="Try another date, area or category." />)
           : (() => { const L = tab === "venues" ? venues : services; return L.length ? (view === "list" ? <div className="ds-list">{L.map(l => <Link key={l.id} href={lHref(l)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image} alt="" /><span className="k-grow"><b>{l.name} {l.verified && <BadgeCheck size={13} className="k-blue" />}</b><span className="k-xs k-muted"><Star size={11} fill="#f59e0b" color="#f59e0b" /> {l.rating.toFixed(1)} ({l.review_count}) · {l.category}</span><span className="k-xs k-muted"><MapPin size={11} /> {l.location}{l.capacity_max ? ` · up to ${num(l.capacity_max)}` : ""}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{money(l.price_from)}</b><small className="k-xs k-muted">{l.price_unit}</small></span></Link>)}</div> : <div className="ds-events ds-events-grid">{L.map(l => <ListingCard key={l.id} l={l} href={lHref(l)} saved={saved.has(`listing:${l.id}`)} />)}</div>) : <Empty title={`No ${tab} match`} />; })()}
       </div>
-      {view === "map" && <div className="ds-results-map"><MapView pins={(tab === "events" ? events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name, price: e.minPrice != null ? money(e.minPrice) : "" })) : (tab === "venues" ? venues : services).filter(l => l.lat).map(l => ({ id: l.id, lat: l.lat!, lng: l.lng!, label: l.name, price: money(l.price_from) })))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height="100%" mapKey={process.env.MAP_TILER_API_KEY} showPrices ariaLabel="Results map" /></div>}
+      {view === "map" && <div className="ds-results-map"><MapView pins={(tab === "events" ? events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name, price: e.minPrice != null ? money(e.minPrice) : "" })) : (tab === "venues" ? venues : services).filter(l => l.lat).map(l => ({ id: l.id, lat: l.lat!, lng: l.lng!, label: l.name, price: money(l.price_from) })))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height="100%" showPrices ariaLabel="Results map" /></div>}
     </div>}
   </div>;
 }

@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { RangeLinks } from "./range-links";
 import { Ticket, BarChart3, Truck, Users, ArrowRight, ChevronRight, User, CalendarDays, Clock, MapPin, Gauge, Building2, ClipboardList, Sparkles, Wand2, Search, CheckCircle2, PenSquare } from "lucide-react";
 import { Card, Ring, Bar, Chip, Avatars, Avatar, Beta, LineChart, BarChart } from "@/components/kit";
 import { AgentAsk } from "@/components/kit/client";
 import { money, num, dateLong, timeRange, eventTypeLabel, relative, dateBadge } from "@/lib/format";
 import type { ProEvent, EventData } from "@/lib/data/event";
 import { ReadinessPanel } from "@/components/ops/readiness-panel";
+import { activityLabel } from "@/lib/activity-labels";
 
 const ST: Record<string, { label: string; tone: "green" | "amber" | "blue" | "red" | "gray" | "purple" }> = { confirmed: { label: "Confirmed", tone: "green" }, fulfilled: { label: "Fulfilled", tone: "green" }, held: { label: "On hold", tone: "purple" }, quoted: { label: "Quote received", tone: "blue" }, available: { label: "Available", tone: "blue" }, sent: { label: "Requested", tone: "amber" }, awaiting: { label: "Pending", tone: "amber" }, suggested: { label: "Suggested", tone: "gray" }, declined: { label: "Declined", tone: "red" }, expired: { label: "No response", tone: "gray" }, standby: { label: "Standby", tone: "purple" }, cancelled: { label: "Cancelled", tone: "gray" }, clarification: { label: "Clarification", tone: "amber" }, draft: { label: "Draft", tone: "gray" }, unavailable: { label: "Unavailable", tone: "red" } };
 export const itemStatus = (s: string) => ST[s] ?? { label: s, tone: "gray" as const };
@@ -26,7 +28,7 @@ export function Overview({ e, d, me, canMoney }: { e: ProEvent; d: EventData; me
     ...(e.starts_at ? [{ at: e.starts_at, title: "Event day", sub: "Live Mode ready", tag: ["On track", "green"] }] : []),
   ].sort((a, b) => (a.at ?? "9").localeCompare(b.at ?? "9")).slice(-5);
   // Activity = the event's audit trail (bookings, orders, crew, media, contracts, status changes).
-  const activity = d.activity.length ? d.activity.slice(0, 5).map(a => ({ at: a.created_at, text: a.text, tone: a.event.startsWith("booking") || a.event.startsWith("contract") ? "green" : a.event.startsWith("crew") || a.event.startsWith("media") ? "purple" : "blue" }))
+  const activity = d.activity.length ? d.activity.slice(0, 5).map(a => ({ at: a.created_at, text: activityLabel(a.event, a.text), tone: a.event.startsWith("booking") || a.event.startsWith("contract") ? "green" : a.event.startsWith("crew") || a.event.startsWith("media") ? "purple" : "blue" }))
     : d.items.filter(b => b.status !== "suggested").slice(0, 5).map(b => ({ at: b.updated_at, text: `${itemStatus(b.status).label} – ${b.title}`, tone: "blue" }));
   const pendingSup = d.primary.filter(b => !["confirmed", "fulfilled"].includes(b.status));
   const risks = [
@@ -50,7 +52,7 @@ export function Overview({ e, d, me, canMoney }: { e: ProEvent; d: EventData; me
           <div><dt><Gauge size={15} />Owner</dt><dd className="k-row" style={{ gap: 8 }}><Avatar src="/assets/gd/av-alex-organizer.webp" name={me.name} size="sm" />You ({me.name.split(" ")[0]})</dd></div>
           <div><dt><Building2 size={15} />Internal team</dt><dd><Avatars people={crew} max={4} /></dd></div></dl></Card>
       <Card><div className="k-between"><h3 className="ov-h">Ticket sales pace</h3><Link className="k-link" href={`/organizer/events/${e.id}/promotion?tab=performance`}>View sales <ArrowRight size={12} /></Link></div>
-        <div className="k-between" style={{ margin: "8px 0 10px" }}><b style={{ fontSize: 17 }}>{num(d.sold)} of {num(d.cap)} <span className="k-muted" style={{ fontWeight: 500, fontSize: 13 }}>sold ({soldPct}%)</span></b><span className="k-btn ghost sm">Last 30 days</span></div>
+        <div className="k-between" style={{ margin: "8px 0 10px" }}><b style={{ fontSize: 17 }}>{num(d.sold)} of {num(d.cap)} <span className="k-muted" style={{ fontWeight: 500, fontSize: 13 }}>sold ({soldPct}%)</span></b><RangeLinks eventId={e.id} tab="overview" current={d.rangeDays} /></div>
         {pace.length > 1 ? <LineChart series={[{ data: pace, color: "#1b64f5", label: "Tickets sold", fill: true }]} labels={paceLabels} height={150} yFormat={v => v >= 1000 ? `${(v / 1000).toFixed(1)}K` : String(Math.round(v))} /> : <p className="k-small">No ticket sales recorded yet.</p>}</Card>
       <Card><div className="k-between"><h3 className="ov-h">Budget vs forecast</h3>{canMoney && <Link className="k-link" href={`/organizer/events/${e.id}?tab=money`}>View money <ArrowRight size={12} /></Link>}</div>
         {canMoney ? <><div className="ov-legend">{([["Budget", budget, "#1b64f5"], ["Committed", committed, "#10b981"], ["Actual", actual, "#8b5cf6"], ["Forecast", forecastCost, "#f59e0b"]] as const).map(([l, v, c]) => <div key={l}><span><i className="k-dot" style={{ background: c }} />{l}</span><b>{money(v)}</b></div>)}</div>

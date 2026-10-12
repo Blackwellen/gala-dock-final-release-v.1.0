@@ -21,9 +21,11 @@ async function seat(workspaceId: string, roles = ["owner", "manager", "member", 
   const sb = await createClient();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: m } = await sb.from("workspace_members").select("role,status,workspaces(kind)").eq("workspace_id", workspaceId).eq("user_id", user.id).maybeSingle();
+  const { data: m } = await sb.from("workspace_members").select("role,status,workspaces(kind,status)").eq("workspace_id", workspaceId).eq("user_id", user.id).maybeSingle();
   if (!m || m.status !== "active" || !roles.includes(m.role)) return null;
-  return { sb, user, role: m.role as string, kind: (m.workspaces as unknown as { kind: Surface }).kind };
+  const workspace = m.workspaces as unknown as { kind: Surface; status: string } | null;
+  if (!workspace || workspace.status !== "active" || !["organizer", "provider"].includes(workspace.kind)) return null;
+  return { sb, user, role: m.role as string, kind: workspace.kind };
 }
 
 /** Do / Goal mode: creates a durable run; the worker plans and executes it. */
@@ -49,8 +51,9 @@ async function ownRun(runId: string) {
   const sb = await createClient();
   const { data: run } = await sb.from("agent_runs").select("id,workspace_id,status,user_id").eq("id", runId).maybeSingle();
   if (!run) return null;
-  const s = await seat(run.workspace_id as string, ["owner", "manager"]); const { data: { user } } = await sb.auth.getUser();
-  return s || run.user_id === user?.id ? { run, userId: user!.id } : null;
+  // Creating the run does not retain authority after membership is revoked or the workspace is suspended.
+  const s = await seat(run.workspace_id as string);
+  return s && (["owner", "manager"].includes(s.role) || run.user_id === s.user.id) ? { run, userId: s.user.id } : null;
 }
 
 export async function confirmPlan(runId: string): Promise<R> {
@@ -60,6 +63,7 @@ export async function confirmPlan(runId: string): Promise<R> {
   bump(); return { ok: true };
 }
 export async function controlRun(runId: string, action: "cancel" | "pause" | "resume"): Promise<R> {
+  if (!["cancel", "pause", "resume"].includes(action)) return { ok: false, error: "Unknown run action." };
   const o = await ownRun(runId); if (!o) return { ok: false, error: "Run not found." };
   const to = action === "cancel" ? "cancelled" : action === "pause" ? "paused" : "queued";
   const db = untyped(createAdminClient() as never);

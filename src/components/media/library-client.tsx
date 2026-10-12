@@ -1,23 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Flag } from "lucide-react";
 import { createDesign, reportTemplate } from "@/lib/media/actions";
 import { PRESETS } from "@/lib/media/document";
 import { promptDialog } from "@/lib/ui/dialogs";
 
-export function NewDesign({ workspaceId, events }: { workspaceId: string; events: { id: string; name: string }[] }) {
+export function NewDesign({ workspaceId, events, initialOpen = false }: { workspaceId: string; events: { id: string; name: string }[]; initialOpen?: boolean }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false), [busy, setBusy] = useState(""), [err, setErr] = useState(""), [eventId, setEventId] = useState(""), [custom, setCustom] = useState({ w: 1080, h: 1350 });
+  const [open, setOpen] = useState(initialOpen), [busy, setBusy] = useState(""), [err, setErr] = useState(""), [eventId, setEventId] = useState(""), [custom, setCustom] = useState({ w: 1080, h: 1350 });
+  const dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null),titleId=useId();
+  useEffect(()=>{if(!open||!dialog.current)return;const el=dialog.current,button=trigger.current,previous=document.body.style.overflow;el.showModal();document.body.style.overflow='hidden';return()=>{el.close();document.body.style.overflow=previous;button?.focus();};},[open]);
   const go = async (key: string, i: Omit<Parameters<typeof createDesign>[0], "workspaceId">) => {
+    if (!navigator.onLine) { setErr("Reconnect before creating a design."); return; }
     setBusy(key); setErr("");
-    const r = await createDesign({ ...i, workspaceId, eventId: eventId || null });
-    if (r.ok) router.push(`/studio/${r.data}`); else { setErr(r.error); setBusy(""); }
+    try {const r = await createDesign({ ...i, workspaceId, eventId: eventId || null });
+      if (r.ok) router.push(`/studio/${r.data}`); else { setErr(r.error); setBusy(""); }
+    }catch{setErr("Could not reach Gala Dock. Reconnect and try again.");setBusy("");}
   };
-  if (!open) return <button className="st-btn primary" onClick={() => setOpen(true)}><Plus size={15} />New design</button>;
-  return <div className="st-pop" role="dialog" aria-label="New design" style={{ top: 80 }}>
-    <div className="st-pop-head"><b>New design</b><button className="st-icon" onClick={() => setOpen(false)} aria-label="Close">×</button></div>
+  return <><button ref={trigger} type="button" className="st-btn primary" onClick={() => setOpen(true)}><Plus size={15} />New design</button><dialog ref={dialog} className="st-pop st-new-design" aria-labelledby={titleId} onCancel={()=>setOpen(false)} onClick={e=>{if(e.target!==e.currentTarget)return;const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)setOpen(false);}}>
+    <div className="st-pop-head"><b id={titleId}>New design</b><button type="button" autoFocus className="st-icon" onClick={() => setOpen(false)} aria-label="Close new design">×</button></div>
     <label className="st-field"><span>Link to event (fills names, dates and the ticket QR)</span><select value={eventId} onChange={e => setEventId(e.target.value)}><option value="">No event</option>{events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select></label>
     {eventId && <button className="st-btn primary" disabled={!!busy} onClick={() => go("poster", { preset: "a3", fromEvent: true, title: "Event poster" })}>{busy === "poster" && <Loader2 size={14} className="mk-spin" />}Start from my event poster</button>}
     {["Print", "Social", "Event"].map(g => <div key={g}><h3 style={{ margin: "4px 0", fontSize: 11, textTransform: "uppercase", color: "#6a70b0" }}>{g}</h3>
@@ -27,7 +30,7 @@ export function NewDesign({ workspaceId, events }: { workspaceId: string; events
       <button className="st-btn" disabled={!!busy} onClick={() => go("custom", { width: custom.w, height: custom.h, title: "Custom design" })}>Custom size</button>
       <button className="st-btn" disabled={!!busy} onClick={() => go("transparent", { width: custom.w, height: custom.h, transparent: true, title: "Transparent design" })}>Transparent</button></div>
     {err && <p className="st-warn" role="alert">{err}</p>}
-  </div>;
+  </dialog></>;
 }
 
 export function TemplateCard({ id, title, meta, workspaceId, community, children }: { id: string; title: string; meta: string; workspaceId: string; community: boolean; children: React.ReactNode }) {

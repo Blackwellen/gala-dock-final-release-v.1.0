@@ -24,7 +24,7 @@ export async function resaleTicket(ticketId: string, cancel: boolean): Promise<A
   const id = Id.safeParse(ticketId); if (!id.success) return { ok: false, error: "Ticket not found." };
   const ctx = await getCustomer();
   const { error } = await ctx.supabase.rpc("list_ticket_for_resale", { p_ticket: id.data, p_cancel: cancel });
-  if (error) return { ok: false, error: error.message.includes("not_resellable") ? "Only valid, unused tickets can be resold." : error.message.includes("not_listed") ? "This ticket isn't listed for resale." : "Could not update resale." };
+  if (error) return { ok: false, error: error.message.includes("price_cap_exceeded") ? "The original price exceeds the current resale cap. Contact ticket support." : error.message.includes("resale_disabled") ? "Official resale is turned off for this event." : error.message.includes("resale_window_closed") ? "The resale window is closed." : error.message.includes("resale_reserved") ? "A buyer has reserved this ticket. Try again after their reservation expires." : error.message.includes("not_resellable") ? "Only valid, unused paid tickets can be resold." : error.message.includes("not_listed") ? "This ticket isn't listed for resale." : "Could not update resale." };
   bump(id.data); return { ok: true, message: cancel ? "Resale cancelled — a fresh QR code has been issued." : "Listed on official resale at face value. You'll be paid if it sells." };
 }
 

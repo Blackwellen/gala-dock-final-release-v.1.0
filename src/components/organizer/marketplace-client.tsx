@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useRef } from "react";
 import { Search, SlidersHorizontal, MapPin, ChevronRight, CalendarDays, Star } from "lucide-react";
 import { Dialog, MapView, Menu } from "@/components/kit/client";
+import type { MapBounds } from "@/components/kit/map-view";
 import { useQueryNav } from "./events-client";
 
 export function MarketFilters({ tab, categories }: { tab: "venues" | "services"; categories: string[] }) {
@@ -51,12 +52,14 @@ export function EventPicker({ events, current }: { events: { id: string; name: s
 }
 
 type Pin = { id: string; lat: number; lng: number; name: string; price: string; image: string; rating: number; reviews: number; capacity: number | null; href: string };
-export function MarketMap({ pins, mapKey, total, label, center }: { pins: Pin[]; mapKey?: string; total: number; label: string; center?: { lat: number; lng: number } }) {
-  const [sel, setSel] = useState<string | null>(pins[0]?.id ?? null); const router = useRouter(); const p = pins.find(x => x.id === sel);
+export function MarketMap({ pins, total, label, center }: { pins: Pin[]; total: number; label: string; center?: { lat: number; lng: number } }) {
+  const [sel, setSel] = useState<string | null>(null); const router = useRouter(); const pathname = usePathname(); const sp = useSearchParams();
+  const [follow, setFollow] = useState(true); const followRef = useRef(true);
+  // "Search as I move the map": the visible area becomes a bbox filter on the results (server-side), so the list matches the map.
+  const onMoveEnd = (b: MapBounds) => { if (!followRef.current) return; const n = new URLSearchParams(sp.toString()); n.set("bbox", [b.south, b.west, b.north, b.east].map(v => v.toFixed(4)).join(",")); router.replace(`${pathname}?${n}`, { scroll: false }); };
   return <div className="mk-map">
-    <MapView pins={pins.map(x => ({ id: x.id, lat: x.lat, lng: x.lng, label: x.name, price: x.price }))} center={center} zoom={11} height="100%" mapKey={mapKey} selected={sel} onSelect={setSel} showPrices ariaLabel={`Map of ${label}`} />
-    <label className="mk-map-move"><input type="checkbox" defaultChecked />Search as I move the map</label>
-    {p && <button className="mk-map-card" onClick={() => router.push(p.href)}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p.image || "/assets/gd/covers/summer-sessions.webp"} alt="" /><b>{p.name}</b><span className="k-row k-xs" style={{ gap: 6 }}><Star size={11} fill="#f59e0b" color="#f59e0b" />{p.rating.toFixed(1)} ({p.reviews})<b style={{ marginLeft: "auto" }}>{p.price}</b></span>{p.capacity && <small><MapPin size={10} /> {p.capacity.toLocaleString()} capacity</small>}</button>}
+    <MapView pins={pins.map(x => ({ id: x.id, lat: x.lat, lng: x.lng, label: x.name, price: x.price, href: x.href, image: x.image || "/assets/gd/covers/summer-sessions.webp", sub: [`★ ${x.rating.toFixed(1)} (${x.reviews})`, x.capacity ? `${x.capacity.toLocaleString()} capacity` : ""].filter(Boolean).join(" · ") }))} center={center} zoom={11} height="100%" selected={sel} onSelect={setSel} showPrices ariaLabel={`Map of ${label}`} onMoveEnd={onMoveEnd} />
+    <label className="mk-map-move"><input type="checkbox" checked={follow} onChange={e => { followRef.current = e.target.checked; setFollow(e.target.checked); if (!e.target.checked && sp.get("bbox")) { const n = new URLSearchParams(sp.toString()); n.delete("bbox"); router.replace(`${pathname}${n.size ? `?${n}` : ""}`, { scroll: false }); } }} />Search as I move the map</label>
     <Link className="mk-map-all" href="?view=map">View {total} {label} in this area <ChevronRight size={14} /></Link>
   </div>;
 }
