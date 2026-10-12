@@ -55,6 +55,6 @@ Each party keeps the other's confidential information confidential. Partners rec
 
 ## 7. Term and termination
 
-Either party may end the programme relationship on 30 days' notice, or immediately for material breach. Earned and payable fees survive. Partners are independent businesses, not Gala Dock's employees, agents or contractors, and can't bind Gala Dock. Liability: each party's total liability is capped at the greater of the fees paid or payable under these terms in the previous 12 months and £5,000, except for liability that cannot be limited by law.
+Either party may end the programme relationship on 30 days' notice, or immediately for material breach. Earned and payable fees survive. Partners are independent businesses, not Gala Dock's employees, agents or contractors, and can't bind Gala Dock. Liability: each party's total liability is capped at the greater of the fees paid or payable under these terms in the previous 12 months and £1,000, except for liability that cannot be limited by law.
 
 Governing law: England and Wales.

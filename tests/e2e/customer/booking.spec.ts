@@ -57,7 +57,9 @@ test("accept quote → deposit via Stripe Checkout → booking confirmed on retu
   await page.goto(`/account/events/${ev}/book?item=${item}&step=2`, { waitUntil: "networkidle" });
   await expect(page.getByRole("radio", { name: /Accept quote & book/ })).toHaveAttribute("aria-checked", "true");
   await page.locator(".bk-agree input").check();
-  await page.getByRole("button", { name: /Book & pay £300 deposit/ }).click();
+  // £300 deposit + £7.50 booking admin fee, shown before paying.
+  await expect(page.getByText(/£7\.50 Gala Dock booking admin fee/).first()).toBeVisible();
+  await page.getByRole("button", { name: /Book & pay £307\.50/ }).click();
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 60_000 });
   const db = admin();
   const { data: po } = await db.from("payment_orders").select("kind,status,amount_minor,customer_fee_minor,currency,stripe_checkout_session,commission").eq("build_item_id", item).order("created_at", { ascending: false }).limit(1).single();

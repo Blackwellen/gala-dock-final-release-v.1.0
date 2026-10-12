@@ -7,6 +7,7 @@ import { VSteps } from "@/components/kit";
 import { NumberStepper, SaveHeart, useAction, useKitToast, Menu } from "@/components/kit/client";
 import { saveBookingDraft, submitBooking, acceptQuote, checkAvailability, type Availability, type BookingRequirements } from "@/lib/actions/booking";
 import type { BookingQuestion } from "@/lib/booking-questions";
+import { bookingAdminFee, gbpPence, BOOKING_ADMIN_FEE } from "@/lib/fees";
 
 type QuoteItem = { label?: string; description?: string; name?: string; qty?: number; unit_price?: number };
 export type BookingData = {
@@ -168,7 +169,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <div><dt><Clock size={15} />Response time</dt><dd>Within {L?.response_hours ?? 48} hours</dd></div>
           <div><dt><Lock size={15} />Hold period</dt><dd>72 hours (if selected)</dd></div>
           <div><dt><Clock size={15} />Cancellation</dt><dd>{data.item.quote.terms?.cancellation ?? "Free until you approve a quote"}</dd></div>
-          <div><dt><CreditCard size={15} />Payment</dt><dd>{quoted ? `${gbp(depositOf(data))} deposit on booking` : "Refundable authorisation"}</dd></div>
+          <div><dt><CreditCard size={15} />Payment</dt><dd>{quoted ? `${gbp(depositOf(data))} deposit + ${gbpPence(bookingAdminFee(depositOf(data)))} admin fee on booking` : "Refundable authorisation"}</dd></div>
           <div><dt><FileText size={15} />Full terms</dt><dd>{L ? <Link className="k-link" href={`${L.href}#terms`}>View {kind} terms <ArrowRight size={13} /></Link> : "Shared with your quote"}</dd></div></dl></section>
         <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Sparkles size={20} className="bk-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span></div><p>Here&apos;s what will happen when you submit:</p>
           <ol className="bk-steps4">{whatHappens(opt, data).map((t, i) => <li key={t}><span>{i + 1}</span>{t}</li>)}</ol></section>
@@ -178,7 +179,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
     {step === 2 && <div className="bk-bar">
       <Link className="k-btn outline" href={`${base}&step=1`}><ArrowLeft size={16} />Back to Requirements</Link>
       <label className="bk-check bk-agree"><input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} />I agree to the {kind}&apos;s {L ? <Link href={`${L.href}#terms`} className="k-underline">terms and conditions</Link> : "terms and conditions"}<span className="k-red">*</span></label>
-      <button className="k-btn primary bk-submit" onClick={() => void submit()} disabled={pending || (opt === "hold" && !data.card) || (opt === "accept" && !data.card)}>{pending && <Loader2 size={16} className="k-spin" />}{opt === "accept" ? `Book & pay ${gbp(depositOf(data))} deposit` : opt === "hold" ? "Request Hold" : opt === "standby" ? "Join Standby List" : data.submitted ? "Update Booking Request" : "Submit Booking Request"}<ArrowRight size={17} /></button>
+      <button className="k-btn primary bk-submit" onClick={() => void submit()} disabled={pending || (opt === "hold" && !data.card) || (opt === "accept" && !data.card)}>{pending && <Loader2 size={16} className="k-spin" />}{opt === "accept" ? `Book & pay ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))}` : opt === "hold" ? "Request Hold" : opt === "standby" ? "Join Standby List" : data.submitted ? "Update Booking Request" : "Submit Booking Request"}<ArrowRight size={17} /></button>
     </div>}
   </div>;
 }
@@ -188,7 +189,7 @@ const estimateOf = (d: BookingData) => d.item.amount ?? d.pkg?.price ?? d.listin
 const authOf = (d: BookingData) => Math.max(50, Math.min(500, Math.round(d.item.deposit || (estimateOf(d) ?? 0) * 0.1)));
 function whatHappens(opt: Opt, d: BookingData) {
   const who = d.listing?.kind === "venue" ? "venue" : "provider";
-  if (opt === "accept") return [`We'll charge your ${gbp(depositOf(d))} deposit`, `Your booking with ${d.item.title} is confirmed instantly`, "The balance is scheduled in Money", "You can message the provider any time"];
+  if (opt === "accept") return [`We'll charge your ${gbp(depositOf(d))} deposit plus a ${gbpPence(bookingAdminFee(depositOf(d)))} booking admin fee`, `Your booking with ${d.item.title} is confirmed instantly`, "The balance is scheduled in Money", "You can message the provider any time"];
   if (opt === "hold") return [`We'll place a refundable ${gbp(authOf(d))} authorisation`, `The ${who} holds your date for 72 hours`, "You'll receive a formal quote to review", "The hold is released if you don't book"];
   if (opt === "standby") return [`We'll add you to the ${who}'s standby list`, "You'll be alerted if your date opens up", "There's no charge and no commitment", "You can request a quote at any time"];
   return [`We'll send your booking request to the ${who}`, `They'll respond within ${d.listing?.response_hours ?? 48} hours`, "You'll receive a formal quote to review", "No payment is taken unless you approve the quote"];
@@ -251,7 +252,7 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
       <div className="bk-price">
         <div className="bk-price-est"><small>{quoted ? "Quoted price" : "Estimated price"}</small><b>{gbp(quoted ? data.item.amount : est)}</b><span>{data.pkg?.name ?? data.item.package}</span></div>
         <dl className="bk-price-lines">{lines.slice(0, 5).map(l => <div key={l.label}><dt>{l.label}</dt><dd>{gbp(l.total)}</dd></div>)}{!lines.length && <div><dt>Quote to follow</dt><dd>—</dd></div>}</dl>
-        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Deposit / authorisation"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "Refundable"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : opt === "hold" ? authOf(data) : 0)}</strong><small>{opt === "accept" ? `Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} scheduled before your event.` : opt === "hold" ? "Pre-authorisation only. No charge unless you approve the quote." : "Nothing is charged for a request or standby."}</small></div>
+        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Deposit / authorisation"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "Refundable"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : opt === "hold" ? authOf(data) : 0)}</strong><small>{opt === "accept" ? `Plus a ${gbpPence(bookingAdminFee(depositOf(data)))} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))} today. Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} (plus its admin fee) scheduled before your event.` : opt === "hold" ? "Pre-authorisation only. No charge unless you approve the quote." : "Nothing is charged for a request or standby."}</small></div>
       </div>
       <div className="bk-info3">
         <div><Clock size={22} /><span><small>Response deadline</small><b>{data.item.response_deadline && ["sent", "awaiting"].includes(data.item.status) ? new Date(data.item.response_deadline).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) : `${L?.response_hours ?? 48} hours`}</b><em>You&apos;ll be notified by email and in your event.</em></span></div>

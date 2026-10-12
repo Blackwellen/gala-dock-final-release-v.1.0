@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 import * as A from "@/lib/marketplace/actions";
 import type { ActionResult, CancellationQuote } from "@/lib/marketplace/actions";
+import { bookingAdminFee, gbpPence, BOOKING_ADMIN_FEE } from "@/lib/fees";
 
 const gbp = (n: number | null | undefined) => n == null ? "—" : new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(n));
 
@@ -180,7 +181,8 @@ export function DisputeOpenForm({ itemId, reasons, base }: { itemId: string; rea
 }
 
 /** Starts an orchestrated payment (payment order → Stripe Checkout). Money is only marked paid when Stripe confirms. */
-export function PayButton({ kind, itemId, standbyId, label, returnPath, note }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string }) {
+/** `amount` (pounds, before the admin fee) lets the button show the exact booking admin fee; otherwise the rate is shown. */
+export function PayButton({ kind, itemId, standbyId, label, returnPath, note, amount }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string; amount?: number }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
   const go = () => start(async () => {
@@ -188,5 +190,7 @@ export function PayButton({ kind, itemId, standbyId, label, returnPath, note }: 
     const r = await A.payBooking(kind, { itemId, standbyId }, returnPath);
     if (!r.ok) setError(r.error); else if (r.data) window.location.assign(r.data);
   });
-  return <div className="mk-pay">{note && <p className="mk-note">{note}</p>}<Btn tone="primary" type="button" pending={pending} onClick={go}>{label}</Btn><Err e={error} /></div>;
+  const fee = amount != null ? bookingAdminFee(amount) : null;
+  return <div className="mk-pay">{note && <p className="mk-note">{note}</p>}
+    <p className="mk-note">{fee != null ? `Plus a ${gbpPence(fee)} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence((amount ?? 0) + fee)} in total.` : `Plus a Gala Dock booking admin fee of ${BOOKING_ADMIN_FEE.pct}% (min £${BOOKING_ADMIN_FEE.minimum}), shown before you pay.`}</p><Btn tone="primary" type="button" pending={pending} onClick={go}>{label}</Btn><Err e={error} /></div>;
 }

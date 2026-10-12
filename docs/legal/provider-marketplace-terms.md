@@ -93,7 +93,7 @@ For customer data you receive through bookings, you and Gala Dock are each indep
 
 10.4 **Indemnity.** You indemnify Gala Dock against losses, claims, fines, refunds and chargebacks (including reasonable legal costs) arising from your services, your breach of these terms or of law, or claims by customers, attendees or regulators about your services, except to the extent caused by Gala Dock's breach or negligence.
 
-10.5 **Our liability.** Nothing limits liability for death or personal injury caused by negligence, fraud, or anything that can't be limited by law. Otherwise, neither party is liable for indirect or consequential loss or loss of profit, revenue, goodwill or data, and Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the commission and fees you paid to Gala Dock in that period and (b) £5,000. Booking funds held for you, which remain payable to you, are not counted against this cap.
+10.5 **Our liability.** Nothing limits liability for death or personal injury caused by negligence, fraud, or anything that can't be limited by law. Otherwise, neither party is liable for indirect or consequential loss or loss of profit, revenue, goodwill or data, and Gala Dock's total liability to you in any 12-month period is limited to the greater of (a) the commission and fees you paid to Gala Dock in that period and (b) £1,000. Booking funds held for you, which remain payable to you, are not counted against this cap.
 
 10.6 Governing law: England and Wales.
 

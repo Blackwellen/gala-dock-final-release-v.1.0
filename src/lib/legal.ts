@@ -16,7 +16,7 @@ export const LEGAL = {
     supplier: "8% on Starter, 7% on Pro and 6% on Business or Enterprise plans", bookingAdmin: "2.5% of each booking payment (minimum £1)",
   },
   /** Business users' liability floor (Organizer, Provider, Venue and Partner terms). */
-  liabilityFloor: "£5,000",
+  liabilityFloor: "£1,000",
 } as const;
 
 export const LEGAL_DOCS = [
