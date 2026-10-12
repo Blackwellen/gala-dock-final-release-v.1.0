@@ -33,7 +33,8 @@ test.describe("storage quotas", () => {
     if (!up2.error) uploaded.push(p2);
     expect(up2.error).not.toBeNull(); expect(up2.error?.message).toMatch(/P0001|quota/);  // storage surfaces the trigger as P0001 → routes map it to a clear 413
     // Deleting frees the allowance.
-    expect((await db.storage.from("event-media").remove([p1])).error).toBeNull(); uploaded.splice(uploaded.indexOf(p1), 1);
+    // Members can delete their own workspace's event images (needs the select policy added in 202610270024).
+    const rm = await c.storage.from("event-media").remove([p1]); expect(rm.error).toBeNull(); expect(rm.data?.length).toBe(1); uploaded.splice(uploaded.indexOf(p1), 1);
     expect((await db.from("storage_attribution").select("name").eq("name", p1)).data).toEqual([]);   // attribution follows deletes
     expect(((await c.rpc("my_storage_usage", { p_workspace: ws })).data as { files: number }).files).toBe(0);
     const p3 = `${ws}/q3-${Date.now()}.png`;
@@ -43,6 +44,8 @@ test.describe("storage quotas", () => {
     expect((await stranger.rpc("storage_usage", { p_workspace: ws, p_user: null })).error?.message).toMatch(/forbidden/);
     expect((await stranger.rpc("storage_usage", { p_workspace: null, p_user: u.id })).error?.message).toMatch(/forbidden/);
     expect((await stranger.rpc("my_storage_usage", { p_workspace: ws })).error).not.toBeNull();
+    // ...and can't delete another workspace's images.
+    expect((await stranger.storage.from("event-media").remove([p3])).data ?? []).toEqual([]);
     expect((await c.rpc("storage_usage", { p_workspace: ws, p_user: null })).error).toBeNull();   // members still can
     // Owners were warned when crossing 80% / 100%.
     const { data: n } = await db.from("notifications").select("title").eq("user_id", u.id).like("title", "Storage %");
