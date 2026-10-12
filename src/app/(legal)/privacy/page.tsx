@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
     <p>This policy explains how {LEGAL.service} (“we”, “us”) collects and uses personal data when you use {LEGAL.site}, our apps and our services as a customer, event organiser, venue or service provider, team member, promoter or partner. We follow the UK General Data Protection Regulation (UK GDPR), the Data Protection Act 2018 and the Privacy and Electronic Communications Regulations 2003 (PECR).</p>
 
     <h2 id="who">1. Who we are and how to contact us</h2>
-    <p>{LEGAL.entity.name}{LEGAL.entity.number ? ` (company number ${LEGAL.entity.number})` : ""}{LEGAL.entity.address ? `, ${LEGAL.entity.address}` : ""} is the controller of the personal data described here, except where section 3 says otherwise. We are registered with the Information Commissioner’s Office under registration number {LEGAL.entity.ico}.</p>
+    <p>{LEGAL.entity.name}{LEGAL.entity.number ? ` (company number ${LEGAL.entity.number})` : ""}{LEGAL.entity.address ? `, ${LEGAL.entity.address}` : ""}{LEGAL.entity.vat ? ` (VAT number ${LEGAL.entity.vat})` : ""} is the controller of the personal data described here, except where section 3 says otherwise. We are registered with the Information Commissioner’s Office under registration number {LEGAL.entity.ico}.</p>
     <p>Our Data Protection Officer is {dpo.name}. Contact the DPO at <a href={`mailto:${contact.privacy}`}>{contact.privacy}</a> about anything in this policy or to exercise your rights.</p>
 
     <h2 id="collect">2. The personal data we collect</h2>

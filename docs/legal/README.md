@@ -2,7 +2,7 @@
 
 > **Approved for publication by Jamahl Thomas, Director, Blackwellen Limited, 12 October 2026.** These documents describe how the product actually behaves. They have not been reviewed by an external solicitor or barrister; an external review is recommended as the business grows.
 
-**Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, Herefordshire, HR5 3DJ** · VAT number **[VAT NUMBER — if registered]** · ICO registration **ZC160806**
+**Operator:** Blackwellen Limited, trading as Gala Dock · Company number **16482166** · Registered office **61 Bridge Street, Kington, Herefordshire, HR5 3DJ** · VAT number **GB508480488** · ICO registration **ZC160806**
 
 These placeholders must be completed from verified company records. `src/lib/legal.ts` holds the same fields for the published pages and currently leaves them empty.
 

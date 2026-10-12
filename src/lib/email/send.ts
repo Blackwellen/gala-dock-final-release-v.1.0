@@ -2,29 +2,33 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 
+import { emailHtml, escapeHtml } from "./layout";
+
 /**
- * Transactional email delivery (release spec §76–77) via Resend's REST API. Configuration contract: RESEND_API_KEY and EMAIL_FROM
- * (a verified sender, e.g. "Gala Dock <no-reply@mail.galadock.com>"); optional EMAIL_REPLY_TO. Without them the worker leaves mail
- * queued and the health check reports BLOCKED_EXTERNAL_CONFIGURATION.
+ * Transactional email delivery (release spec §76–77) via Resend's REST API. Configuration: RESEND_API_KEY (or RESEND_API), optional
+ * EMAIL_FROM (default "Gala Dock <no-reply@galadock.com>", the sending domain must be verified in Resend) and EMAIL_REPLY_TO
+ * (default support@galadock.com). Without a key the worker leaves mail queued and the health check reports it.
  */
-export const emailConfigured = () => Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+const apiKey = () => process.env.RESEND_API_KEY || process.env.RESEND_API || "";
+const fromAddress = () => process.env.EMAIL_FROM || "Gala Dock <no-reply@galadock.com>";
+const replyTo = () => process.env.EMAIL_REPLY_TO || "support@galadock.com";
+export const emailConfigured = () => Boolean(apiKey());
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.galadock.com").replace(/\/+$/, "");
-const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+const EYEBROW: Record<string, string> = { security: "Account security", payments: "Payments", bookings: "Bookings", tickets: "Tickets", messages: "Messages", team: "Your team", marketing: "News from Gala Dock" };
+const CTA: Record<string, string> = { security: "Review your account", payments: "View payment", bookings: "View booking", tickets: "View tickets", messages: "Open conversation" };
 
 export function render(o: { subject: string; body: string; link?: string | null; category: string }) {
   const url = o.link ? (o.link.startsWith("http") ? o.link : `${site()}${o.link}`) : null;
   const prefs = `${site()}/account?tab=notifications`;
-  const footer = ["security", "payments"].includes(o.category) ? "You’re receiving this because it concerns your account’s security or payments." : `You can change which emails you get in your notification settings: ${prefs}`;
-  const text = `${o.subject}\n\n${o.body}${url ? `\n\nOpen in Gala Dock: ${url}` : ""}\n\n—\nGala Dock · Blackwellen Ltd\n${footer}`;
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f7fd;font-family:Inter,Arial,sans-serif;color:#090a52">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:14px;padding:28px" cellpadding="0" cellspacing="0"><tr><td>
-<p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#0038fd">GALA DOCK</p>
-<h1 style="margin:0 0 12px;font-size:20px">${esc(o.subject)}</h1>
-<p style="margin:0 0 18px;line-height:1.6;color:#2b3080;white-space:pre-line">${esc(o.body)}</p>
-${url ? `<a href="${esc(url)}" style="display:inline-block;background:#0038fd;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Open in Gala Dock</a>` : ""}
-<p style="margin:24px 0 0;font-size:12px;color:#7a80b8;line-height:1.5">Gala Dock · Blackwellen Ltd<br>${esc(footer)}</p>
-</td></tr></table></td></tr></table></body></html>`;
+  const essential = ["security", "payments"].includes(o.category);
+  const footer = essential ? "You’re receiving this because it concerns your account’s security or payments." : `You can change which emails you get in your notification settings: ${prefs}`;
+  const text = `${o.subject}\n\n${o.body}${url ? `\n\nOpen in Gala Dock: ${url}` : ""}\n\n—\nGala Dock · Blackwellen Limited · VAT No. GB508480488\n${footer}`;
+  const html = emailHtml({
+    preheader: o.body.split("\n")[0]!.slice(0, 140), eyebrow: EYEBROW[o.category] ?? "Gala Dock", heading: o.subject,
+    bodyHtml: `<p style="margin:0">${escapeHtml(o.body).replace(/\n{2,}/g, '</p><p style="margin:14px 0 0">').replace(/\n/g, "<br>")}</p>`,
+    cta: url ? { label: CTA[o.category] ?? "Open in Gala Dock", url } : null,
+    footerNote: essential ? escapeHtml(footer) : `You can change which emails you get in your <a href="${escapeHtml(prefs)}" style="color:#7a80b8;text-decoration:underline">notification settings</a>.`,
+  });
   return { text, html };
 }
 
@@ -41,15 +45,22 @@ export async function drainOutbox(limit = 25) {
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST", signal: AbortSignal.timeout(15_000),
-        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": `outbox-${r.id}` },
-        body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [r.to_email], subject: r.subject, text, html, ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+        headers: { Authorization: `Bearer ${apiKey()}`, "Content-Type": "application/json", "Idempotency-Key": `outbox-${r.id}` },
+        body: JSON.stringify({ from: fromAddress(), to: [r.to_email], subject: r.subject, text, html, reply_to: replyTo(),
           headers: ["security", "payments"].includes(r.category) ? undefined : { "List-Unsubscribe": `<${site()}/account?tab=notifications>` } }),
       });
       const j = await res.json().catch(() => ({})) as { id?: string; message?: string };
       if (res.ok) { sent++; await db.from("email_outbox").update({ status: "sent", sent_at: new Date().toISOString(), provider_id: j.id ?? null, last_error: null, lease_until: null }).eq("id", r.id); }
       else {
         failed++;
-        // 4xx other than rate limits won't succeed on retry (bad address, unverified domain): suppress after recording why.
+        // Account-level problems (sending domain not verified, key revoked or send-restricted) aren't the recipient's fault: put the
+        // whole batch back in the queue untouched and stop, so nothing is lost while the configuration is fixed.
+        if (res.status === 401 || (res.status === 403 && /domain|not verified|api key/i.test(String(j.message ?? "")))) {
+          await db.from("email_outbox").update({ status: "queued", attempts: Math.max(0, r.attempts - 1), last_error: `${res.status} ${String(j.message ?? "").slice(0, 200)}`, lease_until: null })
+            .in("id", ((data ?? []) as Row[]).map(x => x.id)).eq("status", "sending");
+          return { configured: true, sent, failed, blocked: String(j.message ?? `HTTP ${res.status}`).slice(0, 200) };
+        }
+        // Other 4xx (bad address, rejected content) won't succeed on retry: suppress after recording why.
         const permanent = res.status >= 400 && res.status < 500 && res.status !== 429;
         await db.from("email_outbox").update({ status: permanent ? "suppressed" : "failed", last_error: `${res.status} ${String(j.message ?? "").slice(0, 200)}`, lease_until: null }).eq("id", r.id);
       }

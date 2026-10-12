@@ -8,6 +8,7 @@ import {
   ShieldCheck, Sparkles, Store, Ticket, UserPlus, Users, Wallet, type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/ui";
+import { LEGAL } from "@/lib/legal";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { AgentDemo } from "@/components/landing/agent-demo";
 import { Faq, type FaqItem } from "@/components/landing/faq";
@@ -393,7 +394,7 @@ export default function Page() {
             </nav>
           </div>
           <div className="lp-footer-bottom">
-            <p>© {year} Gala Dock. All rights reserved.</p>
+            <p>© {year} Gala Dock. All rights reserved.<br /><small>Gala Dock is a trading name of {LEGAL.entity.name}, registered in England and Wales (company number {LEGAL.entity.number}). Registered office: {LEGAL.entity.address}. VAT number {LEGAL.entity.vat}.</small></p>
             <ul>
               <li><Link href="/terms">Terms</Link></li>
               <li><Link href="/privacy">Privacy</Link></li>

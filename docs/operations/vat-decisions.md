@@ -13,7 +13,7 @@
 - Blackwellen Limited's VAT number field exists in Settings → Workspace.
 
 ## Questions for the adviser
-1. **VAT registration:** is Blackwellen Limited registered, or is it about to pass the £90,000 threshold? If so, which fees carry 20% VAT?
+1. **VAT registration: done.** Blackwellen Limited is VAT-registered (**GB508480488**, added 12 Oct 2026). Gala Dock's own fees are UK supplies, so standard-rated 20% VAT applies to them unless the adviser says otherwise: ticket fees, seller commission, booking admin fee, supplier commission, subscriptions and boosts. **This is now urgent:** prices are currently shown and charged excluding VAT.
 2. **Agent or principal for bookings:** the terms set Gala Dock up as an agent, so only the commission is Gala Dock's supply. Does the adviser agree? Does the 2.5% customer admin fee count as a separate supply to the customer?
 3. **Tickets:** when an organiser sells tickets through Gala Dock, is Gala Dock an agent (VAT due only on the £1 + 5% fee) or a principal (VAT due on the whole ticket price)? This depends on who the ticket buyer contracts with.
 4. **Platform rules for overseas sellers:** do any providers or organisers sit outside the UK? If so, check the online marketplace rules (joint and several liability, and VAT on goods).

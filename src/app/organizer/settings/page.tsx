@@ -37,7 +37,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const integrations = [
     { b: ["stripe"], n: "Stripe payouts", ok: w?.payout_status === "active", d: w?.payout_status === "active" ? "Payouts active" : "Finish payout setup", href: "/organizer/money?tab=settlements" },
     { b: ["google-calendar", "outlook", "apple"], n: "Calendar subscription", ok: true, d: "Subscribe from My Account", href: "/account?tab=profile" },
-    { b: ["resend"], n: "Transactional email", ok: !!process.env.RESEND_API_KEY, d: process.env.RESEND_API_KEY ? "Resend (production)" : "Not configured", href: "#" },
+    { b: ["resend"], n: "Transactional email", ok: !!(process.env.RESEND_API_KEY || process.env.RESEND_API), d: (process.env.RESEND_API_KEY || process.env.RESEND_API) ? "Resend (production)" : "Not configured", href: "#" },
     { b: ["microsoft"], n: "Gala Agent (Azure OpenAI)", ok: !!(process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY), d: "AI model access", href: "/organizer/agent" },
   ];
   const plan = String(s.plan ?? (w?.plan === "starter" ? "Starter" : "Pro Plan")); const price = Number(s.plan_price ?? 0);
