@@ -12,7 +12,7 @@ import { stripeKey } from "@/lib/stripe";
  * (platform collects, protects until delivery, then transfers) — see docs/architecture/payments.md for the legal/merchant assumptions.
  */
 
-export type PayKind = "deposit" | "balance_payment" | "standby_fee" | "emergency_service";
+export type PayKind = "deposit" | "balance_payment" | "standby_fee" | "emergency_service" | "platform_boost";
 type Order = { id: string; reference: string; kind: string; status: string; amount_minor: number; platform_fee_minor: number; refunded_minor: number; transferred_minor: number;
   currency: string; description: string; payee_workspace_id: string | null; build_item_id: string | null; event_id: string | null; stripe_checkout_session: string | null;
   stripe_payment_intent: string | null; stripe_charge: string | null; stripe_transfer: string | null };
@@ -38,11 +38,14 @@ const ERR: [RegExp, string][] = [
 ];
 
 /** Creates (or resumes) the payment order and returns a Stripe Checkout URL. */
-export async function startPayment(kind: PayKind, ids: { itemId?: string; standbyId?: string }, origin: string, returnPath: string): Promise<{ ok: true; url: string; reference: string } | { ok: false; error: string }> {
+export async function startPayment(kind: PayKind, ids: { itemId?: string; standbyId?: string; boostId?: string }, origin: string, returnPath: string): Promise<{ ok: true; url: string; reference: string } | { ok: false; error: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Please sign in again." };
-  const { data, error } = await supabase.rpc("create_payment_order" as never, { p_kind: kind, p_item: ids.itemId ?? null, p_standby: ids.standbyId ?? null } as never);
+  // Promotion boosts are platform revenue with their own order function (price from the boost catalogue).
+  const { data, error } = kind === "platform_boost"
+    ? await supabase.rpc("create_boost_payment_order" as never, { p_boost: ids.boostId ?? null } as never)
+    : await supabase.rpc("create_payment_order" as never, { p_kind: kind, p_item: ids.itemId ?? null, p_standby: ids.standbyId ?? null } as never);
   if (error) return { ok: false, error: ERR.find(([re]) => re.test(error.message))?.[1] ?? "Couldn’t start the payment. You haven’t been charged." };
   const po = data as unknown as Order;
   if (!stripeKey()) return { ok: false, error: "Card payments aren’t configured in this environment yet." };
