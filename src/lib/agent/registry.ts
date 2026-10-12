@@ -29,6 +29,12 @@ export const TOOLS: Tool[] = [
     input: z.object({ category: z.string().max(40).optional(), city: z.string().max(60).optional(), guests: z.number().int().min(1).max(100000).optional(), max_price: z.number().min(0).optional() }) }),
   t({ id: "team.conflicts", title: "Team conflicts", description: "Double bookings, travel clashes, unfilled shifts, qualifications.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({}) }),
   t({ id: "tickets.sales", title: "Ticket sales", description: "Sold, held and revenue per tier for an event.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "venues.rank", title: "Rank venues", description: "Score published venues for an event (capacity fit, city, price against budget, rating, response time) with reasons.", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id, limit: z.number().int().min(1).max(20).optional() }) }),
+  t({ id: "event.break_even", title: "Break-even", description: "Tickets needed to cover supplier costs (plus optional extra costs and fee %), sold so far, and whether it's achievable.", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id, extra_costs: z.number().min(0).max(10_000_000).optional(), fee_pct: z.number().min(0).max(50).optional() }) }),
+  t({ id: "seating.suggest", title: "Suggest seating", description: "Pack guests into tables of N, keeping groups together and flagging dietary needs per table. Saves nothing.", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id, table_size: z.number().int().min(2).max(30).optional(), include_pending: z.boolean().optional() }) }),
   t({ id: "money.payables", title: "Payables", description: "Supplier payments due, scheduled or overdue.", surface: "organizer", risk: 0, permission: "finance.read", input: z.object({}) }),
   // ── Organizer · R1/R2
   t({ id: "draft.note", title: "Draft", description: "Save a draft (message, plan, checklist) for a human to review. Sends nothing.", surface: "both", risk: 1, permission: "events.read",
