@@ -31,7 +31,7 @@ export async function ReadinessPanel({ eventId, compact = false }: { eventId: st
 }
 
 type Conflict = { kind: string; severity: "blocker" | "warning"; shift_id: string | null; event_id: string | null; message: string };
-const KIND: Record<string, string> = { overlap: "Double-booked", travel: "Travel time", unavailable: "Unavailable", unfilled: "Unfilled", qualification: "Qualification", missing_role: "Missing role" };
+const KIND: Record<string, string> = { overlap: "Double-booked", travel: "Travel time", unavailable: "Unavailable", unfilled: "Unfilled", unconfirmed: "Not confirmed", qualification: "Qualification", missing_role: "Missing role" };
 
 /** Team conflict engine output (§85) for Team, Home, Plan and the Agent. */
 export async function TeamConflicts({ workspaceId, eventId, limit = 20 }: { workspaceId: string; eventId?: string; limit?: number }) {

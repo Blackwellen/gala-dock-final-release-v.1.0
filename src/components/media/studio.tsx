@@ -9,8 +9,10 @@ import { LayerView, fillCss, qrContrast, pathD } from "./layer-view";
 import { exportDesign } from "./export";
 import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-panel";
 import { CommentsPanel } from "./comments-panel";
+import { DesignMenu } from "./design-menu";
+import { FriendlyField, EventFieldButtons } from "./event-fields";
 import { saveDesign, restoreVersion, deriveDesign, publishTemplate, listTemplates, templateUsed, type TemplateSummary } from "@/lib/media/actions";
-import { PRESETS, PLACEHOLDERS, fontSpecs, googleFontHrefs, reflow, uid, type DesignDoc, type EventData, type Layer, type Page, type TextLayer, type Brush, type PathLayer, type WidgetLayer, type Effects, type TextFx } from "@/lib/media/document";
+import { PRESETS, FIELD_LABELS, fontSpecs, googleFontHrefs, reflow, uid, type DesignDoc, type EventData, type Layer, type Page, type TextLayer, type Brush, type PathLayer, type WidgetLayer, type Effects, type TextFx } from "@/lib/media/document";
 import { loadFonts } from "@/lib/design-kit/assets";
 import { ColorButton, FillButton } from "@/components/design-kit/color-picker";
 import { FontPicker, IconPicker, EmojiPicker, SymbolPicker, ShapePicker, WidgetPicker, EffectsPicker } from "@/components/design-kit/pickers";
@@ -311,6 +313,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <button className="st-btn" onClick={() => setPanel(panel === "versions" ? "" : "versions")}><History size={15} />Versions</button>
       {design.canEdit && <button className="st-btn" onClick={() => setPanel(panel === "publish" ? "" : "publish")}><Share2 size={15} />Share template</button>}
       <button className="st-btn primary" onClick={() => setPanel(panel === "export" ? "" : "export")}><Download size={15} />Export</button>
+      <DesignMenu id={design.id} title={title} library={back} inEditor canEdit={design.canEdit} />
     </header>
     {notice && <p className="st-notice" role="alert">{notice}{save === "conflict" && <button className="st-link" onClick={() => location.reload()}>Reload</button>}<button className="st-link" onClick={() => setNotice("")} aria-label="Dismiss"><X size={13} /></button></p>}
 
@@ -330,6 +333,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <button className="st-textbtn h" onClick={() => addText("heading")}>Add a heading</button>
           <button className="st-textbtn s" onClick={() => addText("sub")}>Add a subheading</button>
           <button className="st-textbtn b" onClick={() => addText("body")}>Add body text</button>
+          <h3>Event details</h3>
+          <p className="st-hint">Adds text that fills in from your event automatically.</p>
+          <EventFieldButtons data={eventData} onAdd={k => addText("body", `{{${k}}}`, k, "Inter", { name: FIELD_LABELS[k] })} />
           <h3>Text styles</h3>
           <div className="st-tstyles">{TEXT_STYLES.map(s => <button key={s.name} style={{ fontFamily: `'${s.font}', Inter`, fontWeight: s.weight, fontStyle: s.italic ? "italic" : undefined }} onClick={() => addText("heading", s.name, undefined, s.font,
             { name: s.name, weight: s.weight, italic: s.italic, size: unit * s.size, transform: s.transform, letterSpacing: s.letterSpacing ?? 0, color: s.color ?? "#090a2e", effects: s.fx ? { textFx: s.fx } : undefined })}>{s.name}</button>)}</div>
@@ -337,8 +343,6 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <h3>Fonts</h3>
           <FontPicker value={{ family: one?.type === "text" ? one.font : "Inter", weight: one?.type === "text" ? one.weight : 400, italic: one?.type === "text" ? !!one.italic : false }} custom={[...new Set(customFonts.map(f => f.family))]}
             onChange={f => { if (one?.type === "text") set({ font: f.family, weight: f.weight, italic: f.italic } as Partial<Layer>); else applyFont(f.family); }} />
-          <h3>Event fields</h3>
-          <ul className="st-chips">{PLACEHOLDERS.map(k => <li key={k}><button onClick={() => addText("body", `{{${k}}}`, k)}>{k.replace("event.", "").replace("_", " ")}</button></li>)}</ul>
         </>}
         {tab === "Icons" && <IconPicker onPick={i => add({ id: uid(), name: i.name, type: "icon", icon: i.set === "lucide" ? i.name : `${i.set}:${i.name}`, svg: i.svg, color: "#090a2e", ...center(unit * 0.15, unit * 0.15) })} />}
         {tab === "Emoji" && <EmojiSymbols onEmoji={(e, n) => addGlyph(e, n, true)} onSymbol={c => addGlyph(c, `Symbol ${c}`, false)} />}
@@ -395,9 +399,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <h3>Background</h3>
           <FillButton label="Background" fill={page.background ?? { type: "solid", color: "#ffffff" }} onChange={f => updatePage(p => ({ ...p, background: f }))} docColors={docColors} />
           <button className="st-btn" onClick={() => updatePage(p => ({ ...p, background: null }))}>Transparent background</button>
-          <h3>Event data</h3>
+          <h3>Event details</h3>
           <p className="st-hint">Text and QR codes linked to the event update automatically when event details change.</p>
-          <ul className="st-chips">{PLACEHOLDERS.map(k => <li key={k}><button onClick={() => addText("body", `{{${k}}}`, k)}>{k.replace("event.", "").replace("_", " ")}</button></li>)}</ul>
+          <EventFieldButtons data={eventData} onAdd={k => addText("body", `{{${k}}}`, k, "Inter", { name: FIELD_LABELS[k] })} />
         </>}
         {tab === "Resize" && <ResizePanel designId={design.id} />}
       </aside>
@@ -442,7 +446,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             <div className="st-grid4">{(["x", "y", "w", "h"] as const).map(k => <label key={k} className="st-field"><span>{k.toUpperCase()}</span><input type="number" value={Math.round(one[k])} onChange={e => set({ [k]: Number(e.target.value) } as Partial<Layer>)} /></label>)}</div>
             <div className="st-row"><label className="st-field"><span>Rotate</span><input type="number" value={one.rotation} onChange={e => set({ rotation: Number(e.target.value) })} /></label>
               <button className="st-btn" onClick={() => set({ flipX: !one.flipX })}>Flip H</button><button className="st-btn" onClick={() => set({ flipY: !one.flipY })}>Flip V</button></div>
-            {one.type === "text" && <TextProps l={one} set={set} custom={[...new Set(customFonts.map(f => f.family))]} docColors={docColors} />}
+            {one.type === "text" && <TextProps l={one} set={set} custom={[...new Set(customFonts.map(f => f.family))]} docColors={docColors} data={eventData} />}
             {one.type === "image" && <>
               <h3>Image</h3>
               <div className="st-row">
@@ -464,10 +468,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             {one.type === "drawing" && <><h3>Drawing</h3><ColorButton label="Colour" value={one.paths[0]?.color ?? "#000000"} onChange={c => set({ paths: one.paths.map(p => ({ ...p, color: c })) })} docColors={docColors} />
               <button className={`st-btn ${tool === "erase" ? "primary" : ""}`} onClick={() => setTool(tool === "erase" ? "select" : "erase")}><Eraser size={14} />Rubber</button></>}
             {one.type === "path" && <PathProps l={one} set={set} docColors={docColors} />}
-            {one.type === "widget" && <WidgetProps l={one} set={set} docColors={docColors} />}
+            {one.type === "widget" && <WidgetProps l={one} set={set} docColors={docColors} data={eventData} />}
             {(one.type === "qr" || one.type === "barcode") && <>
               <h3>{one.type === "qr" ? "QR code" : "Barcode"}</h3>
-              <label className="st-field"><span>Value</span><input value={one.value} onChange={e => set({ value: e.target.value.slice(0, 500), bind: undefined })} /></label>
+              <FriendlyField label={one.type === "qr" ? "Link or text in the code" : "Barcode value"} value={one.value} data={eventData} maxLength={500} only={["event.public_url", "event.name"]} onChange={v => set({ value: v, bind: undefined })} />
               <ColorButton label="Code" value={one.fg} onChange={c => set({ fg: c })} docColors={docColors} /><ColorButton label="Background" value={one.bg} onChange={c => set({ bg: c })} docColors={docColors} />
               <label className="st-field"><span>Label</span><input value={one.label ?? ""} onChange={e => set({ label: e.target.value.slice(0, 40) })} /></label>
               {qrContrast(one.fg, one.bg) < 4 && <p className="st-warn">Low contrast — this code may not scan reliably. Use a dark code on a light background.</p>}
@@ -527,12 +531,12 @@ function MiniThumb({ doc }: { doc: DesignDoc }) {
     {p.layers.map(l => <LayerView key={l.id} l={l} data={SAMPLE} />)}</div></div>;
 }
 
-function TextProps({ l, set, custom, docColors }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void; custom: string[]; docColors: string[] }) {
+function TextProps({ l, set, custom, docColors, data }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void; custom: string[]; docColors: string[]; data: EventData }) {
   const [fonts, setFonts] = useState(false);
   return <>
     <h3>Text</h3>
-    <label className="st-field"><span>Text</span><textarea rows={3} value={l.text} onChange={e => set({ text: e.target.value, bind: undefined } as Partial<Layer>, false)} /></label>
-    {l.bind && <p className="st-hint">Linked to <b>{l.bind}</b> — updates with the event.</p>}
+    <FriendlyField label="Text" multiline value={l.text} data={data} onChange={v => set({ text: v, bind: undefined } as Partial<Layer>, false)} />
+    {l.bind && <p className="st-hint">Shows your event’s <b>{FIELD_LABELS[l.bind as keyof typeof FIELD_LABELS]?.toLowerCase() ?? "details"}</b> — updates automatically.</p>}
     <button className="dk-cbtn-trigger" onClick={() => setFonts(f => !f)} aria-expanded={fonts} style={{ fontFamily: `'${l.font}', Inter` }}><b>{l.font}</b><code>{l.weight}{l.italic ? " italic" : ""}</code></button>
     {fonts && <FontPicker value={{ family: l.font, weight: l.weight, italic: !!l.italic }} custom={custom} onChange={f => set({ font: f.family, weight: f.weight, italic: f.italic } as Partial<Layer>)} />}
     <div className="st-grid4">
@@ -576,14 +580,14 @@ function PathProps({ l, set, docColors }: { l: PathLayer; set: (p: Partial<Layer
   </>;
 }
 
-function WidgetProps({ l, set, docColors }: { l: WidgetLayer; set: (p: Partial<Layer>, record?: boolean) => void; docColors: string[] }) {
+function WidgetProps({ l, set, docColors, data }: { l: WidgetLayer; set: (p: Partial<Layer>, record?: boolean) => void; docColors: string[]; data: EventData }) {
   const def = widgetById(l.widget);
   const fields = l.widget === "card" ? [{ key: "title", label: "Title", kind: "text" }, { key: "text", label: "Text", kind: "list" }, { key: "icon", label: "Icon (Lucide name)", kind: "text" }] : def?.fields ?? [];
   const prop = (k: string, v: string | number) => set({ props: { ...l.props, [k]: v } } as Partial<Layer>, false);
   return <>
     <h3>{def?.name ?? "Info card"}</h3>
-    {fields.map(f => <label key={f.key} className="st-field"><span>{f.label}</span>{f.kind === "list" ? <textarea rows={f.key === "text" ? 2 : 5} value={String(l.props[f.key] ?? "")} onChange={e => prop(f.key, e.target.value.slice(0, 1000))} />
-      : <input type={f.kind === "number" ? "number" : "text"} value={String(l.props[f.key] ?? "")} onChange={e => prop(f.key, f.kind === "number" ? Number(e.target.value) : e.target.value.slice(0, 200))} />}</label>)}
+    {fields.map(f => f.kind === "number" || f.key === "icon" ? <label key={f.key} className="st-field"><span>{f.label}</span><input type={f.kind === "number" ? "number" : "text"} value={String(l.props[f.key] ?? "")} onChange={e => prop(f.key, f.kind === "number" ? Number(e.target.value) : e.target.value.slice(0, 200))} /></label>
+      : <FriendlyField key={f.key} label={f.label} value={String(l.props[f.key] ?? "")} data={data} multiline={f.kind === "list"} rows={f.key === "text" ? 2 : 5} maxLength={f.kind === "list" ? 1000 : 200} onChange={v => prop(f.key, v)} />)}
     {l.widget === "card" && <label className="st-field"><span>Layout</span><select value={Number(l.props.layout) || 0} onChange={e => { const lay = CARD_LAYOUTS[Number(e.target.value)]!, sz = cardSize(lay); set({ props: { ...l.props, layout: lay.id }, h: (l.w * sz.h) / sz.w } as Partial<Layer>); }}>
       {CARD_LAYOUTS.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
     <label className="st-field"><span>Style</span><select value={l.variant} onChange={e => set({ variant: Number(e.target.value) } as Partial<Layer>)}>{["Filled", "Outline", "Minimal", "Rounded", "Glass", "Bold"].map((v, i) => <option key={v} value={i}>{v}</option>)}</select></label>

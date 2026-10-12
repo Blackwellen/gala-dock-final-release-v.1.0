@@ -146,3 +146,33 @@
 .st-toolhint .st-btn{height:26px}
 .st-details summary{cursor:pointer;font-size:11.5px;font-weight:600;color:var(--st-sub);padding:2px 0}
 .st-notice .st-link{margin-left:6px}
+
+/* Design card actions (duplicate / delete) and the delete-undo banner. */
+.ml-design .ml-open{display:grid;gap:6px;color:inherit;text-decoration:none;min-width:0}
+.ml-design .ml-open b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dm{position:relative}
+.ml-design>.dm{position:absolute;top:12px;right:12px}
+.dm-trigger{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--st-border);border-radius:8px;background:#fff;color:#1d2068;cursor:pointer;box-shadow:0 2px 8px #0d0d6314}
+.dm-trigger:hover,.dm-trigger[aria-expanded="true"]{border-color:#c9d6f5;background:#f5f8ff}
+.dm-menu{position:absolute;right:0;top:36px;z-index:50;min-width:210px;padding:5px;display:grid;gap:2px;background:#fff;border:1px solid var(--st-border);border-radius:10px;box-shadow:0 16px 44px #0d0d6326}
+.dm-menu>a,.dm-menu>button{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:0;border-radius:7px;background:none;font:inherit;font-size:12.5px;color:#0d0d63;text-decoration:none;cursor:pointer;text-align:left}
+.dm-menu>a:hover,.dm-menu>button:hover:not(:disabled){background:#f2f5ff}
+.dm-menu>button.danger{color:#c8243d}
+.dm-confirm{padding:8px 10px;display:grid;gap:8px;font-size:12px;color:#1d2068}
+.dm-confirm p{margin:0;line-height:1.4}.dm-confirm div{display:flex;justify-content:flex-end;gap:6px}
+.st-btn.danger{background:#c8243d;border-color:#c8243d;color:#fff}
+.dm-err{margin:4px 8px;font-size:11.5px;color:#c8243d}
+.dm-banner{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:#eef3ff;color:#1d2068;font-size:13px}
+.dm-banner .st-link{display:inline-flex;align-items:center;gap:4px}
+/* Share to community dialog */
+.sc-backdrop{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:rgba(9,10,40,.45)}
+.sc-dialog{width:min(460px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 30px 70px -20px rgba(9,10,46,.45);color:#090a52;font-size:13px}
+.sc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.sc-head h2{margin:0;font-size:16px;flex:1}
+.sc-x{display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:7px;background:none;cursor:pointer;color:inherit}.sc-x:hover{background:#eef1fb}
+.sc-dialog form{display:grid;gap:9px}.sc-dialog label{display:grid;gap:4px}.sc-dialog label>span{font-size:11.5px;font-weight:600;color:#4a50a6}
+.sc-dialog input:not([type=checkbox]),.sc-dialog select,.sc-dialog textarea{width:100%;box-sizing:border-box;border:1px solid #e3e8f5;border-radius:8px;padding:7px 9px;font:inherit;color:inherit}
+.sc-check{display:flex!important;grid-template-columns:none;align-items:flex-start;gap:7px;font-size:12px;color:#4a50a6}.sc-check input{margin-top:2px;accent-color:#0038fd}
+.sc-note{margin:0;font-size:12px;line-height:1.5;color:#5157a4}.sc-err{margin:0;color:#c4142b;font-weight:600}.sc-ok{margin:0 0 10px;line-height:1.5}
+.sc-acts{display:flex;justify-content:flex-end;gap:8px}
+.sc-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid #e3e8f5;border-radius:8px;background:#fff;font:inherit;font-weight:600;color:inherit;cursor:pointer}
+.sc-btn.primary{background:#0038fd;border-color:#0038fd;color:#fff}.sc-btn:disabled{opacity:.55;cursor:default}

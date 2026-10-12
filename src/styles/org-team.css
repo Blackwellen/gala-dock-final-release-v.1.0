@@ -47,3 +47,12 @@
 @media (max-width: 1400px) { .tm-kpis, .tp-kpis { grid-template-columns: repeat(3, 1fr); } .tm-row1, .tm-row2, .tp-r1, .tp-r2 { grid-template-columns: minmax(0, 1fr); } .tp-r3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 800px) { .tm-kpis, .tp-kpis, .tp-r3 { grid-template-columns: 1fr 1fr; } .tp-head { flex-wrap: wrap; } .tp-bio { flex-direction: column; } .tm-board { overflow-x: auto; } .tm-grid { min-width: 720px; } .tp-cal { grid-template-columns: repeat(4, 1fr); } }
 .tm-people .tm-table td { white-space: nowrap; } .tm-people .tm-table td:nth-child(2) { white-space: normal; min-width: 90px; }
+/* People table fits its card: names/roles may wrap, the actions column is pinned to the 30px touch target. */
+.tm-people .tm-table { table-layout: auto; }
+.tm-people .tm-table th, .tm-people .tm-table td { padding-left: 4px; padding-right: 4px; }
+.tm-people .tm-table td:first-child { white-space: normal; }
+.tm-people .tm-table td:nth-child(2) { min-width: 72px; }
+.tm-people .tm-table td:last-child, .tm-people .tm-table th:last-child { width: 30px; padding-right: 0; }
+.tm-people .tm-dots { width: 30px !important; height: 30px !important; min-width: 30px; }
+.tm-conf h2 { display: flex; align-items: center; gap: 8px; } .tm-conf-n { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: #fff2df; color: #8f5100; font-size: 11.5px; font-weight: 650; display: inline-grid; place-items: center; }
+.tm-conf .tm-conf-more { justify-content: center; }

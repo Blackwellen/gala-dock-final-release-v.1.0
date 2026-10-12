@@ -3,13 +3,16 @@ import { Users, CalendarDays, AlertTriangle, ShieldAlert, CalendarClock, Chevron
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs, Beta } from "@/components/kit";
 import { TeamHeaderActions, PersonRowMenu, ShiftMenu, ResolveButton } from "@/components/organizer/team-client";
-import { TeamConflicts } from "@/components/ops/readiness-panel";
 
 export const metadata = { title: "Team" };
 const TZ = "Europe/London";
 const ST: Record<string, [string, string]> = { active: ["Active", "green"], available: ["Available", "green"], on_event: ["On Event", "amber"], unavailable: ["Unavailable", "red"], deactivated: ["Deactivated", "gray"] };
 const SH: Record<string, [string, string]> = { confirmed: ["Confirmed", "green"], pending: ["Pending", "amber"], draft: ["Draft", "gray"], unavailable: ["Unavailable", "gray"], travel: ["Travel", "gray"] };
 const COL = ["blue", "pink", "purple", "green"];
+const KIND_META: Record<string, { label: string; icon: typeof AlertTriangle }> = {
+  overlap: { label: "Double booking", icon: ShieldAlert }, travel: { label: "Travel clash", icon: Clock }, unavailable: { label: "Unavailable", icon: Ban },
+  unfilled: { label: "Unfilled role", icon: AlertTriangle }, unconfirmed: { label: "Not confirmed", icon: Clock }, qualification: { label: "Qualification", icon: ShieldAlert }, missing_role: { label: "Missing role", icon: AlertTriangle },
+};
 
 export default async function TeamPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase; const ws = ctx.workspace.id;
@@ -22,22 +25,24 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   const mon = new Date(anchor); mon.setUTCDate(anchor.getUTCDate() - ((anchor.getUTCDay() + 6) % 7)); mon.setUTCHours(0, 0, 0, 0);
   const sun = new Date(mon.getTime() + 7 * 864e5); const days = Array.from({ length: 7 }, (_, i) => new Date(mon.getTime() + i * 864e5));
   const now = new Date();
-  const [{ data: crew }, { data: shifts }, { data: blocks }, { data: events }] = await Promise.all([
+  const [{ data: crew }, { data: shifts }, { data: blocks }, { data: events }, { data: engine }] = await Promise.all([
     sb.from("crew_members").select("id,name,role,member_type,status,avatar,email,location,skills").eq("workspace_id", ws).neq("status", "deactivated").order("member_type").order("name"),
     sb.from("shifts").select("id,crew_id,event_id,title,role,starts_at,ends_at,location,status,headcount").eq("workspace_id", ws).gte("ends_at", new Date(Math.min(mon.getTime(), now.getTime())).toISOString()).order("starts_at").limit(400),
     sb.from("availability_blocks").select("id,crew_id,kind,starts_at,ends_at,note").eq("workspace_id", ws).not("crew_id", "is", null).gte("ends_at", mon.toISOString()).lt("starts_at", sun.toISOString()),
     sb.from("events").select("id,name,starts_at,ends_at,venue_name,location").eq("workspace_id", ws).gte("starts_at", now.toISOString()).order("starts_at").limit(30),
+    sb.rpc("team_conflicts" as never, { p_workspace: ws, p_to: new Date(now.getTime() + 30 * 864e5).toISOString() } as never),
   ]);
   const people = crew ?? []; const S = shifts ?? [];
   const list = people.filter(p => (who === "all" || p.member_type === who) && (!q || `${p.name} ${p.role}`.toLowerCase().includes(q)));
   const upcoming = S.filter(s => s.starts_at >= now.toISOString());
   const assigned = new Set(upcoming.filter(s => s.crew_id && ["confirmed", "pending"].includes(s.status)).map(s => s.crew_id));
   const in7 = upcoming.filter(s => Date.parse(s.starts_at) < now.getTime() + 7 * 864e5);
-  const unfilled = upcoming.filter(s => !s.crew_id || s.status === "draft");
-  // Conflicts: overlapping active shifts for the same person, or tight turnarounds (< 3h).
-  const conflicts: { kind: "double" | "travel"; crew: string; a: typeof S[number]; b: typeof S[number] }[] = [];
-  const byCrew = new Map<string, typeof S>(); for (const s of upcoming.filter(x => x.crew_id && ["confirmed", "pending"].includes(x.status))) byCrew.set(s.crew_id!, [...(byCrew.get(s.crew_id!) ?? []), s]);
-  for (const [c, arr] of byCrew) for (let i = 1; i < arr.length; i++) { const a = arr[i - 1]!, b = arr[i]!; if (b.starts_at < a.ends_at && a.event_id !== b.event_id) conflicts.push({ kind: "double", crew: c, a, b }); else if (a.event_id !== b.event_id && Date.parse(b.starts_at) - Date.parse(a.ends_at) < 3 * 36e5 && b.starts_at >= a.ends_at) conflicts.push({ kind: "travel", crew: c, a, b }); }
+  // Conflicts & gaps come from the team conflict engine (team_conflicts), the same source as Home, Plan and the Agent.
+  type Issue = { kind: string; severity: "blocker" | "warning"; shift_id: string | null; crew_id: string | null; event_id: string | null; message: string };
+  const issues = ((engine ?? []) as Issue[]).sort((x, y) => Number(y.severity === "blocker") - Number(x.severity === "blocker"));
+  const gaps = issues.filter(i => i.kind === "unfilled" || i.kind === "unconfirmed");
+  const conflicts = issues.filter(i => i.kind !== "unfilled" && i.kind !== "unconfirmed");
+  const shiftOf = (id: string | null) => S.find(x => x.id === id);
   const name = (id: string | null) => people.find(p => p.id === id)?.name ?? "Unassigned";
   const fmtD = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ });
   const fmtT = (iso: string) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
@@ -53,8 +58,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Team" }]} />
     <div className="k-page-head"><div className="k-grow"><h1>Team</h1><p className="sub">Manage workspace people, crew, availability and assignments.</p></div><TeamHeaderActions events={(events ?? []).map(e => ({ id: e.id, name: e.name, starts_at: e.starts_at, ends_at: e.ends_at }))} people={people.map(p => ({ id: p.id, name: p.name }))} /></div>
     <LinkTabs current={tab} tabs={[["people", "People"], ["availability", "Availability"], ["assignments", "Assignments"], ["shifts", "Shifts"]].map(([k, l]) => ({ key: k, label: l, href: href({ tab: k === "people" ? undefined : k }) }))} />
-    <TeamConflicts workspaceId={ctx.workspace.id} limit={8} />
-    <div className="tm-kpis">{([[Users, "Total people", people.length, `${people.filter(p => p.member_type === "member").length} members · ${people.filter(p => p.member_type === "crew").length} crew`, "blue", ""], [CalendarDays, "Assigned to events", assigned.size, `${people.length ? Math.round((assigned.size / people.length) * 100) : 0}% of team`, "blue", ""], [AlertTriangle, "Unfilled roles", unfilled.length, unfilled.length ? "Needs attention" : "All roles filled", "red", unfilled.length ? "warn" : ""], [ShieldAlert, "Conflicts", conflicts.length, "Next 30 days", "pink", ""], [CalendarClock, "Upcoming shifts", in7.length, "Next 7 days", "blue", ""]] as const).map(([I, l, v, s, c, w]) => <div key={l} className="k-card tm-kpi"><span><small>{l}</small><b>{v}</b><em className={w}>{w && <AlertTriangle size={12} />}{s}</em></span><span className={`tm-ki ${c}`}><I size={20} /></span></div>)}</div>
+    <div className="tm-kpis">{([[Users, "Total people", people.length, `${people.filter(p => p.member_type === "member").length} members · ${people.filter(p => p.member_type === "crew").length} crew`, "blue", ""], [CalendarDays, "Assigned to events", assigned.size, `${people.length ? Math.round((assigned.size / people.length) * 100) : 0}% of team`, "blue", ""], [AlertTriangle, "Unfilled roles", gaps.length, gaps.length ? "Needs attention" : "All roles filled", "red", gaps.length ? "warn" : ""], [ShieldAlert, "Conflicts", conflicts.length, conflicts.length ? "Next 30 days · needs review" : "Next 30 days", "pink", conflicts.length ? "warn" : ""], [CalendarClock, "Upcoming shifts", in7.length, "Next 7 days", "blue", ""]] as const).map(([I, l, v, s, c, w]) => <div key={l} className="k-card tm-kpi"><span><small>{l}</small><b>{v}</b><em className={w}>{w && <AlertTriangle size={12} />}{s}</em></span><span className={`tm-ki ${c}`}><I size={20} /></span></div>)}</div>
 
     <div className="tm-row1">
       <section className="k-card tm-people"><h2>Team members &amp; crew</h2>
@@ -77,10 +81,12 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
     <div className="tm-row2">
       <section className="k-card tm-shifts"><div className="k-between"><h2>Upcoming shifts</h2><Link className="k-link" href={href({ tab: "shifts" })}>View all shifts <ArrowRight size={13} /></Link></div>
         <table className="tm-table"><thead><tr><th>Date</th><th>Time</th><th>Event</th><th>Role</th><th>People</th><th>Status</th><th>Actions</th></tr></thead><tbody>{grouped.map(g => { const [sl, st] = SH[g.s.status] ?? [g.s.status, "gray"]; return <tr key={g.key}><td>{fmtD(g.s.starts_at)}</td><td>{fmtT(g.s.starts_at)} – {fmtT(g.s.ends_at)}</td><td><b>{g.s.title}</b><small>{g.s.location}</small></td><td>{g.s.role}</td><td><span className="tm-avs">{g.people.slice(0, 4).map(id => { const p = people.find(x => x.id === id); return p?.avatar ? /* eslint-disable-next-line @next/next/no-img-element */ <img key={id} src={p.avatar} alt={p.name} /> : <span key={id} className="tm-av sm">{name(id).slice(0, 1)}</span>; })}<em>{g.people.length || g.s.headcount}</em></span></td><td><span className={`tm-st ${st}`}>{st === "green" ? <CheckCircle2 size={12} /> : <Clock size={12} />}{sl}</span></td><td><ShiftMenu id={g.s.id} status={g.s.status} eventId={g.s.event_id} /></td></tr>; })}{!grouped.length && <tr><td colSpan={7} className="k-small" style={{ padding: 14 }}>No upcoming shifts.</td></tr>}</tbody></table></section>
-      <section className="k-card tm-conf"><div className="k-between"><h2>Conflicts &amp; gaps</h2><Link className="k-link" href={href({ tab: "assignments" })}>View all <ArrowRight size={13} /></Link></div>
-        <ul>{conflicts.slice(0, 2).map((c, i) => <li key={i}><span className={`tm-ci ${c.kind === "double" ? "red" : "amber"}`}>{c.kind === "double" ? <ShieldAlert size={18} /> : <Clock size={18} />}</span><span className="k-grow"><b>{c.kind === "double" ? "Double booking" : "Travel gap"}</b><small>{c.kind === "double" ? `${name(c.crew)} is assigned to two events at the same time.` : `Only ${Math.max(0, Math.round((Date.parse(c.b.starts_at) - Date.parse(c.a.ends_at)) / 36e5))} hours between events for ${name(c.crew)}.`}</small><small>{fmtD(c.b.starts_at)} · {fmtT(c.b.starts_at)} – {fmtT(c.b.ends_at)}</small></span><ResolveButton href={`/organizer/team/${c.crew}`} label="Review" /></li>)}
-          {unfilled.slice(0, 1).map(u => <li key={u.id}><span className="tm-ci amber"><AlertTriangle size={18} /></span><span className="k-grow"><b>Missing role coverage</b><small>No confirmed {u.role || "crew"} for {u.title}.</small><small>{fmtD(u.starts_at)} · {fmtT(u.starts_at)} – {fmtT(u.ends_at)}</small></span><ResolveButton href={href({ tab: "assignments" })} label="Assign" /></li>)}
-          {!conflicts.length && !unfilled.length && <li><span className="tm-ci green"><CheckCircle2 size={18} /></span><span className="k-grow"><b>All key roles filled</b><small>Your events have the recommended role coverage.</small></span></li>}</ul></section>
+      <section className="k-card tm-conf" id="conflicts"><div className="k-between"><h2>Conflicts &amp; gaps{issues.length > 0 && <span className="tm-conf-n">{issues.length}</span>}</h2><Link className="k-link" href={href({ tab: "assignments" })}>View all <ArrowRight size={13} /></Link></div>
+        <ul>{issues.slice(0, 4).map((c, i) => { const sh = shiftOf(c.shift_id); const meta = KIND_META[c.kind] ?? KIND_META.overlap;
+          return <li key={`${c.kind}-${c.shift_id ?? c.event_id}-${i}`}><span className={`tm-ci ${c.severity === "blocker" ? "red" : "amber"}`}><meta.icon size={18} /></span><span className="k-grow"><b>{meta.label}</b><small>{c.message}</small>{sh && <small>{fmtD(sh.starts_at)} · {fmtT(sh.starts_at)} – {fmtT(sh.ends_at)}</small>}</span>
+            <ResolveButton href={c.kind === "unfilled" ? href({ tab: "assignments" }) : c.crew_id ? `/organizer/team/${c.crew_id}` : c.event_id ? `/organizer/events/${c.event_id}?tab=operations&section=team` : href({ tab: "assignments" })} label={c.kind === "unfilled" ? "Assign" : c.kind === "unconfirmed" ? "Confirm" : "Review"} /></li>; })}
+          {issues.length > 4 && <li className="tm-conf-more"><Link className="k-link" href={href({ tab: "assignments" })}>{issues.length - 4} more</Link></li>}
+          {!issues.length && <li><span className="tm-ci green"><CheckCircle2 size={18} /></span><span className="k-grow"><b>No conflicts or gaps</b><small>No double bookings, travel clashes, availability conflicts or unfilled roles in the next 30 days.</small></span></li>}</ul></section>
       <section className="k-card tm-ai"><div className="k-row" style={{ gap: 8 }}><Sparkles size={18} className="k-blue" /><b>AI Assistant</b><Beta /></div>
         {([[Wrench, "Build staffing plan", "Generate a full staffing plan for this event", "amber"], [UserSearch, "Find available crew", "Show crew matching required skills", "purple"], [GitMerge, "Resolve conflicts", "Suggest changes to fix scheduling conflicts", "amber"], [Send, "Draft assignment messages", "Create and send invites to crew", "purple"]] as const).map(([I, t, d, c]) => <Link key={t} href={`/organizer/agent?goal=${encodeURIComponent(t)}`} className="tm-ail"><span className={`tm-ci ${c}`}><I size={17} /></span><span><b>{t}</b><small>{d}</small></span></Link>)}</section>
     </div>

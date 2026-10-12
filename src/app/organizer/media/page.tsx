@@ -7,5 +7,5 @@ export default async function OrganizerMediaPage({ searchParams }: PageProps<"/o
   const sp = await searchParams;
   const ctx = await getOrganizer("/organizer/media");
   const tab = sp.tab === "templates" || sp.tab === "community" ? sp.tab : "designs";
-  return <MediaLibrary db={ctx.supabase} workspaceId={ctx.workspace.id} base="/organizer/media" tab={tab} q={typeof sp.q === "string" ? sp.q : undefined} />;
+  return <MediaLibrary db={ctx.supabase} workspaceId={ctx.workspace.id} base="/organizer/media" tab={tab} q={typeof sp.q === "string" ? sp.q : undefined} deleted={typeof sp.deleted === "string" ? sp.deleted : undefined} />;
 }

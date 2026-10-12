@@ -3,10 +3,12 @@ import regeneratedAssets from "@/lib/regenerated-assets.json";
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "./globals.css";
+import "@/styles/popovers.css";
 import { Providers } from "@/components/ui";
 import { PwaLifecycle } from "@/components/pwa";
 import { MaintenanceBanner } from "@/components/maintenance-banner";
 import { GuidedTour } from "@/components/guided-tour";
+import { PopoverFit } from "@/components/shared/popover-fit";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -30,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: fitScript }} /></head>
-      <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers><MaintenanceBanner />{children}<Suspense fallback={null}><GuidedTour /></Suspense><PwaLifecycle /></Providers></body>
+      <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers><MaintenanceBanner /><PopoverFit />{children}<Suspense fallback={null}><GuidedTour /></Suspense><PwaLifecycle /></Providers></body>
     </html>
   );
 }

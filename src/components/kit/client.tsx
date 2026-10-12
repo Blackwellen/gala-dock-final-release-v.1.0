@@ -1,6 +1,7 @@
 "use client";
 // Interactive UI primitives (menus, dialogs, toasts, toggles, map, agent ask box).
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Heart, Sparkles, ArrowRight, Send, Plus, Minus, CheckCircle2, AlertTriangle } from "lucide-react";
@@ -40,20 +41,43 @@ export function useAction() {
 
 // ── Popover menu ──────────────────────────────────────────────────────────
 export function Menu({ trigger, children, align = "right", width, label }: { trigger: (p: { open: boolean; toggle: () => void; id: string }) => ReactNode; children: ReactNode | ((close: () => void) => ReactNode); align?: "left" | "right"; width?: number; label: string }) {
-  const [open, setOpen] = useState(false); const ref = useRef<HTMLDivElement>(null); const id = useId();
+  const [open, setOpen] = useState(false); const ref = useRef<HTMLDivElement>(null); const pop = useRef<HTMLDivElement>(null); const id = useId();
+  const [box, setBox] = useState<{ host: HTMLElement; style: React.CSSProperties } | null>(null);
   useEffect(() => {
     if (!open) return;
-    const onDoc = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onDoc = (e: MouseEvent) => { const t = e.target as Node; if (!ref.current?.contains(t) && !pop.current?.contains(t)) setOpen(false); };
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     document.addEventListener("mousedown", onDoc); document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
   }, [open]);
+  // The list renders at the shell root (fixed), so cards, tables and banners with overflow:hidden can never clip it. It sits
+  // under its trigger, flips above when there's more room there, caps its height to the space left (content scrolls inside)
+  // and stays inside the window horizontally. Coordinates are divided by the shell's CSS zoom (--k-zoom).
+  const place = useCallback(() => {
+    const t = ref.current; if (!t) return;
+    const host = (t.closest(".k-root") as HTMLElement | null) ?? document.body;
+    const z = parseFloat(getComputedStyle(host).zoom || "1") || 1, r = t.getBoundingClientRect(), vw = document.documentElement.clientWidth || innerWidth, vh = document.documentElement.clientHeight || innerHeight, gap = 8;
+    const h = pop.current ? pop.current.scrollHeight * z : 0, w = pop.current ? pop.current.offsetWidth * z : (width ?? 220) * z;
+    const below = vh - r.bottom - gap - 6, above = r.top - gap - 6, up = h > below && above > below;
+    const avail = Math.max(120, up ? above : below);
+    let left = align === "right" ? r.right - w : r.left; left = Math.min(Math.max(gap, left), vw - gap - w);
+    const style: React.CSSProperties = { position: "fixed", left: left / z, width, maxHeight: Math.min(avail, 440 * z) / z, overflowY: "auto", zIndex: 1100,
+      ...(up ? { top: "auto", bottom: (vh - r.top + 6) / z } : { top: (r.bottom + 6) / z }) };
+    setBox({ host, style });
+  }, [align, width]);
+  useEffect(() => {
+    if (!open) { setBox(null); return; }
+    place(); const raf = requestAnimationFrame(place); // second pass once the list has its real size
+    const onMove = (e: Event) => { if (e.target instanceof Node && pop.current?.contains(e.target)) return; place(); };
+    addEventListener("resize", onMove); addEventListener("scroll", onMove, true);
+    return () => { cancelAnimationFrame(raf); removeEventListener("resize", onMove); removeEventListener("scroll", onMove, true); };
+  }, [open, place]);
   const close = () => setOpen(false);
   return <div ref={ref} style={{ position: "relative", display: "inline-flex" }}>
     {trigger({ open, toggle: () => setOpen(o => !o), id })}
-    <AnimatePresence>{open && <motion.div id={id} role="menu" aria-label={label} className="k-pop" style={{ top: "calc(100% + 6px)", [align]: 0, width }} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .12 }}>
+    {box && createPortal(<AnimatePresence>{open && <motion.div ref={pop} id={id} role="menu" aria-label={label} className="k-pop" data-portal="" style={box.style} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .12 }}>
       {typeof children === "function" ? children(close) : children}
-    </motion.div>}</AnimatePresence>
+    </motion.div>}</AnimatePresence>, box.host)}
   </div>;
 }
 

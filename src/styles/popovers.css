@@ -1,0 +1,31 @@
+/* Dropdowns & popovers, app-wide. Never taller than the screen: content scrolls inside a calm, premium surface.
+   src/components/shared/popover-fit.tsx then flips / nudges / tightens each one to the space actually available. */
+:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover]) {
+  max-height: min(440px, calc(100vh - 96px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 12px;
+  border: 1px solid rgba(20, 28, 74, .09);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 64, .05), 0 8px 24px -6px rgba(16, 24, 64, .14), 0 24px 48px -12px rgba(16, 24, 64, .16);
+  scrollbar-width: thin;
+  scrollbar-color: #cdd5eb transparent;
+  scroll-padding: 6px;
+}
+:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar { width: 10px; }
+:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb { background: #d3daee; border-radius: 10px; border: 3px solid #fff; }
+:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb:hover { background: #b9c3e2; }
+:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-track { background: transparent; }
+
+/* Kit menu items: comfortable rows, clear hover / focus, quiet section labels. */
+.k-pop { padding: 6px; }
+.k-pop .k-menu-item { min-height: 34px; padding: 7px 10px; border-radius: 8px; color: #1d2068; transition: background .12s, color .12s; }
+.k-pop .k-menu-item:hover, .k-pop .k-menu-item:focus-visible { background: #f2f5ff; color: #0a0d5e; outline: none; }
+.k-pop .k-menu-item:focus-visible { box-shadow: inset 0 0 0 2px #c5d2fb; }
+.k-pop .k-menu-item svg { flex-shrink: 0; color: #5157a4; }
+.k-pop .k-menu-item.k-red, .k-pop .k-menu-item.k-red svg { color: #c8243d; }
+.k-pop .k-menu-item.k-red:hover { background: #fff3f5; }
+.k-pop .k-menu-item:disabled { opacity: .45; cursor: not-allowed; }
+.k-pop .k-menu-sep { margin: 5px 6px; background: #eef1f8; }
+
+@media (prefers-reduced-motion: reduce) { .k-pop .k-menu-item { transition: none; } }
