@@ -196,7 +196,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
           <div className="ws-pop-head"><b>Notifications</b></div>
           <NoticeList items={notifications} empty="You’re all caught up." />
         </Popover>
-        <Link href="/help" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
+        <Link href="/provider/help" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
         <AccountMenu name={user.name} subtitle={workspace.name} avatar={user.avatar} links={[{ href: "/provider/settings", label: "Workspace settings" }, { href: "/discover", label: "Switch to Customer" }]} />
       </div>
     </header>
