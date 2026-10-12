@@ -59,7 +59,7 @@
 .mb-layers{overflow:auto;padding:6px 8px;display:grid;gap:8px;align-content:start}
 .mb-layers header{display:flex;align-items:center;gap:4px}
 .mb-layers header b{font-size:10.5px;font-weight:650;color:#0d0d63}
-.mb-layers header small{font-size:9.5px;color:#7a80c0;margin-right:auto}
+.mb-layers header small{font-size:9.5px;color:#5d60a8;margin-right:auto}
 .mb-layers header button{width:22px;height:22px;display:grid;place-items:center;border:0;background:none;color:#5157a4;cursor:pointer;border-radius:5px}
 .mb-layers header button:hover{background:#f1f4fd}
 .mb-layers header svg{width:12px!important;height:12px!important}
@@ -67,8 +67,8 @@
 .mb-layers li button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px;height:24px;padding:0 6px;border:0;border-radius:5px;background:none;font-size:10.5px;color:#1d2068;text-align:left;cursor:pointer}
 .mb-layers li button:hover{background:#f6f8ff}
 .mb-layers li button.on{background:#e9eeff;color:var(--ws-blue-2)}
-.mb-layers li svg{width:11px!important;height:11px!important;color:#7a80c0}
-.mb-unplaced button{color:#7a80c0!important}
+.mb-layers li svg{width:11px!important;height:11px!important;color:#5d60a8}
+.mb-unplaced button{color:#5d60a8!important}
 .mb-unplaced em{font-style:normal;font-size:9px;color:#f39a1e}
 .mb-props{padding:10px;display:grid;gap:9px;overflow:auto;align-content:start}
 .mb-props label{display:grid;gap:4px;font-size:10px;color:#0d0d63}
@@ -113,7 +113,7 @@
 .mb-search{display:flex;align-items:center;gap:6px;height:30px;padding:0 9px;border:1px solid #e2e8fb;border-radius:7px}
 .mb-search svg{width:13px!important;height:13px!important;color:#5157a4}
 .mb-search input{border:0;outline:0;font-size:11px;flex:1;min-width:0;background:none}
-.mb-assets h4{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7a80c0;margin:0 0 6px}
+.mb-assets h4{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5d60a8;margin:0 0 6px}
 .mb-presets ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}
 .mb-presets button{width:100%;display:grid;text-align:left;gap:1px;padding:7px 9px;border:1px solid var(--ws-border);border-radius:8px;background:linear-gradient(180deg,#fff,#f8faff);cursor:pointer}
 .mb-presets button:hover{border-color:#c5d2fb;box-shadow:0 2px 8px #3c6ec814}
@@ -198,12 +198,12 @@
 .mb-legend header{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;color:#02032e}
 .mb-legend header button{width:22px;height:22px;border:0;background:none;display:grid;place-items:center;cursor:pointer;border-radius:5px;color:#5157a4}
 .mb-legend header button:hover{background:#f1f4fd}
-.mb-legend h5{margin:2px 0 0;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7a80c0}
+.mb-legend h5{margin:2px 0 0;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5d60a8}
 .mb-legend ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
 .mb-legend li{display:flex;align-items:center;gap:7px;font-size:10.5px;color:#1d2068;min-height:20px}
 .mb-legend li>span:first-child{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;flex-shrink:0}
 .mb-legend li>span:first-child svg{width:12px!important;height:12px!important}
-.mb-legend li em{margin-left:auto;font-style:normal;font-size:9.5px;color:#7a80c0;font-variant-numeric:tabular-nums}
+.mb-legend li em{margin-left:auto;font-style:normal;font-size:9.5px;color:#5d60a8;font-variant-numeric:tabular-nums}
 .mb-legend .dot{width:12px!important;height:12px!important;border-radius:50%!important;margin:0 4px}
 .mb-bar>button,.mb-zoom button,.mb-tiles button,.mb-acts button,.mb-align button,.mb-menu button,.mb-presets button{transition:background .14s,border-color .14s,box-shadow .14s,color .14s}
 .mb-tiles button:hover>span{transform:scale(1.06)}

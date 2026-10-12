@@ -83,7 +83,7 @@
 .sb label,.sr label{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:4px;row-gap:5px;font-size:10.5px;color:#0d0d63;align-content:flex-start;min-width:0}
 .sb label>input,.sb label>select,.sb label>textarea,.sb label>span,.sr label>input,.sr label>select,.sr label>div,.sr label>span.sr-money{flex:1 0 100%}
 .sb label>small:last-child{flex:1 0 100%;text-align:right}
-.sb label small,.sr label small{font-weight:400;color:#7a80c0}
+.sb label small,.sr label small{font-weight:400;color:#5d60a8}
 .sb i,.sr i{font-style:normal;color:#ec3a52}
 .sb input:not([type=checkbox]):not([type=radio]),.sb select,.sb textarea,.sr input:not([type=checkbox]):not([type=radio]),.sr select{height:33px;border:1px solid #e2e8fb;border-radius:6px;padding:0 10px;font-size:11px;color:#0d0d63;background-color:#fff;width:100%;min-width:0}
 .sb select,.sr select{padding-right:26px;background-position:right 9px center}
