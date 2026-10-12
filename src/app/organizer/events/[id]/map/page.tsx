@@ -53,6 +53,6 @@ export default async function EventMapPage(props: PageProps<"/organizer/events/[
 .ep-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}.ep-head h1{font-size:28px;font-weight:800;letter-spacing:-.03em;color:#02032e}.ep-head p{font-size:12.5px;color:#3f4596;margin-top:4px;max-width:680px}
 .ep-stats{display:flex;gap:10px;margin:0}.ep-stats div{padding:9px 14px;border:1px solid #eef4fc;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(60,110,200,.04)}.ep-stats dt{font-size:10px;color:#5157a4}.ep-stats dd{margin:2px 0 0;font-size:16px;font-weight:750;color:#02032e}
 .ep-tiers{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}.ep-tiers li{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border:1px solid #eef4fc;border-radius:14px;background:#fff;font-size:11px;color:#0d0d63}
-.ep-tiers i{width:10px;height:10px;border-radius:50%}.ep-tiers small{color:#7a80c0;text-transform:capitalize}.ep-note{display:flex;gap:8px;align-items:center;font-size:11.5px;color:#1d2068;background:#eef3ff;border-radius:8px;padding:9px 12px}.ep-note svg{width:15px;height:15px;color:#1a1af2}`}</style>
+.ep-tiers i{width:10px;height:10px;border-radius:50%}.ep-tiers small{color:#5d60a8;text-transform:capitalize}.ep-note{display:flex;gap:8px;align-items:center;font-size:11.5px;color:#1d2068;background:#eef3ff;border-radius:8px;padding:9px 12px}.ep-note svg{width:15px;height:15px;color:#1a1af2}`}</style>
   </div>;
 }
