@@ -32,6 +32,7 @@ export function render(o: { subject: string; body: string; link?: string | null;
   return { text, html };
 }
 
+const RESERVED = /(^|\.)(test|example|invalid|localhost)$|^example\.(com|org|net)$/;
 type Row = { id: string; to_email: string; subject: string; body: string; link: string | null; category: string; attempts: number };
 
 /** Drains the outbox. Idempotent per row (Resend Idempotency-Key = outbox id). */
@@ -41,6 +42,11 @@ export async function drainOutbox(limit = 25) {
   const { data } = await db.rpc("claim_email_batch", { p_limit: limit });
   let sent = 0, failed = 0;
   for (const r of (data ?? []) as Row[]) {
+    // Reserved test domains (RFC 2606 / 6761) can never receive mail; sending would only bounce and hurt the domain's reputation.
+    if (RESERVED.test(r.to_email.split("@")[1]?.toLowerCase() ?? "")) {
+      await db.from("email_outbox").update({ status: "suppressed", last_error: "reserved test domain (never deliverable)", lease_until: null }).eq("id", r.id);
+      continue;
+    }
     const { text, html } = render(r);
     try {
       const res = await fetch("https://api.resend.com/emails", {
