@@ -6,11 +6,11 @@ import { emailHtml, escapeHtml } from "./layout";
 
 /**
  * Transactional email delivery (release spec §76–77) via Resend's REST API. Configuration: RESEND_API_KEY (or RESEND_API), optional
- * EMAIL_FROM (default "Gala Dock <no-reply@galadock.com>", the sending domain must be verified in Resend) and EMAIL_REPLY_TO
+ * EMAIL_FROM (default "Gala Dock <no-reply@mail.galadock.com>", the sending domain must be verified in Resend) and EMAIL_REPLY_TO
  * (default support@galadock.com). Without a key the worker leaves mail queued and the health check reports it.
  */
 const apiKey = () => process.env.RESEND_API_KEY || process.env.RESEND_API || "";
-const fromAddress = () => process.env.EMAIL_FROM || "Gala Dock <no-reply@galadock.com>";
+const fromAddress = () => process.env.EMAIL_FROM || "Gala Dock <no-reply@mail.galadock.com>";
 const replyTo = () => process.env.EMAIL_REPLY_TO || "support@galadock.com";
 export const emailConfigured = () => Boolean(apiKey());
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.galadock.com").replace(/\/+$/, "");

@@ -59,7 +59,7 @@ for (const [k, t] of Object.entries(T)) {
 if (smtp) {
   const key = process.env.RESEND_API_KEY || process.env.RESEND_API;
   if (!key) { console.error("No Resend key in env."); process.exit(1); }
-  Object.assign(patch, { smtp_host: "smtp.resend.com", smtp_port: "465", smtp_user: "resend", smtp_pass: key, smtp_admin_email: "no-reply@galadock.com", smtp_sender_name: "Gala Dock", smtp_max_frequency: 30, rate_limit_email_sent: 100 });
+  Object.assign(patch, { smtp_host: "smtp.resend.com", smtp_port: "465", smtp_user: "resend", smtp_pass: key, smtp_admin_email: "no-reply@mail.galadock.com", smtp_sender_name: "Gala Dock", smtp_max_frequency: 30, rate_limit_email_sent: 100 });
 }
 console.log(`${Object.keys(T).length} templates rendered → ${out}`);
 if (!apply) { console.log("Dry run. Add --apply to update Supabase Auth (and --smtp to switch auth mail to Resend once the domain is verified)."); process.exit(0); }
