@@ -11,6 +11,7 @@ import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-pa
 import { CommentsPanel } from "./comments-panel";
 import { DesignMenu } from "./design-menu";
 import { FriendlyField, EventFieldButtons, InsertField } from "./event-fields";
+import { MyElements } from "./my-elements";
 import { TemplateFilterBar, TemplateFacetFields, facetsFrom } from "./template-filters";
 import { FORMATS, labelOf, type TemplateFilters } from "@/lib/media/template-taxonomy";
 import { saveDesign, restoreVersion, deriveDesign, publishTemplate, listTemplates, templateUsed, type TemplateSummary } from "@/lib/media/actions";
@@ -268,6 +269,15 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   };
   const addGlyph = (ch: string, name: string, emoji: boolean) => { const s = unit * 0.16; add({ id: uid(), name, type: "text", text: ch, font: emoji ? "Noto Color Emoji" : "Inter", size: s, weight: 400, color: "#090a2e", align: "center", valign: "middle", lineHeight: 1, letterSpacing: 0, ...center(s * 1.3, s * 1.3) }); };
   const addShape = (shape: "rect" | "ellipse", name = shape === "rect" ? "Rectangle" : "Ellipse") => add({ id: uid(), name, type: "shape", shape, fill: { type: "solid", color: "#0b08f8" }, ...center(unit * 0.3, unit * 0.3) });
+  const addElementImage = (src: string, path: string, w0: number, h0: number, title: string) => { const s = Math.min((page.width * 0.5) / Math.max(1, w0), (page.height * 0.5) / Math.max(1, h0), 1.5);
+    add({ id: uid(), name: title || "Element", type: "image", asset: { src, path, width: w0, height: h0 }, fit: "contain", focusX: 50, focusY: 50, zoom: 1, ...center(Math.max(8, w0 * s), Math.max(8, h0 * s)) }); };
+  const addElementGroup = (layers: Layer[], title: string) => { if (!layers.length) return;
+    const w = Math.max(...layers.map(l => l.x + l.w)), h = Math.max(...layers.map(l => l.y + l.h)), s = Math.min(1, (page.width * 0.8) / Math.max(1, w), (page.height * 0.8) / Math.max(1, h));
+    const ox = (page.width - w * s) / 2, oy = (page.height - h * s) / 2;
+    const fresh = layers.map(l => ({ ...l, id: uid(), name: l.name || title, x: ox + l.x * s, y: oy + l.y * s, w: l.w * s, h: l.h * s, ...(l.type === "text" ? { size: l.size * s } : {}) }) as Layer);
+    updatePage(p => ({ ...p, layers: [...p.layers, ...fresh] })); setSel(fresh.map(l => l.id)); setTool("select"); };
+  const myElements = (compact: boolean) => <MyElements workspaceId={workspaceId} canEdit={design.canEdit} compact={compact} selection={page.layers.filter(l => sel.includes(l.id))}
+    onInsertImage={addElementImage} onInsertGroup={addElementGroup} preview={layers => <GroupThumb layers={layers} />} />;
   const addImage = (a: Asset) => { const w = page.width * 0.6; add({ id: uid(), name: a.title || "Image", type: "image", asset: { src: a.src, path: a.path }, fit: "cover", focusX: 50, focusY: 50, zoom: 1, ...center(w, w * 0.66) }); };
   const upload = async (file: File) => {
     const fd = new FormData(); fd.set("file", file); fd.set("purpose", "image");
@@ -333,6 +343,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <aside className="st-panel" aria-label={tab}>
         {tab === "Templates" && <TemplatesPanel workspaceId={workspaceId} canEdit={design.canEdit} onUse={useTemplate} portal={back.startsWith("/provider") ? "provider" : "organiser"} />}
         {tab === "Elements" && <>
+          {myElements(true)}
           <div className="st-quick">
             <button onClick={() => addShape("rect")}><Square size={18} />Rectangle</button><button onClick={() => addShape("ellipse")}><Circle size={18} />Circle</button>
             <button onClick={() => { setTool("line"); setTab("Draw"); }}><Spline size={18} />Bendy line</button>
@@ -365,7 +376,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
           <WidgetPicker onPick={w => { const s = Math.min(1, (page.width * 0.8) / w.w); add({ id: uid(), name: w.name, type: "widget", widget: w.widget, variant: w.variant, theme: w.theme, props: w.props, ...center(w.w * s * (unit / 1080), w.h * s * (unit / 1080)) }); }} />
         </>}
         {tab === "Uploads" && <>
-          {design.canEdit && <label className="st-drop"><Upload size={20} /><span>Upload JPG, PNG or WebP</span><input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f); }} /></label>}
+          {myElements(false)}
+          <h3>Photos</h3>
+          {design.canEdit && <label className="st-drop"><Upload size={20} /><span>Upload a photo — JPG, PNG or WebP</span><input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f); }} /></label>}
 
           <div className="st-assets">{assets.map(a => <button key={a.src} onClick={() => addImage(a)} title={a.title}>{/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={a.src} alt={a.title} loading="lazy" /></button>)}</div>
@@ -546,6 +559,12 @@ function TemplatesPanel({ workspaceId, canEdit, onUse, portal }: { workspaceId: 
 }
 /** Sample event details so template previews read naturally (the real event's data fills in once used). */
 const SAMPLE: EventData = { "event.name": "Summer Gala", "event.date": "Sat 21 June", "event.time": "19:30", "event.venue_name": "Riverside Arena", "event.city": "London", "event.public_url": "https://www.galadock.com", "ticket.starting_price": "£25.00", "organizer.name": "Alex Events" };
+/** Preview of a saved layer group for the My elements grid. */
+function GroupThumb({ layers }: { layers: Layer[] }) {
+  const w = Math.max(1, ...layers.map(l => l.x + l.w)), h = Math.max(1, ...layers.map(l => l.y + l.h)), s = 96 / Math.max(w, h);
+  return <span className="me-gthumb" aria-hidden="true"><span style={{ width: w, height: h, position: "absolute", left: (96 - w * s) / 2, top: (96 - h * s) / 2, transform: `scale(${s})`, transformOrigin: "0 0" }}>
+    {layers.map(l => <LayerView key={l.id} l={l} data={SAMPLE} />)}</span></span>;
+}
 function MiniThumb({ doc }: { doc: DesignDoc }) {
   const p = doc.pages?.[0]; if (!p) return <div className="st-mthumb" />;
   const s = 116 / Math.max(p.width, p.height);

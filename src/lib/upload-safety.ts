@@ -54,7 +54,15 @@ function stripWebp(b: Uint8Array): Uint8Array {
 }
 const ACTIVE_PDF = /\/(JavaScript|JS|Launch|EmbeddedFile|RichMedia|XFA|OpenAction\s*<<[^>]*\/S\s*\/JavaScript)\b/;
 
+/** SVG elements (Media Studio "My elements"): always shown through <img>, which never runs scripts; refused anyway if they carry
+ *  scripts, event handlers, javascript: links, embedded documents or entity declarations, so a stored file is inert wherever it's opened. */
+const ACTIVE_SVG = /<\s*(script|foreignObject|iframe|frame|embed|object|handler|listener|set|animate)\b|\son[a-z]+\s*=|javascript:|<!ENTITY|<!DOCTYPE|\b(?:xlink:)?href\s*=\s*["']\s*(?!#|data:image\/(?:png|jpe?g|webp|gif);)/i;
 export function sanitize(bytes: Uint8Array, type: string): Verdict {
+  if (type === "image/svg+xml") {
+    const text = new TextDecoder("utf-8").decode(bytes);
+    if (ACTIVE_SVG.test(text)) return { ok: false, reason: "active_content", detail: "SVGs with scripts, links or embedded content aren’t accepted. Export a plain SVG and try again." };
+    return { ok: true, bytes: new TextEncoder().encode(text.replace(/<!--[\s\S]*?-->/g, "").replace(/<metadata[\s\S]*?<\/metadata>/gi, "")) };
+  }
   if (type === "image/jpeg") return { ok: true, bytes: stripJpeg(bytes) };
   if (type === "image/png") return { ok: true, bytes: stripPng(bytes) };
   if (type === "image/webp") return { ok: true, bytes: stripWebp(bytes) };

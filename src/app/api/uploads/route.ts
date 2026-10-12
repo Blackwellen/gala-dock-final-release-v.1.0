@@ -15,6 +15,9 @@ function sniff(bytes: Uint8Array) {
   if (starts(0xff, 0xd8, 0xff)) return { ext: "jpg", type: "image/jpeg" };
   if (starts(0x52, 0x49, 0x46, 0x46) && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) return { ext: "webp", type: "image/webp" };
   if (starts(0x25, 0x50, 0x44, 0x46, 0x2d)) return { ext: "pdf", type: "application/pdf" };
+  if (starts(0x47, 0x49, 0x46, 0x38) && (bytes[4] === 0x37 || bytes[4] === 0x39) && bytes[5] === 0x61) return { ext: "gif", type: "image/gif" };
+  const head = new TextDecoder("utf-8").decode(bytes.subarray(0, 1024)).replace(/^﻿/, "").trimStart();
+  if (/^(<\?xml[^>]*\?>\s*)?(<!--[\s\S]*?-->\s*)*<svg[\s>]/i.test(head)) return { ext: "svg", type: "image/svg+xml" };
   return null;
 }
 
@@ -29,11 +32,13 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   const purpose = form?.get("purpose");
-  if (!(file instanceof File) || (purpose !== "image" && purpose !== "document")) return json({ error: "Choose a file to upload." }, 400);
+  if (!(file instanceof File) || (purpose !== "image" && purpose !== "document" && purpose !== "element")) return json({ error: "Choose a file to upload." }, 400);
   if (file.size === 0 || file.size > MAX_BYTES) return json({ error: "Files must be smaller than 10MB." }, 413);
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind = sniff(bytes);
-  if (!kind || (purpose === "image" && kind.type === "application/pdf")) return json({ error: purpose === "image" ? "Upload a PNG, JPG or WebP image." : "Upload a PDF, PNG or JPG document." }, 415);
+  // GIF and SVG are accepted only as Media Studio elements; documents and images keep their original types.
+  const allowed = purpose === "element" ? ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"] : purpose === "image" ? ["image/png", "image/jpeg", "image/webp"] : ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+  if (!kind || !allowed.includes(kind.type)) return json({ error: purpose === "element" ? "Upload a PNG, JPG, WebP, GIF or SVG." : purpose === "image" ? "Upload a PNG, JPG or WebP image." : "Upload a PDF, PNG or JPG document." }, 415);
   const safe = await checkUpload(bytes, kind.type);   // strip metadata, refuse active PDFs, malware scan when configured
   if (!safe.ok) return json({ error: verdictMessage(safe) }, safe.reason === "scanner_unavailable" ? 503 : 422);
   const path = `${user.id}/${randomUUID()}.${kind.ext}`;
