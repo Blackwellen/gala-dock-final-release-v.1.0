@@ -189,7 +189,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 |---|---|---|---|
 | 1 | **Transactional email provider** — `RESEND_API_KEY`, `EMAIL_FROM` on a verified domain (receipts, refunds, security alerts depend on it) | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
 | 2 | **Enable Supabase PITR** (RPO 24 h today) before live payments | Ops | BLOCKED_EXTERNAL_CONFIGURATION |
-| 3 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh. Placeholders still needing your input: ICO registration number, VAT number, named safeguarding lead + deputy, liability cap amounts (Organizer/Provider terms), partner fee schedule, accessibility audit date. Company name/number/office are filled (Blackwellen Limited, 16482166, 61 Bridge Street, Kington, HR5 3DJ). | Legal / Owner | BLOCKED_LEGAL_REVIEW |
+| 3 | **Legal sign-off** of terms, payment-protection model (PSR perimeter), resale law refresh. Filled: company (Blackwellen Limited, 16482166, 61 Bridge Street, Kington, HR5 3DJ), ICO ZB905402, safeguarding lead (Jamahl Thomas, Director), liability floor £100, provider insurance £2,000,000, partner fees (per signed order form), contacts support@ / legal@galadock.com, break-glass DPIA signed off by the DPO. Still open: VAT number, deputy safeguarding lead, accessibility audit date. | Legal / Owner | BLOCKED_LEGAL_REVIEW |
 
 ## 17. Non-blocking items (§149)
 
