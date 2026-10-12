@@ -1214,3 +1214,6 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* tuned onboarding r2: experience */
 
+/* Auth side-panel art without baked-in text (scripts/build-story-art.mjs). The old per-page art contained the design's headline,
+   features and stats, which ghosted through the live text whenever wording or layout differed. */
+.auth-story,.auth-page .auth-story{background-image:url('/assets/auth-story-clean.webp')!important;background-size:cover!important;background-position:center bottom!important;background-repeat:no-repeat!important;background-color:#0b0c33}
