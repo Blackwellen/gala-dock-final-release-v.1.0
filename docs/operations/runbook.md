@@ -42,7 +42,12 @@ Scheduled jobs — **all run in Supabase `pg_cron`** (no Vercel cron); HTTP work
 
 ## 3. Restore test (§133)
 
-**Status: NOT PERFORMED, BLOCKED_EXTERNAL_CONFIGURATION.** Restoring into production is never acceptable, and no staging project exists to restore into. Procedure for the first quarterly test:
+**Status: backup verification drill PASSED (12 Oct 2026); full restore into a temporary project still to do.**
+
+* **Drill (12 Oct 2026):** `scripts/db-backup-restore.mjs 2026-10-12 --verify` downloaded the 12 Oct nightly backup from R2 and decompressed and parsed all 167 tables in memory. Every row count (40,245 in total) matched the manifest. It took 42.9 s and wrote nothing to disk or production. This proves the backup is complete and readable (RPO: 24 h). It does not prove a load into a fresh database.
+* **Repeat monthly:** `node --env-file=.env --env-file=.env.local scripts/db-backup-restore.mjs <YYYY-MM-DD> --verify`.
+
+Restoring into production is never acceptable. Procedure for the full quarterly test (needs a temporary Supabase project):
 1. Create a temporary Supabase project in the same region and restore the latest backup into it (Dashboard → Database → Backups → Restore to new project).
 2. Run `supabase db diff` against `supabase/migrations` and expect no drift.
 3. Run the read-only smoke suite against it: `E2E_BASE_URL` pointing at a preview deployment wired to the restored project, `tests/release/*.spec.ts`.

@@ -69,7 +69,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | Area | Status | Notes |
 |---|---|---|
 | §45–48 Workspace sweeps | PASS_WITH_NOTE | 390 px audit of 79/79 routes (session 0b): one nav per breakpoint, no horizontal scroll, no page errors. Organizer/Provider/Customer/Portal shells carry MobileNav, GlobalSearch and inbox. |
-| §49 Ticket event profile | PASS | Rich public page exists (hero, organiser, date, venue, map, programme, tiers, policies, save/share/calendar). Launch-state badge and state-aware CTA are built on `/events/[slug]` from `event_launch_state` (coming soon, on sale, low stock, sold out → waitlist, ended), with the `waitlist_offer` redirect into checkout. |
+| §49 Ticket event profile | PASS | Rich public page exists (hero, organiser, date, venue, map, programme, tiers, policies, save/share/calendar). Launch-state badge and state-aware CTA are built on `/events/[slug]` from `event_launch_state` (coming soon, countdown, presale, on sale, low availability, sold out, waitlist, postponed, cancelled, ended), with the `waitlist_offer` redirect into checkout. |
 | §50 Launch states | FIXED | `event_launch_state()` derives Draft / Coming soon / Countdown / Presale / On sale / Final release / Low availability / Sold out / Waitlist / Postponed / Cancelled / Ended. |
 | §51 Countdown | PASS_WITH_NOTE | Countdown setting and `launch.at` drive the state; inventory eligibility follows tier sale windows. Reminder sign-up uses the waitlist. Race behaviour is covered by the inventory-safety test (15 concurrent holds never oversell 5). |
 | §52 Waiting room / waitlist | FIXED (server) | Server-authoritative FIFO queue with admission rate and bounded window, `/api/events/[id]/queue`, checkout gate `queue_admit_check`; waitlist now reserves freed inventory for 30 minutes per person and passes expired offers on. Checkout wiring done by session -22: admission consumed at order creation (409 otherwise), waiting-room UI polls server values only, `claim_waitlist_offer` converts reserved inventory into the buyer's hold, checkout honours `event_launch_state`. Tests: `tests/release/launch.spec.ts`, ticketing waitlist test. |
@@ -133,7 +133,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 | §93 Stripe | PASS_WITH_NOTE | Payments orchestration, webhooks (authoritative), reconciliation, refunds, disputes, Connect transfers. **Local `.env` holds a LIVE secret key** — confirm intended environments; production uses the configured key. |
 | §94 MapTiler | PASS | Configured; maps and geocoding in listings/search. |
 | §132 Backups | PASS_WITH_NOTE | Daily physical backups verified (latest 10 Oct 2026), plus our own nightly logical backup to R2 (pg_cron → Edge Function `db-backup`; first run 12 Oct 2026, 167 tables). PITR not enabled by owner decision until there are users; RPO 24 h. Storage objects are replicated to the EU-jurisdiction R2 bucket every 15 minutes (see §92). |
-| §133 Restore test | BLOCKED_EXTERNAL_CONFIGURATION | Needs a staging project; procedure in `docs/operations/runbook.md`. |
+| §133 Restore test | PASS_WITH_NOTE | Verification drill passed 12 Oct 2026: the nightly R2 backup decompressed and parsed in full, 167 tables and 40,245 rows matching the manifest, in 43 s (`scripts/db-backup-restore.mjs --verify`). A full load into a temporary project is still to do; procedure in `docs/operations/runbook.md` §3. |
 | §134–135 DR / IR | PASS | Runbook with RTO/RPO table, secret-rotation steps, ICO 72-hour process. |
 | §136–137 Observability / health | PASS_WITH_NOTE | `/api/health` + `/admin/health`. Error reporting: `src/instrumentation.ts` sends server errors to any Sentry-compatible DSN (`SENTRY_DSN`; self-hosted GlitchTip on Oracle) without headers/cookies/query strings. Uptime: Uptime Kuma on Oracle with monitors defined in `docs/operations/oracle-setup.md`. Both need the Oracle VM set up (≈45 min, free tier). |
 
@@ -178,7 +178,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 | Area | Status | Notes |
 |---|---|---|
-| §138 Tax/VAT | BLOCKED_LEGAL_REVIEW | Fees exclude VAT; agent-vs-principal and invoicing model need a tax adviser. |
+| §138 Tax/VAT | BLOCKED_LEGAL_REVIEW | Fees exclude VAT; the agent-vs-principal and invoicing model need a tax adviser. The questions and what changes afterwards (about a day's work) are in `docs/operations/vat-decisions.md`. |
 | §139 Fraud/risk | PASS_WITH_NOTE | Amount-mismatch detection, idempotent orders, chargeback holds, new-device alerts, rate limits; no external fraud scoring. |
 | §140 Reconciliation | PASS | Immutable double-entry ledger, webhook-authoritative states, return-path reconcile. |
 
@@ -194,7 +194,7 @@ Status vocabulary: **PASS** · **PASS_WITH_NOTE** · **FIXED** (defect found and
 
 ## 17. Non-blocking items (§149)
 
-Turnstile keys (code ready); virtual-event API adapters (manual links work); Google OAuth client (code ready); calendar two-way sync; separate response-QA pass; further enterprise agent tools; ad inventory targeting/charging; full WCAG audit; Oracle ops VM (scanner, uptime, error tracking — instructions ready); restore test in staging.
+Turnstile keys (code ready); virtual-event API adapters (manual links work); Google OAuth client (code ready); calendar two-way sync; separate response-QA pass; further enterprise agent tools; ad inventory targeting/charging; full WCAG audit; Oracle ops VM (scanner, uptime, error tracking — instructions ready); full restore into a temporary project.
 
 ## 18. Migration report (§147) — this run
 

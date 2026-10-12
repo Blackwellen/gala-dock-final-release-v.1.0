@@ -1,4 +1,5 @@
 // Restores a nightly db-backup (R2: db-backups/<date>/) — see supabase/functions/db-backup and docs/operations runbook §2.
+//   Verify only:    node --env-file=.env --env-file=.env.local scripts/db-backup-restore.mjs <YYYY-MM-DD> --verify   (downloads, decompresses and parses every table in memory; checks row counts against the manifest; writes nothing)
 //   Download only:  node --env-file=.env --env-file=.env.local scripts/db-backup-restore.mjs <YYYY-MM-DD> --out artifacts/restore
 //   Load into a project (schema first: apply supabase/migrations to the target, then):
 //                   node --env-file=.env --env-file=.env.local scripts/db-backup-restore.mjs <YYYY-MM-DD> --target <project-ref> [--tables public.events,...]
@@ -12,8 +13,9 @@ import { join } from "node:path";
 const [date, ...rest] = process.argv.slice(2);
 const opt = k => { const i = rest.indexOf(k); return i >= 0 ? rest[i + 1] : undefined; };
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? "")) { console.error("Usage: db-backup-restore.mjs <YYYY-MM-DD> (--out <dir> | --target <ref>) [--tables a,b]"); process.exit(1); }
-const out = opt("--out"), target = opt("--target"), only = opt("--tables")?.split(",");
-if (!out && !target) { console.error("Give --out <dir> or --target <project-ref>."); process.exit(1); }
+const out = opt("--out"), target = opt("--target"), only = opt("--tables")?.split(","), verify = rest.includes("--verify");
+if (!out && !target && !verify) { console.error("Give --verify, --out <dir> or --target <project-ref>."); process.exit(1); }
+const t0 = Date.now(), problems = [];
 
 // ── R2 (S3 SigV4) ──
 const j = (process.env.CLOUDFLARE_R2_JURISDICTION ?? "eu").trim().toLowerCase();
@@ -45,6 +47,11 @@ if (target === process.env.SUPABASE_PROJECT_REF) console.warn("WARNING: target i
 for (const t of tables) {
   const name = `${t.schema_name}.${t.table_name}`;
   const text = gunzipSync(await r2get(`db-backups/${date}/${name}.ndjson.gz`)).toString("utf8");
+  if (verify) {
+    const lines = text.split("\n").filter(Boolean); let bad = 0;
+    for (const l of lines) { try { if (typeof JSON.parse(l) !== "object") bad++; } catch { bad++; } }
+    if (lines.length !== Number(t.rows) || bad) problems.push(`${name}: manifest ${t.rows}, file ${lines.length}${bad ? `, ${bad} unparseable` : ""}`);
+  }
   if (out) { mkdirSync(join(out, date), { recursive: true }); writeFileSync(join(out, date, `${name}.ndjson`), text); }
   if (target) {
     const rows = text.split("\n").filter(Boolean);
@@ -57,5 +64,10 @@ for (const t of tables) {
     }
   }
   console.log(`  ${name}: ${t.rows} rows${out ? " saved" : ""}${target ? " loaded" : ""}`);
+}
+if (verify) {
+  console.log(problems.length ? `VERIFY FAILED (${problems.length}):\n  ${problems.join("\n  ")}` : `VERIFY OK: every table decompressed, every row parsed, counts match the manifest.`);
+  console.log(`Elapsed ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+  if (problems.length) process.exit(1);
 }
 console.log("Done.");
