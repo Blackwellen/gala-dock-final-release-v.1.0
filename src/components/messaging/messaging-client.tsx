@@ -5,11 +5,13 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from "reac
 import { useRouter } from "next/navigation";
 import { BadgeCheck, Braces, CalendarDays, ExternalLink, FileText, Loader2, MapPin, MessageSquare, Paperclip, Send, Smile, Star, UserPlus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { Dialog } from "@/components/kit/client";
 import { sendMessage, startConversation, markRead, contactProfile, setSavedContact, type ContactProfile } from "@/lib/messaging/actions";
 import { personalise, hasTokens, TOKENS, type TokenValues } from "@/lib/messaging/tokens";
 import { loadEmoji, type EmojiMeta } from "@/lib/design-kit/assets";
 import { listingHref } from "@/lib/links";
 import { Avatar } from "./avatar";
+import "@/styles/messaging.css";
 
 /** Live updates: Supabase Realtime (RLS-filtered) with a slow polling fallback; marks the thread read while open. */
 export function LiveThread({ conversationId }: { conversationId: string }) {
@@ -222,19 +224,30 @@ export function ProfileButton({ type, id, name, avatar, seat, children }: { type
   </>;
 }
 
-/** "Message" button for listing pages, bookings and team rows: opens (or reuses) a conversation with that party. */
-export function MessageButton({ toType, to, label = "Message", subject = "", kind = "direct", listingId, eventId, itemId, asWorkspace, inbox = "/account/inbox" }: {
-  toType: "user" | "workspace"; to: string; label?: string; subject?: string; kind?: string; listingId?: string; eventId?: string; itemId?: string; asWorkspace?: string | null; inbox?: string }) {
+/** "Message" button for listing pages, bookings and team rows: opens a dialog, then starts (or reuses) the conversation and
+ *  opens it in the inbox. */
+export function MessageButton({ toType, to, label = "Message", subject = "", kind = "direct", listingId, eventId, itemId, asWorkspace, inbox = "/account/inbox", className = "k-btn ghost", toName, values = {} }: {
+  toType: "user" | "workspace"; to: string; label?: string; subject?: string; kind?: string; listingId?: string; eventId?: string; itemId?: string; asWorkspace?: string | null; inbox?: string;
+  className?: string; toName?: string; values?: TokenValues }) {
   const router = useRouter(); const [open, setOpen] = useState(false); const [body, setBody] = useState(""); const [pending, start] = useTransition(); const [error, setError] = useState("");
   const ta = useRef<HTMLTextAreaElement>(null);
-  if (!open) return <button type="button" className="mk-btn ghost" onClick={() => setOpen(true)}>{label}</button>;
-  return <form className="mk-form" aria-label={label} onSubmit={e => { e.preventDefault(); start(async () => {
-    const r = await startConversation({ toType, to, subject, body, kind, listingId, eventId, itemId, asWorkspace });
-    if (!r.ok) setError(r.error); else router.push(`${inbox}?c=${r.data}`);
-  }); }}>
-    <div className="mk-field wide"><span>Message</span><div className="ms-box"><textarea ref={ta} rows={3} value={body} onChange={e => setBody(e.target.value)} required maxLength={8000} autoFocus aria-label="Message" />
-      <div className="ms-tools"><EmojiButton onPick={e => insertAt(ta.current, body, e, setBody)} /></div></div></div>
-    <div className="mk-row wide"><button type="button" className="mk-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="mk-btn primary" disabled={pending || !body.trim()}>Send</button></div>
-    {error && <p className="mk-error" role="alert">{error}</p>}
-  </form>;
+  const v: TokenValues = { ...values, them: toName ?? values.them };
+  const send = () => start(async () => {
+    setError("");
+    const r = await startConversation({ toType, to, subject: personalise(subject, v), body: personalise(body, v), kind, listingId, eventId, itemId, asWorkspace });
+    if (!r.ok) setError(r.error); else { setOpen(false); setBody(""); router.push(`${inbox}?c=${r.data}`); }
+  });
+  return <>
+    <button type="button" className={className} onClick={() => setOpen(true)}><MessageSquare size={14} aria-hidden="true" />{label}</button>
+    <Dialog open={open} onClose={() => setOpen(false)} title={toName ? `Message ${toName}` : label} sub="Your message opens a conversation in your inbox. They’ll be notified and can reply there.">
+      <form className="ms-dialog" onSubmit={e => { e.preventDefault(); if (body.trim()) send(); }}>
+        {subject && <p className="ms-dialog-subj"><span>Subject</span>{personalise(subject, v)}</p>}
+        <div className="ms-box"><textarea ref={ta} rows={5} value={body} onChange={e => setBody(e.target.value)} maxLength={8000} autoFocus aria-label="Message" placeholder="Hi, we’re planning… could you let us know about availability and pricing?" />
+          <div className="ms-tools"><EmojiButton onPick={e => insertAt(ta.current, body, e, setBody)} /><PersonaliseButton values={v} onPick={t => insertAt(ta.current, body, t, setBody)} /></div></div>
+        {error && <p className="k-error" role="alert">{error}</p>}
+        <div className="k-row" style={{ justifyContent: "flex-end", gap: 8 }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button>
+          <button className="k-btn primary" disabled={pending || !body.trim()}>{pending ? <Loader2 size={15} className="mk-spin" /> : <Send size={15} />}Send message</button></div>
+      </form>
+    </Dialog>
+  </>;
 }

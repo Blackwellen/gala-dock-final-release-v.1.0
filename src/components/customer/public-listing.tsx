@@ -95,8 +95,8 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
       </div>
       <aside className="pl-side">
         {kind === "service" && <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} />}
-        <section className="ce-card pl-book"><h2>{kind === "venue" ? "Booking options" : "Book this supplier"}</h2>
-          <PlanWithListing listing={{ id: l.id, name: l.name, category: cat, kind, capacity: l.capacity_max }} events={(myEvents ?? []).map(e => ({ id: e.id, name: e.name, guests: e.guest_count }))} signedIn={!!user} next={href} />
+        <section id="book" className="ce-card pl-book"><h2>{kind === "venue" ? "Booking options" : "Book this supplier"}</h2>
+          <PlanWithListing listing={{ id: l.id, name: l.name, category: cat, kind, capacity: l.capacity_max, workspaceId: (l as { workspace_id?: string }).workspace_id ?? null }} events={(myEvents ?? []).map(e => ({ id: e.id, name: e.name, guests: e.guest_count }))} signedIn={!!user} next={href} />
           {kind === "venue" && <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} />}</section>
         {kind === "service" && tiers.length > 0 && <section className="ce-card pl-est"><div className="k-between"><h2>Price estimate</h2><span><small>From </small><b>{money(tiers[0]!.p)}</b><small> per guest</small></span></div>
           <div className="pl-tiers">{tiers.map((t, i) => <span key={t.l} className={i === 0 ? "on" : ""}><i /><b>{money(t.p)}{i === tiers.length - 1 ? "+" : ""}</b><small>{t.l}</small></span>)}</div><p>Final pricing depends on menu, guest count, location and production needs. Get a detailed quote for accurate pricing.</p></section>}
@@ -105,7 +105,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
         <section id="location" className="ce-card pl-loc"><div className="k-between"><h2>Location</h2><a className="k-link" href={maps} target="_blank" rel="noopener noreferrer">View on Google Maps <ChevronRight size={13} /></a></div>
           {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={130} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>
         <section className="ce-card pl-agent"><div className="k-row" style={{ gap: 8 }}><Compass size={20} className="pw-spark" /><b>Plan with this {kind === "venue" ? "venue" : "supplier"}</b></div><p>Check your dates, compare similar options, or start planning around it.</p>
-          {[[`Is ${l.name} available for my dates?`, user ? `/plan` : `/login?next=${href}`], [`Compare with similar ${kind === "venue" ? "venues" : "suppliers"}`, "#similar"], ["Plan an event around it", "/plan"]].map(([t, h]) => <Link key={t} href={h} className="pl-ask">{t}<ArrowRight size={14} /></Link>)}</section>
+          {[[`Is ${l.name} available for my dates?`, user ? (myEvents?.length ? "#book" : "/plan") : `/login?next=${href}`], [`Compare with similar ${kind === "venue" ? "venues" : "suppliers"}`, "#similar"], ["Plan an event around it", "/plan"]].map(([t, h]) => <Link key={t} href={h} className="pl-ask">{t}<ArrowRight size={14} /></Link>)}</section>
       </aside>
     </div>
   </div>;

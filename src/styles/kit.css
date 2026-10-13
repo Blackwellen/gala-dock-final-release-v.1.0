@@ -358,3 +358,8 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
 .o-top .o-logo img { width:44px;height:44px;object-fit:contain; }
 .c-top .c-logo { width:44px;min-width:44px; }
 .c-top .c-logo img { width:44px;height:44px;object-fit:contain; }
+/* Gala Agent replies render markdown (AgentReply). */
+.k-agent-reply { white-space: normal; display: grid; gap: 6px; font-size: 12px; }
+.k-agent-reply p { margin: 0; } .k-agent-reply .k-agent-h { display: block; font-size: 12px; color: var(--k-ink); margin-top: 2px; }
+.k-agent-reply ul, .k-agent-reply ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.k-agent-reply code { font-size: 11px; background: #ebe6ff; border-radius: 4px; padding: 0 4px; }

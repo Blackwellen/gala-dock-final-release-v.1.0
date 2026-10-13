@@ -7,7 +7,9 @@ import { chat, SAFETY, agentConfigured, dataBlock, AgentBudgetError } from "@/li
 import { listWorkspaceAccess } from "@/lib/auth";
 import { buildContext } from "@/lib/agent/context";
 
-const Body = z.object({ scope: z.enum(["customer", "organizer"]), eventId: z.string().uuid().optional(), question: z.string().trim().min(2).max(1500) });
+const Body = z.object({ scope: z.enum(["customer", "organizer"]), eventId: z.string().uuid().optional(), question: z.string().trim().min(2).max(1500),
+  /** What the person is looking at (listing, lead, proposal) — page-supplied, treated as data, never as instructions. */
+  focus: z.string().trim().max(2000).optional() });
 
 /** Read-only Gala Agent Q&A grounded in the caller's RLS-scoped records. Gala Agent is a paid Organizer / Provider feature:
  *  every answer is preflighted against and charged to the workspace's credits. Customer accounts have no workspace, no
@@ -23,7 +25,7 @@ export async function POST(request: Request) {
   if (parsed.data.scope === "customer") return NextResponse.json({ error: "Gala Agent is available in Organizer and Provider workspaces." }, { status: 403 });
   if (!agentConfigured()) return NextResponse.json({ error: "Gala Agent isn't configured on this environment (Azure OpenAI keys missing)." }, { status: 503 });
   if (!(await rateLimit(`agent-ask:${user.id}`, 30, 3600))) return NextResponse.json({ error: "You've reached the hourly Gala Agent limit. Please try again later." }, { status: 429 });
-  const { eventId, question } = parsed.data; const scope = "organizer" as const;
+  const { eventId, question, focus } = parsed.data; const scope = "organizer" as const;
   // The workspace that pays: the event's workspace when asking about an event, otherwise the user's last-used organizer workspace.
   const access = (await listWorkspaceAccess(supabase)).filter(w => w.kind === "organizer" && w.member_status === "active" && w.workspace_status === "active");
   let workspaceId: string | null = null;
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
   try {
     const { text } = await chat([
       { role: "system", content: `${SAFETY}\nAudience: a professional event organizer; be operational and precise.\nToday is ${new Date().toISOString().slice(0, 10)}.` },
-      { role: "user", content: `${dataBlock(context ?? "No records.")}\n\nQuestion: ${question}` },
+      { role: "user", content: `${dataBlock(`${focus ? `Currently viewing: ${focus}\n\n` : ""}${context ?? "No records."}`)}\n\nQuestion: ${question}` },
     ], { tier: "standard", maxTokens: 700, meter: { workspaceId, userId: user.id, purpose: "ask_organizer" } });
     return NextResponse.json({ answer: text || "I couldn't find enough information to answer that." });
   } catch (e) {

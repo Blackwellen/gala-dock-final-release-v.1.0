@@ -19,7 +19,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const it = d.items.find(i => i.id === sp.item) ?? (sp.item ? null : d.items.find(i => i.category === "venue" && OPEN.includes(i.status)) ?? d.items.find(i => OPEN.includes(i.status)));
   if (!it) redirect(`/account/events/${e.id}/build`);
   const step = Math.min(3, Math.max(1, Number(sp.step) || 1));
-  const base = `/account/events/${e.id}/book?item=${it.id}`;
+  const base = `/account/events/${e.id}/book?item=${it.id}${sp.option === "hold" ? "&option=hold" : ""}`;
   const [{ data: l }, { data: pkg }, { data: pr }, { data: revs }] = await Promise.all([
     it.listing_id ? ctx.supabase.from("listings").select("id,name,kind,category,location,city,image,gallery,rating,review_count,capacity_max,price_from,price_unit,response_hours,description,details,tags,instant_book,slug").eq("id", it.listing_id).maybeSingle() : Promise.resolve({ data: null }),
     it.listing_id ? ctx.supabase.from("packages").select("name,description,base_price,price_basis,image,deposit_pct,inclusions").eq("listing_id", it.listing_id).eq("status", "published").order("base_price").limit(1).maybeSingle() : Promise.resolve({ data: null }),
@@ -73,7 +73,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
     reviews: (revs ?? []).map(r => ({ rating: r.rating, body: r.body })),
     questions: questionsFor(it.category, l?.details),
     saved: { date: req.date ?? ymd(start), start: req.start ?? hhmm(start, "18:00"), end: req.end ?? hhmm(end, "23:00"), flexible_dates: req.flexible_dates ?? false, guests: req.guests ?? e.guest_count, adults: req.adults ?? e.adults ?? undefined, children: req.children ?? e.children ?? undefined, setup: req.setup ?? "", breakdown: req.breakdown ?? "", access: req.access ?? "standard", notes: req.notes ?? "", answers: req.answers ?? {}, alt_dates: req.alt_dates ?? true, standby_interest: req.standby_interest ?? false },
-    savedOption: ((pr?.requirements as { option?: string } | null)?.option ?? null) as BookingData["savedOption"],
+    savedOption: ((pr?.requirements as { option?: string } | null)?.option ?? (sp.option === "hold" ? "hold" : null)) as BookingData["savedOption"],
     submitted: pr?.status === "sent",
     card: def ? { brand: def.brand, last4: def.last4, exp: def.exp, test: false } : sk?.startsWith("sk_test_") ? { brand: "Visa", last4: "4242", exp: "12/2034", test: true } : null,
   };

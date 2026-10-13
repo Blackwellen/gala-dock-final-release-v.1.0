@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Heart, Share2, Columns3, FileText, MessageSquare, Clock4, CalendarCheck, Zap, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useAction, useKitToast } from "@/components/kit/client";
 import { addAndRequest } from "@/lib/actions/build-extra";
+import { listingAvailabilityFor } from "@/lib/actions/provider-search";
+import { MessageButton } from "@/components/messaging/messaging-client";
 
 export function RecordView({ itemKey, signedIn }: { itemKey: string; signedIn: boolean }) {
   useEffect(() => { if (signedIn) void fetch("/api/recent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key: itemKey }) }).catch(() => null); }, [itemKey, signedIn]);
@@ -25,7 +27,7 @@ export function ListingActions({ listingId, name, saved: initial, signedIn }: { 
 
 type Ev = { id: string; name: string; guests?: number };
 /** Add this listing to one of your events and go to the right step: request quote, hold, enquiry (messages) or book. */
-export function PlanWithListing({ listing, events, signedIn, next, compact }: { listing: { id: string; name: string; category: string; kind: string; capacity?: number | null }; events: Ev[]; signedIn: boolean; next: string; compact?: boolean }) {
+export function PlanWithListing({ listing, events, signedIn, next, compact }: { listing: { id: string; name: string; category: string; kind: string; capacity?: number | null; workspaceId?: string | null }; events: Ev[]; signedIn: boolean; next: string; compact?: boolean }) {
   const { run, pending } = useAction(); const [ev, setEv] = useState(events[0]?.id ?? "");
   const e = events.find(x => x.id === ev);
   const login = `/login?next=${encodeURIComponent(next)}`;
@@ -33,15 +35,20 @@ export function PlanWithListing({ listing, events, signedIn, next, compact }: { 
   if (!signedIn) return <div className="pl-plan"><Link className="k-btn primary pl-main-cta" href={login}><FileText size={17} />Request quote</Link><div className="pl-cta-g"><Link className="k-btn outline" href={login}><MessageSquare size={16} />Enquire</Link><Link className="k-btn outline" href={login}><Clock4 size={16} />Conditional hold</Link></div><p className="k-xs k-muted">Sign in to request quotes, hold dates and book. It&apos;s free.</p></div>;
   if (!events.length) return <div className="pl-plan"><p className="k-small">Start a plan to request quotes from {listing.name}.</p><Link className="k-btn primary pl-main-cta" href="/plan">Plan an event</Link></div>;
   const fit = listing.capacity && e?.guests ? e.guests <= listing.capacity : null;
-  const go = (mode: "add" | "quote") => void run(() => addAndRequest(ev, listing.id, listing.category, mode));
+  const go = (mode: "add" | "quote" | "hold") => void run(() => addAndRequest(ev, listing.id, listing.category, mode));
+  const [avail, setAvail] = useState<{ ev: string; v: string } | null>(null);
+  useEffect(() => { if (!signedIn || !ev) return; let live = true; void listingAvailabilityFor(ev, listing.id).then(v => { if (live) setAvail({ ev, v }); }); return () => { live = false; }; }, [ev, listing.id, signedIn]);
+  const av = avail?.ev === ev ? avail.v : null;
+  const AV: Record<string, [string, string]> = { available: ["ok", "Free on your event date"], limited: ["warn", "Limited availability on your date"], unavailable: ["bad", "Booked on your event date"], no_date: ["warn", "Set your event date to check availability"] };
   return <div className="pl-plan">
     <label className="pl-ev"><span>For your event</span><select value={ev} onChange={x => setEv(x.target.value)}>{events.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
+    {av && AV[av] && <div className={`pl-fit ${AV[av]![0]}`} role="status">{AV[av]![0] === "ok" ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}{AV[av]![1]}</div>}
     {fit !== null && <div className={`pl-fit ${fit ? "ok" : "bad"}`}>{fit ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}{fit ? `Fits your ${e!.guests} guests` : `Holds up to ${listing.capacity} — you have ${e!.guests} guests`}</div>}
     <button className="k-btn primary pl-main-cta" disabled={pending} onClick={() => go("quote")}>{pending ? <Loader2 size={16} className="k-spin" /> : <FileText size={17} />}Request quote</button>
     <div className="pl-cta-g">
       <button className="k-btn outline" disabled={pending} onClick={() => go("add")}><CalendarCheck size={16} />Add to build</button>
-      <button className="k-btn outline" disabled={pending} onClick={() => go("quote")}><Clock4 size={16} />Conditional hold</button>
-      <Link className="k-btn outline" href={`/account/events/${ev}/messages?listing=${listing.id}`}><MessageSquare size={16} />Enquire</Link>
+      <button className="k-btn outline" disabled={pending} onClick={() => go("hold")}><Clock4 size={16} />Conditional hold</button>
+      {listing.workspaceId ? <MessageButton className="k-btn outline" toType="workspace" to={listing.workspaceId} toName={listing.name} kind="enquiry" listingId={listing.id} eventId={ev} inbox="/account/inbox" label="Enquire" subject={`Enquiry about ${listing.name}${e ? ` for ${e.name}` : ""}`} /> : <Link className="k-btn outline" href="/account/inbox"><MessageSquare size={16} />Enquire</Link>}
       <Link className="k-btn outline" href={`/account/events/${ev}/build?cat=${listing.category}`}><Zap size={16} />Compare options</Link>
     </div>
   </div>;

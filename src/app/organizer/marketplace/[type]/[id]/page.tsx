@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Star, BadgeCheck, MapPin, Users, Clock, Zap, CalendarDays, ShieldCheck, Package, ArrowRight, MessageSquare, Sparkles, CheckCircle2, Layers, Ruler } from "lucide-react";
+import { Star, BadgeCheck, MapPin, Users, Clock, Zap, CalendarDays, ShieldCheck, Package, ArrowRight, Sparkles, CheckCircle2, Layers, Ruler } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { LISTING_COLS, fitFor, availabilityFor, type Listing, type EventCtx } from "@/lib/data/marketplace";
 import { Crumbs, Card, Chip, Tag, Bar, Empty, Beta } from "@/components/kit";
 import { SaveHeart, AgentAsk } from "@/components/kit/client";
+import { MessageButton } from "@/components/messaging/messaging-client";
 import { money, num, dateShort, relative } from "@/lib/format";
 
 export const metadata = { title: "Provider" };
@@ -29,6 +30,12 @@ export default async function ProviderProfile({ params, searchParams }: { params
   ]);
   const gallery = [l.image, ...(l.gallery ?? [])].filter(Boolean);
   while (gallery.length < 5) gallery.push(["/assets/gd/v-grand-hall.webp", "/assets/gd/v-pulse.webp", "/assets/gd/v-oakwood.webp", "/assets/gd/v-skyline-rooftop.webp"][gallery.length - 1] ?? l.image);
+  // What Gala Agent sees about this listing, so answers are about it (not a similarly named one).
+  const agentFocus = [`${type === "venue" ? "Venue" : "Supplier"} listing "${l.name}" (${l.category}) in ${l.city || l.location}`, l.capacity_max ? `capacity ${l.capacity_min ?? 0}–${l.capacity_max}` : "",
+    l.price_from != null ? `from £${l.price_from} ${l.price_unit}` : "price on request", `rated ${l.rating.toFixed(1)} from ${l.review_count} reviews`, l.verified ? "verified" : "not yet verified",
+    l.instant_book ? "instant book" : "", l.emergency_supply ? "offers emergency supply" : "", l.response_hours != null ? `usually replies within ${l.response_hours}h` : "",
+    ev ? `availability for ${ev.name}: ${a.label}; fit score ${f.score}%` : "", (pkgs?.length ? `packages: ${pkgs.slice(0, 5).map(p => `${p.name} £${p.base_price}`).join(", ")}` : ""),
+    l.description ? `description: ${l.description.slice(0, 600)}` : ""].filter(Boolean).join("; ");
   const reqHref = `/organizer/marketplace/requests/new?step=1&listing=${l.id}${ev ? `&event=${ev.id}` : ""}&category=${type === "venue" ? "venue" : l.category.toLowerCase()}`;
   const base = `/organizer/marketplace/${type}/${l.id}${ev ? `?event=${ev.id}` : ""}`;
   const sep = base.includes("?") ? "&" : "?";
@@ -71,9 +78,9 @@ export default async function ProviderProfile({ params, searchParams }: { params
         <Card><h3 className="ov-h">For {ev?.name ?? "your event"}</h3>
           <div className="k-row" style={{ gap: 12, margin: "10px 0" }}><span className="rf-ring" style={{ ["--v" as string]: f.score, ["--c" as string]: f.score >= 85 ? "#16a34a" : f.score >= 70 ? "#f59e0b" : "#ef4444" }}><b>{f.score}%</b></span><div><b className="k-small">Event fit</b><div className="k-xs k-muted">{f.reasons.slice(0, 2).join(" · ")}</div></div></div>
           <Chip tone={a.state === "available" ? "green" : a.state === "unavailable" ? "red" : a.state === "pending" ? "amber" : "blue"}>{a.label}</Chip>
-          <div className="k-col" style={{ gap: 8, marginTop: 12 }}><Link className="k-btn primary block" href={reqHref}>Request availability</Link><Link className="k-btn outline block" href={`${reqHref}&hold=1`}>Request with conditional hold</Link>{l.emergency_supply && <Link className="k-btn danger block" href={`${reqHref}&emergency=1`}><Zap size={14} />Emergency request</Link>}<Link className="k-btn ghost block" href={ev ? `/organizer/events/${ev.id}?tab=plan&section=suppliers` : "/organizer/events"}><MessageSquare size={14} />Message provider</Link></div></Card>
+          <div className="k-col" style={{ gap: 8, marginTop: 12 }}><Link className="k-btn primary block" href={reqHref}>Request availability</Link><Link className="k-btn outline block" href={`${reqHref}&hold=1`}>Request with conditional hold</Link>{l.emergency_supply && <Link className="k-btn danger block" href={`${reqHref}&emergency=1`}><Zap size={14} />Emergency request</Link>}<MessageButton className="k-btn ghost block" toType="workspace" to={l.workspace_id} toName={l.name} kind="enquiry" listingId={l.id} eventId={ev?.id} asWorkspace={ctx.workspace.id} inbox="/organizer/inbox" label={type === "venue" ? "Message venue" : "Message provider"} subject={`Enquiry about ${l.name}${ev ? ` for ${ev.name}` : ""}`} values={{ me: ctx.name, business: ctx.workspace.name }} /></div></Card>
         <Card><h3 className="ov-h" style={{ marginBottom: 8 }}>Trust &amp; relationship</h3><ul className="pl-agent-list"><li><ShieldCheck size={15} className={l.verified ? "k-green" : "k-muted"} />{l.verified ? "Identity & insurance verified" : "Verification pending"}</li><li><CheckCircle2 size={15} className="k-green" />{l.review_count} completed bookings on Gala Dock</li><li><CheckCircle2 size={15} className={worked ? "k-green" : "k-muted"} />{worked ? `Worked with you ${worked} time${worked === 1 ? "" : "s"}` : "New to your workspace"}</li></ul></Card>
-        <section className="k-agent"><div className="k-agent-head"><Sparkles size={16} className="k-spark" /><h3>Gala Agent</h3><Beta /></div><p>Ask about fit, terms or alternatives.</p><AgentAsk scope="organizer" eventId={ev?.id} placeholder={`Ask about ${l.name}...`} /></section>
+        <section className="k-agent"><div className="k-agent-head"><Sparkles size={16} className="k-spark" /><h3>Gala Agent</h3><Beta /></div><p>Ask about fit, terms or alternatives.</p><AgentAsk scope="organizer" eventId={ev?.id} placeholder={`Ask about ${l.name}...`} context={agentFocus} /></section>
         <Link className="k-link" href={`/organizer/marketplace${type === "service" ? "?tab=services" : ""}`}>Back to marketplace <ArrowRight size={12} /></Link>
       </div>
     </div>

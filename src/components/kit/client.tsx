@@ -151,12 +151,27 @@ export function Countdown({ to, compact }: { to: string; compact?: boolean }) {
 export function useTabs<T extends string>(initial: T) { const [tab, setTab] = useState<T>(initial); return { tab, setTab, props: (k: T) => ({ role: "tab" as const, "aria-selected": tab === k, onClick: () => setTab(k) }) }; }
 
 // ── Gala Agent ask box (server-side model call via /api/agent/ask) ────────
-export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", suggestions = [], compact }: { scope: "organizer"; eventId?: string; placeholder?: string; suggestions?: string[]; compact?: boolean }) {
+/** Renders Gala Agent replies: headings, bullet/numbered lists, **bold** and `code` — never raw HTML. */
+function AgentReply({ text }: { text: string }) {
+  const inline = (t: string) => t.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) => part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part.startsWith("`") && part.endsWith("`") ? <code key={i}>{part.slice(1, -1)}</code> : part);
+  const out: ReactNode[] = []; let list: { ordered: boolean; items: string[] } | null = null;
+  const flush = () => { if (list) { const L = list.ordered ? "ol" : "ul"; out.push(<L key={out.length}>{list.items.map((it, i) => <li key={i}>{inline(it)}</li>)}</L>); list = null; } };
+  for (const raw of text.split("\n")) {
+    const line = raw.trimEnd(), b = /^\s*[-*•]\s+(.*)/.exec(line), n = /^\s*\d+[.)]\s+(.*)/.exec(line), h = /^#{1,6}\s+(.*)/.exec(line);
+    if (b || n) { const ordered = !!n; if (!list || list.ordered !== ordered) { flush(); list = { ordered, items: [] }; } list.items.push((b ?? n)![1]!); continue; }
+    flush();
+    if (h) out.push(<b key={out.length} className="k-agent-h">{inline(h[1]!)}</b>); else if (line.trim()) out.push(<p key={out.length}>{inline(line)}</p>);
+  }
+  flush();
+  return <div className="k-agent-reply">{out}</div>;
+}
+export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", suggestions = [], compact, context }: { scope: "organizer"; eventId?: string; placeholder?: string; suggestions?: string[]; compact?: boolean;
+  /** What the person is looking at (a listing, lead or proposal), sent with every question so answers are about it. */ context?: string }) {
   const [q, setQ] = useState(""); const [busy, setBusy] = useState(false); const [reply, setReply] = useState<string | null>(null); const toast = useKitToast();
   async function ask(text: string) {
     if (!text.trim() || busy) return; setBusy(true); setReply(null);
     try {
-      const r = await fetch("/api/agent/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ scope, eventId, question: text.slice(0, 1500) }) });
+      const r = await fetch("/api/agent/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ scope, eventId, question: text.slice(0, 1500), focus: context?.slice(0, 2000) }) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) toast(j.error ?? "Gala Agent is unavailable right now.", "error"); else setReply(j.answer);
     } catch { toast("Gala Agent is unavailable right now.", "error"); } finally { setBusy(false); }
@@ -167,7 +182,7 @@ export function AgentAsk({ scope, eventId, placeholder = "Ask anything...", sugg
       <input value={q} onChange={e => setQ(e.target.value)} placeholder={placeholder} aria-label="Ask Gala Agent" maxLength={1500} />
       <button type="submit" aria-label="Send to Gala Agent" disabled={busy}>{busy ? <span className="k-skel" style={{ width: 12, height: 12, borderRadius: "50%" }} /> : <Send size={13} />}</button>
     </form>
-    <div aria-live="polite">{reply && <div className="k-agent-reply">{reply}</div>}</div>
+    <div aria-live="polite">{reply && <AgentReply text={reply} />}</div>
   </div>;
 }
 

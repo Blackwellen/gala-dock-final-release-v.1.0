@@ -64,3 +64,14 @@ export async function searchProviders(eventId: string, category: string, f: Prov
       verified: !!l.verified, instant_book: !!l.instant_book, badge: l.badge, tags: (l.tags ?? []).slice(0, 3), href: listingHref(l.kind, l.slug, l.id), availability: st[i] ?? "unknown",
       added: added.has(l.id), estimate: estimate(l), tooSmall: l.kind === "venue" && !!l.capacity_max && guests > l.capacity_max })) } };
 }
+
+/** Is this listing free on one of my events' dates? (provider calendar, holds and blocks) */
+export async function listingAvailabilityFor(eventId: string, listingId: string): Promise<ProviderHit["availability"] | "no_date"> {
+  const ids = z.string().uuid(); if (!ids.safeParse(eventId).success || !ids.safeParse(listingId).success) return "unknown";
+  const ctx = await getCustomer();
+  const { data: e } = await ctx.supabase.from("events").select("starts_at,ends_at").eq("id", eventId).eq("owner_id", ctx.user.id).maybeSingle();
+  if (!e?.starts_at) return "no_date";
+  const end = e.ends_at ?? new Date(new Date(e.starts_at).getTime() + 6 * 3600_000).toISOString();
+  const { data } = await ctx.supabase.rpc("listing_availability" as never, { p_listing: listingId, p_start: e.starts_at, p_end: end } as never);
+  return (data as ProviderHit["availability"] | null) ?? "unknown";
+}
