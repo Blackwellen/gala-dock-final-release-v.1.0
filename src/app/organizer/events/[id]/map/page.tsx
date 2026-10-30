@@ -1,50 +1,64 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Info } from "lucide-react";
+import { CalendarDays, Info, MapPin } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { getProEvent } from "@/lib/data/event";
 import { untyped } from "@/lib/workspace/db";
-import { loadEventPlan } from "@/lib/data/event-plan";
-import { planSeats, planAreas } from "@/components/venue-plan/inventory";
-import { EventPlanEditor } from "./editor";
+import { loadEventPlan, isPlanV2 } from "@/lib/data/event-plan";
+import type { MapEl } from "@/app/provider/venues/_components/venue-map";
+import { EventMapEditor, type Binding, type MapTab, type VersionRow, type ZoneRow } from "./editor";
+import type { Validation } from "./actions";
+import "@/styles/org-event-map.css";
 
-export const metadata: Metadata = { title: "Event layout" };
+export const metadata: Metadata = { title: "Venue map" };
+const TABS: MapTab[] = ["design", "ticketing", "operations", "preview"];
+const PALETTE = ["#5b5bff", "#a855f7", "#16a46c", "#e08a00", "#e0398b", "#0ea5c6"];
 
-/** ORG-013 · Event layout: the venue's published structural plan is locked underneath; the organiser builds the event overlay and ticketing on top. */
+/**
+ * ORG-013 · Event venue map. The venue's published structural plan is locked underneath; the organiser builds the event
+ * overlay (seating, zones, facilities) and ticket bindings on top. Version-checked saves, findings from event_map_validate,
+ * compare/restore, and a published preview (Q19 map engine, docs/maps/map-engine.md).
+ */
 export default async function EventMapPage(props: PageProps<"/organizer/events/[id]/map">) {
-  const { id } = await props.params;
+  const [{ id }, sp] = await Promise.all([props.params, props.searchParams]);
   const ctx = await getOrganizer();
   const e = await getProEvent(ctx, id);
   const sb = untyped(ctx.supabase);
-  const [{ data: tiers }, { data: seatRows }, plan] = await Promise.all([
-    sb.from("ticket_tiers").select("id,name,color,status").eq("event_id", e.id).order("sort"),
+  const [{ data: tiers }, { data: seatRows }, plan, { data: versions }, { data: val }, { data: bind }, { data: pub }] = await Promise.all([
+    sb.from("ticket_tiers").select("id,name,color,status,quantity,price").eq("event_id", e.id).order("sort"),
     sb.from("event_seats").select("status").eq("event_id", e.id),
     loadEventPlan(ctx.supabase, { id: e.id, venue_listing_id: (e as { venue_listing_id?: string | null }).venue_listing_id }),
+    sb.from("venue_maps").select("version,status,created_at").eq("event_id", e.id).order("version", { ascending: false }).limit(50),
+    sb.rpc("event_map_validate", { p_event: e.id }),
+    sb.rpc("event_map_bindings", { p_event: e.id }),
+    sb.from("venue_maps").select("overlay").eq("event_id", e.id).eq("status", "published").order("version", { ascending: false }).limit(1).maybeSingle(),
   ]);
-  const { base, overlay, legacy, geo, latest } = plan;
-  const venue = plan.venueName ? { name: plan.venueName } : null, structure = plan.structureVersion ? { version: plan.structureVersion } : null;
-  let seats = 0; try { seats = planSeats(overlay).length; } catch { seats = 0; }
-  const standing = planAreas(overlay).reduce((a, x) => a + x.capacity, 0);
+  const { data: structure } = plan.venueId ? await sb.from("venue_structures").select("capacity_max").eq("venue_id", plan.venueId).eq("status", "published").maybeSingle() : { data: null };
+  const tab = (TABS as string[]).includes(String(sp.tab)) ? sp.tab as MapTab : "design";
+  const b = (bind ?? { tiers: [], zones: [] }) as { tiers: Binding[]; zones: ZoneRow[] };
   const sold = (seatRows ?? []).filter(r => r.status === "sold").length, held = (seatRows ?? []).filter(r => r.status === "held").length;
-  const palette = ["#5b5bff", "#a855f7", "#16a46c", "#e08a00", "#e0398b", "#0ea5c6"];
+  const when = e.starts_at ? new Date(e.starts_at as string) : null;
+  const fmtD = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" });
+  const fmtT = (d: Date) => d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
+  const ends = e.ends_at ? new Date(e.ends_at as string) : null;
+  const canEdit = ["owner", "manager", "member"].includes(ctx.role);
 
-  return <div className="ep">
-    <Link href={`/organizer/events/${e.id}?tab=plan`} className="ep-back"><ArrowLeft aria-hidden="true" />Back to {e.name}</Link>
-    <header className="ep-head"><div><h1>Event layout</h1>
-      <p>{venue && structure ? <>Built on <b>{venue.name}</b>’s published plan (v{structure.version}). The venue structure is locked; add seating, zones and facilities on top.</>
-        : venue ? <><b>{venue.name}</b> hasn’t published a floor plan yet, so build the event layout here. Add the street map to place it on site, or upload a site drawing.</>
-        : "Build your site plan: upload a site drawing or aerial image, add the street map and drag in assets."}</p></div>
-      <dl className="ep-stats"><div><dt>Reserved seats</dt><dd>{seats.toLocaleString("en-GB")}</dd></div><div><dt>Standing / area capacity</dt><dd>{standing.toLocaleString("en-GB")}</dd></div>
-        <div><dt>Seats sold · held</dt><dd>{sold} · {held}</dd></div><div><dt>Layout</dt><dd>{latest ? `v${latest.version} · ${latest.status}` : "Not started"}</dd></div></dl></header>
-    {(tiers ?? []).length > 0 && <ul className="ep-tiers" aria-label="Ticket tiers">{(tiers ?? []).map((t, i) => <li key={t.id}><i style={{ background: t.color || palette[i % palette.length] }} />{t.name}<small>{t.status.replace("_", " ")}</small></li>)}</ul>}
-    {legacy && <p className="ep-note"><Info aria-hidden="true" />This event has an earlier zone layout. Building here creates a new version in the new planner — the old layout stays in version history.</p>}
-    <EventPlanEditor eventId={e.id} base={base} overlay={overlay} version={plan.publishedVersion} draftVersion={latest && latest.status !== "published" ? latest.version : 0} geo={geo}
-      spaces={plan.spaces}
-      tiers={(tiers ?? []).map((t, i) => ({ id: t.id, name: t.name, color: t.color || palette[i % palette.length] }))} />
-    <style>{`.ep{display:grid;gap:12px;padding:4px 0 24px}.ep-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#1d2068;justify-self:start}.ep-back svg{width:15px;height:15px}
-.ep-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}.ep-head h1{font-size:28px;font-weight:800;letter-spacing:-.03em;color:#02032e}.ep-head p{font-size:12.5px;color:#3f4596;margin-top:4px;max-width:680px}
-.ep-stats{display:flex;gap:10px;margin:0}.ep-stats div{padding:9px 14px;border:1px solid #eef4fc;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(60,110,200,.04)}.ep-stats dt{font-size:10px;color:#5157a4}.ep-stats dd{margin:2px 0 0;font-size:16px;font-weight:750;color:#02032e}
-.ep-tiers{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}.ep-tiers li{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border:1px solid #eef4fc;border-radius:14px;background:#fff;font-size:11px;color:#0d0d63}
-.ep-tiers i{width:10px;height:10px;border-radius:50%}.ep-tiers small{color:#5d60a8;text-transform:capitalize}.ep-note{display:flex;gap:8px;align-items:center;font-size:11.5px;color:#1d2068;background:#eef3ff;border-radius:8px;padding:9px 12px}.ep-note svg{width:15px;height:15px;color:#1a1af2}`}</style>
+  return <div className="om-page">
+    <nav className="om-crumbs" aria-label="Breadcrumb"><ol><li><Link href="/organizer">Organizer</Link></li><li><Link href="/organizer/events">Events</Link></li>
+      <li><Link href={`/organizer/events/${e.id}`}>{e.name}</Link></li><li aria-current="page">Venue Map</li></ol></nav>
+    <header className="om-head">
+      <div><h1>{e.name}<span className={`om-chip ${plan.publishedVersion ? "live" : "draft"}`}>{plan.publishedVersion ? "Published" : "Draft"}</span></h1>
+        <p className="om-meta">{when && <span><CalendarDays aria-hidden="true" />{fmtD(when)} · {fmtT(when)}{ends ? ` – ${fmtT(ends)}` : ""}</span>}
+          {(plan.venueName || e.city) && <span><MapPin aria-hidden="true" />{[plan.venueName, e.city].filter(Boolean).join(", ")}</span>}</p></div>
+      <p className="om-intro">{plan.venueName && plan.structureVersion ? <>Built on <b>{plan.venueName}</b>’s published plan (v{plan.structureVersion}). Venue exits, routes, rooms and walls are locked; add seating, zones and facilities on top.</>
+        : plan.venueName ? <><b>{plan.venueName}</b> hasn’t published a floor plan yet, so build the event layout here. Add the street map or upload a site drawing.</>
+        : "Build your site plan: upload a site drawing or aerial image, add the street map and drag in assets."}</p>
+    </header>
+    {plan.legacy && <p className="om-note"><Info aria-hidden="true" />This event has an earlier zone layout. Building here creates a new version in the new planner — the old layout stays in version history.</p>}
+    <EventMapEditor eventId={e.id} base={plan.base} overlay={plan.overlay} spaces={plan.spaces} geo={plan.geo} initialTab={tab} canEdit={canEdit}
+      tiers={(tiers ?? []).map((t, i) => ({ id: t.id as string, name: t.name as string, color: (t.color as string | null) || PALETTE[i % PALETTE.length], quantity: (t.quantity as number | null) ?? null, price: (t.price as number | null) ?? null, status: String(t.status ?? "") }))}
+      versions={(versions ?? []) as VersionRow[]} publishedVersion={plan.publishedVersion} latestVersion={plan.latest?.version ?? 0}
+      validation={(val as Validation | null) ?? null} bindings={b.tiers ?? []} zones={b.zones ?? []} venueCapacity={(structure?.capacity_max as number | null | undefined) ?? null}
+      sold={sold} held={held} publishedOverlay={pub && isPlanV2(pub.overlay) ? pub.overlay as MapEl[] : []} />
   </div>;
 }

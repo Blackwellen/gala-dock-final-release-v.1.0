@@ -25,6 +25,9 @@ test("keyboard: login form is operable without a mouse and shows focus", async (
   await page.goto(`${BASE}/login`);
   await page.getByLabel("Email").focus();
   await page.keyboard.type("someone@gala-dock.test");
+  // Design order (AUTH-001): "Forgot password?" sits on the Password label row, before the field.
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Forgot password?" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Password", { exact: true })).toBeFocused();
   await page.keyboard.press("Tab");

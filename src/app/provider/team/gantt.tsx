@@ -31,7 +31,9 @@ export function TeamGantt({ crew, shifts, blocks, days, base }: { crew: Crew[]; 
       ...blocks.filter(b => b.crew_id === c.id).map(b => ({ key: b.id, start: +new Date(b.starts_at), end: +new Date(b.ends_at), title: b.kind === "open" ? "Available" : b.note || "Unavailable", sub: "",
         tone: b.kind === "open" ? "free" : /holiday|leave/i.test(b.note) ? "hol" : "off", label: `${b.kind === "open" ? "Available" : b.note || "Unavailable"}, ${day(b.starts_at, { weekday: "short", day: "numeric", month: "short" })}` })),
     ];
-    const bars = raw.filter(b => b.end > weekStart && b.start < weekEnd).map((b): Omit<Placed, "lane"> => ({ ...b, a: pos(b.start), z: Math.max(pos(b.end), pos(b.start) + 0.18) }))
+    // Same-day items fill their day cell (as in PROV-013) so the title stays readable; multi-day items keep their real span.
+    const span = (a: number, z: number) => Math.floor(a) === Math.floor(Math.max(a, z - 1e-6)) ? { a: Math.floor(a) + 0.03, z: Math.floor(a) + 0.97 } : { a, z };
+    const bars = raw.filter(b => b.end > weekStart && b.start < weekEnd).map((b): Omit<Placed, "lane"> => ({ ...b, ...span(pos(b.start), Math.max(pos(b.end), pos(b.start) + 0.18)) }))
       .filter(b => b.z > b.a).sort((x, y) => x.a - y.a);
     const laneEnd: number[] = [];
     const placed: Placed[] = bars.map(b => { let l = laneEnd.findIndex(e => e <= b.a + 0.01); if (l < 0) { l = laneEnd.length; laneEnd.push(0); } laneEnd[l] = b.z; return { ...b, lane: l }; });

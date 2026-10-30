@@ -168,3 +168,6 @@
 .wz-next{padding:0 22px!important}
 @media (max-width:1280px){.wz-grid,.wz-grid:has(.wz-avail){grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.wz-rail{grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.wz-wide{grid-column:1/-1}}
 @media (max-width:860px){.wz-grid,.wz-grid:has(.wz-avail){grid-template-columns:minmax(0,1fr)}.wz-wide,.wz-grid:has(.wz-avail) .wz-wide{grid-column:auto}.wz-2col,.wz-3{grid-template-columns:minmax(0,1fr)}.wz-steps{padding:0;overflow-x:auto}.wz-foot{flex-wrap:wrap;position:sticky;bottom:0;background:var(--ws-bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom))}}
+
+/* W12 wizard sweep (≤860): the booking wizard's six-column services table (64px inputs) has no scroll wrapper and ran past the card at 390/360 — let it scroll inside the panel. */
+@media (max-width:860px){.wz-svc{display:block;overflow-x:auto;max-width:100%}}

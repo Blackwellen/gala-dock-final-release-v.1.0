@@ -1,12 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { agentRefusalCode, agentRefusalText } from "./refusals";
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { rateLimit } from "@/lib/security";
-import { ask, applyApproval, compileRoutine, nextCron, FAR_FUTURE } from "./runtime";
+import { ask, applyApproval, compileRoutine, FAR_FUTURE } from "./runtime";
+import { parseSchedule, nextRunAt } from "./schedule";
 import { TOOL } from "./registry";
 
 // Gala Agent UI actions (§5, §10–13). Seat = the workspace the person is acting in; membership is re-checked server-side.
@@ -82,9 +84,9 @@ export async function decideApproval(approvalId: string, approve: boolean, edite
   const { data: before } = await untyped(sb as never).from("agent_approvals").select("tool_id,payload").eq("id", approvalId).maybeSingle();
   if (edited && before?.tool_id) { const parsed = TOOL.get(before.tool_id)?.input.safeParse({ ...(before.payload as object), ...edited }); if (!parsed?.success) return { ok: false, error: "The edited values aren’t valid." }; }
   const { error } = await sb.rpc("decide_agent_approval" as never, { p_approval: approvalId, p_approve: approve, p_edited: edited ? { ...(before?.payload as object), ...edited } : null } as never);
-  if (error) return { ok: false, error: /already_decided/.test(error.message) ? "Already decided." : /expired/.test(error.message) ? "This approval expired." : "You can’t decide this approval." };
+  if (error) return { ok: false, error: agentRefusalCode(error.message) && !/^not_authorized/.test(error.message) ? agentRefusalText(error.message) : "You can’t decide this approval." };
   const r = await applyApproval(approvalId, user.id);
-  bump(); return r.ok ? { ok: true } : { ok: false, error: r.error ?? "Couldn’t apply the decision." };
+  bump(); return r.ok ? { ok: true } : { ok: false, error: r.error ? agentRefusalText(r.error) : "Couldn’t apply the decision." };
 }
 export async function approveBatch(runId: string, batchKey: string): Promise<R<number>> {
   const sb = await createClient();
@@ -109,7 +111,9 @@ export async function saveRoutine(workspaceId: string, text: string): Promise<R>
   const c = await compileRoutine(s.kind, text, { workspaceId, userId: s.user.id });
   if (!c.ok) return c;
   const t = c.compiled.trigger;
-  const next = t.type === "event" ? new Date(FAR_FUTURE) : nextCron(t.cron, new Date());
+  // Compiled cron is Europe/London wall-clock time (compileRoutine's tz) — evaluate it there, not in UTC.
+  const spec = t.type === "event" ? null : parseSchedule(t.cron, t);
+  const next = t.type === "event" ? new Date(FAR_FUTURE) : spec ? nextRunAt(spec, new Date())?.at ?? null : null;
   const { error } = await untyped(createAdminClient() as never).from("agent_routines").insert({ workspace_id: workspaceId, owner_id: s.user.id, title: c.compiled.title, detail: c.compiled.goal,
     schedule: t.type === "event" ? `on ${t.event}` : t.cron, trigger: t, actions: c.compiled.actions, limits: c.compiled.limits, compiled_at: new Date().toISOString(), enabled: true, next_run_at: next?.toISOString(), approval_policy: "policy" });
   if (error) return { ok: false, error: "Couldn’t save the routine." };

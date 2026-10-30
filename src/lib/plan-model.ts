@@ -1,19 +1,10 @@
+import * as md from "@/lib/master-data";
 /** Plan-an-Event (CU-W01) planning model: occasions, categories, benchmarks and budget allocation. Pure functions, no I/O. */
-export const OCCASIONS = [
-  { key: "wedding", label: "Wedding", img: "type-wedding" }, { key: "birthday", label: "Birthday", img: "type-birthday" },
-  { key: "corporate", label: "Corporate", img: "type-corporate" }, { key: "party", label: "Party", img: "type-party" },
-  { key: "festival", label: "Festival", img: "type-festival" }, { key: "nightlife", label: "Nightclub", img: "type-nightclub" },
-  { key: "private_dinner", label: "Private Dinner", img: "type-private_dinner" }, { key: "childrens_party", label: "Children's Party", img: "type-childrens_party" },
-] as const;
-export const MORE_OCCASIONS = [{ key: "conference", label: "Conference" }, { key: "awards", label: "Awards" }, { key: "community", label: "Community" }, { key: "food_drink", label: "Food & Drink" }, { key: "comedy", label: "Comedy" }, { key: "custom", label: "Something else" }] as const;
-export const MUST_HAVES = [
-  { key: "venue", label: "Venue" }, { key: "food", label: "Catering" }, { key: "drinks", label: "Drinks / Bar" },
-  { key: "entertainment", label: "Entertainment" }, { key: "media", label: "Photography" }, { key: "styling", label: "Decor & Styling" },
-] as const;
-export const OPTIONALS = [
-  { key: "transport", label: "Transportation" }, { key: "accommodation", label: "Accommodation" }, { key: "security", label: "Security" },
-  { key: "staff", label: "Staff" }, { key: "invitations", label: "Invitations" }, { key: "activities", label: "Activities" },
-] as const;
+// Occasions and planning categories come from canonical master data (src/lib/master-data, Q02); wording per this screen.
+export const OCCASIONS = md.optionsFor("plan.occasions").map(o => ({ ...o, img: String(md.term("event_type", o.key)?.meta?.img ?? `type-${o.key}`) }));
+export const MORE_OCCASIONS = md.optionsFor("plan.more_occasions");
+export const MUST_HAVES = md.optionsFor("plan.must_haves");
+export const OPTIONALS = md.optionsFor("plan.optionals");
 export const STYLES = [{ key: "classic", label: "Classic & Elegant" }, { key: "modern", label: "Modern & Minimal" }, { key: "fun", label: "Fun & Colourful" }, { key: "luxury", label: "Luxury / High-End" }, { key: "rustic", label: "Rustic / Outdoors" }, { key: "custom", label: "Custom / Other" }] as const;
 export const ACCESS = [{ key: "wheelchair", label: "Wheelchair accessible" }, { key: "hearing", label: "Hearing assistance" }, { key: "dietary", label: "Dietary requirements" }, { key: "quiet", label: "Quiet space" }, { key: "other", label: "Other requirements" }] as const;
 
@@ -42,8 +33,8 @@ export function allocate(type: string, budget: number, cats: string[]) {
 }
 export const labelOf = (k: string) => [...MUST_HAVES, ...OPTIONALS].find(c => c.key === k)?.label ?? k;
 /** Build category used when the plan creates build items (accommodation/invitations/activities live under transport/extras). */
-export const buildCat = (k: string) => ({ accommodation: "transport", security: "staff", invitations: "extras", activities: "extras" } as Record<string, string>)[k] ?? k;
-export const occasionLabel = (k: string) => [...OCCASIONS, ...MORE_OCCASIONS].find(o => o.key === k)?.label ?? "Event";
+export const buildCat = (k: string) => String(md.term("plan_need", k)?.meta?.build ?? k);
+export const occasionLabel = (k: string) => [...OCCASIONS, ...MORE_OCCASIONS].find(o => o.key === k)?.label ?? (md.term("event_type", k)?.label || "Event");
 export const occasionPitch: Record<string, string> = {
   wedding: "We'll help you find the perfect venue, suppliers and create a timeline — from ceremony to celebration.",
   birthday: "From the venue to the cake, we'll line up everything for a birthday to remember.",

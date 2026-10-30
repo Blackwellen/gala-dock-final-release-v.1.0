@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { CalendarPlus, Send, Tag, ExternalLink, MoreHorizontal, CheckCircle2, Repeat, XCircle, Wallet, Download, Copy, Loader2, ShieldCheck, Printer } from "lucide-react";
+import { CalendarPlus, Send, Tag, ExternalLink, MoreHorizontal, CheckCircle2, Repeat, XCircle, Wallet, Download, Copy, Loader2, ShieldCheck, Printer, Video } from "lucide-react";
 import { Dialog, Menu, useAction, useKitToast } from "@/components/kit/client";
 import { resaleTicket } from "@/lib/actions/tickets";
 import { offerTransfer } from "@/lib/tickets/actions";
@@ -62,7 +62,7 @@ export function ResaleDialog({ open, onClose, ticketId, name }: { open: boolean;
 
 type PanelTicket = { id: string; code: string; status: string; tier: string; sub: string; gate: string; seat: string; qr: string | null; attendee: string };
 /** Selected event's tickets: per-ticket QR, wallet/save, transfer, resale, calendar and event page. */
-export function TicketPanel({ tickets, when, slug, transfers }: { tickets: PanelTicket[]; when: string; slug: string | null; transfers: boolean }) {
+export function TicketPanel({ tickets, when, slug, transfers, online = null }: { tickets: PanelTicket[]; when: string; slug: string | null; transfers: boolean; online?: { label: string; open: boolean } | null }) {
   const [i, setI] = useState(0); const t = tickets[Math.min(i, tickets.length - 1)]!; const toast = useKitToast();
   const [transfer, setTransfer] = useState(false); const [resale, setResale] = useState(false); const [wallet, setWallet] = useState(false); const { run, pending } = useAction();
   const valid = t.status === "valid"; const listed = t.status === "resale_listed";
@@ -71,8 +71,8 @@ export function TicketPanel({ tickets, when, slug, transfers }: { tickets: Panel
   return <div className="tk-pbody">
     {tickets.length > 1 && <div className="tk-seg" role="tablist">{tickets.map((x, k) => <button key={x.id} role="tab" aria-selected={k === i} onClick={() => setI(k)}>Ticket {k + 1} of {tickets.length}</button>)}</div>}
     <div className="tk-qrcard">
-      <div className="k-between" style={{ alignItems: "flex-start" }}><span><b>{t.tier}</b><small>{t.seat ? `Seat ${t.seat}` : t.sub}</small></span><span className="tk-gate"><small>Entry gate</small><b>{t.gate}</b></span></div>
-      <div className={`tk-qr ${valid ? "" : "dim"}`}>{valid ? <RotatingQr ticketId={t.id} size={170} /> : t.qr && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.qr} alt={`QR code for ticket ${t.code}`} /></>}{!valid && <span className="tk-qr-void">{listed ? "Paused while listed" : sl}</span>}</div>
+      <div className="k-between" style={{ alignItems: "flex-start" }}><span><b>{t.tier}</b><small>{t.seat ? `Seat ${t.seat}` : t.sub}</small></span>{t.gate && <span className="tk-gate"><small>Entry gate</small><b>{t.gate}</b></span>}</div>
+      <div className={`tk-qr ${valid ? "" : "dim"}`}>{valid ? <RotatingQr ticketId={t.id} size={136} logo compact /> : t.qr && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={t.qr} alt={`QR code for ticket ${t.code}`} /></>}{!valid && <span className="tk-qr-void">{listed ? "Paused while listed" : sl}</span>}</div>
       <b className="tk-code">{t.code}</b>
       <span className={`tk-valid ${tone}`}>{tone === "green" ? <CheckCircle2 size={15} /> : <XCircle size={15} />}{sl}</span>
       {when !== "resale" && <div className="tk-wallets"><button className="tk-wallet apple" onClick={() => setWallet(true)}><Wallet size={16} />Add to Apple Wallet</button><button className="tk-wallet" onClick={() => setWallet(true)}><Wallet size={16} />Add to Google Wallet</button></div>}
@@ -81,6 +81,7 @@ export function TicketPanel({ tickets, when, slug, transfers }: { tickets: Panel
       <button className="tk-act" disabled={!valid || !transfers} title={!transfers ? "Transfers are turned off for this event" : undefined} onClick={() => setTransfer(true)}><Send size={17} />Transfer ticket</button>
       {listed ? <button className="tk-act" disabled={pending} onClick={() => void run(() => resaleTicket(t.id, true))}><Repeat size={17} />Cancel resale</button> : <button className="tk-act" disabled={!valid} onClick={() => setResale(true)}><Tag size={17} />Official resale</button>}
       <a className="tk-act" href={`/api/tickets/${t.id}/ics`}><CalendarPlus size={17} />Add to calendar</a>
+      {online && valid && <Link className="tk-act tk-join" href={`/account/tickets/${t.id}#os-h`} title={online.label}><Video size={17} />{online.open ? "Join online" : "Online access"}</Link>}
       {slug ? <Link className="tk-act" href={`/events/${slug}`}><ExternalLink size={17} />View event page</Link> : <Link className="tk-act" href={`/account/tickets/${t.id}`}><ExternalLink size={17} />Ticket details</Link>}
     </div>
     <TransferDialog open={transfer} onClose={() => setTransfer(false)} ticketId={t.id} name={t.tier} />

@@ -22,3 +22,5 @@
   .tp-ticket header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .tp-actions{display:none}
 }
+/* W02: the customer kit h1 colour (ink) overrode the white header text, leaving the event name invisible on navy. */
+.c-root .tp-ticket header h1, .tp-ticket header h1{color:#fff}

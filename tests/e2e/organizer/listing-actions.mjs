@@ -4,6 +4,14 @@
 // Usage: node --env-file=.env --env-file=.env.local tests/e2e/organizer/listing-actions.mjs
 import { chromium } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
+// D01 RFQ step 1 requires title, scope, date, location and attendance (prefilled from the event where it has them).
+async function fillBrief(o, title) {
+  await o.getByPlaceholder("e.g. Main Stage Production & AV").fill(title);
+  await o.getByPlaceholder(/Describe your requirements/).fill("Main hall with staging and sound.");
+  const date = o.locator("form.wz-grid input[type=date]").first(); if (!(await date.inputValue())) await date.fill("2027-07-20");
+  const where = o.locator("form.wz-grid .k-input-icon input").nth(1); if (!(await where.inputValue())) await where.fill("London, UK");
+  const att = o.locator("form.wz-grid input[inputmode=numeric]").first(); if (!(await att.inputValue())) await att.fill("300");
+}
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 const VENUE = "327451a6-0693-47f6-bbec-a480fe805db5";   // Riverside Arena (emergency supply)
 const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
@@ -28,14 +36,17 @@ try {
   for (const [btn, flag, expect] of [["Request with conditional hold", "hold", /Conditional hold requested/], ["Emergency request", "emergency", /Emergency request\./]]) {
     await o.goto(url, { waitUntil: "load" }); await o.getByRole("link", { name: btn }).click();
     await o.waitForURL(new RegExp(`${flag}=1`)); check(`${btn}: step 1 says so`, expect.test(await o.locator("form.wz-grid").innerText()));
-    await o.locator("input[required]").first().fill(`E2E ${flag} request`).catch(() => {});
-    await o.getByRole("button", { name: /Continue to recipients/ }).click(); await o.waitForURL(/step=2/, { timeout: 30000 });
-    check(`${btn}: flag kept on step 2`, o.url().includes(`${flag}=1`));
+    await fillBrief(o, `E2E ${flag} request`);
+    await o.getByRole("button", { name: /Continue to specifications/ }).click(); await o.waitForURL(/step=2/, { timeout: 30000 });
+    await o.getByRole("button", { name: /Continue to suppliers/ }).click(); await o.waitForURL(/step=3/, { timeout: 30000 });
+    check(`${btn}: flag kept on the Suppliers step`, o.url().includes(`${flag}=1`));
     const sw = o.locator(".k-between", { hasText: flag === "hold" ? "Conditional hold" : "Emergency request" }).getByRole("switch");
     check(`${btn}: switch is on`, (await sw.getAttribute("aria-checked")) === "true");
   }
   await o.goto(url, { waitUntil: "load" }); await o.getByRole("link", { name: "Request availability" }).first().click(); await o.waitForURL(/step=1/);
-  await o.getByRole("button", { name: /Continue to recipients/ }).click(); await o.waitForURL(/step=2/, { timeout: 30000 });
+  await fillBrief(o, "E2E plain request");
+  await o.getByRole("button", { name: /Continue to specifications/ }).click(); await o.waitForURL(/step=2/, { timeout: 30000 });
+  await o.getByRole("button", { name: /Continue to suppliers/ }).click(); await o.waitForURL(/step=3/, { timeout: 30000 });
   check("Plain request starts with the hold off", (await o.locator(".k-between", { hasText: "Conditional hold" }).getByRole("switch").getAttribute("aria-checked")) === "false");
   // Gala Agent knows which listing it is.
   await o.goto(url, { waitUntil: "load" });

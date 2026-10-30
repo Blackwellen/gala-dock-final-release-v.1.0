@@ -6,7 +6,7 @@ let ev = ""; let cust = ""; const guest = `E2E Guest ${Date.now()}`; const msg =
 let savedKey = ""; let savedAt = "";
 test.beforeAll(async () => {
   const db = admin();
-  const { data: us } = await db.auth.admin.listUsers({ perPage: 200 }); cust = us.users.find(u => u.email === "alex.thompson@example.com")!.id;
+  const { data: us } = await db.auth.admin.listUsers({ perPage: 1000 }); cust = us.users.find(u => u.email === "alex.thompson@example.com")!.id;
   ev = (await db.from("events").select("id").eq("owner_id", cust).eq("management", "consumer").ilike("name", "%wedding%").order("created_at").limit(1).single()).data!.id;
 });
 test.afterAll(async () => {

@@ -273,3 +273,15 @@
 .vw-prev-nm{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .vw label:has(>input:is([type=radio],[type=checkbox])):not(.vw-switch){flex-wrap:nowrap!important}
 .vw label>input:is([type=radio],[type=checkbox]){flex:none!important}
+/* W12 wizard sweep (≤860): the plan-wizard defect again — .vw-acc-grid is redeclared as two tracks *after* the 860 query, so on
+   phones the accessibility switches (nowrap labels) stayed side by side and ran past the card; the licence rows' five tracks
+   and nowrap names did the same at 390/360. Re-collapse them here, after the base rules. */
+@media (max-width:860px){
+  .vw-acc-grid{grid-template-columns:minmax(0,1fr)}
+  .vw-acc .vw-switch b,.vw-docs .vw-doc{white-space:normal;overflow-wrap:anywhere}
+  .vw-docs details>summary{grid-template-columns:26px minmax(0,1fr) 22px;row-gap:2px}
+  .vw-docs details>summary>:nth-child(3),.vw-docs details>summary>:nth-child(4){grid-column:2/3;justify-self:start}.vw-docs details>summary>.vw-doc-more{grid-column:3;grid-row:1}
+  .vw-docs .vw-other>summary{grid-template-columns:26px minmax(0,1fr) auto}
+  .vw-doc-edit,.vw-doc-others>div{grid-template-columns:minmax(0,1fr);padding-left:0}
+  .vw-doc-others{padding-left:0}
+}

@@ -34,6 +34,7 @@
 .mb-canvas.tool-select .vm-room,.mb-canvas.tool-select .vm-fix,.mb-canvas.tool-select .vm-wall,.mb-canvas.tool-select .vm-route,.mb-canvas.tool-select .vm-text,.mb-canvas.tool-select .vm-under{cursor:move}
 .mb-handle{fill:#fff;stroke:#1a1af2;stroke-width:1.5;vector-effect:non-scaling-stroke}
 .mb-selbox{fill:none;stroke:#1a1af2;stroke-width:1;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;pointer-events:none}
+.mb-finding{fill:none;stroke-width:2.5;stroke-dasharray:6 3;vector-effect:non-scaling-stroke}.mb-finding.error{stroke:#e5484d;fill:rgba(229,72,77,.08)}.mb-finding.warning{stroke:#e08a00;fill:rgba(224,138,0,.06)}
 .mb-dim{font-size:11px;font-weight:650;fill:#1a1af2;paint-order:stroke;stroke:#fff;stroke-width:3px;pointer-events:none}
 .mb-draft rect,.mb-draft polyline{fill:#1a1af214;stroke:#1a1af2;stroke-width:1.5;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
 .mb-draft polyline{fill:none}

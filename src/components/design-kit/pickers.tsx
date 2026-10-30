@@ -10,6 +10,7 @@ import { widgetPresets, type WidgetPreset } from "@/lib/design-kit/widget-preset
 import { CARD_TOPICS, CARD_LAYOUTS, cardSize, type CardTopic } from "@/lib/design-kit/info-cards";
 import { effectPresets, type EffectPreset } from "@/lib/design-kit/effects";
 import { WidgetView } from "./widget-view";
+import { sanitizeSvg } from "@/lib/security/svg-sanitize";
 import type { WidgetLayer } from "@/lib/media/document";
 import "@/styles/design-kit.css";
 
@@ -78,7 +79,7 @@ export function IconPicker({ onPick }: { onPick: (i: IconChoice) => void }) {
       {options.map(o => <option key={o.prefix} value={o.prefix}>{o.name} · {o.count.toLocaleString("en-GB")}</option>)}</select></label>
     {current !== "lucide" && !data ? <Loading /> : <div className={`dk-igrid ${group === "colour" || group === "brands" ? "big" : ""}`}>{names.slice(0, n).map(name => {
       if (current === "lucide") { const I = lucide[name as keyof typeof lucide]; return <button key={name} type="button" title={name} aria-label={name} onClick={() => onPick({ name, set: "lucide" })}><I size={22} strokeWidth={1.75} /></button>; }
-      const s = iconOf(data!, name)!; return <button key={name} type="button" title={name.replace(/-/g, " ")} aria-label={name.replace(/-/g, " ")} onClick={() => onPick({ name, set: current, svg: s })}><svg viewBox={`0 0 ${s.w} ${s.h}`} width={24} height={24} dangerouslySetInnerHTML={{ __html: s.body }} /></button>;
+      const s = iconOf(data!, name)!; return <button key={name} type="button" title={name.replace(/-/g, " ")} aria-label={name.replace(/-/g, " ")} onClick={() => onPick({ name, set: current, svg: s })}><svg viewBox={`0 0 ${s.w} ${s.h}`} width={24} height={24} dangerouslySetInnerHTML={{ __html: sanitizeSvg(s.body) }} /></button>;
     })}<div ref={more} /></div>}
     {names.length === 0 && (current === "lucide" || data) && <p className="dk-cap">No icons match “{q}”. Try another library.</p>}
   </div>;

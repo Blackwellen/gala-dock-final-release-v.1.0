@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getProvider } from "@/lib/provider/context";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { providerSnapshot, askProviderAgent } from "@/lib/provider/agent";
+import { AgentBudgetError } from "@/lib/agent/llm";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 
@@ -17,7 +18,10 @@ export async function POST(request: Request) {
   const message = String(body?.message ?? "").trim().slice(0, 2000);
   if (message.length < 2) return json({ error: "Ask Gala Agent something." }, 400);
   const history = (body?.history ?? []).filter(h => (h.role === "user" || h.role === "assistant") && typeof h.content === "string").map(h => ({ role: h.role, content: h.content.slice(0, 2000) })).slice(-8);
-  const out = await askProviderAgent(await providerSnapshot(db, workspace.id), message, history).catch(() => undefined);
+  let budget: string | null = null;
+  const out = await askProviderAgent(await providerSnapshot(db, workspace.id), message, history, { workspaceId: workspace.id, userId, purpose: "provider_chat" })
+    .catch(e => { if (e instanceof AgentBudgetError) budget = e.message; return undefined; });
+  if (budget) return json({ error: budget, budget: true }, 402);
   if (out === null) return json({ unavailable: true, reply: "Gala Agent’s model isn’t configured for this workspace yet, so I can’t answer right now. Your routines and approvals still work." });
   if (out === undefined) return json({ error: "Gala Agent couldn’t answer just now. Please try again." }, 502);
   const queued: string[] = [];

@@ -319,10 +319,9 @@ html[data-ws-h=tiny] .ws-switcher img,html[data-ws-h=tiny] .ws-switcher-blank{wi
 .ws-overlay-ctl:not(.open){opacity:1}
 @media print{.ws-overlay,.ws-overlay-ctl{display:none!important}}
 
-/* Official logo lockup (public/brand/gala-dock-logo.png: 500×129 with padding; artwork spans 41–472 × 8–124) */
-.ws-logo{display:block;width:174px;height:47px;overflow:hidden;flex-shrink:0}
-.ws-logo img{width:202px;height:52px;max-width:none;margin:-3px 0 0 -17px}
-@media (max-width:520px){.ws-logo{width:128px;height:35px}.ws-logo img{width:149px;height:38px;margin:-2px 0 0 -12px}}
+/* Official lockup box (BrandLogo outside the top bar, e.g. admin login): G mark + wordmark from components/brand/gala-logo. */
+.ws-logo{display:flex;align-items:center;height:47px;flex-shrink:0}
+@media (max-width:520px){.ws-logo{height:35px}.ws-logo .gd-lockup{--gd-h:32px}}
 
 /* Admin has 15 destinations: rows 43 px (design pitch ≈45 px incl. gap) and a compact promo so the rail fits the 1024 canvas. */
 .ws-app.admin .ws-nav-item>a{min-height:43px}
@@ -413,6 +412,6 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 .ws-app .ws-chip.amber,.ws-app .ws-chip.orange { color:#834600; }
 .ws-overlay-ctl>button { color:#090a52; background:#fff; }
 .ws-app .ao-pri.high,.ws-app .ao-pri.urgent,.ws-app .ao-cs { color:#b11931; }
-/* App branding: the circular symbol occupies the far-left slot. */
-.ws-topbar .ws-logo-mark { width:44px;height:44px;margin:0 12px;display:grid;place-items:center;overflow:visible; }
-.ws-topbar .ws-logo-mark img { width:44px;height:44px;position:static;transform:none;object-fit:contain; }
+/* App branding: G mark + purple wordmark (D01) in the far-left slot. */
+.ws-topbar .ws-logo-mark { width:auto;height:44px;margin:0 12px;display:flex;align-items:center;overflow:visible; }
+.ws-topbar .ws-logo-mark .gd-lockup { --gd-h:44px; }

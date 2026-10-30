@@ -14,20 +14,24 @@ export async function startMaintenance(f: FormData): Promise<R> {
   const modules = f.getAll("modules").map(String).filter(m => (MODULES as readonly string[]).includes(m));
   const iso = (k: string) => { const v = String(f.get(k) ?? ""); if (!v) return null; const d = new Date(v); return Number.isNaN(d.getTime()) ? null : d.toISOString(); };
   const title = String(f.get("title") ?? "").trim();
+  const reason = String(f.get("reason") ?? "").trim();
   if (!(level >= 1 && level <= 5) || title.length < 3) return { ok: false, error: "Choose a level and give the notice a title." };
+  if (reason.length < 5) return { ok: false, error: "Give a reason for this change (at least 5 characters). It is recorded in the audit log." };
   const { error } = await admin.db.rpc("start_maintenance" as never, { p: {
-    level, modules, title, message: String(f.get("message") ?? "").slice(0, 1000), starts_at: iso("starts_at"), ends_at: iso("ends_at"), expected_restore: iso("expected_restore"),
+    level, modules, title, reason: reason.slice(0, 500), message: String(f.get("message") ?? "").slice(0, 1000), starts_at: iso("starts_at"), ends_at: iso("ends_at"), expected_restore: iso("expected_restore"),
     status_url: String(f.get("status_url") ?? "").trim(), audience: String(f.get("audience") ?? "all"), dismissible: f.get("dismissible") === "on",
     severity: String(f.get("severity") ?? "") || null, reference: String(f.get("reference") ?? "").slice(0, 60), bypass_roles: f.get("bypass") === "on" ? ["platform_admin"] : [],
   } } as never);
-  if (error) return /step_up/.test(error.message) ? { ok: false, error: "Verify with your authenticator to start M4 or M5.", stepUp: true }
+  if (error) return /step_up/.test(error.message) ? { ok: false, error: level >= 4 ? "Verify with your authenticator to start M4 or M5." : "Verify with your authenticator, then save again.", stepUp: true }
+    : /reason_required/.test(error.message) ? { ok: false, error: "Give a reason for this change (at least 5 characters)." }
     : { ok: false, error: /check constraint|invalid input/.test(error.message) ? "Some fields are invalid — the status link must start with https:// and the end must be after the start." : "Couldn’t start maintenance." };
   revalidatePath("/admin/maintenance"); return { ok: true };
 }
 
 export async function endMaintenance(id: string, note: string): Promise<R> {
   const admin = await getAdmin();
+  if (note.trim().length < 5) return { ok: false, error: "Add a closing note (at least 5 characters)." };
   const { error } = await admin.db.rpc("end_maintenance" as never, { p_window: id, p_note: note } as never);
-  if (error) return { ok: false, error: "Couldn’t end this window." };
+  if (error) return { ok: false, error: /step_up/.test(error.message) ? "Verify with your authenticator, then try again." : "Couldn’t end this window." };
   revalidatePath("/admin/maintenance"); return { ok: true };
 }

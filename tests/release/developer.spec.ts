@@ -69,7 +69,7 @@ test.describe("developer platform", () => {
 
   test("audit events fan out to subscribed webhooks, signed and retried", async ({ request }) => {
     const secret = "whsec_e2e_secret";
-    const { data: ep } = await db.from("webhook_endpoints").insert({ workspace_id: ws, url: "https://example.com/gala-hook", events: ["event.created"], secret, created_by: owner.id }).select("id").single();
+    const { data: ep } = await db.from("webhook_endpoints").insert({ workspace_id: ws, url: "https://192.0.2.10/gala-hook", events: ["event.created"], secret, created_by: owner.id }).select("id").single();
     await db.from("audit_events").insert({ actor_id: owner.id, actor_type: "user", workspace_id: ws, event: "event.created", metadata: { event_id: "e1", ip: "1.2.3.4" } });
     await db.from("audit_events").insert({ actor_id: owner.id, actor_type: "user", workspace_id: ws, event: "listing.updated", metadata: {} });   // not subscribed
     const { data: dels } = await db.from("webhook_deliveries").select("id,event_type,payload,status").eq("endpoint_id", (ep as { id: string }).id);
@@ -80,7 +80,7 @@ test.describe("developer platform", () => {
     expect(res.ok()).toBe(true);
     const { data: after } = await db.from("webhook_deliveries").select("status,attempts,response_status,next_attempt_at").eq("id", dels![0].id).single();
     expect(after!.attempts).toBe(1);
-    expect(["delivered", "failed"]).toContain(after!.status);   // example.com rejects POSTs → failed with backoff
+    expect(["delivered", "failed"]).toContain(after!.status);   // TEST-NET target: the SSRF guard refuses it before connecting → failed with backoff (no outbound request)
     if (after!.status === "failed") expect(new Date(after!.next_attempt_at).getTime()).toBeGreaterThan(Date.now());
     // Signature format receivers verify against.
     const t = 1700000000, body = JSON.stringify({ a: 1 });

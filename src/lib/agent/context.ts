@@ -48,5 +48,12 @@ export async function buildContext(sb: Sb, userId: string, scope: "customer" | "
   ]);
   for (const a of approvals ?? []) lines.push(`APPROVAL PENDING ${a.title}${a.amount ? ` ${money(a.amount)}` : ""}`);
   for (const l of leads ?? []) lines.push(`LEAD ${l.name} ${l.stage} ${money(l.value)} next: ${clip(l.next_action, 60)}`);
+  // Q17: server-detected schedule / resource / live-ops conflicts (operational_conflicts) for the caller's organizer workspaces.
+  const { data: wsRows } = await sb.from("events").select("workspace_id").not("workspace_id", "is", null).limit(50);
+  const rpc = sb.rpc as unknown as (f: string, a: object) => Promise<{ data: { severity: string; message: string; event_name: string | null }[] | null }>;
+  for (const ws of [...new Set((wsRows ?? []).map(r => r.workspace_id as string))].slice(0, 3)) {
+    const { data: conflicts } = await rpc.call(sb, "operational_conflicts", { p_ws: ws });
+    for (const c of (conflicts ?? []).slice(0, 10)) lines.push(`CONFLICT ${c.severity} ${clip(c.message, 140)}${c.event_name ? ` (${c.event_name})` : ""}`);
+  }
   return lines.join("\n");
 }

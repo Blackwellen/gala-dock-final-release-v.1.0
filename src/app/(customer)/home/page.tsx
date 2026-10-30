@@ -20,8 +20,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const dayStart = new Date(`${day}T00:00:00Z`).toISOString(), dayEnd = new Date(new Date(`${day}T00:00:00Z`).getTime() + 864e5).toISOString();
   const [tk, { data: mine }, { data: pub }, { data: saved }, { data: recent }] = await Promise.all([
     myTickets(ctx),
-    ctx.supabase.from("events").select("id,name,starts_at,ends_at,venue_name,location,city,cover_image,status").eq("owner_id", ctx.user.id).eq("management", "consumer").gte("starts_at", now.toISOString()).neq("status", "cancelled").order("starts_at").limit(6),
-    ctx.supabase.from("events").select("id,name,slug,starts_at,ends_at,venue_name,city,location,cover_image,event_type,tags").eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("starts_at", now.toISOString()).order("starts_at").limit(24),
+    ctx.supabase.from("events").select("id,name,starts_at,ends_at,venue_name,location,city,cover_image,status").eq("owner_id", ctx.user.id).eq("management", "consumer").gte("starts_at", now.toISOString()).not("status", "in", "(cancelled,archived)").order("starts_at").limit(6),
+    ctx.supabase.from("events_public").select("id,name,slug,starts_at,ends_at,venue_name,city,location,cover_image,event_type,tags").eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("starts_at", now.toISOString()).order("starts_at").limit(24),
     ctx.supabase.from("saved_items").select("item_key").eq("user_id", ctx.user.id).order("created_at", { ascending: false }).limit(40),
     ctx.supabase.from("recently_viewed").select("item_key").eq("user_id", ctx.user.id).limit(20),
   ]);
@@ -59,7 +59,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="hm-grid">
       <section className="ce-card hm-recs"><div className="k-between hm-h"><div><h2>Recommended for You</h2><p>Events picked based on your interests, past activity, and trending in your area.</p></div><Link className="k-link" href="/discover?tab=events&results=1">View All Events <ArrowRight size={15} /></Link></div>
         <HomeCarousel>{recs.map(e => <article key={e.id} className="hm-card"><div className="hm-card-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><SaveHeart itemKey={`event:${e.id}`} saved={savedKeys.has(`event:${e.id}`)} className="hm-heart" size={17} label={`Save ${e.name}`} /></div>
-          <Link href={e.slug ? `/events/${e.slug}` : "#"} className="hm-card-b"><span className="hm-cal sm"><small>{md(e.starts_at).m}</small><b>{md(e.starts_at).d}</b></span><span className="k-grow"><b>{e.name}</b><em><MapPin size={13} />{[e.venue_name, e.city].filter(Boolean).join(", ")}</em></span></Link>
+          <Link href={`/events/${e.slug ?? e.id}`} className="hm-card-b"><span className="hm-cal sm"><small>{md(e.starts_at).m}</small><b>{md(e.starts_at).d}</b></span><span className="k-grow"><b>{e.name}</b><em><MapPin size={13} />{[e.venue_name, e.city].filter(Boolean).join(", ")}</em></span></Link>
           <div className="hm-tags">{[...new Map([eventTypeLabel(e.event_type), ...(e.tags ?? []).slice(0, 2)].map(t => [t.toLowerCase(), t])).values()].slice(0, 2).map((t, i) => <span key={t} className={i === 0 ? TAG[e.event_type] ?? "blue" : "blue"}>{t}</span>)}</div></article>)}</HomeCarousel>
         {!recs.length && <p className="k-small">No public events on sale right now — check back soon.</p>}</section>
       <section className="ce-card hm-up"><div className="k-between hm-h"><h2>My Upcoming Events</h2><Link className="k-link" href="/account/events">View Calendar <ArrowRight size={15} /></Link></div>

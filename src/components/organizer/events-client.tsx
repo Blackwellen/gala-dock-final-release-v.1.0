@@ -4,7 +4,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Search, SlidersHorizontal, MoreHorizontal, Copy, Archive, ExternalLink, LayoutTemplate, Eye, Download, Upload, Plus, ChevronDown, CalendarDays, TrendingUp } from "lucide-react";
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
-import { duplicateEvent, archiveEvent, importEvents } from "@/lib/actions/events";
+import { archiveEvent, importEvents } from "@/lib/actions/events";
+import { useDuplicateDialog } from "./event/duplicate-dialog";
 
 export function useQueryNav() {
   const router = useRouter(); const pathname = usePathname(); const params = useSearchParams(); const [pending, start] = useTransition();
@@ -36,12 +37,13 @@ export function EventFilters({ clients, venues, types, owners }: { clients: stri
 }
 
 export function EventRowMenu({ id, name, slug, isPublic }: { id: string; name: string; slug: string | null; isPublic: boolean }) {
-  const { run, pending } = useAction(); const [confirm, setConfirm] = useState(false);
+  const { run, pending } = useAction(); const [confirm, setConfirm] = useState(false); const dup = useDuplicateDialog();
   return <>
+    {dup.dialog}
     <Menu label={`Actions for ${name}`} width={220} trigger={({ open, toggle, id: mid }) => <button className="k-icon-btn" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label={`Actions for ${name}`}><MoreHorizontal size={16} /></button>}>
       {close => <>
         <Link role="menuitem" className="k-menu-item" href={`/organizer/events/${id}`} onClick={close}><ExternalLink size={15} />Open event</Link>
-        <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); void run(() => duplicateEvent(id)); }}><Copy size={15} />Duplicate</button>
+        <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); dup.open({ id, name }); }}><Copy size={15} />Duplicate</button>
         <Link role="menuitem" className="k-menu-item" href={`/organizer/events/${id}/template?step=1`} onClick={close}><LayoutTemplate size={15} />Save as template</Link>
         {isPublic && slug ? <Link role="menuitem" className="k-menu-item" href={`/events/${slug}`} target="_blank" onClick={close}><Eye size={15} />Public preview</Link> : <span className="k-menu-item k-muted" title="Publish the event page to preview it publicly"><Eye size={15} />Public preview (not published)</span>}
         <div className="k-menu-sep" />
@@ -58,11 +60,14 @@ export function EventRowMenu({ id, name, slug, isPublic }: { id: string; name: s
 export function ImportExport({ rows }: { rows: Record<string, string | number>[] }) {
   const toast = useKitToast(); const [open, setOpen] = useState(false); const { run } = useAction();
   const exportCsv = () => {
-    if (!rows.length) { toast("Nothing to export with the current filters.", "error"); return; }
-    const head = Object.keys(rows[0]!); const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const csv = [head.join(","), ...rows.map(r => head.map(h => esc(r[h])).join(","))].join("\n");
+    // Rows ticked in the list view narrow the export; with nothing ticked every filtered event is exported.
+    const picked = new Set([...document.querySelectorAll<HTMLInputElement>('input[name="ev-select"]:checked')].map(i => i.value));
+    const out = picked.size ? rows.filter(r => picked.has(String(r.id))) : rows;
+    if (!out.length) { toast("Nothing to export with the current filters.", "error"); return; }
+    const head = Object.keys(out[0]!); const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = [head.join(","), ...out.map(r => head.map(h => esc(r[h])).join(","))].join("\n");
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = `gala-dock-events-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
-    toast(`Exported ${rows.length} events`);
+    toast(`Exported ${out.length} event${out.length === 1 ? "" : "s"}${picked.size ? " (selected)" : ""}`);
   };
   return <>
     <button className="k-btn outline lg" onClick={() => setOpen(true)}><Download size={16} />Import</button>
@@ -75,6 +80,14 @@ export function ImportExport({ rows }: { rows: Record<string, string | number>[]
       }} /></label>
     </Dialog>
   </>;
+}
+
+/** Header checkbox for the events list: ticks/unticks every row on this page (rows feed Export). */
+export function SelectAllEvents() {
+  return <input type="checkbox" aria-label="Select all events on this page" onChange={e => {
+    const on = e.currentTarget.checked;
+    e.currentTarget.closest("table")?.querySelectorAll<HTMLInputElement>('input[name="ev-select"]').forEach(i => { i.checked = on; });
+  }} />;
 }
 
 /** Minimal RFC4180 CSV parser → array of objects keyed by lower-cased header. */

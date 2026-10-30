@@ -21,8 +21,11 @@ export function describeIntent(next: string | null | undefined, titles: Record<s
   if (!path) return null;
   const [pathname, query = ""] = path.split("?");
   const event = new URLSearchParams(query).get("event");
-  if (pathname === "/checkout") {
-    const title = event ? titles[`/events/${event}`] : undefined;
+  // Ticket checkout lives at /checkout/[event] (slug or id); legacy /checkout?event= links still match. Confirmation pages don't.
+  const checkoutEvent = /^\/checkout\/([^/]+)\/?$/.exec(pathname)?.[1];
+  if (pathname === "/checkout" || checkoutEvent) {
+    const key = checkoutEvent ?? event;
+    const title = key ? titles[`/events/${key}`] : undefined;
     return { kind: "checkout", title: "Returning to checkout", detail: title ? `Complete your ${title} tickets` : "Complete your ticket purchase", href: path };
   }
   if (pathname.startsWith("/events/")) return { kind: "event", title: "Returning to your event", detail: titles[pathname] ?? "Continue where you left off", href: path };
@@ -31,4 +34,13 @@ export function describeIntent(next: string | null | undefined, titles: Record<s
   if (pathname.startsWith("/onboarding")) return { kind: "onboarding", title: "Continuing your setup", detail: "Your progress is saved and will resume", href: path };
   if (pathname.startsWith("/venues/") || pathname.startsWith("/services/")) return { kind: "booking", title: "Returning to your booking", detail: titles[pathname] ?? "Continue your enquiry", href: path };
   return null;
+}
+
+/** Request header the proxy sets to the page being requested, so server layouts can preserve the sign-in return path. */
+export const RETURN_PATH_HEADER = "x-gd-return-path";
+export function returnPathOf(url: { pathname: string; searchParams: URLSearchParams }) {
+  const params = new URLSearchParams(url.searchParams);
+  params.delete("_rsc");
+  const query = params.toString();
+  return safeNext(`${url.pathname}${query ? `?${query}` : ""}`, "");
 }

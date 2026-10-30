@@ -29,10 +29,11 @@
 .adag-tools input{width:auto!important}
 .adag-rail{display:grid;gap:12px;min-width:0}
 .adag-fails{padding:10px 12px}
-.adag-fails h2,.adag-health h2{font-size:13.5px}
+.adag-fails h2,.adag-health h2{font-size: var(--k-title-sub)}
 .adag-fails ul{list-style:none;margin:0;padding:0;display:grid}
 .adag-fails li{display:grid;grid-template-columns:22px minmax(0,1fr) auto 14px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f4f7fc}
 .adag-fails li:last-child{border-bottom:0}
+.adag-fails li.adb-none{display:block}
 .ws-app .adag-fails li>svg{width:17px;height:17px;color:#fff;fill:#e3122e}
 .adag-fails li span{display:grid;line-height:1.35;min-width:0}
 .adag-fails li small{font-size:10px;color:#3f4596;white-space:nowrap}
@@ -50,7 +51,7 @@
 .adag-health li b{font-weight:500;text-align:right;color:#0d0d63}
 .adag-bottom{display:grid;grid-template-columns:283fr 412fr 313fr 229fr;gap:10px}
 .adag-bottom .adb-panel{padding:10px 12px}
-.adag-bottom h2{font-size:13.5px}
+.adag-bottom h2{font-size: var(--k-title-sub)}
 .adag-queue ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .adag-queue li{display:grid;grid-template-columns:18px 28px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:11px;color:#0d0d63}
 .ws-app .adag-queue li svg{width:15px;height:15px;color:#0d0d63}

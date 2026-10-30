@@ -111,11 +111,42 @@ export async function saveMenuSection(menuId: string, name: string, id?: string)
   paths("/provider/menus/[id]");
   return { ok: true } as Result;
 }
-export async function saveMenuItem(i: { id?: string; menuId: string; sectionId: string; name: string; description: string; price: string; unit: string; dietary: string[]; allergens: string[]; allergenNote: string; available: boolean }) {
+const ALLERGEN_KEYS = new Set(["celery", "gluten", "crustaceans", "eggs", "fish", "lupin", "milk", "molluscs", "mustard", "nuts", "peanuts", "sesame", "soya", "sulphites"]);
+const COURSES = new Set(["canape", "starter", "main", "dessert", "side", "drink", "late", "other"]);
+/** Menu item (Q13): 14 UK FIC allergens + "may contain", an explicit declaration (stamped and audited by menu_items_allergen_guard), course. */
+export async function saveMenuItem(i: { id?: string; menuId: string; sectionId: string; name: string; description: string; price: string; unit: string; dietary: string[]; allergens: string[]; allergenNote: string; available: boolean;
+  mayContain?: string[]; declared?: boolean; course?: string }) {
   const sb = await createClient();
+  const allergens = i.allergens.filter(a => ALLERGEN_KEYS.has(a)), mayContain = (i.mayContain ?? []).filter(a => ALLERGEN_KEYS.has(a) && !allergens.includes(a));
   const row = { menu_id: i.menuId, section_id: UUID.test(i.sectionId) ? i.sectionId : null, name: i.name.trim().slice(0, 120), description: i.description.slice(0, 600), price: num(i.price), unit: i.unit.slice(0, 20) || "portion",
-    dietary: i.dietary, allergens: i.allergens, allergen_note: i.allergenNote.slice(0, 300), available: i.available };
+    dietary: i.dietary, allergens, allergen_note: i.allergenNote.slice(0, 300), available: i.available,
+    ...(i.mayContain !== undefined ? { may_contain: mayContain } : {}),
+    ...(i.declared !== undefined ? { allergen_status: i.declared || allergens.length || mayContain.length ? "declared" : "not_declared" } : {}),
+    ...(i.course !== undefined ? { course: COURSES.has(i.course) ? i.course : null } : {}) };
   const { error } = i.id && UUID.test(i.id) ? await sb.from("menu_items" as never).update(row as never).eq("id", i.id) : await sb.from("menu_items" as never).insert(row as never);
+  if (error) return fail(error);
+  paths("/provider/menus/[id]");
+  return { ok: true } as Result;
+}
+/** Relational variant (Q13 menu_item_variants): own price delta (pence) and dietary/allergen arrays. Owner/manager RLS. */
+export async function saveMenuVariant(i: { id?: string; menuId: string; itemId: string; name: string; priceDelta: string; dietary: string[]; allergens: string[]; mayContain: string[]; available: boolean }) {
+  if (!UUID.test(i.menuId) || !UUID.test(i.itemId)) return { ok: false, error: "Not found." } as Result;
+  const name = i.name.trim().slice(0, 80);
+  if (!name) return { ok: false, error: "Give the variant a name." } as Result;
+  const delta = Math.round((Number(i.priceDelta || 0)) * 100);
+  if (!Number.isFinite(delta) || Math.abs(delta) > 10_000_000) return { ok: false, error: "Enter a price difference in pounds." } as Result;
+  const allergens = i.allergens.filter(a => ALLERGEN_KEYS.has(a));
+  const row = { menu_id: i.menuId, menu_item_id: i.itemId, name, price_delta_minor: delta, dietary: i.dietary, allergens, may_contain: i.mayContain.filter(a => ALLERGEN_KEYS.has(a) && !allergens.includes(a)), available: i.available, updated_at: new Date().toISOString() };
+  const sb = await createClient();
+  const { error } = i.id && UUID.test(i.id) ? await sb.from("menu_item_variants" as never).update(row as never).eq("id", i.id) : await sb.from("menu_item_variants" as never).insert(row as never);
+  if (error) return /duplicate key/.test(error.message) ? { ok: false, error: "This item already has a variant with that name." } as Result : fail(error);
+  paths("/provider/menus/[id]");
+  return { ok: true } as Result;
+}
+export async function deleteMenuVariant(id: string) {
+  if (!UUID.test(id)) return { ok: false, error: "Not found." } as Result;
+  const sb = await createClient();
+  const { error } = await sb.from("menu_item_variants" as never).delete().eq("id", id);
   if (error) return fail(error);
   paths("/provider/menus/[id]");
   return { ok: true } as Result;

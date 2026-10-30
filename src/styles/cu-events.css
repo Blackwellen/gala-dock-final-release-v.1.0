@@ -76,8 +76,49 @@
 .me { gap: 10px; }
 .me-grid { margin-top: 2px; }
 .me-grid > .k-col { gap: 11px !important; }
+/* W02: draft card — the reference stepper stops ~450px in and "Continue Planning" + ⋯ sit to its right; a full-width stepper
+   ran under the button (labels "Payments"/"Ready" were covered). */
+@media (min-width: 721px) { .me-steps.sm { max-width: min(450px, calc(100% - 230px)); } }
+@media (max-width: 720px) { .me-draft-acts { margin-top: 12px; } }
 @media (max-width:720px){
  .me .me-card.draft { grid-template-columns:minmax(0,1fr); }
  .me .me-steps { display:flex; flex-wrap:wrap; gap:8px; }
  .me .me-meta { gap:10px; }
+}
+/* W02 r2 responsive: at 768 the card's ⋯ menu sat 2px past the window edge — let the card body shrink. */
+@media (max-width: 900px) { .me-card > * { min-width: 0; } .me-card .k-between { flex-wrap: wrap; gap: 8px; } }
+/* W02 pass 4 (≥1401px): reference tracks 31→1100 / 1115→1506 (no CSS zoom — one display scale, density.css). */
+@media (min-width: 1401px) {
+  .c-root .me { margin-top: -6px; }
+  .c-root .me .me-grid { grid-template-columns: minmax(0, 1fr) 407px; gap: 15px; }
+}
+/* W02 pass 4 — phone (≤480px), PWA #201 "My Events Planning Dashboard": a plain page header (title + subtitle, no photo banner
+   or KPI strip), the Planner helper as a compact row, segmented tabs, then card-per-row events — 120px photo left with name,
+   date and place beside it; progress, money tiles, next action and buttons across the full card width below. */
+@media (max-width: 480px) {
+  .c-root .me-hero { height: auto; padding: 0; background: transparent; border-radius: 0; flex-direction: column; align-items: stretch; gap: 10px; overflow: visible; }
+  .c-root .me-hero > .me-hero-bg, .c-root .me-hero::before, .c-root .me-hero::after { display: none; }
+  .c-root .me-hero .me-hero-text h1 { color: var(--k-ink); font-size: 22px; text-shadow: none; }
+  .c-root .me-hero .me-hero-text p { color: var(--k-muted); font-size: 12.5px; margin-top: 2px; text-shadow: none; }
+  .c-root .me-hero .me-stats { display: none; }
+  .c-root .me-hero .me-agent { width: auto; padding: 10px 12px; }
+  .c-root .me-card { grid-template-columns: 120px minmax(0, 1fr); column-gap: 12px; row-gap: 10px; padding: 10px; }
+  .c-root .me-card .me-img { grid-column: 1; grid-row: 1; height: 88px; border-radius: 8px; }
+  .c-root .me-card .me-thumbs { display: none; }
+  .c-root .me-card .me-heart { left: 88px; right: auto; top: 14px; }
+  .c-root .me-card .me-body { display: contents; }
+  .c-root .me-card .me-body > :first-child { grid-column: 2; grid-row: 1; min-width: 0; }
+  .c-root .me-card .me-body > :not(:first-child) { grid-column: 1 / -1; min-width: 0; }
+  .c-root .me-card .me-name { font-size: 15px; line-height: 1.25; }
+  .c-root .me-card .me-meta { flex-direction: column; align-items: flex-start; gap: 3px; font-size: 11.5px; }
+}
+@media (max-width: 480px) {
+  .c-root .me-card .me-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .c-root .me-card .me-kpis > * { flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px; min-height: 0; }
+  .c-root .me-card .me-kpis svg { display: none; }
+  .c-root .me-card .me-kpis small { font-size: 10px; } .c-root .me-card .me-kpis b { font-size: 11.5px; }
+  .c-root .me-card .me-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+  .c-root .me-card .me-foot > .me-next { grid-column: 1 / -1; }
+  .c-root .me-card .me-foot > .k-btn { height: 40px; min-height: 40px; font-size: 12.5px; padding: 0 8px; }
+  .c-root .me-card .me-steps { margin: 0; }
 }

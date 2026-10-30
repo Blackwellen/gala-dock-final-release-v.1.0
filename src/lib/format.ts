@@ -1,4 +1,5 @@
 // Display formatting shared by Customer and Organizer surfaces. All dates render in the event/workspace timezone.
+import { resolveTerm, term } from "@/lib/master-data";
 const TZ = "Europe/London";
 
 export function money(value: number | string | null | undefined, currency = "GBP", opts: { decimals?: boolean; compact?: boolean } = {}) {
@@ -56,4 +57,5 @@ export const EVENT_TYPE_LABEL: Record<string, string> = {
   childrens_party: "Children's Party", webinar: "Webinar", custom: "Custom",
   virtual_event: "Virtual Event", live_audio: "Live Audio", podcast_recording: "Podcast Live Recording", hybrid: "Hybrid Event", remote_conference: "Remote Conference",
 };
-export const eventTypeLabel = (t?: string | null) => EVENT_TYPE_LABEL[t ?? ""] ?? titleCase(t ?? "Event");
+// Keys without a short label here fall back to the canonical master-data label ("religious" → "Faith & Cultural"), then title case.
+export const eventTypeLabel = (t?: string | null) => EVENT_TYPE_LABEL[t ?? ""] ?? term("event_type", resolveTerm("event_type", t) ?? "")?.label ?? titleCase(t ?? "Event");

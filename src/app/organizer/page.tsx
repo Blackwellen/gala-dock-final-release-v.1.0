@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConflictsStrip } from "@/components/organizer/conflicts-strip";
 import { AlertCircle, CalendarDays, ChevronRight, MapPin, Users, MoreHorizontal, Zap, UserPlus, FileText, Package, Send, Store, BarChart3, CheckCircle2, Clock, UserCheck, Lightbulb, MessageSquare, AlertTriangle, Sparkles, DollarSign, Receipt, ArrowRight, ChevronDown, CalendarRange } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { listWorkspaceEvents, withStats, attentionQueue, ledgerSeries, shiftConflicts } from "@/lib/data/organizer";
@@ -17,7 +18,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
   const all = await withStats(sb, await listWorkspaceEvents(sb, ws));
   const now = new Date(nowMs).toISOString();
   const upcoming = all.filter(e => e.starts_at && e.starts_at >= now && !["cancelled", "archived", "completed"].includes(e.status)).slice(0, 4);
-  const horizon = new Date(nowMs + RANGES[range] * 864e5 * 30).toISOString(); // attention looks ahead; range narrows recency of items shown
+  const horizon = new Date(nowMs + RANGES[range] * 864e5).toISOString();
   const attention = (await attentionQueue(sb, ws, all)).filter(a => !a.due || a.due <= horizon);
   const eventIds = all.map(e => e.id);
   const [leads, proposals, confirmed, dues, invoicesOut, runs, approvals, threads, tasks, shifts, series] = await Promise.all([
@@ -57,7 +58,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
         <div className="k-seg solid" role="group" aria-label="Time range">{(["today", "week", "month"] as const).map(r => <Link key={r} href={`/organizer?range=${r}`} aria-current={(range === r) ? "page" : undefined} scroll={false}>{r === "today" ? "Today" : r === "week" ? "This Week" : "This Month"}</Link>)}</div>
       </div>
     </div>
-    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
+    <ConflictsStrip workspaceId={ctx.workspace.id} limit={5} />
 
     <Card aria-label="Attention queue">
       <div className="k-between" style={{ marginBottom: 10 }}>
@@ -82,7 +83,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
           <div className="oh-upcoming">{upcoming.map(e => { const d = dateBadge(e.starts_at); const pctSold = e.ticketCap ? Math.round((100 * e.sold) / e.ticketCap) : e.readiness; const [label, tone] = statusOf(e.readiness); return <div key={e.id} className="oh-up-row">
             <DateBox mon={d.mon} day={d.day} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={e.cover_image} alt="" className="oh-up-img" />
+            <img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" className="oh-up-img" />
             <div className="oh-up-name"><Link href={`/organizer/events/${e.id}`} className="k-strong k-ellipsis" style={{ display: "block", fontSize: 13 }}>{e.name}</Link><span className="k-row k-small k-muted" style={{ gap: 4 }}><MapPin size={12} />{e.location || e.venue_name}</span></div>
             <span className="k-row k-small" style={{ gap: 5, color: "var(--k-ink-2)" }}><Users size={13} />{num(e.sold)} / {num(e.ticketCap)}</span>
             <div className="oh-up-bar"><span className="k-small">{pctSold}%</span><Bar value={pctSold} tone={pctSold >= 90 ? "green" : pctSold >= 70 ? undefined : "purple"} label={`${e.name} tickets sold`} /></div>
@@ -99,9 +100,9 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
 
     <Card aria-label="Commercial summary">
       <div className="k-between" style={{ marginBottom: 12 }}><div className="k-row" style={{ gap: 12 }}><Tile icon={BarChart3} /><div><h2 style={{ fontSize: 15.5 }}>Commercial summary</h2><p className="k-small">Performance across all events and revenue streams.</p></div></div>
-        <div className="k-row" style={{ gap: 14 }}><Link className="k-link" href="/organizer/money?tab=reports">View detailed reports <ArrowRight size={13} /></Link><span className="k-btn ghost sm"><CalendarRange size={14} />Last 30 days</span></div></div>
+        <div className="k-row" style={{ gap: 14 }}><Link className="k-link" href="/organizer/money?tab=reports">View detailed reports <ArrowRight size={13} /></Link><span className="k-row k-xs k-muted" style={{ gap: 6 }}><CalendarRange size={14} aria-hidden />Totals to date</span></div></div>
       <div className="k-grid k-g5">
-        <SumKpi icon={Users} tone="blue" label="Leads & Proposals" value={num(leadCount)} sub={`${leads30} new in last 30 days`} spark={series.income.map((v, i) => v / 1000 + i)} color="#3b82f6" href="/organizer/sales" />
+        <SumKpi icon={Users} tone="blue" label="Leads & Proposals" value={num(leadCount)} sub={`${leads30} new · 30 days`} spark={series.income.map((v, i) => v / 1000 + i)} color="#3b82f6" href="/organizer/sales" />
         <SumKpi icon={CalendarDays} tone="purple" label="Confirmed Bookings" value={num(confirmed.data?.length ?? 0)} sub="across all events" spark={series.costs.map(v => v / 1000)} color="#a855f7" href="/organizer/marketplace?section=requests" />
         <SumKpi icon={DollarSign} tone="green" label="Ticket Revenue" value={money(ticketRevenue)} sub="gross, all tiers" spark={series.income} color="#16a34a" href="/organizer/money" />
         <SumKpi icon={BarChart3} tone="purple" label="Forecast Profit" value={money(forecastProfit)} sub="upcoming events" spark={series.income.map((v, i) => v - series.costs[i]!)} color="#7c3aed" href="/organizer/money?tab=reports" />
@@ -139,5 +140,5 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
 }
 
 function SumKpi({ icon: Icon, tone, label, value, sub, spark, color, href }: { icon: typeof Users; tone: "blue" | "purple" | "green" | "red"; label: string; value: string; sub: string; spark: number[]; color: string; href: string }) {
-  return <Link href={href} className="oh-sum"><Tile icon={Icon} tone={tone} /><div className="k-grow"><div className="k-small" style={{ color: "var(--k-ink-2)" }}>{label}</div><div className="oh-sum-val">{value}</div><div className="k-xs k-muted">{sub}</div></div><Spark data={spark} color={color} width={64} height={38} /></Link>;
+  return <Link href={href} className="oh-sum"><Tile icon={Icon} tone={tone} /><div className="k-grow"><div className="k-small" style={{ color: "var(--k-ink-2)" }}>{label}</div><div className="oh-sum-val">{value}</div><div className="k-xs k-muted">{sub}</div></div><Spark data={spark} color={color} width={54} height={38} /></Link>;
 }

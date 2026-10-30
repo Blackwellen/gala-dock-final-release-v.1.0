@@ -24,7 +24,7 @@
 .pb-value{font-size:11.5px!important;font-weight:700!important}
 .pb-pay{display:inline-flex;align-items:center;gap:4px}
 .pb-pay svg{width:12px!important;height:12px!important}
-.pb-pay.green{color:#0f8a4e!important}.pb-pay.amber{color:#d86d00!important}.pb-pay.red{color:#e3122e!important}.pb-pay.grey{color:#6c74a8!important}
+.pb-pay.green{color:#08713f!important}.pb-pay.amber{color:#965100!important}.pb-pay.red{color:#b3152b!important}.pb-pay.grey{color:#51577a!important}
 .pb-grid .ws-chip{font-size:10px;height:26px;padding:0 10px}
 .pb-team{display:grid;gap:3px}
 .pb-avatars{display:flex;align-items:center}

@@ -7,7 +7,8 @@ import { Bell, ChevronLeft, ChevronDown, Menu, Search, X, Plus, MessageSquare, U
 import { GlobalSearch } from "@/components/search/global-search";
 import "@/styles/pwa-nav.css";
 
-export type NavEntry = { href: string; label: string; icon: LucideIcon; badge?: string | number | null; match?: string | RegExp; exact?: boolean };
+/** `titleOnly` (optional): names the page in the top bar when active but is not repeated in the menu grid (e.g. an entry the shared account section already links). */
+export type NavEntry = { href: string; label: string; icon: LucideIcon; badge?: string | number | null; match?: string | RegExp; exact?: boolean; titleOnly?: boolean };
 export type MobileNotice = { id: string; title: string; body?: string; link?: string; read_at?: string | null };
 type Props = {
   menu: NavEntry[]; tabs: NavEntry[]; title?: string; right?: ReactNode; home?: string;
@@ -17,8 +18,22 @@ type Props = {
   notifications?: MobileNotice[]; unread?: number; onReadNotifications?: () => void;
 };
 
+const BACK_ICON = "a:has(> svg.lucide-arrow-left), a:has(> svg.lucide-chevron-left), button:has(> svg.lucide-arrow-left)";
+/** True when the page renders its own visible back control (a `*-back` / `back-link` class or an arrow-left link) outside the PWA chrome and footers. */
+function hasPageBack() {
+  const els = document.querySelectorAll<HTMLElement>(`[class*="back"], ${BACK_ICON}`);
+  for (const el of els) {
+    if (el.closest(".pwa-top, .pwa-back, .pwa-tabs, .pwa-sheet, footer, [class*='foot'], dialog, [role=dialog], [role=menu]")) continue;
+    const named = [...el.classList].some(c => c === "back-link" || c.endsWith("-back"));
+    if (!named && !el.matches(BACK_ICON)) continue;
+    if (!/back/i.test(el.textContent ?? "") && !el.getAttribute("aria-label")?.match(/back/i)) continue;
+    if (el.getClientRects().length && getComputedStyle(el).visibility !== "hidden") return true;
+  }
+  return false;
+}
+
 /** Four role-specific primary links and one Menu. Native dialogs supply modal inertness and focus containment. */
-export function MobileNav({ menu, tabs, title, right, home = "/", search, create = [], workspaceSwitcher, messagesHref, unreadMessages, notifications = [], unread = 0, onReadNotifications }: Props) {
+export function MobileNav({ menu, tabs, title, right, home = "/", search, create = [], workspaceSwitcher, messagesHref, unreadMessages, notifications = [], unread = 0, onReadNotifications, topLevel }: Props & { /** Paths (exact) that are top-level destinations: no Back link, as in the PWA mocks. */ topLevel?: readonly string[] }) {
   const pathname = usePathname(), params = useSearchParams(), router = useRouter();
   const [panel, setPanel] = useState<"menu" | "notifications" | null>(null), [finding, setFinding] = useState(false);
   const searchRow = useRef<HTMLDivElement>(null), sheet = useRef<HTMLDialogElement>(null);
@@ -26,9 +41,22 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
   const active = (e: NavEntry) => e.match ? new RegExp(e.match).test(pathname) : e.exact ? pathname === e.href : pathname === e.href.split("?")[0] || pathname.startsWith(`${e.href.split("?")[0]}/`);
   const current = [...menu, ...tabs].filter(active).sort((a, b) => b.href.length - a.href.length)[0];
   const primary = tabs.slice(0, 4);
-  const remaining = menu.filter(m => !primary.some(p => p.href === m.href));
+  const remaining = menu.filter(m => !m.titleOnly && !primary.some(p => p.href === m.href));
   const routeKey = pathname + "?" + params.toString();
   useEffect(() => { queueMicrotask(() => { setPanel(null); setFinding(false); }); }, [routeKey]);
+  // Pages with their own visible back link ("← Back to events") keep it and the bar's Back hides, so a phone never shows two.
+  // Wizard footers' previous-step buttons are a different action and don't count.
+  const [pageBack, setPageBack] = useState(false);
+  useEffect(() => {
+    let frame = 0;
+    const check = () => { frame = 0; setPageBack(hasPageBack()); };
+    const queue = () => { if (!frame) frame = requestAnimationFrame(check); };
+    queue();
+    const watch = new MutationObserver(queue);
+    watch.observe(document.body, { childList: true, subtree: true });
+    addEventListener("resize", queue);
+    return () => { watch.disconnect(); removeEventListener("resize", queue); cancelAnimationFrame(frame); };
+  }, [routeKey]);
   useEffect(() => {
     if (!finding) return;
     searchRow.current?.querySelector("input")?.focus();
@@ -61,7 +89,7 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
         {right}
       </div>
     </header>
-    {pathname !== home && <button type="button" className="pwa-back" onClick={() => history.length > 1 ? router.back() : router.push(home)}><ChevronLeft size={17} aria-hidden="true" />Back</button>}
+    {pathname !== home && !topLevel?.includes(pathname) && !pageBack && <button type="button" className="pwa-back" onClick={() => history.length > 1 ? router.back() : router.push(home)}><ChevronLeft size={17} aria-hidden="true" />Back</button>}
     {search && finding && <div className="pwa-search" id="pwa-search" ref={searchRow}><GlobalSearch seat={search.seat ?? null} placeholder={search.placeholder} /></div>}
     <nav className="pwa-tabs" aria-label="Primary">{primary.map(t => <Link key={t.href} href={t.href} className={active(t) ? "on" : ""} aria-current={active(t) ? "page" : undefined}>
       <t.icon size={21} aria-hidden="true" /><span>{t.label}</span>{t.badge ? <i>{t.badge}</i> : null}</Link>)}
@@ -79,7 +107,9 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
           <span className="pwa-ico"><m.icon size={22} aria-hidden="true" /></span><span className="pwa-lbl">{m.label}</span>{m.badge ? <i className="pwa-badge">{m.badge}</i> : null}</Link></li>)}</ul></nav>
         {create.length > 0 && <section className="pwa-section" aria-label="Create"><h3>Create</h3><div className="pwa-create">{create.map(c => { const Icon = c.icon ?? Plus; return <Link key={c.href} href={c.href} onClick={() => setPanel(null)}><Icon size={20} aria-hidden="true" /><span>{c.label}</span></Link>; })}</div></section>}
         {workspaceSwitcher && <section className="pwa-section"><h3>Switch workspace</h3>{workspaceSwitcher}</section>}
-        <section className="pwa-section pwa-account"><Link href="/account" onClick={() => setPanel(null)}><User size={19} aria-hidden="true" />My account</Link><Link href="/help" onClick={() => setPanel(null)}>Help</Link><form action="/auth/signout" method="post"><button type="submit"><LogOut size={19} aria-hidden="true" />Sign out</button></form></section>
+        <section className="pwa-section pwa-account">{/* W12/W13: skip when the role menu already lists them (Help appeared twice; Account and My account both) */}
+          {!menu.some(m => m.href === "/account" || /^(my )?account$/i.test(m.label)) && <Link href="/account" onClick={() => setPanel(null)}><User size={19} aria-hidden="true" />My account</Link>}
+          {!menu.some(m => /^help$/i.test(m.label)) && <Link href="/help" onClick={() => setPanel(null)}>Help</Link>}<form action="/auth/signout" method="post"><button type="submit"><LogOut size={19} aria-hidden="true" />Sign out</button></form></section>
       </> : <div className="pwa-notices">{notifications.length ? notifications.map(n => <Link key={n.id} href={n.link || home} onClick={() => setPanel(null)}><b>{n.title}</b>{n.body && <span>{n.body}</span>}</Link>) : <p>You’re all caught up.</p>}</div>}
     </dialog>
   </>;

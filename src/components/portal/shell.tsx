@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GalaLogo } from "@/components/brand/gala-logo";
 import type { ReactNode } from "react";
 import { ChevronDown, MessageSquareText, Bell, CircleHelp, LogOut, Plus, type LucideIcon } from "lucide-react";
 import "@/styles/portal-shell.css";
@@ -33,8 +34,7 @@ export function PortalShell({ portal, context, nav, user, links, searchPlacehold
       <NavToggle />
       <div className="pt-brand">
         <Link href="/" className="pt-logo" aria-label="Gala Dock home">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/gala-dock-logo.png" alt="Gala·Dock" width={202} height={52} />
+          <GalaLogo />
         </Link>
       </div>
       {context.menu && context.menu.length > 1
@@ -49,9 +49,9 @@ export function PortalShell({ portal, context, nav, user, links, searchPlacehold
       {!!create?.length && <details className="pt-create pt-pop"><summary className="pt-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></summary>
         <div className="pt-pop-panel left" role="menu">{create.map(c => c.external ? <a key={c.label} href={c.href} role="menuitem" download>{c.label}</a> : <Link key={c.label} href={c.href} role="menuitem">{c.label}</Link>)}</div></details>}
       <nav className="pt-actions" aria-label="Portal shortcuts">
-        <Link href={links.messages} className="pt-act"><span className="pt-act-ic"><MessageSquareText aria-hidden="true" />{!!links.messagesUnread && <i className="pt-dot num">{links.messagesUnread}</i>}</span><span className="pt-act-l">Messages</span></Link>
-        <Link href={links.notifications} className="pt-act"><span className="pt-act-ic"><Bell aria-hidden="true" />{!!links.notificationsUnread && <i className="pt-dot" />}</span><span className="pt-act-l">Notifications</span></Link>
-        <Link href={links.help} className="pt-act"><span className="pt-act-ic"><CircleHelp aria-hidden="true" /></span><span className="pt-act-l">Help</span></Link>
+        <Link href={links.messages} className="pt-act" aria-label="Messages"><span className="pt-act-ic"><MessageSquareText aria-hidden="true" />{!!links.messagesUnread && <i className="pt-dot num">{links.messagesUnread}</i>}</span><span className="pt-act-l">Messages</span></Link>
+        <Link href={links.notifications} className="pt-act" aria-label="Notifications"><span className="pt-act-ic"><Bell aria-hidden="true" />{!!links.notificationsUnread && <i className="pt-dot" />}</span><span className="pt-act-l">Notifications</span></Link>
+        <Link href={links.help} className="pt-act" aria-label="Help"><span className="pt-act-ic"><CircleHelp aria-hidden="true" /></span><span className="pt-act-l">Help</span></Link>
         <details className="pt-account pt-pop">
           <summary aria-label="Account"><PortalAvatar src={user.avatar} name={user.name} /><ChevronDown className="chev" aria-hidden="true" /></summary>
           <div className="pt-pop-panel right" role="menu">

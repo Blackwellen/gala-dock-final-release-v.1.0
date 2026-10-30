@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, cleanup, createUser, seedWorkspace, signedIn } from "../phase1/helpers";
+import { admin, cleanup, createUser, enrolTotp, seedWorkspace, signedIn } from "../phase1/helpers";
 
 // Phase 3 marketplace lifecycle (§33–37, §44–45) against the live project, through RLS-bound user clients.
 type Id = { id: string };
@@ -31,6 +31,7 @@ test.describe("marketplace lifecycle", () => {
     event = ((await db.from("events").insert({ owner_id: org.id, name: "Marketplace test", starts_at: new Date(Date.now() + 20 * day).toISOString(), venue_listing_id: venueListing }).select("id").single()).data as Id).id;
     await db.from("platform_admins").insert({ user_id: adm.id, title: "Test admin", permissions: ["support", "marketplace", "commerce"] });
     [orgC, provC, prov2C, outC, admC] = await Promise.all([org, prov, prov2, out, adm].map(u => signedIn(u.email))) as unknown as SupabaseClient[];
+    await enrolTotp(admC as unknown as Parameters<typeof enrolTotp>[0]);   // Q31: admin mutations need aal2
   });
   // Disputes/cancellations are restrict-FK records, so they go first; workspaces must go before their owners can be deleted.
   test.afterAll(async () => {

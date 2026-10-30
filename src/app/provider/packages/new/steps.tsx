@@ -7,9 +7,12 @@ import type { Listing } from "@/lib/provider/queries";
 import { savePackageOffer, savePackagePricing, savePackageAvailability } from "../actions";
 import { InclusionsEditor, AvailabilityCalendar, type DayState } from "../_components/editors";
 import type { PackageRow } from "../data";
+import { labelsFor, resolveTerm } from "@/lib/master-data";
 
 const FEATURES = ["Riverside location", "Professional sound & lighting", "Fully staffed bar", "Customisable to your theme", "Step-free access", "Dedicated coordinator"];
-const EVENT_TYPES = ["Private Parties", "Weddings", "Corporate Events", "Birthdays", "Conferences", "Festivals", "Product Launches"];
+const EVENT_TYPES = labelsFor("provider.package_event_types");
+/** Stored event type → the option with the same canonical key (any spelling); unrecognised values are kept, unset stays unset. */
+const eventTypeOf = (v?: string) => !v ? "" : EVENT_TYPES.find(t => resolveTerm("event_type", t) === resolveTerm("event_type", v)) ?? v;
 const Toggle = ({ name, label, sub, on }: { name: string; label: string; sub?: string; on?: boolean }) =>
   <label className="vw-switch"><input type="checkbox" name={name} defaultChecked={!!on} /><i aria-hidden="true" /><span><b>{label}</b>{sub && <small>{sub}</small>}</span></label>;
 const Foot = ({ back, next, step, label }: { back?: string; next: string; step: number; label?: string }) => <div className="vw-foot">
@@ -46,7 +49,8 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
         <label>Short description <i>*</i><textarea name="description" rows={3} minLength={20} maxLength={500} required defaultValue={p?.description ?? ""} /></label></section>
       <section className="ws-panel pkw-incl"><h2>Inclusions</h2><p>Select the venues, services and extras included in this package.</p><InclusionsEditor initial={d.items ?? []} options={options} /></section>
       <section className="ws-panel pkw-event"><h2>Event details</h2><p>Set the core details for this package.</p>
-        <div className="vw-grid2"><label>Event type<select name="event_type" className="ws-select" defaultValue={d.event_type ?? EVENT_TYPES[0]}>{EVENT_TYPES.map(t => <option key={t}>{t}</option>)}</select></label>
+        <div className="vw-grid2"><label>Event type<select name="event_type" className="ws-select" defaultValue={eventTypeOf(d.event_type)}>
+          <option value="">Any event type</option>{d.event_type && !EVENT_TYPES.includes(eventTypeOf(d.event_type)) && <option>{d.event_type}</option>}{EVENT_TYPES.map(t => <option key={t}>{t}</option>)}</select></label>
           <label>Suitable for<select name="suitable_for" className="ws-select" defaultValue={d.suitable_for ?? "All ages"}><option>All ages</option><option>Adults (18+)</option><option>Families</option></select></label>
           <label>Duration<span className="vw-money"><input name="duration" type="number" min={1} max={48} step={0.5} defaultValue={p?.duration_hours ?? 4} /><em className="r">hours</em></span></label>
           <label>Guest capacity<span className="vw-dual"><input name="min_guests" type="number" min={1} defaultValue={p?.min_guests ?? ""} placeholder="Min" aria-label="Minimum guests" /><input name="max_guests" type="number" min={1} defaultValue={p?.max_guests ?? ""} placeholder="Max" aria-label="Maximum guests" /></span></label></div>
@@ -54,7 +58,7 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
       <section className="ws-panel pkw-addons"><h2>Optional add-ons</h2><p>Add optional extras to enhance this package.</p>
         <ul>{[0, 1, 2, 3].map(i => { const a = addOns[i]; return <li key={i}><input name={`addon_name_${i}`} defaultValue={a?.name ?? ""} placeholder={["Photo booth", "Decor & styling", "Extended bar", "Add-on"][i]} aria-label={`Add-on ${i + 1}`} />
           <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Detail" aria-label={`Add-on ${i + 1} detail`} /><span className="vw-money"><em>£</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
-          <label className="vw-switch"><input type="checkbox" name={`addon_on_${i}`} defaultChecked={a?.enabled ?? true} /><i aria-label="Offered" /></label></li>; })}</ul></section>
+          <label className="vw-switch"><input type="checkbox" name={`addon_on_${i}`} defaultChecked={a?.enabled ?? true} aria-label={`Offer add-on ${i + 1}`} /><i aria-hidden="true" /></label></li>; })}</ul></section>
       <section className="ws-panel pkw-feat"><h2>Key features</h2><p>Highlight what makes this package special.</p>
         <div className="svw-checks pkw-checks">{[...new Set([...FEATURES, ...(d.features ?? [])])].map(f => <label key={f}><input type="checkbox" name="features" value={f} defaultChecked={(d.features ?? []).includes(f)} />{f}</label>)}</div>
         <label className="pkw-addfeat"><Plus aria-hidden="true" /><input name="feature_custom" placeholder="Add feature" maxLength={60} aria-label="Add feature" /></label></section>

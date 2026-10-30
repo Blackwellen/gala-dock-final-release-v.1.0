@@ -48,15 +48,16 @@ export function ChoiceGroup({ legend, question, variant, maxVisible, moreLabel =
 }) {
   const id = useId();
   const [expanded, setExpanded] = useState(false);
-  const all = items.map(i => typeof i === "string" ? { value: i, label: i } : i);
+  // `at` keeps each option's index in `items`, so images / icons / descriptions stay paired when the collapsed list skips some.
+  const all = items.map((i, at) => typeof i === "string" ? { value: i, label: i, at } : { ...i, at });
   // Collapsed lists always keep selected options visible.
   const options = maxVisible && !expanded ? all.filter((o, i) => i < maxVisible || value.includes(o.value)) : all;
   return <fieldset className={`choice-fieldset ${error ? "has-error" : ""}`} aria-describedby={error ? `${id}-error` : undefined}>
     <legend className={hideLegend ? "sr-only" : undefined}>{legend}</legend>
     {question && <p className="muted question">{question}</p>}
     <div className={`choice-group ${images ? "with-images" : ""} ${variant ?? ""}`} style={columns ? { gridTemplateColumns: `repeat(${columns},minmax(0,1fr))` } : undefined}>
-      {options.map((item, i) => {
-        const checked = value.includes(item.value);
+      {options.map(item => {
+        const i = item.at, checked = value.includes(item.value);
         return <label key={item.value} className={`choice ${checked ? "selected" : ""}`}>
           <input type={multi ? "checkbox" : "radio"} name={name} value={item.value} checked={checked}
             onChange={() => onChange(multi ? (checked ? value.filter(v => v !== item.value) : [...value, item.value]) : [item.value])} />

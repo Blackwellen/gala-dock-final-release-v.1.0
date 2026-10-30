@@ -7,10 +7,12 @@ import { untyped } from "@/lib/workspace/db";
 import { agentConfigured } from "@/lib/agent/llm";
 import * as Agent from "@/lib/agent/actions";
 import type { ActionResult } from "./shell";
+import { agentRefusalText } from "@/lib/agent/refusals";
 
 // Organizer Gala Agent screen actions — thin adapters over the durable runtime (src/lib/agent/*). Signatures kept for the UI.
 const SCOPES = ["event", "workspace", "provider", "ticketing", "promotion", "team", "money", "calendar"] as const;
-const Run = z.object({ goal: z.string().trim().min(8).max(1500), scope: z.array(z.enum(SCOPES)).max(8), event_id: z.string().uuid().nullable() });
+const Run = z.object({ goal: z.string().trim().min(8).max(1500), scope: z.array(z.enum(SCOPES)).max(8), event_id: z.string().uuid().nullable(), mission: z.string().regex(/^org\.[a-z_]{2,60}$/).nullable().optional() });
+type AvailableSkill = { id: string; available: boolean; locked_reason: string | null };
 
 /** Do/Goal mode: creates a persisted run that the worker plans (typed tools) and executes step by step with approvals. */
 export async function startRun(input: unknown): Promise<ActionResult<{ id: string }>> {
@@ -23,7 +25,19 @@ export async function startRun(input: unknown): Promise<ActionResult<{ id: strin
     goal = `${goal}\n(Event: ${ev.name}, event_id ${ev.id})`;
   }
   if (p.data.scope.length) goal = `${goal}\n(Focus: ${p.data.scope.join(", ")})`;
-  const r = await Agent.startRun(ctx.workspace.id, goal);
+  // Skill picker (Q42): the chosen skill becomes the run's mission (agent_runs.mission; runtime.ts follows its bound tools and
+  // mission template). Checked as this user against agent_available_skills (active, organiser surface, plan gate) so a locked
+  // skill is refused here with the same wording the database uses (plan_not_entitled).
+  let mission: string | undefined;
+  if (p.data.mission) {
+    const { data: skills, error: se } = await untyped(ctx.supabase).rpc("agent_available_skills", { p_workspace: ctx.workspace.id });
+    if (se) return { ok: false, error: agentRefusalText(se.message, "Couldn’t check the skills for this workspace.") };
+    const k = ((skills ?? []) as AvailableSkill[]).find(x => x.id === p.data.mission);
+    if (!k) return { ok: false, error: agentRefusalText("unknown_skill") };
+    if (!k.available) return { ok: false, error: agentRefusalText(k.locked_reason === "plan" ? "plan_not_entitled" : "unknown_skill") };
+    mission = k.id;
+  }
+  const r = await Agent.startRun(ctx.workspace.id, goal, mission);
   if (!r.ok) return r;
   if (p.data.event_id || p.data.scope.length) await untyped(createAdminClient() as never).from("agent_runs").update({ event_id: p.data.event_id, scope: p.data.scope }).eq("id", r.data!);
   revalidatePath("/organizer/agent");

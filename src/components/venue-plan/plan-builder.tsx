@@ -1,7 +1,7 @@
 "use client";
 import "@/styles/venue-plan.css";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type PointerEvent as RPE } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type MutableRefObject, type PointerEvent as RPE } from "react";
 import { MousePointer2, Hand, Square, Pentagon, Minus as WallIcon, Type, Ruler, Undo2, Redo2, Trash2, Copy, Eye, EyeOff, Lock, Unlock, ImagePlus, Map as MapIcon, Maximize2, Minimize2,
   ZoomIn, ZoomOut, Scan, Grid3x3, Magnet, Layers, Crosshair, ArrowUpToLine, ArrowDownToLine, Save, Upload, Shapes, Search, Keyboard, RotateCw, RotateCcw, AlignStartVertical, AlignCenterVertical,
   AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Satellite, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2,
@@ -27,6 +27,10 @@ type Drag =
   | { kind: "measure"; sx: number; sy: number };
 export type Tier = { id: string; name: string; color: string };
 export type SaveFn = (els: MapEl[], publish: boolean) => Promise<{ ok: boolean; message?: string; error?: string }>;
+/** Imperative handle for page shells (ORG-013 header actions, findings panel): additive, optional. */
+export type PlanApi = { save: (publish: boolean) => void; elements: () => MapEl[]; isDirty: () => boolean; focus: (id: string) => boolean };
+/** A validation finding drawn on the canvas (event_map_validate: element_id + severity). */
+export type PlanHighlight = { id: string; severity: "error" | "warning" };
 
 const GROUPS: [string, string, (e: MapEl) => boolean][] = [
   ["base", "Street map", e => e.type === "basemap"], ["drawings", "Drawings & aerials", e => e.type === "underlay"], ["rooms", "Rooms & spaces", e => e.type === "room"],
@@ -74,8 +78,9 @@ function shift(e: MapEl, dx: number, dy: number): MapEl {
 /**
  * Enterprise venue/event plan builder. Venue mode edits the structural plan; event mode edits an event overlay above a locked base plan and assigns ticket tiers.
  */
-export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title }: {
+export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title, apiRef, highlights = [], onDirtyChange, hidePublish = false }: {
   initial: MapEl[]; spaces?: MapSpace[]; version: number; draftVersion?: number; geo: { lat: number; lng: number } | null; height?: number; onSave: SaveFn; mode?: "venue" | "event"; base?: MapEl[]; tiers?: Tier[]; title?: string;
+  apiRef?: MutableRefObject<PlanApi | null>; highlights?: PlanHighlight[]; onDirtyChange?: (dirty: boolean) => void; hidePublish?: boolean;
 }) {
   const toast = useToast();
   const [pending, start] = useTransition();
@@ -319,6 +324,22 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     setConfirmPub(false);
     const r = await onSave(els, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) setDirty(false);
   });
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => {
+    if (!apiRef) return;
+    apiRef.current = {
+      save: (publish: boolean) => save(publish), elements: () => els, isDirty: () => dirty,
+      focus: (id: string) => {
+        const i = els.findIndex(e => e.id === id);
+        if (i < 0) return false;
+        const b = elBounds(els[i]), w = Math.max(b.w * 3, 120);
+        setSel([i]); setPanel("inspect"); setSideOpen(true);
+        setView(v => ({ x: b.x + b.w / 2 - w / 2, y: b.y + b.h / 2 - (w * (v.h / v.w)) / 2, w, h: w * (v.h / v.w) }));
+        return true;
+      },
+    };
+    return () => { apiRef.current = null; };
+  });
   const setS = (patch: Partial<MapEl>) => s && commit(l => l.map((x, j) => j === sel[0] ? { ...x, ...patch } : x));
   const setSeating = (patch: Partial<Seating>) => {
     if (!s?.seating) return; const ns = { ...s.seating, ...patch }, sz = seatingSize(ns);
@@ -497,10 +518,10 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
       <span className="ws-spacer" />
       <span className="mb-status" aria-live="polite">{dirty ? "Unsaved changes" : draftVersion ? `Draft v${draftVersion} saved${version ? ` · v${version} live` : ""}` : version ? `Version ${version} live` : "Not published"}</span>
       <button type="button" className="mb-txt" disabled={pending || !dirty} onClick={() => save(false)}>{pending ? <Loader2 aria-hidden="true" className="k-spin" /> : <Save aria-hidden="true" />}Save draft</button>
-      <span className="mb-pop-wrap"><button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0 && !draftVersion)} aria-expanded={confirmPub} onClick={() => setConfirmPub(v => !v)}><Upload aria-hidden="true" />Publish</button>
+      {!hidePublish && <span className="mb-pop-wrap"><button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0 && !draftVersion)} aria-expanded={confirmPub} onClick={() => setConfirmPub(v => !v)}><Upload aria-hidden="true" />Publish</button>
         {confirmPub && <div className="mb-pop right" role="dialog" aria-label="Publish layout"><b>{mode === "event" ? "Publish this event layout?" : "Publish this venue plan?"}</b>
           <p>{mode === "event" ? "Seat and area inventory for ticketing updates to match. Sold or held seats must stay on the plan." : "Organisers planning events here will see the new version."}</p>
-          <div className="mb-pop-acts"><button type="button" className="ws-btn ghost sm" onClick={() => setConfirmPub(false)}>Cancel</button><button type="button" className="ws-btn primary sm" disabled={pending} onClick={() => save(true)}>Publish</button></div></div>}</span>
+          <div className="mb-pop-acts"><button type="button" className="ws-btn ghost sm" onClick={() => setConfirmPub(false)}>Cancel</button><button type="button" className="ws-btn primary sm" disabled={pending} onClick={() => save(true)}>Publish</button></div></div>}</span>}
       <input ref={importRef} type="file" accept="application/json,.json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void importJson(f); e.target.value = ""; }} />
       <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, uploadKind.current); e.target.value = ""; }} />
     </div>
@@ -535,6 +556,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
               <polyline points={[...draft, ...(cursor ? [[sn(cursor[0]), sn(cursor[1])]] : [])].map(p => p.join(",")).join(" ")} />
               {draft.map((p, v) => <circle key={v} cx={p[0]} cy={p[1]} r={view.w / 220} />)}
               {cursor && <text x={cursor[0] + 8} y={cursor[1] - 8} className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(dist(draft[draft.length - 1], cursor))} m</text>}</g>}
+            {highlights.length > 0 && els.map((e, i) => { const h = e.id ? highlights.find(x => x.id === e.id) : undefined; if (!h || e.hidden) return null; const b = elBounds(e);
+              return <rect key={`hl${i}`} x={b.x - hr} y={b.y - hr} width={b.w + hr * 2} height={b.h + hr * 2} className={`mb-finding ${h.severity}`} pointerEvents="none"><title>{h.severity === "error" ? "Blocking issue" : "Warning"}</title></rect>; })}
             {marquee && <rect className="mb-marquee" x={Math.min(marquee[0][0], marquee[1][0])} y={Math.min(marquee[0][1], marquee[1][1])} width={Math.abs(marquee[1][0] - marquee[0][0])} height={Math.abs(marquee[1][1] - marquee[0][1])} />}
             {measure && <g className="mb-measure"><line x1={measure[0][0]} y1={measure[0][1]} x2={measure[1][0]} y2={measure[1][1]} />
               <text x={(measure[0][0] + measure[1][0]) / 2} y={(measure[0][1] + measure[1][1]) / 2 - 8} textAnchor="middle" className="mb-dim" style={{ fontSize: 11 / scale }}>{mm(dist(measure[0], measure[1]))} m</text></g>}

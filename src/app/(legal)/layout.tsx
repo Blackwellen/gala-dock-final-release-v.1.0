@@ -4,6 +4,8 @@ import "@/styles/kit.css";
 import "@/styles/customer.css";
 import { KitProviders } from "@/components/kit/client";
 import { PublicHeader } from "@/components/customer/public-header";
+import { SiteFooter } from "@/components/public/site-footer";
+import "@/styles/pub-directory.css";
 import { LEGAL, LEGAL_DOCS } from "@/lib/legal";
 import "@/styles/legal.css";
 
@@ -17,5 +19,6 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
         <p>Version {LEGAL.version} · effective {LEGAL.effective}</p></nav>
       <main className="lg-doc" id="main">{children}</main>
     </div>
+    <SiteFooter />
   </div></KitProviders>;
 }

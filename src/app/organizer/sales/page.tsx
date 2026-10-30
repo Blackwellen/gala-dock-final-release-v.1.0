@@ -5,6 +5,8 @@ import { Crumbs, Card, Chip, Bar, Beta, Empty } from "@/components/kit";
 import { PipelineBoard, AddLeadButton, type BoardLead } from "@/components/organizer/sales-client";
 import { money, num, dateShort, time, relative } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
+import { untyped } from "@/lib/workspace/db";
+import { SalesNav, KpiDelta } from "@/components/organizer/sales-nav";
 
 export const metadata = { title: "Sales" };
 const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -37,19 +39,24 @@ export default async function SalesPage({ searchParams }: PageProps<"/organizer/
   const types = Object.entries(won.reduce<Record<string, { n: number; v: number }>>((acc, l) => { const k = l.event_type; acc[k] = { n: (acc[k]?.n ?? 0) + 1, v: (acc[k]?.v ?? 0) + Number(l.value) }; return acc; }, {})).sort((a, b) => b[1].v - a[1].v);
   const maxType = Math.max(1, ...types.map(t => t[1].v));
   const qs = (patch: Record<string, string | null>) => { const p = new URLSearchParams(); for (const [k, v] of Object.entries(sp)) if (typeof v === "string") p.set(k, v); for (const [k, v] of Object.entries(patch)) v == null ? p.delete(k) : p.set(k, v); return `/organizer/sales?${p}`; };
-  const kpis = [[Users, "blue", "Total leads", num(inRange.length)], [BarChart3, "blue", "Pipeline value", money(pipelineValue)], [FileText, "blue", "Proposals sent", num(sent)], [Target, "blue", "Win rate", `${winRate}%`], [Trophy, "green", "Closed value", money(closedValue)], [Clock, "purple", "Avg. sales cycle", `${cycle} days`]] as const;
+  // Period KPIs and prior-period deltas from lead_stage_history (sales_kpis); in-page values are the fallback if the RPC fails.
+  type K = { leads: number; pipeline_value: number; proposals_sent: number; win_rate: number | null; closed_value: number; avg_cycle_days: number | null };
+  const { data: kd } = await untyped(sb).rpc("sales_kpis", { p_ws: ctx.workspace.id, p_days: days });
+  const k = kd as { current: K; delta: Record<keyof K, number | null> } | null; const cur = k?.current;
+  const kpis = [[Users, "blue", "Total leads", num(cur?.leads ?? inRange.length), k?.delta.leads, "%", false], [BarChart3, "blue", "Pipeline value", money(cur?.pipeline_value ?? pipelineValue), k?.delta.pipeline_value, "%", false], [FileText, "blue", "Proposals sent", num(cur?.proposals_sent ?? sent), k?.delta.proposals_sent, "%", false], [Target, "blue", "Win rate", `${cur ? cur.win_rate ?? 0 : winRate}%`, k?.delta.win_rate, "pts", false], [Trophy, "green", "Closed value", money(cur?.closed_value ?? closedValue), k?.delta.closed_value, "%", false], [Clock, "purple", "Avg. sales cycle", `${cur ? Math.round(Number(cur.avg_cycle_days ?? 0)) : cycle} days`, k?.delta.avg_cycle_days, "%", true]] as const;
 
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales" }]} />
     <div className="k-page-head" style={{ marginTop: -6 }}>
       <div><h1 style={{ fontSize: 30 }}>Sales</h1><p className="sub" style={{ fontSize: 14.5 }}>Manage event leads and proposals from first enquiry to confirmed event.</p></div>
       <div className="k-row k-wrap" style={{ gap: 10 }}>
-        <div className="k-seg">{[[30, "30 days"], [90, "90 days"], [365, "12 months"]].map(([d, l]) => <Link key={d} href={qs({ range: String(d) })} aria-current={(days === d) ? "page" : undefined}><CalendarRange size={14} />Last {l}</Link>)}</div>
+        <div className="k-seg">{[[30, "30 days"], [90, "90 days"], [365, "12 months"]].map(([d, l]) => <Link key={d} href={qs({ range: String(d) })} aria-current={(days === d) ? "page" : undefined} aria-label={`Last ${l}`}>{d === 30 && <CalendarRange size={14} aria-hidden />}{l}</Link>)}</div>
         <form className="k-input-icon" role="search" action="/organizer/sales"><Search size={15} /><input className="k-input" name="q" defaultValue={q} placeholder="Search leads, clients, or events..." style={{ width: 240, height: 40 }} aria-label="Search sales" />{tab === "proposals" && <input type="hidden" name="tab" value="proposals" />}</form>
         <AddLeadButton primary />
       </div>
     </div>
-    <div className="k-grid k-g6 sa-kpis">{kpis.map(([I, t, l, v]) => <div key={l} className="ev-kpi"><span className={`k-tile ${t}`}><I size={19} /></span><div><span>{l}</span><b>{v}</b></div></div>)}</div>
+    <SalesNav active={tab === "proposals" ? "proposals" : "leads"} />
+    <div className="k-grid k-g6 sa-kpis">{kpis.map(([I, t, l, v, d, u, inv]) => <div key={l} className="ev-kpi"><span className={`k-tile ${t}`}><I size={19} /></span><div><span>{l}</span><b>{v}</b>{k && <KpiDelta value={d} unit={u} days={days} invert={inv} />}</div></div>)}</div>
     <div className="sa-grid">
       <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
         <Card flush>

@@ -2,9 +2,10 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
-import { stripe, stripeKey } from "@/lib/stripe";
+import { stripe, stripeKey, stripePublishableKey } from "@/lib/stripe";
 import { stripeCustomer, ownCard } from "@/lib/payments";
 import { passwordChecks } from "@/lib/password";
+import { customerInterests, currencies } from "@/lib/onboarding-schema";
 import type { ActionResult } from "./shell";
 
 const bump = () => { revalidatePath("/account/settings"); revalidatePath("/", "layout"); };
@@ -16,6 +17,15 @@ export async function saveProfile(input: unknown): Promise<ActionResult> {
   const { error } = await ctx.supabase.rpc("update_my_profile", { p: p.data });
   if (error) return { ok: false, error: error.message.includes("invalid_phone") ? "Enter a valid phone number." : error.message.includes("invalid_dob") ? "Enter a valid date of birth (13+)." : error.message.includes("invalid_name") ? "Enter your full name." : "Could not save your profile." };
   bump(); return { ok: true, message: "Profile updated." };
+}
+
+export async function saveEventPreferences(input: unknown): Promise<ActionResult> {
+  const parsed = z.object({ home_area: z.string().trim().max(150), currency: z.string().refine(v => currencies.some(c => c.value === v)), interests: z.array(z.string().refine(v => customerInterests.includes(v))).max(customerInterests.length) }).strict().safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Check your event preferences and try again." };
+  const ctx = await getCustomer();
+  const { error } = await ctx.supabase.from("profiles").update({ ...parsed.data, interests: [...new Set(parsed.data.interests)] }).eq("id", ctx.user.id);
+  if (error) return { ok: false, error: "Could not save your event preferences." };
+  bump(); return { ok: true, message: "Event preferences updated." };
 }
 
 const NOTIF = ["event_updates", "tickets", "messages", "marketing", "reminders", "quotes"] as const;
@@ -55,7 +65,8 @@ export async function calendarFeed(): Promise<ActionResult<{ url: string }>> {
 
 /** SetupIntent for adding a card with Stripe's Payment Element (card details never touch our servers). */
 export async function startAddCard(): Promise<ActionResult<{ clientSecret: string; publishableKey: string }>> {
-  const pk = process.env.NODE_ENV === "production" ? process.env.STRIPE_PUBLIC_KEY : (process.env.STRIPE_PUBLIC_KEY_SANDBOX ?? process.env.STRIPE_PUBLIC_KEY);
+  // The publishable key must be the same mode as the platform key (a pk_live with an sk_test SetupIntent cannot confirm).
+  const pk = stripePublishableKey();
   if (!stripeKey() || !pk) return { ok: false, error: "Payments aren't configured yet." };
   const ctx = await getCustomer();
   try {

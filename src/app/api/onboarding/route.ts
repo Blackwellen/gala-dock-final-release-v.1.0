@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { safeNext } from "@/lib/redirects";
-import { createInviteToken, rateLimit, sameOrigin } from "@/lib/security";
+import { rateLimit, sameOrigin } from "@/lib/security";
+import { createWorkspaceInvite } from "@/lib/workspace/invites";
 import { flowSteps, ruleIssues, validateStep, type Flow, type Values } from "@/lib/onboarding-schema";
 import type { Json } from "@/types/database";
 
@@ -114,9 +115,8 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
   const invites: { email: string; role: string; url: string }[] = [];
   for (const member of (values.members as { email: string; role: string }[]) ?? []) {
-    const { token, hash } = createInviteToken();
-    const { error } = await supabase.from("workspace_invites").insert({ workspace_id: workspaceId, email: member.email, role: member.role, token_hash: hash, invited_by: user.id });
-    if (!error) invites.push({ ...member, url: `${origin}/invite/${token}` });
+    const created = await createWorkspaceInvite(supabase, workspaceId, member.email, member.role);
+    if (created.ok) invites.push({ ...member, url: `${origin}/invite/${created.token}` });
   }
 
   let publish: Json | null = null;

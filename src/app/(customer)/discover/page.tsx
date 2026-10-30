@@ -7,8 +7,14 @@ import { Chip, Tag, Empty } from "@/components/kit";
 import { SaveHeart, MapView } from "@/components/kit/client";
 import { DiscoverSearch, AgentBrief } from "@/components/customer/discover-client";
 import { dateBadge, time12, money, num, dateShort } from "@/lib/format";
+import { serveSponsored, type Sponsored } from "@/lib/ads/serve";
+import { clickHref, interleave } from "@/lib/ads/core";
+import { SponsoredCard, SponsoredLabel, SponsoredRow } from "@/components/ads/sponsored";
+import { AdView } from "@/components/ads/beacon";
 
 export const metadata = { title: "Discover" };
+/** Image-less events and listings (e.g. new or test events) get a neutral cover instead of src="" (which re-requests the page). */
+const FALLBACK_COVER = "/assets/gd/hero-discover.webp";
 type SP = Record<string, string | string[] | undefined>;
 const s = (v: unknown) => (typeof v === "string" ? v : "");
 const CHIP_ICON: Record<string, React.ComponentType<{ size?: number }>> = { tonight: Flame, weekend: Calendar, music: Music, nightlife: Wine, food: Utensils, comedy: Laugh, family: Users, corporate: Briefcase, wedding: HeartIcon };
@@ -26,29 +32,33 @@ export default async function Discover({ searchParams }: { searchParams: Promise
   const listQ = (kind: "venue" | "service", limit: number) => { let q = ctx.supabase.from("listings").select(LISTING_COLS).eq("published", true).eq("kind", kind); if (results && tab !== "events" && s(sp.q)) { const t = s(sp.q).replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,category.ilike.%${t}%,description.ilike.%${t}%`); } if (results && s(sp.city)) q = q.ilike("location", `%${s(sp.city)}%`); return q.order("review_count", { ascending: false }).limit(limit); };
   const [{ data: venuesRaw }, { data: servicesRaw }] = await Promise.all([listQ("venue", results ? 60 : 12), listQ("service", results ? 60 : 12)]);
   const venues = (venuesRaw ?? []) as unknown as Listing[], services = (servicesRaw ?? []) as unknown as Listing[];
-  const { data: searchBoosts } = tab === "events" && s(sp.q) ? await ctx.supabase.rpc("active_boosts", { p_placement: "search", p_city: s(sp.city) || undefined, p_limit: 3 }) : { data: [] };
-  const sponsored = new Map((searchBoosts ?? []).filter(b => events.some(e => e.id === b.event_id)).map(b => [b.event_id, b.boost_id]));
-  if (sponsored.size) { events.sort((a, b) => Number(sponsored.has(b.id)) - Number(sponsored.has(a.id))); await Promise.all([...sponsored.values()].map(id => ctx.supabase.rpc("record_boost_event", { p_boost: id, p_kind: "impression" }))); }
-  const resultHref = (e: PublicEvent) => sponsored.has(e.id) && e.slug ? `/api/boosts/${sponsored.get(e.id)}/click?to=${encodeURIComponent(`/events/${e.slug}`)}` : evHref(e);
-  // Featured slot: a paid "discover" boost targeted to this city/category wins (labelled Sponsored, impression counted); otherwise the top organic event.
-  const { data: boostRows } = await ctx.supabase.rpc("active_boosts", { p_placement: !isDate && chip ? "category" : "discover", p_city: s(sp.city) || undefined, p_category: !isDate && chip ? chip : undefined, p_limit: 3 });
-  const boosted = (boostRows ?? []).map(b => ({ b, e: events.find(x => x.id === b.event_id) })).find(x => x.e);
-  if (boosted) await ctx.supabase.rpc("record_boost_event", { p_boost: boosted.b.boost_id, p_kind: "impression" });
-  const featured = boosted?.e ?? events[0];
-  const featHref = (e: NonNullable<typeof featured>) => boosted && e.id === boosted.e!.id && e.slug ? `/api/boosts/${boosted.b.boost_id}/click?to=${encodeURIComponent(`/events/${e.slug}`)}` : evHref(e);
+  // Sponsored layer (Q23): served server-side from owned inventory, labelled, and kept apart from the organic list — organic
+  // results are never re-sorted or re-ranked by a boost. Impressions count only from the slot's visibility beacon.
+  const adCtx = { city: s(sp.city) || null, category: !isDate && chip ? chip : null };
+  const [heroAds, feedAds] = await Promise.all([
+    serveSponsored(adCtx.category ? "category_top" : "discover_hero", adCtx),
+    results && tab === "events" ? serveSponsored(s(sp.q) ? "search_results" : "discover_feed", adCtx) : Promise.resolve([] as Sponsored[]),
+  ]);
+  const hero = heroAds.find(a => a.event) ?? null;
+  const resultHref = (e: PublicEvent) => evHref(e);
+  const featHref = (e: { id: string; slug?: string | null }) => hero ? clickHref(hero.token) : evHref(e as PublicEvent);
+  const feed = interleave(events, feedAds.map(a => ({ ...a, subjectId: a.event_id ?? "" })), s(sp.q) ? [] : [4, 8]);
   const featVenues = ["the-loft-london", "riverside-events-center", "the-harper"].map(k => venues.find(v => v.slug === k)).filter(Boolean) as Listing[];
   const popServices = ["elite-sounds-dj", "taste-catering-co", "luxe-event-decor"].map(k => services.find(v => v.slug === k)).filter(Boolean) as Listing[];
   const popular = ["neon-nights", "summer-rooftop-party", "taste-tango-fest", "comedy-central-live"].map(k => events.find(e => e.slug === k)).filter(Boolean) as PublicEvent[];
+  // Organic fallback: the first curated popular event, else the first with a cover photo (never an image-less test fixture).
+  const featured = hero?.event ? { ...hero.event, cover_image: hero.event.cover_image ?? "/assets/gd/covers/summer-sessions.webp" } : (popular[0] ?? events.find(e => e.cover_image && e.location) ?? events[0]);
   const qs = (patch: Record<string, string | null>) => { const p = new URLSearchParams(); for (const [k, v] of Object.entries(sp)) if (typeof v === "string") p.set(k, v); for (const [k, v] of Object.entries(patch)) v == null ? p.delete(k) : p.set(k, v); return `/discover?${p}`; };
   const evHref = (e: PublicEvent) => `/events/${e.slug ?? e.id}`;
-  const lHref = (l: Listing) => `/discover/${l.kind}/${l.slug ?? l.id}`;
+  // Listing profiles live at /venues/[slug] and /services/[slug] (slug or id); /discover/<kind>/<slug> has no route and 404'd.
+  const lHref = (l: Listing) => `/${l.kind === "venue" ? "venues" : "services"}/${l.slug ?? l.id}`;
 
   return <div className="ds">
     <section className="ds-hero">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/assets/gd/hero-discover.webp" alt="" className="ds-hero-bg" />
       <div className="ds-hero-text"><h1>Discover incredible events, venues and services</h1><p>Concerts, festivals, private parties, venues, catering, DJs and more near you and around the world.</p></div>
-      {featured && <Link href={featHref(featured)} className="ds-feat" prefetch={false}><b className="ds-feat-h">{boosted ? <>Featured Event <span className="ds-sponsored">Sponsored</span></> : "Featured Event"}</b><div className="k-row" style={{ gap: 10 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={featured.cover_image} alt="" /><span className="ds-feat-date"><small>{dateBadge(featured.starts_at).mon}</small><b>{dateBadge(featured.starts_at).day}</b></span><span className="ds-feat-info"><b>{featured.name}</b><span><MapPin size={13} />{featured.location}</span><span><Clock size={13} />{time12(featured.starts_at)} – {time12(featured.ends_at)}</span></span><span className="ds-feat-go"><ChevronRight size={18} /></span></div></Link>}
+      {featured && <Link href={featHref(featured)} className="ds-feat" prefetch={false} {...(hero ? { rel: "sponsored nofollow" } : {})}>{hero && <AdView token={hero.token} />}<b className="ds-feat-h">{hero ? <>Featured Event <SponsoredLabel /></> : "Featured Event"}</b><div className="k-row" style={{ gap: 10 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={featured.cover_image || FALLBACK_COVER} alt="" /><span className="ds-feat-date"><small>{dateBadge(featured.starts_at).mon}</small><b>{dateBadge(featured.starts_at).day}</b></span><span className="ds-feat-info"><b>{featured.name}</b><span><MapPin size={13} />{featured.location}</span><span><Clock size={13} />{time12(featured.starts_at)} – {time12(featured.ends_at)}</span></span><span className="ds-feat-go"><ChevronRight size={18} /></span></div></Link>}
     </section>
     <section className="ds-panel">
       <div className="ds-tabs">{([["events", "Events", Ticket], ["venues", "Venues", Building2], ["services", "Services", Wrench]] as const).map(([k, l, I]) => <Link key={k} href={qs({ tab: k === "events" ? null : k, chip: null, results: results ? "1" : null })} aria-current={(tab === k) ? "page" : undefined}><I size={17} />{l}</Link>)}</div>
@@ -75,8 +85,10 @@ export default async function Discover({ searchParams }: { searchParams: Promise
     </div> : <div className={`ds-results ${view === "map" ? "with-map" : ""}`}>
       <div className="k-col" style={{ gap: 12, minWidth: 0 }}>
         <div className="k-between"><div className="k-row" style={{ gap: 12 }}><div className="k-seg solid">{([["cards", "Cards", LayoutGrid], ["list", "List", List], ["map", "Map", MapIcon]] as const).map(([k, l, I]) => <Link key={k} aria-current={(view === k) ? "page" : undefined} href={qs({ view: k === "cards" ? null : k })}><I size={14} />{l}</Link>)}</div><span className="k-small k-muted">{num(tab === "events" ? events.length : tab === "venues" ? venues.length : services.length)} results{s(sp.q) ? ` for “${s(sp.q)}”` : ""}</span></div><Link className="k-link" href="/discover">Back to Discover</Link></div>
-        {tab === "events" ? (events.length ? (view === "list" ? <div className="ds-list">{events.map(e => <Link key={e.id} href={resultHref(e)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" /><span className="k-grow"><b>{e.name}</b><span className="k-xs k-muted"><Calendar size={11} /> {dateShort(e.starts_at)} · {time12(e.starts_at)}</span><span className="k-xs k-muted"><MapPin size={11} /> {e.location}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b><Chip tone={e.remaining < 100 ? "red" : "green"}>{e.remaining < 100 ? `${e.remaining} left` : "Available"}</Chip></span></Link>)}</div> : <div className="ds-events ds-events-grid">{events.map(e => <EventCard key={e.id} e={e} saved={saved.has(`event:${e.id}`)} href={resultHref(e)} sponsored={sponsored.has(e.id)} />)}</div>) : <Empty title="No events match" text="Try another date, area or category." />)
-          : (() => { const L = tab === "venues" ? venues : services; return L.length ? (view === "list" ? <div className="ds-list">{L.map(l => <Link key={l.id} href={lHref(l)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image} alt="" /><span className="k-grow"><b>{l.name} {l.verified && <BadgeCheck size={13} className="k-blue" />}</b><span className="k-xs k-muted"><Star size={11} fill="#f59e0b" color="#f59e0b" /> {l.rating.toFixed(1)} ({l.review_count}) · {l.category}</span><span className="k-xs k-muted"><MapPin size={11} /> {l.location}{l.capacity_max ? ` · up to ${num(l.capacity_max)}` : ""}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{money(l.price_from)}</b><small className="k-xs k-muted">{l.price_unit}</small></span></Link>)}</div> : <div className="ds-events ds-events-grid">{L.map(l => <ListingCard key={l.id} l={l} href={lHref(l)} saved={saved.has(`listing:${l.id}`)} />)}</div>) : <Empty title={`No ${tab} match`} />; })()}
+        {tab === "events" && (s(sp.q) || view !== "cards") && <SponsoredRow items={feedAds} />}
+        {tab === "events" ? (events.length ? (view === "list" ? <div className="ds-list">{events.map(e => <Link key={e.id} href={resultHref(e)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || FALLBACK_COVER} alt="" /><span className="k-grow"><b>{e.name}</b><span className="k-xs k-muted"><Calendar size={11} /> {dateShort(e.starts_at)} · {time12(e.starts_at)}</span><span className="k-xs k-muted"><MapPin size={11} /> {e.location}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b><Chip tone={e.remaining < 100 ? "red" : "green"}>{e.remaining < 100 ? `${e.remaining} left` : "Available"}</Chip></span></Link>)}</div> : <div className="ds-events ds-events-grid">{s(sp.q) ? events.map(e => <EventCard key={e.id} e={e} saved={saved.has(`event:${e.id}`)} href={resultHref(e)} />)
+          : feed.map(f => f.kind === "organic" ? <EventCard key={f.item.id} e={f.item} saved={saved.has(`event:${f.item.id}`)} href={resultHref(f.item)} /> : <div key={f.slot.token} className="gd-sp-feed"><SponsoredCard s={f.slot} /></div>)}</div>) : <Empty title="No events match" text="Try another date, area or category." />)
+          : (() => { const L = tab === "venues" ? venues : services; return L.length ? (view === "list" ? <div className="ds-list">{L.map(l => <Link key={l.id} href={lHref(l)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || FALLBACK_COVER} alt="" /><span className="k-grow"><b>{l.name} {l.verified && <BadgeCheck size={13} className="k-blue" />}</b><span className="k-xs k-muted"><Star size={11} fill="#f59e0b" color="#f59e0b" /> {l.rating.toFixed(1)} ({l.review_count}) · {l.category}</span><span className="k-xs k-muted"><MapPin size={11} /> {l.location}{l.capacity_max ? ` · up to ${num(l.capacity_max)}` : ""}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{money(l.price_from)}</b><small className="k-xs k-muted">{l.price_unit}</small></span></Link>)}</div> : <div className="ds-events ds-events-grid">{L.map(l => <ListingCard key={l.id} l={l} href={lHref(l)} saved={saved.has(`listing:${l.id}`)} />)}</div>) : <Empty title={`No ${tab} match`} />; })()}
       </div>
       {view === "map" && <div className="ds-results-map"><MapView pins={(tab === "events" ? events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name, price: e.minPrice != null ? money(e.minPrice) : "" })) : (tab === "venues" ? venues : services).filter(l => l.lat).map(l => ({ id: l.id, lat: l.lat!, lng: l.lng!, label: l.name, price: money(l.price_from) })))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height="100%" showPrices ariaLabel="Results map" /></div>}
     </div>}
@@ -87,7 +99,7 @@ function EventCard({ e, saved, href, sponsored = false }: { e: PublicEvent; save
   const b = dateBadge(e.starts_at); const badge = sponsored ? "Sponsored" : String(e.settings.badge ?? (e.remaining < 100 ? "Last tickets" : ""));
   const rating = Number(e.settings.rating ?? 0), reviews = Number(e.settings.reviews ?? 0);
   return <article className="ds-ev">
-    <Link href={href} className="ds-ev-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" />{badge && <span className={`ds-badge ${BADGE_TONE[badge] ?? "blue"}`}>{badge}</span>}</Link>
+    <Link href={href} className="ds-ev-img" aria-label={`Open ${e.name}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || FALLBACK_COVER} alt="" />{badge && <span className={`ds-badge ${BADGE_TONE[badge] ?? "blue"}`}>{badge}</span>}</Link>
     <SaveHeart itemKey={`event:${e.id}`} saved={saved} className="ds-heart" label={e.name} size={17} />
     <div className="ds-ev-body">
       <div className="k-row" style={{ gap: 12, alignItems: "flex-start" }}><span className="ds-ev-date"><small>{b.mon}</small><b>{b.day}</b></span><span className="k-grow" style={{ minWidth: 0 }}><Link href={href}><b className="ds-ev-name">{e.name}</b></Link><span className="ds-ev-loc"><MapPin size={12} />{e.location}</span>{rating > 0 && <span className="ds-ev-rate"><Star size={13} fill="#f59e0b" color="#f59e0b" /><b>{rating.toFixed(1)}</b> ({reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k` : reviews})</span>}</span></div>
@@ -97,13 +109,13 @@ function EventCard({ e, saved, href, sponsored = false }: { e: PublicEvent; save
   </article>;
 }
 function MiniCard({ l, href, saved, service }: { l: Listing; href: string; saved: boolean; service?: boolean }) {
-  return <article className="ds-mc"><Link href={href} className="ds-mc-img" aria-label={l.name}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image} alt="" /></Link><SaveHeart itemKey={`listing:${l.id}`} saved={saved} className="ds-heart sm" label={l.name} size={15} />
+  return <article className="ds-mc"><Link href={href} className="ds-mc-img" aria-label={l.name}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || FALLBACK_COVER} alt="" /></Link><SaveHeart itemKey={`listing:${l.id}`} saved={saved} className="ds-heart sm" label={l.name} size={15} />
     <div className="ds-mc-body"><Link href={href}><b>{l.name}</b></Link>{!service && <div className="k-between ds-mc-meta"><span><MapPin size={10} />{l.location.split(",")[0]}, {l.city}</span><span>From {money(l.price_from)}/{l.price_unit.replace("per ", "")}</span></div>}
       <span className="ds-mc-rate"><Star size={11} fill="#f59e0b" color="#f59e0b" /><b>{l.rating.toFixed(1)}</b> ({l.review_count})</span>{service && <b className="ds-mc-price">From {money(l.price_from)}{l.price_unit.includes("guest") || l.price_unit.includes("person") ? " / person" : ""}</b>}
       <div className="k-row ds-mc-tags">{l.tags.slice(0, 3).map(t => <span key={t}>{t}</span>)}</div></div></article>;
 }
 function ListingCard({ l, href, saved }: { l: Listing; href: string; saved: boolean }) {
-  return <article className="ds-ev"><Link href={href} className="ds-ev-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image} alt="" />{l.badge && <span className="ds-badge blue">{l.badge}</span>}</Link><SaveHeart itemKey={`listing:${l.id}`} saved={saved} className="ds-heart" label={l.name} size={17} />
+  return <article className="ds-ev"><Link href={href} className="ds-ev-img" aria-label={`Open ${l.name}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || FALLBACK_COVER} alt="" />{l.badge && <span className="ds-badge blue">{l.badge}</span>}</Link><SaveHeart itemKey={`listing:${l.id}`} saved={saved} className="ds-heart" label={l.name} size={17} />
     <div className="ds-ev-body"><div className="k-between"><Link href={href}><b className="ds-ev-name">{l.name}</b></Link><b>{money(l.price_from)}<small className="k-xs k-muted"> /{l.price_unit.replace("per ", "")}</small></b></div>
       <span className="ds-ev-rate"><Star size={13} fill="#f59e0b" color="#f59e0b" /><b>{l.rating.toFixed(1)}</b> ({l.review_count} reviews){l.verified && <Chip tone="blue" icon={BadgeCheck}>Verified</Chip>}</span>
       <span className="ds-ev-loc"><MapPin size={12} />{l.location}{l.capacity_max ? ` · ${num(l.capacity_max)} capacity` : ` · ${l.category}`} · responds in {l.response_hours}h</span>

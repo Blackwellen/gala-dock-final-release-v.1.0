@@ -8,15 +8,26 @@ import { z } from "zod";
  */
 export type Risk = 0 | 1 | 2 | 3 | 4 | 5;
 export type Surface = "organizer" | "provider" | "both";
+/** Where a tool may be called from. Never "customer" (owner decision: no AI in the customer workspace); enforced by a CHECK on agent_tools. */
+export type Exposure = "organizer" | "provider" | "admin" | "api" | "mcp";
 export type Tool = {
   id: string; version: number; title: string; description: string; surface: Surface; risk: Risk; permission: string;
   mutation: boolean; reversible: boolean; idempotent: boolean; timeoutMs: number; retries: number;
   input: z.ZodTypeAny; amountMinor?: (input: Record<string, unknown>) => number; approvalNote?: string; affected?: (input: Record<string, unknown>) => string;
+  /** Surfaces that may call it (Q41). API/MCP get R0–R3 only (R4 → approval_required, R5 never). */
+  exposure: Exposure[];
+  /** Plan capability required (plan_entitlements / workspace override); R3/R4 need `agent.actions`. */
+  planCapability: string | null;
+  /** Per-workspace calls per minute, enforced in agent_execute_tool. */
+  ratePerMinute: number;
 };
 const id = z.string().uuid();
 const iso = z.string().datetime({ offset: true });
-const t = (x: Omit<Tool, "version" | "timeoutMs" | "retries" | "idempotent" | "reversible" | "mutation"> & Partial<Tool>): Tool =>
-  ({ version: 1, timeoutMs: 15000, retries: 2, idempotent: true, reversible: x.risk <= 2, mutation: x.risk >= 1, ...x });
+const exposureFor = (surface: Surface, risk: Risk): Exposure[] =>
+  [...(surface === "both" ? ["organizer", "provider"] as Exposure[] : [surface as Exposure]), ...(risk <= 3 ? ["api", "mcp"] as Exposure[] : [])];
+const t = (x: Omit<Tool, "version" | "timeoutMs" | "retries" | "idempotent" | "reversible" | "mutation" | "exposure" | "planCapability" | "ratePerMinute"> & Partial<Tool>): Tool =>
+  ({ version: 1, timeoutMs: 15000, retries: 2, idempotent: true, reversible: x.risk <= 2, mutation: x.risk >= 1, exposure: exposureFor(x.surface, x.risk),
+    planCapability: x.risk >= 3 ? "agent.actions" : null, ratePerMinute: x.risk >= 3 ? 10 : x.risk >= 1 ? 30 : 60, ...x });
 
 export const TOOLS: Tool[] = [
   // ── Organizer · R0
@@ -35,6 +46,10 @@ export const TOOLS: Tool[] = [
     input: z.object({ event_id: id, extra_costs: z.number().min(0).max(10_000_000).optional(), fee_pct: z.number().min(0).max(50).optional() }) }),
   t({ id: "seating.suggest", title: "Suggest seating", description: "Pack guests into tables of N, keeping groups together and flagging dietary needs per table. Saves nothing.", surface: "organizer", risk: 0, permission: "events.read",
     input: z.object({ event_id: id, table_size: z.number().int().min(2).max(30).optional(), include_pending: z.boolean().optional() }) }),
+  t({ id: "map.validate", title: "Validate event map", description: "Capacity, exits, clear routes, aisles, accessibility and ticket/zone bindings for an event's layout. Read only.", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id, version: z.number().int().min(1).optional() }) }),
+  t({ id: "map.bindings", title: "Map ticket bindings", description: "Which seats and areas on the published layout belong to each ticket tier and access zone. Read only.", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ event_id: id }) }),
   t({ id: "money.payables", title: "Payables", description: "Supplier payments due, scheduled or overdue.", surface: "organizer", risk: 0, permission: "finance.read", input: z.object({}) }),
   // ── Organizer · R1/R2
   t({ id: "draft.note", title: "Draft", description: "Save a draft (message, plan, checklist) for a human to review. Sends nothing.", surface: "both", risk: 1, permission: "events.read",
@@ -77,6 +92,50 @@ export const TOOLS: Tool[] = [
   t({ id: "quote.send", title: "Send a quote", description: "Issue a priced quote to the client.", surface: "provider", risk: 4, permission: "quotes.send",
     input: z.object({ item_id: id, items: z.array(z.object({ name: z.string().max(120), qty: z.number().min(0), unit_price: z.number().min(0) })).min(1).max(40), deposit_pct: z.number().int().min(0).max(100).optional(), valid_days: z.number().int().min(1).max(90).optional(), message: z.string().max(4000).optional() }),
     amountMinor: i => Math.round(((i.items as { qty: number; unit_price: number }[]) ?? []).reduce((a, x) => a + x.qty * x.unit_price, 0) * 100), approvalNote: "Commercial commitment to the client.", affected: i => `request ${i.item_id}` }),
+
+  // ── Q42 Organizer Agent domain hooks (R0 reads over the same domain functions the UI uses, as the human; event-scoped tools are
+  //    refused for events outside the run's workspace). Campaigns are read-only for the agent.
+  t({ id: "calendar.upcoming", title: "Upcoming calendar", description: "This workspace's events in the next N days with operational conflicts (crew, venue, supplier clashes).", surface: "organizer", risk: 0, permission: "events.read",
+    input: z.object({ within_days: z.number().int().min(1).max(365).optional() }) }),
+  t({ id: "event.conflicts", title: "Event conflicts", description: "Scheduling and resource conflicts for one event, with severity.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "event.ops_readiness", title: "Operations readiness", description: "Live-operations readiness: staffing, run sheet, suppliers on site, checks.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "compliance.overview", title: "Compliance overview", description: "Licences, permits, safety plans and requirements with submitted / pending / verified / expired status.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "hospitality.summary", title: "Hospitality summary", description: "Catering, bar and service schedule status for an event (counts only; no guest care details).", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "logistics.overview", title: "Logistics overview", description: "Travel, parking, loading windows and accommodation for an event.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "partners.overview", title: "Partners overview", description: "Sponsors, exhibitors and talent on an event with deliverable status.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "virtual.attendance", title: "Online attendance", description: "Online session attendance (live and replay) for a virtual or hybrid event.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id }) }),
+  t({ id: "campaigns.calendar", title: "Promotion calendar", description: "Scheduled promotion campaigns and blackouts in the next N days. Read only.", surface: "organizer", risk: 0, permission: "promotion.manage",
+    input: z.object({ within_days: z.number().int().min(1).max(180).optional() }) }),
+  t({ id: "campaigns.report", title: "Campaign report", description: "Delivery and conversion report for one campaign. Read only — the agent never sends campaigns.", surface: "organizer", risk: 0, permission: "promotion.manage", input: z.object({ campaign_id: id }) }),
+  t({ id: "sales.client", title: "Client overview", description: "A sales client's events, proposals, invoices and pipeline stage.", surface: "organizer", risk: 0, permission: "sales.read", input: z.object({ client_id: id }) }),
+  t({ id: "stock.report", title: "Stock report", description: "Bar stock, consumables and merchandise levels, reservations and low-stock items, optionally for one event.", surface: "organizer", risk: 0, permission: "events.read", input: z.object({ event_id: id.optional() }) }),
+  t({ id: "comms.inbox", title: "Inbox", description: "Recent conversations in this workspace with unread flags.", surface: "both", risk: 0, permission: "agent.use", input: z.object({ limit: z.number().int().min(1).max(50).optional() }) }),
+  // ── Q43 Provider Agent domain hooks
+  t({ id: "bookings.upcoming", title: "Upcoming bookings", description: "Confirmed and held jobs in the next N days with time, space, guests and next action.", surface: "provider", risk: 0, permission: "bookings.read",
+    input: z.object({ within_days: z.number().int().min(1).max(365).optional() }) }),
+  t({ id: "opportunities.sla", title: "Response SLA", description: "Open requests ordered by response deadline with hours left and overdue flags.", surface: "provider", risk: 0, permission: "opportunities.read", input: z.object({}) }),
+  t({ id: "listing.readiness", title: "Listing readiness", description: "What a listing still needs before it can be published or booked.", surface: "provider", risk: 0, permission: "bookings.read", input: z.object({ listing_id: id }) }),
+  t({ id: "listing.availability", title: "Listing availability", description: "Whether a listing is free for a window (holds, bookings, blocks, capacity).", surface: "provider", risk: 0, permission: "opportunities.read",
+    input: z.object({ listing_id: id, starts_at: iso, ends_at: iso, guests: z.number().int().min(1).max(100000).optional() }) }),
+  t({ id: "trust.summary", title: "Trust status", description: "Verification, insurance and document status for this workspace.", surface: "provider", risk: 0, permission: "bookings.read", input: z.object({}) }),
+  t({ id: "money.release_readiness", title: "Payout readiness", description: "Whether payouts can be released (connected account, verification) plus protected / releasing / released totals.", surface: "provider", risk: 0, permission: "money.read", input: z.object({}) }),
+
+  t({ id: "quote.draft", title: "Draft a quote", description: "Save a priced quote as a draft for a human to review and send. Sends nothing.", surface: "provider", risk: 1, permission: "quotes.send",
+    input: z.object({ item_id: id, items: z.array(z.object({ name: z.string().max(120), qty: z.number().min(0), unit_price: z.number().min(0) })).min(1).max(40), deposit_pct: z.number().int().min(0).max(100).optional(), valid_days: z.number().int().min(1).max(90).optional(), message: z.string().max(4000).optional() }),
+    amountMinor: i => Math.round(((i.items as { qty: number; unit_price: number }[]) ?? []).reduce((a, x) => a + x.qty * x.unit_price, 0) * 100), affected: i => `request ${i.item_id}` }),
+  t({ id: "crew.assign", title: "Assign crew", description: "Assign a crew member to a confirmed job (refused if it clashes with their other shifts).", surface: "provider", risk: 2, permission: "team.manage",
+    input: z.object({ job_id: id, crew_id: id, role: z.string().min(2).max(60).optional() }), affected: i => `job ${i.job_id}` }),
+  t({ id: "equipment.allocate", title: "Allocate equipment", description: "Reserve equipment for a job (refused beyond available quantity).", surface: "provider", risk: 2, permission: "bookings.manage",
+    input: z.object({ job_id: id, equipment_id: id, quantity: z.number().int().min(1).max(10000) }), affected: i => `job ${i.job_id}` }),
+  t({ id: "availability.emergency_window", title: "Offer emergency availability", description: "Publish a window when you can take emergency work (visible to organizers' emergency requests; not a booking).", surface: "provider", risk: 3, permission: "availability.manage",
+    input: z.object({ starts_at: iso, ends_at: iso, listing_id: id.optional(), space_id: id.optional(), note: z.string().max(500).optional() }), affected: () => "emergency availability" }),
+  // ── Q42/Q43 shared: memory (data-minimised, user-resettable) and mission control
+  t({ exposure: ["organizer", "provider"], id: "memory.recall", title: "Recall preferences", description: "Saved working preferences and facts for this workspace (and your own), newest first.", surface: "both", risk: 0, permission: "agent.use",
+    input: z.object({ kind: z.enum(["preference", "fact", "summary"]).optional() }) }),
+  t({ exposure: ["organizer", "provider"], id: "memory.remember", title: "Remember a preference", description: "Save a short working preference or fact (no personal, contact, health or payment data). Users can reset memory in Settings → Agent.", surface: "both", risk: 2, permission: "agent.use",
+    input: z.object({ key: z.string().regex(/^[a-z][a-z0-9_.]{1,59}$/), value: z.string().min(1).max(500), kind: z.enum(["preference", "fact", "summary"]).optional(), scope: z.enum(["workspace", "user"]).optional() }) }),
+  t({ exposure: ["organizer", "provider"], id: "mission.wait_for", title: "Wait for a response", description: "Pause the mission until a request changes status (e.g. the provider responds) or N hours pass. Uses no model tokens while waiting.", surface: "both", risk: 0, permission: "agent.use",
+    input: z.object({ item_id: id, hours: z.number().int().min(1).max(336).optional() }) }),
 ];
 export const TOOL = new Map(TOOLS.map(x => [x.id, x]));
 
@@ -118,9 +177,12 @@ export function inQuietHours(p: Policy, now = new Date()) {
   return from > to ? hm >= from || hm < to : hm >= from && hm < to;
 }
 
-/** Tool catalogue text for the planner: only tools this surface + policy allows. */
-export function catalogFor(surface: "organizer" | "provider", p: Policy) {
-  return TOOLS.filter(x => (x.surface === surface || x.surface === "both") && (!p.allowed_tools || p.allowed_tools.includes(x.id)) && x.risk < 5)
+/**
+ * Tool catalogue text for the planner: only tools this surface + policy allows. `actions: false` (plan without `agent.actions`, e.g.
+ * Starter — coordinator decision 2026-10-29: Starter = R0–R2) hides R3/R4 so the planner never proposes what the database would refuse.
+ */
+export function catalogFor(surface: "organizer" | "provider", p: Policy, opts: { actions?: boolean } = {}) {
+  return TOOLS.filter(x => x.exposure.includes(surface) && (!p.allowed_tools || p.allowed_tools.includes(x.id)) && x.risk < 5 && (opts.actions !== false || x.risk <= 2))
     .map(x => ({ id: x.id, risk: `R${x.risk}`, title: x.title, description: x.description, input: describe(x.input) }));
 }
 function describe(s: z.ZodTypeAny): unknown {

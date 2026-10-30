@@ -11,7 +11,7 @@
 .cp-phases b { display: block; font-size: 12.5px; color: var(--k-ink); } .cp-phases em { display: block; font-style: normal; font-size: 12px; color: var(--k-ink-2); } .cp-phases small { display: block; font-size: 11px; color: var(--k-muted); }
 .cp-phases li[data-state="cur"] b, .cp-phases li[data-state="cur"] em { color: var(--k-blue); }
 .cp-phases li > span:last-child { background: transparent; }
-.cp-phases li:not(:last-child)::after { top: 11px; left: 30px; }
+.cp-phases li:not(:last-child)::after { top: 11px; left: 36px; } /* W02: was 30px, 4px left of the label's white mask, so "-6+ weeks" showed a dash */
 .cp-phases li > span:last-child { padding-top: 0; }
 .cp-phases li > span:last-child b { background: #fff; display: inline-block; padding-right: 6px; }
 .cp-date { display: flex; gap: 14px; background: #f5f8ff; border-radius: 10px; padding: 14px 16px; }
@@ -60,3 +60,54 @@
 .cp-dl-card { padding: 4px 8px; }
 .cp-grid { margin-top: -2px; }
 .cp-win{min-width:110px;text-align:center;color:var(--k-ink)}
+@media(max-width:480px) {
+ .cp-tabs { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;max-width:100%; }
+ .cp-tabs a { justify-content:center;min-width:0;min-height:44px;height:auto;padding:6px 4px;line-height:1.25;text-align:center; }
+ .cp-tabs a svg { display:none; }
+}
+
+/* W02 pass 4 — CU-005 structure at reference density (design #93): journey card 119px; one board row of fixed height (531px)
+   holding the Timeline/Checklist card and the Event day plan rail, each column scrolling inside its card; the helper bar sits
+   in the reference's bottom slot (y 955) instead of being pushed below a long checklist. */
+@media (min-width: 1100px) {
+  .cp-journey { height: 119px; padding: 8px 16px 8px 16px; margin-top: 0; }
+  .cp-journey > div:first-child > .k-row h2 { font-size: 17px; }
+  .cp-phases { margin-top: 14px; }
+  .cp-date { padding: 10px 16px; align-self: stretch; margin: 0 -6px 0 0; }
+  .cp-date p { margin: 2px 0 6px; }
+  .cp-grid { height: 531px; margin-top: -1px; gap: 14px; align-items: stretch; }
+  .cp-grid > .ce-card { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .cp-cols { flex: 1; min-height: 0; }
+  .cp-cols > div { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 6px; }
+  .cp-dl { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+  .cp-agent { height: 62px; margin-top: -2px; }
+}
+@media (min-width: 1100px) and (max-width: 1360px) { .cp-grid { height: 600px; } }
+@media (min-width: 1100px) {
+  .cp-main .k-select { width: 96px; height: 34px; }
+  .cp-main .k-btn.outline { height: 34px; white-space: nowrap; flex-shrink: 0; }
+  .cp-cat li { padding: 1px 0; min-height: 25px; }
+  .cp-cat li .eh-check { width: 16px; height: 16px; margin: 0; }
+  .cp-cat ul { padding: 2px 12px; }
+}
+/* W02 pass 4 — phone (≤480px), PWA #175 "Emma's Birthday Party Timeline": no journey stepper; Timeline / Checklist / Day Plan
+   segmented control first, the list as one card per row, and "Need to change the date?" as a card near the bottom. */
+@media (max-width: 480px) {
+  .c-root .cp-journey { order: 8; display: block; padding: 0; background: transparent; border: 0; box-shadow: none; height: auto; }
+  .c-root .cp-journey > div:first-child { display: none; }
+  .c-root .cp-agent { order: 7; }
+  .c-root .cp-grid { height: auto; }
+  .c-root .cp-main { padding: 8px; }
+  .c-root .cp-main > .k-between { flex-direction: column; align-items: stretch; gap: 8px; }
+  .c-root .cp-main > .k-between > .k-row { justify-content: space-between; }
+  .c-root .cp-month ul, .c-root .cp-cat ul { margin-left: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px; }
+  .c-root .cp-month li, .c-root .cp-cat li { padding: 9px 10px; border: 1px solid var(--k-line); border-radius: 10px; background: #fff; }
+}
+@media (max-width: 480px) {
+  .c-root .cp-main > .k-between > .k-row { flex-wrap: nowrap; gap: 6px; }
+  .c-root .cp-main > .k-between > .k-row .k-select { width: 92px; min-width: 0; }
+  .c-root .cp-main > .k-between > .k-row .k-btn { padding: 0 10px; white-space: nowrap; }
+  .c-root .cp-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .c-root .cp-filters a { white-space: nowrap; flex-shrink: 0; }
+  .c-root .cp-check > .k-between { flex-wrap: wrap; gap: 8px; }
+}

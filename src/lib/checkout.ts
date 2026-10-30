@@ -2,36 +2,35 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped, type Db } from "@/lib/workspace/db";
 import { stripe } from "@/lib/stripe";
+import { paymentDeps } from "@/lib/payments/server";
+import { getDirectPaymentStatus } from "@/lib/payments/service";
 
 export const CHECKOUT_COOKIE = (eventId: string) => `gd_co_${eventId.replace(/-/g, "").slice(0, 12)}`;
-export type Line = { tier_id: string; name: string; unit: number; qty: number; seats: string[] };
-export type Summary = { kind: "primary" | "resale"; lines: Line[]; subtotal: number; fee: number; commission: number; total: number; expiresAt: string | null; currency: string };
-const r2 = (n: number) => Math.round(n * 100) / 100;
+/** `unit` is the price paid per ticket after any code discount (what Stripe charges); `listUnit` is the tier's face price. */
+export type Line = { tier_id: string; name: string; unit: number; qty: number; seats: string[]; listUnit?: number; discountUnit?: number };
+export type AppliedCode = { code: string; purpose: "discount" | "access"; kind: "percent" | "amount"; amount: number };
+export type Summary = { kind: "primary" | "resale"; lines: Line[]; subtotal: number; fee: number; commission: number; total: number; expiresAt: string | null; currency: string;
+  discount?: number; codes?: AppliedCode[] };
+type Quote = { kind: "primary" | "resale"; currency: string; expires_at: string | null; subtotal_minor: number; discount_minor: number; fee_minor: number; commission_minor: number; total_minor: number;
+  lines: { tier_id: string; name: string; unit_minor: number; discount_minor: number; net_unit_minor: number; qty: number; seats: string[] }[]; codes: AppliedCode[] };
+const pounds = (minor: number) => Number(minor) / 100;
 
-/** Prices an order from what the database actually holds for this token (never from client input). `db` may be the caller's own client. */
-export async function summarise(eventId: string, token: string, db: Db = untyped(createAdminClient() as never)): Promise<Summary> {
-  const [{ data: holds }, { data: resale }, { data: tiers }, { data: fee }] = await Promise.all([
-    db.rpc("checkout_holds", { p_event: eventId, p_token: token }),
-    db.rpc("resale_holds_for", { p_token: token }),
-    db.from("ticket_tiers").select("id,name,price").eq("event_id", eventId),
-    db.rpc("ticket_fee_config"),
-  ]);
-  const h = (holds ?? { ga: [], seats: [] }) as { ga: { tier_id: string; qty: number; expires_at: string }[]; seats: { seat_key: string; label: string; tier_id: string; expires_at: string }[] };
-  const tier = new Map((tiers ?? []).map((t: { id: string; name: string; price: number }) => [t.id, t]));
-  const lines = new Map<string, Line>();
-  for (const g of h.ga) { const t = tier.get(g.tier_id); if (t) lines.set(g.tier_id, { tier_id: g.tier_id, name: t.name, unit: Number(t.price), qty: g.qty, seats: [] }); }
-  for (const s of h.seats) { const t = tier.get(s.tier_id); if (!t) continue; const l = lines.get(s.tier_id) ?? { tier_id: s.tier_id, name: t.name, unit: Number(t.price), qty: 0, seats: [] }; l.qty += 1; l.seats.push(s.label || s.seat_key); lines.set(s.tier_id, l); }
-  // Resale listings held by this token become their own lines (one order is either primary or resale).
-  const rs = ((resale ?? []) as { ticket_id: string; tier_id: string; tier: string; seat: string | null; price: number; expires_at: string }[]);
-  for (const r of rs) { const key = `resale:${r.tier_id}:${r.price}`; const l = lines.get(key) ?? { tier_id: r.tier_id, name: `${r.tier} (resale)`, unit: Number(r.price), qty: 0, seats: [] }; l.qty += 1; if (r.seat) l.seats.push(r.seat); lines.set(key, l); }
-  const cfg = (fee ?? { fixed: 0, pct_bps: 0 }) as { fixed?: number; pct_bps?: number; seller_bps?: number };
-  const list = [...lines.values()];
-  const subtotal = r2(list.reduce((a, l) => a + l.unit * l.qty, 0));
-  const feeAmt = r2(list.reduce((a, l) => a + (l.unit > 0 ? l.qty * (Number(cfg.fixed ?? 0) + (l.unit * Number(cfg.pct_bps ?? 0)) / 10000) : 0), 0));
-  // Seller commission on primary sales (deducted from the organiser's proceeds, never added to the buyer's price).
-  const commission = rs.length ? 0 : r2(subtotal * Number(cfg.seller_bps ?? 0) / 10000);
-  const exp = [...h.ga.map(g => g.expires_at), ...h.seats.map(s => s.expires_at), ...rs.map(r => r.expires_at)].sort()[0] ?? null;
-  return { kind: rs.length ? "resale" : "primary", lines: list, subtotal, fee: feeAmt, commission, total: r2(subtotal + feeAmt), expiresAt: exp, currency: "GBP" };
+/**
+ * Prices an order from what the database actually holds for this token (never from client input). The pence quote comes from
+ * `checkout_quote` (Q20: lines, code discounts, booking fee, VAT rules, commission) — the same function the order insert is
+ * checked against, so the order amount can't drift from it. Always read with the service client (token-gated; the `db`
+ * argument is kept for call-site compatibility).
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept so existing call sites (which pass their own client) stay valid
+export async function summarise(eventId: string, token: string, _db?: Db): Promise<Summary> {
+  const db = untyped(createAdminClient() as never);
+  const { data, error } = await db.rpc("checkout_quote", { p_event: eventId, p_token: token });
+  if (error || !data) throw new Error("Could not price this order.");
+  const q = data as Quote;
+  const lines: Line[] = q.lines.map(l => ({ tier_id: l.tier_id, name: l.name, unit: pounds(l.net_unit_minor), qty: l.qty, seats: l.seats ?? [],
+    ...(l.discount_minor > 0 ? { listUnit: pounds(l.unit_minor), discountUnit: pounds(l.discount_minor) } : {}) }));
+  return { kind: q.kind, lines, subtotal: pounds(q.subtotal_minor), fee: pounds(q.fee_minor), commission: pounds(q.commission_minor), total: pounds(q.total_minor),
+    expiresAt: q.expires_at, currency: q.currency, discount: pounds(q.discount_minor), codes: (q.codes ?? []).map(({ code, purpose, kind, amount }) => ({ code, purpose, kind, amount: Number(amount) })) };
 }
 
 /** Issues tickets for a paid (or free) order exactly once. Safe to call from both the redirect and the webhook. */
@@ -44,15 +43,25 @@ export async function finalise(orderRef: string) {
   if (o.status === "issued") return { ok: true as const, order: o };
   if (o.amount > 0) {
     if (!o.stripe_session) return { ok: false as const, error: "not_paid" };
+    if (o.strategy === "direct") {
+      // Direct charge (Q07): ask Stripe in the seller's account context; the RPC verifies account + amount and posts the memo ledger once.
+      const deps = paymentDeps(db);
+      if (!deps) return { ok: false as const, error: "not_paid" };
+      const st = await getDirectPaymentStatus(deps, o.connected_account_id, o.stripe_session);
+      if (!st.paid || st.reference !== orderRef || !st.paymentIntent) return { ok: false as const, error: "not_paid" };
+      const { data: applied, error: pe } = await db.rpc("checkout_order_direct_paid", { p_ref: orderRef, p_pi: st.paymentIntent, p_charge: st.charge ?? "", p_amount_minor: st.amountMinor, p_account: o.connected_account_id, p_application_fee: null });
+      if (pe || applied !== "applied") return { ok: false as const, error: "not_paid" };
+    } else {
     const s = await stripe<{ payment_status: string; amount_total: number; metadata: Record<string, string> }>(`checkout/sessions/${o.stripe_session}`);
     if (s.payment_status !== "paid" || s.metadata.order_ref !== orderRef || s.amount_total !== Math.round((Number(o.amount) + Number(o.fee)) * 100)) return { ok: false as const, error: "not_paid" };
     await db.from("checkout_orders").update({ status: "paid", updated_at: new Date().toISOString() }).eq("order_ref", orderRef).eq("status", "pending");
+    }
   }
   const { data: prof } = await db.from("profiles").select("full_name").eq("id", o.buyer_id).maybeSingle();
   const { error } = await db.rpc(o.kind === "resale" ? "issue_resale" : "issue_checkout", { p_token: o.token, p_order_ref: orderRef, p_attendee: prof?.full_name ?? "", p_holder: o.buyer_id });
   if (error) {
     // Paid but the hold had lapsed: refund automatically rather than keep money without tickets.
-    if (o.amount > 0 && /hold_expired|seat_unavailable/.test(error.message)) {
+    if (o.amount > 0 && /hold_expired|seat_unavailable|original_payment_required/.test(error.message)) {
       // Durable queue first. A failed or pending Stripe request must never look like a completed refund.
       // The existing worker owns retries and the stable per-order idempotency key.
       const queued = await db.from("checkout_orders").update({ refund_status: "due", refund_reason: "hold_expired", updated_at: new Date().toISOString() }).eq("order_ref", orderRef).eq("refund_status", "none");

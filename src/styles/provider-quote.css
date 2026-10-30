@@ -217,3 +217,6 @@ svg.green{color:#16b67a}svg.red{color:#ec2f52}svg.blue{color:#4b55a8}
 .qr-three{align-items:start}
 .qr-switch{flex-wrap:nowrap;white-space:nowrap}
 .qr-opt select{width:96px}
+/* W12 wizard sweep (≤520): .qb-cost drops to 2 tracks but .qb-total kept `grid-column: 2/4`, so the grid grew an implicit third
+   track and squashed the label (same defect as the plan-wizard tiles) — end the total at the last explicit line. */
+@media (max-width:520px){.qb-total{grid-column:2/-1}}

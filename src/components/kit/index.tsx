@@ -93,7 +93,8 @@ export function BarChart({ series, labels, height = 150, colors = ["var(--k-blue
   </div>;
 }
 /** Multi-line chart. */
-export function LineChart({ series, labels, height = 150, yFormat = (v: number) => String(v), dashed = [] }: { series: { data: (number | null)[]; color: string; label: string; fill?: boolean }[]; labels: string[]; height?: number; yFormat?: (v: number) => string; dashed?: number[] }) {
+/** `marker` (optional) draws a labelled vertical rule at a fractional label index, e.g. "Today" between two months. */
+export function LineChart({ series, labels, height = 150, yFormat = (v: number) => String(v), dashed = [], marker }: { series: { data: (number | null)[]; color: string; label: string; fill?: boolean }[]; labels: string[]; height?: number; yFormat?: (v: number) => string; dashed?: number[]; marker?: { at: number; label: string } }) {
   const w = 400, vals = series.flatMap(s => s.data.filter((v): v is number => v != null)), max = Math.max(1, ...vals);
   const nice = Math.ceil(max / Math.pow(10, Math.floor(Math.log10(max)))) * Math.pow(10, Math.floor(Math.log10(max)));
   const ticks = [0, .25, .5, .75, 1].map(t => t * nice);
@@ -104,7 +105,9 @@ export function LineChart({ series, labels, height = 150, yFormat = (v: number) 
       <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" style={{ width: "100%", height, display: "block", overflow: "visible" }}>
         {ticks.slice(1).map(t => <line key={t} x1={0} x2={w} y1={y(t)} y2={y(t)} stroke="#eef1f7" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />)}
         {series.map((s, si) => { const pts = s.data.map((v, i) => v == null ? null : `${x(i)},${y(v)}`).filter(Boolean) as string[]; if (pts.length < 2) return null; return <g key={si}>{s.fill && <path d={`M${pts.join(" L")} L${x(s.data.length - 1)},${height} L0,${height} Z`} fill={s.color} opacity=".08" />}<polyline points={pts.join(" ")} fill="none" stroke={s.color} strokeWidth={2} strokeDasharray={dashed.includes(si) ? "5 4" : undefined} vectorEffect="non-scaling-stroke" strokeLinejoin="round" /></g>; })}
+        {marker && marker.at >= 0 && marker.at <= labels.length - 1 && <line x1={x(marker.at)} x2={x(marker.at)} y1={0} y2={height} stroke="#94a3b8" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />}
       </svg>
+      {marker && marker.at >= 0 && marker.at <= labels.length - 1 && <span style={{ position: "relative", display: "block", height: 0 }}><span style={{ position: "absolute", left: `${(marker.at / Math.max(1, labels.length - 1)) * 100}%`, top: -height - 14, transform: "translateX(-50%)", fontSize: 10, color: "var(--k-ink-2)", whiteSpace: "nowrap" }}>{marker.label}</span></span>}
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>{labels.map((l, i) => <span key={i} style={{ whiteSpace: "nowrap", visibility: labels.length > 8 && i % Math.ceil(labels.length / 6) ? "hidden" : "visible" }}>{l}</span>)}</div>
     </div>
   </div>;

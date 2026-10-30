@@ -3,32 +3,44 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getOrganizer, getCustomer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
+import { untyped } from "@/lib/workspace/db";
+import { isTimezone } from "@/lib/master-data";
+import { transitionEvent } from "@/lib/events/lifecycle";
 
 const Id = z.string().uuid();
-const LOCKED = ["live", "completed", "closed"];
 
-/** Duplicate an event's plan structure only (no guests, payments, tickets sold, messages). Explicit user action. */
-export async function duplicateEvent(eventId: string): Promise<ActionResult> {
+const DupInput = z.object({
+  starts_at: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/, "Choose the new start date and time."),
+  timezone: z.string().refine(isTimezone, "Choose a timezone."),
+  name: z.string().trim().max(120).optional(),
+  confirm: z.literal(true, { message: "Confirm what will and won't be copied." }),
+  request_id: z.string().uuid().optional(),
+});
+/**
+ * Duplicate an event to a new date (server-side, one transaction: `duplicate_event`). Programme, run sheet, task deadlines and
+ * ticket windows keep their offset from the start; only allow-listed settings are copied; guests, tickets, orders, payments,
+ * bookings/holds, seats, shifts, incidents, files, share links, venue confirmation and permits are never copied. Audited.
+ */
+export async function duplicateEvent(eventId: string, input?: unknown): Promise<ActionResult<{ id: string }>> {
   const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
+  const p = DupInput.safeParse(input ?? {});
+  if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "Choose the new date and confirm the copy." };
   const ctx = await getOrganizer();
-  const { data: e } = await ctx.supabase.from("events").select("*").eq("id", id.data).eq("workspace_id", ctx.workspace.id).maybeSingle();
+  const { data: e } = await ctx.supabase.from("events").select("id").eq("id", id.data).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) return { ok: false, error: "Event not found in this workspace." };
-  const { data: copy, error } = await ctx.supabase.from("events").insert({
-    owner_id: ctx.user.id, workspace_id: ctx.workspace.id, management: "professional", name: `${e.name} (copy)`.slice(0, 120), event_type: e.event_type,
-    visibility: "private", status: "draft", timezone: e.timezone, venue_name: e.venue_name, location: e.location, city: e.city, capacity: e.capacity,
-    budget_total: e.budget_total, revenue_goal: e.revenue_goal, target_profit: e.target_profit, currency: e.currency, description: e.description, goal: e.goal,
-    cover_image: e.cover_image, client_name: e.client_name, tags: e.tags, settings: { ...(e.settings as object), duplicated_from: e.id },
-  }).select("id").single();
-  if (error || !copy) return { ok: false, error: "Could not duplicate the event." };
-  const { data: tiers } = await ctx.supabase.from("ticket_tiers").select("name,description,kind,price,quantity,order_limit,allocation,color,sort,badge").eq("event_id", e.id);
-  if (tiers?.length) await ctx.supabase.from("ticket_tiers").insert(tiers.map(t => ({ ...t, event_id: copy.id, status: "draft" as const, sold: 0, held: 0 })));
-  const { data: prog } = await ctx.supabase.from("programme_items").select("title,detail,area,kind,duration_minutes,starts_at,image").eq("event_id", e.id).eq("kind", "programme");
-  if (prog?.length) await ctx.supabase.from("programme_items").insert(prog.map(p => ({ ...p, event_id: copy.id })));
+  const { data, error } = await untyped(ctx.supabase).rpc("duplicate_event", { p_source: e.id, p_starts_local: p.data.starts_at, p_timezone: p.data.timezone, p_confirm: true, p_name: p.data.name || null, p_request_id: p.data.request_id ?? null });
+  if (error) {
+    const m = error.message;
+    return { ok: false, error: /new_date_in_past/.test(m) ? "The new date must be in the future." : /invalid_timezone/.test(m) ? "Choose a valid timezone." : /not_authorized/.test(m) ? "You don't have permission to duplicate events in this workspace." : "Could not duplicate the event." };
+  }
+  const r = data as { id: string; copied?: { tiers: number; programme: number; tasks: number } };
   revalidatePath("/organizer/events");
-  return { ok: true, message: "Draft copy created — guests, orders and payments were not copied.", redirect: `/organizer/events/${copy.id}` };
+  const c = r.copied, n = (k: number, w: string) => `${k} ${w}${k === 1 ? "" : "s"}`;
+  return { ok: true, data: { id: r.id }, redirect: `/organizer/events/${r.id}`,
+    message: `Draft copy created${c ? ` with ${n(c.programme, "programme item")}, ${n(c.tasks, "task")} and ${n(c.tiers, "ticket tier")} moved to the new date` : ""}. Guests, orders, payments, bookings and permits were not copied.` };
 }
 
-/** Archive: not allowed while live; financial records are preserved. */
+/** Archive: not allowed while live; financial records are preserved. Runs through the guarded lifecycle command. */
 export async function archiveEvent(eventId: string): Promise<ActionResult> {
   const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
   const ctx = await getOrganizer();
@@ -36,10 +48,8 @@ export async function archiveEvent(eventId: string): Promise<ActionResult> {
   const { data: e } = await ctx.supabase.from("events").select("id,status,name").eq("id", id.data).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) return { ok: false, error: "Event not found in this workspace." };
   if (e.status === "live") return { ok: false, error: "A live event can't be archived. End the event first." };
-  const { count } = await ctx.supabase.from("tickets").select("id", { count: "exact", head: true }).eq("event_id", e.id).eq("status", "valid");
-  if ((count ?? 0) > 0 && !LOCKED.includes(e.status)) return { ok: false, error: `${count} valid tickets exist. Cancel or refund them (or complete the event) before archiving.` };
-  const { error } = await ctx.supabase.from("events").update({ status: "archived", updated_at: new Date().toISOString() }).eq("id", e.id);
-  if (error) return { ok: false, error: "Could not archive the event." };
+  const r = await transitionEvent(ctx.supabase, e.id, "archived", e.status);
+  if (!r.ok) return r;
   revalidatePath("/organizer/events");
   return { ok: true, message: `${e.name} archived.` };
 }
@@ -65,16 +75,25 @@ export async function cancelEvent(eventId: string, reason: string, cause: "organ
   return { ok: true, message: `${e.name} cancelled. ${r.tickets_voided} ticket${r.tickets_voided === 1 ? "" : "s"} voided; ${r.orders_to_refund} order${r.orders_to_refund === 1 ? "" : "s"} will be refunded in full and buyers have been told.${fees}` };
 }
 
-/** Consumer event duplicate (Customer App). */
-export async function duplicateMyEvent(eventId: string): Promise<ActionResult> {
+/**
+ * Consumer event duplicate (Customer App): same server command and scrub rules as the organiser path (`duplicate_event`) —
+ * a new future date + timezone and an explicit confirmation are required; guests, tickets, payments, bookings and files are never copied.
+ */
+export async function duplicateMyEvent(eventId: string, input?: unknown): Promise<ActionResult<{ id: string }>> {
   const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
+  const p = DupInput.safeParse(input ?? {});
+  if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "Choose the new date and confirm the copy." };
   const ctx = await getCustomer();
-  const { data: e } = await ctx.supabase.from("events").select("*").eq("id", id.data).eq("owner_id", ctx.user.id).maybeSingle();
+  const { data: e } = await ctx.supabase.from("events").select("id").eq("id", id.data).eq("owner_id", ctx.user.id).is("workspace_id", null).maybeSingle();
   if (!e) return { ok: false, error: "Event not found." };
-  const { data: copy, error } = await ctx.supabase.from("events").insert({ owner_id: ctx.user.id, management: "consumer", name: `${e.name} (copy)`.slice(0, 120), event_type: e.event_type, visibility: "private", status: "draft", guest_count: e.guest_count, budget_total: e.budget_total, description: e.description, cover_image: e.cover_image, tags: e.tags, priorities: e.priorities, city: e.city }).select("id").single();
-  if (error || !copy) return { ok: false, error: "Could not duplicate the event." };
+  const { data, error } = await untyped(ctx.supabase).rpc("duplicate_event", { p_source: e.id, p_starts_local: p.data.starts_at, p_timezone: p.data.timezone, p_confirm: true, p_name: p.data.name || null, p_request_id: p.data.request_id ?? null });
+  if (error) {
+    const m = error.message;
+    return { ok: false, error: /new_date_in_past/.test(m) ? "The new date must be in the future." : /invalid_timezone/.test(m) ? "Choose a valid timezone." : "Could not duplicate the event." };
+  }
+  const r = data as { id: string };
   revalidatePath("/account/events");
-  return { ok: true, message: "Draft copy created.", redirect: `/account/events/${copy.id}` };
+  return { ok: true, data: { id: r.id }, message: "Draft copy created for the new date. Guests, tickets, payments and bookings were not copied.", redirect: `/account/events/${r.id}` };
 }
 
 const ImportRow = z.object({ name: z.string().trim().min(1).max(120), event_type: z.string().trim().max(40).optional(), date: z.string().trim().optional(), venue: z.string().trim().max(120).optional(), capacity: z.coerce.number().int().min(0).max(500000).optional(), budget: z.coerce.number().min(0).max(1e9).optional() });

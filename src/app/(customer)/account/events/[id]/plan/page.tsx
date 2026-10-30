@@ -1,19 +1,23 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { UrlSelect } from "@/components/customer/url-select";
-import { CalendarClock, CalendarDays, CheckSquare, ClipboardList, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, CheckCircle2, Circle, Sun, MapPin, Utensils, Music2, Ticket, CreditCard, MoreHorizontal, ArrowRight, Sparkles, Send, Building2, Flower2, Clock, PartyPopper, Wand2, MessageSquareMore } from "lucide-react";
+import { CalendarClock, CalendarDays, CheckSquare, ClipboardList, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, CheckCircle2, Circle, Sun, MapPin, Utensils, Music2, Ticket, CreditCard, ArrowRight, Sparkles, Send, Building2, Flower2, Clock, PartyPopper, Wand2, MessageSquareMore } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { CuEventHeader } from "@/components/customer/event-header";
 import { TaskCheck } from "@/components/organizer/event/controls";
 import { AddTaskBtn, AddDayItem, SharePlan } from "@/components/customer/plan-client";
 import { Avatar } from "@/components/kit";
+import { EventDateChange } from "@/components/customer/event-date-change";
 
 import { dayMonth, time12 } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
 
 export const metadata = { title: "Plan" };
 const CAT_ICON: Record<string, [React.ComponentType<{ size?: number }>, string]> = { "Venue & Location": [MapPin, "#e11d48"], "Food & Drink": [Utensils, "#e11d48"], Entertainment: [Music2, "#7c3aed"], "Guests & Tickets": [Ticket, "#e11d48"], Payments: [CreditCard, "#2563eb"] };
+// Tasks created outside the planner (agent, quick add) carry raw slugs ("venue", "food", "meeting"); show them under the reference group names.
+const CAT_NAME: Record<string, string> = { venue: "Venue & Location", location: "Venue & Location", food: "Food & Drink", catering: "Food & Drink", drinks: "Food & Drink", entertainment: "Entertainment", guests: "Guests & Tickets", tickets: "Guests & Tickets", payment: "Payments", payments: "Payments", meeting: "Meetings", event: "Event", general: "General" };
+const catName = (c: string): string => CAT_NAME[c.toLowerCase()] ?? (c ? c[0]!.toUpperCase() + c.slice(1) : "General");
 const DAY_ICON = (t: string): [React.ComponentType<{ size?: number }>, string] => /venue|access|check/i.test(t) ? [Building2, "#7c3aed"] : /decor|styling/i.test(t) ? [Flower2, "#2563eb"] : /cater|dinner/i.test(t) ? [Utensils, "#f59e0b"] : /dj|music/i.test(t) ? [Music2, "#7c3aed"] : /guest|ceremony/i.test(t) ? [PartyPopper, "#f59e0b"] : /end|close/i.test(t) ? [Clock, "#64748b"] : [CheckCircle2, "#10b981"];
 
 export default async function PlanPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
@@ -27,7 +31,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
   const tasks = tasksRaw ?? [];
   const counts = { all: tasks.length, todo: tasks.filter(t => t.status === "todo").length, in_progress: tasks.filter(t => t.status === "in_progress").length, done: tasks.filter(t => t.status === "done").length };
   const shown = tasks.filter(t => filter === "all" || t.status === filter);
-  const cats = [...new Set(tasks.map(t => t.category))];
+  const cats = [...new Set(tasks.map(t => catName(t.category ?? "")))];
   // planning journey phases relative to event date (guidance only; never blocks short-notice events)
   const weeks = e.starts_at ? Math.floor((new Date(e.starts_at).getTime() - requestTime()) / (7 * 864e5)) : 99;
   const phases = [["6+ weeks", "Foundation", "Venue, key providers"], ["4–6 weeks", "Details", "Catering, entertainment"], ["2–4 weeks", "Finalise", "Guests, remaining suppliers"], ["1 week", "Confirm", "Final checks & balances"], ["Event day", "Enjoy!", "Everything comes together"]] as const;
@@ -40,6 +44,8 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
     if (win === "week") d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); if (win === "month") d.setUTCDate(1); return d; })();
   const winEnd = new Date(winStart); if (win === "week") winEnd.setUTCDate(winEnd.getUTCDate() + 7); else winEnd.setUTCMonth(winEnd.getUTCMonth() + 1);
   const shift = (dir: -1 | 1) => { const d = new Date(winStart); if (win === "week") d.setUTCDate(d.getUTCDate() + 7 * dir); else d.setUTCMonth(d.getUTCMonth() + dir); return d.toISOString().slice(0, 10); };
+  // From "All dates" the arrows step into the week before / after this one (the reference shows Today ‹ › Week at all times).
+  const weekShift = (dir: -1 | 1) => { const d = new Date(today0); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 7 * dir); return d.toISOString().slice(0, 10); };
   const pq = (patch: Record<string, string | null>) => { const n = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [k, v] of Object.entries(patch)) { if (v === null) n.delete(k); else n.set(k, v); } return `/account/events/${e.id}/plan${n.size ? `?${n}` : ""}`; };
   const inWin = (at: string | null) => win === "all" || (!!at && at >= winStart.toISOString() && at < winEnd.toISOString());
   const winLabel = win === "week" ? `${dayMonth(winStart.toISOString())} – ${dayMonth(new Date(winEnd.getTime() - 864e5).toISOString())}` : win === "month" ? winStart.toLocaleString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }) : "";
@@ -52,20 +58,20 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
     <section className="ce-card cp-journey">
       <div><div className="k-row" style={{ gap: 12, alignItems: "baseline" }}><h2 className="ce-h2" style={{ fontSize: 17 }}>Your planning journey</h2><span className="k-small">A simple guide to keep you on track. Times adapt to your event date.</span></div>
         <ol className="cp-phases">{phases.map(([w, l, s], i) => <li key={w} data-state={i < curIdx ? "done" : i === curIdx ? "cur" : "todo"}><span className="cp-dot">{i < curIdx ? "✓" : i + 1}</span><span><b>{w}</b><em>{l}</em><small>{s}</small></span></li>)}</ol></div>
-      <div className="cp-date"><span className="k-tile lg"><CalendarClock size={22} /></span><div><b>Need to change your date?</b><p>See availability impact across all your bookings before making any changes.</p><Link className="k-btn outline sm" href={`/account/events/${e.id}/plan?change=date`}>Check new dates <ArrowRight size={12} /></Link></div></div>
+      <div className="cp-date"><span className="k-tile lg"><CalendarClock size={22} /></span><div><b>Need to change your date?</b><p>Check ticket and provider commitments before making any changes.</p><EventDateChange eventId={e.id} initialOpen={sp.change==="date"}/></div></div>
     </section>
     <div className="cp-grid">
       <section className="ce-card cp-main">
         <div className="k-between" style={{ marginBottom: 12 }}><div className="cp-tabs" role="group" aria-label="Plan views">{([["timeline", "Timeline", CalendarDays], ["checklist", "Checklist", CheckSquare], ["day", "Day Plan", ClipboardList]] as const).map(([k, l, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={`/account/events/${e.id}/plan${k === "timeline" ? "" : `?tab=${k}`}`}><I size={16} />{l}</Link>)}</div>
-          <div className="k-row" style={{ gap: 8 }}><Link className="k-btn ghost" href={pq({ from: null })} scroll={false}>Today</Link>{win !== "all" && <><Link className="k-icon-btn" href={pq({ from: shift(-1) })} aria-label={`Previous ${win}`} scroll={false}><ChevronLeft size={15} /></Link><b className="k-small cp-win">{winLabel}</b><Link className="k-icon-btn" href={pq({ from: shift(1) })} aria-label={`Next ${win}`} scroll={false}><ChevronRight size={15} /></Link></>}<Suspense><UrlSelect param="win" value={win === "all" ? "" : win} label="Timeline range" options={[{ value: "", label: "All dates" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} /></Suspense><SharePlan eventId={e.id} /></div></div>
+          <div className="k-row" style={{ gap: 8 }}><Link className="k-btn ghost" href={pq({ from: null })} scroll={false}>Today</Link><Link className="k-icon-btn" href={pq(win === "all" ? { win: "week", from: weekShift(-1) } : { from: shift(-1) })} aria-label={`Previous ${win === "all" ? "week" : win}`} scroll={false}><ChevronLeft size={15} /></Link>{win !== "all" && <b className="k-small cp-win">{winLabel}</b>}<Link className="k-icon-btn" href={pq(win === "all" ? { win: "week", from: weekShift(1) } : { from: shift(1) })} aria-label={`Next ${win === "all" ? "week" : win}`} scroll={false}><ChevronRight size={15} /></Link><Suspense><UrlSelect param="win" value={win === "all" ? "" : win} label="Timeline range" options={[{ value: "", label: "All dates" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} /></Suspense><SharePlan eventId={e.id} /></div></div>
         <div className={`cp-cols ${tab}`}>
-          {tab !== "checklist" && tab !== "day" && <div className="cp-tl"><h3>Planning timeline</h3><p className="k-small">{win === "all" ? "Key milestones and upcoming tasks." : `Tasks due ${win === "week" ? "this week" : "this month"} of the range shown.`}</p>
+          {tab !== "checklist" && tab !== "day" && <div className="cp-tl" role="region" aria-label="Planning timeline" tabIndex={0}><h3>Planning timeline</h3><p className="k-small">{win === "all" ? "Key milestones and upcoming tasks." : `Tasks due ${win === "week" ? "this week" : "this month"} of the range shown.`}</p>
             {[...byMonth.entries()].map(([m, list], i) => <div key={m} className="cp-month"><div className="cp-month-h">{i === 1 ? <ChevronDown size={14} /> : <ChevronDown size={14} />}<b>{m}</b>{i === 1 ? <ChevronDown size={14} className="k-muted" style={{ marginLeft: "auto" }} /> : <ChevronUp size={14} className="k-muted" style={{ marginLeft: "auto" }} />}</div>
               <ul>{list.map(t => <li key={t.id}>{t.status === "done" ? <CheckCircle2 size={18} fill="#10b981" color="#fff" /> : <Circle size={18} className="k-muted" />}<span className="k-grow"><b>{t.title}</b>{t.assignee_name && t.assignee_name !== "You" && <small>{t.assignee_name}</small>}</span><span className="k-xs k-muted">{dayMonth(t.due_at)}</span></li>)}</ul></div>)}
             {e.starts_at && <div className="cp-month"><ul><li><Sun size={18} color="#f59e0b" /><b className="k-grow">Event day</b><span className="k-xs k-muted">{dayMonth(e.starts_at)}</span></li></ul></div>}</div>}
-          {tab !== "day" && <div className="cp-check"><h3>Your checklist</h3><p className="k-small">Everything you need to do for a successful event.</p>
+          {tab !== "day" && <div className="cp-check" role="region" aria-label="Your checklist" tabIndex={0}><h3>Your checklist</h3><p className="k-small">Everything you need to do for a successful event.</p>
             <div className="k-between" style={{ margin: "10px 0" }}><div className="cp-filters">{([["all", "All", counts.all], ["todo", "To do", counts.todo], ["in_progress", "In progress", counts.in_progress], ["done", "Done", counts.done]] as const).map(([k, l, n]) => <Link key={k} href={`/account/events/${e.id}/plan?tab=${tab}&f=${k}`} aria-current={(filter === k) ? "page" : undefined}>{k === "todo" ? <Circle size={11} /> : k === "in_progress" ? <CheckCircle2 size={11} /> : k === "done" ? <CheckCircle2 size={11} /> : null}{l} ({n})</Link>)}</div><AddTaskBtn eventId={e.id} categories={cats.length ? cats : ["General"]} /></div>
-            {cats.map(c => { const list = shown.filter(t => t.category === c); if (!list.length) return null; const [I, col] = CAT_ICON[c] ?? [ClipboardList, "#2563eb"]; return <div key={c} className="cp-cat"><div className="k-between"><span className="k-row" style={{ gap: 10 }}><span style={{ color: col }}><I size={16} /></span><b>{c}</b><span className="k-muted k-small">({tasks.filter(t => t.category === c && t.status === "done").length}/{tasks.filter(t => t.category === c).length})</span></span><MoreHorizontal size={15} className="k-muted" /></div>
+            {cats.map(c => { const list = shown.filter(t => catName(t.category ?? "") === c); if (!list.length) return null; const [I, col] = CAT_ICON[c] ?? [ClipboardList, "#2563eb"]; return <div key={c} className="cp-cat"><div className="k-between"><span className="k-row" style={{ gap: 10 }}><span style={{ color: col }}><I size={16} /></span><b>{c}</b><span className="k-muted k-small">({tasks.filter(t => catName(t.category ?? "") === c && t.status === "done").length}/{tasks.filter(t => catName(t.category ?? "") === c).length})</span></span></div>
               <ul>{list.map(t => <li key={t.id}><TaskCheck eventId={e.id} taskId={t.id} done={t.status === "done"} title={t.title} /><span className="k-grow">{t.title}</span>{stat(t)}<span className="cp-who"><Avatar src={t.assignee_name === "You" ? "/assets/gd/av-alex-customer.webp" : supplierAvatar(t.assignee_name)} name={t.assignee_name || "You"} size="sm" />{t.assignee_name || "You"}</span></li>)}</ul></div>; })}
             {!shown.length && <p className="k-small">No tasks in this view.</p>}</div>}
           {tab === "day" && <DayPlan e={e} day={day ?? []} eventId={e.id} />}
@@ -73,7 +79,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
       </section>
       <section className="ce-card cp-day"><div className="k-between"><div><h2 className="ce-h2 sm" style={{ margin: 0 }}>Event day plan</h2><p className="k-xs k-muted">A clear timeline for you and your providers.</p></div><Link className="k-link" href={`/account/events/${e.id}/plan?tab=day`}>View full schedule <ArrowRight size={12} /></Link></div>
         <ol className="cp-dl">{(day ?? []).map((p, i) => { const [I, col] = DAY_ICON(p.title); const img = d.items.find(it => p.detail && it.title.toLowerCase().startsWith(p.detail.toLowerCase().split(" ")[0]!))?.image || ["/assets/gd/b-loft.webp", "/assets/gd/sg-wedding-decor.webp", "/assets/gd/bc-tastetango.webp", "", "/assets/gd/sg-live-band.webp", "/assets/gd/me-wedding.webp", "/assets/gd/bc-tastetango.webp", "/assets/gd/b-elite-sounds.webp", "/assets/gd/sv-loft.webp"][i];
-          return <li key={p.id} data-first={i === 0}><span className="cp-dl-t">{time12(p.starts_at)}</span><i /><div className="cp-dl-card"><span className="cp-dl-ic" style={{ color: col, background: `color-mix(in srgb, ${col} 10%, #fff)` }}><I size={15} /></span><span className="k-grow"><b>{p.title}</b><small>{p.detail}</small></span>{/* eslint-disable-next-line @next/next/no-img-element */}{img && <img src={img} alt="" />}<MoreHorizontal size={14} className="k-muted" /></div></li>; })}</ol>
+          return <li key={p.id} data-first={i === 0}><span className="cp-dl-t">{time12(p.starts_at)}</span><i /><div className="cp-dl-card"><span className="cp-dl-ic" style={{ color: col, background: `color-mix(in srgb, ${col} 10%, #fff)` }}><I size={15} /></span><span className="k-grow"><b>{p.title}</b><small>{p.detail}</small></span>{/* eslint-disable-next-line @next/next/no-img-element */}{img && <img src={img} alt="" />}</div></li>; })}</ol>
         <AddDayItem eventId={e.id} /></section>
     </div>
     <section className="ce-card cp-agent"><span className="cp-agent-ic"><ClipboardList size={22} /></span><div><div className="k-row" style={{ gap: 8 }}><b style={{ fontSize: 17, color: "var(--k-blue)" }}>What to do next</b></div><p className="k-xs">Jump straight to the parts of your plan that usually need attention.</p></div>
@@ -81,7 +87,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
   </div>;
 }
 function DayPlan({ e, day, eventId }: { e: { starts_at: string | null }; day: { id: string; title: string; detail: string; starts_at: string }[]; eventId: string }) {
-  return <div className="cp-check"><h3>Day plan</h3><p className="k-small">Your run of the day — share it with suppliers and helpers.</p>
+  return <div className="cp-check" role="region" aria-label="Day plan" tabIndex={0}><h3>Day plan</h3><p className="k-small">Your run of the day — share it with suppliers and helpers.</p>
     <table className="k-table" style={{ marginTop: 10 }}><thead><tr><th>Time</th><th>What</th><th>Who / where</th></tr></thead><tbody>{day.map(p => <tr key={p.id}><td>{time12(p.starts_at)}</td><td style={{ color: "var(--k-ink)" }}>{p.title}</td><td>{p.detail}</td></tr>)}</tbody></table>
     {!day.length && <p className="k-small">{e.starts_at ? "No day plan yet." : "Set your event date to build a day plan."}</p>}<div style={{ marginTop: 10 }}><AddDayItem eventId={eventId} /></div></div>;
 }

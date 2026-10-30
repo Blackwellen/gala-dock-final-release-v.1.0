@@ -1,0 +1,69 @@
+/* S2 event sections: Operations › Access & passes, Sell › Registration / Inventory & allocations / Resale & risk, Plan › Online sessions.
+   Built on kit tokens (k-*), same density as the organiser event tabs. Prefix ax-. */
+.ax-wrap { display: grid; gap: 14px; min-width: 0; }
+.ax-wrap > * { min-width: 0; }
+.ax-kpis { gap: 12px; }
+.ax-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 12px; margin-bottom: 10px; }
+.ax-head > div { min-width: 0; }
+.ax-head p { margin: 2px 0 0; }
+.ax-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; align-items: start; }
+.ax-grid > * { min-width: 0; }
+.ax-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ax-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; white-space: nowrap; }
+td.ax-actions { display: table-cell; text-align: right; }
+td.ax-actions > * + * { margin-left: 4px; }
+.ax-table td { vertical-align: top; }
+.ax-li { align-items: center; gap: 10px; }
+.ax-swatch { width: 14px; height: 30px; border-radius: 4px; flex: none; }
+.ax-checks { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 14px; min-width: 0; }
+.ax-checks legend { width: 100%; margin-bottom: 6px; }
+.ax-rule { display: grid; grid-template-columns: 130px minmax(0, 1fr) 180px 180px 32px; gap: 8px; align-items: center; }
+.ax-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ax-seg a, .ax-seg button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--k-line); background: #fff; font-size: 12px; font-weight: 550; color: var(--k-ink-2); }
+.ax-seg [aria-current="page"], .ax-seg [aria-pressed="true"] { background: var(--k-blue-soft); border-color: transparent; color: var(--k-blue); }
+.ax-dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; font-size: 12px; margin: 0; }
+.ax-dl dt { color: var(--k-muted); }
+.ax-dl dd { margin: 0; color: var(--k-ink); font-weight: 550; min-width: 0; overflow-wrap: anywhere; }
+/* Question rows live in the 360px side column: label on its own line, then type / options, then flags + reorder actions. */
+.ax-field-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--k-line-2); }
+.ax-field-row > :first-child { grid-column: 1 / -1; }
+.ax-field-row > .ax-actions { grid-column: 1 / -1; justify-self: end; }
+.ax-field-row:last-child { border-bottom: 0; }
+.ax-answers { display: grid; gap: 4px; font-size: 11.5px; }
+.ax-answers b { color: var(--k-ink); font-weight: 600; }
+.ax-tier { border: 1px solid var(--k-line-2); border-radius: 12px; padding: 12px; display: grid; gap: 10px; min-width: 0; }
+.ax-tier + .ax-tier { margin-top: 10px; }
+.ax-stack { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: #eef1f8; }
+.ax-stack > i { display: block; height: 100%; }
+.ax-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--k-muted); }
+.ax-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+.ax-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.ax-mini > div { background: #f7f9fd; border-radius: 8px; padding: 7px 9px; min-width: 0; }
+.ax-mini b { display: block; font-size: 14px; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+.ax-mini span { font-size: 10.5px; color: var(--k-muted); }
+.ax-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; background: #f3f5fb; border-radius: 5px; padding: 1px 6px; }
+.ax-session { border: 1px solid var(--k-line-2); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.ax-session + .ax-session { margin-top: 10px; }
+.ax-session.child { margin-left: 22px; }
+.ax-links { display: grid; gap: 6px; font-size: 12px; }
+.ax-links code { overflow-wrap: anywhere; }
+@media (max-width: 1240px) { .ax-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 900px) {
+  .ax-mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ax-rule { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ax-rule > button { justify-self: end; }
+  .ax-session.child { margin-left: 10px; }
+}
+/* Phone: tables become stacked cards (each cell carries data-label). */
+@media (max-width: 640px) {
+  .ax-table thead { display: none; }
+  .ax-table, .ax-table tbody, .ax-table tr, .ax-table td { display: block; width: 100%; }
+  .ax-table tr { border: 1px solid var(--k-line-2); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; }
+  .ax-table td { border: 0; padding: 4px 0; text-align: left !important; }
+  .ax-table td[data-label]::before { content: attr(data-label); display: block; font-size: 10.5px; color: var(--k-muted); font-weight: 600; }
+  td.ax-actions { text-align: left; white-space: normal; }
+  .ax-mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ax-rule { grid-template-columns: minmax(0, 1fr); }
+  .ax-dl { grid-template-columns: minmax(0, 1fr); }
+  .ax-dl dd { margin-bottom: 4px; }
+}

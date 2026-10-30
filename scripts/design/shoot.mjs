@@ -2,6 +2,7 @@
 // Usage: node --env-file=.env.local scripts/design/shoot.mjs <role customer|organizer> <path> [reference.png] [name] [width] [height]
 import { chromium } from "@playwright/test";
 import fs from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 
@@ -42,7 +43,7 @@ const shotPath = `artifacts/visual/p2/${name}.png`;
 const buf = await page.screenshot({ path: shotPath });
 const geometry = await page.evaluate(() => ({ url: location.pathname + location.search, scrollWidth: document.documentElement.scrollWidth, innerWidth, scrollHeight: document.documentElement.scrollHeight, overflowX: document.documentElement.scrollWidth > innerWidth }));
 geometry.shell = await page.evaluate(() => ({scrollY,top:document.querySelector('.pwa-top')?.getBoundingClientRect().toJSON(),topDisplay:document.querySelector('.pwa-top')&&getComputedStyle(document.querySelector('.pwa-top')).display,nav:document.querySelector('.pwa-tabs')?.getBoundingClientRect().toJSON()}));
-const out = { name, path, width, height, dpr, geometry, errors };
+const out = { name, path, width, height, dpr, geometry, errors, capturedUtc: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), reference: ref ?? null, metric: ref ? { name: 'pixelmatch raw unmasked pixels', threshold: 0.12, includeAA: false, maskedPercent: 0, requiredMismatchPercent: 5 } : null };
 if (refPng && refPng.width === width * dpr && refPng.height === height * dpr) {
   const shot = PNG.sync.read(buf);
   const pixelWidth = refPng.width, pixelHeight = refPng.height;

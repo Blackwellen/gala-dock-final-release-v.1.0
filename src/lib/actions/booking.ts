@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { untyped } from "@/lib/workspace/db";
 import { payBooking, requestHold } from "@/lib/marketplace/actions";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
@@ -14,6 +15,7 @@ const Requirements = z.object({
   setup: z.union([Time, z.literal("")]), breakdown: z.union([Time, z.literal("")]), access: z.enum(["standard", "step_free", "loading_bay", "restricted"]),
   notes: z.string().max(500), answers: z.record(z.string().max(40), z.string().max(40)).refine(a => Object.keys(a).length <= 12),
   alt_dates: z.boolean(), standby_interest: z.boolean(), layout: z.string().max(40).optional(),
+  attachments:z.array(z.object({path:z.string().max(180),name:z.string().min(1).max(120)})).max(6).optional(),
 });
 export type BookingRequirements = z.infer<typeof Requirements>;
 
@@ -58,7 +60,7 @@ export async function submitBooking(eventId: string, itemId: string, option: "re
 }
 
 /** Accept the quote: starts a deposit payment order and returns the Stripe Checkout URL. The webhook confirms the booking
- *  (payment order → ledger → booking confirmed, provider notified); funds are protected until delivery. */
+ *  (payment order → ledger → booking confirmed, provider notified); the charge is a Stripe direct charge to the provider (Q07). */
 export async function acceptQuote(eventId: string, itemId: string, agreed: boolean): Promise<ActionResult<string>> {
   const o = await own(eventId, itemId); if (!o) return { ok: false, error: "Booking not found." };
   if (!agreed) return { ok: false, error: "Please agree to the provider's terms to continue." };
@@ -74,8 +76,7 @@ export type Availability = "available" | "limited" | "unavailable" | "unknown";
 export async function checkAvailability(listingId: string, date: string, start: string, end: string): Promise<ActionResult<Availability>> {
   const l = Id.safeParse(listingId); if (!l.success || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Time.safeParse(start).success || !Time.safeParse(end).success) return { ok: false, error: "Choose a date and time." };
   const ctx = await getCustomer();
-  const s = new Date(`${date}T${start}:00Z`); const e = new Date(`${date}T${end}:00Z`); if (e <= s) e.setUTCDate(e.getUTCDate() + 1);
-  const { data, error } = await ctx.supabase.rpc("listing_availability", { p_listing: l.data, p_start: s.toISOString(), p_end: e.toISOString() });
+  const { data, error } = await untyped(ctx.supabase).rpc("listing_availability_local", { p_listing:l.data,p_date:date,p_start:start,p_end:end });
   if (error) return { ok: false, error: "Couldn't check availability." };
   return { ok: true, data: (data ?? "unknown") as Availability };
 }

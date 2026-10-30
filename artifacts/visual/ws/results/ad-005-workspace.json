@@ -3,8 +3,10 @@
   "url": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
   "file": "Designs/Admin Workspace/Gala Dock Workspace Dashboard.png",
   "status": 200,
-  "mismatchPercent": 12.86,
-  "ssim": 0.6145,
+  "mismatchPercent": 12.78,
+  "layoutPercent": 11.6,
+  "mediaBoxes": 11,
+  "ssim": 0.6166,
   "masks": [],
   "maskReason": null,
   "geometry": {
@@ -12,5 +14,5 @@
     "scrollHeight": 1108
   },
   "errors": [],
-  "at": "2026-10-11T09:17:06.442Z"
+  "at": "2026-10-11T23:03:34.830Z"
 }

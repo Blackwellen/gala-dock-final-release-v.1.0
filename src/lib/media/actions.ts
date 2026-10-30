@@ -6,6 +6,9 @@ import { randomUUID } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
+import { decision as fileDecision } from "@/lib/files/service";
+import { PUBLIC_IMAGE_TYPES, validateUpload } from "@/lib/files/policy";
+import { sanitize as sanitizeImage } from "@/lib/files/safety-core";
 import { PRESETS, blankDoc, posterFromEvent, reflow, type DesignDoc, type EventData, type ImageLayer } from "./document";
 
 // Media Studio actions (media spec §5–17, §49–51). Permissions + optimistic concurrency live in the DB functions.
@@ -93,10 +96,15 @@ export async function publishTemplate(id: string, meta: { title: string; descrip
       if (l.type !== "image" || l.asset.public || !l.asset.path) continue;
       const { data: ok } = await sb.rpc("can_read_media_path" as never, { p_path: l.asset.path } as never);
       if (!ok) continue;
+      if ((await fileDecision(admin, "workspace-files", l.asset.path)) !== "ok") continue;   // Q04: quarantined/infected never becomes public
       const file = await admin.storage.from("workspace-files").download(l.asset.path);
       if (file.error || !file.data) continue;
-      const dest = `templates/${randomUUID()}.${l.asset.path.split(".").pop()}`;
-      const up = await admin.storage.from("event-media").upload(dest, file.data, { contentType: file.data.type, upsert: false });
+      const bytes = new Uint8Array(await file.data.arrayBuffer());
+      const checked = validateUpload({ bytes, declaredType: null, fileClass: "public_media", allowed: PUBLIC_IMAGE_TYPES });   // PNG/JPEG/WebP only, no SVG/polyglot
+      if (!checked.ok) continue;
+      const clean = sanitizeImage(bytes, checked.kind.type); if (!clean.ok) continue;
+      const dest = `templates/${randomUUID()}.${checked.kind.ext}`;
+      const up = await admin.storage.from("event-media").upload(dest, clean.bytes, { contentType: checked.kind.type, upsert: false });
       if (up.error) continue;
       (l as ImageLayer).asset = { ...l.asset, src: admin.storage.from("event-media").getPublicUrl(dest).data.publicUrl, path: undefined, public: true }; changed = true;
     }

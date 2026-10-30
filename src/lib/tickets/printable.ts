@@ -24,9 +24,9 @@ export async function loadPrintable(ticketId: string): Promise<{ ok: true; t: Pr
   if (t.status !== "valid") return { ok: false, status: 409, error: "This ticket can’t be printed because it is no longer valid." };
   const ev = t.event as unknown as { name: string; starts_at: string | null; ends_at: string | null; venue_name: string | null; location: string | null; city: string | null; settings: Record<string, unknown> | null; timezone: string | null };
   if (ev.settings?.print_tickets === false) return { ok: false, status: 403, error: "The organiser has turned off printed tickets for this event. Show the ticket in your wallet instead." };
-  const { data: n } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce").eq("id", ticketId).maybeSingle();
+  const { data: n } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce,print_epoch").eq("id", ticketId).maybeSingle();
   if (!n?.qr_nonce) return { ok: false, status: 409, error: "Ticket unavailable" };
-  const payload = printCredential(ticketId, n.qr_nonce);
+  const payload = printCredential(ticketId, n.qr_nonce, Number(n.print_epoch ?? 0));
   const qrPng = await QRCode.toBuffer(payload, { errorCorrectionLevel: "M", margin: 2, width: 600 });
   const terms = String((ev.settings as { ticket_terms?: string } | null)?.ticket_terms ?? "Valid for one admission. This ticket is linked to its holder; transfers and resale through Gala Dock replace this ticket and its code. Duplicate or altered tickets are refused at entry.");
   return { ok: true, t: {

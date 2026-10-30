@@ -18,7 +18,7 @@ const browser = await engine.launch({ ...(browserName==='chromium'?{executablePa
 const results=[];
 try {
  for(const role of roles.length ? roles : Object.keys(homes)) {
-  const ctx=await browser.newContext({ storageState:`artifacts/auth/${role}.json`,deviceScaleFactor:dpr, reducedMotion:'reduce',locale:'en-GB',timezoneId:'Europe/London' });
+  const ctx=await browser.newContext({ storageState:`artifacts/auth/${process.env.PWA_AUTH_FIXTURE === '1' ? 'pwa-resume-' : ''}${role}.json`,deviceScaleFactor:dpr, reducedMotion:'reduce',locale:'en-GB',timezoneId:'Europe/London' });
   const page=await ctx.newPage(); const errors=[]; page.on('pageerror',e=>errors.push(e.message));
   const response=await page.goto(base+homes[role],{waitUntil:'networkidle',timeout:120000});
   if(new URL(page.url()).pathname!==homes[role]) { results.push({role,blocked:`authentication redirected to ${new URL(page.url()).pathname}`,status:response?.status()}); await ctx.close(); continue; }

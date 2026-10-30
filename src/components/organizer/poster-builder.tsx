@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { CalendarDays, Clock, MapPin, Download, Save, Sparkles, Undo2, Redo2, Minus, Plus, Maximize, Type, Image as ImageIcon, Shapes, QrCode, Layers, Palette, Loader2, ExternalLink, Eye, Link2, ChevronDown, Upload, CircleCheck } from "lucide-react";
 import { Toggle, useAction, useKitToast } from "@/components/kit/client";
-import { createClient } from "@/lib/supabase/client";
+import { uploadPublicMedia } from "@/lib/files/upload-public";
 import { saveMediaAsset } from "@/lib/actions/builders";
 import { suggestPosterCopy } from "@/lib/actions/poster-copy";
 
@@ -142,11 +142,7 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
   const blobOf = useCallback(async (f: Fmt, type = "image/png") => { const k = document.createElement("canvas"); await render(k, f, c, workspaceName); return new Promise<Blob>((res, rej) => k.toBlob(b => b ? res(b) : rej(new Error("render")), type, .92)); }, [c, workspaceName]);
   const fileBase = e.name.replace(/[^\w]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
   const download = async (f: Fmt, type: "png" | "jpg" = "png") => { const b = await blobOf(f, type === "png" ? "image/png" : "image/jpeg"); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `${fileBase}-${f.key}.${type}`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
-  const put = async (b: Blob, ext: string) => {
-    const sb = createClient(); const path = `${workspaceId}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await sb.storage.from("event-media").upload(path, b, { contentType: b.type, upsert: false }); if (error) throw error;
-    return sb.storage.from("event-media").getPublicUrl(path).data.publicUrl;
-  };
+  const put = (b: Blob, ext: string) => uploadPublicMedia(workspaceId, b, `${fileBase || "poster"}.${ext}`);   // Q04: server-validated public upload
   const upload = async (f: Fmt, primary: boolean) => {
     const url = await put(await blobOf(f), "png");
     return run(() => saveMediaAsset({ event_id: e.id, url, title: `${e.name} — ${f.label}`, format: f.key, data: { ...c, format: f.key, promo: opts.promo }, gallery: primary && opts.gallery, poster: primary && opts.promo && ["a3", "a4", "portrait"].includes(f.key) }), { refresh: false });

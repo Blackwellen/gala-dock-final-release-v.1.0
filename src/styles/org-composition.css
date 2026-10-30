@@ -1,0 +1,75 @@
+/* Lane D · S4 — organiser campaigns, media library/galleries/brand, structure, forms & waivers, merch & stock, lost property,
+   sustainability (oc-*). Builds on kit.css tokens; fits 1536 without zoom and collapses to one column by 390. */
+.oc { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.oc-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 12px 14px; background: #fff; border: 1px solid var(--k-line); border-radius: 12px; min-width: 0; }
+.k-card .oc-kpis { border: 0; padding: 0; background: transparent; }
+.oc-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 14px; align-items: start; min-width: 0; }
+.oc-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; min-width: 0; }
+.oc-h { font-size: 16px; font-weight: 700; color: var(--k-ink); margin: 0 0 2px; overflow-wrap: anywhere; }
+.oc-h3 { font-size: 12.5px; font-weight: 650; color: var(--k-ink); margin: 0 0 6px; display: flex; align-items: center; gap: 6px; }
+.oc-wrap { flex-wrap: wrap; gap: 8px; }
+.oc-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+.oc-ul { margin: 4px 0 0; padding-left: 18px; font-size: 12px; color: var(--k-ink-2); display: flex; flex-direction: column; gap: 3px; }
+.oc-ul .k-link { margin-left: 6px; font-size: 11.5px; }
+.oc-tabs { flex-wrap: wrap; max-width: 100%; }
+.oc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.oc-li { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 1px solid var(--k-line-2); border-radius: 10px; background: #fff; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; }
+.oc-li.static { cursor: default; flex-wrap: wrap; }
+.oc-li:not(.static):hover { border-color: #c9d5f0; background: #fafbff; }
+.oc-li.on { border-color: var(--k-blue); box-shadow: 0 0 0 3px #1b64f51a; }
+.oc-li .k-grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.oc-li b { font-size: 12.5px; color: var(--k-ink); overflow-wrap: anywhere; }
+.oc-li small { font-size: 11px; color: var(--k-muted); overflow-wrap: anywhere; }
+.oc-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; align-items: start; min-width: 0; }
+.k-card > .oc-form { margin-bottom: 10px; }
+.oc-span2 { grid-column: 1 / -1; }
+.oc-fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; min-width: 0; }
+.oc-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.oc-pick { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--k-line); border-radius: 999px; font-size: 12px; cursor: pointer; background: #fff; }
+.oc-pick.on { border-color: var(--k-blue); background: var(--k-blue-soft); color: var(--k-blue); }
+.oc-pick input { margin: 0; }
+.oc-dl { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 6px 12px; margin: 0; font-size: 12.5px; }
+.oc-dl dt { color: var(--k-muted); } .oc-dl dd { margin: 0; color: var(--k-ink); overflow-wrap: anywhere; }
+/* Wizard steps */
+.oc-steps { list-style: none; display: flex; gap: 6px; margin: 0 0 14px; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.oc-steps li button { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--k-line); background: #fff; font: inherit; font-size: 12px; color: var(--k-ink-2); white-space: nowrap; cursor: pointer; }
+.oc-steps li button:disabled { cursor: not-allowed; opacity: .6; }
+.oc-steps li button span { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; font-weight: 700; background: #eef2fa; }
+.oc-steps li[data-state="current"] button { border-color: var(--k-blue); color: var(--k-blue); background: var(--k-blue-soft); }
+.oc-steps li[data-state="current"] button span { background: var(--k-blue); color: #fff; }
+.oc-steps li[data-state="done"] button span { background: var(--k-green); color: #fff; }
+.oc-chans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.oc-chan { border: 1px solid var(--k-line); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; min-width: 0; }
+.oc-chan.on { border-color: var(--k-blue); background: #f7faff; }
+/* Media */
+.oc-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.oc-media { min-width: 0; }
+.oc-media-ph { display: grid; place-items: center; gap: 4px; height: 140px; border-radius: 8px; background: #f2f5fb; color: var(--k-muted); font-size: 11px; }
+.oc-asset-edit { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 16px; }
+.oc-gallery { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.oc-gallery li { display: flex; gap: 10px; align-items: center; padding: 8px; border: 1px solid var(--k-line-2); border-radius: 10px; min-width: 0; }
+.oc-title-input { max-width: 420px; font-weight: 650; }
+.oc-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; }
+.oc-swatch { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--k-line); border-radius: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.oc-swatch i { width: 16px; height: 16px; border-radius: 4px; border: 1px solid #0000001a; }
+.oc-swatch button { border: 0; background: none; padding: 0; color: var(--k-muted); cursor: pointer; display: inline-flex; }
+/* Form builder */
+.oc-fields { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.oc-fields li { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 2fr) auto auto; gap: 8px; padding: 8px; border: 1px solid var(--k-line-2); border-radius: 10px; }
+.oc .k-table .k-input, .oc .k-table .k-select { height: var(--k-input-dense-h); min-width: 90px; }
+@media (max-width: 1180px) {
+  .oc-split { grid-template-columns: minmax(0, 1fr); }
+  .oc-chans { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .oc-fields li { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .oc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .oc-grid2, .oc-form, .oc-asset-edit { grid-template-columns: minmax(0, 1fr); }
+  .oc-chans { grid-template-columns: minmax(0, 1fr); }
+  .oc-ellipsis { max-width: 160px; }
+  .oc-dl { grid-template-columns: 96px minmax(0, 1fr); }
+}
+@media (max-width: 420px) {
+  .oc-fields li { grid-template-columns: minmax(0, 1fr); }
+  .oc-li { flex-wrap: wrap; }
+}

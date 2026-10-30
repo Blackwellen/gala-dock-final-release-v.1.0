@@ -118,9 +118,9 @@ export default async function ListingsPage(props: PageProps<"/provider/listings/
       <div className="ws-page-actions">
         {only === "package" && <Link className="ws-btn outline" href="/provider/menus"><UtensilsCrossed aria-hidden="true" />Food &amp; drink</Link>}
         <span className="ws-btn outline pl-import" aria-disabled="true" title="Bulk import from CSV isn’t available yet — add listings individually"><Upload aria-hidden="true" />Import listings</span>
-        <MenuButton label="Add listing" className="ws-btn primary pl-add-btn" trigger={<><Plus aria-hidden="true" />Add listing<ChevronDown aria-hidden="true" /></>} entries={[
+        {ctx.can.manage && <MenuButton label="Add listing" className="ws-btn primary pl-add-btn" trigger={<><Plus aria-hidden="true" />Add listing<ChevronDown aria-hidden="true" /></>} entries={[
           ...(caps.includes("venue") ? [{ kind: "link" as const, label: "Add venue", href: "/provider/venues/new?step=1" }, ...(primary?.kind === "venue" ? [{ kind: "link" as const, label: "Add space", href: `/provider/venues/${primary.id}/spaces/new?step=1` }] : [])] : []),
-          ...(caps.includes("service") ? [{ kind: "link" as const, label: "Add service", href: "/provider/services/new?step=1" }] : []), { kind: "link", label: "Create package", href: "/provider/packages/new?step=1" }]} />
+          ...(caps.includes("service") ? [{ kind: "link" as const, label: "Add service", href: "/provider/services/new?step=1" }] : []), { kind: "link", label: "Create package", href: "/provider/packages/new?step=1" }]} />}
       </div>
     </header>
     <div className="pl-layout">
@@ -172,12 +172,12 @@ export default async function ListingsPage(props: PageProps<"/provider/listings/
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {l.image ? <img src={l.image} alt="" /> : <span className="qb-noimg" />}<span><b>{l.name}</b><small>{l.views} views • {l.enquiry_count} enquiries</small></span>
             <em><ArrowUp aria-hidden="true" />{l.views ? Math.round((100 * l.enquiry_count) / l.views) : 0}%</em></li>)}</ul><small className="pl-note"><TrendingUp aria-hidden="true" />% = enquiry conversion from views</small></section>
-        <section className="ws-panel pl-quick"><h2>Quick actions</h2><ul>
+        {ctx.can.manage && <section className="ws-panel pl-quick"><h2>Quick actions</h2><ul>
           {caps.includes("venue") && <li><Link href="/provider/venues/new?step=1"><Building2 aria-hidden="true" /><span><b>Add new venue</b><small>Create a new venue listing</small></span></Link></li>}
           {caps.includes("venue") && primary?.kind === "venue" && <li><Link href={`/provider/venues/${primary.id}/spaces/new?step=1`}><LayoutGrid aria-hidden="true" /><span><b>Add new space</b><small>Create a space within a venue</small></span></Link></li>}
           {caps.includes("service") && <li><Link href="/provider/services/new?step=1"><Wrench aria-hidden="true" /><span><b>Add new service</b><small>Create a service offering</small></span></Link></li>}
           <li><Link href="/provider/packages/new?step=1"><PackageIcon aria-hidden="true" /><span><b>Create package</b><small>Bundle your spaces or services</small></span></Link></li>
-        </ul></section>
+        </ul></section>}
       </aside>
     </div>
   </div>;

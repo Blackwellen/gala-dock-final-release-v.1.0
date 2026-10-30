@@ -5,14 +5,13 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ALL_SCOPES } from "./gateway";
 import { assertPublicUrl } from "./ssrf";
+import { WEBHOOK_EVENTS } from "./webhook-catalogue";
 
 type R<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 const B62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const rand = (n: number) => Array.from({ length: n }, () => B62[randomInt(62)]).join("");
-const WEBHOOK_EVENTS = ["event.created", "event.updated", "event.published", "booking.requested", "booking.created", "booking.confirmed", "booking.cancelled", "booking.cancellation_applied",
-  "quote.received", "quote.accepted", "proposal.accepted", "ticket.order.paid", "ticket.transferred", "ticket.resold", "payment.succeeded", "payment.refunded", "dispute.opened",
-  "agent.run.completed", "listing.published", "review.published", "provider.document.expiring"];
-export async function webhookEvents() { return WEBHOOK_EVENTS; }
+// Subscribable types come from the public webhook catalogue (Q30; mirrors public.webhook_payload_fields).
+export async function webhookEvents(): Promise<string[]> { return [...WEBHOOK_EVENTS]; }
 const bump = () => { revalidatePath("/organizer/settings", "page"); revalidatePath("/provider/settings", "page"); };
 
 /** Creates a scoped key. The full key is returned once and only its SHA-256 hash is stored. */
@@ -36,7 +35,7 @@ export async function revokeApiKey(id: string): Promise<R> {
 
 /** Adds an endpoint after checking it's a public https URL. The signing secret is returned once. */
 export async function createWebhook(workspaceId: string, url: string, events: string[], description: string): Promise<R<string>> {
-  const evs = events.filter(e => WEBHOOK_EVENTS.includes(e));
+  const evs = events.filter(e => (WEBHOOK_EVENTS as readonly string[]).includes(e));
   if (!evs.length) return { ok: false, error: "Choose at least one event." };
   let safe: string;
   try { safe = await assertPublicUrl(url.trim()); } catch (e) { return { ok: false, error: (e as Error).message }; }
@@ -62,4 +61,27 @@ export async function replayDelivery(id: string): Promise<R> {
   const { error } = await sb.rpc("replay_webhook_delivery" as never, { p_delivery: id } as never);
   if (error) return { ok: false, error: "Couldn’t replay." };
   bump(); return { ok: true };
+}
+
+/** Rotates a key: a new key with the same name, scopes and limits (acting as you); the old one keeps working for the grace window. */
+export async function rotateApiKey(id: string, graceHours = 24): Promise<R<string>> {
+  const prefix = rand(8), key = `gd_live_${prefix}_${rand(32)}`;
+  const sb = await createClient();
+  const { error } = await sb.rpc("rotate_api_key" as never, { p_key: id, p_prefix: prefix, p_hash: createHash("sha256").update(key).digest("hex"), p_grace_hours: Math.max(0, Math.min(168, Math.round(graceHours))) } as never);
+  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can rotate API keys." : /key_inactive/.test(error.message) ? "This key is already revoked or expired." : /step_up|mfa|session/.test(error.message) ? "Verify your second factor, then try again." : "Couldn’t rotate the key." };
+  bump(); return { ok: true, data: key };
+}
+export async function setApiKeyLimits(id: string, ratePerMinute: number | null, expiresDays: number | null): Promise<R> {
+  const sb = await createClient();
+  const { error } = await sb.rpc("set_api_key_limits" as never, { p_key: id, p_rate_limit: ratePerMinute, p_expires: expiresDays ? new Date(Date.now() + Math.min(expiresDays, 365) * 864e5).toISOString() : null } as never);
+  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can change API keys." : /rate_limit/.test(error.message) ? "Rate limit must be 1–1200 requests a minute." : "Couldn’t update the key." };
+  bump(); return { ok: true };
+}
+/** New signing secret (returned once). The previous secret also signs deliveries for 24 hours. */
+export async function rotateWebhookSecret(id: string): Promise<R<string>> {
+  const secret = `whsec_${randomBytes(24).toString("base64url")}`;
+  const sb = await createClient();
+  const { error } = await sb.rpc("rotate_webhook_secret" as never, { p_endpoint: id, p_secret: secret } as never);
+  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "Only owners and managers can rotate secrets." : "Couldn’t rotate the secret." };
+  bump(); return { ok: true, data: secret };
 }

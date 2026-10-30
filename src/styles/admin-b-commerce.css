@@ -47,7 +47,7 @@
 .adc-tx{padding:8px 10px 10px}
 .adc-tx-h{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
 .adc-tx-h .adb-pop{order:9}
-.adc-tx-h h2{font-size:15px}
+.adc-tx-h h2{font-size: var(--k-title-card)}
 .adc-seg{display:flex;gap:2px;background:#f6f9fe;border-radius:7px;padding:2px}
 .adc-seg a{padding:5px 16px;font-size:11px;color:#1d2068;border-radius:5px}
 .adc-seg a.on{background:var(--ws-blue);color:#fff}

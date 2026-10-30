@@ -18,6 +18,7 @@ insert into public.role_permissions(workspace_kind, role, permission) values
   ('organizer','owner','agent.use'),
   ('organizer','owner','agent.approve'),
   ('organizer','owner','settings.manage'),
+  ('organizer','owner','checkin.scan'),
   ('organizer','manager','events.read'),
   ('organizer','manager','events.write'),
   ('organizer','manager','sales.read'),
@@ -29,11 +30,13 @@ insert into public.role_permissions(workspace_kind, role, permission) values
   ('organizer','manager','finance.read'),
   ('organizer','manager','agent.use'),
   ('organizer','manager','agent.approve'),
+  ('organizer','manager','checkin.scan'),
   ('organizer','member','events.read'),
   ('organizer','member','events.write'),
   ('organizer','member','sales.read'),
   ('organizer','member','marketplace.request'),
   ('organizer','member','agent.use'),
+  ('organizer','member','checkin.scan'),
   ('organizer','finance','events.read'),
   ('organizer','finance','finance.read'),
   ('organizer','finance','finance.write'),
@@ -358,19 +361,129 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('quote','sent','withdrawn');
 drop trigger if exists provider_quotes_state_guard on public.provider_quotes;
 create trigger provider_quotes_state_guard before insert or update of status on public.provider_quotes for each row execute function public.enforce_state_transition('quote', 'status');
-insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('ticket', 'tickets', 'status', 'audit', array['valid']::text[], array['used','refunded','transferred','resold','void']::text[]);
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('marketplace_request', 'provider_requests', 'status', 'audit', array['draft','sent']::text[], array['cancelled']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('marketplace_request','draft','sent'),
+  ('marketplace_request','draft','cancelled'),
+  ('marketplace_request','sent','awaiting'),
+  ('marketplace_request','sent','clarification'),
+  ('marketplace_request','sent','quote_received'),
+  ('marketplace_request','sent','declined'),
+  ('marketplace_request','sent','expired_no_response'),
+  ('marketplace_request','sent','closed'),
+  ('marketplace_request','sent','cancelled'),
+  ('marketplace_request','awaiting','clarification'),
+  ('marketplace_request','awaiting','quote_received'),
+  ('marketplace_request','awaiting','declined'),
+  ('marketplace_request','awaiting','expired_no_response'),
+  ('marketplace_request','awaiting','closed'),
+  ('marketplace_request','awaiting','cancelled'),
+  ('marketplace_request','clarification','awaiting'),
+  ('marketplace_request','clarification','quote_received'),
+  ('marketplace_request','clarification','declined'),
+  ('marketplace_request','clarification','expired_no_response'),
+  ('marketplace_request','clarification','closed'),
+  ('marketplace_request','clarification','cancelled'),
+  ('marketplace_request','quote_received','clarification'),
+  ('marketplace_request','quote_received','closed'),
+  ('marketplace_request','quote_received','cancelled'),
+  ('marketplace_request','declined','sent'),
+  ('marketplace_request','declined','closed'),
+  ('marketplace_request','declined','cancelled'),
+  ('marketplace_request','expired_no_response','sent'),
+  ('marketplace_request','expired_no_response','closed'),
+  ('marketplace_request','expired_no_response','cancelled'),
+  ('marketplace_request','closed','sent'),
+  ('marketplace_request','closed','cancelled');
+drop trigger if exists provider_requests_state_guard on public.provider_requests;
+create trigger provider_requests_state_guard before insert or update of status on public.provider_requests for each row execute function public.enforce_state_transition('marketplace_request', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('ticket', 'tickets', 'status', 'enforce', array['valid','used','cancelled','refunded','transferred','resold','resale_listed']::text[], array['refunded','transferred','resold','void']::text[]);
 insert into public.state_transitions(machine, from_state, to_state) values
   ('ticket','valid','used'),
   ('ticket','valid','refunded'),
   ('ticket','valid','transferred'),
   ('ticket','valid','resale_listed'),
+  ('ticket','valid','cancelled'),
   ('ticket','valid','void'),
   ('ticket','resale_listed','valid'),
   ('ticket','resale_listed','resold'),
+  ('ticket','resale_listed','cancelled'),
+  ('ticket','resale_listed','refunded'),
   ('ticket','resale_listed','void'),
-  ('ticket','used','valid');
+  ('ticket','used','valid'),
+  ('ticket','used','refunded'),
+  ('ticket','used','cancelled'),
+  ('ticket','cancelled','refunded'),
+  ('ticket','transferred','cancelled');
 drop trigger if exists tickets_state_guard on public.tickets;
 create trigger tickets_state_guard before insert or update of status on public.tickets for each row execute function public.enforce_state_transition('ticket', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('ticket_order', 'checkout_orders', 'order_state', 'enforce', array['draft','inventory_held','payment_pending','paid','issued','expired','failed','cancelled','refund_pending','refunded','partially_refunded','chargeback']::text[], array['refunded']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('ticket_order','draft','inventory_held'),
+  ('ticket_order','draft','expired'),
+  ('ticket_order','draft','cancelled'),
+  ('ticket_order','inventory_held','payment_pending'),
+  ('ticket_order','inventory_held','paid'),
+  ('ticket_order','inventory_held','issued'),
+  ('ticket_order','inventory_held','expired'),
+  ('ticket_order','inventory_held','failed'),
+  ('ticket_order','inventory_held','cancelled'),
+  ('ticket_order','inventory_held','refund_pending'),
+  ('ticket_order','payment_pending','paid'),
+  ('ticket_order','payment_pending','issued'),
+  ('ticket_order','payment_pending','expired'),
+  ('ticket_order','payment_pending','failed'),
+  ('ticket_order','payment_pending','cancelled'),
+  ('ticket_order','payment_pending','refund_pending'),
+  ('ticket_order','payment_pending','refunded'),
+  ('ticket_order','paid','issued'),
+  ('ticket_order','paid','failed'),
+  ('ticket_order','paid','refund_pending'),
+  ('ticket_order','paid','refunded'),
+  ('ticket_order','paid','chargeback'),
+  ('ticket_order','issued','refund_pending'),
+  ('ticket_order','issued','refunded'),
+  ('ticket_order','issued','partially_refunded'),
+  ('ticket_order','issued','cancelled'),
+  ('ticket_order','issued','chargeback'),
+  ('ticket_order','expired','paid'),
+  ('ticket_order','expired','issued'),
+  ('ticket_order','expired','refund_pending'),
+  ('ticket_order','expired','refunded'),
+  ('ticket_order','failed','paid'),
+  ('ticket_order','failed','issued'),
+  ('ticket_order','failed','refund_pending'),
+  ('ticket_order','failed','refunded'),
+  ('ticket_order','cancelled','refund_pending'),
+  ('ticket_order','cancelled','refunded'),
+  ('ticket_order','refund_pending','refunded'),
+  ('ticket_order','refund_pending','partially_refunded'),
+  ('ticket_order','refund_pending','issued'),
+  ('ticket_order','refund_pending','paid'),
+  ('ticket_order','partially_refunded','refund_pending'),
+  ('ticket_order','partially_refunded','refunded'),
+  ('ticket_order','chargeback','refunded'),
+  ('ticket_order','chargeback','issued');
+drop trigger if exists checkout_orders_state_guard on public.checkout_orders;
+create trigger checkout_orders_state_guard before insert or update of order_state on public.checkout_orders for each row execute function public.enforce_state_transition('ticket_order', 'order_state');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('registration', 'registrations', 'status', 'enforce', array['submitted']::text[], array['rejected','cancelled']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('registration','submitted','pending_approval'),
+  ('registration','submitted','approved'),
+  ('registration','submitted','waitlisted'),
+  ('registration','submitted','rejected'),
+  ('registration','submitted','cancelled'),
+  ('registration','pending_approval','approved'),
+  ('registration','pending_approval','rejected'),
+  ('registration','pending_approval','waitlisted'),
+  ('registration','pending_approval','cancelled'),
+  ('registration','waitlisted','approved'),
+  ('registration','waitlisted','pending_approval'),
+  ('registration','waitlisted','rejected'),
+  ('registration','waitlisted','cancelled'),
+  ('registration','approved','cancelled');
+drop trigger if exists registrations_state_guard on public.registrations;
+create trigger registrations_state_guard before insert or update of status on public.registrations for each row execute function public.enforce_state_transition('registration', 'status');
 insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('conditional_hold', 'conditional_holds', 'status', 'enforce', array['requested','held']::text[], array['declined','released','expired','converted','cancelled']::text[]);
 insert into public.state_transitions(machine, from_state, to_state) values
   ('conditional_hold','requested','held'),
@@ -535,6 +648,7 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_run','awaiting_plan_confirmation','running'),
   ('agent_run','awaiting_plan_confirmation','cancelled'),
   ('agent_run','awaiting_plan_confirmation','planning'),
+  ('agent_run','awaiting_plan_confirmation','paused'),
   ('agent_run','running','waiting_external'),
   ('agent_run','running','waiting_approval'),
   ('agent_run','running','scheduled_wait'),
@@ -567,6 +681,7 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_run','retrying','running'),
   ('agent_run','retrying','failed'),
   ('agent_run','retrying','cancelled'),
+  ('agent_run','retrying','paused'),
   ('agent_run','partially_completed','running'),
   ('agent_run','partially_completed','completed'),
   ('agent_run','partially_completed','cancelled'),
@@ -574,6 +689,32 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_run','failed','queued');
 drop trigger if exists agent_runs_state_guard on public.agent_runs;
 create trigger agent_runs_state_guard before insert or update of status on public.agent_runs for each row execute function public.enforce_state_transition('agent_run', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('verification', 'verification_checks', 'status', 'enforce', array['unverified','submitted']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('verification','unverified','submitted'),
+  ('verification','unverified','pending_review'),
+  ('verification','submitted','pending_review'),
+  ('verification','submitted','action_required'),
+  ('verification','submitted','rejected'),
+  ('verification','submitted','unverified'),
+  ('verification','pending_review','verified'),
+  ('verification','pending_review','action_required'),
+  ('verification','pending_review','rejected'),
+  ('verification','pending_review','suspended'),
+  ('verification','verified','pending_review'),
+  ('verification','verified','action_required'),
+  ('verification','verified','suspended'),
+  ('verification','verified','expired'),
+  ('verification','action_required','submitted'),
+  ('verification','action_required','pending_review'),
+  ('verification','action_required','rejected'),
+  ('verification','action_required','suspended'),
+  ('verification','rejected','submitted'),
+  ('verification','suspended','pending_review'),
+  ('verification','expired','submitted'),
+  ('verification','expired','pending_review');
+drop trigger if exists verification_checks_state_guard on public.verification_checks;
+create trigger verification_checks_state_guard before insert or update of status on public.verification_checks for each row execute function public.enforce_state_transition('verification', 'status');
 insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('agent_approval', 'agent_approvals', 'status', 'enforce', array['pending']::text[], array['approved','rejected','expired','cancelled']::text[]);
 insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_approval','pending','approved'),
@@ -582,4 +723,329 @@ insert into public.state_transitions(machine, from_state, to_state) values
   ('agent_approval','pending','cancelled');
 drop trigger if exists agent_approvals_state_guard on public.agent_approvals;
 create trigger agent_approvals_state_guard before insert or update of status on public.agent_approvals for each row execute function public.enforce_state_transition('agent_approval', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('event', 'events', 'status', 'enforce', array['draft','planning']::text[], array['archived']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('event','draft','planning'),
+  ('event','draft','ready'),
+  ('event','draft','published'),
+  ('event','draft','on_sale'),
+  ('event','draft','cancelled'),
+  ('event','draft','archived'),
+  ('event','draft','suspended'),
+  ('event','planning','draft'),
+  ('event','planning','ready'),
+  ('event','planning','published'),
+  ('event','planning','on_sale'),
+  ('event','planning','postponed'),
+  ('event','planning','cancelled'),
+  ('event','planning','archived'),
+  ('event','planning','suspended'),
+  ('event','ready','planning'),
+  ('event','ready','published'),
+  ('event','ready','on_sale'),
+  ('event','ready','postponed'),
+  ('event','ready','cancelled'),
+  ('event','ready','archived'),
+  ('event','ready','suspended'),
+  ('event','published','ready'),
+  ('event','published','on_sale'),
+  ('event','published','live'),
+  ('event','published','completed'),
+  ('event','published','postponed'),
+  ('event','published','cancelled'),
+  ('event','published','archived'),
+  ('event','published','suspended'),
+  ('event','on_sale','published'),
+  ('event','on_sale','live'),
+  ('event','on_sale','completed'),
+  ('event','on_sale','postponed'),
+  ('event','on_sale','suspended'),
+  ('event','on_sale','cancelled'),
+  ('event','on_sale','archived'),
+  ('event','live','completed'),
+  ('event','live','suspended'),
+  ('event','live','cancelled'),
+  ('event','suspended','draft'),
+  ('event','suspended','planning'),
+  ('event','suspended','ready'),
+  ('event','suspended','published'),
+  ('event','suspended','on_sale'),
+  ('event','suspended','live'),
+  ('event','suspended','completed'),
+  ('event','suspended','closed'),
+  ('event','suspended','postponed'),
+  ('event','suspended','cancelled'),
+  ('event','suspended','archived'),
+  ('event','postponed','planning'),
+  ('event','postponed','ready'),
+  ('event','postponed','published'),
+  ('event','postponed','on_sale'),
+  ('event','postponed','cancelled'),
+  ('event','postponed','archived'),
+  ('event','postponed','suspended'),
+  ('event','completed','closed'),
+  ('event','completed','archived'),
+  ('event','completed','suspended'),
+  ('event','closed','archived'),
+  ('event','closed','suspended'),
+  ('event','cancelled','archived'),
+  ('event','cancelled','suspended'),
+  ('event','archived','suspended');
+drop trigger if exists events_state_guard on public.events;
+create trigger events_state_guard before insert or update of status on public.events for each row execute function public.enforce_state_transition('event', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('contract', 'contracts', 'status', 'enforce', array['draft']::text[], array['signed','void']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('contract','draft','sent'),
+  ('contract','draft','void'),
+  ('contract','sent','signed'),
+  ('contract','sent','declined'),
+  ('contract','sent','expired'),
+  ('contract','sent','void'),
+  ('contract','sent','draft'),
+  ('contract','declined','draft'),
+  ('contract','declined','void'),
+  ('contract','expired','draft'),
+  ('contract','expired','void');
+drop trigger if exists contracts_state_guard on public.contracts;
+create trigger contracts_state_guard before insert or update of status on public.contracts for each row execute function public.enforce_state_transition('contract', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('leave_request', 'leave_requests', 'status', 'enforce', array['pending']::text[], array['rejected','cancelled']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('leave_request','pending','approved'),
+  ('leave_request','pending','rejected'),
+  ('leave_request','pending','cancelled'),
+  ('leave_request','approved','cancelled');
+drop trigger if exists leave_requests_state_guard on public.leave_requests;
+create trigger leave_requests_state_guard before insert or update of status on public.leave_requests for each row execute function public.enforce_state_transition('leave_request', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('incident', 'incidents', 'status', 'enforce', array['open']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('incident','open','acknowledged'),
+  ('incident','open','investigating'),
+  ('incident','open','mitigated'),
+  ('incident','open','resolved'),
+  ('incident','acknowledged','investigating'),
+  ('incident','acknowledged','mitigated'),
+  ('incident','acknowledged','resolved'),
+  ('incident','investigating','mitigated'),
+  ('incident','investigating','resolved'),
+  ('incident','mitigated','investigating'),
+  ('incident','mitigated','resolved'),
+  ('incident','resolved','investigating');
+drop trigger if exists incidents_state_guard on public.incidents;
+create trigger incidents_state_guard before insert or update of status on public.incidents for each row execute function public.enforce_state_transition('incident', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('event_party', 'event_parties', 'status', 'enforce', array['prospect','negotiating']::text[], array['completed','cancelled','withdrawn']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('event_party','prospect','negotiating'),
+  ('event_party','prospect','confirmed'),
+  ('event_party','prospect','withdrawn'),
+  ('event_party','prospect','cancelled'),
+  ('event_party','negotiating','prospect'),
+  ('event_party','negotiating','confirmed'),
+  ('event_party','negotiating','withdrawn'),
+  ('event_party','negotiating','cancelled'),
+  ('event_party','confirmed','completed'),
+  ('event_party','confirmed','cancelled');
+drop trigger if exists event_parties_state_guard on public.event_parties;
+create trigger event_parties_state_guard before insert or update of status on public.event_parties for each row execute function public.enforce_state_transition('event_party', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('party_deliverable', 'event_party_deliverables', 'status', 'enforce', array['pending']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('party_deliverable','pending','in_progress'),
+  ('party_deliverable','pending','submitted'),
+  ('party_deliverable','pending','waived'),
+  ('party_deliverable','in_progress','pending'),
+  ('party_deliverable','in_progress','submitted'),
+  ('party_deliverable','in_progress','waived'),
+  ('party_deliverable','submitted','approved'),
+  ('party_deliverable','submitted','rejected'),
+  ('party_deliverable','rejected','in_progress'),
+  ('party_deliverable','rejected','submitted'),
+  ('party_deliverable','rejected','waived'),
+  ('party_deliverable','waived','pending');
+drop trigger if exists event_party_deliverables_state_guard on public.event_party_deliverables;
+create trigger event_party_deliverables_state_guard before insert or update of status on public.event_party_deliverables for each row execute function public.enforce_state_transition('party_deliverable', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('talent_rider', 'talent_riders', 'status', 'enforce', array['draft','submitted']::text[], array['superseded','withdrawn']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('talent_rider','draft','submitted'),
+  ('talent_rider','draft','withdrawn'),
+  ('talent_rider','submitted','accepted'),
+  ('talent_rider','submitted','changes_requested'),
+  ('talent_rider','submitted','superseded'),
+  ('talent_rider','submitted','withdrawn'),
+  ('talent_rider','changes_requested','superseded'),
+  ('talent_rider','changes_requested','withdrawn'),
+  ('talent_rider','accepted','superseded');
+drop trigger if exists talent_riders_state_guard on public.talent_riders;
+create trigger talent_riders_state_guard before insert or update of status on public.talent_riders for each row execute function public.enforce_state_transition('talent_rider', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('event_licence', 'event_licences', 'status', 'enforce', array['draft','submitted','granted','not_required']::text[], array['withdrawn','revoked']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('event_licence','draft','submitted'),
+  ('event_licence','draft','granted'),
+  ('event_licence','draft','withdrawn'),
+  ('event_licence','draft','not_required'),
+  ('event_licence','submitted','granted'),
+  ('event_licence','submitted','refused'),
+  ('event_licence','submitted','withdrawn'),
+  ('event_licence','submitted','not_required'),
+  ('event_licence','refused','submitted'),
+  ('event_licence','refused','withdrawn'),
+  ('event_licence','granted','expired'),
+  ('event_licence','granted','revoked'),
+  ('event_licence','expired','submitted'),
+  ('event_licence','not_required','draft');
+drop trigger if exists event_licences_state_guard on public.event_licences;
+create trigger event_licences_state_guard before insert or update of status on public.event_licences for each row execute function public.enforce_state_transition('event_licence', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('safety_plan', 'safety_plans', 'status', 'enforce', array['draft']::text[], array['superseded','withdrawn']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('safety_plan','draft','submitted'),
+  ('safety_plan','draft','withdrawn'),
+  ('safety_plan','submitted','approved'),
+  ('safety_plan','submitted','changes_requested'),
+  ('safety_plan','submitted','withdrawn'),
+  ('safety_plan','changes_requested','superseded'),
+  ('safety_plan','changes_requested','withdrawn'),
+  ('safety_plan','approved','superseded');
+drop trigger if exists safety_plans_state_guard on public.safety_plans;
+create trigger safety_plans_state_guard before insert or update of status on public.safety_plans for each row execute function public.enforce_state_transition('safety_plan', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('virtual_session', 'virtual_sessions', 'status', 'enforce', array['draft','scheduled']::text[], array['archived']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('virtual_session','draft','scheduled'),
+  ('virtual_session','draft','cancelled'),
+  ('virtual_session','scheduled','draft'),
+  ('virtual_session','scheduled','live'),
+  ('virtual_session','scheduled','ended'),
+  ('virtual_session','scheduled','cancelled'),
+  ('virtual_session','live','ended'),
+  ('virtual_session','live','cancelled'),
+  ('virtual_session','ended','archived'),
+  ('virtual_session','ended','live'),
+  ('virtual_session','cancelled','scheduled'),
+  ('virtual_session','cancelled','archived');
+drop trigger if exists virtual_sessions_state_guard on public.virtual_sessions;
+create trigger virtual_sessions_state_guard before insert or update of status on public.virtual_sessions for each row execute function public.enforce_state_transition('virtual_session', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('virtual_recording', 'virtual_recordings', 'status', 'enforce', array['processing','available']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('virtual_recording','processing','available'),
+  ('virtual_recording','processing','withdrawn'),
+  ('virtual_recording','available','withdrawn'),
+  ('virtual_recording','withdrawn','available');
+drop trigger if exists virtual_recordings_state_guard on public.virtual_recordings;
+create trigger virtual_recordings_state_guard before insert or update of status on public.virtual_recordings for each row execute function public.enforce_state_transition('virtual_recording', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('risk_signal', 'risk_signals', 'status', 'enforce', array['open','cleared','actioned']::text[], array[]::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('risk_signal','open','cleared'),
+  ('risk_signal','open','actioned'),
+  ('risk_signal','open','expired'),
+  ('risk_signal','cleared','open'),
+  ('risk_signal','cleared','actioned'),
+  ('risk_signal','expired','open'),
+  ('risk_signal','expired','cleared'),
+  ('risk_signal','expired','actioned'),
+  ('risk_signal','actioned','cleared');
+drop trigger if exists risk_signals_state_guard on public.risk_signals;
+create trigger risk_signals_state_guard before insert or update of status on public.risk_signals for each row execute function public.enforce_state_transition('risk_signal', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('risk_hold', 'risk_holds', 'status', 'enforce', array['active']::text[], array['released']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('risk_hold','active','released');
+drop trigger if exists risk_holds_state_guard on public.risk_holds;
+create trigger risk_holds_state_guard before insert or update of status on public.risk_holds for each row execute function public.enforce_state_transition('risk_hold', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('legal_hold', 'legal_holds', 'status', 'enforce', array['active']::text[], array['released']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('legal_hold','active','released');
+drop trigger if exists legal_holds_state_guard on public.legal_holds;
+create trigger legal_holds_state_guard before insert or update of status on public.legal_holds for each row execute function public.enforce_state_transition('legal_hold', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('support_case', 'support_cases', 'status', 'enforce', array['open','waiting','escalated','resolved']::text[], array['closed']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('support_case','open','waiting'),
+  ('support_case','open','escalated'),
+  ('support_case','open','resolved'),
+  ('support_case','waiting','open'),
+  ('support_case','waiting','escalated'),
+  ('support_case','waiting','resolved'),
+  ('support_case','escalated','open'),
+  ('support_case','escalated','waiting'),
+  ('support_case','escalated','resolved'),
+  ('support_case','resolved','open'),
+  ('support_case','resolved','closed');
+drop trigger if exists support_cases_state_guard on public.support_cases;
+create trigger support_cases_state_guard before insert or update of status on public.support_cases for each row execute function public.enforce_state_transition('support_case', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('promotion_campaign', 'promotion_campaigns', 'status', 'enforce', array['draft']::text[], array['completed','cancelled']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('promotion_campaign','draft','scheduled'),
+  ('promotion_campaign','draft','cancelled'),
+  ('promotion_campaign','scheduled','draft'),
+  ('promotion_campaign','scheduled','active'),
+  ('promotion_campaign','scheduled','cancelled'),
+  ('promotion_campaign','active','paused'),
+  ('promotion_campaign','active','completed'),
+  ('promotion_campaign','active','cancelled'),
+  ('promotion_campaign','paused','active'),
+  ('promotion_campaign','paused','completed'),
+  ('promotion_campaign','paused','cancelled');
+drop trigger if exists promotion_campaigns_state_guard on public.promotion_campaigns;
+create trigger promotion_campaigns_state_guard before insert or update of status on public.promotion_campaigns for each row execute function public.enforce_state_transition('promotion_campaign', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('waiver_template', 'waiver_templates', 'status', 'enforce', array['draft']::text[], array['retired']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('waiver_template','draft','published'),
+  ('waiver_template','draft','retired'),
+  ('waiver_template','published','retired');
+drop trigger if exists waiver_templates_state_guard on public.waiver_templates;
+create trigger waiver_templates_state_guard before insert or update of status on public.waiver_templates for each row execute function public.enforce_state_transition('waiver_template', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('merch_order', 'merch_orders', 'status', 'enforce', array['pending']::text[], array['refunded','cancelled','expired']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('merch_order','pending','paid'),
+  ('merch_order','pending','cancelled'),
+  ('merch_order','pending','expired'),
+  ('merch_order','paid','collected'),
+  ('merch_order','paid','refunded'),
+  ('merch_order','paid','partially_refunded'),
+  ('merch_order','partially_refunded','refunded'),
+  ('merch_order','partially_refunded','collected'),
+  ('merch_order','partially_refunded','partially_refunded'),
+  ('merch_order','collected','refunded'),
+  ('merch_order','collected','partially_refunded');
+drop trigger if exists merch_orders_state_guard on public.merch_orders;
+create trigger merch_orders_state_guard before insert or update of status on public.merch_orders for each row execute function public.enforce_state_transition('merch_order', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('lost_report', 'lost_reports', 'status', 'enforce', array['submitted']::text[], array['collected','closed','expired']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('lost_report','submitted','matched'),
+  ('lost_report','submitted','closed'),
+  ('lost_report','submitted','expired'),
+  ('lost_report','matched','verified'),
+  ('lost_report','matched','submitted'),
+  ('lost_report','matched','closed'),
+  ('lost_report','matched','expired'),
+  ('lost_report','verified','collected'),
+  ('lost_report','verified','matched'),
+  ('lost_report','verified','closed');
+drop trigger if exists lost_reports_state_guard on public.lost_reports;
+create trigger lost_reports_state_guard before insert or update of status on public.lost_reports for each row execute function public.enforce_state_transition('lost_report', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('found_item', 'found_items', 'status', 'enforce', array['logged']::text[], array['collected','disposed']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('found_item','logged','matched'),
+  ('found_item','logged','disposed'),
+  ('found_item','matched','claimed'),
+  ('found_item','matched','logged'),
+  ('found_item','matched','disposed'),
+  ('found_item','claimed','collected'),
+  ('found_item','claimed','logged');
+drop trigger if exists found_items_state_guard on public.found_items;
+create trigger found_items_state_guard before insert or update of status on public.found_items for each row execute function public.enforce_state_transition('found_item', 'status');
+insert into public.state_machines(machine, table_name, column_name, mode, initial_states, terminal_states) values ('experiment', 'experiments', 'status', 'enforce', array['draft']::text[], array['stopped','completed','archived']::text[]);
+insert into public.state_transitions(machine, from_state, to_state) values
+  ('experiment','draft','pending_approval'),
+  ('experiment','draft','running'),
+  ('experiment','draft','archived'),
+  ('experiment','pending_approval','approved'),
+  ('experiment','pending_approval','draft'),
+  ('experiment','pending_approval','archived'),
+  ('experiment','approved','running'),
+  ('experiment','approved','draft'),
+  ('experiment','approved','archived'),
+  ('experiment','running','paused'),
+  ('experiment','running','stopped'),
+  ('experiment','running','completed'),
+  ('experiment','paused','running'),
+  ('experiment','paused','stopped'),
+  ('experiment','paused','completed');
+drop trigger if exists experiments_state_guard on public.experiments;
+create trigger experiments_state_guard before insert or update of status on public.experiments for each row execute function public.enforce_state_transition('experiment', 'status');
 commit;

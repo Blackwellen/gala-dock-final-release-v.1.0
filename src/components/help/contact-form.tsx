@@ -20,6 +20,7 @@ export function ContactForm({ workspaceId, source }: { workspaceId?: string | nu
     <label><span>Subject</span><input name="subject" required minLength={3} maxLength={200} placeholder="e.g. Payout hasn’t arrived" /></label>
     <label><span>How can we help?</span><textarea name="body" required minLength={10} maxLength={5000} rows={5} placeholder="Include the event, booking or order reference, dates and anything else that helps us look into it." /></label>
     {state.error && <p className="hc-err" role="alert">{state.error}</p>}
+    <p className="hc-sub" data-testid="help-context">Sent from: {source}{workspaceId ? " · your workspace is attached so support can see the right records" : ""}</p>
     <button type="submit" className="hc-btn primary" disabled={pending}>{pending ? "Sending…" : "Send to support"}</button>
   </form>;
 }

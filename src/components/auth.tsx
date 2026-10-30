@@ -1,6 +1,7 @@
 "use client";
 
 import { useHydrated } from "@/lib/use-hydrated";
+import { LEGAL } from "@/lib/legal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -22,7 +23,7 @@ export type AuthProps = {
   workspaces?: { id: string; name: string; kind: string }[];
 };
 
-const TERMS_VERSION = "2026-10";
+const TERMS_VERSION = LEGAL.version;   // single source: src/lib/legal.ts (mirrored in platform_settings section "legal")
 const titles: Record<AuthScreen, string> = { login: "Log in", register: "Create your account", "verify-email": "Verify your email", "forgot-password": "Forgot your password?", "reset-password": "Reset your password", mfa: "Multi-factor authentication", invite: "Workspace invite", access: "Secure access" };
 const descriptions: Record<AuthScreen, string> = {
   login: "Sign in to Gala Dock and we’ll take you back to your last valid Customer, Organizer, Provider, or Admin destination.",
@@ -334,7 +335,7 @@ export function AuthPage(props: AuthProps) {
               <AuthInput label="Confirm new password" name="confirm" type="password" placeholder="Confirm your new password" autoComplete="new-password" error={fieldErrors.confirm} />
               <PasswordRules value={password} strength />
               <div className="auth-security reset-security"><ShieldCheck aria-hidden="true" /><span><b>For your security</b><small>After you reset your password, you’ll be signed out on all devices.</small></span></div></>}
-            {screen === "login" && <label className="check-row"><input name="remember" type="checkbox" defaultChecked /><span>Remember this device</span><span className="tooltip-anchor" tabIndex={0} aria-label="When unchecked, you’ll be signed out when you close your browser."><CircleHelp size={15} aria-hidden="true" /></span></label>}
+            {screen === "login" && <label className="check-row"><input name="remember" type="checkbox" defaultChecked /><span>Remember this device</span><span className="tooltip-anchor" role="img" tabIndex={0} aria-label="When unchecked, you’ll be signed out when you close your browser."><CircleHelp size={15} aria-hidden="true" /></span></label>}
             {screen === "forgot-password" && <div className="auth-note"><IconTile icon={Send} color="purple" /><span><b>If an account exists for this email,</b><small>we’ll send a reset link with further instructions.</small></span></div>}
 
             {screen === "verify-email" && state !== "expired" && <>

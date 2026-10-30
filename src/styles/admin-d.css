@@ -1,0 +1,45 @@
+/* Q31 remainder (lane D): admin review queues, support operations, privacy tools, job console and health. Reference-blocked
+   routes (no dedicated AD-* frame) follow the AD-012 Trust & Safety / AD-013 Support visual language: same panels, KPI cards,
+   underlined tabs, pills and table density from admin-b.css. */
+.add{display:grid;gap:14px}
+.add-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.add-kpis.six{grid-template-columns:repeat(6,minmax(0,1fr))}
+.add-cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:12px}
+.add-card{border:1px solid var(--ws-border);border-radius:10px;padding:12px;display:grid;gap:10px;background:#fbfcff;min-width:0}
+.add-card header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.add-card header b{font-size:13px;color:#0d0d63}
+.add-i{width:13px;height:13px;vertical-align:-2px;margin-right:4px}
+.add-bad{color:var(--ws-red);font-weight:600}
+.add-warn{color:#b26b00;font-weight:600}
+.add-decide,.add-grid-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end}
+.add-decide label,.add-grid-form label,.add-stack label{display:grid;gap:4px;font-size:11px;color:#1d2068;font-weight:500;min-width:0}
+.add-decide .wide,.add-grid-form .wide{grid-column:span 3}
+.add-decide input,.add-decide select,.add-grid-form input,.add-grid-form select,.add-grid-form textarea,.add-inline input,.add-inline select,.add-stack input,.add-stack select,.add-stack textarea{width:100%;min-width:0;border:1px solid #dfe5f4;border-radius:7px;font-size:12px;padding:7px 9px;background:#fff;font:inherit}
+.add-inline{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.add-inline input{width:auto;flex:1 1 120px}
+.add-inline select{width:auto}
+.add-stack{display:grid;gap:8px}
+.add-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.add-row>div{display:grid;gap:3px;min-width:0;flex:1 1 320px}
+.add-acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.add-quote{margin:4px 0 0;font-size:12px;color:#4a50a6;font-style:italic}
+.add-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+.add-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;word-break:break-all}
+.add-keys{display:flex;gap:4px;flex-wrap:wrap}
+.add-keys code{font-size:10.5px;background:#eef2fb;border-radius:4px;padding:1px 5px}
+.add-note{font-size:11.5px;color:#4a50a6;margin:0;line-height:1.5}
+.add-warnbox{border:1px solid #f3d29a;background:#fff8eb;color:#6b4300;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.5}
+.add-checks{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:280px;overflow:auto}
+.add-checks label{display:flex;gap:8px;align-items:center;font-size:12px}
+.add-spark{display:flex;gap:2px;align-items:flex-end;height:28px}
+.add-spark i{display:block;width:6px;border-radius:2px;background:#2bb673}
+.add-spark i.degraded{background:#f2a33a}.add-spark i.down{background:var(--ws-red)}
+.add-preview{display:grid;gap:10px}
+.add-preview .gd-maint-row{display:flex;flex-wrap:wrap;gap:4px 10px;padding:8px 16px;border-radius:8px;font:500 13px/1.4 Inter,system-ui,sans-serif}
+.add-preview .gd-maint-row.info{background:#e8f1fe;color:#0b2a8a}.add-preview .gd-maint-row.warning{background:#fff2df;color:#7a4100}.add-preview .gd-maint-row.critical{background:#c4142b;color:#fff}
+.add-mini-page{border:1px dashed #c9d3ee;border-radius:12px;background:#f4f7fd;padding:16px;display:grid;place-items:center}
+.add-mini-page>div{background:#fff;border-radius:12px;padding:16px;max-width:420px;width:100%;display:grid;gap:6px;box-shadow:0 12px 30px -18px rgba(20,30,90,.3)}
+.add-mini-page small{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0038fd}
+.add-mini-page b{font-size:16px;color:#090a52}.add-mini-page p{margin:0;font-size:12px;color:#4a50a6}
+@media (max-width:1100px){.add-kpis,.add-kpis.six{grid-template-columns:repeat(2,minmax(0,1fr))}.add-split{grid-template-columns:1fr}.add-decide,.add-grid-form{grid-template-columns:repeat(2,minmax(0,1fr))}.add-decide .wide,.add-grid-form .wide{grid-column:1/-1}}
+@media (max-width:560px){.add-kpis,.add-kpis.six{grid-template-columns:1fr}.add-decide,.add-grid-form{grid-template-columns:1fr}}

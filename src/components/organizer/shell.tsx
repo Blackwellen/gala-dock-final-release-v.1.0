@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { GalaLogo } from "@/components/brand/gala-logo";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Plus, ChevronDown, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon, Palette } from "lucide-react";
@@ -68,8 +69,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
     <header className="o-top pwa-hide-desktop-nav">
       <div className="o-top-l">
       <button className="o-burger k-icon-btn plain" aria-label="Open navigation" aria-expanded={navOpen} onClick={() => setNavOpen(true)}><MenuIcon size={20} /></button>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><img src="/brand/favicon-48.png" alt="" width={44} height={44} /></Link>
+      <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><GalaLogo /></Link>
       <Menu label="Switch workspace" align="left" width={280} trigger={({ open, toggle, id }) => <button className="o-ws" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={workspace.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><span className="k-ellipsis">{workspace.name}</span><ChevronDown size={16} aria-hidden /></button>}>
@@ -97,7 +97,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           {notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} aria-hidden className={n.read_at ? "k-muted" : "k-blue"} /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}
         </>}
       </Menu>
-      <Link href="/organizer/help" className="o-top-btn o-top-help" aria-label="Help"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
+      <Link href="/help?from=organizer" className="o-top-btn o-top-help" aria-label="Help"><CircleHelp size={20} aria-hidden /><span className="o-top-lbl">Help</span></Link>
       <Menu label="Account" width={240} trigger={({ open, toggle, id }) => <button className="o-avatar" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Account menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={user.avatar || "/assets/gd/av-alex-organizer.webp"} alt="" /><ChevronDown size={16} aria-hidden /></button>}>

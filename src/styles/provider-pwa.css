@@ -1,8 +1,61 @@
 /* Provider forms and data views retain their full content on phone and tablet. */
 @media(max-width:1279px) {
+.ws-app.provider .wz,.ws-app.provider .vw { grid-template-columns:minmax(0,1fr);min-width:0;max-width:100%; }
+.ws-app.provider .vw { grid-template-areas:none; }
+.ws-app.provider .wz>*,.ws-app.provider .vw>* { min-width:0; }
+.ws-app.provider .vw>*,.ws-app.provider .vw .vw-contents>* { grid-area:auto;grid-row:auto;grid-column:auto;min-width:0; }
+.ws-app.provider .vw-s1,.ws-app.provider .vw-s3,.ws-app.provider .vw-s4 { grid-template-columns:minmax(0,1fr);grid-template-areas:none; }
+.ws-app.provider .vw-s1>*,.ws-app.provider .vw-s3>*,.ws-app.provider .vw-s4>* { grid-area:auto;grid-row:auto;grid-column:auto;min-width:0; }
+.ws-app.provider .vw-s1-form>*,.ws-app.provider .vw-s3 .vw-contents>*,.ws-app.provider .vw-s4 .vw-contents>* { grid-area:auto;grid-row:auto;grid-column:auto;min-width:0; }
+.ws-app.provider .vw-side { grid-template-columns:minmax(0,1fr);min-width:0; }
+.ws-app.provider .vw-preview-head,.ws-app.provider .vw-prev-h,.ws-app.provider .se-head-actions { flex-wrap:wrap;gap:8px; }
+.ws-app.provider .vw-preview-head h2,.ws-app.provider .vw-prev-h h2 { min-width:0;overflow-wrap:anywhere; }
+.ws-app.provider .vw-agent h2 { display:flex;flex-wrap:wrap;gap:8px; }.ws-app.provider .vw-agent h2 em { color:#08713f; }
+.ws-app.provider .sb-agent-box,.ws-app.provider .vw-agent { min-width:0; }.ws-app.provider .sb-agent-box li { overflow-wrap:anywhere; }.ws-app.provider .sb-agent-box .ws-btn { height:auto;white-space:normal; }
+.ws-app.provider .ws-kpi-text { flex:1; }.ws-app.provider .pa-runs a { white-space:normal;overflow-wrap:anywhere; }.ws-app.provider .pa-runs li>div { min-width:0; }
+.ws-app.provider .ws-back { display:inline-flex;align-items:center;min-height:44px; }
+.ws-app.provider .ws-back { white-space:normal;max-width:100%;overflow-wrap:anywhere; }
+.ws-app.provider .vw-preview button,.ws-app.provider .vw-strip-acts button { min-width:44px;min-height:44px; }.ws-app.provider .vw-strip-acts { flex-wrap:wrap; }
+.ws-app.provider label:has(>input:is([type=checkbox],[type=radio])) { min-height:44px; }
+.ws-app.provider :is(.qw-related .disabled,.qr-three .muted,.svw-week input,.pa-state) { opacity:1;color:#515779; }
+.ws-app.provider :is(.vw-counted>small,.vw-radios small,.svw-modes small,.svw-models small,.svw-bmodes small,.sb-agent-box>small,.pkp-cta-note) { color:#515779; }
+.ws-app.provider :is(.ok,.vw-ready-ok b,.pk-status .green,.pa-state,.pa-runs em) { color:#08713f; }
+.ws-app.provider .pl-badge.published { background:#08713f; }.ws-app.provider .pl-badge.draft { color:#703c00; }.ws-app.provider .pl-quality small { color:#08713f; }
+.ws-app.provider .pcal-entry.emergency em,.ws-app.provider .pcal-entry.hold em { color:#a91935; }
+.ws-app.provider .pt-bar.off,.ws-app.provider .pt-bar.hol { color:#9c2438; }.ws-app.provider .pt-bar small { opacity:1; }.ws-app.provider .ptm-tags .cert,.ws-app.provider .ptm-tags .no { color:#515779; }
 .ws-app.provider .ws-table-wrap { overflow-x:auto;max-width:100%; }
+.ws-app.provider .wz-steps,.ws-app.provider .qw-steps { overflow-x:auto;max-width:100%;min-width:0; }
 .ws-app.provider .ws-panel-head, .ws-app.provider .ws-page-actions { flex-wrap:wrap;gap:10px; }
 .ws-app.provider .ws-panel-head>* { min-width:0; }
+.ws-app.provider .ws-chip { flex-shrink:0;max-width:100%;height:auto;min-height:24px;white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider .ws-panel-head h2 { white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider .ps-faces { flex-wrap:wrap; }
+.ws-app.provider .pv-info dd { min-width:0;overflow-wrap:anywhere; }
+.ws-app.provider .vw-prev-thumbs { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.ws-app.provider .vw-thumbs { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.ws-app.provider label:has(>input:is([type=checkbox],[type=radio])) { display:flex;align-items:center;gap:8px; }
+.ws-app.provider input:is([type=checkbox],[type=radio]):not(.vw-switch input) { width:24px;height:24px;flex-shrink:0; }
+.ws-app.provider .svw-checks label { height:auto;min-height:44px;white-space:normal; }
+.ws-app.provider .qb-x { min-width:44px;min-height:44px; }
+.ws-app.provider .qb-lines li { grid-template-columns:14px 58px minmax(0,1fr) 62px 88px 44px; }
+.ws-app.provider :is(.qw-related .disabled,.qp-act.disabled,.qw-totals .muted,.qr-three .muted) { opacity:1; }
+.ws-app.provider :is(.qw-related .disabled,.qp-act.disabled) :is(b,small),.ws-app.provider .qw-totals .muted { color:#515779; }
+.ws-app.provider :is(.pq-insight p,.pl-note,.sb label>small,.vw label>small,.svw-setup label>small,.svw-rates h2>small) { color:#515779; }
+.ws-app.provider :is(.pa-chat header em,.pl-top li em,.pv-q li b,.sr-note.ok b,.sb-agent h2 em,.ps-roles i.o,.pcal-entry em) { color:#08713f; }
+.ws-app.provider :is(.pk-status li>em,.se-count,.pt-type.part_time) { color:#874006; }
+.ws-app.provider :is(.ptm-perms li.no,.pt-st.off,.ptm-ev.off) { color:#515779; }
+.ws-app.provider .ptm-ev.free { color:#08713f; }.ws-app.provider .pt-bar.special small { color:#572097; }
+.ws-app.provider .svw-week input:disabled { opacity:1;-webkit-text-fill-color:#515779; }
+.ws-app.provider .svw-week li:has(input[type=checkbox]:not(:checked)) input[type=time] { opacity:1;color:#515779; }
+.ws-app.provider .svw-h h2 small { color:#515779; }
+.ws-app.provider .vw-strip-drop>small { color:#515779; }
+.ws-app.provider .vw-doc.up { color:#08713f; }.ws-app.provider .svw-models label span b { color:#515779; }
+.ws-app.provider .se-head-actions { flex-shrink:1;min-width:0;max-width:100%; }
+.ws-app.provider .sb-foot { flex-wrap:wrap;gap:8px;min-width:0; }
+.ws-app.provider .sb-foot .ws-btn { flex:1 1 180px;white-space:normal;height:auto;min-height:44px; }
+.ws-app.provider .sb-tiles button { max-width:100%;min-width:0; }.ws-app.provider .sb-tiles svg { max-width:100%; }.ws-app.provider .sb-tiles b { white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider :is(.vw-agent,.vw-tips,.sb-agent-box) :is(li,li>span,li>a) { min-width:0;white-space:normal;overflow-wrap:anywhere; }
+.ws-app.provider :is(.vw-agent,.vw-tips,.sb-agent-box) .ws-btn { max-width:100%;white-space:normal; }
 .ws-app.provider .ws-panel-head .ws-link { white-space:normal;overflow-wrap:anywhere;min-height:44px;display:inline-flex;align-items:center; }
 .ws-app.provider .ws-kpi { overflow:visible;min-width:0; }.ws-app.provider .ws-kpi-text { min-width:0; }.ws-app.provider .ws-kpi-text :is(b, small, span) { white-space:normal;overflow-wrap:anywhere; }
 .ws-app.provider .qw-rail { grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
@@ -15,9 +68,28 @@
 .ws-app.provider .qw-agent h2 i { color:#08713f; }.ws-app.provider .pcal-free,.ws-app.provider .pcal-mini-grid a.out { color:#515779; }.ws-app.provider .pcal-entry.block em { color:#515779; }
 .ws-app.provider .pa-runs li { min-width:0;flex-wrap:wrap; }.ws-app.provider .pa-runs a { overflow-wrap:anywhere;min-width:0; }
 .ws-app.provider .pb-grid .ws-cell-text { overflow:visible; }.ws-app.provider .pb-grid .ws-cell-text small { white-space:normal;overflow-wrap:anywhere; }
-.ws-app.provider .qb-foot, .ws-app.provider .wz-foot { bottom:var(--pwa-bottom,70px); }
+.ws-app.provider .qb-foot { position:static;bottom:auto; }
+.ws-app.provider .wz-foot { bottom:var(--pwa-bottom,70px); }
+.ws-app.provider .se-unit em { color:#515779; }
 }
+@media(max-width:600px) { .ws-app.provider .svp-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:860px) {
+.ws-app.provider .vw-contents>* { grid-area:auto;grid-row:auto;grid-column:auto;min-width:0; }
+.ws-app.provider .ptm-grid { grid-template-columns:minmax(0,1fr); }.ws-app.provider .ptm-grid>* { min-width:0; }
+.ws-app.provider .qb-lines li { grid-template-columns:56px minmax(0,1fr) 44px;gap:10px; }
+.ws-app.provider .qb-lines .qb-line-text { grid-column:1/-1;min-width:0; }
+.ws-app.provider .qb-lines .qb-line-text input { width:100%; }
+.ws-app.provider .qb-lines li>.qb-grip,.ws-app.provider .qb-lines li>img,.ws-app.provider .qb-lines li>.qb-noimg { display:none; }
+.ws-app.provider .svw-checks { grid-template-columns:minmax(0,1fr); }
+.ws-app.provider .se-head-actions .ws-btn { white-space:normal;height:auto; }
+.ws-app.provider :is(.sb,.sr,.pkw-s1,.pkw-s2) { grid-template-columns:minmax(0,1fr);grid-template-areas:none;min-width:0; }
+.ws-app.provider :is(.sb,.sr,.pkw-s1,.pkw-s2)>* { grid-area:auto;grid-row:auto;grid-column:auto;min-width:0; }
+.ws-app.provider :is(.sb-side,.pkw-side1,.pkw-side2) { grid-template-columns:minmax(0,1fr);min-width:0; }
+.ws-app.provider .sb-quick { grid-template-columns:repeat(2,minmax(0,1fr)); }.ws-app.provider .sb-quick input { width:100%;min-width:0; }
+.ws-app.provider .ps { grid-template-columns:minmax(0,1fr);min-width:0; }.ws-app.provider .ps-tabs { min-width:0;max-width:100%;overflow-x:auto; }
+.ws-app.provider .ws-tabs { max-width:100%; }.ws-app.provider .ps-grid { grid-template-columns:repeat(12,minmax(0,1fr));min-width:0; }
+.ws-app.provider .se-layouts ul,.ws-app.provider .se-caps ul { grid-template-columns:minmax(0,1fr); }
+.ws-app.provider .svw-week li>svg { display:none; }
 .ws-app.provider .vw-location, .ws-app.provider .vw-acc-grid, .ws-app.provider .vw-acc .vw-tg, .ws-app.provider .vw-doc-others>div { grid-template-columns:minmax(0,1fr); }
 .ws-app.provider .vw-map { min-width:0;max-width:100%; }.ws-app.provider .vw-map-search { min-width:0; }.ws-app.provider .vw-map-search span { min-width:0; }.ws-app.provider .vw-map>p { flex-wrap:wrap; }
 .ws-app.provider .vw-preview .ws-panel-head { flex-wrap:wrap; }.ws-app.provider .vw-add { height:auto;white-space:normal;overflow:visible; }
@@ -27,3 +99,22 @@
 .ws-app.provider .vw-acc .vw-switch b, .ws-app.provider .vw-docs .vw-doc { white-space:normal; }
 .ws-app.provider .svw-week li { grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding-bottom:8px;border-bottom:1px solid var(--ws-border); }.ws-app.provider .svw-week li>span:nth-child(4) { display:none; }.ws-app.provider .svw-week input[type=time] { min-width:0; }
 }
+@media(max-width:1279px) {
+ .ws-app.provider .pcal-mcell.out { color:#626b80; }
+ .ws-app.provider .pt-bar.event { color:#086739; }
+ .ws-app.provider .pt-bar.event small { color:#086739;opacity:1; }
+ .ws-app.provider .ps-form { min-width:0; }
+ .ws-app.provider .ps-form>.wide { grid-column:1/-1; }
+ .ws-app.provider .ps-form>label { min-width:0; }
+ .ws-app.provider .ps-tg { position:relative;min-height:44px; }
+ .ws-app.provider .ps-tg input[type=checkbox] { inset:0;width:100%;height:100%;margin:0; }
+ .ws-app.provider .ps-form :is(input,select,textarea) { max-width:100%;min-width:0; }
+ .ws-app.provider .po-places li>a { display:flex;align-items:center;min-height:44px;padding:8px 0; }
+ .ws-app.provider .ws-chip.red { color:#b21d37; }
+ .ws-app.provider .ptm-ev.event,.ws-app.provider .ptm-ev.event small { color:#572097;opacity:1; }
+ .ws-app.provider .ws-btn.danger { color:#c41b35; }
+}
+/* W12 wizard check: at the end of a wizard the sticky footer sat under the tab bar (bottom 870 vs tabs top 774 at 390) — leave room below. */
+@media (max-width:1279px){.ws-app.provider .ws-main:has(.wz-foot){padding-bottom:calc(var(--pwa-bottom,70px) + 24px)}}
+/* The footer is the only child of a grid item (.wz-span), so its own sticky had no room to move. Stick the wrapper instead. */
+@media (max-width:1279px){.ws-app.provider .wz-span:has(> .wz-foot){position:sticky;bottom:calc(var(--pwa-bottom,70px) + 8px);z-index:6}.ws-app.provider .wz-span > .wz-foot{position:static}}

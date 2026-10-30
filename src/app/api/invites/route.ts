@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
-import { clientIp, createInviteToken, hashToken, isTokenFormat, rateLimit, sameOrigin } from "@/lib/security";
+import { clientIp, hashToken, isTokenFormat, rateLimit, sameOrigin } from "@/lib/security";
+import { createWorkspaceInvite } from "@/lib/workspace/invites";
 import { memberRoles } from "@/lib/onboarding-schema";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -43,9 +44,7 @@ export async function POST(request: Request) {
   const { data: workspace } = await supabase.from("workspaces").select("id,onboarding_complete").eq("id", body.workspaceId).eq("owner_id", user.id).eq("status", "active").maybeSingle();
   if (!workspace) return json({ error: "Only workspace owners can invite members." }, 403);
   if (!workspace.onboarding_complete) return json({ error: "Finish setting up the workspace before inviting your team." }, 409);
-  const { token, hash } = createInviteToken();
-  const { error } = await supabase.from("workspace_invites").insert({ workspace_id: workspace.id, email, role, token_hash: hash, invited_by: user.id });
-  if (error?.code === "23505") return json({ error: "This person already has a pending invitation." }, 409);
-  if (error) return json({ error: "Could not create invitation." }, 500);
-  return json({ inviteUrl: `${new URL(request.url).origin}/invite/${token}` });
+  const created = await createWorkspaceInvite(supabase, workspace.id, email, role);
+  if (!created.ok) return json({ error: created.error }, created.status);
+  return json({ inviteUrl: `${new URL(request.url).origin}/invite/${created.token}` });
 }

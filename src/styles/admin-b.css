@@ -1,6 +1,6 @@
 /* Admin B shared styles (AD-010..AD-018). Prefix: adb-. Calibrated to Designs/Admin Workspace (1536×1024). */
 .adb{display:grid;gap:12px;min-width:0}
-.adb h2{font-size:14.5px;font-weight:720;letter-spacing:-.02em;color:#02032e}
+.adb h2{font-size: var(--k-title-card);font-weight:720;letter-spacing:-.02em;color:#02032e}
 .adb-sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .adb-sec-h h2 small{font-size:13px;font-weight:500;color:#3f4596}
 .adb-panel{background:#fff;border:1px solid var(--ws-border);border-radius:12px;box-shadow:var(--ws-shadow);padding:12px 14px;min-width:0}
@@ -9,7 +9,7 @@
 
 /* Header */
 .adb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:-9px}
-.adb-head h1{font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.035em;color:#02032e}
+.adb-head h1{font-size: var(--k-title-admin);line-height:1.1;font-weight:800;letter-spacing:-.035em;color:#02032e}
 .adb-head>div>p{font-size:18px;line-height:1.25;color:#3f4596;margin-top:1px;letter-spacing:-.012em}
 .adb-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .adb-back{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#0d0d63;margin-bottom:6px}

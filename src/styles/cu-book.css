@@ -5,7 +5,7 @@
 .bk-crumbs a { color: var(--k-blue); } .bk-crumbs a:hover { text-decoration: underline; } .bk-crumbs svg { color: #6b7489; flex-shrink: 0; }
 .bk-crumbs [aria-current] { color: var(--k-ink); font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
 .bk-title { grid-column: 2 / 4; padding-left: 50px; }
-.bk-title h1 { margin: 0; font-size: 29px; font-weight: 700; letter-spacing: -.02em; color: var(--k-ink); line-height: 1.15; }
+.bk-title h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: var(--k-ink); line-height: 1.15; }
 .bk-title .ce-sub { margin: 6px 0 0; font-size: 15px; color: #4a5470; }
 .bk-grid { display: grid; grid-template-columns: var(--bk-rail) minmax(0, 1fr) var(--bk-side); gap: var(--bk-gap); align-items: start; }
 .bk-rail { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 46px; }
@@ -183,3 +183,58 @@
 .bk-head .bk-crumbs { grid-column: 1 / -1; flex-wrap: wrap; white-space: normal; padding-top: 0; row-gap: 4px; }
 .bk-head .bk-title { grid-column: 2 / 4; padding-left: 0; }
 @media (max-width: 1000px) { .bk-head .bk-title { grid-column: auto; } .bk-title h1 { font-size: 24px; } }
+/* W02: at the 1536 reference width the crumbs sit in the rail column on the title row (title centre 97px, not 150px), the title
+   starts ~64px into the main column, and the event name truncates so the trail can't reach the title. */
+@media (min-width: 1401px) {
+  .bk-head { margin-top: -10px; }
+  .bk-head .bk-crumbs { grid-column: 1; grid-row: 1; flex-wrap: nowrap; white-space: nowrap; padding-top: 4px; font-size: 11.5px; }
+  .bk-head .bk-crumbs { width: max-content; gap: 4px; font-size: 11px; } .bk-head .bk-crumbs > * { flex-shrink: 0; }
+  .bk .bk-head .bk-crumbs a[aria-label] { min-width: 22px; }
+  .bk-head .bk-crumbs a:not([aria-label]) { max-width: 100px; overflow: hidden; text-overflow: ellipsis; display: inline-block; line-height: 30px; }
+  .bk-head .bk-title { grid-column: 2 / 4; grid-row: 1; padding-left: 64px; }
+}
+/* W02 r2 responsive: the venue facts row (date | guests | package) overflowed at 1024 and 768 — wrap it below desktop. */
+@media (max-width: 1280px) { .bk-facts { flex-wrap: wrap; row-gap: 10px; } .bk-facts > span { min-width: 0; } }
+/* W02 pass 3 (customer booking, ≥1401px): reference sections are ~245/219/215 px (step 1) and ~170/287/150 px (step 2); ours ran
+   28–66 px taller per section, pushing later sections ~20–100 px down. Tighter section padding, inputs and option cards. */
+@media (min-width: 1401px) {
+  .c-root .bk .bk-sec { padding: 13px 16px 14px; }
+  .c-root .bk .bk-in { height: 38px; }
+  .c-root .bk .bk-row3 { margin-top: 10px; }
+  .c-root .bk .bk-card { padding: 12px 14px 11px; gap: 8px; }
+  .c-root .bk .bk-card-text { line-height: 1.45; }
+  .c-root .bk .bk-card ul { gap: 4px; }
+  .c-root .bk .bk-note { padding: 7px 10px; }
+}
+/* W02 pass 4 (≥1401px): the booking references (#58, #59) are drawn ~12% denser than our type scale (title 25 vs 29px, section
+   heads 14.5 vs 16.5px, body 13 vs 14.5px) — every section ran 15–70px tall and the payment section fell below the fold. The
+   block uses the reference tracks: rail 38→287, main 303→1140, side 1159→1500 (design px). W02 consistency pass: no CSS zoom —
+   one display scale for every page (density.css); components keep the shared type and spacing sizes. */
+@media (min-width: 1401px) {
+  .c-root .bk { --bk-rail: 249px; --bk-side: 341px; --bk-gap: 16px; padding: 0 8px 0 6px; }
+  .c-root .bk .bk-head { margin: 0 0 14px; } /* W14: with no zoom the -6px pulled the title into the breadcrumb row */
+  .c-root .bk .bk-head .bk-title { padding-left: 9px; }
+  .c-root .bk .bk-title .ce-sub { margin-top: 4px; }
+  .c-root .bk .bk-rail { top: 78px; }
+}
+@media (min-width: 1401px) {
+  .c-root .bk .bk-card-text { font-size: 14.5px; line-height: 1.5; }
+  .c-root .bk .bk-card ul li { font-size: 14px; }
+  .c-root .bk .bk-cards { min-height: 224px; }
+}
+@media (min-width: 1401px) {
+  /* Step 1 (#58) is drawn denser than step 2 (#59). */
+  .c-root .bk[data-step="1"] { --bk-rail: 249px; --bk-side: 341px; --bk-gap: 16px; }
+  .c-root .bk[data-step="2"] .bk-price > * { padding: 11px 12px; }
+  .c-root .bk[data-step="2"] .bk-info3 > div { padding: 9px 12px; }
+  .c-root .bk[data-step="2"] .bk-info3 em { line-height: 1.4; }
+  .c-root .bk[data-step="2"] .bk-info3 b { margin: 2px 0; }
+}
+/* W12 wizard sweep (≤640): the summary facts keep `nowrap` from the base rule above (declared after the 640 query), so a long
+   package or venue name ran past the stacked card at 390/360 — wrap them once the facts stack. */
+@media (max-width: 640px) {
+  .bk-facts b, .bk-facts small { white-space: normal; overflow-wrap: anywhere; }
+  .bk-facts > span, .bk-facts > span > span { min-width: 0; }
+}
+/* W12 wizard sweep (≤1279): the sticky booking bar sat at bottom:0 under the fixed .pwa-tabs bar — park it above the tabs. */
+@media (max-width: 1279px) { .k-root.c-root .bk-bar { bottom: var(--pwa-bottom, 70px); } }

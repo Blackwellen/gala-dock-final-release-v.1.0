@@ -81,9 +81,9 @@ test("Journey C + M + P: organizer onboarding — refresh-safe drafts, single wo
   // M: unsaved input survives a refresh in this tab.
   await page.reload();
   await expect(page.getByLabel("Workspace name")).toHaveValue("Thomas Events QA");
-  // Q: Gala Agent unavailability never blocks setup.
-  await page.getByRole("button", { name: "Suggest settings for me" }).click();
-  await expect(page.getByText(/isn’t available right now|couldn’t be reached|busy/)).toBeVisible();
+  // Q: the Gala Agent helper is optional and never blocks setup. (Spec updated 2026-10-29: it no longer clicks it — the agent is
+  // now live, so the old "unavailable" message no longer appears, and test runs must not call AI. Setup continues below without it.)
+  await expect(page.getByRole("button", { name: "Suggest settings for me" })).toBeVisible();
   // P: concurrent duplicate submissions create exactly one draft workspace.
   const body = { flow: "organizer", step: "organisation", values: { name: "Thomas Events QA", business_type: "Event Management Company", country: "United Kingdom", timezone: "Europe/London", currency: "GBP" } };
   const results = await Promise.all([1, 2, 3].map(() => page.request.post(`${BASE}/api/onboarding`, { data: body, headers: { Origin: BASE } })));
@@ -263,7 +263,9 @@ test("Journey K: MFA challenge is required, rejects bad codes and resumes the or
   await page.getByRole("button", { name: "Verify" }).click();
   await expect(page.getByText("That code isn’t valid. Check your app and try again.")).toBeVisible();
   await page.getByRole("tab", { name: "Recovery code" }).click();
-  await expect(page.getByText("Recovery codes aren’t available yet")).toBeVisible();
+  // Recovery codes are implemented now (was a "not available yet" placeholder); the tab shows the recovery-code form.
+  await expect(page.getByText("Use a recovery code")).toBeVisible();
+  await expect(page.getByLabel("Recovery code")).toBeVisible();
   await page.getByRole("tab", { name: "Authenticator" }).click();
   // Wait for a fresh 30s window so the code isn't reused from enrolment.
   await page.waitForTimeout(31_000);

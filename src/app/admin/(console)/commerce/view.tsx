@@ -48,6 +48,7 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
     actions={<>
       <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="period" label="Period" value={period} options={Object.entries(PERIODS).map(([value, p]) => ({ value, label: p.label }))} /></Suspense></span>
       <Link className="adb-btn" href="/admin/commerce/vat">VAT</Link>
+      <Link className="adb-btn" href="/admin/commerce/reconciliation">Reconciliation</Link>
       <Link className="adb-btn" href={`/admin/commerce/export?period=${period}`}><Upload aria-hidden="true" />Export</Link>
       <Link className="adb-btn primary" href={`/admin/commerce/export?period=${period}&kind=summary`}><Plus aria-hidden="true" />Generate report</Link>
     </>} />;
@@ -177,7 +178,7 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
             <td><Pill status={st.key} label={st.label} dot /></td>
             <td><span className="adc-prov"><i className={connect ? "c" : ""}>{connect ? "◎" : "S"}</i>{t.details.provider ?? "Stripe"}</span></td>
             <td className="r"><Menu label={`Actions for ${t.description}`} entries={[{ kind: "link", label: "Open transaction", href: `/admin/commerce/transactions/${t.id}` },
-              ...(t.event_id ? [{ kind: "link" as const, label: "Open event", href: `/admin/events/${t.event_id}` }] : []),
+              ...(t.event_id ? [{ kind: "link" as const, label: "Open event", href: `/admin/events?sel=${t.event_id}` }] : []),
               { kind: "link", label: "Open support for this payment", href: `/admin/support?q=${encodeURIComponent(String(t.details.reference ?? t.stripe_ref ?? t.description))}` }]} /></td>
           </tr>; })}</tbody>
       </table></div>

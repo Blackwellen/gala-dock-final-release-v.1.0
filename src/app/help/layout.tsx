@@ -3,8 +3,10 @@ import "@/styles/kit.css";
 import "@/styles/customer.css";
 import { KitProviders } from "@/components/kit/client";
 import { PublicHeader } from "@/components/customer/public-header";
+import { SiteFooter } from "@/components/public/site-footer";
 
-/** Public Help Centre: the same public header as the event and legal pages. Signed-in workspaces have their own in-shell copy. */
+/** The one Help Centre for everyone: the public header (signed-in visitors get their avatar) and the public footer. Workspace help
+ *  routes redirect here. */
 export default function HelpLayout({ children }: { children: ReactNode }) {
-  return <KitProviders><div className="c-root k-root pub-root"><PublicHeader /><main id="main">{children}</main></div></KitProviders>;
+  return <KitProviders><div className="c-root k-root pub-root"><PublicHeader /><main id="main">{children}</main><SiteFooter /></div></KitProviders>;
 }

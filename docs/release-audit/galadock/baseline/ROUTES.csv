@@ -1,0 +1,259 @@
+route,kind,methods,workspace,dynamic_params,auth_guard,notes,design_reference,file
+/admin,page,GET,admin,,layout:getAdmin getAdmin,,AD-001,src/app/admin/(console)/page.tsx
+/admin/agent-integrations,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-016 / AG-001-ADMIN,src/app/admin/(console)/agent-integrations/page.tsx
+/admin/agent-integrations/credits,page,GET,admin,,layout:getAdmin getAdmin token,,,src/app/admin/(console)/agent-integrations/credits/page.tsx
+/admin/agent-integrations/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/agent-integrations/export/route.ts
+/admin/analytics,page,GET,admin,,layout:getAdmin requireAdminPermission,,AD-017,src/app/admin/(console)/analytics/page.tsx
+/admin/analytics/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/analytics/export/route.ts
+/admin/commerce,page,GET,admin,,layout:getAdmin requireAdminPermission,,AD-010,src/app/admin/(console)/commerce/page.tsx
+/admin/commerce/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/commerce/export/route.ts
+/admin/commerce/payouts,page,GET,admin,,layout:getAdmin requireAdminPermission,,,src/app/admin/(console)/commerce/payouts/page.tsx
+/admin/commerce/transactions/[id],page,GET,admin,id,layout:getAdmin getAdmin requireAdminPermission,,AD-011,src/app/admin/(console)/commerce/transactions/[id]/page.tsx
+/admin/commerce/vat,page,GET,admin,,layout:getAdmin requireAdminPermission,,,src/app/admin/(console)/commerce/vat/page.tsx
+/admin/conversations,page,GET,admin,,layout:getAdmin getAdmin,,,src/app/admin/(console)/conversations/page.tsx
+/admin/conversations/[grant],page,GET,admin,grant,layout:getAdmin getAdmin,,,src/app/admin/(console)/conversations/[grant]/page.tsx
+/admin/conversations/request,page,GET,admin,,layout:getAdmin getAdmin,,,src/app/admin/(console)/conversations/request/page.tsx
+/admin/disputes,page,GET,admin,,layout:getAdmin getAdmin,,,src/app/admin/(console)/disputes/page.tsx
+/admin/events,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-006,src/app/admin/(console)/events/page.tsx
+/admin/events/export,api,GET,admin,,requireAdminPermission,,,src/app/admin/(console)/events/export/route.ts
+/admin/health,page,GET,admin,,layout:getAdmin getAdmin CRON_SECRET,,,src/app/admin/(console)/health/page.tsx
+/admin/login,page,GET,admin,,requireRole getOptionalUser,,,src/app/admin/login/page.tsx
+/admin/maintenance,page,GET,admin,,layout:getAdmin getAdmin,,,src/app/admin/(console)/maintenance/page.tsx
+/admin/marketplace,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-007,src/app/admin/(console)/marketplace/page.tsx
+/admin/marketplace/export,api,GET,admin,,requireAdminPermission,,,src/app/admin/(console)/marketplace/export/route.ts
+/admin/marketplace/listings/[id],page,GET,admin,id,layout:getAdmin getAdmin requireAdminPermission,,AD-008,src/app/admin/(console)/marketplace/listings/[id]/page.tsx
+/admin/partners,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-015,src/app/admin/(console)/partners/page.tsx
+/admin/partners/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/partners/export/route.ts
+/admin/settings,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-018,src/app/admin/(console)/settings/page.tsx
+/admin/settings/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/settings/export/route.ts
+/admin/support,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-013,src/app/admin/(console)/support/page.tsx
+/admin/support/[id],page,GET,admin,id,layout:getAdmin getAdmin requireAdminPermission,,AD-014,src/app/admin/(console)/support/[id]/page.tsx
+/admin/support/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/support/export/route.ts
+/admin/support/privacy,page,GET,admin,,layout:getAdmin getAdmin,,,src/app/admin/(console)/support/privacy/page.tsx
+/admin/tickets,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-009,src/app/admin/(console)/tickets/page.tsx
+/admin/tickets/export,api,GET,admin,,requireAdminPermission,,,src/app/admin/(console)/tickets/export/route.ts
+/admin/tickets/force-majeure,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,,src/app/admin/(console)/tickets/force-majeure/page.tsx
+/admin/trust,page,GET,admin,,layout:getAdmin requireAdminPermission,,AD-012,src/app/admin/(console)/trust/page.tsx
+/admin/trust/[id],page,GET,admin,id,layout:getAdmin,redirect-only,,src/app/admin/(console)/trust/[id]/page.tsx
+/admin/trust/disputes,page,GET,admin,,layout:getAdmin requireAdminPermission,,,src/app/admin/(console)/trust/disputes/page.tsx
+/admin/trust/export,api,GET,admin,,getAdmin,,,src/app/admin/(console)/trust/export/route.ts
+/admin/users,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-002,src/app/admin/(console)/users/page.tsx
+/admin/users/[id],page,GET,admin,id,layout:getAdmin getAdmin requireAdminPermission,,AD-003,src/app/admin/(console)/users/[id]/page.tsx
+/admin/users/export,api,GET,admin,,requireAdminPermission,,,src/app/admin/(console)/users/export/route.ts
+/admin/workspaces,page,GET,admin,,layout:getAdmin getAdmin requireAdminPermission,,AD-004,src/app/admin/(console)/workspaces/page.tsx
+/admin/workspaces/[id],page,GET,admin,id,layout:getAdmin getAdmin requireAdminPermission,,AD-005,src/app/admin/(console)/workspaces/[id]/page.tsx
+/admin/workspaces/export,api,GET,admin,,requireAdminPermission,,,src/app/admin/(console)/workspaces/export/route.ts
+/partner,page,GET,affiliate,,requireUser,,,src/app/partner/page.tsx
+/partner/qr,api,GET,affiliate,,auth.getUser,,,src/app/partner/qr/route.ts
+/partner/resources/[slug],api,GET,affiliate,slug,auth.getUser,,,src/app/partner/resources/[slug]/route.ts
+/promoter,page,GET,affiliate,,requireUser,,,src/app/promoter/page.tsx
+/promoter/[promoterId],page,GET,affiliate,promoterId,requireUser,,,src/app/promoter/[promoterId]/page.tsx
+/api/account/avatar,api,POST,api,,auth.getUser writes,,,src/app/api/account/avatar/route.ts
+/api/account/export,api,GET,api,,auth.getUser,,,src/app/api/account/export/route.ts
+/api/agent/ask,api,POST,api,,auth.getUser writes,,,src/app/api/agent/ask/route.ts
+/api/agent/onboarding,api,POST,api,,auth.getUser token writes,,,src/app/api/agent/onboarding/route.ts
+/api/agent/provider,api,POST,api,,getProvider writes,,,src/app/api/agent/provider/route.ts
+/api/agent/worker,api,GET/POST,api,,CRON_SECRET writes,,,src/app/api/agent/worker/route.ts
+/api/auth/google/callback,api,GET,api,,token,,,src/app/api/auth/google/callback/route.ts
+/api/auth/google/start,api,POST,api,,token writes,,,src/app/api/auth/google/start/route.ts
+/api/auth/mfa-recover,api,POST,api,,auth.getUser writes,,,src/app/api/auth/mfa-recover/route.ts
+/api/boosts/[id]/click,api,GET,api,id,none,,,src/app/api/boosts/[id]/click/route.ts
+/api/calendar/[token],api,GET,api,token,token,,,src/app/api/calendar/[token]/route.ts
+/api/calendar/oauth/[provider]/callback,api,GET,api,provider,auth.getUser token,,,src/app/api/calendar/oauth/[provider]/callback/route.ts
+/api/calendar/oauth/[provider]/start,api,GET,api,provider,auth.getUser,,,src/app/api/calendar/oauth/[provider]/start/route.ts
+/api/calendar/sync,api,POST,api,,auth.getUser writes,,,src/app/api/calendar/sync/route.ts
+/api/checkout/complete,api,GET,api,,none,,,src/app/api/checkout/complete/route.ts
+/api/checkout/session,api,POST,api,,auth.getUser token writes,,,src/app/api/checkout/session/route.ts
+/api/cron/calendar-sync,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/calendar-sync/route.ts
+/api/cron/email,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/email/route.ts
+/api/cron/payments,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/payments/route.ts
+/api/cron/privacy,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/privacy/route.ts
+/api/cron/scan-uploads,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/scan-uploads/route.ts
+/api/cron/storage-backup,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/storage-backup/route.ts
+/api/cron/webhooks,api,POST/GET,api,,CRON_SECRET writes,,,src/app/api/cron/webhooks/route.ts
+/api/dev/design,api,GET,api,,none,,,src/app/api/dev/design/route.ts
+/api/dev/designs,api,GET,api,,none,,,src/app/api/dev/designs/route.ts
+/api/disputes/[id]/files,api,GET,api,id,auth.getUser,,,src/app/api/disputes/[id]/files/route.ts
+/api/enquiries,api,POST,api,,auth.getUser writes,,,src/app/api/enquiries/route.ts
+/api/events/[id]/queue,api,POST/GET,api,id,token writes,,,src/app/api/events/[id]/queue/route.ts
+/api/export/[kind],api,GET,api,kind,auth.getUser,,,src/app/api/export/[kind]/route.ts
+/api/files/[id],api,GET,api,id,auth.getUser,,,src/app/api/files/[id]/route.ts
+/api/health,api,GET,api,,CRON_SECRET,,,src/app/api/health/route.ts
+/api/invites,api,POST,api,,auth.getUser token writes,,,src/app/api/invites/route.ts
+/api/listing-media,api,POST,api,,getProvider auth.getUser writes,,,src/app/api/listing-media/route.ts
+/api/maintenance,api,GET,api,,none,,,src/app/api/maintenance/route.ts
+/api/maps/geocode,api,GET,api,,auth.getUser,,,src/app/api/maps/geocode/route.ts
+/api/maps/tile/[style]/[z]/[x]/[y],api,GET,api,style;z;x;y,none,,,src/app/api/maps/tile/[style]/[z]/[x]/[y]/route.ts
+/api/mcp,api,POST/GET,api,,authenticate( writes,,,src/app/api/mcp/route.ts
+/api/media/asset,api,GET,api,,auth.getUser,,,src/app/api/media/asset/route.ts
+/api/media/font,api,POST/GET/DELETE,api,,auth.getUser writes,,,src/app/api/media/font/route.ts
+/api/messages/[id]/files,api,GET,api,id,auth.getUser,,,src/app/api/messages/[id]/files/route.ts
+/api/onboarding,api,POST,api,,auth.getUser token writes,,,src/app/api/onboarding/route.ts
+/api/payouts,api,POST/GET,api,,auth.getUser writes,,,src/app/api/payouts/route.ts
+/api/recent,api,POST,api,,auth.getUser writes,,,src/app/api/recent/route.ts
+/api/requests/[id]/files,api,GET,api,id,auth.getUser,,,src/app/api/requests/[id]/files/route.ts
+/api/saved,api,POST,api,,auth.getUser writes,,,src/app/api/saved/route.ts
+/api/search,api,GET,api,,auth.getUser,,,src/app/api/search/route.ts
+/api/stripe/webhook,api,POST,api,,token writes,,,src/app/api/stripe/webhook/route.ts
+/api/tickets/[id]/credential,api,GET,api,id,auth.getUser token,,,src/app/api/tickets/[id]/credential/route.ts
+/api/tickets/[id]/ics,api,GET,api,id,auth.getUser,,,src/app/api/tickets/[id]/ics/route.ts
+/api/tickets/[id]/pdf,api,GET,api,id,none,,,src/app/api/tickets/[id]/pdf/route.ts
+/api/uploads,api,POST,api,,auth.getUser writes,,,src/app/api/uploads/route.ts
+/api/v1/openapi.json,api,GET,api,,apiKey,,,src/app/api/v1/openapi.json/route.ts
+/api/v1/tools,api,GET,api,,authenticate(,,,src/app/api/v1/tools/route.ts
+/api/v1/tools/[tool],api,POST,api,tool,authenticate( writes,,,src/app/api/v1/tools/[tool]/route.ts
+/account,page,GET,customer,,layout:getCustomer getCustomer,,CU-013: Modern Event App Account Dashboard.png,src/app/(customer)/account/page.tsx
+/account/disputes/[id],page,GET,customer,id,layout:getCustomer getCustomer,,,src/app/(customer)/account/disputes/[id]/page.tsx
+/account/events,page,GET,customer,,layout:getCustomer getCustomer,,CU-002: My Events Planning Dashboard.png,src/app/(customer)/account/events/page.tsx
+/account/events/[id],page,GET,customer,id,layout:getCustomer getCustomer,,CU-003: Emma’s Garden Party Dashboard.png,src/app/(customer)/account/events/[id]/page.tsx
+/account/events/[id]/book,page,GET,customer,id,layout:getCustomer getCustomer,,CU-W02-01 / CU-W02-02,src/app/(customer)/account/events/[id]/book/page.tsx
+/account/events/[id]/bookings/[item],page,GET,customer,id;item,layout:getCustomer getCustomer,,,src/app/(customer)/account/events/[id]/bookings/[item]/page.tsx
+/account/events/[id]/bookings/[item]/catering,page,GET,customer,id;item,layout:getCustomer getCustomer,,,src/app/(customer)/account/events/[id]/bookings/[item]/catering/page.tsx
+/account/events/[id]/build,page,GET,customer,id,layout:getCustomer getCustomer,,CU-004: Emma’s Birthday Event Builder.png,src/app/(customer)/account/events/[id]/build/page.tsx
+/account/events/[id]/guests-tickets,page,GET,customer,id,layout:getCustomer getCustomer,,CU-006: Guests & Tickets Event Dashboard.png,src/app/(customer)/account/events/[id]/guests-tickets/page.tsx
+/account/events/[id]/messages,page,GET,customer,id,layout:getCustomer getCustomer,,CU-008: Emma’s Birthday Party Messages.png,src/app/(customer)/account/events/[id]/messages/page.tsx
+/account/events/[id]/money,page,GET,customer,id,layout:getCustomer getCustomer,,CU-007: Emma’s Birthday Budget Overview.png,src/app/(customer)/account/events/[id]/money/page.tsx
+/account/events/[id]/plan,page,GET,customer,id,layout:getCustomer getCustomer,,CU-005: Emma’s Birthday Party Timeline.png,src/app/(customer)/account/events/[id]/plan/page.tsx
+/account/events/[id]/scan,page,GET,customer,id,layout:getCustomer getCustomer,,,src/app/(customer)/account/events/[id]/scan/page.tsx
+/account/events/[id]/tickets/setup,page,GET,customer,id,layout:getCustomer getCustomer,,CU-W03-01 / CU-W03-02 / CU-W03-03,src/app/(customer)/account/events/[id]/tickets/setup/page.tsx
+/account/help,page,GET,customer,,layout:getCustomer,,,src/app/(customer)/account/help/page.tsx
+/account/help/[slug],page,GET,customer,slug,layout:getCustomer,,,src/app/(customer)/account/help/[slug]/page.tsx
+/account/inbox,page,GET,customer,,layout:getCustomer getCustomer,,,src/app/(customer)/account/inbox/page.tsx
+/account/reviews,page,GET,customer,,layout:getCustomer getCustomer,,CU-012: Mobile Event Reviews Dashboard.png,src/app/(customer)/account/reviews/page.tsx
+/account/saved,page,GET,customer,,layout:getCustomer getCustomer,,"CU-011: Saved Events, Venues & Services.png",src/app/(customer)/account/saved/page.tsx
+/account/tickets,page,GET,customer,,layout:getCustomer getCustomer,,CU-009: Modern My Tickets App Interface.png,src/app/(customer)/account/tickets/page.tsx
+/account/tickets/[id],page,GET,customer,id,layout:getCustomer getCustomer,,CU-010: Modern DJ Night Ticket Details UI.png,src/app/(customer)/account/tickets/[id]/page.tsx
+/account/tickets/[id]/print,page,GET,customer,id,layout:getCustomer,,,src/app/(customer)/account/tickets/[id]/print/page.tsx
+/account/tickets/[id]/resale,page,GET,customer,id,layout:getCustomer getCustomer,,BUY-W02-01 / BUY-W02-02,src/app/(customer)/account/tickets/[id]/resale/page.tsx
+/checkout/[event],page,GET,customer,event,auth.getUser token,,BUY-W01-01 / BUY-W01-02 / BUY-W01-03,src/app/checkout/[event]/page.tsx
+/checkout/[event]/confirmation,page,GET,customer,event,auth.getUser,,,src/app/checkout/[event]/confirmation/page.tsx
+/discover,page,GET,customer,,layout:getCustomer getCustomer,,CU-001: Gala Dock Event Discovery App.png,src/app/(customer)/discover/page.tsx
+/home,page,GET,customer,,layout:getCustomer getCustomer,,Home (signed-in): 9EC8147F…jpeg (+ (1)),src/app/(customer)/home/page.tsx
+/messages/[id],page,GET,customer,id,requireUser,,,src/app/messages/[id]/page.tsx
+/plan,page,GET,customer,,layout:getCustomer getCustomer,,CU-W01-01 / CU-W01-02 / CU-W01-03 / CU-W01-04 / PLANNER-CU,src/app/(customer)/plan/page.tsx
+/studio/[id],page,GET,customer,id,requireUser,,MEDIA-STUDIO,src/app/studio/[id]/page.tsx
+/tickets/[id]/join,api,GET,customer,id,auth.getUser,,,src/app/tickets/[id]/join/route.ts
+/tickets/accept/[token],page,GET,customer,token,layout:getCustomer getCustomer token,,,src/app/(customer)/tickets/accept/[token]/page.tsx
+/organizer,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-001: Gala Dock Event Command Center.png,src/app/organizer/page.tsx
+/organizer/agent,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-020: Gala Agent Event Management Dashboard.png / AG-001-ORGANIZER,src/app/organizer/agent/page.tsx
+/organizer/agent/[section],page,GET,organizer,section,layout:getOrganizer,redirect-only,,src/app/organizer/agent/[section]/page.tsx
+/organizer/agent/policy,page,GET,organizer,,layout:getOrganizer getOrganizer,,,src/app/organizer/agent/policy/page.tsx
+/organizer/agent/runs/[id],page,GET,organizer,id,layout:getOrganizer,,AG-002-ORGANIZER,src/app/organizer/agent/runs/[id]/page.tsx
+/organizer/calendar,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-004: Pastel Week Calendar Dashboard.png,src/app/organizer/calendar/page.tsx
+/organizer/disputes/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/disputes/[id]/page.tsx
+/organizer/events,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-002: Event Management Dashboard Mockup.png,src/app/organizer/events/page.tsx
+/organizer/events/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-003: Summer Garden Party Dashboard.png,src/app/organizer/events/[id]/page.tsx
+/organizer/events/[id]/live,page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/events/[id]/live/page.tsx
+/organizer/events/[id]/map,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-013: Event Venue Map Editor UI.png,src/app/organizer/events/[id]/map/page.tsx
+/organizer/events/[id]/media,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-015: Summer Garden Party Creator Dashboard.png,src/app/organizer/events/[id]/media/page.tsx
+/organizer/events/[id]/page,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-012: Summer Garden Party Event Editor.png,src/app/organizer/events/[id]/page/page.tsx
+/organizer/events/[id]/promotion,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-014: Promotion & Distribution Dashboard.png,src/app/organizer/events/[id]/promotion/page.tsx
+/organizer/events/[id]/promotion/new,page,GET,organizer,id,layout:getOrganizer getOrganizer,redirect-only,ORG-W05-01 / ORG-W05-02 / ORG-W05-03,src/app/organizer/events/[id]/promotion/new/page.tsx
+/organizer/events/[id]/scan,page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/events/[id]/scan/page.tsx
+/organizer/events/[id]/template,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-W07-01 / ORG-W07-02,src/app/organizer/events/[id]/template/page.tsx
+/organizer/events/[id]/tickets/setup,page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-W03-01 / ORG-W03-02 / ORG-W03-03 / TICKET-ALLOCATION / TICKET-REVIEW,src/app/organizer/events/[id]/tickets/setup/page.tsx
+/organizer/events/[id]/virtual,page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/events/[id]/virtual/page.tsx
+/organizer/events/new,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-W01-01 / ORG-W01-02 / ORG-W01-03 / ORG-W01-04,src/app/organizer/events/new/page.tsx
+/organizer/help,page,GET,organizer,,layout:getOrganizer getOrganizer,,,src/app/organizer/help/page.tsx
+/organizer/help/[slug],page,GET,organizer,slug,layout:getOrganizer getOrganizer,,,src/app/organizer/help/[slug]/page.tsx
+/organizer/inbox,page,GET,organizer,,layout:getOrganizer getOrganizer,,,src/app/organizer/inbox/page.tsx
+/organizer/marketplace,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-008: London Event Marketplace Discovery.png,src/app/organizer/marketplace/page.tsx
+/organizer/marketplace/[type]/[id],page,GET,organizer,type;id,layout:getOrganizer getOrganizer,,ORG-009: The Garden Rooms Venue Listing.png,src/app/organizer/marketplace/[type]/[id]/page.tsx
+/organizer/marketplace/bookings/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/marketplace/bookings/[id]/page.tsx
+/organizer/marketplace/bookings/[id]/catering,page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/marketplace/bookings/[id]/catering/page.tsx
+/organizer/marketplace/emergency,page,GET,organizer,,layout:getOrganizer getOrganizer,,,src/app/organizer/marketplace/emergency/page.tsx
+/organizer/marketplace/emergency/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,,src/app/organizer/marketplace/emergency/[id]/page.tsx
+/organizer/marketplace/requests/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-010: Event Quote Comparison Dashboard.png,src/app/organizer/marketplace/requests/[id]/page.tsx
+/organizer/marketplace/requests/new,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-W04-01 / ORG-W04-02,src/app/organizer/marketplace/requests/new/page.tsx
+/organizer/media,page,GET,organizer,,layout:getOrganizer getOrganizer,,MEDIA-ORG,src/app/organizer/media/page.tsx
+/organizer/money,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-018: Modern Events Finance Dashboard.png,src/app/organizer/money/page.tsx
+/organizer/money/invoices/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer token,,ORG-019: Paid Invoice Dashboard for Summer Garden Party.png,src/app/organizer/money/invoices/[id]/page.tsx
+/organizer/money/invoices/new,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-W06-01 / ORG-W06-02,src/app/organizer/money/invoices/new/page.tsx
+/organizer/promotions/new,page,GET,organizer,,layout:getOrganizer getOrganizer,,W05 Promotion (3): Neon Nights Promotion Dashboard2 · Neon Nights Festival Prom,src/app/organizer/promotions/new/page.tsx
+/organizer/proposals/new,page,GET,organizer,,layout:getOrganizer getOrganizer token,,ORG-W02-01 / ORG-W02-02 / ORG-W02-03,src/app/organizer/proposals/new/page.tsx
+/organizer/sales,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-005: Sales Pipeline Dashboard Mockup.png,src/app/organizer/sales/page.tsx
+/organizer/sales/leads/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-006: Event Lead CRM Dashboard.png,src/app/organizer/sales/leads/[id]/page.tsx
+/organizer/sales/proposals/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer token,,ORG-007: Summer Garden Party Proposal Dashboard.png,src/app/organizer/sales/proposals/[id]/page.tsx
+/organizer/settings,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-021: Gala Dock Organizer Settings Dashboard.png,src/app/organizer/settings/page.tsx
+/organizer/team,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-016: My Events Co Team Dashboard.png,src/app/organizer/team/page.tsx
+/organizer/team/[id],page,GET,organizer,id,layout:getOrganizer getOrganizer,,ORG-017: Maya Patel Crew Profile Dashboard.png,src/app/organizer/team/[id]/page.tsx
+/organizer/tickets,page,GET,organizer,,layout:getOrganizer getOrganizer,,ORG-011 Tickets & Promotion hub: Gala Dock Event Promotion Dashboard,src/app/organizer/tickets/page.tsx
+/organizer/tickets-promotion,page,GET,organizer,,layout:getOrganizer,redirect-only,ORG-011: Event Ticketing and Promotion Dashboard.png,src/app/organizer/tickets-promotion/page.tsx
+/continue,api,GET,portal,,none,redirect-only,,src/app/continue/route.ts
+/invite/[token],page,GET,portal,token,token,,AUTH-007,src/app/invite/[token]/page.tsx
+/pay/[token],page,GET,portal,token,token,,,src/app/pay/[token]/page.tsx
+/payments/[ref],page,GET,portal,ref,getCustomer,,,src/app/payments/[ref]/page.tsx
+/portal/[token],page,GET,portal,token,token,,,src/app/portal/[token]/page.tsx
+/portal/[token]/documents/[id],api,GET,portal,token;id,token,,,src/app/portal/[token]/documents/[id]/route.ts
+/proposal/[token],page,GET,portal,token,token,,,src/app/proposal/[token]/page.tsx
+/r/[code],api,GET,portal,code,none,,,src/app/r/[code]/route.ts
+/r/[code]/consent,page,GET,portal,code,none,,,src/app/r/[code]/consent/page.tsx
+/provider,page,GET,provider,,layout:getProvider getProvider,,PROV-001: Provider Command Centre Dashboard.png,src/app/provider/page.tsx
+/provider/agent,page,GET,provider,,layout:getProvider getProvider,,PROV-016: Gala Agent Mobile Dashboard.png / AG-001-PROVIDER,src/app/provider/agent/page.tsx
+/provider/agent/[section],page,GET,provider,section,layout:getProvider,redirect-only,,src/app/provider/agent/[section]/page.tsx
+/provider/agent/policy,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/agent/policy/page.tsx
+/provider/agent/runs/[id],page,GET,provider,id,layout:getProvider,,AG-002-PROVIDER,src/app/provider/agent/runs/[id]/page.tsx
+/provider/beo/[id],page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/beo/[id]/page.tsx
+/provider/bookings,page,GET,provider,,layout:getProvider getProvider,,PROV-005: Bookings Dashboard Overview.png,src/app/provider/bookings/page.tsx
+/provider/bookings/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-006: Riverside Wedding Booking Dashboard.png,src/app/provider/bookings/[id]/page.tsx
+/provider/bookings/export,api,GET,provider,,getProvider,,,src/app/provider/bookings/export/route.ts
+/provider/bookings/new,page,GET,provider,,layout:getProvider getProvider,,PROV-W06-01 / PROV-W06-02 / PROV-W06-03,src/app/provider/bookings/new/page.tsx
+/provider/calendar,page,GET,provider,,layout:getProvider getProvider,,PROV-007: Provider Calendar Week View.png,src/app/provider/calendar/page.tsx
+/provider/disputes/[id],page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/disputes/[id]/page.tsx
+/provider/emergency,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/emergency/page.tsx
+/provider/emergency/[id],page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/emergency/[id]/page.tsx
+/provider/help,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/help/page.tsx
+/provider/help/[slug],page,GET,provider,slug,layout:getProvider getProvider,,,src/app/provider/help/[slug]/page.tsx
+/provider/inbox,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/inbox/page.tsx
+/provider/listings/[[...type]],page,GET,provider,type,layout:getProvider getProvider,,,src/app/provider/listings/[[...type]]/page.tsx
+/provider/media,page,GET,provider,,layout:getProvider getProvider,,MEDIA-PROV,src/app/provider/media/page.tsx
+/provider/menus,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/menus/page.tsx
+/provider/menus/[id],page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/menus/[id]/page.tsx
+/provider/messages/[id],page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/messages/[id]/page.tsx
+/provider/money,page,GET,provider,,layout:getProvider getProvider,,PROV-015: Mobile Finance Dashboard Overview.png,src/app/provider/money/page.tsx
+/provider/money/export,api,GET,provider,,getProvider,,,src/app/provider/money/export/route.ts
+/provider/money/statement,page,GET,provider,,layout:getProvider getProvider,,,src/app/provider/money/statement/page.tsx
+/provider/opportunities,page,GET,provider,,layout:getProvider getProvider,,PROV-002: Riverside Venue Opportunities Dashboard.png,src/app/provider/opportunities/page.tsx
+/provider/opportunities/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-003: Riverside Wedding Venue Booking App.png,src/app/provider/opportunities/[id]/page.tsx
+/provider/opportunities/[id]/quote,page,GET,provider,id,layout:getProvider getProvider,,PROV-W05-01 / PROV-W05-02,src/app/provider/opportunities/[id]/quote/page.tsx
+/provider/packages/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-012: Wedding Package Management Dashboard.png,src/app/provider/packages/[id]/page.tsx
+/provider/packages/new,page,GET,provider,,layout:getProvider getProvider,,PROV-W04-01 / PROV-W04-02,src/app/provider/packages/new/page.tsx
+/provider/quotes/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-004: Riverside Venue Quote Dashboard.png,src/app/provider/quotes/[id]/page.tsx
+/provider/quotes/[id]/print,page,GET,provider,id,layout:getProvider getProvider,,,src/app/provider/quotes/[id]/print/page.tsx
+/provider/search,page,GET,provider,,layout:getProvider,,,src/app/provider/search/page.tsx
+/provider/services/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-011: Wedding DJ Provider Dashboard.png,src/app/provider/services/[id]/page.tsx
+/provider/services/new,page,GET,provider,,layout:getProvider getProvider,,PROV-W03-01 / PROV-W03-02 / PROV-W03-03,src/app/provider/services/new/page.tsx
+/provider/settings,page,GET,provider,,layout:getProvider getProvider token,,PROV-017: Riverside Venue Settings Dashboard.png,src/app/provider/settings/page.tsx
+/provider/team,page,GET,provider,,layout:getProvider getProvider,,PROV-013: Riverside Venue Team Dashboard.png,src/app/provider/team/page.tsx
+/provider/team/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-014: Sarah Mitchell Team Profile Dashboard.png,src/app/provider/team/[id]/page.tsx
+/provider/venues/[id],page,GET,provider,id,layout:getProvider getProvider,,PROV-009: Riverside Venue Management Dashboard.png / MAP-PROV,src/app/provider/venues/[id]/page.tsx
+/provider/venues/[id]/spaces/[spaceId],page,GET,provider,id;spaceId,layout:getProvider getProvider,,,src/app/provider/venues/[id]/spaces/[spaceId]/page.tsx
+/provider/venues/[id]/spaces/new,page,GET,provider,id,layout:getProvider getProvider,,PROV-W02-01 / PROV-W02-02,src/app/provider/venues/[id]/spaces/new/page.tsx
+/provider/venues/new,page,GET,provider,,layout:getProvider getProvider,,PROV-W01-01 / PROV-W01-02 / PROV-W01-03 / PROV-W01-04,src/app/provider/venues/new/page.tsx
+/,page,GET,public,,none,,Landing: — (existing),src/app/page.tsx
+/[...slug],page,GET,public,slug,none,,,src/app/[...slug]/page.tsx
+/access,page,GET,public,,none,,AUTH-008,src/app/access/page.tsx
+/auth/callback,api,GET,public,,none,,,src/app/auth/callback/route.ts
+/auth/confirm,api,GET,public,,token,,,src/app/auth/confirm/route.ts
+/auth/continue,api,GET,public,,none,redirect-only,,src/app/auth/continue/route.ts
+/auth/signout,api,POST,public,,writes,,,src/app/auth/signout/route.ts
+/cookies,page,GET,public,,token,,,src/app/(legal)/cookies/page.tsx
+/data-retention,page,GET,public,,none,,,src/app/(legal)/data-retention/page.tsx
+/events/[slug],page,GET,public,slug,auth.getUser,,Public event page: image-gen-3,src/app/events/[slug]/page.tsx
+/forgot-password,page,GET,public,,none,,AUTH-004,src/app/forgot-password/page.tsx
+/help,page,GET,public,,none,,,src/app/help/page.tsx
+/help/[slug],page,GET,public,slug,none,,,src/app/help/[slug]/page.tsx
+/login,page,GET,public,,none,,AUTH-001,src/app/login/page.tsx
+/maintenance,page,GET,public,,none,,,src/app/maintenance/page.tsx
+/mfa,page,GET,public,,none,,AUTH-006,src/app/mfa/page.tsx
+/onboarding,page,GET,public,,none,,ONB-001,src/app/onboarding/page.tsx
+/onboarding/[flow],page,GET,public,flow,none,,,src/app/onboarding/[flow]/page.tsx
+/organizers/[slug],page,GET,public,slug,none,,Organizer profile (public): — (no design; matches profile pattern),src/app/organizers/[slug]/page.tsx
+/privacy,page,GET,public,,token,,,src/app/(legal)/privacy/page.tsx
+/register,page,GET,public,,none,,AUTH-002,src/app/register/page.tsx
+/reset-password,page,GET,public,,none,,AUTH-005,src/app/reset-password/page.tsx
+/services/[slug],page,GET,public,slug,none,,Service profile (public): image-gen-2,src/app/services/[slug]/page.tsx
+/terms,page,GET,public,,none,,,src/app/(legal)/terms/page.tsx
+/ticket-terms,page,GET,public,,none,,,src/app/(legal)/ticket-terms/page.tsx
+/venues/[slug],page,GET,public,slug,none,,Venue profile (public): image-gen-1,src/app/venues/[slug]/page.tsx
+/verify-email,page,GET,public,,none,,AUTH-003,src/app/verify-email/page.tsx

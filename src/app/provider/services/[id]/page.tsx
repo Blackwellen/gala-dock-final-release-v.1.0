@@ -7,6 +7,7 @@ import "@/styles/provider-venue.css";
 import "@/styles/provider-venue-setup.css";
 import "@/styles/provider-space.css";
 import "@/styles/provider-service.css";
+import { PublicAvailabilityToggle } from "@/components/provider/public-availability-toggle";
 import { Fragment } from "react";
 import { Kpi, Ring, Chip, Tabs } from "@/components/workspace/kit";
 import { ActionForm } from "@/components/workspace/actions";
@@ -136,6 +137,7 @@ export default async function ServiceProfile(props: PageProps<"/provider/service
         <section className="ws-panel pv-status"><div className="ws-panel-head"><h2>Service status</h2></div>
           {["restricted", "suspended"].includes(s.review_status) ? <p className="pv-restricted"><CircleAlert aria-hidden="true" />Restricted by Gala Dock review — contact support.</p> : <LiveToggle venueId={s.id} live={live} />}
           <div className="pv-quality"><h2>Listing quality</h2><div className="pv-q"><Ring value={qScore} size={64} /><ul>{quality.map(([l, x]) => <li key={l}>{x >= 8 ? <CircleCheck aria-hidden="true" className="ok" /> : <CircleAlert aria-hidden="true" className="warn" />}<span>{l}</span><b>{x}/10</b></li>)}</ul></div></div></section>
+        <PublicAvailabilityToggle listingId={s.id} kind="service" on={(s.details as { public_availability?: unknown } | null)?.public_availability === true} canManage={ctx.can.manage} publicHref={s.slug && live ? `/services/${s.slug}` : null} />
         <section className="ws-panel svp-cov"><div className="ws-panel-head"><h2>Coverage area</h2><Link className="ws-link" href={`/provider/services/new?service=${s.id}&step=1`}><Pencil aria-hidden="true" />Edit</Link></div>
           <CoverageMap base={cov.base ?? "London"} radiusMiles={cov.radius_miles ?? 40} width={286} height={150} />
           <p className="svp-legend"><i className="p" />Primary coverage ({cov.radius_miles ?? 40} miles)</p></section>

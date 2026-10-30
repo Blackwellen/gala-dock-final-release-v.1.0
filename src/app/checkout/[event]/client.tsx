@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { GalaLogo } from "@/components/brand/gala-logo";
+import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CalendarDays, MapPin, Minus, Plus, Lock, ShieldCheck, Clock3, Ticket, Armchair, CircleAlert, CreditCard, RefreshCw, Check, Repeat, Gift } from "lucide-react";
-import { SeatPicker } from "@/components/venue-plan/seat-picker";
+import { ArrowLeft, CalendarDays, MapPin, Minus, Plus, Lock, ShieldCheck, Clock3, Ticket, Armchair, CircleAlert, CreditCard, RefreshCw, Check, Repeat, Gift, Tag, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import type { Summary } from "@/lib/checkout";
-import { reserve, reserveResale, releaseHold, claimOffer } from "./actions";
+import { reserve, reserveResale, releaseHold, claimOffer, applyCode, removeCode } from "./actions";
 import { WaitingRoom } from "./waiting-room";
+
+// Q45 performance: the seat map (venue-map → design elements → the full Lucide icon set, ~4.7 MB of dev chunks) loads only for
+// seated events that render it. Still server-rendered, so seated checkouts paint the same markup; GA-only checkouts never fetch it.
+const SeatPicker = dynamic(() => import("@/components/venue-plan/seat-picker").then(m => m.SeatPicker), { loading: () => <div style={{ height: 480 }} aria-busy="true" /> });
 
 type Tier = { id: string; name: string; description: string; price: number; remaining: number; limit: number; seated: boolean; color: string; onSale: boolean; note: string | null; badge: string | null };
 type Seat = { key: string; tier_id: string | null; accessible: boolean; status: "available" | "held" | "sold" | "blocked" };
@@ -16,11 +21,12 @@ const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", c
 const when = (s: string | null, e: string | null) => { if (!s) return "Date to be announced"; const d = new Date(s), f = (o: Intl.DateTimeFormatOptions) => d.toLocaleString("en-GB", { timeZone: "Europe/London", ...o });
   return `${f({ weekday: "short", day: "numeric", month: "long", year: "numeric" })} · ${f({ hour: "2-digit", minute: "2-digit" })}${e ? ` – ${new Date(e).toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" })}` : ""}`; };
 
-export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale, launch, offerId }: {
+export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale, launch, offerId, mapSlot = null }: {
   event: { id: string; name: string; slug: string; startsAt: string | null; endsAt: string | null; venue: string; city: string; cover: string };
   tiers: Tier[]; seats: Seat[]; overlay: MapEl[]; base: MapEl[]; fee: { fixed: number; pct_bps: number }; user: { email: string } | null;
   preset: { tier: string; qty: number } | null; existing: Summary | null; cancelled: boolean;
-  resale: { id: string; tier: string; tier_id: string; seat: string | null; price: number }[]; startResale: boolean;
+  resale: { id: string; tier: string; tier_id: string; seat: string | null; price: number; face_value?: number; policy_version?: number; jurisdiction?: string; restrictions?: { min_age?: number; transfer_allowed?: boolean; name_on_ticket?: boolean; terms_url?: string } }[]; startResale: boolean;
+  /** Server-rendered event map for general-admission events (no seat picker), shown collapsed. */ mapSlot?: ReactNode;
   /** event_launch_state (§50) */ launch: string; /** ?waitlist_offer= from the waitlist notification (§52) */ offerId: string | null;
 }) {
   const [mode, setMode] = useState<"new" | "resale">(startResale && resale.length ? "resale" : "new");
@@ -72,16 +78,28 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
   const [inQueue, setInQueue] = useState(false);
   const buyable = ["presale", "on_sale", "final_release", "low_availability"].includes(launch);
   const LAUNCH_MSG: Record<string, string> = { coming_soon: "Tickets aren’t on sale yet.", countdown: "Tickets go on sale soon.", sold_out: "This event is sold out.", waitlist: "This event is sold out. Join the waitlist on the event page and we’ll hold tickets for you if any come back.",
-    postponed: "This event has been postponed. Ticket sales are paused.", cancelled: "This event has been cancelled.", ended: "This event has ended.", draft: "Tickets aren’t available." };
+    postponed: "This event has been postponed. Ticket sales are paused.", cancelled: "This event has been cancelled.", ended: "This event has ended.", draft: "Tickets aren’t available.",
+    seller_not_ready: "Online ticket sales for this event aren’t open yet — the organiser is finishing their Stripe payment setup. Please check back soon." };
   const useOffer = () => start(async () => { setErr(null); const r = await claimOffer(event.id, offerId!);
     if (!r.ok) { if ("login" in r && r.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}?waitlist_offer=${offerId}`)}`); return; } setErr(r.error); return; }
     setSummary(r.summary); setStep(2); setNow(null); });
+  // Q20 promo / access codes: validated server-side (rate-limited). Access codes unlock presale tiers or allocations for the next
+  // reservation (page refresh shows them); discount codes reprice the current hold. Never applied to resale.
+  const [code, setCode] = useState(""); const [codeMsg, setCodeMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const codes = summary?.codes ?? [];
+  const apply = () => start(async () => { const c = code.trim(); if (!c) return; setCodeMsg(null);
+    const r = await applyCode(event.id, c); if (!r.ok) { setCodeMsg({ ok: false, text: r.error }); return; }
+    setCode(""); const applied = r.summary.codes?.find(x => x.code.toUpperCase() === c.toUpperCase());
+    setCodeMsg({ ok: true, text: applied?.purpose === "access" ? "Access code accepted — tickets it unlocks are now shown." : "Code applied." });
+    if (step === 2) setSummary(r.summary); else router.refresh(); });
+  const drop = (c: string) => start(async () => { const r = await removeCode(event.id, c); if (r.ok) { if (step === 2) setSummary(r.summary); setCodeMsg(null); router.refresh(); } });
   const mm = Math.floor(left / 60000), ss = Math.floor((left % 60000) / 1000);
   const shown = step === 2 && summary ? { lines: summary.lines.map(l => ({ name: l.name, q: l.qty, unit: l.unit, seats: l.seats, color: tierById.get(l.tier_id)?.color })), sub: summary.subtotal, fee: summary.fee, total: summary.total }
     : { lines: est.lines.map(l => ({ name: l.t.name, q: l.q, unit: l.t.price, seats: [] as string[], color: l.t.color })), sub: est.sub, fee: est.fee, total: est.total };
+  const discount = step === 2 && summary?.discount ? summary.discount : 0;
 
   return <div className="co">
-    <header className="co-top"><Link href="/" className="co-logo" aria-label="Gala Dock home">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/gala-dock-logo.png" alt="Gala Dock" /></Link>
+    <header className="co-top"><Link href="/" className="co-logo" aria-label="Gala Dock home"><GalaLogo /></Link>
       <ol className="co-steps"><li className={step === 1 ? "on" : "done"}><span>{step > 1 ? <Check aria-hidden="true" /> : 1}</span>Tickets</li><li className={step === 2 ? "on" : ""}><span>2</span>Review</li><li><span>3</span>Payment</li></ol>
       <span className="co-secure"><Lock aria-hidden="true" />Secure checkout</span></header>
     <div className="co-body">
@@ -100,7 +118,8 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
         {step === 1 && resale.length > 0 && <nav className="co-mode" aria-label="Ticket source"><button type="button" className={mode === "new" ? "on" : ""} onClick={() => setMode("new")}><Ticket aria-hidden="true" />New tickets</button>
           <button type="button" className={mode === "resale" ? "on" : ""} onClick={() => setMode("resale")}><Repeat aria-hidden="true" />Fan resale <em>{resale.length}</em></button></nav>}
         {step === 1 && mode === "resale" && <section className="co-card"><div className="co-h"><h2><Repeat aria-hidden="true" />Fan-to-fan resale</h2><small>Face value or less · fresh ticket issued to you</small></div>
-          <ul className="co-tiers co-resale">{resale.map(r => { const on = rsel.includes(r.id), t = tierById.get(r.tier_id); return <li key={r.id} className={on ? "sel" : ""}><i style={{ background: t?.color }} /><div><b>{r.tier}</b><small>{r.seat ?? "General admission"}</small></div><strong>{gbp(r.price)}</strong>
+          <p className="co-resale-note">Resale tickets are sold at face value or less{resale[0]?.policy_version ? ` under the ${resale[0].jurisdiction ?? "GB"} resale policy v${resale[0].policy_version}` : ""}. A new ticket is issued in your name and the seller’s is cancelled. <Link className="co-link" href={resale[0]?.restrictions?.terms_url ?? "/ticket-terms"}>Ticket terms</Link></p>
+          <ul className="co-tiers co-resale">{resale.map(r => { const on = rsel.includes(r.id), t = tierById.get(r.tier_id); return <li key={r.id} className={on ? "sel" : ""}><i style={{ background: t?.color }} /><div><b>{r.tier}</b><small>{r.seat ?? "General admission (standing)"}{r.face_value != null ? ` · Face value ${gbp(Number(r.face_value))}` : ""}{r.restrictions?.min_age ? ` · ${r.restrictions.min_age}+` : ""}{r.restrictions?.transfer_allowed === false ? " · Not transferable" : ""}</small></div><strong>{gbp(r.price)}</strong>
             <button type="button" className={`co-pick${on ? " on" : ""}`} aria-pressed={on} onClick={() => setRsel(v => on ? v.filter(x => x !== r.id) : v.length >= 10 ? v : [...v, r.id])}>{on ? <><Check aria-hidden="true" />Selected</> : "Select"}</button></li>; })}</ul></section>}
         {step === 1 && mode === "new" && <>
           {hasMap && <section className="co-card"><div className="co-h"><h2><Armchair aria-hidden="true" />Choose your seats</h2><small>Tap seats to select · up to 10 per order</small></div>
@@ -113,6 +132,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
               <span className="co-qty"><button type="button" aria-label={`Fewer ${t.name}`} disabled={q === 0} onClick={() => setQty(s => ({ ...s, [t.id]: Math.max(0, q - 1) }))}><Minus aria-hidden="true" /></button>
                 <output aria-live="polite">{q}</output><button type="button" aria-label={`More ${t.name}`} disabled={!t.onSale || q >= max} onClick={() => setQty(s => ({ ...s, [t.id]: q + 1 }))}><Plus aria-hidden="true" /></button></span></li>; })}</ul></section>}
           {!hasMap && !ga.length && <section className="co-card"><p>Tickets aren’t available right now.</p></section>}
+          {!hasMap && mapSlot && <details className="co-card co-map"><summary><MapPin aria-hidden="true" />Event map<small>Stages, zones, entrances and facilities</small></summary>{mapSlot}</details>}
         </>}
 
         {step === 2 && summary && <section className="co-card co-review"><div className="co-h"><h2>Review your order</h2><button type="button" className="co-link" onClick={change} disabled={pending}><RefreshCw aria-hidden="true" />Change tickets</button></div>
@@ -126,7 +146,13 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
 
       <aside className="co-side"><section className="co-card co-sum"><h2>Order summary</h2>
         {shown.lines.length ? <ul>{shown.lines.map((l, i) => <li key={i}><i style={{ background: l.color }} /><span>{l.q} × {l.name}</span><b>{gbp(l.unit * l.q)}</b></li>)}</ul> : <p className="co-empty">No tickets selected yet.</p>}
-        <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div><div><dt>Booking fee <small style={{ fontWeight: 400, opacity: .75 }}>(incl. VAT)</small></dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
+        {mode === "new" && <div className="co-code">
+          <form onSubmit={e => { e.preventDefault(); apply(); }}><label htmlFor="co-code-in"><Tag aria-hidden="true" />Promo or access code</label>
+            <span><input id="co-code-in" value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={32} autoComplete="off" spellCheck={false} placeholder="e.g. EARLYBIRD" aria-describedby="co-code-msg" />
+              <button type="submit" disabled={pending || !/^[A-Za-z0-9_ -]{2,32}$/.test(code.trim())}>Apply</button></span></form>
+          {codes.length > 0 && <ul aria-label="Applied codes">{codes.map(c => <li key={c.code}><b>{c.code}</b><small>{c.purpose === "access" ? "Access" : c.kind === "percent" ? `${c.amount}% off` : `${gbp(c.amount)} off each`}</small><button type="button" aria-label={`Remove code ${c.code}`} disabled={pending} onClick={() => drop(c.code)}><X aria-hidden="true" /></button></li>)}</ul>}
+          <p id="co-code-msg" role="status" className={codeMsg ? (codeMsg.ok ? "ok" : "bad") : ""}>{codeMsg?.text ?? ""}</p></div>}
+        <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div>{discount > 0 && <div className="disc"><dt>Code savings <small style={{ fontWeight: 400, opacity: .75 }}>(included)</small></dt><dd>−{gbp(discount)}</dd></div>}<div><dt>Booking fee <small style={{ fontWeight: 400, opacity: .75 }}>(incl. VAT)</small></dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
         {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0 || inQueue || !buyable} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
           : <button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button>}
         <p className="co-trust"><ShieldCheck aria-hidden="true" />Payments by Stripe. Gala Dock never sees your card details.</p></section></aside>

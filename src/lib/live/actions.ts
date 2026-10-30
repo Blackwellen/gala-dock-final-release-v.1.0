@@ -21,8 +21,11 @@ export async function setProviderCheckin(itemId: string, status: string, note = 
 export async function setProgrammeStatus(eventId: string, itemId: string, status: "upcoming" | "in_progress" | "done" | "delayed"): Promise<Result> {
   if (!UUID.test(eventId) || !UUID.test(itemId)) return { ok: false, error: "Not found." };
   const sb = await createClient();
-  const { error } = await sb.from("programme_items").update({ status }).eq("id", itemId).eq("event_id", eventId);
-  if (error) return err(error.message);
+  // Q17: run_sheet_update records delays / actual times and checks dependencies ('delayed' is tracked, not a programme status).
+  const { data: it } = await sb.from("programme_items").select("id").eq("id", itemId).eq("event_id", eventId).maybeSingle();
+  if (!it) return { ok: false, error: "Not found." };
+  const { error } = await sb.rpc("run_sheet_update" as never, { p_item: itemId, p_status: status } as never);
+  if (error) return /dependency_pending/.test(error.message) ? { ok: false, error: "An earlier item this depends on isn't done yet." } : err(error.message);
   revalidatePath(LIVE, "page");
   return { ok: true };
 }
@@ -40,7 +43,9 @@ export async function reportIncident(eventId: string, title: string, detail: str
 export async function resolveIncident(eventId: string, id: string): Promise<Result> {
   if (!UUID.test(eventId) || !UUID.test(id)) return { ok: false, error: "Not found." };
   const sb = await createClient();
-  const { error } = await sb.from("incidents").update({ status: "resolved" } as never).eq("id", id).eq("event_id", eventId);
+  const { data: inc } = await sb.from("incidents").select("id").eq("id", id).eq("event_id", eventId).maybeSingle();
+  if (!inc) return { ok: false, error: "Not found." };
+  const { error } = await sb.rpc("incident_transition" as never, { p_incident: id, p_to: "resolved", p_note: "Resolved from live mode" } as never);
   if (error) return err(error.message);
   revalidatePath(LIVE, "page");
   return { ok: true };

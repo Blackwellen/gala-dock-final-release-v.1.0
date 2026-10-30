@@ -44,12 +44,17 @@ next-env.d.ts
 
 # session states from automated sign-in (contain auth tokens)
 /artifacts/auth/
+/artifacts/visual/state-*.json
 
 # Playwright output (traces can contain session tokens)
 /test-results/
 /playwright-report/
 /blob-report/
 /artifacts/debug/
+/artifacts/pwa/test-*/
+/artifacts/pwa/**/trace.zip
+/artifacts/pwa/traces/
 
 .vercel
 /artifacts/tmp/
+/.next-pwa-maximum/

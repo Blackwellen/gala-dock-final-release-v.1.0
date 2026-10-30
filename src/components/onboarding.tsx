@@ -99,14 +99,6 @@ function AgentPanel({ step, context, onApply, preview, heading, text, action = "
     <AgentResults agent={agent} onApply={onApply} />
   </section>;
 }
-/** Compact "Gala Agent can suggest" link used beside a field group. */
-function AgentInline({ step, context, onApply, preview, label = "Gala Agent can suggest" }: { step: string; context: () => Values; onApply: (s: Suggestion) => void; preview?: boolean; label?: string }) {
-  const agent = useAgent(step, context, preview);
-  return <div className="agent-inline" aria-live="polite">
-    <button type="button" className="link-button agent-link" onClick={agent.ask} disabled={agent.status === "loading"}>{agent.status === "loading" ? <Loader2 size={15} className="spin" aria-hidden="true" /> : <Sparkles size={15} aria-hidden="true" />}{agent.status === "loading" ? "Thinking…" : label}</button>
-    <AgentResults agent={agent} onApply={onApply} />
-  </div>;
-}
 
 /* ---------- Upload ---------- */
 function UploadBox({ label, purpose, onUploaded, preview, current, compact = false }: { label: string; purpose: "image" | "document"; onUploaded: (file: { path: string; name: string; url: string | null }) => void; preview?: boolean; current?: string; compact?: boolean }) {
@@ -369,7 +361,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
             <TextField label="Home area" optional hintAbove value={str("home_area")} onChange={v => set("home_area", v)} hint="Helps us show you local events and venues." autoComplete="address-level2" icon={<MapPin size={18} aria-hidden="true" />} /></div>
           <SelectField label="Default currency" hintAbove value={str("currency")} onChange={v => set("currency", v)} options={currencies} hint="Used for ticket prices and bookings." icon={<CircleDollarSign size={18} aria-hidden="true" />} />
           <div className="setup-group interests-group"><div className="group-heading"><span><h3 id="interests-heading">What are you interested in?</h3><p className="muted">Select as many as you like. We’ll use this to personalise your recommendations.</p></span>
-            <AgentInline step="preferences" context={agentContext} onApply={applySuggestion} preview={preview} /></div>
+            </div>{/* No Gala Agent on customer preferences (owner decision: no AI in the customer workspace). */}
             <ChoiceGroup legend="What are you interested in?" hideLegend name="interests" items={customerInterests} images={customerInterests.map((_, i) => `interest-${i}`)} icons={interestIcons.map((Icon, i) => <Icon key={i} size={17} aria-hidden="true" />)} multi value={arr("interests")} onChange={v => set("interests", v)} columns={5} /></div>
         </>}
 
@@ -385,7 +377,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         </section>}
 
         {key === "operating" && <>
-          <ChoiceGroup legend="Event types" question="Select all that apply. At least one, or Mixed / Custom." name="event_types" items={organizerEventTypes} images={organizerEventTypes.map((t, i) => t === "Mixed / Custom" ? "" : `type-${i % 9}`)} icons={eventTypeIcons.map((Icon, i) => <Icon key={i} size={17} aria-hidden="true" />)} multi value={arr("event_types")} onChange={v => set("event_types", v)} error={errors.event_types} columns={5} />
+          <ChoiceGroup legend="Event types" question="Select all that apply. At least one, or Mixed / Custom." name="event_types" maxVisible={10} moreLabel="More event types" items={organizerEventTypes} images={organizerEventTypes.map((t, i) => t === "Mixed / Custom" ? "" : `type-${i % 9}`)} icons={eventTypeIcons.map((Icon, i) => <Icon key={i} size={17} aria-hidden="true" />)} multi value={arr("event_types")} onChange={v => set("event_types", v)} error={errors.event_types} columns={5} />
           <div className="setup-option-grid">
             <ChoiceGroup legend="Event access" question="Do you typically run public, private or both?" name="event_access" items={["Public", "Private", "Both"]} descriptions={["(Open to all)", "(By invitation)", "(Choose per event)"]} value={[str("event_access")]} onChange={v => set("event_access", v[0])} />
             <ChoiceGroup legend="Ticketing" question="Do you sell tickets for your events?" name="ticketing" items={["Yes", "No"]} descriptions={["(Use Gala Dock ticketing)", "(Registrations or invite only)"]} {...yesNo("ticketing")} />
@@ -437,7 +429,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           <hr /><ChoiceGroup legend="What do you offer?" name="capabilities" items={[{ value: "venue", label: "Venues" }, { value: "service", label: "Services" }, { value: "both", label: "Both" }]}
             value={arr("capabilities").length === 2 ? ["both"] : arr("capabilities")} onChange={v => set("capabilities", v[0] === "both" ? ["venue", "service"] : v)}
             descriptions={["Event spaces, halls, unique locations", "Catering, photography, DJs, décor, staffing", "One workspace, team, calendar and payouts for both"]} icons={[<IconTile key="v" icon={Building2} />, <IconTile key="s" icon={Store} />, <IconTile key="b" icon={Layers} />]} error={errors.capabilities} />
-          {arr("capabilities").includes("service") && <ChoiceGroup legend="Service categories" name="service_categories" items={serviceCategories} multi value={arr("service_categories")} onChange={v => set("service_categories", v)} error={errors.service_categories} />}
+          {arr("capabilities").includes("service") && <ChoiceGroup legend="Service categories" name="service_categories" maxVisible={10} moreLabel="More categories" items={serviceCategories} multi value={arr("service_categories")} onChange={v => set("service_categories", v)} error={errors.service_categories} />}
           <div className="two-columns"><TextField label="Primary location" required value={str("location")} onChange={v => set("location", v)} error={errors.location} icon={<MapPin size={18} aria-hidden="true" />} autoComplete="address-level2" />
             <SelectField label="Travel / coverage area" value={str("coverage")} onChange={v => set("coverage", v)} options={["Venue location only", "Within 25 miles", "Within 50 miles", "Within 100 miles", "Nationwide", "International"]} /></div>
         </section>}
@@ -460,7 +452,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
               {str("kind") === "service" ? <div className="two-columns"><SelectField label="Delivery mode" value={str("delivery_mode")} onChange={v => set("delivery_mode", v)} options={["On-site at the event", "Remote / digital", "Both"]} />
                 <SelectField label="Coverage / travel" value={str("coverage")} onChange={v => set("coverage", v)} options={["Within 25 miles", "Within 50 miles", "Within 100 miles", "Nationwide", "International"]} /></div>
                 : <TextField label="Address" optional value={str("address")} onChange={v => set("address", v)} autoComplete="street-address" />}
-              <ChoiceGroup legend="Event types (select all that apply)" variant="chips" name="event_types" items={listingEventTypes} multi value={arr("event_types")} onChange={v => set("event_types", v)} />
+              <ChoiceGroup legend="Event types (select all that apply)" variant="chips" maxVisible={6} moreLabel="More event types" name="event_types" items={listingEventTypes} multi value={arr("event_types")} onChange={v => set("event_types", v)} />
               {str("kind") !== "service" && <ChoiceGroup legend="Key features" variant="chips" maxVisible={5} moreLabel="Add feature" name="amenities" items={amenities} multi value={arr("amenities")} onChange={v => set("amenities", v)} />}
             </div>
             <hr /><h3>Photos</h3><p className="muted">Add high quality photos to showcase {str("kind") === "service" ? "your work" : "the space"}. At least one is required before publishing.</p>

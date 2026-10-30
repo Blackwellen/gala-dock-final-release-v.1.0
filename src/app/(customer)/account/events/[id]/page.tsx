@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { Star, MapPin, Home, Users, ArrowRight, Plus, CheckCircle2, Circle, Sparkles, UtensilsCrossed, Gem, Camera, Car, BedDouble, Music2, Flower2, MoreHorizontal, ChevronRight, ClipboardCheck } from "lucide-react";
+import { Star, MapPin, Home, Users, ArrowRight, Plus, CheckCircle2, Circle, ListChecks,UtensilsCrossed, Gem, Camera, Car, BedDouble, Music2, Flower2, MoreHorizontal, ChevronRight, ClipboardCheck } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { LISTING_COLS, type Listing } from "@/lib/data/marketplace";
 import { CuEventHeader } from "@/components/customer/event-header";
 import { ItemCta, ItemMenu, AddProviderDialog } from "@/components/customer/build-client";
-import { Beta } from "@/components/kit";
 import { money } from "@/lib/format";
+import { loadEventPlan } from "@/lib/data/event-plan";
+import { PublicPlan } from "@/components/venue-plan/public-plan";
 
 export const metadata = { title: "My event" };
 export const CU_STATUS: Record<string, [string, string]> = { confirmed: ["Confirmed", "green"], fulfilled: ["Completed", "green"], quoted: ["Pending quote", "blue"], available: ["Available", "blue"], sent: ["Requested", "purple"], awaiting: ["Requested", "purple"], held: ["Held", "blue"], suggested: ["Suggested", "gray"], standby: ["Standby", "gray"], declined: ["Declined", "red"], expired: ["No response", "gray"] };
@@ -23,6 +24,12 @@ export default async function MyEventPage({ params }: { params: Promise<{ id: st
   const tickets = await ctx.supabase.from("ticket_tiers").select("id", { count: "exact", head: true }).eq("event_id", e.id);
   const checks = [["Venue confirmed", d.s.venueOk], ["Date and time set", !!e.starts_at], [`${d.s.confirmed} of ${d.s.providers} key providers confirmed`, d.s.providers > 0 && d.s.confirmed === d.s.providers], [tickets.count ? "Tickets set up" : "Tickets not set up", !!tickets.count], ["Finalise remaining providers", d.s.providers > 0 && d.s.confirmed === d.s.providers]] as [string, boolean][];
   const score = Math.round((100 * checks.filter(c => c[1]).length) / checks.length);
+  // W11: what still stops the next lifecycle step (event_lifecycle_blockers — the same rule the server enforces), shown under readiness.
+  const nextState = e.visibility === "public" ? "published" : "ready";
+  const { data: blk } = ["draft", "planning"].includes(e.status) ? await ctx.supabase.rpc("event_lifecycle_blockers" as never, { p_event: e.id, p_to: nextState } as never) : { data: null };
+  const blockers = (Array.isArray(blk) ? blk : []) as { key: string; label: string; fix?: string }[];
+  // The event's saved layout (venue structure + latest overlay), read-only; hidden when nothing has been drawn.
+  const plan = await loadEventPlan(ctx.supabase, { id: e.id, venue_listing_id: (e as { venue_listing_id?: string | null }).venue_listing_id ?? null });
   const pendingQ = d.items.find(i => i.status === "quoted");
   const recs = [pendingQ ? `Review the ${pendingQ.category === "food" ? "catering " : ""}quote from ${pendingQ.title}.` : "Request quotes for your remaining categories.", tickets.count ? "Send invitations to your guests." : "Set up your ticket types for guests.", !d.items.some(i => i.category === "media") ? "Consider adding a photographer (3 great options)." : "Review your day plan timings."];
   const add = [["food", "Catering", UtensilsCrossed], ["styling", "Decor", Gem], ["media", "Photography", Camera], ["transport", "Transport", Car], ["extras", "Accommodation", BedDouble], ["entertainment", "Entertainment", Music2], ["styling", "Flowers", Flower2]] as const;
@@ -49,14 +56,16 @@ export default async function MyEventPage({ params }: { params: Promise<{ id: st
         <div className="ce-sugg">{sugg.map(([t, s2, img, c]) => <div key={t} className="ce-sg">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={img} alt="" /><span className="k-grow"><b>{t}</b><small>{s2}</small></span><AddProviderDialog eventId={e.id} category={c} label={t} listings={forCat(c)} trigger="tile" /></div>)}<Link className="ce-sugg-next" href={`/account/events/${e.id}/build`} aria-label="More suggestions"><ChevronRight size={16} /></Link></div>
       </section>
       <div className="k-col" style={{ gap: 14 }}>
-        <section className="ce-card"><h2 className="ce-h2 sm">Event readiness</h2><div className="ce-ready"><span className="ce-ring" style={{ ["--v" as string]: score }}><b>{score}%</b></span><ul>{checks.map(([l, ok]) => <li key={l}>{ok ? <CheckCircle2 size={17} className="k-green" fill="#10b981" color="#fff" /> : <Circle size={17} className="k-muted" />}{l}</li>)}</ul></div></section>
-        <section className="ce-card ce-planner"><div className="k-row" style={{ gap: 8 }}><Sparkles size={24} className="k-blue" /><b style={{ fontSize: 16 }}>Gala Planner</b><Beta /></div><p className="ce-planner-q">Here&apos;s what I recommend next:</p><ol>{recs.map((r, i) => <li key={i}><span>{i + 1}</span>{r}</li>)}</ol><Link className="k-btn primary block lg" href={`/account/events/${e.id}/build`}>Continue planning with me <ArrowRight size={15} /></Link></section>
+        <section className="ce-card"><h2 className="ce-h2 sm">Event readiness</h2><div className="ce-ready"><span className="ce-ring" style={{ ["--v" as string]: score }}><b>{score}%</b></span><ul>{checks.map(([l, ok]) => <li key={l}>{ok ? <CheckCircle2 size={17} className="k-green" fill="#10b981" color="#fff" /> : <Circle size={17} className="k-muted" />}{l}</li>)}</ul></div>{blockers.length > 0 && <p className="ce-blockers"><b>Before it can be {nextState === "published" ? "published" : "marked ready"}:</b> {blockers.slice(0, 3).map(b => b.label).join(" · ")}</p>}</section>
+        <section className="ce-card ce-planner"><div className="k-row" style={{ gap: 8 }}><ListChecks size={24} className="k-blue" /><b style={{ fontSize: 16 }}>Next steps</b></div><p className="ce-planner-q">Based on what&apos;s still open:</p><ol>{recs.map((r, i) => <li key={i}><span>{i + 1}</span>{r}</li>)}</ol><Link className="k-btn primary block lg" href={`/account/events/${e.id}/build`}>Continue planning <ArrowRight size={15} /></Link></section>
         <section className="ce-card"><div className="k-between"><h2 className="ce-h2 sm">Estimated budget</h2><Link className="k-link" href={`/account/events/${e.id}/money`}>Edit budget</Link></div>
           <div className="ce-budget-bar"><i style={{ width: `${budget ? Math.min(100, (paid / budget) * 100) : 0}%`, background: "#14b8a6" }} /><i style={{ width: `${budget ? Math.min(100, ((est - paid) / budget) * 100) : 0}%`, background: "#5eead4" }} /></div><div className="k-xs k-muted" style={{ textAlign: "right", marginTop: -14 }}>{money(budget)}</div>
           <div className="ce-budget"><span><b>{money(est)}</b><small>Estimated</small></span><span><b>{money(paid)}</b><small>Paid</small></span><span><b>{money(Math.max(0, budget - est))}</b><small>Remaining</small></span></div>
           <Link className="ce-breakdown" href={`/account/events/${e.id}/money`}><ClipboardCheck size={16} />View full breakdown <ArrowRight size={14} /></Link></section>
       </div>
     </div>
+    <PublicPlan id="event-layout" title="Event layout" intro={plan.latest?.status === "published" ? "The published layout for your event." : plan.latest ? "The latest saved layout for your event (not published yet)." : `The ${plan.venueName ?? "venue"} floor plan.`}
+      label={`Layout for ${e.name}`} base={plan.base} overlay={plan.overlay} spaces={plan.spaces} />
   </div>;
 }
 function AddTile({ eventId, category, label, Icon, listings }: { eventId: string; category: string; label: string; Icon: React.ComponentType<{ size?: number }>; listings: Parameters<typeof AddProviderDialog>[0]["listings"] }) {

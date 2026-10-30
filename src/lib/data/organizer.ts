@@ -1,4 +1,5 @@
 import "server-only";
+import { stripeLive } from "@/lib/stripe";
 import type { OrganizerCtx } from "./context";
 import { money, dateShort, dayMonth } from "@/lib/format";
 
@@ -76,7 +77,7 @@ export async function attentionQueue(sb: Sb, workspaceId: string, events: EventS
 /** Monthly series (last n months) of ledger income/costs for sparklines. */
 export async function ledgerSeries(sb: Sb, workspaceId: string, months = 7) {
   const since = new Date(); since.setMonth(since.getMonth() - months + 1, 1); since.setHours(0, 0, 0, 0);
-  const { data } = await sb.from("transactions").select("amount,kind,occurred_at,category,status").eq("workspace_id", workspaceId).gte("occurred_at", since.toISOString());
+  const { data } = await sb.from("transactions").select("amount,kind,occurred_at,category,status").eq("workspace_id", workspaceId).eq("livemode", stripeLive()).gte("occurred_at", since.toISOString());
   const keys = Array.from({ length: months }, (_, i) => { const d = new Date(since); d.setMonth(since.getMonth() + i); return d.toISOString().slice(0, 7); });
   const income = keys.map(k => (data ?? []).filter(t => t.occurred_at.startsWith(k) && Number(t.amount) > 0).reduce((s, t) => s + Number(t.amount), 0));
   const costs = keys.map(k => (data ?? []).filter(t => t.occurred_at.startsWith(k) && Number(t.amount) < 0).reduce((s, t) => s - Number(t.amount), 0));

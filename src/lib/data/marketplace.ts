@@ -24,17 +24,43 @@ export async function availabilityFor(ctx: OrganizerCtx, listingIds: string[], e
   const out = new Map<string, { state: "available" | "likely" | "pending" | "unavailable" | "unknown"; label: string }>();
   for (const id of listingIds) out.set(id, { state: "unknown", label: "Check availability" });
   if (!e?.starts_at || !listingIds.length) return out;
-  const day = e.starts_at.slice(0, 10);
-  const { data: items } = await ctx.supabase.from("build_items").select("listing_id,status,event_id,events(starts_at)").in("listing_id", listingIds);
-  for (const id of listingIds) {
-    const mine = (items ?? []).filter(i => i.listing_id === id);
-    const thisEvent = mine.find(i => i.event_id === e.id);
-    const clash = mine.some(i => i.event_id !== e.id && ["confirmed", "held"].includes(i.status) && (i.events as unknown as { starts_at: string | null } | null)?.starts_at?.slice(0, 10) === day);
-    if (thisEvent && ["confirmed", "fulfilled"].includes(thisEvent.status)) out.set(id, { state: "available", label: "Booked for this event" });
-    else if (thisEvent && ["sent", "awaiting"].includes(thisEvent.status)) out.set(id, { state: "pending", label: "Awaiting confirmation" });
-    else if (thisEvent && ["available", "quoted", "held"].includes(thisEvent.status)) out.set(id, { state: "available", label: thisEvent.status === "held" ? "On hold for you" : "Available" });
-    else if (clash) out.set(id, { state: "unavailable", label: "Booked that date" });
-    else out.set(id, { state: "likely", label: "Likely available" });
-  }
+  const { data: items, error } = await ctx.supabase.from("build_items").select("listing_id,status").eq("event_id", e.id).in("listing_id", listingIds);
+  if (error) return out;
+  const end = e.ends_at ?? new Date(new Date(e.starts_at).getTime()+6*36e5).toISOString();
+  // The privacy-preserving RPC sees canonical cross-workspace commitments. A caller's RLS view
+  // cannot establish availability by failing to see another customer's booking.
+  for (let offset=0;offset<listingIds.length;offset+=10) await Promise.all(listingIds.slice(offset,offset+10).map(async id=>{
+    const thisEvent=items?.find(i=>i.listing_id===id);
+    if(thisEvent&&["confirmed","fulfilled"].includes(thisEvent.status)){out.set(id,{state:"available",label:"Booked for this event"});return;}
+    if(thisEvent?.status==="held"){out.set(id,{state:"available",label:"On hold for you"});return;}
+    if(thisEvent&&["sent","awaiting"].includes(thisEvent.status)){out.set(id,{state:"pending",label:"Awaiting confirmation"});return;}
+    const result=await ctx.supabase.rpc("listing_availability",{p_listing:id,p_start:e.starts_at!,p_end:end});
+    if(result.error)return;
+    if(result.data==="unavailable")out.set(id,{state:"unavailable",label:"Unavailable in this time window"});
+    else if(result.data==="limited")out.set(id,{state:"likely",label:"Limited availability; confirm with provider"});
+    else if(result.data==="available")out.set(id,{state:"available",label:"Calendar open; provider confirmation required"});
+  }));
+  return out;
+}
+
+/**
+ * Q09 organic ranking for the organizer marketplace (migration 202610291031): versioned, explainable scores with
+ * `ranking_reasons` per listing and availability for the event window (Q10–Q12 commitments). Additive to `fitFor` /
+ * `availabilityFor` (unchanged). Sponsorship is never an input. Returns an empty map if ranking is unavailable.
+ */
+export type RankedListing = { score: number; model_version: number; availability: "available" | "limited" | "unavailable" | "unknown"; reliability_band: string;
+  estimate_minor: number | null; packages: { package_id: string; name: string; price_minor: number }[];
+  ranking_reasons: { feature: string; value: number; weight: number; contribution: number; text: string }[] };
+export async function rankedFor(ctx: OrganizerCtx, kind: "venue" | "service", e: EventCtx | null, opts: { q?: string; category?: string; city?: string; limit?: number; availability?: "rank" | "exclude" } = {}) {
+  const out = new Map<string, RankedListing>();
+  const p: Record<string, unknown> = { kind, limit: Math.min(50, opts.limit ?? 50), availability: opts.availability ?? "rank" };
+  if (opts.q) p.q = opts.q; if (opts.category) p.category = opts.category;
+  const city = opts.city ?? e?.city; if (city) p.city = city;
+  if (e?.starts_at) { p.starts_at = e.starts_at; p.ends_at = e.ends_at ?? new Date(new Date(e.starts_at).getTime() + 6 * 36e5).toISOString(); }
+  const guests = e ? (e.capacity || e.guest_count) : null; if (guests) p.guests = guests;
+  if (e?.budget_total && kind === "venue") p.budget = Math.round(Number(e.budget_total) * 0.35);
+  const { data, error } = await (ctx.supabase as unknown as { rpc(fn: string, a: unknown): PromiseLike<{ data: unknown; error: unknown }> }).rpc("marketplace_search_explained", { p, p_workspace: ctx.workspace.id }); // internal explainability: organizer workspace with marketplace.request
+  if (error || !data) return out;
+  for (const r of (data as { results: (RankedListing & { listing_id: string })[] }).results ?? []) out.set(r.listing_id, r);
   return out;
 }

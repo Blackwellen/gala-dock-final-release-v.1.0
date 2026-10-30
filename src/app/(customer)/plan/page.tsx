@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
-import { PlanWizard, type PlanData } from "@/components/customer/plan-wizard";
+import { PlanWizard, type PlanData, type PlanStepNo } from "@/components/customer/plan-wizard";
 import { allocate, benchmark, occasionLabel, normaliseCats, areaOf } from "@/lib/plan-model";
 import { listingHref } from "@/lib/links";
 
@@ -13,9 +13,12 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
   const { data: ev } = sp.event && /^[0-9a-f-]{36}$/i.test(sp.event) ? await ctx.supabase.from("events").select("id,name,event_type,status,visibility,description,starts_at,ends_at,flexible_dates,location,city,guest_count,adults,children,budget_total,priorities,settings,cover_image").eq("id", sp.event).eq("owner_id", ctx.user.id).eq("management", "consumer").maybeSingle() : { data: null };
   const e = ev as Ev | null;
   const prio = normaliseCats(e?.priorities);
-  const maxStep = !e ? 1 : !e.starts_at ? 2 : !prio.length ? 3 : 4;
-  const step = Math.min(Math.max(1, Number(sp.step) || (e && e.status !== "draft" ? 4 : 1)), maxStep) as 1 | 2 | 3 | 4;
   const s = (e?.settings ?? {}) as Record<string, unknown>;
+  // Furthest reachable step from what is saved (plans started on the earlier four-step wizard count guests/budget as done once priorities exist).
+  const done = Number(s.plan_steps ?? 0) || 0;
+  const guestsDone = done >= 3 || !!s.guests_confirmed || prio.length > 0, budgetDone = done >= 5 || (!!s.budget_mode && Number(e?.budget_total ?? 0) > 0);
+  const maxStep = !e ? 1 : !e.starts_at ? 2 : !guestsDone ? 3 : !prio.length ? 4 : !budgetDone ? 5 : 6;
+  const step = Math.min(Math.max(1, Number(sp.step) || (e && e.status !== "draft" ? 6 : maxStep)), maxStep) as PlanStepNo;
   const city = (e?.city || e?.location?.split(",")[0] || "London").trim() || "London";
 
   // Market data for the chosen city from published listings (no fabricated figures).
@@ -48,6 +51,18 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
   const { data: saved } = await ctx.supabase.from("saved_items").select("item_key").eq("user_id", ctx.user.id).like("item_key", "listing:%");
   const savedSet = new Set((saved ?? []).map(x => x.item_key));
   const base = e ? `/plan?event=${e.id}` : "/plan?";
+  // W11 (lane C): tiles and labels come from event_type_aliases; modules, online copy and public/ticketing rules from
+  // event_type_rules(type) — the same rules the database enforces.
+  const { data: aliasRows } = await ctx.supabase.from("event_type_aliases" as never).select("event_type,label,plan_tile,sort").order("sort" as never);
+  // Every event type is offered: types without a tile assignment join "More types" (before "Something else"), so none are unreachable.
+  const aliases = ((aliasRows ?? []) as { event_type: string; label: string; plan_tile: "primary" | "more" | null }[])
+    .map(a => ({ ...a, plan_tile: a.plan_tile ?? "more" as const }))
+    .sort((a, b) => Number(a.event_type === "custom") - Number(b.event_type === "custom"));
+  const ruleKeys = [...new Set([...aliases.map(a => a.event_type), ...(e?.event_type ? [e.event_type] : [])])];
+  const rules = await Promise.all(ruleKeys.map(k => ctx.supabase.rpc("event_type_rules" as never, { p_type: k } as never).then(r => [k, r.data] as const, () => [k, null] as const)));
+  type Rule = { online?: boolean; modules?: unknown; label?: string; public_listing_allowed?: boolean; ticketing?: string };
+  const profiles = Object.fromEntries(rules.filter(([, r]) => r).map(([k, r]) => { const x = r as unknown as Rule; return [k, { online: !!x.online, modules: Array.isArray(x.modules) ? (x.modules as unknown[]).filter((m): m is string => typeof m === "string") : [], label: x.label, publicAllowed: x.public_listing_allowed !== false, ticketing: x.ticketing }]; }));
+  const typeTiles = { primary: aliases.filter(a => a.plan_tile === "primary").map(a => ({ key: a.event_type, label: a.label })), more: aliases.filter(a => a.plan_tile === "more").map(a => ({ key: a.event_type, label: a.label })) };
 
   const data: PlanData = {
     event: e ? { id: e.id, status: e.status, name: e.name, event_type: e.event_type, visibility: e.visibility as "private" | "public", description: e.description ?? "", agent_help: s.agent_help !== false,
@@ -60,11 +75,11 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
     bench, budget, alloc,
     venues: fitVenues.slice(0, 3).map(v => ({ id: v.id, name: v.name, image: v.image, location: v.location, price_from: v.price_from == null ? null : Number(v.price_from), price_hi: v.price_from == null ? null : Math.round(Number(v.price_from) * 1.6 / 100) * 100, cap: [v.capacity_min, v.capacity_max], rating: Number(v.rating), reviews: v.review_count, href: listingHref(v.kind, v.slug, v.id), saved: savedSet.has(`listing:${v.id}`) })),
     mapKey: "", // tiles are proxied (/api/maps/tile); the key never reaches the browser
-    occasionTitle: occasionLabel(type),
+    occasionTitle: occasionLabel(type), reach: maxStep as PlanStepNo, profiles, typeTiles,
   };
   return <div className="pw">
     <div className="pw-head"><Link href={e && e.status !== "draft" ? `/account/events/${e.id}` : "/account/events"} className="pw-back"><ArrowLeft size={16} />{e && e.status !== "draft" ? "Back to event" : "Back to home"}</Link>
-      <div className="pw-title"><h1>Plan an Event</h1><p>{["Let's bring your event to life. Tell us the occasion and your goal, and we'll tailor the recommendations for you.", "When and where is your event taking place? You can be flexible to see more options.", "Set your budget and tell us what matters most. We'll recommend the best options for your event.", "Here's a recommended event plan based on what you've told us. Review and adjust before we create your event."][step - 1]}</p></div></div>
+      <div className="pw-title"><h1>Plan an Event</h1><p>{["Let's bring your event to life. Tell us the occasion and your goal, and we'll tailor the recommendations for you.", "When and where is your event taking place? You can be flexible to see more options.", "How many people are coming? Guest numbers shape the venues and packages we show you.", "Choose the services you need and any extras you'd like. We'll prioritise them in your plan.", "Set your budget and tell us what matters most. We'll recommend the best options for your event.", "Here's a recommended event plan based on what you've told us. Review and adjust before we create your event."][step - 1]}</p></div></div>
     <PlanWizard step={step} base={base} data={data} />
   </div>;
 }

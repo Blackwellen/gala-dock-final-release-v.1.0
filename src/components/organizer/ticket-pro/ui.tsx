@@ -17,9 +17,10 @@ export const uid = () => Math.random().toString(36).slice(2, 10);
 
 export const STEPS = [
   { title: "Model & Capacity", sub: "Ticket model and inventory" }, { title: "Tiers, Releases & Pricing", sub: "Pricing and options" },
-  { title: "Rules & Publish", sub: "Policies, review and activation" },
+  { title: "Seating & Allocation", sub: "Map and zones" }, { title: "Access & Controls", sub: "Holds, comps and accessibility" },
+  { title: "Review & Activate", sub: "Check and publish" },
 ];
-const INTRO = ["Define your ticket model, capacity and seating for this event.", "Create your ticket tiers, pricing, release plan and sales settings.", "Set your policies and buyer questions, then review and publish ticket sales."];
+const INTRO = ["Define your ticket model, capacity and inventory for this event.", "Create your ticket tiers, pricing, release plan and sales settings.", "Allocate your tiers to the venue map and zones.", "Set your policies, holds, comps and buyer questions.", "Review everything and complete all checks before publishing."];
 
 export function ProShell({ step, base, event, crumbs, children }: { step: number; base: string; event: { id: string; name: string }; crumbs?: ReactNode; children: ReactNode }) {
   return <div className="tp">

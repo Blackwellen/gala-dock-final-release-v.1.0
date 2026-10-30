@@ -9,6 +9,7 @@ import { saveServiceBasics, saveServicePricing, saveServiceAvailability } from "
 import { PhotoManager } from "../../venues/_components/photo-manager";
 import { RowMenu } from "../../_components/row-menu";
 import { Counted } from "../../venues/new/preview";
+import { labelsFor, labelOf, optionsFor, resolveTerm, terms } from "@/lib/master-data";
 
 export type Svc = {
   delivery?: string; coverage?: { mode?: string; radius_miles?: number; base?: string; areas?: string }; event_types?: string[]; credentials?: { name: string; reference?: string; expires?: string; required?: boolean }[];
@@ -18,9 +19,17 @@ export type Svc = {
   holds?: { enabled?: boolean; hours?: number }; standby?: { enabled?: boolean }; emergency?: { enabled?: boolean }; included?: string[]; excluded?: string[]; service_type?: string; durations?: string; team?: string; equipment?: string; travel?: string; docs?: string;
 };
 export type Pkg = { id: string; name: string; description: string; base_price: number; image: string; duration_hours: number | null; status: string };
-const EVENT_TYPES = ["Weddings", "Corporate Events", "Private Parties", "Nightclub", "Festivals", "Birthdays", "Children’s Parties", "Conferences", "Exhibitions", "Product Launches", "Live Shows", "Other"];
-const CATEGORIES = ["Entertainment > DJ", "Entertainment > Live music", "Entertainment > Performers", "Catering > Full service", "Catering > Street food", "Production > AV & lighting", "Production > Staging",
-  "Photography & video", "Decor & styling", "Furniture & hire", "Staffing & security", "Transport", "Other"];
+const EVENT_TYPES = labelsFor("provider.service_event_types");
+/** Every service category, grouped under its top-level group (single-term groups share "More services"). The screen's designed wording is
+ *  kept where it has one (stored values stay as they were); every other category uses its catalogue label. Values are label-valued. */
+const WORDING = new Map(optionsFor("provider.service_categories").map(o => [o.key, o.label]));
+const SC = terms("service_category"), word = (k: string, l: string) => WORDING.get(k) ?? l;
+const CAT_GROUPS = [...SC.filter(g => !g.parent && SC.some(c => c.parent === g.key)).map(g => ({ group: g.label, options: SC.filter(c => c.key === g.key || c.parent === g.key).map(c => ({ key: c.key, label: word(c.key, c.label) })) })),
+  { group: "More services", options: SC.filter(g => !g.parent && !SC.some(c => c.parent === g.key)).map(c => ({ key: c.key, label: word(c.key, c.label) })) }];
+const CATEGORIES = CAT_GROUPS.flatMap(g => g.options);
+/** Stored wording → the option for the same canonical category (any legacy spelling selects it); unrecognised values are kept as-is. */
+const categoryOf = (v: string) => CATEGORIES.find(o => o.key === resolveTerm("service_category", v))?.label ?? v;
+const sameType = (a: string, b: string) => a === b || (!!resolveTerm("event_type", a) && resolveTerm("event_type", a) === resolveTerm("event_type", b));
 const Toggle = ({ name, label, sub, on }: { name: string; label: string; sub?: string; on?: boolean }) =>
   <label className="vw-switch"><input type="checkbox" name={name} defaultChecked={!!on} /><i aria-hidden="true" /><span><b>{label}</b>{sub && <small>{sub}</small>}</span></label>;
 const Foot = ({ back, next, step, draftName = "_draft" }: { back?: string; next: string; step: number; draftName?: string }) => <div className="vw-foot">
@@ -39,10 +48,12 @@ const DELIVERY: Record<string, string> = { onsite: "On-site", remote: "Remote/On
 export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: string }) {
   const cov = svc.coverage ?? {}, base = cov.base ?? s?.city ?? "London", photos = s ? [s.image, ...(s.gallery ?? [])].filter(Boolean) : [];
   const creds = ["Public liability insurance", "PAT testing (equipment)", "DBS check (if required)", "Other certifications"];
-  const types = svc.event_types ?? [];
+  const types = svc.event_types ?? [], category = categoryOf(s?.category ?? "");
+  // Every event type, plus any stored wording that matches none of them (so re-saving never drops it).
+  const typeOpts = [...EVENT_TYPES, ...types.filter(x => !EVENT_TYPES.some(t => sameType(t, x)))];
   const pl = (svc.credentials ?? []).some(c => c.name.startsWith("Public liability") && (c.reference || c.expires));
   const covText = (cov.mode ?? "local") === "local" ? `${cov.radius_miles ?? 50} miles from ${base}` : cov.mode === "areas" ? (cov.areas || "Specific areas — none listed yet") : cov.mode === "national" ? "National" : "International";
-  const suggestions: [string, boolean][] = [[`Category: ${s?.category?.replace(" > ", " & ") || "choose the most specific one"}`, !!s?.category],
+  const suggestions: [string, boolean][] = [[`Category: ${s?.category ? labelOf("service_category", s.category) : "choose the most specific one"}`, !!s?.category],
     [types.length ? `Event types: ${types.slice(0, 4).join(", ")}${types.length > 4 ? ` +${types.length - 4}` : ""}` : "Pick 3–6 event types you’re best at", types.length >= 3 && types.length <= 6],
     [`Delivery mode: ${DELIVERY[svc.delivery ?? "onsite"]}`, true], [`Coverage: ${covText}`, (cov.mode ?? "local") !== "areas" || !!cov.areas],
     ["Include equipment options and add-on packages", (svc.addons ?? []).length > 0], [pl ? "Public liability insurance added" : "Add public liability insurance", pl]];
@@ -50,7 +61,9 @@ export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: 
     <ActionForm action={saveServiceBasics.bind(null, s?.id ?? null, next)} className="vw-contents">
       <section className="ws-panel svw-basic"><h2>Basic information</h2><p>Tell us what service you provide and how it can be used.</p>
         <div className="vw-grid2"><label>Service name <i>*</i><input name="name" defaultValue={s?.name ?? ""} required minLength={2} maxLength={100} /></label>
-          <label>Category <i>*</i><select name="category" className="ws-select" defaultValue={s?.category && CATEGORIES.includes(s.category) ? s.category : CATEGORIES[0]}>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></label></div>
+          <label>Category <i>*</i><select name="category" className="ws-select" required defaultValue={category}>
+            <option value="" disabled>Choose a category</option>{category && !CATEGORIES.some(o => o.label === category) && <option>{category}</option>}
+            {CAT_GROUPS.map(g => <optgroup key={g.group} label={g.group}>{g.options.map(o => <option key={o.key}>{o.label}</option>)}</optgroup>)}</select></label></div>
         <label className="svw-desc">Short description <i>*</i><Counted name="description" rows={4} max={500} defaultValue={s?.description ?? ""} label="Short description" /></label></section>
       <section className="ws-panel svw-delivery"><h2>Delivery mode</h2><p>How is your service delivered?</p>
         <div className="svw-modes">{([["onsite", House, "On-site", "I travel to the event"], ["remote", Monitor, "Remote/Online", "Delivered virtually"], ["hybrid", Users, "Hybrid", "Both on-site and online"]] as const).map(([k, I, l, sub]) =>
@@ -63,7 +76,7 @@ export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: 
             <label>Base<select name="base" className="ws-select" defaultValue={base}>{Object.keys(UK_PLACES).map(p => <option key={p}>{p}</option>)}</select></label></div>
             <CoverageMap base={base} radiusMiles={cov.radius_miles ?? 50} width={206} height={204} /></div></div></section>
       <section className="ws-panel svw-types"><h2>Event types</h2><p>Select the types of events this service is suitable for.</p>
-        <div className="svw-checks">{EVENT_TYPES.map(t => <label key={t}><input type="checkbox" name="event_types" value={t} defaultChecked={types.includes(t)} />{t}</label>)}</div></section>
+        <div className="svw-checks">{typeOpts.map(t => <label key={t}><input type="checkbox" name="event_types" value={t} defaultChecked={types.some(x => sameType(t, x))} />{t}</label>)}</div></section>
       <section className="ws-panel vw-docs svw-creds"><h2>Credentials &amp; trust</h2><p>Add relevant qualifications, insurance and certifications.</p>
         <ul>{creds.map((c, i) => { const x = (svc.credentials ?? []).find(y => y.name === c), st = x?.reference || x?.expires ? "added" : "";
           return <li key={c}><details><summary><span className={`vw-doc-ic ${st || (i === 2 ? "" : "")}`}>{i === 3 ? <FileText aria-hidden="true" /> : i === 2 ? <ShieldCheck aria-hidden="true" /> : <FileCheck2 aria-hidden="true" />}</span><b>{c}</b>
@@ -113,7 +126,7 @@ export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc:
       <div className="svw-col svw-col-b">
     <section className="ws-panel svw-rates"><div className="svw-h"><div><h2>Rates &amp; packages</h2><p>Standard packages customers can book. Each is a live package listing.</p></div>
         <Link className="ws-btn outline sm" href={`/provider/packages/new?step=1&listing=${s.id}`}><Plus aria-hidden="true" />Add package</Link></div>
-        <div className="svw-rtabs" role="tablist" aria-label="Rates view">{([["pk", "Packages"], ["ir", "Individual rates"], ["ao", "Service add-ons"]] as const).map(([k, l], i) =>
+        <div className="svw-rtabs" role="radiogroup" aria-label="Rates view">{([["pk", "Packages"], ["ir", "Individual rates"], ["ao", "Service add-ons"]] as const).map(([k, l], i) =>
         <label key={k} className={`svw-rtab-${k}`}><input type="radio" name="_rates_view" value={k} defaultChecked={i === 0} className="sr-only" />{l}</label>)}</div>
       <ul className="svw-rp-ir">{[["Starting price", Number(s.price_from) > 0 ? money(Number(s.price_from)) : "Not set"], ["Pricing model", summary[0][2]], ["Price shown publicly", svc.pricing?.show_price === false ? "No — quote on request" : "Yes"]].map(([l, v]) => <li key={l}><span><b>{l}</b></span><em>{v}</em></li>)}</ul>
       <ul className="svw-rp-ao">{addons.length ? addons.map(a => <li key={a.name}><span><b>{a.name}</b><small>{a.desc}</small></span><em>{money(a.price)} <small>{a.unit}</small></em></li>) : <li><span><small>No add-ons yet — add them below.</small></span></li>}</ul>
@@ -154,7 +167,7 @@ export function SvcStep3({ s, svc, back, next, verify, label }: { s: Listing; sv
   return <ActionForm action={saveServiceAvailability.bind(null, s.id, next)} className="vw svw-s3">
     <section className="ws-panel svw-avail"><div className="vw-sec-h"><span className="vw-ic"><Calendar aria-hidden="true" /></span><div><h2>Availability</h2><p>Set when you are available to deliver this service.</p></div></div>
       <ul className="svw-week">{(["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const).map(d => <li key={d}><span>{({ mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" })[d]}</span>
-        <label className="vw-switch"><input type="checkbox" name={`on_${d}`} defaultChecked={!!week[d]} /><i aria-label={`${d} available`} /></label>
+        <label className="vw-switch"><input type="checkbox" name={`on_${d}`} defaultChecked={!!week[d]} aria-label={`${d} available`} /><i aria-hidden="true" /></label>
         <input type="time" name={`from_${d}`} defaultValue={week[d]?.[0] ?? "09:00"} aria-label={`${d} from`} /><ArrowRight aria-hidden="true" /><input type="time" name={`to_${d}`} defaultValue={week[d]?.[1] ?? "23:00"} aria-label={`${d} to`} /></li>)}</ul></section>
     <section className="ws-panel svw-cap"><div className="vw-sec-h"><span className="vw-ic"><Users aria-hidden="true" /></span><div><h2>Capacity &amp; limits</h2><p>Set how many bookings you can take and any limits.</p></div></div>
       <div className="vw-grid2"><label>Max bookings per day<input name="per_day" type="number" min={1} defaultValue={cap.per_day ?? 1} /></label><label>Max bookings per week<input name="per_week" type="number" min={1} defaultValue={cap.per_week ?? ""} /></label></div>

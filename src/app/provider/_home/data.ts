@@ -1,6 +1,7 @@
 import "server-only";
 import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
+import { stripeLive } from "@/lib/stripe";
 import { delta } from "@/lib/workspace/format";
 import {
   workspaceItems, workspaceJobs, workspaceListings, workspaceSpaces, workspaceCrew, itemState, isEmergency, isQuoteRequested,
@@ -42,7 +43,7 @@ export async function homeData(range: Range) {
   const monthStart = new Date(startOfMonth(0, now)), prevMonthStart = new Date(startOfMonth(-1, now));
   const prevMonthSameDay = new Date(Math.min(prevMonthStart.getTime() + (now - monthStart.getTime()), monthStart.getTime()));
   const tx = await rows<{ amount: number; occurred_at: string; kind: string; status: string }>(
-    ctx.db.from("transactions").select("amount,occurred_at,kind,status").eq("workspace_id", ctx.workspace.id).eq("kind", "income").eq("status", "completed")
+    ctx.db.from("transactions").select("amount,occurred_at,kind,status").eq("workspace_id", ctx.workspace.id).eq("livemode", stripeLive()).eq("kind", "income").eq("status", "completed")
       .gte("occurred_at", new Date(prevMonthStart).toISOString()));
   const revenue = tx.filter(t => new Date(t.occurred_at) >= monthStart).reduce((a, t) => a + Number(t.amount), 0);
   const revenuePrev = tx.filter(t => new Date(t.occurred_at) >= prevMonthStart && new Date(t.occurred_at) < prevMonthSameDay).reduce((a, t) => a + Number(t.amount), 0);

@@ -33,6 +33,10 @@ export async function GET() {
     q("tasks", db.from("user_tasks").select("title,complete,created_at").eq("user_id", user.id)),
     q("privacy_requests", db.from("privacy_requests").select("reference,kind,status,received_at,due_at,completed_at,outcome").eq("user_id", user.id)),
     q("sign_ins", db.rpc("my_sessions")),
+    // Q32: records organisers hold about you (guest lists, care needs, registrations, passes, admissions, transfers), resale,
+    // waiting rooms, account holds and security events: tables your own RLS-scoped client can't read.
+    q("privacy_subject_records", db.rpc("privacy_subject_export")),
+    q("consents", db.rpc("my_consents")),
   ]);
   const out = { exported_at: new Date().toISOString(), controller: "Blackwellen Ltd (Gala Dock)", account: { id: user.id, email: user.email, created_at: user.created_at, last_sign_in_at: user.last_sign_in_at },
     ...Object.fromEntries(sections) };

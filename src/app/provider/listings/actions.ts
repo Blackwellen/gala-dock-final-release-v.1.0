@@ -6,6 +6,7 @@ import { call, friendly, type ActionResult } from "@/lib/workspace/rpc";
 const MISSING: Record<string, string> = {
   listing_name: "a name", listing_description: "a description of at least 40 characters", listing_location: "a location", listing_photo: "a photo",
   workspace_setup: "workspace setup", verification: "identity verification", payouts: "payout setup",
+  credentials: "the required compliance documents, verified and in date (Settings → Trust & credentials)", trust_hold: "a Trust & Safety review to be resolved",
 };
 
 /** Publishes through publish_listing(); ineligible listings stay drafts and the missing items are reported. */

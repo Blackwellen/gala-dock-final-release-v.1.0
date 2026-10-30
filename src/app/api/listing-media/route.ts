@@ -5,19 +5,14 @@ import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { checkUpload, verdictMessage } from "@/lib/upload-safety";
 import { getProvider } from "@/lib/provider/context";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { safeFileName, validateUpload, PUBLIC_IMAGE_TYPES } from "@/lib/files/policy";
+import { enqueue, registerFile } from "@/lib/files/service";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
-const MAX_BYTES = 10 * 1024 * 1024;
 
-function sniff(b: Uint8Array) {
-  const starts = (...sig: number[]) => sig.every((x, i) => b[i] === x);
-  if (starts(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return { ext: "png", type: "image/png" };
-  if (starts(0xff, 0xd8, 0xff)) return { ext: "jpg", type: "image/jpeg" };
-  if (starts(0x52, 0x49, 0x46, 0x46) && b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return { ext: "webp", type: "image/webp" };
-  return null;
-}
-
-/** Uploads a public listing photo into the active provider workspace's folder. Storage RLS also requires owner/manager on that workspace. */
+/** Uploads a public listing photo into the active provider workspace's folder (owner/manager checked here). Q04: magic bytes, declared MIME,
+ *  polyglot check, metadata strip and scan run before the server (service role) stores it, so no client ever writes a public bucket. */
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json({ error: "Invalid request origin." }, 403);
   const supabase = await createClient();
@@ -29,15 +24,18 @@ export async function POST(request: Request) {
   if (!["owner", "manager"].includes(role)) return json({ error: "Only owners and managers can change listing photos." }, 403);
   const file = (await request.formData().catch(() => null))?.get("file");
   if (!(file instanceof File)) return json({ error: "Choose a photo to upload." }, 400);
-  if (file.size === 0 || file.size > MAX_BYTES) return json({ error: "Photos must be smaller than 10MB." }, 413);
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const kind = sniff(bytes);
-  if (!kind) return json({ error: "Upload a PNG, JPG or WebP image." }, 415);
+  const v = validateUpload({ bytes, declaredType: file.type, fileClass: "public_media", allowed: PUBLIC_IMAGE_TYPES });
+  if (!v.ok) return json({ error: v.code === "too_large" || v.code === "empty" ? "Photos must be smaller than 10MB." : v.code === "polyglot" ? "This image contains embedded content and can’t be published." : "Upload a PNG, JPG or WebP image." }, v.status);
+  const kind = v.kind;
   const safe = await checkUpload(bytes, kind.type);
   if (!safe.ok) return json({ error: verdictMessage(safe) }, safe.reason === "scanner_unavailable" ? 503 : 422);
   const path = `${workspace.id}/${randomUUID()}.${kind.ext}`;
-  const { error } = await supabase.storage.from("listing-media").upload(path, safe.bytes, { contentType: kind.type, upsert: false });
+  const admin = createAdminClient();
+  const { error } = await admin.storage.from("listing-media").upload(path, safe.bytes, { contentType: kind.type, upsert: false });
   if (error && /quota|P0001/i.test(error.message)) return json({ error: "Storage is full for this workspace. Delete files or upgrade your plan in Settings → Payments & Billing." }, 413);
   if (error) return json({ error: "Upload failed. Please try again." }, 500);
-  return json({ url: supabase.storage.from("listing-media").getPublicUrl(path).data.publicUrl });
+  await registerFile(admin, { bucket: "listing-media", name: path, fileClass: "public_media", sniffed: kind.type, declared: file.type, bytes: safe.bytes, displayName: safeFileName(file.name, "photo") }).catch(e => console.error("file_register_failed", (e as Error).message));
+  await enqueue(admin, "files.derive", { bucket: "listing-media", name: path }, `files.derive:listing-media/${path}`);
+  return json({ url: admin.storage.from("listing-media").getPublicUrl(path).data.publicUrl });
 }

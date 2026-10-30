@@ -74,6 +74,11 @@ button.cb-grip:focus-visible { outline: 2px solid var(--k-blue); color: var(--k-
 .cb-bud { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .cb-bud small { white-space: nowrap; font-size: 11px !important; }
 /* Keep the price column to the reference height: secondary booking link sits compact under the CTA. */ .cb-price { gap: 1px; } .cb-price > .k-link { font-size: 11px; line-height: 1.3; margin-top: 1px; } .cb-card { min-height: 100px; padding: 6px 8px; }
 .cb-paid { display: flex; gap: 16px; margin: 8px 0 0; font-size: 11.5px; color: var(--k-muted); } .cb-paid b { color: var(--k-ink); font-weight: 600; margin-left: 4px; }
+/* W02: reference columns are 282 / 1fr / 305. Rows were ~23px taller than the reference because the kit's 30px link floor applied
+   to "Manage booking"; tags that don't fit drop whole instead of being cut mid-word ("Tasting i…"). */
+@media (min-width: 1401px) { .cb-grid { grid-template-columns: 282px minmax(0, 1fr) 305px; } }
+.cb-grid .cb-card .cb-price > a.k-link { min-height: 0; }
+@media (min-width: 901px) { .cb-grid .cb-card .ce-tags { flex-wrap: wrap; max-height: 22px; overflow: hidden; } }
 /* The later desktop density rule must not restore an empty category column on phones. */
 @media (max-width:900px){
  .cb-grid .cb-row { grid-template-columns:18px minmax(0,1fr); }
@@ -84,3 +89,74 @@ button.cb-grip:focus-visible { outline: 2px solid var(--k-blue); color: var(--k-
  .cb-grid .cb-price .cb-cta { min-height:44px; white-space:normal; }
  .cb-grid .cb-card .ce-tags { flex-wrap:wrap; overflow:visible; }
 }
+/* W02 r2: rail rows stay one line (51px) like the reference: counts move to a badge, the sub-line ellipsises, and a Q15 booking
+   deadline replaces the sub-line only when it is due soon or overdue. */
+.cb-cat .k-grow { min-width: 0; }
+.cb-cat small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cb-cat small.cb-bookby.due_soon { color: #9a5800; } .cb-cat small.cb-bookby.overdue { color: #c81e3a; }
+.cb-cat-n { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #eef2fb; color: var(--k-ink-2); font-size: 10.5px; font-weight: 600; display: grid; place-items: center; flex-shrink: 0; }
+.cb-dep { display: inline-flex; align-items: center; gap: 4px; width: fit-content; height: 20px; padding: 0 8px; border-radius: 6px; background: #fff4e3; color: #9a5800; font-size: 10.5px; font-weight: 550; }
+.cb-dep.soft { background: #f3f5fa; color: var(--k-ink-2); }
+.cb-warn { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0 0; font-size: 11.5px; color: #9a5800; } .cb-warn svg { flex-shrink: 0; margin-top: 2px; }
+.cb-steps { margin: 8px 0 4px; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--k-ink-2); } .cb-steps a { color: var(--k-blue); }
+.cb-cat b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* W02 r2 responsive: the package header's actions (Suggestions / View on map / ⋯) pushed the menu past the edge at 1024 and 768. */
+@media (max-width: 1280px) { .cb-main > .k-between { flex-wrap: wrap; gap: 10px; } .cb-main > .k-between > .k-row { flex-wrap: wrap; } }
+/* W02 pass 4 (≥1401px) — CU-004 structure (design #68): the three columns are one 729px row ending at the reference's bottom
+   edge (y≈1009). The package list scrolls inside "Your event package" with "Add more to your event" pinned in its footer slot;
+   the category list and the right rail scroll inside their own columns. Track widths 285 / 848 / 304 with the reference's
+   12 / 22px gaps. */
+@media (min-width: 1401px) {
+  .cb-grid { grid-template-columns: 285px minmax(0, 1fr) 304px; column-gap: 12px; height: 729px; align-items: stretch; }
+  .cb-grid > .cb-main { margin-right: 10px; }
+  .cb-grid > * { min-height: 0; }
+  .cb-rail { overflow: hidden; }
+  .cb-rail .cb-cats { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+  .cb-main { display: flex; flex-direction: column; overflow: hidden; }
+  .cb-main > .cb-list { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; padding-right: 4px; margin: 0; }
+  .cb-main > .cb-more { flex-shrink: 0; margin-top: 10px; }
+  .cb-grid > .k-col { overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
+}
+/* W02 pass 4 — phone (≤480px), PWA #173 "Emma's Birthday Event Builder": a 64px icon column of categories beside the package
+   list (icon over a one-word label, current category filled blue), card-per-row packages (80px photo left, status / name /
+   price right, actions under), and the budget, readiness and ideas cards full width below. */
+@media (max-width: 480px) {
+  .c-root .cb-grid { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; height: auto; }
+  .c-root .cb-grid > .cb-rail { grid-column: 1; padding: 0; background: transparent; border: 0; box-shadow: none; position: sticky; top: 64px; align-self: start; }
+  .c-root .cb-rail > h2, .c-root .cb-rail > form { display: none; }
+  .c-root .cb-rail .cb-cats { flex-direction: column; overflow: visible; gap: 6px; }
+  .c-root .cb-rail .cb-cat { min-width: 0; height: auto; flex-direction: column; gap: 3px; padding: 8px 2px; background: #fff; border: 1px solid var(--k-line); text-align: center; }
+  .c-root .cb-rail .cb-cat .k-grow b { font-size: 10px; font-weight: 500; white-space: normal; line-height: 1.15; display: block; }
+  .c-root .cb-rail .cb-cat .k-grow small, .c-root .cb-rail .cb-cat .cb-cat-n, .c-root .cb-rail .cb-cat > svg { display: none; }
+  .c-root .cb-rail .cb-cat[aria-current="page"] { background: var(--k-blue); border-color: var(--k-blue); }
+  .c-root .cb-rail .cb-cat[aria-current="page"] b { color: #fff; } .c-root .cb-rail .cb-cat[aria-current="page"] .cb-cat-ic { background: #ffffff26 !important; color: #fff !important; }
+  .c-root .cb-grid > .cb-main { grid-column: 2; padding: 8px; min-width: 0; }
+  .c-root .cb-main > .k-between { margin-bottom: 8px !important; }
+  .c-root .cb-main > .k-between h2 { font-size: 15px !important; } .c-root .cb-main > .k-between .ce-sub { display: none; }
+
+  .c-root .cb-grid .cb-cat-col { display: none; }
+  .c-root .cb-grid .cb-card { grid-template-columns: 80px minmax(0, 1fr) 24px; gap: 4px 8px; padding: 6px; }
+  .c-root .cb-grid .cb-card > img { width: 80px; height: 80px; grid-row: 1 / span 2; border-radius: 8px; }
+  .c-root .cb-grid .cb-card .ce-tags, .c-root .cb-grid .cb-card .cb-lines { display: none; }
+  .c-root .cb-grid .cb-name { font-size: 12.5px; }
+  .c-root .cb-grid .cb-price { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 0; border: 0; }
+  .c-root .cb-grid .cb-price .cb-cta { min-height: 32px; height: 32px; font-size: 11.5px !important; width: auto; margin: 0; }
+  .c-root .cb-grid > .k-col { grid-column: 1 / -1; }
+  .c-root .cb-more { flex-wrap: wrap; padding: 10px; } .c-root .cb-more-it { display: none; }
+}
+@media (max-width: 480px) {
+  .c-root .cb-main > .k-between .k-btn.ghost { display: none; }
+  .c-root .cb-grid .cb-row { grid-template-columns: 16px minmax(0, 1fr); align-items: center; }
+  .c-root .cb-grid .cb-row { gap: 0; }
+  .c-root .cb-list { gap: 6px; }
+}
+/* W02 pass 4 (≥1401px): the budget card carries one warning line (the most pressing; the rest are in Money) and Paid / Still due
+   on the legend's last row, so the card returns to the reference's ~169px and Event readiness to its slot. */
+@media (min-width: 1401px) {
+  .c-root .cb-grid .cb-warn ~ .cb-warn { display: none; }
+  .c-root .cb-grid .cb-warn { margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .c-root .cb-grid .cb-warn svg { vertical-align: -2px; margin-right: 4px; }
+  .c-root .cb-grid .cb-paid { margin: 4px 0 0; font-size: 11px; }
+}
+/* W12: the build header row ran 9px past the card at 1448–1920 and clipped the Package actions menu button — let the left group wrap. */
+.c-root .cb-main > .k-between { min-width: 0; gap: 8px; } .c-root .cb-main > .k-between > .k-row { flex-wrap: wrap; min-width: 0; } .c-root .cb-main > .k-between > :last-child { flex-shrink: 0; }

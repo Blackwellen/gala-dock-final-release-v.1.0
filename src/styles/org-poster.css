@@ -1,14 +1,14 @@
 /* ORG-015 Poster & media builder */
 .pb { display: flex; flex-direction: column; gap: 6px; }
 .pb-head { display: flex; gap: 16px; align-items: flex-start; }
-.pb-head h1 { margin: 0; font-size: 25px; font-weight: 650; letter-spacing: -.01em; color: var(--k-ink); }
+.pb-head h1 { margin: 0; font-size: var(--k-title-page); font-weight: 650; letter-spacing: -.01em; color: var(--k-ink); }
 .pb-st { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; text-transform: capitalize; }
 .pb-st.green { background: #e6f7ee; color: #0a7a49; border: 1px solid #bfe8d2; }
 .pb-st.gray { background: #f1f4f9; color: var(--k-muted); }
 .pb-meta { display: flex; gap: 14px; margin: 2px 0 0; font-size: 12px; color: var(--k-ink-2); }
 .pb-meta span { display: inline-flex; align-items: center; gap: 5px; }
 .pb-acts { gap: 10px; }
-.pb-acts .k-btn { height: 36px; font-size: 12.5px; }
+.pb-acts .k-btn { height: var(--k-btn-lg-h); font-size: var(--k-btn-lg-fs); }
 .pb-split { position: relative; display: inline-flex; }
 .pb-split > .k-btn:first-child { border-radius: 8px 0 0 8px; padding-right: 24px; }
 .pb-split > .k-btn:nth-child(2) { border-radius: 0 8px 8px 0; padding: 0 9px; border-left: 1px solid #ffffff40; }
@@ -26,7 +26,7 @@
 .pb-var { grid-area: var; }
 .pb-pub { grid-area: pub; }
 .pb-c { padding: 10px 12px 12px !important; min-width: 0; }
-.pb h2 { margin: 0; font-size: 14.5px; font-weight: 650; color: var(--k-ink); }
+.pb h2 { margin: 0; font-size: var(--k-title-card); font-weight: 650; color: var(--k-ink); }
 .pb-sub { margin: 2px 0 9px; font-size: 11px; color: var(--k-muted); }
 
 .pb-tpls { display: grid; grid-template-columns: repeat(12, 1fr); gap: 7px 6px; }
@@ -107,7 +107,7 @@
 .pb-checks label { display: flex; align-items: center; gap: 9px; height: 26px; font-size: 12px; color: var(--k-ink-2); }
 .pb-checks input { width: 15px; height: 15px; accent-color: var(--k-blue); }
 .pb-pubb { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-.pb-pubb .k-btn { height: 36px; justify-content: center; font-size: 12px; }
+.pb-pubb .k-btn { height: var(--k-btn-lg-h); justify-content: center; font-size: var(--k-btn-lg-fs); }
 
 .pb-lib { padding: 14px !important; }
 .pb-libg { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }

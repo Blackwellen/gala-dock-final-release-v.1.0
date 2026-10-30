@@ -4,13 +4,17 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
+import { untyped } from "@/lib/workspace/db";
+import { isCurrency, isTerm, isTimezone } from "@/lib/master-data";
 import type { Json, TablesInsert } from "@/types/database";
 
 const Id = z.string().uuid();
-const TYPES = ["festival", "party", "nightlife", "corporate", "wedding", "birthday", "childrens_party", "webinar", "community", "conference", "comedy", "custom"] as const;
-const S1 = z.object({ name: z.string().trim().min(2).max(100), event_type: z.enum(TYPES), client_name: z.string().max(120), visibility: z.enum(["public", "private"]), goal: z.string().trim().min(10).max(500), cover_image: z.string().max(300) });
-const S2 = z.object({ starts_at: z.string(), ends_at: z.string(), timezone: z.string().max(40), flexible_dates: z.boolean(), venue_mode: z.enum(["known", "unknown"]), venue_listing_id: z.string().uuid().nullable(), venue_name: z.string().max(120), location: z.string().max(200), capacity: z.number().int().min(1).max(1_000_000), capacity_type: z.enum(["standing", "seated", "mixed"]), age: z.string().max(10), recurring: z.boolean() });
-const S3 = z.object({ model: z.enum(["ticketed", "free", "private", "client"]), currency: z.enum(["GBP", "EUR", "USD"]), budget: z.number().min(0).max(100_000_000), revenue: z.number().min(0).max(100_000_000), profit: z.number().min(-100_000_000).max(100_000_000), avg_price: z.number().min(0).max(100000), tax: z.string().max(40), budget_lines: z.record(z.string().max(40), z.number().min(0)) });
+// Event type and currency validate against canonical master data (Q02) rather than local lists.
+const EventType = z.string().refine(v => isTerm("event_type", v), "Unknown event type");
+const Currency = z.string().refine(v => isCurrency(v, { transactional: true }), "Unsupported currency");
+const S1 = z.object({ name: z.string().trim().min(2).max(100), event_type: EventType, client_name: z.string().max(120), visibility: z.enum(["public", "private"]), goal: z.string().trim().min(10).max(500), cover_image: z.string().max(300) });
+const S2 = z.object({ starts_at: z.string(), ends_at: z.string(), timezone: z.string().max(40).refine(v => isTimezone(v), "Unknown timezone"), flexible_dates: z.boolean(), venue_mode: z.enum(["known", "unknown"]), venue_listing_id: z.string().uuid().nullable(), venue_name: z.string().max(120), location: z.string().max(200), capacity: z.number().int().min(1).max(1_000_000), capacity_type: z.enum(["standing", "seated", "mixed"]), age: z.string().max(10), recurring: z.boolean() });
+const S3 = z.object({ model: z.enum(["ticketed", "free", "private", "client"]), currency: Currency, budget: z.number().min(0).max(100_000_000), revenue: z.number().min(0).max(100_000_000), profit: z.number().min(-100_000_000).max(100_000_000), avg_price: z.number().min(0).max(100000), tax: z.string().max(40), budget_lines: z.record(z.string().max(40), z.number().min(0)) });
 const S4 = z.object({ template_id: z.string().uuid().nullable(), modules: z.record(z.string().max(30), z.boolean()), provider_categories: z.array(z.string().max(40)).max(12), agent_goal: z.string().max(500), publish: z.boolean() });
 export type CreateStep1 = z.infer<typeof S1>; export type CreateStep2 = z.infer<typeof S2>; export type CreateStep3 = z.infer<typeof S3>; export type CreateStep4 = z.infer<typeof S4>;
 
@@ -61,6 +65,13 @@ export async function finishCreate(id: string, input: unknown): Promise<ActionRe
   const { data: e } = await o.ctx.supabase.from("events").select("id,name,starts_at,capacity,settings,visibility,event_type").eq("id", id).single();
   if (!e?.starts_at) return { ok: false, error: "Add the date and venue first." };
   const s = (e.settings ?? {}) as Record<string, unknown>; const m = p.data.modules;
+  // A chosen template is instantiated server-side at this event's start (programme, tasks, tiers, dependencies; idempotent).
+  let fromTemplate = 0;
+  if (p.data.template_id) {
+    const { data: applied, error: tplErr } = await untyped(o.ctx.supabase).rpc("apply_event_template", { p_event: id, p_template: p.data.template_id });
+    if (tplErr) return { ok: false, error: /not_authorized/.test(tplErr.message) ? "That template isn't available in this workspace." : "Could not apply the template." };
+    fromTemplate = Number((applied as { copied?: { tasks?: number } } | null)?.copied?.tasks ?? 0);
+  }
   const due = (days: number) => new Date(Date.parse(e.starts_at!) - days * 864e5).toISOString();
   const tasks: [string, string, number, string][] = [["Confirm venue and sign contract", "venue", 90, "high"]];
   if (m.providers) for (const c of p.data.provider_categories) tasks.push([`Shortlist and request quotes: ${c}`, "suppliers", 75, "medium"]);
@@ -68,14 +79,16 @@ export async function finishCreate(id: string, input: unknown): Promise<ActionRe
   if (m.promotion) tasks.push(["Publish event page", "promotion", 60, "high"], ["Launch marketing campaign", "promotion", 45, "medium"]);
   if (m.risk) tasks.push(["Complete risk assessment", "risk", 30, "high"], ["Confirm permits, licences and insurance", "risk", 21, "high"]);
   if (m.tickets) tasks.push(["Set up ticket tiers and pricing", "ticketing", 60, "high"]);
-  await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, d, priority]) => ({ event_id: id, workspace_id: o.ctx.workspace.id, owner_id: o.ctx.user.id, title, category, due_at: due(d), priority, status: "todo" })));
+  if (fromTemplate === 0) await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, d, priority]) => ({ event_id: id, workspace_id: o.ctx.workspace.id, owner_id: o.ctx.user.id, title, category, due_at: due(d), priority, status: "todo" })));
   if (m.tickets && s.ticketed !== false) {
     const { count } = await o.ctx.supabase.from("ticket_tiers").select("id", { count: "exact", head: true }).eq("event_id", id);
     if (!count) await o.ctx.supabase.from("ticket_tiers").insert({ event_id: id, name: "General Admission", description: "Standard entry", kind: "general", price: Number(s.avg_ticket_price ?? 0), quantity: Math.max(1, Number(e.capacity ?? 100)), status: "draft", sort: 1 });
   }
   const slug = m.promotion && e.visibility === "public" ? `${e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(2).toString("hex")}` : null;
-  await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
+  const { data: fresh } = await o.ctx.supabase.from("events").select("settings").eq("id", id).single();
+  const s2 = { ...((fresh?.settings ?? s) as Record<string, unknown>) };
+  await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
   if (p.data.agent_goal.trim().length >= 8) { const { startRun } = await import("./agent"); await startRun({ goal: p.data.agent_goal, scope: ["event"], event_id: id }); }
   revalidatePath("/organizer/events"); revalidatePath("/organizer");
-  return { ok: true, message: `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };
+  return { ok: true, message: fromTemplate ? `${e.name} created from the template with ${fromTemplate} tasks.` : `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };
 }

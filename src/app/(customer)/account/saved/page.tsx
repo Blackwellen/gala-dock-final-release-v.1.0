@@ -23,7 +23,7 @@ export default async function SavedPage({ searchParams }: { searchParams: Promis
   const ids = (p: string, rows: { item_key: string }[] | null) => (rows ?? []).filter(s => s.item_key.startsWith(`${p}:`)).map(s => s.item_key.slice(p.length + 1)).filter(x => /^[0-9a-f-]{36}$/i.test(x));
   const evIds = ids("event", saved), lIds = [...new Set([...ids("listing", saved), ...ids("listing", recent)])];
   const [{ data: evs }, { data: ls }, { data: tiers }] = await Promise.all([
-    evIds.length ? ctx.supabase.from("events").select("id,name,slug,starts_at,status,venue_name,city,location,cover_image,event_type,tags").in("id", evIds) : Promise.resolve({ data: [] }),
+    evIds.length ? ctx.supabase.from("events_public").select("id,name,slug,starts_at,status,venue_name,city,location,cover_image,event_type,tags").in("id", evIds) : Promise.resolve({ data: [] }),
     lIds.length ? ctx.supabase.from("listings").select("id,name,slug,kind,category,location,city,image,rating,review_count,capacity_max,price_from,price_unit,badge,instant_book,tags,details").in("id", lIds) : Promise.resolve({ data: [] }),
     evIds.length ? ctx.supabase.from("ticket_tiers").select("event_id,quantity,sold,status,sale_start").in("event_id", evIds) : Promise.resolve({ data: [] }),
   ]);

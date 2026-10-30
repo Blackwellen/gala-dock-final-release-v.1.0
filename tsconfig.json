@@ -36,7 +36,9 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     ".next-pwa-release/types/**/*.ts",
-    ".next-pwa-release/dev/types/**/*.ts"
+    ".next-pwa-release/dev/types/**/*.ts",
+    ".next-pwa-maximum/types/**/*.ts",
+    ".next-pwa-maximum/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

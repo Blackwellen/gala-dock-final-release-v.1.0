@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, anon, BASE, cleanup, createUser, login, seedWorkspace, signedIn } from "../phase1/helpers";
+import { admin, anon, BASE, cleanup, createUser, login, seedWorkspace, signedIn, insertEventFixture } from "../phase1/helpers";
 
 // Release spec §122–127: ticket-gated virtual access; host links private; access follows the ticket.
 const db = admin as unknown as SupabaseClient;
@@ -10,8 +10,8 @@ test.describe("virtual events", () => {
   test.beforeAll(async () => {
     [owner, buyer, other] = await Promise.all([createUser("vx-o"), createUser("vx-b"), createUser("vx-x")]);
     ws = await seedWorkspace(owner.id, "organizer", "Virtual Org");
-    ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "Online Summit", event_type: "remote_conference", status: "on_sale",
-      starts_at: new Date(Date.now() + 10 * 60_000).toISOString(), ends_at: new Date(Date.now() + 70 * 60_000).toISOString() }).select("id").single()).data as { id: string }).id;
+    ev = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name: "Online Summit", event_type: "remote_conference", status: "on_sale",
+      starts_at: new Date(Date.now() + 10 * 60_000).toISOString(), ends_at: new Date(Date.now() + 70 * 60_000).toISOString() }, "virtual").select("id").single()).data as { id: string }).id;
     tier = ((await db.from("ticket_tiers").insert({ event_id: ev, name: "Online", price: 10, quantity: 100, status: "on_sale" }).select("id").single()).data as { id: string }).id;
     ticket = ((await db.from("tickets").insert({ code: `VX${Date.now()}`, event_id: ev, tier_id: tier, holder_id: buyer.id, order_ref: `VXO${Date.now()}`, status: "valid" }).select("id").single()).data as { id: string }).id;
   });
@@ -29,14 +29,16 @@ test.describe("virtual events", () => {
     const ok = (await b.rpc("virtual_join", { p_ticket: ticket })).data;
     expect(ok).toMatchObject({ ok: true, url: "https://meet.example.com/attendee", mode: "live" });
     expect((await db.from("check_ins").select("credential").eq("ticket_id", ticket)).data![0]!.credential).toBe("virtual");
+    expect((await db.from("tickets").select("status").eq("id", ticket).single()).data?.status).toBe("valid");   // Q29 (4030): online join never sets used
     // Someone else can't use the ticket; attendees can't read host links; public summary has no URLs.
     expect((await x.rpc("virtual_join", { p_ticket: ticket })).data.reason).toBe("not_your_ticket");
     expect((await b.from("event_virtual").select("host_url").eq("event_id", ev)).data).toEqual([]);
     expect(JSON.stringify((await (anon() as unknown as SupabaseClient).rpc("event_virtual_public", { p_event: ev })).data)).not.toContain("https://");
     // A refunded ticket loses access.
-    await db.from("tickets").update({ status: "refunded" }).eq("id", ticket);
-    expect((await b.rpc("virtual_join", { p_ticket: ticket })).data.reason).toBe("refunded");
-    await db.from("tickets").update({ status: "used" }).eq("id", ticket);
+    // (A separate ticket: refunded is terminal under the enforced ticket machine, so the shared fixture is never refunded.)
+    const refundedTicket = ((await db.from("tickets").insert({ code: `VXR${Date.now()}`, event_id: ev, tier_id: tier, holder_id: buyer.id, order_ref: `VXR${Date.now()}`, status: "valid" }).select("id").single()).data as { id: string }).id;
+    await db.from("tickets").update({ status: "refunded" }).eq("id", refundedTicket);
+    expect((await b.rpc("virtual_join", { p_ticket: refundedTicket })).data.reason).toBe("refunded");
   });
 
   test("join route redirects the holder to the session", async ({ page }) => {

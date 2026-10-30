@@ -4,10 +4,11 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Users, Armchair, Stars, Check, Info, Sparkles, Lightbulb, CheckCircle2, MapPin, Map as MapIcon, PenSquare, Upload, Maximize, Plus, MoreHorizontal, ChevronDown, Trash2, Loader2 } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
-import { createClient } from "@/lib/supabase/client";
+import { uploadPublicMedia } from "@/lib/files/upload-public";
 import { saveProModel } from "@/lib/actions/ticket-pro";
 import { SECTION_TYPES, type ProSection, type ProSettings, type SectionType } from "@/lib/ticket-pro-model";
 import type { ProSetup } from "@/lib/data/ticket-pro";
+import { eventTypeLabel } from "@/lib/format";
 import { Card, Donut, Footer, VenueMap, num, pct, uid } from "./ui";
 
 const COLORS = ["#2563eb", "#7c3aed", "#e0398b", "#e08a00", "#16a46c", "#64748b", "#0ea5c6", "#f97316"];
@@ -38,11 +39,10 @@ export function StepModel({ data, base }: { data: ProSetup; base: string }) {
   };
   const upload = async (f: File) => {
     if (!/^image\/(png|jpe?g|webp)$/.test(f.type) || f.size > 10_000_000) return toast("Use a PNG, JPG or WebP under 10 MB", "error");
-    setBusy(true); const sb = createClient();
-    const path = `${data.workspaceId}/map-${crypto.randomUUID()}.${f.type.split("/")[1]!.replace("jpeg", "jpg")}`;
-    const { error } = await sb.storage.from("event-media").upload(path, f, { contentType: f.type });
-    setBusy(false); if (error) return toast("Upload failed", "error");
-    setMapImg(sb.storage.from("event-media").getPublicUrl(path).data.publicUrl); setSource("upload"); toast("Map uploaded");
+    setBusy(true);
+    const url = await uploadPublicMedia(data.workspaceId, f, f.name).catch((e: Error) => { toast(e.message || "Upload failed", "error"); return null; });   // Q04: server-validated
+    setBusy(false); if (!url) return;
+    setMapImg(url); setSource("upload"); toast("Map uploaded");
   };
 
   return <>
@@ -68,7 +68,7 @@ export function StepModel({ data, base }: { data: ProSetup; base: string }) {
         <div className="tp-col tp-a-right">
         <Card title={<><Lightbulb size={16} className="tp-amber" />AI recommendations</>} className="tp-ai">
           <div className="tp-aih"><Sparkles size={18} className="tp-spark" /><b>Gala Agent</b><span className="k-beta">BETA</span><button className="k-btn primary sm" onClick={() => { setSections(rec); if (model === "general") setModel("hybrid"); toast("Suggested sections applied — adjust as needed"); }}>Use suggestion</button></div>
-          <p>For a {data.event.event_type.replace(/_/g, " ")} of this size, I recommend a hybrid model with GA standing, a premium seated area, VIP zones and accessible allocation. This gives the best mix of revenue and experience.</p>
+          <p>For a {eventTypeLabel(data.event.event_type).toLowerCase()} event of this size, I recommend a hybrid model with GA standing, a premium seated area, VIP zones and accessible allocation. This gives the best mix of revenue and experience.</p>
           <ul className="tp-recs">{recLines.map(([n, l]) => <li key={l}><CheckCircle2 size={16} />{num(n)} {l}</li>)}</ul>
         </Card>
         <Card title={<><Lightbulb size={16} className="tp-amber" />Important considerations</>} className="tp-cons">
@@ -84,12 +84,12 @@ export function StepModel({ data, base }: { data: ProSetup; base: string }) {
           </div>
           <div className="tp-mapg"><VenueMap sections={sections.filter(s => s.type !== "hold")} image={mapImg} />
         <div className="tp-secs"><div className="tp-ch"><h2>Sections &amp; allocations</h2><button className="k-btn outline sm" onClick={() => setSections(ss => [...ss, { id: uid(), name: `Section ${ss.length + 1}`, type: "standing", capacity: Math.max(0, capacity - sum), color: COLORS[ss.length % COLORS.length]!, tiers: [], holds: 0 }])}><Plus size={14} />Add section</button></div>
-            <table className="tp-t"><thead><tr><th>Section</th><th>Type</th><th>Capacity</th><th>Allocation</th><th /></tr></thead>
+            <div className="tp-tw"><table className="tp-t"><thead><tr><th>Section</th><th>Type</th><th>Capacity</th><th>Allocation</th><th /></tr></thead>
               <tbody>{sections.map((s, i) => <tr key={s.id}><td><span className="tp-sn2"><i style={{ background: s.color }} /><input aria-label="Section name" value={s.name} maxLength={60} onChange={x => set(i, { name: x.target.value })} /></span></td>
                 <td><select className="tp-bare" aria-label={`${s.name} type`} value={s.type} onChange={x => set(i, { type: x.target.value as SectionType })}>{Object.entries(SECTION_TYPES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></td>
                 <td><input className="tp-bare num" inputMode="numeric" aria-label={`${s.name} capacity`} value={s.capacity} onChange={x => set(i, { capacity: Number(x.target.value.replace(/\D/g, "")) || 0 })} /></td><td>{pct(s.capacity, capacity)}</td>
                 <td><Menu label={`Options for ${s.name}`} width={180} trigger={({ toggle, open, id }) => <button className="k-icon-btn" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Options for ${s.name}`}><MoreHorizontal size={15} /></button>}>{close => <><div className="tp-sw">{COLORS.map(c => <button key={c} style={{ background: c }} aria-label={`Colour ${c}`} onClick={() => { set(i, { color: c }); close(); }} />)}</div><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { setSections(ss => ss.filter((_, k) => k !== i)); close(); }}><Trash2 size={14} />Remove section</button></>}</Menu></td></tr>)}</tbody>
-              <tfoot><tr><td colSpan={2}>Total {bufferN ? <small>· {num(bufferN)} buffer · {num(sellable)} sellable</small> : null}</td><td className={sum > capacity ? "k-red" : ""}>{num(sum)}</td><td>{pct(sum, capacity)}</td><td /></tr></tfoot></table>
+              <tfoot><tr><td colSpan={2}>Total {bufferN ? <small>· {num(bufferN)} buffer · {num(sellable)} sellable</small> : null}</td><td className={sum > capacity ? "k-red" : ""}>{num(sum)}</td><td>{pct(sum, capacity)}</td><td /></tr></tfoot></table></div>
             {sum > capacity && <p className="tp-err"><Info size={13} />Sections exceed event capacity by {num(sum - capacity)}.</p>}
           </div>
           </div>

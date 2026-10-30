@@ -5,6 +5,8 @@ import { myTickets, ticketQr, whenLine } from "@/lib/data/customer-tickets";
 import { TicketPanel, GroupActions, FilterSelect } from "@/components/customer/tickets-client";
 import { eventTypeLabel } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { myOnlineSessions } from "@/lib/virtual/my-online";
 
 export const metadata = { title: "My Tickets" };
 const TONES: Record<string, string> = { music: "purple", festival: "blue", nightlife: "blue", food_drink: "green", party: "purple", comedy: "amber", wedding: "purple" };
@@ -18,10 +20,18 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
     && (!when || (() => { const t = g.event.starts_at ? new Date(g.event.starts_at).getTime() : 0; const d = (t - now) / 864e5; return when === "week" ? d <= 7 && d >= -7 : when === "month" ? d <= 31 && d >= -31 : when === "later" ? d > 31 : true; })()));
   const sel = sp.t === "none" ? null : list.find(g => g.key === sp.t) ?? list[0] ?? null;
   const qrs = sel && sel.when !== "resale" ? await Promise.all(sel.tickets.map(t => ticketQr(t))) : [];
+  // Q29 "Join online" entry: the selected event's sessions (or its legacy single online link) for current ticket holders.
+  const online = sel && sel.when === "upcoming" ? await (async () => {
+    const ss = await myOnlineSessions(ctx.supabase as unknown as SupabaseClient, sel.event.id);
+    if (ss.length) { const open = ss.some(x => x.join === "open"); const next = ss.find(x => x.join === "soon"); return { open, label: open ? "A session is open now" : next ? `Next session opens ${new Date(next.opensAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })}` : "Online sessions" }; }
+    const { data } = await ctx.supabase.rpc("event_virtual_public" as never, { p_event: sel.event.id } as never);
+    return data ? { open: false, label: "This event has an online session" } : null;
+  })() : null;
   const types = [...new Set(all.groups.map(g => g.event.event_type))]; const cities = [...new Set(all.groups.map(g => g.event.city).filter(Boolean))];
   const href = (p: Record<string, string | undefined>) => { const u = new URLSearchParams(); const m = { tab, q: sp.q, type, when, loc, ...p }; for (const [k, v] of Object.entries(m)) if (v && !(k === "tab" && v === "upcoming")) u.set(k, v); const s = u.toString(); return `/account/tickets${s ? `?${s}` : ""}`; };
 
   return <div className="tk">
+    {sp.join && <div className="k-notice amber tk-join-note" role="status">{sp.join.slice(0, 200)}</div>}
     <div className="tk-head"><div><h1>My Tickets</h1><p>Your upcoming events, past experiences and tickets you&apos;ve sold or transferred.</p></div><Link className="k-btn primary tk-browse" href="/discover?tab=events&results=1">Browse Events <ArrowRight size={18} /></Link></div>
     <div className={`tk-grid ${sel ? "" : "solo"}`}>
       <div className="tk-main">
@@ -51,7 +61,7 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
         <section className="ce-card tk-panel">
           <div className="tk-hero">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={sel.event.cover_image || "/assets/gd/oe-neon.webp"} alt="" /><Link href={href({ t: "none" })} className="tk-close" aria-label="Close ticket panel"><X size={20} /></Link>
             <div><h2>{sel.event.name}</h2><p><MapPin size={15} />{[sel.event.venue_name, sel.event.city].filter(Boolean).join(", ")}</p><p><CalendarDays size={15} />{whenLine(sel.event)}</p></div></div>
-          <TicketPanel when={sel.when} slug={sel.event.slug} transfers={sel.event.settings?.transfers !== false} tickets={sel.tickets.map((t, i) => ({ id: t.id, code: t.code, status: t.status, tier: t.tier?.name ?? "Admission", sub: t.tier?.description || (t.tier?.kind === "vip" ? "VIP Entry" : "Standard Entry"), gate: String((sel.event.settings?.entry_gate as string | undefined) ?? "Main Gate A"), seat: t.seat, qr: qrs[i] ?? null, attendee: t.attendee_name }))} />
+          <TicketPanel online={online} when={sel.when} slug={sel.event.slug} transfers={sel.event.settings?.transfers !== false} tickets={sel.tickets.map((t, i) => ({ id: t.id, code: t.code, status: t.status, tier: t.tier?.name ?? "Admission", sub: t.tier?.description || (t.tier?.kind === "vip" ? "VIP Entry" : "Standard Entry"), gate: typeof sel.event.settings?.entry_gate === "string" ? (sel.event.settings.entry_gate as string).trim() : "", seat: t.seat, qr: qrs[i] ?? null, attendee: t.attendee_name }))} />
         </section>
         <Link href="/help?topic=tickets" className="ce-card tk-help"><span className="tk-help-ic"><CircleHelp size={22} /></span><span className="k-grow"><b>Need help with your ticket?</b><small>View entry information, transfer rules or contact support.</small></span><ChevronRight size={18} /></Link>
       </aside>}

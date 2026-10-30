@@ -121,6 +121,7 @@
 
 /* Invoices */
 .pc-inv li{display:grid;grid-template-columns:26px minmax(0,1fr) 60px 84px 70px;align-items:center;gap:0 12px;min-height:42px;padding:2px 0}
+.pc-docs li.pt-empty,.pc-inv li.pt-empty,.pc-msgs li.pt-empty,.pc-actions li.pt-empty{display:block;min-height:0;height:auto}  /* W09: empty states sat in the 26px icon column, one word per line */
 .pc-inv-t{padding-left:4px}
 .pc-amt{font-size:12.5px;font-weight:500;color:#132087;text-align:right}
 .pc-inv-s{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding-left:12px}

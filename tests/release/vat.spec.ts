@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, cleanup, createUser, seedWorkspace, signedIn } from "../phase1/helpers";
+import { admin, cleanup, createUser, enrolTotp, seedWorkspace, signedIn, insertEventFixture } from "../phase1/helpers";
 
 // VAT on Gala Dock's own fees (migration 202610280020): consumer fees VAT-inclusive, business fees plus 20%; VAT booked to tax_payable.
 const db = admin as unknown as SupabaseClient;
@@ -10,7 +10,7 @@ test.describe("VAT on Gala Dock fees", () => {
   test.beforeAll(async () => {
     [owner, buyer, finance] = await Promise.all([createUser("vat-o"), createUser("vat-b"), createUser("vat-f")]);
     ws = await seedWorkspace(owner.id, "organizer", "VAT Org");
-    ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "VAT Gala", status: "on_sale" }).select("id").single()).data as { id: string }).id;
+    ev = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name: "VAT Gala", status: "on_sale" }, "vat").select("id").single()).data as { id: string }).id;
     await db.from("platform_admins").insert({ user_id: finance.id, title: "VAT test", permissions: ["commerce"] });
   });
   test.afterAll(async () => {
@@ -46,6 +46,7 @@ test.describe("VAT on Gala Dock fees", () => {
   test("VAT summary: commerce admins only; includes this order's VAT", async () => {
     const today = new Date().toISOString().slice(0, 10);
     const f = await signedIn(finance.email) as unknown as SupabaseClient, o = await signedIn(owner.email) as unknown as SupabaseClient;
+    await enrolTotp(f as never);   // Q45 (migration 202610293034): platform-admin reads need an aal2 session too
     expect((await o.rpc("admin_vat_summary", { p_from: today, p_to: today })).error?.message).toMatch(/not_authorized/);
     const { data, error } = await f.rpc("admin_vat_summary", { p_from: today, p_to: today });
     expect(error).toBeNull();

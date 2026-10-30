@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkBuilder } from "@/components/portal/link-builder";
 import { Megaphone, Images, ChartColumnBig, Coins, CalendarDays, MapPin, Users, ChevronRight, Ticket, Target, Award, Sparkles, UsersRound, Copy, Settings,
   Download, Trophy, Play, type LucideIcon } from "lucide-react";
 import "@/styles/portal-promoter.css";
@@ -79,7 +80,9 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
   const link = `/r/${p.code}`;
   const shareText = `${e.name} — get your tickets`;
   const releases = [...new Map(tiers.filter(t => t.sale_start && t.status !== "hidden").map(t => [t.release_name || t.name, t.sale_start!])).entries()].sort((a, b) => a[1].localeCompare(b[1]));
-  const dates = [...releases.map(([r, at], i) => ({ at, label: i === 0 ? `${r === "Phase 1" ? "Early bird" : r} sales live` : `${r === "Phase 2" ? "General release" : r}` })),
+  // "Phase 1 – Early Access" → "Early Access" so each row fits on one line (PROM-001).
+  const short = (r: string) => r.replace(/^Phase \d+\s*[–—-]\s*/, "") || r;
+  const dates = [...releases.map(([r, at], i) => ({ at, label: i === 0 ? `${r === "Phase 1" ? "Early bird" : short(r)} sales live` : `${r === "Phase 2" ? "General release" : short(r)}` })),
     ...(e.starts_at ? [{ at: e.starts_at, label: "Event day" }] : [])].slice(0, 4);
   const nextIdx = dates.findIndex(d => Date.parse(d.at) > now);
   const recent = sales.slice(0, 5);
@@ -155,8 +158,8 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
                   <li><span className="blue"><UsersRound aria-hidden="true" /></span><span><b>Grow the community</b><small>Build excitement online</small></span></li>
                 </ul>
               </div>
-              <div className="pp-dates"><div className="pt-panel-head"><h2>Important dates</h2><Link className="pt-link" href={`/events/${e.slug ?? ""}`}>View timeline <ChevronRight aria-hidden="true" /></Link></div>
-                <ol>{dates.map((d, i) => <li key={d.label} className={i < nextIdx || nextIdx === -1 ? "past" : i === nextIdx ? "next" : "later"}><CalendarDays aria-hidden="true" /><b>{fmt(d.at, { month: "short", day: "numeric" })}</b><i /><span>{d.label}</span></li>)}</ol></div>
+              <div className="pp-dates"><div className="pt-panel-head"><h2>Important dates</h2>{e.slug && e.visibility === "public" && <Link className="pt-link" href={`/events/${e.slug}`}>View timeline <ChevronRight aria-hidden="true" /></Link>}</div>
+                <ol>{dates.map((d, i) => <li key={d.label} className={i < nextIdx || nextIdx === -1 ? "past" : i === nextIdx ? "next" : "later"}><CalendarDays aria-hidden="true" /><b>{fmt(d.at, { month: "short", day: "numeric" })}</b><i /><span title={d.label}>{d.label}</span></li>)}</ol></div>
             </section>
             <div className="pp-bottom">
               <PortalPanel title="Recent sales" action={{ href: href("sales"), label: "View all" }} className="pp-recent">{salesTable(recent)}</PortalPanel>
@@ -193,8 +196,9 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
 
         <aside className="pp-right">
           <section className="pt-panel pp-ref" id="share" data-q-group="">
-            <div className="pt-panel-head"><h2>Your referral link</h2><Link href={`${href("assets")}`} className="pt-link pp-cust">Customise</Link></div>
+            <div className="pt-panel-head"><h2>Your referral link</h2></div>
             <div className="pp-field"><span><AbsoluteUrl path={link} /></span><CopyButton value={link} label="Copy referral link" /></div>
+            <details className="pp-cust-d"><summary className="pt-link pp-cust">Customise</summary><LinkBuilder base={link} kind="promoter" assets={assets.map(a => ({ id: a.id, title: a.title }))} /></details>
             <h2 className="pp-code-h">Referral code</h2>
             <div className="pp-field"><span className="code">{p.code}</span><CopyButton value={p.code} label="Copy referral code" /></div>
             <div className="pp-share">{SHARE.map(n => <SocialLink key={n} network={n === "instagram" || n === "tiktok" ? "copy" : n === "x" ? "x" : n as "whatsapp" | "facebook" | "email"} path={`${link}?c=${n}`} text={shareText} label={`Share on ${NETWORK_LABEL[n]}`}>

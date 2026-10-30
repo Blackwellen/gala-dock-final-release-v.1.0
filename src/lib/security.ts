@@ -20,6 +20,12 @@ export async function rateLimit(key: string, max: number, windowSeconds: number)
   }
 }
 
+/** W09: per-IP limit for token-link pages (portal, proposal, contract, pay). Slows token guessing; every bad token gets the same 404. */
+export async function tokenPageAllowed(surface: string, requestHeaders: Headers, max = 300) {
+  const ip = clientIp(new Request("http://local", { headers: requestHeaders }));
+  return rateLimit(`${surface}:ip:${createHash("sha256").update(ip).digest("hex").slice(0, 32)}`, max, 3600);
+}
+
 export function clientIp(request: Request) {
   return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "local";
 }

@@ -1,7 +1,6 @@
-# Oracle Cloud ops server: malware scanning, uptime monitoring and error tracking
+# Oracle Cloud ops server: uptime monitoring and error tracking (+ connecting the shared malware scanner)
 
 **What this gives you.** One free Oracle Cloud VM runs:
-- **ClamAV + scanner API**: every upload is malware-scanned before Gala Dock stores it.
 - **Uptime Kuma**: uptime monitoring, status alerts and a status page.
 - **GlitchTip**: Sentry-compatible error tracking for server errors.
 
@@ -14,7 +13,9 @@
 - **PDF checks:** PDFs with active content are refused.
 - **Health monitoring:** `/api/health` reports the scanner and error tracking as BLOCKED_EXTERNAL until you finish these steps.
 
-Files used: `ops/oracle/docker-compose.yml`, `ops/oracle/Caddyfile`, `ops/oracle/env.example`, `ops/av-scanner/server.mjs`.
+Files used: `ops/oracle/docker-compose.yml`, `ops/oracle/Caddyfile`, `ops/oracle/env.example`.
+
+**Malware scanning is not on this VM.** ClamAV runs as a shared Blackwellen service for every brand: the AV scan gateway in the `blackwellen-operations` repo (`services/av-scan-gateway`, `infra/containers/av-scan-gateway`, runbook `ops/runbooks/av-scan-gateway.md`) on the Recovery & Security host. Gala Dock only needs its brand token and the gateway URL (step 6).
 
 ---
 
@@ -48,11 +49,10 @@ sudo netfilter-persistent save
 
 ## 3. DNS
 
-In your DNS provider (galadock.com), create three **A records** pointing to the VM's public IP:
+In your DNS provider (galadock.com), create two **A records** pointing to the VM's public IP:
 
 | Host | Purpose |
 |---|---|
-| `scan.ops.galadock.com` | Scanner API (Vercel calls this) |
 | `status.ops.galadock.com` | Uptime Kuma |
 | `errors.ops.galadock.com` | GlitchTip |
 
@@ -70,30 +70,24 @@ cp env.example .env
 nano .env    # set the three hostnames; generate each secret with: openssl rand -hex 32
 docker compose up -d
 docker compose run --rm glitchtip-migrate      # first run only
-docker compose logs -f clamav                  # wait for "freshclam ... updated" and "clamd started" (3–5 minutes on first boot)
 ```
 
 Caddy fetches HTTPS certificates automatically as soon as DNS resolves.
 
-## 5. Check the scanner
+## 5. Malware scanner (shared Blackwellen AV gateway)
 
-```bash
-TOKEN=$(grep ^SCAN_TOKEN .env | cut -d= -f2)
-curl -s https://scan.ops.galadock.com/health -H "Authorization: Bearer $TOKEN"
-# {"ok":true,"clamd":"PONG","version":"ClamAV 1.4.x/..."}
-
-# EICAR test string (a harmless file every antivirus flags on purpose):
-printf 'X5O!P%%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > eicar.txt
-curl -s -X POST https://scan.ops.galadock.com/scan -H "Authorization: Bearer $TOKEN" --data-binary @eicar.txt
-# {"clean":false,"signature":"Eicar-Test-Signature"}
-```
+Deployed and checked from `blackwellen-operations` (runbook `ops/runbooks/av-scan-gateway.md`). The operator issues Gala Dock's brand
+token there (`BW_AVSCAN_TOKEN_GALA_DOCK`) and gives you the gateway's HTTPS URL. Contract: `POST /scan` with
+`Authorization: Bearer <token>` and the raw bytes → `{"clean":true}` or `{"clean":false,"signature":"…"}`; `GET /healthz` →
+`{"ok":true,"clamd":"PONG",…}`. After connecting, run `node scripts/testing/pwa-scanner-certification.mjs` (clean sample, harmless
+EICAR detection, unauthenticated denial).
 
 ## 6. Connect Gala Dock (Vercel → Project → Settings → Environment Variables, Production)
 
 | Variable | Value |
 |---|---|
-| `CLAMAV_SCAN_URL` | `https://scan.ops.galadock.com` |
-| `CLAMAV_SCAN_TOKEN` | the `SCAN_TOKEN` from the VM's `.env` |
+| `CLAMAV_SCAN_URL` | the shared AV gateway URL from the operator |
+| `CLAMAV_SCAN_TOKEN` | Gala Dock's brand token (`BW_AVSCAN_TOKEN_GALA_DOCK` on the gateway) |
 | `SENTRY_DSN` | from GlitchTip (step 8) |
 
 Add the same values to your local `.env`, then run `node scripts/vercel-env-push.mjs --only CLAMAV_SCAN_URL,CLAMAV_SCAN_TOKEN,SENTRY_DSN` and redeploy.
@@ -114,7 +108,6 @@ Add the same values to your local `.env`, then run `node scripts/vercel-env-push
 | Gala Dock — readiness | HTTP(s) – Keyword | same URL, header `Authorization: Bearer <CRON_SECRET>`, keyword `"db":"ok"` | 5 min |
 | Homepage | HTTP(s) | `https://www.galadock.com/` | 60 s |
 | Checkout API reachable | HTTP(s) | `https://www.galadock.com/api/maintenance` | 2 min |
-| Scanner | HTTP(s) – Keyword | `https://scan.ops.galadock.com/health`, header `Authorization: Bearer <SCAN_TOKEN>`, keyword `PONG` | 5 min |
 | SSL expiry | (on each HTTP monitor) | tick "Certificate expiry notification" | — |
 
 3. **Settings → Notifications:** add Email (SMTP), Slack, Discord, Telegram or SMS, and set it as the default.
@@ -135,7 +128,7 @@ Add the same values to your local `.env`, then run `node scripts/vercel-env-push
 
 ## 9. Maintenance
 
-- **Signatures:** ClamAV updates itself (freshclam) several times a day.
+- **Scanner:** signatures, uptime and alerting are owned by the shared gateway (Watchtower watches `/healthz`); Gala Dock's `/api/health` still reports it.
 - **OS:**
 
   ```bash
@@ -156,4 +149,4 @@ Add the same values to your local `.env`, then run `node scripts/vercel-env-push
 - **Health:** `/api/health` on Gala Dock shows the scanner as `ready` and reports its response time.
 - **Security:**
   - Keep SSH key-only and limited to your IP.
-  - Rotate `SCAN_TOKEN` and `CRON_SECRET` if they're ever exposed: update the VM's `.env` and Vercel, then redeploy.
+  - Rotate `CRON_SECRET` (and ask the operator to rotate Gala Dock's scanner token) if they're ever exposed: update Vercel, then redeploy.

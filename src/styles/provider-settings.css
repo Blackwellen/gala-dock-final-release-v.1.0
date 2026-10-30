@@ -2,7 +2,7 @@
 .ps{display:grid;gap:12px}
 .ps-head{margin-bottom:0}
 .ps-tabs{padding:0!important;gap:2px!important}
-.ps-tabs a{padding:8px 15px 10px!important;font-size:12.5px!important}
+.ps-tabs a{padding:8px 12px 10px!important;font-size:12.5px!important;white-space:nowrap}
 .ps-note{font-size:11.5px;color:#7a4b00;background:#fff7ec;border-radius:8px;padding:8px 12px}
 .ps-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;align-items:stretch}
 .ps-profile{grid-column:span 5}.ps-caps{grid-column:span 4}.ps-plan{grid-column:span 3}
@@ -69,10 +69,12 @@
 .ps .ps-card .ws-btn.ps-end{height:30px;font-size:11px;color:var(--ws-blue-2)!important}
 .ps-li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f4fa}
 .ps-detail{padding:16px 18px!important;max-width:980px}
+.ps-li.ps-off>span:first-child{display:grid;gap:2px;color:#5157a4}.ps-li.ps-off small{font-size:10px;color:#8a90bf}
 .ps-sub{font-size:11px;color:#3f4596;margin:4px 0 10px}
 .ps-form{grid-template-columns:1fr 1fr!important;margin-top:8px}
-.ps-tg{padding:8px 0}
+.ps-tg{padding:8px 0;position:relative}.ps-tg>input[type=checkbox]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0}  /* W10: unpositioned 100%-wide checkbox overflowed the billing tab by 272px */
 .ps-invite{display:grid;grid-template-columns:minmax(0,1fr) 160px auto;gap:8px}
+.ps-invite.ps-role{grid-template-columns:130px auto;margin-left:auto}.ps-invite.ps-role select,.ps-invite.ps-role button{height:30px}
 .ps-invite input,.ps-invite select{height:36px;border:1px solid #e2e8fb;border-radius:7px;padding:0 10px;font-size:11.5px;background-color:#fff}
 .ps-plans{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .ps-plans li{display:grid;gap:4px;padding:12px;border:1px solid var(--ws-border);border-radius:9px}

@@ -52,7 +52,7 @@
 .pp-dates li{position:relative;display:grid;grid-template-columns:14px 52px 10px 1fr;align-items:center;gap:8px;height:28.5px;font-size:11.5px}
 .pt-app .pp-dates li svg{width:13px;height:13px;color:#2a35d0}
 .pp-dates li b{font-weight:600;color:#04055a}
-.pp-dates li span{color:#3f4596;padding-left:10px}
+.pp-dates li span{color:#3f4596;padding-left:10px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pp-dates li i{width:9px;height:9px;border-radius:50%;border:1.6px solid #f0a020;background:#fff;position:relative;z-index:1}
 .pp-dates li.past i{background:#16b67a;border-color:#16b67a}.pp-dates li.next i{border-color:#1a5cf0}
 .pp-dates li::before{content:"";position:absolute;left:96px;top:0;bottom:0;border-left:1.4px dashed #d9e3f7}
@@ -175,3 +175,6 @@
   .pp-channels li{grid-template-columns:26px minmax(0,1fr) auto auto;gap:10px}
   .pp-channels li>span:nth-of-type(2){display:none}
 }
+
+/* W12: tap target ≥ 24px */
+.pp-manage { min-height: 24px; }

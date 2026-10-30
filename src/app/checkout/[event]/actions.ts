@@ -1,13 +1,17 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { randomBytes, createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
+import { rateLimit } from "@/lib/security";
 import { CHECKOUT_COOKIE, summarise, type Summary } from "@/lib/checkout";
 
 const MSG: Record<string, string> = {
   seat_unavailable: "Someone just took one of those seats — please pick again.", sold_out: "There aren’t enough tickets left in that tier.", order_limit: "That’s more than the per-order limit for this tier.",
   not_on_sale: "Tickets for this event aren’t on sale right now.", queue: "Please wait for your turn in the waiting room before reserving tickets.", seated_tier: "Pick seats on the map for that tier.", invalid_quantity: "Choose between 1 and 20 seats.", seat_not_ticketed: "One of those seats isn’t on sale.",
+  access_code_required: "That release needs an access code — enter it before choosing tickets.", allocation_exhausted: "Your access code’s allocation has no tickets left.", below_minimum: "That tier has a minimum number of tickets per order.",
 };
 const msg = (m: string) => MSG[Object.keys(MSG).find(k => m.includes(k)) ?? ""] ?? "We couldn’t reserve those tickets. Please try again.";
 
@@ -79,4 +83,37 @@ export async function claimOffer(eventId: string, offerId: string): Promise<{ ok
   const { error } = await sb.rpc("claim_waitlist_offer" as never, { p_offer: offerId, p_token: token } as never);
   if (error) return { ok: false, error: error.message.includes("offer_expired") ? "This offer has expired — the tickets have gone to the next person in line." : "We couldn’t find that offer." };
   return { ok: true, summary: await summarise(eventId, token, sb as never) };
+}
+
+const CODE_MSG: Record<string, string> = {
+  code_invalid: "That code isn’t valid for this event.", code_exhausted: "That code has reached its usage limit.", code_customer_limit: "You’ve already used that code.",
+  code_not_stackable: "That code can’t be combined with the code you’ve already applied.", invalid_token: "Please choose your tickets again.",
+};
+
+/** Applies a promo or access code to this browser's checkout (Q20). Access codes unlock presale tiers / reserved allocations
+ * for the next reservation; discount codes reprice the current hold. Server-validated and rate-limited; returns the new summary. */
+export async function applyCode(eventId: string, code: string): Promise<{ ok: true; summary: Summary } | { ok: false; error: string }> {
+  if (!/^[0-9a-f-]{36}$/i.test(eventId) || !/^[A-Za-z0-9_ -]{2,32}$/.test(code)) return { ok: false, error: CODE_MSG.code_invalid };
+  const sb = await createClient();
+  const { data: { user } } = await sb.auth.getUser();
+  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!(await rateLimit(`checkout-code:${user?.id ?? ip}:${eventId}`, 10, 600))) return { ok: false, error: "Too many code attempts — please wait a few minutes." };
+  const jar = await cookies(), name = CHECKOUT_COOKIE(eventId);
+  let token = jar.get(name)?.value;
+  if (!token || !/^[A-Za-z0-9_-]{24,64}$/.test(token)) token = randomBytes(24).toString("base64url");
+  jar.set(name, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 30 });
+  const db = untyped(createAdminClient() as never);
+  const { data, error } = await db.rpc("checkout_apply_code", { p_event: eventId, p_token: token, p_code: code, p_buyer: user?.id ?? null });
+  const r = (data ?? {}) as { ok?: boolean; error?: string };
+  if (error || !r.ok) return { ok: false, error: CODE_MSG[r.error ?? ""] ?? CODE_MSG.code_invalid };
+  return { ok: true, summary: await summarise(eventId, token) };
+}
+
+export async function removeCode(eventId: string, code: string): Promise<{ ok: true; summary: Summary } | { ok: false; error: string }> {
+  if (!/^[0-9a-f-]{36}$/i.test(eventId)) return { ok: false, error: "Event not found." };
+  const token = (await cookies()).get(CHECKOUT_COOKIE(eventId))?.value;
+  if (!token) return { ok: false, error: CODE_MSG.invalid_token };
+  const db = untyped(createAdminClient() as never);
+  await db.rpc("checkout_remove_code", { p_event: eventId, p_token: token, p_code: String(code).slice(0, 32) });
+  return { ok: true, summary: await summarise(eventId, token) };
 }

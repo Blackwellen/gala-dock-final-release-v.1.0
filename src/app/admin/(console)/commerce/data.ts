@@ -1,4 +1,5 @@
 import "server-only";
+import { stripeLive } from "@/lib/stripe";
 import { rows, type Db } from "@/lib/workspace/db";
 import { requestTime } from "@/lib/workspace/format";
 
@@ -16,7 +17,7 @@ const num = (v: unknown) => Number(v ?? 0);
 export async function loadLedger(db: Db, days: number) {
   const now = requestTime(), from = now - 2 * days * 864e5;
   const [list, requests] = await Promise.all([
-    rows<Tx>(db.from("transactions").select("id,workspace_id,event_id,kind,category,description,amount,status,source,fee_amount,net_amount,counterparty,stripe_ref,occurred_at,details")
+    rows<Tx>(db.from("transactions").select("id,workspace_id,event_id,kind,category,description,amount,status,source,fee_amount,net_amount,counterparty,stripe_ref,occurred_at,details").eq("livemode", stripeLive())
       .gte("occurred_at", new Date(from).toISOString()).lte("occurred_at", new Date(now).toISOString()).order("occurred_at", { ascending: false }).limit(5000)),
     rows<MoneyRequest>(db.from("admin_money_requests").select("id,kind,status,transaction_id,partner_id,case_id,amount,reason,requested_by_name,created_at").order("created_at", { ascending: false }).limit(500)),
   ]);

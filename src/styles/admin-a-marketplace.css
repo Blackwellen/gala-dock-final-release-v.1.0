@@ -13,7 +13,7 @@
 .am-req td{height:42px;font-size:11px}
 .am-req b{font-weight:600}
 .am-drawer{gap:9px;padding-top:12px}
-.am-drawer .aa-drawer-head h2{display:flex;align-items:center;gap:8px;font-size:15px}
+.am-drawer .aa-drawer-head h2{display:flex;align-items:center;gap:8px;font-size: var(--k-title-card)}
 .am-drawer .aa-drawer-head h2 .aa-status{height:20px;font-size:10px}
 .am-drawer .ws-thumb{border-radius:6px}
 .am-drawer .aw-details .aa-kv>div{grid-template-columns:96px minmax(0,1fr)}

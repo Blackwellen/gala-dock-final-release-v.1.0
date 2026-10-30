@@ -11,14 +11,7 @@
   --k-agent: linear-gradient(135deg, #5b3df5 0%, #8d3cf7 100%);
   --k-font: "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-/* Density: real reflow via CSS zoom (not transform). Desktop defaults keep the 1536px reference proportions on shorter laptop viewports. */
-:root { --k-zoom: 1; }
-@media (min-width: 1100px) { :root { --k-zoom: .8; } }
-@media (min-width: 1100px) and (max-height: 820px) { :root { --k-zoom: .75; } }
-@media (min-width: 1100px) { html[data-density="compact"] { --k-zoom: .72; } html[data-density="comfortable"] { --k-zoom: .9; } }
-/* 1:1 with the 1536px design references (overlay tool + visual regression harness). */
-html[data-density="reference"] { --k-zoom: 1 !important; }
-.o-root, .c-root { zoom: var(--k-zoom); min-height: calc(100dvh / var(--k-zoom)); }
+/* Display scale (--k-zoom) and the shell-root zoom live in density.css, loaded app-wide from the root layout. */
 .k-root { font-family: var(--k-font); color: var(--k-ink); background: var(--k-page); font-size: 13px; line-height: 1.4; }
 :where(.k-root) *, :where(.k-root) *::before, :where(.k-root) *::after { box-sizing: border-box; }
 :where(.k-root) a { color: inherit; text-decoration: none; }
@@ -354,12 +347,24 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
  .k-root .cb-price .cb-cta { min-height:44px; min-width:44px; height:auto; padding:8px 12px; }
 }
 .k-map .card-img { width: 100%; height: 84px; object-fit: cover; border-radius: 7px; margin-bottom: 4px; }
-.o-top .o-logo { width:44px;min-width:44px; }
-.o-top .o-logo img { width:44px;height:44px;object-fit:contain; }
-.c-top .c-logo { width:44px;min-width:44px; }
-.c-top .c-logo img { width:44px;height:44px;object-fit:contain; }
+.o-top .o-logo { width:auto;min-width:0; }
+.o-top .o-logo .gd-lockup { --gd-h:44px; }
 /* Gala Agent replies render markdown (AgentReply). */
 .k-agent-reply { white-space: normal; display: grid; gap: 6px; font-size: 12px; }
 .k-agent-reply p { margin: 0; } .k-agent-reply .k-agent-h { display: block; font-size: 12px; color: var(--k-ink); margin-top: 2px; }
 .k-agent-reply ul, .k-agent-reply ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
 .k-agent-reply code { font-size: 11px; background: #ebe6ff; border-radius: 4px; padding: 0 4px; }
+
+/* W14 consistency tokens (coordinator decision 2026-10-29). Additive: existing component values are unchanged; these name them
+   and add the dense variants. Large CTA = the existing .k-btn.lg (40px), one size for page-header and wizard-footer actions. */
+:root {
+  --k-btn-h: 34px; --k-btn-sm-h: 28px; --k-btn-lg-h: 40px; --k-btn-lg-fs: 13px;
+  --k-input-h: 36px; --k-input-dense-h: 32px;
+  --k-icon-btn: 32px; --k-icon-btn-dense: 26px;
+  --k-chip-h: 20px; --k-chip-dense-h: 18px; --k-chip-dense-fs: 9.5px;
+  --k-card-pad: 16px;
+  --k-title-page: 28px; --k-title-admin: 30px; --k-title-card: 15px; --k-title-sub: 13.5px;
+}
+.k-input.dense, .k-select.dense { height: var(--k-input-dense-h); }
+.k-icon-btn.dense { width: var(--k-icon-btn-dense); height: var(--k-icon-btn-dense); border-radius: 7px; }
+.k-chip.dense { height: var(--k-chip-dense-h); padding: 0 7px; font-size: var(--k-chip-dense-fs); }

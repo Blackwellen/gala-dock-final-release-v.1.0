@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/workspace.css";
+import "@/styles/admin-pwa.css";
 import { AdminShell } from "@/components/workspace/shell";
 import { getAdmin } from "@/lib/admin/context";
 import { adminShellData } from "@/lib/admin/shell-data";

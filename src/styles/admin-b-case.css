@@ -31,7 +31,7 @@
 .adca-stats b.red,.adca-stats em.red{color:#e3122e}
 .adca-stats em{font-style:normal;font-size:11.5px;color:#3f4596;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .adca-sum{padding:12px 12px}
-.adca-sum h2{font-size:14px}
+.adca-sum h2{font-size: var(--k-title-card)}
 .adca-sum>p{font-size:12px;color:#3f4596;line-height:1.6;margin-top:6px}
 .adca-sum dl{display:grid;grid-template-columns:repeat(6,auto);gap:0;margin:12px 0 0;border-top:1px solid #f1f5fc;padding-top:10px}
 .adca-sum dl>div{display:grid;gap:6px;padding:0 10px;border-left:1px solid #f1f5fc}
@@ -43,7 +43,7 @@
 .adca-ago{font-size:10px;color:#0f7a3f;background:#e3f8ec;border-radius:4px;padding:2px 6px}
 .adca-conv{padding:8px 12px 10px}
 .adca-conv-h{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.adca-conv-h h2{font-size:14px;margin-right:6px}
+.adca-conv-h h2{font-size: var(--k-title-card);margin-right:6px}
 .adca-seg{display:flex;gap:2px;background:#f6f9fe;border-radius:7px;padding:2px}
 .adca-seg a{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;font-size:12px;color:#1d2068;border-radius:5px}
 .adca-seg a b{font-size:10px;font-weight:600;color:#3d4592;background:#e8edfb;border-radius:4px;padding:1px 6px}
@@ -80,7 +80,7 @@
 .adca-rail{display:grid;gap:10px;min-width:0}
 .adca-sla{padding:12px 12px}
 .adca-sla-h{display:flex;align-items:center;gap:10px}
-.adca-sla-h h2{font-size:14px}
+.adca-sla-h h2{font-size: var(--k-title-card)}
 .adca-sla-b{display:grid;grid-template-columns:110px minmax(0,1fr);gap:24px;align-items:center;margin-top:8px}
 .adca-g{font-size:16px;font-weight:800;color:#02032e}
 .adca-g small{font-size:16px;font-weight:800}
@@ -89,7 +89,7 @@
 .adca-sla dl>div{display:grid;grid-template-columns:100px 1fr;font-size:12px}
 .adca-sla dt{color:#3f4596}.adca-sla dd{margin:0;color:#1d2068}.adca-sla dd.red{color:#e3122e}
 .adca-linked{padding:10px 12px}
-.adca-linked h2{font-size:14px;margin-bottom:4px}
+.adca-linked h2{font-size: var(--k-title-card);margin-bottom:4px}
 .adca-linked ul{list-style:none;margin:0;padding:0;display:grid}
 .adca-linked li{display:grid;grid-template-columns:18px 70px 36px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid #f4f7fc}
 .adca-linked li:last-child{border-bottom:0}
@@ -102,7 +102,7 @@
 .adca-lt b{font-size:11.5px;font-weight:600;color:#0d0d63}
 .adca-lt small{font-size:11px;color:#3f4596;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .adca-res{padding:10px 12px}
-.adca-res h2{font-size:14px;display:flex;align-items:center;gap:10px}
+.adca-res h2{font-size: var(--k-title-card);display:flex;align-items:center;gap:10px}
 .adca-res h2 .adb-pill{font-size:10px;height:19px}
 .adca-res-kv{gap:3px;margin:4px 0 10px}
 .adca-res-kv>div{grid-template-columns:76px minmax(0,1fr);font-size:11.5px}
@@ -113,7 +113,7 @@
 .adca-res-b .adb-btn{height:36px;font-size:12px}
 .adca-res-b .adb-dots{width:36px;height:36px}
 .adca-rel{padding:10px 12px}
-.adca-rel h2{font-size:14px}
+.adca-rel h2{font-size: var(--k-title-card)}
 .adca-rel ul{list-style:none;margin:0;padding:0;display:grid}
 .adca-rel li{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:11.5px;padding:5px 0;border-bottom:1px solid #f4f7fc}
 .adca-rel li:last-child{border-bottom:0}

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, cleanup, createUser, seedWorkspace, signedIn } from "../phase1/helpers";
+import { admin, cleanup, createUser, seedWorkspace, signedIn, insertEventFixture } from "../phase1/helpers";
 
 // Release spec §117–121 contract: catalogue price, platform_boost order (100% platform, unprotected), webhook-confirmed activation.
 const db = admin as unknown as SupabaseClient;
@@ -10,7 +10,7 @@ test.describe("promotion boosts", () => {
   test.beforeAll(async () => {
     owner = await createUser("boost");
     ws = await seedWorkspace(owner.id, "organizer", "Boost Org");
-    ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "Boosted Night", status: "on_sale", visibility: "public", starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
+    ev = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name: "Boosted Night", status: "on_sale", visibility: "public", starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }, "boosts").select("id").single()).data as { id: string }).id;
   });
   test.afterAll(async () => {
     await db.from("promotion_boosts").delete().eq("workspace_id", ws);

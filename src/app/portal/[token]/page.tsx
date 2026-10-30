@@ -8,7 +8,8 @@ import { PortalShell, PortalPanel, PortalChip, PortalAvatar, type ChipTone } fro
 import { eventHero } from "@/components/portal/media";
 import { createClient } from "@/lib/supabase/server";
 import { untyped } from "@/lib/workspace/db";
-import { hashToken, isTokenFormat } from "@/lib/security";
+import { headers } from "next/headers";
+import { hashToken, isTokenFormat, tokenPageAllowed } from "@/lib/security";
 import { money, num, requestTime } from "@/lib/workspace/format";
 import { ApprovalButtons, MessageComposer, RequestPayment } from "./forms";
 import { ago, dateRange, fmt, statusLabel, timeRange } from "@/components/portal/format";
@@ -38,6 +39,7 @@ const KIND_ICON: Record<Approval["kind"], [LucideIcon, string]> = { approval: [S
 export default async function ClientPortal(props: PageProps<"/portal/[token]">) {
   const { token } = await props.params;
   if (!isTokenFormat(token)) notFound();
+  if (!(await tokenPageAllowed("portal", await headers()))) throw new Error("Too many requests. Please try again shortly.");
   const sp = await props.searchParams;
   const view: ViewKey = VIEWS.includes(sp.view as ViewKey) ? sp.view as ViewKey : "overview";
   const sb = untyped(await createClient());

@@ -1,0 +1,86 @@
+/* Mobile/tablet admin work retains the same navigation and accessible data regions. */
+@media(max-width:1279px) {
+ .ws-app.admin :is(.aa-status,.aa-chip,.adb-pill,.adb-tag) { color:#163879; }
+ .ws-app.admin :is(.green,.good,.up,.g,.ap-ok,.aa-flagline,.adst-sys b) { color:#086739; }
+ .ws-app.admin :is(.red,.bad,.down,.danger) { color:#b21d37; }
+ .ws-app.admin :is(.amber,.warn,.adst-draft,.adsu-find) { color:#875000; }
+ .ws-app.admin :is(.aa-chip.pink,.adb-tag.pink) { color:#9e1262; }
+ .ws-app.admin .ap-member small em { color:#086739; }
+ .ws-app.admin :is(.aa-table,.adb-table) input[type=checkbox] { width:44px;height:44px; }
+ .ws-app.admin :is(.adb-kv dd a,.adb-back,.aa-back) { display:inline-flex;align-items:center;min-height:44px; }
+ .ws-app.admin .adst-chips label { position:relative; }
+ .ws-app.admin .adst-chips .adst-chip span { min-height:44px; }
+ .ws-app.admin .adp-comm dd em { display:block; }
+ .ws-app.admin :is(.aa-btn,.ws-btn).danger { color:#b21d37;background:#fff; }
+ .ws-app.admin .ws-main .ws-btn.danger { color:#b21d37; }
+ .ws-app.admin .al-stars { color:#875000; }
+ .ws-app.admin .al-a.amber { color:#875000!important; }
+ .ws-app.admin .adsu-find { color:#875000!important; }
+ .ws-app.admin .adc-type :is(.purple,.blue,.grey) { color:#3b4387; }
+ .ws-app.admin .adc-health em:is(.purple,.grey) { color:#b21d37; }
+ .ws-app.admin .adc-health em.blue { color:#163879; }
+ .ws-app.admin .ada-hb i { color:#0b0b48; }
+ .ws-app.admin .ads-ref { display:inline-flex;align-items:center;min-height:44px; }
+ .ws-app.admin .ws-main,.ws-app.admin .ws-main > div { min-width:0;max-width:100%; }
+ .ws-app.admin .aa-pager-pages,.ws-app.admin .adb-pager-pages { display:flex;flex-wrap:wrap;min-width:0;gap:4px; }
+ .ws-app.admin .aa-line-tabs { flex-wrap:wrap;gap:4px; }
+ .ws-app.admin .aa-line-tabs a { min-height:44px;padding:10px 12px;white-space:normal; }
+ .ws-app.admin .aa-pager a,.ws-app.admin .adb-pager a { min-width:44px;min-height:44px; }
+ .ws-app.admin .aa-table-scroll,.ws-app.admin .adb-table-wrap { max-width:100%;overflow-x:auto; }
+ .ws-app.admin section > table { display:block;min-width:0;max-width:100%;overflow-x:auto; }
+ .ws-app.admin section > table:focus-visible { outline:2px solid #0b08f8;outline-offset:2px; }
+ .ws-app.admin :is(.aa-btn,.adb-btn,.aa-icon-btn,.aa-f input,.aa-f select,.adb-field input,.adb-field select) { min-height:44px; }
+ .ws-app.admin .adb-btn { max-width:100%;min-width:0;white-space:normal;height:auto; }
+ .ws-app.admin :is(.aa-table td,.aa-table th,.aa-kv dd,.aa-kv dt,.adb-table td,.adb-table th) { font-size:12px; }
+}
+@media(max-width:640px) {
+ .ws-app.admin :is(.aa-dtabs,.adb-sec-h,.adca-conv-h,.adc-tx-h,.adb-pager,.adc-seg,.adca-seg,.ads-ctabs,.adb-legend) { flex-wrap:wrap;min-width:0;max-width:100%; }
+ .ws-app.admin .aa-dtabs a { flex:1 1 80px;min-height:44px;white-space:normal;text-align:center; }
+ .ws-app.admin :is(.aa-dots,.adb-dots) { flex-shrink:0; }
+ .ws-app.admin :is(.ap-kpi,.awd-kpi,.adb-kpi) { flex-direction:column;gap:8px; }
+ .ws-app.admin :is(.ap-kpi small,.ap-kpi b,.ap-kpi em,.awd-kpi small,.aa-delta,.adb-kpi-label,.adb-kpi-sub) { white-space:normal;overflow-wrap:anywhere; }
+ .ws-app.admin .al-spaces li { grid-template-columns:50px minmax(0,1fr); }
+ .ws-app.admin .al-spaces .al-tags { grid-column:1/-1;flex-wrap:wrap;overflow:visible; }
+ .ws-app.admin .al-spaces li>.aa-chip { grid-column:2;justify-self:start; }
+ .ws-app.admin .adca-sum dl { grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+ .ws-app.admin .adca-sum dd { white-space:normal;overflow-wrap:anywhere; }
+ .ws-app.admin .adp-rail>* { min-width:0;max-width:100%; }
+ .ws-app.admin .adb-pager nav { flex-wrap:wrap;min-width:0;max-width:100%; }
+ .ws-app.admin .adsu-prev-h { flex-wrap:wrap; }
+ .ws-app.admin .adca-msgs header { flex-wrap:wrap; }
+ .ws-app.admin .adca-msgs header time { margin-left:0; }
+ .ws-app.admin .adca-stats { grid-template-columns:minmax(0,1fr); }
+ .ws-app.admin .adca-stats>div { min-width:0;height:auto;min-height:84px; }
+ .ws-app.admin .adca-stats :is(span,b,em) { min-width:0;overflow-wrap:anywhere;white-space:normal; }
+ .ws-app.admin .adca-event>div { min-width:0; }
+ .ws-app.admin .adca-event :is(b,span) { white-space:normal;overflow-wrap:anywhere; }
+ .ws-app.admin .ada-rev-b { grid-template-columns:minmax(0,1fr);justify-items:center; }
+ .ws-app.admin .ada-rev-b .adb-legend { width:100%; }
+ .ws-app.admin :is(.aa-panel,.adb-panel,.aa-drawer) :is(.ws-btn,.adb-btn) { max-width:100%;min-width:0;white-space:normal;height:auto;min-height:44px; }
+ .ws-app.admin .aa-kv > div { grid-template-columns:minmax(0,1fr);gap:4px; }
+ .ws-app.admin .aa-head-actions,.ws-app.admin .adb-head-actions { flex-wrap:wrap; }
+ .ws-app.admin .aa-wscard { grid-template-columns:36px minmax(0,1fr); }
+ .ws-app.admin .aa-wscard > :nth-child(n+3) { grid-column:2; }
+ .ws-app.admin .adt-act { grid-template-columns:minmax(0,1fr); }
+ .ws-app.admin .adt-act-row { grid-template-columns:minmax(0,1fr) 44px; }
+ .ws-app.admin .adt-act .adb-btn { min-width:0;white-space:normal;height:auto; }
+ .ws-app.admin .adt-act-row .adt-more { width:44px!important; }
+ .ws-app.admin .adca-sla-b { grid-template-columns:minmax(0,1fr);gap:12px; }
+ .ws-app.admin .adca-sla dl>div { grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px; }
+ .ws-app.admin .adca-sla dd { min-width:0;overflow-wrap:anywhere; }
+}
+
+/* W12 (lane A): tap targets ≥ 24px on phone/tablet touch — links, row menus, copy buttons, switches */
+@media (max-width:1179px) {
+  .ws-app .aa-link, .ws-app .adb-link { min-height: 24px; }
+  .ws-app .adb-dots, .ws-app .adb-copy { min-width: 24px; min-height: 24px; }
+  .ws-app .aa-switch { height: 24px; border-radius: 12px; }
+  .ws-app .aa-switch i { top: 4px; }
+}
+
+/* Owner standard (one size per role): every admin list page title = --k-title-admin (the _a list pages used .ws-page-head's 34px,
+   the _b pages 30px); detail pages share the 24px entity-hero size (case and transaction were 30px). */
+.ws-app .aa .ws-page-head h1 { font-size: var(--k-title-admin); }
+.ws-app .adca .adb-head h1, .ws-app .adt .adb-head h1 { font-size: 24px; }
+/* Row menus and copy buttons: the dense icon-button token (were 20px tall in commerce / support / transaction tables). */
+.ws-app .adb-dots, .ws-app .adb-copy { min-width: var(--k-icon-btn-dense); min-height: var(--k-icon-btn-dense); }

@@ -18,7 +18,7 @@ export default async function MediaBuilderPage({ params, searchParams }: { param
     sb.from("ticket_tiers").select("price").eq("event_id", id).gt("price", 0).order("price").limit(1),
     sb.from("media_assets").select("id,url,title,format,version,created_at").eq("event_id", id).order("created_at", { ascending: false }).limit(40),
   ]);
-  const { data: prev } = await sb.from("media_assets").select("id,url,title,format,version,created_at,events!inner(name,workspace_id)").neq("event_id", id).eq("events.workspace_id", ctx.workspace.id).order("created_at", { ascending: false }).limit(40);
+  const { data: prev } = await sb.from("media_assets").select("id,url,title,format,version,created_at,events!media_assets_event_id_fkey!inner(name,workspace_id)").neq("event_id", id).eq("events.workspace_id", ctx.workspace.id).order("created_at", { ascending: false }).limit(40);
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const d = e.starts_at ? new Date(e.starts_at) : null; const t = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ }) : "";
   const performers = (lineup ?? []).map(l => l.title).filter(x => !/gates|doors|close|open/i.test(x)).slice(0, 4);

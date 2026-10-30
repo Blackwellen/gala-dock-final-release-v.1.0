@@ -66,7 +66,9 @@ for (const size of mobile ? [[320,844],[390,844],[820,360],[1180,820]] : [[1440,
   for (const raw of routes) {
     const url = await resolveUrl(raw); if (url.includes("missing")) { report.push({ size: size.join("x"), route: raw, issues: ["unresolved demo record"] }); continue; }
     const beforeErrors = errors.length;
-    const res = await page.goto(BASE + url, { waitUntil: "networkidle", timeout: 120000 }).catch(e => ({ status: () => String(e).slice(0, 60) }));
+    const res = await page.goto(BASE + url, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(e => ({ status: () => String(e).slice(0, 60) }));
+    await page.locator('main h1,h1').first().waitFor({timeout:30000}).catch(()=>{});
+    await page.evaluate(()=>Promise.race([document.fonts.ready,new Promise(resolve=>setTimeout(resolve,2000))]));
     await page.waitForTimeout(300);
     const issues = await detect();
     if (res?.status?.() !== 200) issues.push(`HTTP ${res?.status?.()}`);

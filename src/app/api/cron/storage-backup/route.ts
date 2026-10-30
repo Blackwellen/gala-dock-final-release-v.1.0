@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { r2Configured, r2Put, r2Delete } from "@/lib/r2";
+import { withObservability } from "@/lib/observability/http";
 
 export const maxDuration = 60;
 const authorised = (h: string | null) => {
@@ -11,7 +12,7 @@ const authorised = (h: string | null) => {
 };
 
 /** Storage → R2 replication worker (release spec §92/§132). Every 15 minutes; a no-op once caught up. Time-boxed to ~45 s per run. */
-export async function POST(request: Request) {
+export const POST = withObservability("cron.storage_backup", async (request: Request) => {
   if (!authorised(request.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
   if (!r2Configured()) return NextResponse.json({ configured: false }, { headers: { "Cache-Control": "no-store" } });
   const admin = createAdminClient(), db = untyped(admin as never), deadline = Date.now() + 45_000;
@@ -33,5 +34,5 @@ export async function POST(request: Request) {
     try { await r2Delete(`storage/${o.bucket}/${o.name}`); await db.from("storage_backups").delete().eq("bucket", o.bucket).eq("name", o.name); expired++; } catch { /* retried next run */ }
   }
   return NextResponse.json({ configured: true, copied, failed, expired }, { headers: { "Cache-Control": "no-store" } });
-}
+}, { kind: "worker" });
 export const GET = POST;

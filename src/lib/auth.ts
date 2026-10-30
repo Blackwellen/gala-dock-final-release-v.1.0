@@ -1,7 +1,8 @@
 import "server-only";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
-import { safeNext } from "./redirects";
+import { RETURN_PATH_HEADER, safeNext } from "./redirects";
 import type { Role } from "./routes";
 
 export { safeNext };
@@ -15,7 +16,9 @@ export type WorkspaceAccess = {
 export async function requireUser(next?: string) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
-  const returnTo = next ? `?next=${encodeURIComponent(next)}` : "";
+  // W01/W10: return to the page actually requested (set by the proxy); layouts only know a section default like /discover.
+  const target = safeNext((await headers()).get(RETURN_PATH_HEADER), "") || next;
+  const returnTo = target ? `?next=${encodeURIComponent(target)}` : "";
   if (error || !data.user) redirect(`/login${returnTo}`);
   const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (assurance.error) redirect(`/login${returnTo}`);

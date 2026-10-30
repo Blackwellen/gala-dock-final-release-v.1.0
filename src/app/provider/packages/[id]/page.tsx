@@ -41,7 +41,7 @@ export default async function PackageProfile(props: PageProps<"/provider/package
   const basis = p.price_basis === "per_person" ? " pp" : p.price_basis === "hourly" ? "/hr" : "";
   const rowsInfo: [string, React.ReactNode][] = [["Package name", p.name], ["Linked " + (parent?.kind === "service" ? "service" : "venue"), <>{parent?.name ?? "—"}{linked.length ? ` – ${linked.map(s => s.name).join(", ")}` : ""}
     {parent && <Link className="pkp-view" href={`/provider/${parent.kind === "venue" ? "venues" : "services"}/${parent.id}`}>View {parent.kind}</Link>}</>],
-    ["Event type", d.event_type ?? "—"], ["Capacity range", p.max_guests ? `${p.min_guests ?? 1} – ${p.max_guests} guests` : "—"], ["Duration", p.duration_hours ? `${p.duration_hours} hours` : "—"],
+    ["Event type", d.event_type || "Any"], ["Capacity range", p.max_guests ? `${p.min_guests ?? 1} – ${p.max_guests} guests` : "—"], ["Duration", p.duration_hours ? `${p.duration_hours} hours` : "—"],
     ["Base price", Number(p.base_price) > 0 ? `From ${money(p.base_price)}${basis}` : "Quote only"], ["Price includes", (p.inclusions ?? []).join(", ") || "—"], ["Suitable for", d.suitable_for ?? "All ages"],
     ["Deposit", `${p.deposit_pct}% to secure`], ["Restrictions", [d.restrictions?.age, d.restrictions?.event_types].filter(Boolean).join(" · ") || "None"],
     ["Cancellation", d.cancellation?.length ? d.cancellation.map(x => `${x.window}: ${x.refund}%`).join(", ") : `${parent?.kind === "service" ? "Service" : "Venue"} policy (see terms)`]];
@@ -89,7 +89,7 @@ export default async function PackageProfile(props: PageProps<"/provider/package
             <span className="ws-btn outline block" aria-disabled="true">Get a Quote</span></div>
         </section>
         <section className="pkp-facts" aria-label="Package facts">
-          {([[Users, "Capacity range", p.max_guests ? `${p.min_guests ?? 1} – ${p.max_guests}` : "—", "guests"], [Clock3, "Duration", p.duration_hours ? `${p.duration_hours}` : "—", "hours"], [PartyPopper, "Event type", d.event_type ?? "—", ""],
+          {([[Users, "Capacity range", p.max_guests ? `${p.min_guests ?? 1} – ${p.max_guests}` : "—", "guests"], [Clock3, "Duration", p.duration_hours ? `${p.duration_hours}` : "—", "hours"], [PartyPopper, "Event type", d.event_type || "Any", ""],
             [CalendarCheck, "Booking mode", p.booking_mode === "instant" ? "Instant" : p.booking_mode === "enquiry" ? "Enquiry" : "Request", ""], [PiggyBank, "Deposit", `${p.deposit_pct}%`, "to secure"]] as const).map(([I, l, v, u]) =>
             <div key={l}><span className="ic"><I aria-hidden="true" /></span><p><small>{l}</small><b>{v} <em>{u}</em></b></p></div>)}</section>
         <div className="pkp-grid">
@@ -97,12 +97,12 @@ export default async function PackageProfile(props: PageProps<"/provider/package
             <dl>{rowsInfo.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl></section>
           <div className="svp-mid">
             <div className="svp-inc">
-              <section className="ws-panel"><h2><CircleCheck aria-hidden="true" className="g" />What’s included</h2><ul>{[...(d.items ?? []).map(i => `${i.name}${i.sub ? ` (${i.sub})` : ""}`), ...(d.features ?? [])].slice(0, 8).map(x => <li key={x}><CircleCheck aria-hidden="true" className="g" />{x}</li>)}</ul></section>
-              <section className="ws-panel"><h2><CircleX aria-hidden="true" className="r" />What’s not included</h2><ul>{(d.excluded?.length ? d.excluded : (p.add_ons ?? []).map(a => `${a.name} (available as add-on)`)).slice(0, 7).map(x => <li key={x}><CircleX aria-hidden="true" className="r" />{x}</li>)}
+              <section className="ws-panel"><h2><CircleCheck aria-hidden="true" className="g" />What’s included</h2><ul>{[...(d.items ?? []).map(i => `${i.name}${i.sub ? ` (${i.sub})` : ""}`), ...(d.features ?? [])].slice(0, 8).map((x, i) => <li key={`${x}-${i}`}><CircleCheck aria-hidden="true" className="g" />{x}</li>)}</ul></section>
+              <section className="ws-panel"><h2><CircleX aria-hidden="true" className="r" />What’s not included</h2><ul>{(d.excluded?.length ? d.excluded : (p.add_ons ?? []).map(a => `${a.name} (available as add-on)`)).slice(0, 7).map((x, i) => <li key={`${x}-${i}`}><CircleX aria-hidden="true" className="r" />{x}</li>)}
                 {!(d.excluded?.length || (p.add_ons ?? []).length) && <li className="pv-none">Nothing listed</li>}</ul></section>
             </div>
             <section className="ws-panel pkp-addons"><div className="ws-panel-head"><h2><Puzzle aria-hidden="true" />Add-ons</h2><Link className="ws-link" href={`/provider/packages/new?package=${p.id}&step=1`}>Manage add-ons <ArrowRight aria-hidden="true" /></Link></div>
-              {(p.add_ons ?? []).length ? <ul>{(p.add_ons ?? []).slice(0, 4).map((a, i) => <li key={a.name}>{/* eslint-disable-next-line @next/next/no-img-element */}
+              {(p.add_ons ?? []).length ? <ul>{(p.add_ons ?? []).slice(0, 4).map((a, i) => <li key={`${a.name}-${i}`}>{/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/assets/gd/${["s-gourmet", "ev-tastetango", "ev-neon", "v-harper"][i % 4]}.webp`} alt="" /><b>{a.name}</b><span>{money(a.price)}</span><small><CircleCheck aria-hidden="true" />{a.enabled === false ? "Hidden" : "Optional"}</small></li>)}</ul>
                 : <p className="pv-none">No add-ons yet.</p>}</section>
           </div>

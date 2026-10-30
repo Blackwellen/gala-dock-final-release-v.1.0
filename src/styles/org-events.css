@@ -6,7 +6,7 @@
 .k-tab[aria-current="page"] .ev-count { background: var(--k-blue-soft); color: var(--k-blue); }
 .ev-tabs-row .k-seg { margin-bottom: 6px; }
 .ev-filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.ev-search { width: 236px; } .ev-search .k-input { height: 38px; }
+.ev-search { width: 236px; } .ev-search .k-input { height: var(--k-input-h); }
 .ev-filter { height: 38px; width: 112px; padding-left: 12px; font-size: 12px; text-overflow: ellipsis; }
 .ev-more { margin-left: auto; height: 38px; }
 .ev-kpis { gap: 10px; }
@@ -62,7 +62,7 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 .mc-item b { font-size: 10.5px; font-weight: 650; color: var(--k-ink); }
 .mc-item small { font-size: 10px; color: var(--k-muted); }
 .mc-meta { display: block; margin-top: 4px; }
-.mc-meta .k-chip { height: 17px; font-size: 9.5px; padding: 0 6px; }
+.mc-meta .k-chip { height: var(--k-chip-dense-h); font-size: var(--k-chip-dense-fs); padding: 0 6px; }
 .mc-item.tone-purple { background: #f5f1ff; border-color: #8b5cf6; } .mc-item.tone-pink { background: #fdf0f6; border-color: #ec4899; }
 .mc-item.tone-red { background: #fff1f2; border-color: #f43f5e; } .mc-item.tone-green { background: #effaf4; border-color: #10b981; }
 .mc-item.tone-amber { background: #fff7ea; border-color: #f59e0b; } .mc-item.tone-cyan { background: #ecf9fd; border-color: #06b6d4; }
@@ -87,3 +87,9 @@ a.k-icon-btn[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 .mc-meta .k-row { flex-wrap: nowrap; }
 .mc-meta .k-xs { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-meta .k-row > :first-child { flex-shrink: 0; }
+@media (max-width: 1279px) {
+ .ev-tabs-row { flex-wrap:wrap;gap:8px;align-items:flex-start; }
+ .ev-tabs-row .k-tabs { flex:1 1 480px;min-width:0;max-width:100%; }
+ .ev-tabs-row .k-seg { flex:0 0 auto;margin-bottom:8px; }
+ .ev-tabs-row .k-seg > a { min-height:44px;min-width:44px; }
+}

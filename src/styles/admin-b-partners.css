@@ -37,7 +37,7 @@
 .ws-app .adp-visit svg{width:12px;height:12px}
 .adp-key{padding:10px 12px}
 .adp-key .adb-sec-h{margin-bottom:4px}
-.adp-key h2{font-size:13.5px}
+.adp-key h2{font-size: var(--k-title-sub)}
 .adp-kv{gap:2px}
 .adp-kv>div{grid-template-columns:118px minmax(0,1fr);font-size:11.5px}
 .adp-kv dd{color:#1d2068}
@@ -47,7 +47,7 @@
 .ws-app .adp-who>svg{width:14px;height:14px;color:#1a1af2}
 .ws-app svg.adp-flag{width:18px;height:12px}
 .adp-perf{padding:10px 12px}
-.adp-perf h2{font-size:13.5px}
+.adp-perf h2{font-size: var(--k-title-sub)}
 .adp-perf h2 small{font-size:11px;font-weight:400;color:#3f4596}
 .adp-perf-g{display:grid;grid-template-columns:repeat(4,1fr)}
 .adp-perf-g>div{display:grid;line-height:1.25;padding:0 10px;border-left:1px solid #eef3fb}
@@ -56,7 +56,7 @@
 .adp-perf-g b{font-size:15px;font-weight:750;color:#02032e}
 .adp-perf-g .adb-delta{font-size:11px;margin:0}
 .adp-comm{padding:10px 12px}
-.adp-comm h2{font-size:13.5px}
+.adp-comm h2{font-size: var(--k-title-sub)}
 .adp-comm dl{display:grid;gap:4px;margin:0}
 .adp-comm dl>div{display:grid;grid-template-columns:150px minmax(0,1fr) auto;font-size:11.5px;align-items:center}
 .adp-comm dl>div.gap{margin-top:6px}
@@ -66,7 +66,7 @@
 .ws-app .adp-comm dd svg{width:12px;height:12px}
 .adp-comm em{font-style:normal;font-size:10.5px;color:#3f4596}
 .adp-qa{padding:10px 12px}
-.adp-qa h2{font-size:13.5px;margin-bottom:8px}
+.adp-qa h2{font-size: var(--k-title-sub);margin-bottom:8px}
 .adp-qa-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .adp-qa-g .adb-btn,.adp-qa-g .ws-btn{height:32px;font-size:11px;padding:0 6px;width:100%;color:#1a1af2;border-color:#d6defa}
 .adp-qa-g .adb-pop>summary{width:100%}

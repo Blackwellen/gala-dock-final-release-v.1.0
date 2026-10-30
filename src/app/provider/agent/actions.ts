@@ -5,6 +5,9 @@ import { randomUUID } from "node:crypto";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { routineNextRun } from "@/lib/agent/schedule-db";
+import { FAR_FUTURE_ISO } from "@/lib/agent/schedule";
 
 /** Approve a proposal, then perform it with the approver's own permissions (RLS + role checks in each RPC). Reject leaves everything unchanged. */
 export async function decideApproval(id: string, approve: boolean): Promise<ActionResult> {
@@ -38,6 +41,11 @@ export async function toggleRoutine(id: string, enabled: boolean): Promise<Actio
   const { db } = await getProvider();
   const { error } = await db.rpc("provider_toggle_routine", { p_routine: id, p_enabled: enabled });
   if (error) return { ok: false, error: friendly(error) };
+  if (enabled) { // the RPC only defaults a missing time to +1h: set the real next due time (the RPC already checked the role)
+    const admin = createAdminClient();
+    const { data: r } = await admin.from("agent_routines").select("id,workspace_id,schedule,trigger,last_run_at").eq("id", id).maybeSingle();
+    if (r) { const next = await routineNextRun(admin as never, r as never, new Date()); await admin.from("agent_routines").update({ next_run_at: (next ?? new Date(FAR_FUTURE_ISO)).toISOString() }).eq("id", id); }
+  }
   revalidatePath("/provider/agent");
   return { ok: true, message: enabled ? "Routine on" : "Routine paused" };
 }

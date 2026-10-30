@@ -17,8 +17,10 @@ import { setPackageStatus } from "../../listings/actions";
 import { saveVenueInfo, saveCommercial } from "./actions";
 import { ShareVenue, LiveToggle, OverviewMap } from "./interactive";
 import { SpacesEditor } from "../_components/spaces-editor";
+import type { StructureMeta } from "./actions";
 import type { MapEl } from "../_components/venue-map";
 import { VenueCommercialEngine } from "@/components/venue/commercial-engine";
+import { PublicAvailabilityToggle } from "@/components/provider/public-availability-toggle";
 
 export const metadata: Metadata = { title: "Venue" };
 type Info = { event_types?: string[]; accessibility?: string; parking?: string; licences?: string[]; curfew?: string; staffing?: string };
@@ -40,8 +42,9 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
   if (!v) notFound();
   const now = requestTime();
   const spaces = allSpaces.filter(s => s.venue_id === v.id).sort((a, b) => b.created_at.localeCompare(a.created_at));
-  const [structure, packages, spaceDetail] = await Promise.all([
+  const [structure, latestStructure, packages, spaceDetail] = await Promise.all([
     one<{ version: number; elements: MapEl[] }>(ctx.db.from("venue_structures").select("version,elements").eq("venue_id", v.id).eq("status", "published").maybeSingle()),
+    one<{ version: number; status: string; elements: MapEl[]; calibration: StructureMeta["calibration"] | null; capacity_max: number | null; rule_pack: string | null }>(ctx.db.from("venue_structures").select("version,status,elements,calibration,capacity_max,rule_pack").eq("venue_id", v.id).order("version", { ascending: false }).limit(1).maybeSingle()),
     rows<{ id: string; name: string; status: string; description: string; base_price: number; price_basis: string; min_guests: number | null; max_guests: number | null; image: string; inclusions: string[]; space_ids: string[] }>(
       ctx.db.from("packages").select("id,name,status,description,base_price,price_basis,min_guests,max_guests,image,inclusions,space_ids").eq("listing_id", v.id).order("created_at", { ascending: false })),
     tab === "spaces" ? rows<{ id: string; area_sqm: number | null; layouts: Record<string, number>; amenities: string[]; turnaround_minutes: number; min_hours: number; details: Record<string, unknown> }>(
@@ -111,7 +114,8 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
     </header>
     <Tabs base={`/provider/venues/${v.id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "spaces", label: "Spaces & Map" }, { key: "packages", label: "Packages" }, { key: "operations", label: "Operations" }, { key: "commercial", label: "Commercial" }]} />
 
-    {tab === "spaces" ? <SpacesEditor venueId={v.id} version={structure?.version ?? 0} elements={structure?.elements ?? []} geo={(v.details as { geo?: { lat: number; lng: number } }).geo ?? (v.lat !== null && v.lng !== null ? { lat: Number(v.lat), lng: Number(v.lng) } : null)}
+    {tab === "spaces" ? <SpacesEditor venueId={v.id} version={structure?.version ?? 0} elements={latestStructure?.elements ?? structure?.elements ?? []} latestVersion={latestStructure?.version ?? 0}
+      meta={{ calibration: latestStructure?.calibration ?? undefined, capacity_max: latestStructure?.capacity_max ?? null, rule_pack: latestStructure?.rule_pack ?? "uk_default" }} geo={(v.details as { geo?: { lat: number; lng: number } }).geo ?? (v.lat !== null && v.lng !== null ? { lat: Number(v.lat), lng: Number(v.lng) } : null)}
       spaces={spaces.map(s => { const x = spaceDetail.find(r => r.id === s.id); return { id: s.id, name: s.name, status: s.status, indoor: s.indoor, image: s.image, capacity_standing: s.capacity_standing, capacity_seated: s.capacity_seated,
         rate_hourly: s.rate_hourly, area_sqm: x?.area_sqm ?? null, layouts: x?.layouts ?? {}, amenities: x?.amenities ?? [], turnaround_minutes: x?.turnaround_minutes ?? 60, min_hours: x?.min_hours ?? 2, description: String(x?.details?.description ?? "") }; })} />
     : <div className="pv-body">
@@ -173,7 +177,8 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
               p.status === "published" ? { kind: "action", label: "Pause package", run: setPackageStatus.bind(null, p.id, "paused") } : { kind: "action", label: "Publish package", run: setPackageStatus.bind(null, p.id, "published") }]} /></li>)}</ul>
             : <Empty icon={PackageIcon} title="No packages yet" text="Bundle a space with catering, AV or staffing so clients can book in one step." />}</section>}
 
-        {tab === "operations" && <section className="ws-panel pv-form"><div className="ws-panel-head"><h2>Key information &amp; contact</h2></div>
+        {tab === "operations" && <PublicAvailabilityToggle listingId={v.id} kind="venue" on={(v.details as { public_availability?: unknown } | null)?.public_availability === true} canManage={ctx.can.manage} publicHref={v.slug && live ? `/venues/${v.slug}` : null} />}
+        {tab === "operations" && <section className="ws-panel pv-form"><div className="ws-panel-head"><h2>Key information &amp; contact</h2><Link className="ws-link" href={`/provider/venues/${v.id}/logistics`}>Loading bays &amp; delivery slots <ArrowRight aria-hidden="true" /></Link></div>
           <ActionForm action={saveVenueInfo.bind(null, v.id)} className="pv-grid">
             <label>Venue type<input name="type" defaultValue={d.type ?? ""} maxLength={60} /></label>
             <label>Address<input name="location" defaultValue={v.location} maxLength={160} required /></label>

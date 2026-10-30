@@ -1,9 +1,9 @@
 /* ORG-014 Promotion & Distribution + W05 promotion wizard. */
 .pr, .pw2 { display: flex; flex-direction: column; gap: 12px; }
-.pr-head { display: flex; gap: 16px; align-items: flex-start; } .pr-head h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--k-ink); } .pr-head .k-btn { height: 40px; gap: 8px; }
+.pr-head { display: flex; gap: 16px; align-items: flex-start; } .pr-head h1 { margin: 0; font-size: var(--k-title-page); font-weight: 700; color: var(--k-ink); } .pr-head .k-btn { height: var(--k-btn-lg-h); gap: 8px; }
 .pr-meta { display: flex; gap: 16px; margin: 6px 0 0; font-size: 13px; color: var(--k-ink-2); } .pr-meta span { display: inline-flex; gap: 6px; align-items: center; }
 .pr-r1 { display: grid; grid-template-columns: 1.45fr 1fr 1.15fr; gap: 14px; } .pr-r2, .pr-r3 { display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 14px; align-items: start; }
-.pr-c { padding: 14px !important; min-width: 0; } .pr h2, .pw2 h2 { margin: 0; font-size: 16px; font-weight: 650; color: var(--k-ink); display: flex; gap: 6px; align-items: center; } .pr-sub { margin: 3px 0 10px; font-size: 12px; color: var(--k-muted); }
+.pr-c { padding: 14px !important; min-width: 0; } .pr h2, .pw2 h2 { margin: 0; font-size: var(--k-title-card); font-weight: 650; color: var(--k-ink); display: flex; gap: 6px; align-items: center; } .pr-sub { margin: 3px 0 10px; font-size: 12px; color: var(--k-muted); }
 .pr-hero { position: relative; border-radius: 12px; overflow: hidden; min-height: 216px; color: #fff; display: flex; align-items: flex-end; padding: 20px 22px; } .pr-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; } .pr-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #0b1437e6 0%, #0b143766 60%, transparent); }
 .pr-hero > div { position: relative; z-index: 1; max-width: 340px; } .pr-hero h2 { color: #fff !important; font-size: 24px; line-height: 1.2; margin: 10px 0 8px; } .pr-hero p { margin: 0 0 14px; font-size: 13px; color: #fff; } .pr-chip { height: 22px; padding: 0 10px; border-radius: 999px; background: #fff; color: var(--k-ink); font-size: 11.5px; display: inline-flex; align-items: center; } .pr-w { background: #fff !important; color: var(--k-blue) !important; border: 0 !important; }
 .pr-prog { display: flex; gap: 10px; align-items: center; margin: 12px 0; font-size: 12px; color: var(--k-muted); }
@@ -37,12 +37,14 @@
 @media (max-width: 1200px) { .pw2-grid, .pw2-r, .pw2-media, .pw2-copy { grid-template-columns: minmax(0, 1fr); } .pw2-ev { position: static; margin-top: 10px; } .pw2-kpis, .pw2-prev { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 800px) { .pr-head { flex-direction: column; } .pr-r1, .pr-r2, .pr-r3 { grid-template-columns: minmax(0, 1fr); } .pr-c, .pw2-c { overflow-x: auto; } .pw2-goals, .pw2-surf { grid-template-columns: 1fr 1fr; } }
 /* ORG-012 Public page editor */
-.pe2 { display: flex; flex-direction: column; gap: 12px; } .pe2-head { display: flex; gap: 16px; align-items: flex-start; } .pe2-head h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--k-ink); } .pe2-head .k-btn { height: 40px; gap: 8px; }
-.pe2 h2 { margin: 0; font-size: 16px; font-weight: 650; color: var(--k-ink); }
+.pe2 { display: flex; flex-direction: column; gap: 12px; } .pe2-head { display: flex; gap: 16px; align-items: flex-start; } .pe2-head h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--k-ink); } .pe2-head .k-btn { height: var(--k-btn-lg-h); gap: 8px; font-size: var(--k-btn-lg-fs); }
+.pe2 h2 { margin: 0; font-size: var(--k-title-card); font-weight: 650; color: var(--k-ink); }
 .pe2-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr) 310px; gap: 14px; align-items: start; } .pe2-grid.full { grid-template-columns: minmax(0, 1fr); }
 .pe2-blocks, .pe2-prev, .pe2-panel { padding: 14px !important; min-width: 0; }
 .pe2-blocks ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; } .pe2-blocks li { display: flex; gap: 8px; align-items: center; padding: 8px; border: 1px solid #edf1f8; border-radius: 8px; background: #fff; } .pe2-blocks li.on { border-color: var(--k-blue); background: #f8fbff; } .pe2-blocks li.drag { opacity: .5; } .pe2-blocks li > svg { color: #9aa3b8; }
 .pe2-grip { color: #9aa3b8; cursor: grab; display: grid; } .pe2-bi { width: 30px; height: 30px; border-radius: 8px; background: #eef2fc; color: #2f4fa8; display: grid; place-items: center; flex-shrink: 0; } .pe2-bt { flex: 1; text-align: left; min-width: 0; } .pe2-bt b { display: block; font-size: 12.5px; color: var(--k-ink); } .pe2-bt small { display: block; font-size: 11px; color: var(--k-muted); }
+/* W03: page-block rows stay one line each (title + caption), as in "Neon Nights Festival Page Editor". */
+.pe2-blocks ol { gap: 5px; } .pe2-blocks li { padding: 6px 8px; } .pe2-bt b, .pe2-bt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pe2-dev { display: inline-flex; border: 1px solid var(--k-line); border-radius: 8px; overflow: hidden; } .pe2-dev button { width: 32px; height: 30px; display: grid; place-items: center; color: var(--k-ink-2); }.pe2-dev button[aria-pressed="true"], .pe2-dev button[aria-current="page"] { background: var(--k-blue); color: #fff; }
 .pe2-frame { margin-top: 12px; border: 1px solid #edf1f8; border-radius: 10px; overflow: hidden; background: #f4f7fd; height: 760px; } .pe2-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; } .pe2-frame.mobile { width: 390px; margin-left: auto; margin-right: auto; }
 .pe2-empty { margin-top: 12px; padding: 40px; border: 1.5px dashed #c9d8f6; border-radius: 10px; text-align: center; font-size: 13px; color: var(--k-muted); }
@@ -54,5 +56,23 @@
 .pe-previewbar { margin-bottom: 10px; }
 @media (max-width: 1400px) { .pe2-grid { grid-template-columns: 280px minmax(0, 1fr); } .pe2-panel { grid-column: 1 / -1; } }
 @media (max-width: 900px) { .pe2-grid { grid-template-columns: minmax(0, 1fr); } .pe2-head { flex-direction: column; } .pe2-frame { height: 520px; } }
-/* ORG-014 reference density: the dashboard rows are drawn ~14% tighter than the shared card scale. */ @media (min-width: 1400px) { .pr-r1, .pr-r2, .pr-r3 { zoom: .86; } }
-.pr-head h1 { font-size: 26px; } .pr-meta { margin-top: 3px; font-size: 12px; } .pr-head .k-btn { height: 36px; font-size: 12.5px; }
+/* ORG-014 reference density: the dashboard rows are drawn ~14% tighter than the shared card scale. Real sizes (no CSS zoom —
+   one display scale only, density.css); values are the former zoom .86 applied to the rules above. */
+@media (min-width: 1400px) {
+  .pr-r1, .pr-r2, .pr-r3 { gap: 12px; } .pr-c { padding: 12px !important; } :is(.pr-r1, .pr-r2, .pr-r3) h2:not(.pr-hero h2) { font-size: var(--k-title-card); } .pr-sub { margin: 3px 0 9px; font-size: 11px; }
+  /* Buttons keep the shared k-btn sizes (34 / 28) for consistency with the rest of the workspace. */
+  :is(.pr-r1, .pr-r2, .pr-r3) .k-table { font-size: 11px; } :is(.pr-r1, .pr-r2, .pr-r3) .k-table :is(th, td) { padding-top: 6px; padding-bottom: 6px; }
+  .pr-hero { min-height: 186px; padding: 17px 19px; border-radius: 10px; } .pr-hero > div { max-width: 292px; } .pr-hero h2 { font-size: 20.5px; margin: 8px 0 7px; } .pr-hero p { font-size: 11.5px; margin-bottom: 12px; }
+  .pr-chip { height: 19px; padding: 0 9px; font-size: 10px; }
+  .pr-prog { gap: 9px; margin: 10px 0; font-size: 10.5px; } .pr-chk { gap: 7px; } .pr-chk li { gap: 9px; font-size: 11px; } .pr-chk svg { width: 14px; height: 14px; }
+  .pr-pace { gap: 12px; margin: 10px 0; } .pr-pace b { font-size: 19px; } .pr-pace small { font-size: 11px; margin-bottom: 7px; }
+  .pr-mom { gap: 10px; padding: 10px; border-radius: 9px; } .pr-mom b { font-size: 11.5px; } .pr-mom strong { font-size: 11px; } .pr-mom small { font-size: 10px; }
+  .pr-dl { gap: 5px; } .pr-dl li { gap: 9px; padding: 5px 3px; } .pr-dl img { width: 34px; height: 28px; } .pr-dl b { font-size: 11px; } .pr-dl small { font-size: 10px; }
+  .pr-cb { width: 15px; height: 15px; } .pr-ci { width: 28px; height: 28px; border-radius: 7px; } .pr-pav { width: 24px; height: 24px; font-size: 10px; }
+  .pr-boost { gap: 7px; } .pr-boost li { gap: 9px; } .pr-boost img { width: 38px; height: 28px; } .pr-boost b { font-size: 11px; } .pr-boost small { font-size: 10px; }
+  .pr-assets { grid-auto-rows: 69px; gap: 5px; } .pr-add { min-height: 69px; font-size: 10.5px; }
+}
+.pr-head h1 { font-size: var(--k-title-page); } .pr-meta { margin-top: 3px; font-size: 12px; } .pr-head .k-btn { height: var(--k-btn-lg-h); font-size: var(--k-btn-lg-fs); }
+/* W12 wizard sweep (≤800): goal and surface tiles drop to two bare `1fr` tracks, so a long label set the track to its
+   min-content and pushed the pair past the card at 360 — let the tracks shrink and the labels wrap. */
+@media (max-width: 800px) { .pw2-goals, .pw2-surf { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pw2-goals b, .pw2-surf b, .pw2-goals small, .pw2-surf small { overflow-wrap: anywhere; } }

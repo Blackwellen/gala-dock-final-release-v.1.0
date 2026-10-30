@@ -119,7 +119,7 @@ export default async function CalendarPage(props: PageProps<"/provider/calendar"
           {(view === "week" || view === "day") && <div className="pcal-grid" style={{ ["--cols" as string]: days.length }}>
             <div className="pcal-corner" />
             {days.map(t => <div key={t} className={`pcal-dayhead ${t === today ? "today" : ""}`}><b>{london(t + 12 * 36e5, { weekday: view === "day" ? "long" : "short" })}</b><small>{london(t + 12 * 36e5, { day: "numeric", month: "short" })}</small></div>)}
-            {venueRows.length > 0 && <div className="pcal-group"><ChevronDown aria-hidden="true" />Spaces &amp; Venues</div>}
+            {venueRows.length > 0 && <div className="pcal-group"><ChevronDown aria-hidden="true" />{venueRows.some(r => r.key.startsWith("space:")) ? "Spaces & Venues" : "Services" /* services-only workspace */}</div>}
             {venueRows.map(r => <RowCells key={r.key} row={r} days={days} cell={cell} />)}
             {teamRows.length > 0 && <div className="pcal-group"><ChevronDown aria-hidden="true" />Team &amp; Resources</div>}
             {teamRows.map(r => <RowCells key={r.key} row={r} days={days} cell={cell} />)}

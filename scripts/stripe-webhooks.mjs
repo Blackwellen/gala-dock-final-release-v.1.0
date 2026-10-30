@@ -2,8 +2,8 @@
 // their IDs/secrets in .env (never printed). Usage: node --env-file=.env scripts/stripe-webhooks.mjs
 import fs from "node:fs";
 const URL_ = "https://www.galadock.com/api/stripe/webhook";
-const PLATFORM = ["checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed", "checkout.session.expired", "payment_intent.succeeded", "payment_intent.payment_failed", "charge.refunded", "charge.dispute.created", "charge.dispute.updated", "charge.dispute.closed", "charge.dispute.funds_withdrawn", "charge.dispute.funds_reinstated", "transfer.created", "transfer.reversed"];
-const CONNECT = ["account.updated", "account.application.deauthorized", "capability.updated", "payout.paid", "payout.failed"];
+// Event lists: scripts/stripe/webhook-events.mjs (shared with scripts/stripe/live-preflight.mjs).
+import { PLATFORM, CONNECT } from "./stripe/webhook-events.mjs";
 const modes = [["", process.env.STRIPE_SECRET_KEY], ["_SANDBOX", process.env.STRIPE_SECRET_KEY_SANDBOX]];
 const env = {};
 for (const [suffix, key] of modes) {

@@ -27,13 +27,17 @@ test.describe("agent planning tools", () => {
       { event_id: ev, name: "VIP", price: 150, quantity: 50, sold: 10, status: "on_sale" },
     ]), db.from("guests").insert([
       ...["Ann", "Ben", "Cat", "Dan", "Eve", "Fay"].map(n => ({ event_id: ev, name: `${n} Smith`, status: "confirmed", group_name: "Smith family", plus_one: false, dietary: "" })),
-      ...["Gus", "Hal", "Ivy"].map(n => ({ event_id: ev, name: `${n} Jones`, status: "confirmed", group_name: "Jones", plus_one: n === "Gus", dietary: n === "Hal" ? "Vegan" : "" })),
+      ...["Gus", "Hal", "Ivy"].map(n => ({ event_id: ev, name: `${n} Jones`, status: "confirmed", group_name: "Jones", plus_one: n === "Gus", dietary: "" })),
       { event_id: ev, name: "Solo Guest", status: "pending", group_name: "", plus_one: false, dietary: "" },
       { event_id: ev, name: "Declined Guest", status: "declined", group_name: "", plus_one: false, dietary: "" },
     ])]);
     for (const s of seeds) expect(s.error).toBeNull();
+    // Dietary needs live in guest_care (Q18; legacy guests.dietary is scrubbed by 4021) — owners/managers only, never in prompts.
+    const hal = ((await db.from("guests").select("id").eq("event_id", ev).eq("name", "Hal Jones").single()).data as { id: string }).id;
+    expect((await db.from("guest_care").upsert({ guest_id: hal, event_id: ev, dietary: "Vegan" })).error).toBeNull();
   });
   test.afterAll(async () => {
+    await db.from("guest_care").delete().eq("event_id", ev);
     await db.from("guests").delete().eq("event_id", ev);
     await db.from("ticket_tiers").delete().eq("event_id", ev);
     await db.from("build_items").delete().eq("event_id", ev);
@@ -80,7 +84,8 @@ test.describe("agent planning tools", () => {
     expect(smith.guests.filter(g => g.name.endsWith("Smith"))).toHaveLength(6);
     const jones = o.tables.find(t => t.groups.includes("Jones"))!;
     expect(jones.guests.filter(g => g.name.endsWith("Jones"))).toHaveLength(3);
-    expect(jones.dietary).toContain("Vegan");
+    expect(jones.dietary).toContain("Vegan");   // read from guest_care (4032)
+    expect(((await db.from("guests").select("dietary").eq("event_id", ev)).data ?? []).every(g => !g.dietary)).toBe(true);
     expect(o.tables.flatMap(t => t.guests).some(g => g.name === "Declined Guest")).toBe(false);
     const confirmedOnly = (await run(a.id, wsA, "seating.suggest", { event_id: ev, table_size: 8, include_pending: false })).data as { seats_needed: number };
     expect(confirmedOnly.seats_needed).toBe(10);

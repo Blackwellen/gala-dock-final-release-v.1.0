@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Heart, Share2, ShoppingCart, ShieldCheck, Smartphone, CheckCircle2, Minus, Plus, BellRing } from "lucide-react";
 import { useKitToast } from "@/components/kit/client";
 import { joinWaitlist } from "@/lib/tickets/actions";
+import { CLOSED_LABEL, isSellable } from "@/lib/public/ticket-cta";
 
 export function RecordView({ itemKey, signedIn }: { itemKey: string; signedIn: boolean }) {
   useEffect(() => { if (signedIn) void fetch("/api/recent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key: itemKey }) }).catch(() => null); }, [itemKey, signedIn]);
@@ -26,10 +27,11 @@ export function EventActions({ eventId, name, saved: initial, signedIn }: { even
 
 type Tier = { id: string; name: string; sub: string; price: number; left: number; qty: number; status: string; badge: string | null };
 /** Choose a ticket type and quantity, then continue to checkout (/checkout/[event]). */
-export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false, launch = null }: { slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean; launch?: string | null }) {
+export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false, launch = null, sellerReady = true }: { slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean; launch?: string | null; sellerReady?: boolean }) {
   // Checkout only reserves in these launch states (§50); otherwise the CTA explains why tickets aren't available.
-  const sellable = !launch || ["presale", "on_sale", "final_release", "low_availability"].includes(launch);
-  const closed: Record<string, string> = { draft: "Not on sale", coming_soon: "Tickets on sale soon", countdown: "Tickets on sale soon", sold_out: "Sold out", waitlist: "Sold out — join the waiting list", postponed: "Event postponed", cancelled: "Event cancelled", ended: "This event has ended" };
+  // Shared with the hero CTA (src/lib/public/ticket-cta.ts) so the two never disagree.
+  const sellable = isSellable(launch);
+  const closed = CLOSED_LABEL;
   const { run, pending } = useAction(); const [joined, setJoined] = useState<string[]>([]);
   const soldOut = (x: Tier) => x.status === "sold_out" || (x.status === "on_sale" && x.left === 0);
   const join = async (tierId: string) => { if (!eventId) return; const r = await run(() => joinWaitlist(eventId, tierId, 1), { refresh: false }); if (r.ok) setJoined(j => [...j, tierId]); };
@@ -47,7 +49,13 @@ export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false,
     {waitlist && eventId && tiers.some(soldOut) && <div className="pe-wait">{tiers.filter(soldOut).map(x => joined.includes(x.id) ? <span key={x.id} className="pe-wait-ok"><CheckCircle2 size={14} />You&apos;re on the {x.name} waiting list — we&apos;ll email you if tickets free up.</span>
       : signedIn ? <button key={x.id} className="k-btn outline sm" disabled={pending} onClick={() => void join(x.id)}><BellRing size={14} />Join waiting list · {x.name}</button>
       : <Link key={x.id} className="k-btn outline sm" href={`/login?next=${encodeURIComponent(`/events/${slug}`)}`}><BellRing size={14} />Sign in to join the {x.name} waiting list</Link>)}</div>}
-    {!sellable ? <button className="k-btn primary pe-buy" disabled>{closed[launch!] ?? "Not on sale"}</button> : t && buyable.length > 0 ? <Link className="k-btn primary pe-buy" href={signedIn ? href : `/login?next=${encodeURIComponent(href)}`}><ShoppingCart size={18} />Buy Tickets · £{(t.price * n).toLocaleString("en-GB")}</Link> : <button className="k-btn primary pe-buy" disabled>Not on sale</button>}
+    {/* Seller readiness (Q07, event_payment_readiness): checkout refuses paid orders until the organiser's Stripe account can take
+        payments, so the card never offers Buy then — it offers the waitlist (when the event has one) or says sales open soon. */}
+    {sellable && !sellerReady ? (waitlist && eventId && t ? (joined.includes(t.id) ? <p className="pe-wait-ok" role="status"><CheckCircle2 size={14} />You&apos;re on the waiting list — we&apos;ll email you when tickets go on sale.</p>
+        : signedIn ? <button className="k-btn primary pe-buy" disabled={pending} onClick={() => void join(t.id)}><BellRing size={18} />Join the waitlist</button>
+        : <Link className="k-btn primary pe-buy" href={`/login?next=${encodeURIComponent(`/events/${slug}`)}`}><BellRing size={18} />Join the waitlist</Link>)
+      : <button className="k-btn primary pe-buy" disabled>Tickets on sale soon</button>)
+    : !sellable ? <button className="k-btn primary pe-buy" disabled>{closed[launch!] ?? "Not on sale"}</button> : t && buyable.length > 0 ? <Link className="k-btn primary pe-buy" href={signedIn ? href : `/login?next=${encodeURIComponent(href)}`}><ShoppingCart size={18} />Buy Tickets · £{(t.price * n).toLocaleString("en-GB")}</Link> : <button className="k-btn primary pe-buy" disabled>Not on sale</button>}
     <div className="pe-trust"><span><ShieldCheck size={14} />Secure checkout</span><span><Smartphone size={14} />Mobile tickets</span><span><CheckCircle2 size={14} />Instant confirmation</span></div>
   </>;
 }

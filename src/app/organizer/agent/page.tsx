@@ -6,6 +6,8 @@ import { AgentComposer, ApprovalButtons, RoutineToggle, NewRoutineButton, NewRun
 import { relative } from "@/lib/format";
 import { TeamConflicts } from "@/components/ops/readiness-panel";
 import { requestTime } from "@/lib/workspace/format";
+import { SKILL } from "@/lib/agent/skills";
+import { TOOL } from "@/lib/agent/registry";
 
 export const metadata = { title: "Gala Agent" };
 const ST: Record<string, [string, string]> = { completed: ["Completed", "green"], running: ["In progress", "blue"], planning: ["In progress", "blue"], waiting_approval: ["Waiting", "amber"], waiting_external: ["Waiting", "amber"], scheduled: ["Scheduled", "blue"], queued: ["Queued", "gray"], paused: ["Paused", "gray"], failed: ["Failed", "red"], cancelled: ["Cancelled", "gray"] };
@@ -26,6 +28,12 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
   const history = R.filter(r => ["completed", "failed", "cancelled"].includes(r.status));
   const pending = (approvals ?? []).filter(a => a.status === "pending");
   const { data: creditData } = await sb.rpc("ai_credit_status" as never, { p_workspace: ws } as never);
+  // Skill picker (Q42): organiser skills this workspace can use now (plan-gated in the database), with their mission steps.
+  const { data: skillRows } = await sb.rpc("agent_available_skills" as never, { p_workspace: ws } as never);
+  const skills = ((skillRows ?? []) as unknown as { id: string; title: string; description: string; available: boolean; locked_reason: string | null }[])
+    .filter(k => SKILL.get(k.id)?.surface === "organizer")
+    .map(k => ({ id: k.id, title: k.title, description: k.description, available: k.available, locked: k.locked_reason === "plan" ? "Needs Pro (Gala Agent actions)" : k.available ? null : "Not available",
+      steps: (SKILL.get(k.id)?.mission ?? []).filter(t => t !== "mission.wait_for").map(t => TOOL.get(t)?.title ?? t) }));
   const credits = creditData as unknown as { available: number; pct: number } | null;
   const creditPct = credits ? Math.min(100, Math.max(0, Number(credits.pct) || 0)) : 0;
   const nextEvent = (events ?? []).find(e => e.starts_at && Date.parse(e.starts_at) > now);
@@ -47,7 +55,7 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
       <div className="ag-tools"><div className="k-row" style={{ gap: 10 }}><Link className="k-btn outline" href="/organizer/settings?tab=agent"><Settings size={16} />Settings</Link><NewRunSplit events={(events ?? []).map(e => ({ id: e.id, name: e.name }))} /></div>
         <div className="k-card ag-usage"><Sparkles size={20} className="k-blue" /><span>AI credits</span><span className="k-grow"><b>{credits ? `${Number(credits.available).toLocaleString("en-GB", { maximumFractionDigits: 1 })} available` : "Usage unavailable"}</b>{credits && <span className="ag-bar" role="meter" aria-label="Monthly credit allowance used" aria-valuenow={creditPct} aria-valuemin={0} aria-valuemax={100}><i className="blue" style={{ width: `${creditPct}%` }} /></span>}</span>{credits && <em>{Math.round(creditPct)}%</em>}<Link className="k-btn outline sm" href="/organizer/settings?tab=agent">View budget</Link></div></div></div>
     <LinkTabs current={tab} tabs={[["work", "Work"], ["approvals", `Approvals${pending.length ? ` (${pending.length})` : ""}`], ["routines", "Routines"], ["history", "History"]].map(([k, l]) => ({ key: k, label: l, href: href({ tab: k === "work" ? undefined : k, status: undefined }) }))} />
-    {tab === "work" && <div className="ag-r1"><section className="k-card ag-c"><h2>Tell Gala Agent what you want to achieve</h2><AgentComposer events={(events ?? []).map(e => ({ id: e.id, name: e.name }))} preset={sp.goal ?? ""} /></section>
+    {tab === "work" && <div className="ag-r1"><section className="k-card ag-c"><h2>Tell Gala Agent what you want to achieve</h2><AgentComposer events={(events ?? []).map(e => ({ id: e.id, name: e.name }))} preset={sp.goal ?? ""} skills={skills} presetSkill={sp.skill ?? ""} presetEvent={sp.event ?? ""} /></section>
       <section className="k-card ag-c"><div className="k-between"><h2>Suggested actions</h2></div><ul className="ag-sug">{suggestions.map(([I, t, c]) => <li key={t}><Link href={href({ goal: t })}><span className={`ag-si ${c}`}><I size={16} /></span>{t}</Link></li>)}</ul></section></div>}
     <div className={tab === "work" ? "ag-r2" : "ag-solo"}>
       {(tab === "work" || tab === "history") && <section className="k-card ag-c"><div className="k-between"><h2>{tab === "history" ? `History (${history.length})` : `Active work (${active.length})`}</h2>{tab === "work" && <span className="k-row" style={{ gap: 10 }}><Link className="k-link" href={href({ tab: "history" })}>View all <ArrowRight size={13} /></Link><form action="/organizer/agent"><select name="status" defaultValue={status} className="ag-sel" aria-label="Status filter"><option value="">All status</option><option value="running">In progress</option><option value="waiting_approval">Waiting</option><option value="completed">Completed</option></select><button className="k-btn outline sm">Apply</button></form></span>}</div>
@@ -59,6 +67,6 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
       {tab === "work" && <section className="k-card ag-c"><div className="k-between"><h2>Recent history</h2><Link className="k-link" href={href({ tab: "history" })}>View all <ArrowRight size={13} /></Link></div>
         <ul className="ag-hist">{history.slice(0, 5).map(r => <li key={r.id}><span className="ag-si green"><CheckCircle2 size={15} /></span><span className="k-grow"><b>{r.goal}</b><small>{r.result || "Completed"}</small></span><small>{relative(r.updated_at)}</small><span className={`ag-st ${r.status === "completed" ? "green" : "red"}`}>{r.status === "completed" ? "Completed" : r.status}</span></li>)}</ul></section>}
     </div>
-    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
+    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} hideEmpty />
   </div>;
 }

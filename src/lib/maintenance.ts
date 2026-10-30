@@ -56,11 +56,36 @@ const ALWAYS = /^\/(admin|maintenance|api\/maintenance|api\/stripe|api\/webhooks
 /** Event-day flows that stay up through M4 (spec §9: ticket display, check-in, existing booking viewing). */
 const CRITICAL_READ = /^\/(account\/tickets|tickets\/|account\/bookings|organizer\/events\/[^/]+\/(scan|live)|account\/events\/[^/]+\/scan)/;
 
+export type Audience = Window["audience"];
+
+/**
+ * Which maintenance audiences a request belongs to, from its surface (the proxy runs before any session work, so it cannot look up
+ * roles). Organizer/provider/admin consoles map to their audience; customer and public surfaces map to customers. Shared API paths
+ * that any audience uses return null: only "all" windows apply to them in the proxy, and the database enforces audience-scoped
+ * windows for the actual writer (public.maintenance_level(module, audiences) / assert_writable(module, audiences)).
+ */
+export function audiencesFor(path: string): Audience[] | null {
+  if (/^\/admin/.test(path)) return ["admins"];
+  if (/^\/organizer/.test(path)) return ["organizers"];
+  if (/^\/provider/.test(path)) return ["providers"];
+  if (/^\/api\/agent/.test(path)) return ["organizers", "providers"];           // Gala Agent is organizer/provider only
+  if (/^\/api\/(checkout|pay|tickets|resale)(\/|$)/.test(path)) return ["customers"];
+  // Shared by every audience: other API routes, sign-in/MFA, the inbox.
+  if (/^\/api\/|^\/(login|signup|auth|mfa|forgot-password|reset-password)(\/|$)|\/inbox|^\/messages/.test(path)) return null;
+  return ["customers"];
+}
+
+/** A window applies to a request when it is for everyone or for one of the request audiences ("qa" windows never reach the proxy). */
+export const appliesTo = (w: Window, aud: Audience[] | null) => w.audience === "all" || (!!aud && aud.includes(w.audience));
+
 export type Decision = { action: "allow" } | { action: "page"; window: Window } | { action: "deny"; window: Window; module: string };
 
-/** Decides what the proxy does with a request given the active windows. Pure, so it is unit-testable. */
-export function decide(ws: Window[], path: string, method: string): Decision {
-  if (!ws.length || ALWAYS.test(path)) return { action: "allow" };
+/** Decides what the proxy does with a request given the active windows (filtered to the request audience). Pure, so it is unit-testable. */
+export function decide(all: Window[], path: string, method: string, viewer?: Audience[]): Decision {
+  if (!all.length || ALWAYS.test(path)) return { action: "allow" };
+  // Q31 S4: honour each window's audience: an organizers-only window never freezes customer surfaces, and vice versa.
+  const ws = all.filter(w => appliesTo(w, viewer ?? audiencesFor(path)));
+  if (!ws.length) return { action: "allow" };
   const write = !["GET", "HEAD", "OPTIONS"].includes(method);
   const top = [...ws].sort((a, b) => b.level - a.level)[0]!;
   const mod = moduleFor(path);

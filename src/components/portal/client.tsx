@@ -45,7 +45,7 @@ export function CopyButton({ value, label = "Copy", className = "pt-copy", child
   return <button type="button" className={className} aria-label={label} title={done ? "Copied" : label} onClick={async () => {
     const text = value.startsWith("/") ? `${location.origin}${value}` : value;
     if (await copyText(text)) { setDone(true); setTimeout(() => setDone(false), 1600); }
-  }}>{done ? <Check aria-hidden="true" /> : children ?? <Copy aria-hidden="true" />}</button>;
+  }}>{done ? <Check aria-hidden="true" /> : children ?? <Copy aria-hidden="true" />}{/* W13: announce + show the result, not only a title change */}<span className="pt-copied" role="status">{done ? "Copied" : ""}</span></button>;
 }
 
 /** Shows a path as an absolute URL once mounted (server render shows the path). */
@@ -72,5 +72,5 @@ export function SocialLink({ network, path, text, label, children }: { network: 
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`, email: `mailto:?subject=${t}&body=${u}`, copy: "" }[network];
     if (target) { window.open(target, "_blank", "noopener,noreferrer"); return; }
     if (await copyText(`${text} ${url}`)) { setCopied(true); setTimeout(() => setCopied(false), 1600); }
-  }}>{children}</button>;
+  }}>{children}<span className="pt-copied" role="status">{copied ? "Link copied" : ""}</span></button>;
 }

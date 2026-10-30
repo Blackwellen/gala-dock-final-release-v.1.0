@@ -10,7 +10,7 @@
 .ada-r2{display:grid;grid-template-columns:543fr 337fr 367fr;gap:10px}
 .ada-r2 .adb-panel{padding:10px 12px}
 .ada-demand .adb-keys{margin:2px 0 4px}
-.ada-funnel h2,.ada-rev h2{font-size:14.5px}
+.ada-funnel h2,.ada-rev h2{font-size: var(--k-title-card)}
 .ada-fn{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;height:150px;margin-top:6px}
 .ada-fn>div{display:grid;justify-items:center;gap:2px;position:relative;align-content:end;height:100%}
 .ada-fn b{font-size:12px;font-weight:700;color:#0d0d63}
@@ -39,7 +39,7 @@
 .ada-hbars b{font-weight:400;text-align:right;color:#3f4596}
 .ada-r4{display:grid;grid-template-columns:445fr 415fr 389fr;gap:10px}
 .ada-mini{padding:10px 10px}
-.ada-mini h2{font-size:14.5px}
+.ada-mini h2{font-size: var(--k-title-card)}
 .ada-mk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border:1px solid #f1f5fc;border-radius:8px;padding:6px 4px}
 .ada-mk.three{grid-template-columns:repeat(3,1fr)}
 .ada-mk>div{display:flex;gap:6px;align-items:flex-start;min-width:0}

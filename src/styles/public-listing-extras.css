@@ -1,0 +1,66 @@
+/* Public venue / service page sections added in W01 Part 2 (floor plan, menus, galleries, good-to-know, service details,
+   space detail). Shared --k-* tokens, one display scale, phone first. */
+.plx-banner { margin: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 1; background: var(--k-line); }
+.plx-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.plx-space { gap: 4px; }
+.plx-more { margin: 4px 16px 16px; border-top: 1px solid var(--k-line); padding-top: 10px; }
+.plx-more > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--k-blue); list-style: none; display: flex; align-items: center; gap: 6px; min-height: 32px; }
+.plx-more > summary::-webkit-details-marker { display: none; }
+.plx-more > summary::after { content: "+"; margin-left: auto; font-size: 16px; } .plx-more[open] > summary::after { content: "–"; }
+.plx-menu .plx-more { margin: 0; }
+.plx-layouts { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.plx-layouts li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border: 1px solid var(--k-line); border-radius: 8px; font-size: 12.5px; color: var(--k-ink-2); }
+.plx-layouts li.on { border-color: var(--k-blue); } .plx-layouts li b { color: var(--k-ink); }
+.plx-layouts li i { font-style: normal; margin-left: 6px; font-size: 10.5px; color: var(--k-blue); }
+.plx-facts, .plx-card dl { margin: 10px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.plx-facts > div, .plx-card dl > div { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.plx-facts dt, .plx-card dt { display: inline-flex; gap: 5px; align-items: center; color: var(--k-muted); flex-shrink: 0; }
+.plx-facts dd, .plx-card dd { margin: 0; text-align: right; color: var(--k-ink); }
+.plx-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.plx-chips span { display: inline-flex; gap: 4px; align-items: center; height: 26px; padding: 0 9px; border: 1px solid var(--k-line); border-radius: 6px; font-size: 12px; color: var(--k-ink-2); }
+.plx-chips svg { color: #0a7a49; }
+.plx-sgal { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.plx-sgal img { width: 100%; height: 72px !important; object-fit: cover; border-radius: 6px; }
+
+.plx-menu-g { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.plx-menu { display: flex; flex-direction: column; gap: 10px; }
+.plx-menu header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.plx-menu header b { display: block; font-size: 16px; color: var(--k-ink); } .plx-menu header small { font-size: 12.5px; color: var(--k-muted); }
+.plx-menu header strong { white-space: nowrap; font-size: 15px; color: var(--k-ink); }
+.plx-menu > p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--k-muted); }
+.plx-menu-terms { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--k-ink-2); }
+.plx-menu-terms li { display: inline-flex; gap: 5px; align-items: center; }
+.plx-course h3 { margin: 12px 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--k-muted); }
+.plx-course ul { list-style: none; margin: 0; padding: 0; }
+.plx-course li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--k-line); }
+.plx-course li:last-child { border-bottom: 0; }
+.plx-course li b { display: block; font-size: 13.5px; color: var(--k-ink); font-weight: 600; } .plx-course li small { display: block; font-size: 12.5px; color: var(--k-muted); }
+.plx-course li strong { white-space: nowrap; font-size: 13px; color: var(--k-ink); }
+.plx-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.plx-tags i { font-style: normal; font-size: 11px; padding: 1px 7px; border-radius: 999px; background: #e7f7ef; color: #0a6b40; }
+.plx-tags em { font-style: normal; font-size: 11.5px; color: var(--k-muted); }
+.plx-note { margin: 12px 0 0; font-size: 12.5px; color: var(--k-muted); }
+
+.plx-gals { display: flex; flex-direction: column; gap: 22px; }
+.plx-gal figure { position: relative; margin: 0; height: 126px; border-radius: 10px; overflow: hidden; }
+.plx-gal figure img { width: 100%; height: 100%; object-fit: cover; }
+.plx-gal figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 8px; font-size: 11.5px; color: #fff; background: linear-gradient(0deg, rgba(7, 10, 34, .75), transparent); }
+
+.plx-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.plx-card h3 { margin: 0; display: flex; gap: 8px; align-items: center; font-size: 16px; color: var(--k-ink); } .plx-card h3 svg { color: #4f46e5; }
+.plx-card > p { margin: 10px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--k-ink-2); }
+.plx-ticks { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--k-ink-2); }
+.plx-ticks li { display: flex; gap: 6px; align-items: center; } .plx-ticks svg { color: #0a7a49; flex-shrink: 0; } .plx-ticks.no svg { color: var(--k-muted); }
+.plx-sub { display: flex; gap: 5px; align-items: center; margin-top: 12px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--k-muted); }
+.plx-hours { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.plx-hours li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--k-ink); padding: 4px 0; border-bottom: 1px solid var(--k-line); }
+.plx-hours li:last-child { border-bottom: 0; } .plx-hours small { display: block; color: var(--k-muted); font-size: 12px; } .plx-hours li > span:last-child { white-space: nowrap; text-align: right; }
+.plx-badge { display: inline-flex; gap: 6px; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; background: #e7f7ef; color: #0a6b40; font-size: 12.5px; font-weight: 600; }
+
+@media (max-width: 600px) {
+  .plx-menu-g, .plx-cards { grid-template-columns: minmax(0, 1fr); }
+  .plx-banner { aspect-ratio: 2 / 1; }
+  .plx-gal .pe3-photos-g { grid-template-columns: 1fr 1fr; } .plx-gal figure { height: 110px; }
+  .plx-facts > div, .plx-card dl > div { flex-direction: column; gap: 1px; } .plx-facts dd, .plx-card dd { text-align: left; }
+}

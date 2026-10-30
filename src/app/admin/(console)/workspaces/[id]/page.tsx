@@ -59,6 +59,7 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
   // Storage use against the plan (§115); the page itself is gated on the workspaces permission.
   const storage = await untyped(db as never).rpc("storage_usage", { p_workspace: id, p_user: null }).then(r => r.data as { bytes: number; files: number; limit_bytes: number; pct: number } | null, () => null);
   const gb = (b: number) => b >= 1073741824 ? `${(b / 1073741824).toFixed(1)} GB` : `${Math.round(b / 1048576)} MB`;
+  const wsEventIds = can("tickets") ? (await rows<{ id: string }>(db.from("events").select("id").eq("workspace_id", id).limit(1000))).map(e => e.id) : [];
   const [metrics, { plans, payoutSchedule }, daily, members, events, eventCount, upcomingCount, listings, tickets, cases, trust, audit, notes, payouts] = await Promise.all([
     loadMetrics(db, 30), loadPlans(db),
     rpc<Daily[]>(db, "admin_workspace_daily", { p_ws: id, p_days: 30 }),
@@ -69,7 +70,8 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
     can("events") || can("tickets") ? count(db.from("events").select("id", { count: "exact", head: true }).eq("workspace_id", id).gt("starts_at", new Date(now).toISOString())) : Promise.resolve(0),
     rows<{ id: string; kind: string; published: boolean }>(db.from("listings").select("id,kind,published").eq("workspace_id", id)),
     can("tickets") ? rows<{ id: string; order_ref: string; status: string; price_paid: number; created_at: string; tier: { name: string } | null; event: { name: string; starts_at: string | null } | null }>(
-      db.from("tickets").select("id,order_ref,status,price_paid,created_at,tier:ticket_tiers(name),event:events!inner(name,starts_at,workspace_id)").eq("event.workspace_id", id).order("created_at", { ascending: false }).limit(200)) : Promise.resolve([]),
+      // W08: filter by this workspace's event ids (the embedded !inner filter scanned every ticket and hit the statement timeout).
+      db.from("tickets").select("id,order_ref,status,price_paid,created_at,tier:ticket_tiers(name),event:events(name,starts_at)").in("event_id", wsEventIds.length ? wsEventIds : ["00000000-0000-0000-0000-000000000000"]).order("created_at", { ascending: false }).limit(200)) : Promise.resolve([]),
     can("support") ? rows<{ id: string; priority: string; status: string }>(db.from("support_cases").select("id,priority,status").eq("workspace_id", id).neq("status", "resolved")) : Promise.resolve([]),
     can("trust") ? rows<{ id: string; category: string; status: string; risk_score: number; created_at: string; decision: string | null }>(
       db.from("trust_cases").select("id,category,status,risk_score,created_at,decision").eq("subject_type", "workspace").or(`subject_id.eq.${id},subject_name.eq."${w.name.replaceAll('"', "")}"`).order("created_at", { ascending: false }).limit(5)) : Promise.resolve([]),

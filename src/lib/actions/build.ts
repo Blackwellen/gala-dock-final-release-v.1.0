@@ -3,10 +3,11 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
 import type { ActionResult } from "./shell";
+import { isTerm } from "@/lib/master-data";
 
 const Id = z.string().uuid();
-const BUILD_CATEGORIES = ["venue", "food", "drinks", "entertainment", "media", "styling", "staff", "production", "hire", "transport", "extras"] as const;
 async function ownEvent(eventId: string) {
   const id = Id.safeParse(eventId); if (!id.success) return null;
   const ctx = await getCustomer();
@@ -18,7 +19,7 @@ const bump = (id: string) => { for (const p of ["", "/build", "/money", "/plan"]
 /** Add a marketplace listing to the build as a suggestion (no commitment, no request sent yet). */
 export async function addToBuild(eventId: string, listingId: string, category: string, role: "primary" | "backup" = "primary"): Promise<ActionResult> {
   const o = await ownEvent(eventId); if (!o) return { ok: false, error: "Event not found." };
-  if (!(BUILD_CATEGORIES as readonly string[]).includes(category)) return { ok: false, error: "Unknown category." };
+  if (!isTerm("build_category", category)) return { ok: false, error: "Unknown category." };
   const lid = Id.safeParse(listingId); if (!lid.success) return { ok: false, error: "Invalid listing." };
   if (["completed", "cancelled", "archived"].includes(o.e.status)) return { ok: false, error: "This event can no longer be changed." };
   const { data: l } = await o.ctx.supabase.from("listings").select("id,name,image,price_from,price_unit,category,kind,capacity_max,tags").eq("id", lid.data).eq("published", true).maybeSingle();
@@ -72,26 +73,27 @@ export async function setItemRole(eventId: string, itemId: string, role: "primar
   else await o.ctx.supabase.from("build_items").update({ role, updated_at: new Date().toISOString() }).eq("id", o.it.id);
   bump(o.e.id); return { ok: true, message: role === "primary" ? `${o.it.title} is now your main choice.` : `${o.it.title} kept as a ${role}.` };
 }
-export type DateImpact = { title: string; status: string; note: string }[];
+export type DateImpact = { items: { title: string; status: string; note: string }[]; blockers: string[] };
 /** Date change impact (read-only): confirmed/held providers must re-confirm; deposits may be at risk. */
 export async function dateChangeImpact(eventId: string, newDate: string): Promise<ActionResult<DateImpact>> {
   const o = await ownEvent(eventId); if (!o) return { ok: false, error: "Event not found." };
-  if (Number.isNaN(Date.parse(newDate))) return { ok: false, error: "Choose a valid date." };
-  const { data: items } = await o.ctx.supabase.from("build_items").select("title,status,listing_id").eq("event_id", o.e.id).in("status", ["confirmed", "held", "quoted", "available", "sent", "awaiting"]);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate) || Number.isNaN(Date.parse(newDate)) || new Date(newDate).toISOString().slice(0,10)!==newDate || Date.parse(newDate)<=Date.now()) return { ok: false, error: "Choose a valid future date." };
+  const { data: items, error: itemError } = await o.ctx.supabase.from("build_items").select("title,status,listing_id").eq("event_id", o.e.id).not("status", "in", "(suggested,draft,declined,unavailable,expired,cancelled,cancelled_by_customer,cancelled_by_provider,refunded,expired_no_response)");
+  if (itemError) return { ok:false,error:"Could not check provider commitments. Try again." };
   const day = newDate.slice(0, 10);
-  const { data: clashes } = await o.ctx.supabase.from("build_items").select("listing_id,events!inner(starts_at)").in("listing_id", (items ?? []).map(i => i.listing_id!).filter(Boolean)).in("status", ["confirmed", "held"]).neq("event_id", o.e.id);
-  const busy = new Set((clashes ?? []).filter(c => (c.events as unknown as { starts_at: string | null }).starts_at?.slice(0, 10) === day).map(c => c.listing_id));
-  return { ok: true, data: (items ?? []).map(i => ({ title: i.title, status: i.status, note: busy.has(i.listing_id) ? "Already booked on that date — you'd need a replacement" : i.status === "confirmed" ? "Must re-confirm the new date; deposit terms may apply" : i.status === "held" ? "Hold is date-specific and would be released" : "Quote would need updating for the new date" })) };
+  const [{ count: tickets, error: ticketError }, { data: tiers, error: tierError }] = await Promise.all([
+    o.ctx.supabase.from("tickets").select("id", { count:"exact",head:true }).eq("event_id",o.e.id).in("status",["valid","resale_listed","used"]),
+    o.ctx.supabase.from("ticket_tiers").select("held").eq("event_id",o.e.id).gt("held",0),
+  ]);
+  if (ticketError || tierError) return { ok:false,error:"Could not check ticket commitments. Try again." };
+  const blockers = [tickets || tiers?.length ? "Tickets or active ticket reservations are tied to this date. Contact support to arrange postponement and ticket-holder notice." : "", items?.length ? "Reconfirm provider requests, quotes and bookings before changing the event date. Open each provider from your Build to agree the change." : "", ["live","completed","closed","cancelled","archived"].includes(o.e.status) ? "This event's lifecycle locks its date." : ""].filter(Boolean);
+  return { ok:true,data:{ blockers,items:(items ?? []).map(i => ({ title:i.title,status:i.status,note:`${day}: ${i.status === "confirmed" ? "Booking must be agreed with the provider; cancellation terms may apply." : i.status === "held" ? "Existing hold is date-specific; reconfirm it with the provider." : "Provider response must be refreshed for the new date."}` })) } };
 }
 export async function changeEventDate(eventId: string, newDate: string): Promise<ActionResult> {
   const o = await ownEvent(eventId); if (!o) return { ok: false, error: "Event not found." };
-  const t = Date.parse(newDate); if (Number.isNaN(t) || t < Date.now()) return { ok: false, error: "Choose a future date." };
-  const { count } = await o.ctx.supabase.from("tickets").select("id", { count: "exact", head: true }).eq("event_id", o.e.id).eq("status", "valid");
-  if (count) return { ok: false, error: "Tickets have been sold for this date. Contact support to reschedule with ticket-holder notice." };
-  const prev = o.e.starts_at ? new Date(o.e.starts_at) : null; const dur = 7 * 36e5;
-  const start = new Date(t); if (prev) start.setUTCHours(prev.getUTCHours(), prev.getUTCMinutes());
-  await o.ctx.supabase.from("events").update({ starts_at: start.toISOString(), ends_at: new Date(start.getTime() + dur).toISOString() }).eq("id", o.e.id);
-  await o.ctx.supabase.from("build_items").update({ status: "available", hold_expires_at: null }).eq("event_id", o.e.id).eq("status", "held");
-  await o.ctx.supabase.from("build_items").update({ status: "suggested" }).eq("event_id", o.e.id).in("status", ["quoted", "available", "sent", "awaiting"]);
-  bump(o.e.id); return { ok: true, message: "Date updated. Providers have been asked to re-confirm; quotes will be refreshed." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate) || Number.isNaN(Date.parse(newDate)) || new Date(newDate).toISOString().slice(0,10)!==newDate) return { ok:false,error:"Choose a valid future date." };
+  const { error } = await untyped(o.ctx.supabase).rpc("change_my_event_date",{ p_event:o.e.id,p_date:newDate });
+  if (error) return { ok:false,error:error.message.includes("ticket_date_commitments") ? "Tickets or reservations are tied to this date. Arrange a postponement through support." : error.message.includes("provider_date_commitments") ? "Reconfirm existing provider requests, quotes, holds and bookings before changing the date." : error.message.includes("future_date_required") ? "Choose a future date." : error.message.includes("event_date_locked") ? "This event's lifecycle locks its date." : "Could not change the event date. Try again." };
+  bump(o.e.id); return { ok:true,message:"Event date updated. The event's local start time and duration were preserved." };
 }
+

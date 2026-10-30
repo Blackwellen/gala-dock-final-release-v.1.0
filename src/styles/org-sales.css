@@ -15,7 +15,7 @@
 .sa-card b { font-size: 11px; color: var(--k-ink); } .sa-card small { font-size: 10.5px; color: var(--k-muted); }
 .sa-img { width: 34px; height: 34px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
 .sa-val { font-size: 13px !important; font-weight: 700; }
-.sa-card .k-chip { height: 18px; font-size: 9.5px; }
+.sa-card .k-chip { height: var(--k-chip-dense-h); font-size: var(--k-chip-dense-fs); }
 .sa-add { display: flex; align-items: center; justify-content: center; gap: 6px; height: 32px; border-radius: 8px; background: #fff !important; border: 1px solid var(--k-line) !important; font-size: 11px; color: var(--k-blue) !important; font-weight: 550; }
 .sa-funnel { display: flex; flex-direction: column; gap: 6px; }
 .sa-fun-row { display: flex; align-items: center; gap: 8px; }

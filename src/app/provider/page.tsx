@@ -96,7 +96,7 @@ export default async function ProviderHome(props: PageProps<"/provider">) {
             <div className="ph-perf-grid">
               {d.performance.venue.listing && <Link href={`/provider/venues/${d.performance.venue.listing.id}`} className="ph-perf-card">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={d.performance.venue.listing.image} alt="" />
+                {d.performance.venue.listing.image ? <img src={d.performance.venue.listing.image} alt="" /> : <span className="ph-perf-noimg" aria-hidden="true" />}
                 <div><span className="ph-perf-label"><ShieldCheck aria-hidden="true" />Venue Bookings</span>
                   <strong>{d.performance.venue.bookings} <Trend v={d.performance.venue.delta} /></strong>
                   <small>Occupancy Rate</small><em>{d.performance.venue.occupancy}%</em>
@@ -104,7 +104,7 @@ export default async function ProviderHome(props: PageProps<"/provider">) {
               </Link>}
               {d.performance.service.listing && <Link href={`/provider/services/${d.performance.service.listing.id}`} className="ph-perf-card">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={d.performance.service.listing.image} alt="" />
+                {d.performance.service.listing.image ? <img src={d.performance.service.listing.image} alt="" /> : <span className="ph-perf-noimg" aria-hidden="true" />}
                 <div><span className="ph-perf-label"><Users aria-hidden="true" />Service Bookings</span>
                   <strong>{d.performance.service.bookings} <Trend v={d.performance.service.delta} /></strong>
                   <small>Revenue</small><em>{money(d.performance.service.revenue)}</em>

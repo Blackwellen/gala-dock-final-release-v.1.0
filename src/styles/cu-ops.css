@@ -40,15 +40,17 @@
 .gt-ck-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; } .gt-ck-btns .k-btn { height: 46px; }
 /* Money */
 .mn-grid { display: grid; grid-template-columns: minmax(0, 1fr) 370px; gap: 12px; align-items: start; margin-top: 2px; }
-.mn-tabsbar { background: #fff; border: 1px solid var(--k-line); border-radius: 12px; padding: 8px 12px; box-shadow: var(--k-card-shadow); }
-.mn-budget { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; }
+.mn-tabsbar { background: #fff; border: 1px solid var(--k-line); border-radius: 12px; padding: 4px 12px; box-shadow: var(--k-card-shadow); }
+.mn-budget { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; padding-top: 14px; padding-bottom: 14px; }
+.mn-budget .mn-alloc-row { margin-top: 6px !important; }
+@media (min-width: 1101px) { .mn-tabsbar .gt-tabs { padding: 0; background: transparent; } .mn-tabsbar .gt-tabs a { height: 31px; } }
 .mn-alloc { height: 22px; padding: 0 8px; border-radius: 6px; background: #f3f5fa; font-size: 11.5px; color: var(--k-ink-2); display: inline-flex; align-items: center; }
 .mn-bar { display: flex; height: 22px; border-radius: 999px; overflow: hidden; margin-top: 6px; background: #eef1f7; }
-.mn-legend { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 14px; }
+.mn-legend { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 12px; }
 .mn-legend > span { display: flex; gap: 8px; align-items: flex-start; } .mn-legend i { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
 .mn-legend b { display: block; font-size: 13px; font-weight: 700; } .mn-legend small { font-size: 12px; color: var(--k-muted); }
 .mn-totals { margin: 0; border: 1px solid var(--k-line); border-radius: 10px; padding: 6px 14px; }
-.mn-totals > div { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--k-line-2); font-size: 12.5px; } .mn-totals > div:last-child { border: 0; }
+.mn-totals > div { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--k-line-2); font-size: 12.5px; } .mn-totals > div:last-child { border: 0; }
 .mn-totals dt { color: var(--k-ink-2); } .mn-totals dd { margin: 0; font-weight: 700; } .mn-totals dd.green { color: var(--k-green); } .mn-totals dd.amber { color: #9a5800; } .mn-totals dd.purple { color: #7c3aed; }
 .mn-t td { padding: 7px 10px; font-size: 11.5px; } .mn-t th { background: #f8faff; font-size: 11px; }
 .mn-img { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; }
@@ -159,3 +161,75 @@
 .mn-card-b b { font-size: 13.5px; color: var(--k-ink); } .mn-card-b small { font-size: 11.5px; color: var(--k-muted); }
 .mn-card dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 6px 0 2px; }
 .mn-card dt { font-size: 10.5px; color: var(--k-muted); } .mn-card dd { margin: 0; font-size: 12.5px; font-weight: 650; color: var(--k-ink); }
+/* W02: reference ticket-sales rail — tier names and KPI labels sit on one line ("General Admission", "Total capacity");
+   ours wrapped because the name column was 84px and the KPI icons 34px. */
+@media (min-width: 1401px) {
+  .gt-tier { grid-template-columns: 84px minmax(0, 1fr) 96px 70px 28px; gap: 10px; }
+  .gt-tk-kpis > div { padding: 9px 8px; gap: 8px; } .gt-tk-kpis .gt-ic.sm { width: 30px; height: 30px; }
+}
+/* W02: reference provider-costs rows are ~47px with single-line provider/package; ours were 51–63px (wrapped "Exclusive package"). */
+@media (min-width: 1101px) { .mn-t td { padding: 5px 8px; line-height: 1.25; } .mn-t td:nth-child(-n+3) { white-space: nowrap; } }
+a.gt-dots:hover { border-color: var(--k-blue); color: var(--k-blue); }
+/* W02 r2: check-in KPI labels stay on one line ("Not arrived" wrapped under the number in a 3-up row). */
+@media (min-width: 1101px) { .gt-tk-kpis small { white-space: nowrap; } .gt-tk-kpis > div { min-width: 0; padding: 10px 8px; gap: 8px; } }
+/* Q13 customer food & drink panel (booking page) */
+.hp { display: flex; flex-direction: column; gap: 12px; }
+.hp-sum { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; } .hp-sum > div { padding: 8px 10px; border: 1px solid var(--k-line); border-radius: 8px; }
+.hp-sum dt { font-size: 11.5px; color: var(--k-muted); } .hp-sum dd { margin: 2px 0 0; font-weight: 650; color: var(--k-ink); } .hp-sum .tot { background: #f5f8ff; }
+.hp-allergens, .hp-warn { display: flex; gap: 6px; align-items: flex-start; margin: 0; font-size: 12.5px; color: #9a5800; } .hp-allergens svg, .hp-warn svg { flex-shrink: 0; margin-top: 2px; }
+.hp-set { border: 1px solid var(--k-line); border-radius: 10px; padding: 12px 14px; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.hp-set legend { display: inline-flex; gap: 6px; align-items: center; padding: 0 6px; font-size: 13px; font-weight: 600; color: var(--k-ink); } .hp-set legend small { font-weight: 400; color: var(--k-muted); }
+.hp-diet { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.hp-bars { display: flex; flex-direction: column; gap: 8px; } .hp-bars label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--k-line); border-radius: 8px; cursor: pointer; }
+.hp-bars label.on { border-color: var(--k-blue); background: #f5f8ff; } .hp-bars label > span { display: flex; flex-direction: column; gap: 2px; } .hp-bars b { font-size: 13px; color: var(--k-ink); } .hp-bars small { font-size: 12px; color: var(--k-muted); }
+.hp-msg { margin: 0; font-size: 12.5px; } .hp-msg.ok { color: #047857; } .hp-msg.bad { color: #c81e3a; }
+@media (max-width: 640px) { .hp-diet { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* W02 r2 responsive: the costs header (title + provider filter + List/Cards) overflowed by 13px at 768. */
+@media (max-width: 900px) { .mn-table > .k-between { flex-wrap: wrap; gap: 10px; } .mn-table > .k-between > * { min-width: 0; } }
+/* W11 "Sell tickets" switch (optional-off / private-only event types). */
+.gt-sell { display: flex; gap: 16px; align-items: center; justify-content: space-between; margin-top: 12px; padding: 14px 16px; border-radius: 10px; background: #f4f7fd; border: 1px solid #e3e9f6; }
+.gt-sell b { font-size: 14px; color: var(--k-ink); } .gt-sell p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--k-ink-2); max-width: 620px; }
+@media (max-width: 640px) { .gt-sell { flex-direction: column; align-items: stretch; } }
+/* W02 pass 3 (tablet landscape 1180×820): the 380px Ticket sales rail overflowed — three `1fr` (min-content) KPI cells with
+   nowrap labels needed ~375px inside a 346px box. Let the cells shrink and the labels wrap between 1101 and 1400px. */
+@media (min-width: 1101px) and (max-width: 1400px) {
+  .gt-tk-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .gt-tk-kpis small { white-space: normal; line-height: 1.25; }
+  .gt-tk-kpis .gt-ic.sm { display: none; }
+}
+/* W02 pass 4 — phone (≤480px), PWA #190 "Guests & Tickets": the status counts live in the filter chips (All / Going / Maybe …),
+   so the four large KPI tiles are not repeated above them; the guest list reads as one row per guest. */
+@media (max-width: 480px) {
+  .c-root .gt-kpis { display: none; }
+  .c-root .gt-top { flex-wrap: wrap; gap: 6px; }
+  .c-root .gt-top .k-btn { height: 34px; padding: 0 10px; font-size: 12px; }
+}
+/* W02 pass 4 — phone (≤480px), PWA #172 "Emma's Birthday Budget Overview": the budget legend is one compact row of figures (the
+   totals list repeats them, so it is not shown), and the provider table reads as one card per supplier — provider and service
+   left, total right, status and amount due on the second line. Only the 10-column provider table is transformed (the refunds
+   table keeps its columns). */
+@media (max-width: 480px) {
+  .c-root .mn-legend { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 8px; }
+  .c-root .mn-legend b { font-size: 12.5px; } .c-root .mn-legend small { font-size: 10.5px; }
+  .c-root .mn-totals { display: none; }
+  .c-root .mn-table .k-table-wrap { overflow: visible; border: 0; }
+  .c-root .mn-table table:has(td:nth-child(10)) thead { display: none; }
+  .c-root .mn-table table:has(td:nth-child(10)), .c-root .mn-table table:has(td:nth-child(10)) tbody { display: block; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) { display: grid; grid-template-columns: minmax(0, 1fr) auto 28px; align-items: center; gap: 2px 8px; padding: 8px 6px 8px 8px; margin-bottom: 8px; border: 1px solid var(--k-line); border-radius: 12px; background: #fff; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td { display: block; padding: 0; border: 0; min-width: 0; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(4) { grid-column: 2; grid-row: 1; font-weight: 700; color: var(--k-ink); text-align: right; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(10) { grid-column: 3; grid-row: 1 / span 2; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(8) { grid-column: 1; grid-row: 2; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(7) { grid-column: 2; grid-row: 2; text-align: right; font-size: 11.5px; color: #be185d; }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:nth-child(7)::before { content: "Due "; color: var(--k-muted); }
+  .c-root .mn-table tr:has(> td:nth-child(10)) > td:is(:nth-child(2), :nth-child(3), :nth-child(5), :nth-child(6), :nth-child(9)) { display: none; }
+}
+/* W02 pass 4 (≥1401px): the "How your payments are handled" copy keeps its full wording but sets tighter (reference card ~118px
+   vs our ~200px), so Budget forecast sits back in its reference slot. */
+@media (min-width: 1401px) {
+  .c-root .mn-protect { padding: 10px 14px; gap: 12px; }
+  .c-root .mn-protect .mn-shield { width: 36px; height: 36px; }
+  .c-root .mn-protect b { font-size: 12.5px; }
+  .c-root .mn-protect p { font-size: 10.5px; line-height: 1.4; margin: 2px 0 4px; }
+}

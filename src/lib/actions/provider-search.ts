@@ -40,7 +40,8 @@ export async function searchProviders(eventId: string, category: string, f: Prov
   const added = new Set((inBuild ?? []).map(b => b.listing_id));
   const per = (l: Row) => /guest|person/.test(l.price_unit ?? "");
   const estimate = (l: Row) => (l.price_from == null ? null : per(l) ? Number(l.price_from) * Math.max(1, guests) : Number(l.price_from));
-  const score = (l: Row) => (l.sponsored ? 0.3 : 0) + Number(l.rating ?? 0) + Math.log10(1 + Number(l.review_count ?? 0)) + (l.verified ? 0.4 : 0) + (l.instant_book ? 0.2 : 0)
+  // Organic score only (Q23): a sponsored flag never adds ranking weight; sponsored inventory renders in labelled slots instead.
+  const score = (l: Row) => Number(l.rating ?? 0) + Math.log10(1 + Number(l.review_count ?? 0)) + (l.verified ? 0.4 : 0) + (l.instant_book ? 0.2 : 0)
     + (e.city && (l.city ?? "").toLowerCase().includes(String(e.city).toLowerCase()) ? 0.6 : 0);
   const sorters: Record<string, (a: Row, b: Row) => number> = {
     recommended: (a, b) => score(b) - score(a), rating: (a, b) => Number(b.rating) - Number(a.rating) || b.review_count - a.review_count, reviews: (a, b) => b.review_count - a.review_count,

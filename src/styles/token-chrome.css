@@ -1,0 +1,7 @@
+/* Token portals / checkout: logo-only bar and slim legal footer (shared --k-* tokens, sizes from brand.css). */
+.gd-brandbar { display: flex; align-items: center; height: 72px; padding: 0 clamp(16px, 3vw, 40px); background: #fff; border-bottom: 1px solid var(--k-line, #e6ecf5); }
+.gd-brandbar-logo { display: inline-flex; flex-shrink: 0; min-width: max-content; }
+.gd-brandbar .gd-lockup { --gd-h: 44px; }
+.gd-legal-footer { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; padding: 18px clamp(16px, 3vw, 40px); border-top: 1px solid var(--k-line, #e6ecf5); background: #fff; font-size: 13px; color: var(--k-muted, #5b6380); }
+.gd-legal-footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; } .gd-legal-footer a { color: var(--k-ink-2, #3a4060); } .gd-legal-footer a:hover { color: var(--k-blue, #2f6bff); }
+@media (max-width: 640px) { .gd-brandbar { height: 58px; } .gd-brandbar .gd-lockup { --gd-h: 34px; } .gd-legal-footer { flex-direction: column; align-items: flex-start; } }

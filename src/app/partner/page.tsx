@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LinkBuilder } from "@/components/portal/link-builder";
 import Link from "next/link";
 import { House, Share2, BadgePoundSterling, FileText, Users, CalendarDays, Database, Percent, ChevronRight, ChevronDown, CircleCheck, Download, Headset, ArrowRight, type LucideIcon } from "lucide-react";
 import "@/styles/portal-partner.css";
@@ -163,8 +164,9 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
         </div>
         <aside className="pr-right">
           <section className="pt-panel pr-link" id="share" data-q-group="">
-            <div className="pt-panel-head"><h2>Your referral link</h2><Link className="pt-link" href={href("resources")}>Customise</Link></div>
+            <div className="pt-panel-head"><h2>Your referral link</h2></div>
             <div className="pr-field"><span><AbsoluteUrl path={link} /></span><CopyButton value={link} label="Copy referral link" /></div>
+            <details className="pr-cust-d"><summary className="pt-link">Customise</summary><LinkBuilder base={link} kind="partner" pages={[["/", "Gala Dock home"], ["/register", "Create an account"]]} /></details>
             <div className="pr-share-row"><div><small>Share on</small><div className="pr-share">
               <SocialLink network="copy" path={link} text="Plan and book events on Gala Dock" label="Copy link"><span className="pr-net link"><BrandGlyph network="link" /></span></SocialLink>
               {(["facebook", "x", "linkedin", "whatsapp", "email"] as const).map(nw => <SocialLink key={nw} network={nw} path={link} text="Plan and book events on Gala Dock" label={`Share on ${nw === "x" ? "X" : nw[0]!.toUpperCase() + nw.slice(1)}`}><span className={`pr-net ${nw}`}><BrandGlyph network={nw} /></span></SocialLink>)}

@@ -78,7 +78,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
             </ActionForm></div></details>
       </>} />
     <TabBar active={tab} tabs={[...Object.entries(QUEUES).map(([key, [label]]) => ({ key, label: label === "Fraud/Abuse" ? "Fraud / Abuse" : label, href: tab === key ? "/admin/trust" : `/admin/trust?tab=${key}` })),
-      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [])]} />
+      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [{ key: "evidence", label: "Evidence review", href: "/admin/trust/verification" }, { key: "risk", label: "Risk signals", href: "/admin/trust/risk" }])]} />
     <section className="adb-kpis ads-kpis">
       <Kpi icon={BookmarkCheck} tone="blue" label="Verification queue" value={kv.n} delta={kv.d} series={kv.series} invert />
       <Kpi icon={ShieldCheck} tone="green" label="Active investigations" value={ki.n} delta={ki.d} series={ki.series} invert />
@@ -104,7 +104,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
               <td><RowCheck label={`Select ${c.reference}`} /></td>
               <td><Link href={qp({ case: c.id })} scroll={false} className="ads-ref">{c.reference}</Link></td>
               <td><span className={`adb-tag ${qt}`}>{ql}</span></td>
-              <td className="ads-title"><Link href={qp({ case: c.id })} scroll={false}>{c.category || c.reason}</Link></td>
+              <td className="ads-title"><Link href={qp({ case: c.id })} scroll={false} title={c.category || c.reason}>{c.category || c.reason}</Link></td>
               <td className="ads-muted">{c.related?.related_to ?? c.subject_type}</td>
               <td><span className="adb-cell">{c.related?.image ? <Img className="adb-thumb" src={c.related.image} alt="" width={32} height={30} /> : <Mark text="G" color="#0d0d63" size={30} />}
                 <span><b>{c.subject_name}</b><small>{c.related?.subject_ref ?? ""}</small></span></span></td>

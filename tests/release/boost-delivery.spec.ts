@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, anon, cleanup, createUser, seedWorkspace, signedIn, BASE } from "../phase1/helpers";
+import { admin, anon, cleanup, createUser, seedWorkspace, signedIn, BASE, insertEventFixture } from "../phase1/helpers";
 
 // Paid placement delivery: only active, in-window boosts on public live events are served (with optional city/category
 // targeting), counters only move for active boosts, and the click redirect can't be used as an open redirect.
@@ -11,7 +11,7 @@ test.describe("boost delivery and analytics", () => {
   test.beforeAll(async () => {
     owner = await createUser("boost-dl");
     ws = await seedWorkspace(owner.id, "organizer", "Boost Delivery Org");
-    ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "Sponsored Night", slug: `sponsored-night-${Date.now()}`, status: "on_sale", visibility: "public", starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
+    ev = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name: "Sponsored Night", slug: `sponsored-night-${Date.now()}`, status: "on_sale", visibility: "public", starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }, "boost-delivery").select("id").single()).data as { id: string }).id;
     const c = await signedIn(owner.email) as unknown as SupabaseClient;
     boost = (await c.rpc("create_promotion_boost", { p_event: ev, p_product: "featured_event_7d", p_targeting: { cities: ["London"], categories: [] } })).data as string;
     const po = (await c.rpc("create_boost_payment_order", { p_boost: boost })).data as { reference: string; amount_minor: number };

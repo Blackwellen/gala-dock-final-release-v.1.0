@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { admin, BASE, cleanup, createUser, seedWorkspace, signedIn } from "../phase1/helpers";
 import { watchHolds } from "../../src/lib/agent/watch";
+import { dbNow, runDbJobs } from "../../src/lib/foundation";
 
 // Release spec §12: Watch and Event-driven routine run types (Ask / task / mission / routine / approval runs are covered in agent.spec).
 const db = admin as unknown as SupabaseClient;
@@ -42,7 +43,7 @@ test.describe("agent run types", () => {
     expect(w.status).toBe("active"); expect(w.checks).toBe(1);
     // An event appears → fires on the next due check.
     await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "Watched Gala", starts_at: new Date(Date.now() + 5 * 864e5).toISOString() });
-    await db.from("agent_watches").update({ next_check_at: new Date().toISOString() }).eq("id", id);
+    await db.from("agent_watches").update({ next_check_at: new Date((await dbNow(db)).getTime() - 1000).toISOString() }).eq("id", id);   // DB clock, not this machine's
     await request.post(`${BASE}/api/agent/worker`, { headers: cron });
     w = (await db.from("agent_watches").select("status,checks,next_check_at").eq("id", id).single()).data!;
     expect(w.status).toBe("triggered");
@@ -50,15 +51,17 @@ test.describe("agent run types", () => {
     expect((await db.from("ai_usage_events").select("id").eq("workspace_id", ws)).data!.length).toBe(0);   // no AI spend
   });
 
-  test("event-driven routines wake on matching domain events, never on the agent's own actions", async () => {
+  test("event-driven routines wake on matching domain events, never on the agent's own actions (via the outbox and job queue)", async () => {
     const far = "2999-01-01T00:00:00Z";
     const { data: r } = await db.from("agent_routines").insert({ workspace_id: ws, owner_id: owner.id, title: "On cancellation", detail: "Find a replacement", schedule: "on booking.cancelled",
       trigger: { type: "event", event: "booking.cancelled" }, actions: [], enabled: true, next_run_at: far }).select("id").single();
     await db.from("audit_events").insert({ actor_id: owner.id, actor_type: "agent", workspace_id: ws, event: "booking.cancelled", metadata: {} });
+    await runDbJobs(db);   // pg_cron also runs this every minute
     expect(new Date((await db.from("agent_routines").select("next_run_at").eq("id", r!.id).single()).data!.next_run_at).getFullYear()).toBe(2999);
     await db.from("audit_events").insert({ actor_id: owner.id, actor_type: "user", workspace_id: ws, event: "booking.cancelled", metadata: { booking: "b1", ip: "1.1.1.1" } });
+    await runDbJobs(db);
     const after = (await db.from("agent_routines").select("next_run_at,last_event").eq("id", r!.id).single()).data!;
-    expect(new Date(after.next_run_at).getTime()).toBeLessThanOrEqual(Date.now() + 1000);
+    expect(new Date(after.next_run_at).getTime()).toBeLessThanOrEqual((await dbNow(db)).getTime());   // compare with DB time
     expect(JSON.stringify(after.last_event)).toContain("booking.cancelled");
     expect(JSON.stringify(after.last_event)).not.toContain("1.1.1.1");
   });

@@ -3,24 +3,41 @@ import { ClipboardList, Users, ScanLine, Map, Coffee, Truck, AlertTriangle, Shie
 import { Card, Chip, Bar, Ring, Avatars, Avatar, BarChart, Empty } from "@/components/kit";
 import { num, time, dateShort, relative, pct } from "@/lib/format";
 import type { ProEvent, EventData } from "@/lib/data/event";
+import { ConflictsStrip } from "@/components/organizer/conflicts-strip";
 import { EventPlanCard } from "./plan-card";
 import { SubTabs } from "./header";
 import { itemStatus } from "./overview";
 import { AddProgrammeButton, RunSheetStatus, TaskCheck, AddTaskButton, IncidentButton, ResolveIncident, StatusButton } from "./controls";
 import { TicketScanner } from "@/components/tickets/scanner";
+import { CloudSun, KeyRound, ShoppingBag, PackageSearch, Leaf } from "lucide-react";
+import { LogisticsSection } from "./sections/logistics";
+import { WeatherSection } from "./sections/weather";
+import { AccessSection } from "./sections/access";
+import { MerchSection } from "./sections/merch";
+import { LostPropertySection } from "./sections/lost-property";
+import { SustainabilitySection } from "./sections/sustainability";
 
 const RS: Record<string, [string, "green" | "amber" | "blue"]> = { done: ["Done", "green"], in_progress: ["In progress", "amber"], upcoming: ["Upcoming", "blue"] };
 
-export function OpsTab({ e, d, section, phase = "all" }: { e: ProEvent; d: EventData; section: string; phase?: string }) {
+export function OpsTab({ e, d, section, phase = "all", role = "" }: { e: ProEvent; d: EventData; section: string; phase?: string; role?: string }) {
   const base = `/organizer/events/${e.id}?tab=operations`;
   const items = [["runsheet", "Run Sheet", ClipboardList], ["team", "Team/Crew", Users], ["checkin", "Check-in", ScanLine], ["floor", "Floor & Map", Map], ["hospitality", "Hospitality", Coffee], ["logistics", "Logistics", Truck], ["risk", "Risk", AlertTriangle], ["incidents", "Incidents", ShieldAlert], ["live", "Live Event Mode", Radio]] as const;
-  const s = items.some(i => i[0] === section) ? section : "runsheet";
+  const more = [["weather", "Weather", CloudSun], ["access", "Access & passes", KeyRound], ["merch", "Merch & stock", ShoppingBag], ["lost", "Lost property", PackageSearch], ["sustainability", "Sustainability", Leaf]] as const;
+  const s = items.some(i => i[0] === section) || more.some(i => i[0] === section) ? section : "runsheet";
+  const sp = { e, d, role };
   return <>
-    <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: k === "floor" ? `/organizer/events/${e.id}/map?tab=operations` : `${base}${k === "runsheet" ? "" : `&section=${k}`}` }))} />
+    <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: k === "floor" ? `/organizer/events/${e.id}/map?tab=operations` : `${base}${k === "runsheet" ? "" : `&section=${k}`}` }))} more={more.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: `${base}&section=${k}` }))} />
+    {s === "logistics" && <LogisticsSection {...sp} />}
+    {s === "weather" && <WeatherSection {...sp} />}
+    {s === "access" && <AccessSection {...sp} />}
+    {s === "merch" && <MerchSection {...sp} />}
+    {s === "lost" && <LostPropertySection {...sp} />}
+    {s === "sustainability" && <SustainabilitySection {...sp} />}
+    {(s === "runsheet" || s === "team" || s === "logistics" || s === "risk" || s === "live") && <ConflictsStrip workspaceId={e.workspace_id as string} eventId={e.id} limit={5} />}
     {s === "runsheet" && <RunSheetView e={e} d={d} phase={phase} />}
     {s === "team" && <TeamView e={e} d={d} />}
     {s === "checkin" && <div className="o-grid-main"><Card><div className="k-between" style={{ marginBottom: 10 }}><h2 className="ov-h" style={{ fontSize: 15.5 }}>Ticket check-in</h2><span className="k-row" style={{ gap: 8 }}><Link className="k-btn outline sm" href={`/organizer/events/${e.id}/scan`}>Full-screen scanner</Link><Link className="k-btn primary sm" href={`/organizer/events/${e.id}/live`}>Live mode</Link></span></div><TicketScanner eventId={e.id} eventName={e.name} /></Card><CheckinStats d={d} /></div>}
-    {(s === "hospitality" || s === "logistics" || s === "risk") && <TaskBoard e={e} d={d} category={s} />}
+    {(s === "hospitality" || s === "risk") && <TaskBoard e={e} d={d} category={s} />}
     {s === "incidents" && <IncidentsView e={e} d={d} full />}
     {s === "live" && <LiveMode e={e} d={d} />}
   </>;

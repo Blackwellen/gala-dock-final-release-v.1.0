@@ -22,7 +22,7 @@ export async function loadProSetup(sb: SupabaseClient, eventId: string, workspac
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const [{ data: tiers }, { data: codes }, { data: promoters }, { data: venue }, { data: ws }, { data: vmap }] = await Promise.all([
     sb.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,status,sale_start,sale_end,release_name,after_tier,order_limit,image,badge,color,allocation,valid_from,valid_to").eq("event_id", e.id).order("sort"),
-    sb.from("discount_codes").select("id,code,kind,amount,valid_from,valid_until,max_uses,used,status").eq("event_id", e.id).neq("status", "disabled").order("code"),
+    sb.from("discount_codes").select("id,code,kind,amount,valid_from,valid_until,max_uses,used,status").eq("event_id", e.id).eq("purpose", "discount").neq("status", "disabled").order("code"),
     sb.from("promoters").select("id,name,code,status,ticket_allocation,tickets_sold").eq("event_id", e.id).order("created_at"),
     e.venue_listing_id ? sb.from("listings").select("name,capacity_max").eq("id", e.venue_listing_id).maybeSingle() : Promise.resolve({ data: null }),
     sb.from("workspaces").select("payout_status,settings").eq("id", workspaceId).maybeSingle(),

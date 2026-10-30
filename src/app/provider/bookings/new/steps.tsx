@@ -8,13 +8,16 @@ import { useToast } from "@/components/ui";
 import type { ActionResult } from "@/components/workspace/actions";
 import { saveBookingStep, confirmBooking, discardBookingDraft } from "./actions";
 import type { BookingDraft } from "./draft";
+import { labelsFor } from "@/lib/master-data";
+import { LAYOUT_LABEL } from "../../venues/_components/layout-glyph";
 
 /** Remote/user media at CSS-controlled sizes (dimensions come from the stylesheet). */
 // eslint-disable-next-line @next/next/no-img-element
 const Pic = (p: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...p} alt={p.alt ?? ""} loading="lazy" />;
 const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(n);
-const TYPES = ["Corporate Event", "Wedding", "Birthday", "Conference", "Product Launch", "Private Dinner", "Party", "Gala", "Production", "Concert", "Other"];
-const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, "_").replace(/^_|_$/g, "");
+const TYPES = labelsFor("provider.booking_event_types");
+/** Layout keys (u_shape, theatre…) as people read them; unknown keys fall back to a capitalised, spaced form. */
+const layoutName = (k: string) => LAYOUT_LABEL[k] ?? `${k[0]?.toUpperCase() ?? ""}${k.slice(1).replace(/_/g, " ")}`;
 
 function useStep() {
   const router = useRouter(), toast = useToast();
@@ -49,7 +52,7 @@ export function StepEvent({ draft, venues }: { draft: BookingDraft; venues: Venu
   const venue = venues.find(v => v.id === d.venueId) ?? venues[0];
   const photos = [venue?.image, ...(venue?.gallery ?? [])].filter(Boolean) as string[];
   const valid = !!(d.eventName && d.date && d.start && d.end && d.clientName && d.guests);
-  const save = (next: 2 | null) => run(() => saveBookingStep({ ...d, eventType: slug(d.eventType ?? "other") }, next));
+  const save = (next: 2 | null) => run(() => saveBookingStep(d, next));
   return <div className="wz-grid">
     <div className="wz-col">
       <section className="ws-panel wz-card"><h2>Venue</h2><p className="qb-sub">Select the venue for this booking.</p>
@@ -67,7 +70,7 @@ export function StepEvent({ draft, venues }: { draft: BookingDraft; venues: Venu
         <label className="ws-field"><span>Event description <small>(optional)</small></span><textarea rows={3} maxLength={500} value={d.description ?? ""} onChange={e => set({ description: e.target.value })} /><small className="wz-count">{(d.description ?? "").length}/500</small></label>
         <div className="ws-field"><span>Special requirements <small>(optional)</small></span><div className="wz-chips">{(d.requirements ?? []).map(r => <i key={r}>{r}<button type="button" aria-label={`Remove ${r}`} onClick={() => set({ requirements: d.requirements?.filter(x => x !== r) })}><X aria-hidden="true" /></button></i>)}
           <span className="wz-addreq"><input value={req} onChange={e => setReq(e.target.value)} placeholder="Add requirement" onKeyDown={e => { if (e.key === "Enter" && req.trim()) { e.preventDefault(); set({ requirements: [...(d.requirements ?? []), req.trim()] }); setReq(""); } }} />
-            <button type="button" onClick={() => { if (req.trim()) { set({ requirements: [...(d.requirements ?? []), req.trim()] }); setReq(""); } }}><Plus aria-hidden="true" />Add requirement</button></span></div></div>
+            <button type="button" disabled={!req.trim()} title={req.trim() ? undefined : "Type a requirement first"} onClick={() => { if (req.trim()) { set({ requirements: [...(d.requirements ?? []), req.trim()] }); setReq(""); } }}><Plus aria-hidden="true" />Add requirement</button></span></div></div>
       </section>
     </div>
     <div className="wz-col">
@@ -132,7 +135,7 @@ export function StepSpace({ draft, venue, spaces, layouts, packages, busy, daySt
           <b>{s.name}</b><small>{s.capacity} capacity{c ? " · Booked" : ""}</small></button>; })}</div></section>
       <div className="wz-2col">
         <section className="ws-panel wz-card"><h2>2. Layout &amp; capacity</h2><p className="qb-sub">Choose a layout and confirm capacity.</p>
-          <div className="wz-2"><label className="ws-field"><span>Layout style</span><select value={layout ?? ""} onChange={e => set({ layout: e.target.value })}>{spaceLayouts.map(([k, c]) => <option key={k} value={k}>{k[0].toUpperCase() + k.slice(1)} ({c})</option>)}</select></label>
+          <div className="wz-2"><label className="ws-field"><span>Layout style</span><select value={layout ?? ""} onChange={e => set({ layout: e.target.value })}>{spaceLayouts.map(([k, c]) => <option key={k} value={k}>{layoutName(k)} ({c})</option>)}</select></label>
             <label className="ws-field"><span>Guest capacity</span><span className="wz-icon-input"><Users aria-hidden="true" /><input readOnly value={guests} /></span></label></div>
           <p className={`wz-hint ${over ? "bad" : ""}`}>{over ? <CircleAlert aria-hidden="true" /> : <Info aria-hidden="true" />}Max for selected layout: {layoutCap}{over ? " — reduce guests or choose another layout/space" : ""}</p>
           <h3>4. Setup &amp; breakdown</h3>
@@ -167,7 +170,7 @@ export function StepSpace({ draft, venue, spaces, layouts, packages, busy, daySt
         {best && best.id !== d.spaceId && <button type="button" className="ws-btn outline block" onClick={() => set({ spaceId: best.id, layout: undefined })}>Apply recommendation</button>}
       </Agent>
       {space && <section className="ws-panel wz-sel-sum"><h2>Selected space</h2><div>{space.image ? <Pic src={space.image} alt="" /> : null}
-        <span><b>{space.name}</b><small>{draft.date} · {draft.start} – {draft.end}</small><small>{layout ? `${layout[0].toUpperCase()}${layout.slice(1)} layout` : ""} · {guests} guests</small></span></div></section>}
+        <span><b>{space.name}</b><small>{draft.date} · {draft.start} – {draft.end}</small><small>{layout ? `${layoutName(layout)} layout` : ""} · {guests} guests</small></span></div></section>}
       <section className={`ws-panel wz-status ${conflict || over ? "bad" : ""}`}>{conflict || over ? <CircleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
         <span><b>{conflict ? "Calendar conflict" : over ? "Over capacity" : "No calendar conflicts"}</b><small>{conflict ? `${conflict.label} overlaps this time.` : over ? "Guest count exceeds the layout capacity." : "The selected space and time are available."}</small></span></section>
       {spaces.filter(s => s.id !== d.spaceId && s.capacity >= guests && !busy.find(b => b.spaceId === s.id)?.conflict).length > 0 && <section className="ws-panel wz-alts"><h2><LayoutGrid aria-hidden="true" />Alternative options</h2>
@@ -204,7 +207,7 @@ export function StepPricing({ draft, venue, space, packages, services, taxBps, d
   return <div className="wz-grid">
     <div className="wz-col wz-wide">
       <section className="ws-panel wz-card wz-selected"><div>{venue.image ? <Pic src={venue.image} alt="" /> : null}
-        <span><b>{draft.eventName}</b><small>{draft.date} · {draft.start} – {draft.end} · {guests} guests · {draft.eventType}</small><small><MapPin aria-hidden="true" />{venue.name} · {space?.name} · {draft.layout ? `${draft.layout[0].toUpperCase()}${draft.layout.slice(1)}` : ""}</small></span>
+        <span><b>{draft.eventName}</b><small>{draft.date} · {draft.start} – {draft.end} · {guests} guests · {draft.eventType}</small><small><MapPin aria-hidden="true" />{venue.name} · {space?.name} · {draft.layout ? layoutName(draft.layout) : ""}</small></span>
         <Link className="ws-btn outline sm" href="/provider/bookings/new?step=1">Edit event details</Link></div></section>
       <div className="wz-2col">
         <section className="ws-panel wz-card"><h2>1. Hire &amp; venue fees</h2><p className="qb-sub">Set the venue hire, minimum spend and any included items.</p>
@@ -245,7 +248,7 @@ export function StepPricing({ draft, venue, space, packages, services, taxBps, d
           {d.minimumSpend ? <li>{minTop > 0 ? <CircleAlert aria-hidden="true" className="warn" /> : <CircleCheck aria-hidden="true" className="ok" />}{minTop > 0 ? `${gbp(minTop)} top-up to reach the minimum spend` : "Minimum spend met"}</li> : null}
           <li>{conflict ? <CircleAlert aria-hidden="true" className="warn" /> : <CircleCheck aria-hidden="true" className="ok" />}{conflict ? `Conflict with ${conflict}` : "No calendar conflicts detected"}</li></ul></Agent>
       <section className="ws-panel wz-sum"><div className="ws-panel-head"><h2>Booking summary</h2><Link className="ws-btn outline sm" href="/provider/bookings/new?step=2">Edit</Link></div>
-        <dl><div><dt>Venue</dt><dd>{venue.name} › {space?.name}</dd></div><div><dt>Layout</dt><dd>{draft.layout ?? "—"}</dd></div><div><dt>Package</dt><dd>{pkg?.name ?? "—"}</dd></div>
+        <dl><div><dt>Venue</dt><dd>{venue.name} › {space?.name}</dd></div><div><dt>Layout</dt><dd>{draft.layout ? layoutName(draft.layout) : "—"}</dd></div><div><dt>Package</dt><dd>{pkg?.name ?? "—"}</dd></div>
           <div><dt>Setup / breakdown</dt><dd>{draft.setupHours ?? 0} hrs / {draft.breakdownHours ?? 0} hrs</dd></div><div><dt>Guests</dt><dd>{guests}</dd></div></dl></section>
       <section className={`ws-panel wz-status ${conflict || !schedOk ? "bad" : ""}`}>{conflict || !schedOk ? <CircleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
         <span><b>{conflict ? "Can’t create yet" : !schedOk ? "Check payment schedule" : "Ready to create booking"}</b><small>{conflict ? "The space is no longer available for this time." : !schedOk ? "Milestones must total 100%." : "All requirements are met and the space is available for the selected dates and times."}</small></span></section>

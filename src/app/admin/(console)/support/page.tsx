@@ -38,7 +38,7 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
   const created = (c: Case) => new Date(c.created_at).getTime();
   const win = (c: Case, a: number, b: number) => created(c) >= a && created(c) < b;
   const respMins = (a: number, b: number) => { const l = all.filter(c => win(c, a, b) && first.has(c.id)).map(c => (first.get(c.id)! - created(c)) / 60000).filter(x => x >= 0); return l.length ? l.reduce((x, y) => x + y, 0) / l.length : 0; };
-  const active = all.filter(c => c.status !== "resolved");
+  const active = all.filter(c => c.status !== "resolved" && c.status !== "closed");
   const openN = all.filter(c => c.status === "open").length, waitingN = all.filter(c => c.status === "waiting").length, escN = all.filter(c => c.status === "escalated").length;
   const atRisk = active.filter(c => { const x = sla(c, now); return x.risk || x.overdue; });
   const resolved7 = all.filter(c => c.resolved_at && new Date(c.resolved_at).getTime() >= now - W), resolvedPrev = all.filter(c => c.resolved_at && new Date(c.resolved_at).getTime() >= now - 2 * W && new Date(c.resolved_at).getTime() < now - W);
@@ -48,7 +48,7 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
   const tab = ["waiting", "escalated", "resolved"].includes(s("tab")) ? s("tab") : "open";
   const q = s("q").toLowerCase(), sort = s("sort") || "newest", type = s("type"), pri = s("priority");
   // "Open" is the whole unresolved queue (open, waiting and escalated); the other tabs narrow it.
-  const list = all.filter(c => (tab === "open" ? c.status !== "resolved" : c.status === tab) && (!type || typeLabel(c) === type) && (!pri || c.priority === pri)
+  const list = all.filter(c => (tab === "open" ? c.status !== "resolved" && c.status !== "closed" : tab === "resolved" ? c.status === "resolved" || c.status === "closed" : c.status === tab) && (!type || typeLabel(c) === type) && (!pri || c.priority === pri)
     && (!q || `${c.reference} ${c.subject} ${c.requester_name} ${c.related?.requester?.email ?? ""} ${c.related?.subject_ref?.label ?? ""} ${c.related?.subject_ref?.ref ?? ""} ${c.related?.order?.ref ?? ""}`.toLowerCase().includes(q)))
     .sort((a, b) => sort === "oldest" ? created(a) - created(b) : sort === "priority" ? PRI[a.priority]! - PRI[b.priority]! || created(b) - created(a)
       : sort === "sla" ? new Date(a.sla_due_at ?? 0).getTime() - new Date(b.sla_due_at ?? 0).getTime() : new Date(updatedAt(b)).getTime() - new Date(updatedAt(a)).getTime());
@@ -76,6 +76,7 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
     <Head title="Support" subtitle="Resolve booking, ticket, payment and platform issues."
       actions={<>
         <Link className="adb-btn" href="/admin/support/privacy"><ShieldCheck aria-hidden="true" />Privacy requests</Link>
+        <Link className="adb-btn" href="/admin/support/macros"><MessageSquareText aria-hidden="true" />Macros &amp; SLAs</Link>
         {permissions.has("support.break_glass_conversation.read") && <Link className="adb-btn" href="/admin/conversations"><ShieldAlert aria-hidden="true" />Break-glass access</Link>}
         <Link className="adb-btn" href="/admin/support/export"><Upload aria-hidden="true" />Export</Link>
         <details className="adb-pop"><summary className="adb-btn primary"><Plus aria-hidden="true" />New support case<ChevronDown aria-hidden="true" /></summary>

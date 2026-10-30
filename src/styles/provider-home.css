@@ -89,6 +89,7 @@
 .ph-perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ph-perf-card{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;border:1px solid var(--ws-border-2);border-radius:10px;overflow:hidden;min-height:150px}
 .ph-perf-card img{width:100%;height:100%;object-fit:cover}
+.ph-perf-card .ph-perf-noimg{display:block;width:100%;height:100%;background:linear-gradient(135deg,#eef3ff,#f6f0ff)}
 .ph-perf-card>div{display:grid;align-content:start;gap:2px;padding:10px 10px 8px 0}
 .ph-perf-label{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#1a1d58}
 .ph-perf-label svg{width:15px!important;height:15px!important;color:#2459f5}
@@ -157,3 +158,6 @@
 .ph-rel .ws-panel-head{margin-bottom:6px}
 .ph-team .ws-panel-head{margin-bottom:6px}
 @media (min-width:1101px){.ph-row-a{min-height:434px}}
+
+/* W12: insight CTA tap target ≥ 24px on phone */
+.ph-ins-cta { min-height: 24px; }

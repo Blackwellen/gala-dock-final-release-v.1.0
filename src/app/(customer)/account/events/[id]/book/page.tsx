@@ -4,7 +4,6 @@ import { ArrowLeft, ChevronRight, CheckCircle2, Clock4, CalendarDays, MessagesSq
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { questionsFor } from "@/lib/booking-questions";
-import { stripeKey } from "@/lib/stripe";
 import { savedCards } from "@/lib/payments";
 import { VSteps } from "@/components/kit";
 import { BookingFlow, type BookingData } from "@/components/customer/booking-flow";
@@ -12,7 +11,7 @@ import { money, dateLong } from "@/lib/format";
 import { listingHref } from "@/lib/links";
 
 export const metadata = { title: "Booking request" };
-const OPEN = ["suggested", "draft", "sent", "awaiting", "clarification", "available", "quoted", "held", "expired", "declined", "unavailable", "standby"];
+const OPEN = ["suggested", "draft", "sent", "awaiting", "clarification", "available", "quoted", "held", "expired", "declined", "unavailable", "standby", "quote_received", "quote_revised", "customer_reviewing"];
 
 export default async function BookPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]); const ctx = await getCustomer(); const d = await getMyEvent(ctx, id); const e = d.e;
@@ -64,7 +63,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   // Event times are shown and edited in the event's local time (UK).
   const hhmm = (dt: Date | null, f: string) => dt ? dt.toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false }) : f;
   const ymd = (dt: Date | null) => dt ? dt.toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : "";
-  const sk = stripeKey(); const def = (await savedCards(ctx)).find(c => c.isDefault);
+  const paymentMethods = await savedCards(ctx); const def = paymentMethods.cards.find(c => c.isDefault);
   const data: BookingData = {
     event: { id: e.id, name: e.name, date: ymd(start), start: hhmm(start, "18:00"), end: hhmm(end, "23:00"), guests: e.guest_count, adults: e.adults, children: e.children, location: e.location },
     item: { id: it.id, title: it.title, status: it.status, category: it.category, amount: it.amount == null ? null : Number(it.amount), deposit: Number(it.deposit ?? 0), package: it.package, image: it.image, quote: (it.quote ?? {}) as BookingData["item"]["quote"], hold_expires_at: it.hold_expires_at, response_deadline: it.response_deadline },
@@ -72,13 +71,14 @@ export default async function BookPage({ params, searchParams }: { params: Promi
     pkg: pkg ? { name: pkg.name, description: pkg.description, price: Number(pkg.base_price), image: pkg.image } : null,
     reviews: (revs ?? []).map(r => ({ rating: r.rating, body: r.body })),
     questions: questionsFor(it.category, l?.details),
-    saved: { date: req.date ?? ymd(start), start: req.start ?? hhmm(start, "18:00"), end: req.end ?? hhmm(end, "23:00"), flexible_dates: req.flexible_dates ?? false, guests: req.guests ?? e.guest_count, adults: req.adults ?? e.adults ?? undefined, children: req.children ?? e.children ?? undefined, setup: req.setup ?? "", breakdown: req.breakdown ?? "", access: req.access ?? "standard", notes: req.notes ?? "", answers: req.answers ?? {}, alt_dates: req.alt_dates ?? true, standby_interest: req.standby_interest ?? false },
+    saved: { attachments:req.attachments??[],date: (sp.date && /^\d{4}-\d{2}-\d{2}$/.test(sp.date) && sp.date >= ymd(new Date()) ? sp.date : null) ?? req.date ?? ymd(start), start: req.start ?? hhmm(start, "18:00"), end: req.end ?? hhmm(end, "23:00"), flexible_dates: req.flexible_dates ?? false, guests: req.guests ?? e.guest_count, adults: req.adults ?? e.adults ?? undefined, children: req.children ?? e.children ?? undefined, setup: req.setup ?? "", breakdown: req.breakdown ?? "", access: req.access ?? "standard", notes: req.notes ?? "", answers: req.answers ?? {}, alt_dates: req.alt_dates ?? true, standby_interest: req.standby_interest ?? false },
     savedOption: ((pr?.requirements as { option?: string } | null)?.option ?? (sp.option === "hold" ? "hold" : null)) as BookingData["savedOption"],
     submitted: pr?.status === "sent",
-    card: def ? { brand: def.brand, last4: def.last4, exp: def.exp, test: false } : sk?.startsWith("sk_test_") ? { brand: "Visa", last4: "4242", exp: "12/2034", test: true } : null,
+    card: def ? { brand: def.brand, last4: def.last4, exp: def.exp, test: false } : null,
+    cardUnavailable:paymentMethods.unavailable,
   };
-  return <div className="bk">
+  return <div className="bk" data-step={step}>
     <div className="bk-head">{crumbs}<div className="bk-title"><h1>Booking Request</h1><p className="ce-sub">{step === 1 ? "Tell the provider what you need. This will be sent as a request for availability and a quote." : "Choose how you'd like to proceed, review the terms and add a payment method. No payment is taken unless you approve a quote."}</p></div></div>
-    <BookingFlow step={step as 1 | 2} base={base} data={data} steps={steps} />
+    <BookingFlow key={it.id} step={step as 1 | 2} base={base} data={data} steps={steps} />
   </div>;
 }

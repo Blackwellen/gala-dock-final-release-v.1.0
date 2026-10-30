@@ -16,6 +16,18 @@ import { Menu, CopyButton } from "../../_b/ui";
 import { stamp, ago } from "../../_b/format";
 import { assignCase, setCaseStatus, resolveCase, replyCase, requestRefund } from "../../_b/actions";
 import { CASE_COLS, typeLabel, updatedAt, sla, roleOf, type Case, type Msg } from "../data";
+import { assignCaseTo, setCasePriority, closeCase, applyMacro, linkRecord, unlinkRecord, escalateToTrust } from "../../_d/actions";
+import "@/styles/admin-d.css";
+
+type CaseEvent = { id: number; kind: string; from_value: string | null; to_value: string | null; actor_type: string; detail: Record<string, unknown>; created_at: string };
+type CaseLink = { id: string; record_type: string; record_id: string; label: string; created_at: string };
+type Ops = { first_response_due_at: string | null; first_responded_at: string | null; first_response_breached_at: string | null; sla_breached_at: string | null; sla_paused_at: string | null; sla_paused_minutes: number; trust_case_id: string | null; escalation_level: number; closed_at: string | null };
+const EVENT_LABEL: Record<string, string> = { created: "Case created", status: "Status", priority: "Priority", assigned: "Assigned", reply: "Reply sent", note: "Internal note", customer_reply: "Customer replied", macro: "Macro applied",
+  linked: "Record linked", unlinked: "Record unlinked", sla_first_response_breached: "First-response SLA missed", sla_breached: "Resolution SLA missed", escalated_trust: "Escalated to Trust & Safety", auto_closed: "Closed automatically" };
+const LINK_TYPES = ["event", "booking", "ticket_order", "payment_order", "transaction", "workspace", "user", "listing", "dispute", "trust_case", "privacy_request", "risk_signal", "support_case"];
+const linkHref = (l: CaseLink) => ({ event: `/admin/events?q=${l.record_id}`, workspace: `/admin/workspaces/${l.record_id}`, user: `/admin/users/${l.record_id}`, listing: `/admin/marketplace/listings/${l.record_id}`,
+  transaction: `/admin/commerce/transactions/${l.record_id}`, trust_case: `/admin/trust?case=${l.record_id}`, support_case: `/admin/support/${l.record_id}`, privacy_request: `/admin/support/privacy?id=${l.record_id}`,
+  risk_signal: "/admin/trust/risk", dispute: "/admin/disputes", ticket_order: `/admin/tickets?q=${l.record_id}`, payment_order: `/admin/commerce?q=${l.record_id}`, booking: "/admin/commerce" } as Record<string, string>)[l.record_type] ?? "/admin/support";
 
 export const metadata: Metadata = { title: "Support case" };
 const ROLE_LABEL: Record<string, string> = { customer: "Customer", support: "Support", provider: "Provider", system: "System" };
@@ -29,12 +41,18 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
   const c = await one<Case>(db.from("support_cases").select(CASE_COLS).eq("id", id).maybeSingle());
   if (!c) notFound();
   const r = c.related ?? {}, now = requestTime(), x = sla(c, now);
-  const [msgs, reqs, related, assignee] = await Promise.all([
+  const [msgs, reqs, related, assignee, history, links, macros, assignees, ops] = await Promise.all([
     rows<Msg>(db.from("support_messages").select("id,case_id,author,author_id,body,internal,role,created_at").eq("case_id", id).order("created_at")),
     rows<{ id: string; status: string; amount: number; reason: string; requested_by_name: string; created_at: string }>(db.from("admin_money_requests").select("id,status,amount,reason,requested_by_name,created_at").eq("case_id", id).order("created_at", { ascending: false })),
     r.related_cases?.length ? rows<{ id: string; reference: string; subject: string; status: string }>(db.from("support_cases").select("id,reference,subject,status").in("reference", r.related_cases)) : Promise.resolve([]),
     c.assignee_id ? one<{ avatar_url: string }>(db.from("profiles").select("avatar_url").eq("id", c.assignee_id).maybeSingle()) : Promise.resolve(null),
+    rows<CaseEvent>(db.from("support_case_events").select("id,kind,from_value,to_value,actor_type,detail,created_at").eq("case_id", id).order("created_at")),
+    rows<CaseLink>(db.from("support_case_links").select("id,record_type,record_id,label,created_at").eq("case_id", id).order("created_at")),
+    rows<{ id: string; title: string; internal: boolean; category: string | null }>(db.from("support_macros").select("id,title,internal,category").eq("active", true).order("title")),
+    Promise.resolve(db.rpc("admin_support_assignees", { p_safeguarding: c.category === "safeguarding" })).then(r => (r.data ?? []) as { user_id: string; name: string }[], () => [] as { user_id: string; name: string }[]),
+    one<Ops>(db.from("support_cases").select("first_response_due_at,first_responded_at,first_response_breached_at,sla_breached_at,sla_paused_at,sla_paused_minutes,trust_case_id,escalation_level,closed_at").eq("id", id).maybeSingle()),
   ]);
+  const usable = macros.filter(m => !m.category || m.category === c.category);
   const s = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
   const tab = ["evidence", "communications", "actions", "activity"].includes(s("tab")) ? s("tab") : "case";
   const f = ["customer", "internal", "provider", "system"].includes(s("f")) ? s("f") : "all";
@@ -46,7 +64,7 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
   const visible = msgs.filter(m => !m.internal);
   const systemN = msgs.filter(m => roleOf(m, c) === "system").length;
   const txId = r.order?.transaction_id ?? r.transaction_id;
-  const resolved = c.status === "resolved";
+  const resolved = c.status === "resolved" || c.status === "closed";
   const ev = r.event, req = r.requester;
   const assigneeAvatar = assignee?.avatar_url || null;
   const elapsed = x.elapsed ?? 0, remaining = x.remainingMin ?? 0, target = (x.targetH ?? 1) * 60;
@@ -116,12 +134,24 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
         {tab === "actions" && <section className="adb-panel adca-sum"><h2>Actions</h2>
           <div className="adca-act-row">
             <ActionButton action={setCaseStatus} args={[id, "waiting"]} reason variant="outline" disabled={c.status === "waiting" || resolved} confirm={{ title: "Mark waiting", body: "Pauses the case while waiting on the customer.", cta: "Mark waiting" }}>Mark waiting on customer</ActionButton>
-            <ActionButton action={setCaseStatus} args={[id, "open"]} reason variant="outline" disabled={c.status === "open"} confirm={{ title: "Reopen case", body: "Returns the case to the open queue.", cta: "Reopen" }}>Reopen</ActionButton>
+            <ActionButton action={setCaseStatus} args={[id, "open"]} reason variant="outline" disabled={c.status === "open" || c.status === "closed"} confirm={{ title: "Reopen case", body: "Returns the case to the open queue with a fresh resolution window.", cta: "Reopen" }}>Reopen</ActionButton>
+            <ActionButton action={closeCase} args={[id]} reason variant="outline" disabled={c.status !== "resolved"} title={c.status !== "resolved" ? "Resolve the case first" : undefined} confirm={{ title: "Close case", body: "Closed cases are final: the customer can’t reply and a new case is needed.", cta: "Close case" }}>Close</ActionButton>
+            {permissions.has("trust") && <ActionButton action={escalateToTrust} args={[id]} reason variant="danger" disabled={!!ops?.trust_case_id || c.status === "closed"} title={ops?.trust_case_id ? "Already with Trust & Safety" : undefined} confirm={{ title: "Escalate to Trust & Safety", body: "Opens a Trust & Safety case about the requester and links it here. Use for safety, fraud or abuse concerns.", cta: "Escalate" }}>Escalate to Trust &amp; Safety</ActionButton>}
+          </div>
+          <div className="add-grid-form">
+            <ActionForm action={assignCaseTo.bind(null, id)} className="add-stack"><label>Assign to<select name="assignee" required defaultValue={c.assignee_id ?? ""}><option value="" disabled>Choose an admin</option>{assignees.map(a => <option key={a.user_id} value={a.user_id}>{a.name}</option>)}</select></label>
+              <label>Reason (audited)<input name="reason" required minLength={5} /></label><button className="adb-btn" type="submit" disabled={c.status === "closed"}>Reassign</button></ActionForm>
+            <ActionForm action={setCasePriority.bind(null, id)} className="add-stack"><label>Priority<select name="priority" defaultValue={c.priority}>{["urgent", "high", "medium", "low"].map(p => <option key={p} value={p}>{p}</option>)}</select></label>
+              <label>Reason (audited)<input name="reason" required minLength={5} /></label><button className="adb-btn" type="submit" disabled={resolved}>Change priority</button></ActionForm>
+            <ActionForm action={linkRecord.bind(null, id)} className="add-stack" resetOnSuccess><label>Link a record<select name="record_type" defaultValue="event">{LINK_TYPES.map(t => <option key={t} value={t}>{t.replace("_", " ")}</option>)}</select></label>
+              <label>Record ID<input name="record_id" required placeholder="UUID, or order reference for ticket orders" /></label><button className="adb-btn" type="submit" disabled={c.status === "closed"}>Link</button></ActionForm>
           </div>
           <ul className="ads-trail">{reqs.map(q => <li key={q.id}><b>Refund request · {money(q.amount, "GBP", { cents: true })} · <Pill status={q.status} /></b><small>{stamp(q.created_at)} · {q.requested_by_name} · {q.reason}</small></li>)}
             {msgs.filter(m => roleOf(m, c) === "system").map(m => <li key={m.id}><b>{m.body}</b><small>{stamp(m.created_at)}</small></li>)}
             {!reqs.length && !systemN && <li><small>No actions recorded yet.</small></li>}</ul></section>}
-        {tab === "activity" && <section className="adb-panel adca-sum"><h2>Activity</h2><ul className="ads-trail">
+        {tab === "activity" && history.length > 0 && <section className="adb-panel adca-sum"><h2>Activity</h2><ul className="ads-trail">
+          {history.map(e => <li key={e.id}><b>{EVENT_LABEL[e.kind] ?? e.kind}{e.from_value || e.to_value ? `: ${[e.from_value, e.to_value].filter(Boolean).join(" → ")}` : ""}{typeof e.detail?.title === "string" ? ` · ${e.detail.title}` : ""}{typeof e.detail?.label === "string" ? ` · ${e.detail.label}` : ""}</b><small>{stamp(e.created_at)} · {e.actor_type}</small></li>)}</ul></section>}
+        {tab === "activity" && !history.length && <section className="adb-panel adca-sum"><h2>Activity</h2><ul className="ads-trail">
           <li><b>Case created</b><small>{stamp(c.created_at)} · {r.created_by ?? c.requester_name}</small></li>
           {msgs.map(m => <li key={m.id}><b>{m.internal ? `Internal note by ${m.author}` : `${ROLE_LABEL[roleOf(m, c)] ?? "Message"}: ${m.author}`}</b><small>{stamp(m.created_at)}</small></li>)}
           {c.resolved_at && <li><b>Resolved: {c.outcome}</b><small>{stamp(c.resolved_at)} · {c.resolution_reason}</small></li>}</ul></section>}
@@ -134,6 +164,9 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
               <select name="mode" defaultValue={compose} aria-label="Message type" className="adb-select"><option value="customer">Customer reply</option><option value="internal">Internal note</option></select>
               <span className="adca-send"><button type="submit" className="adb-btn primary" disabled={resolved}>{compose === "internal" ? "Save note" : "Send reply"}</button><span className="adca-send-c"><ChevronDown aria-hidden="true" /></span></span></div>
           </ActionForm>
+          {usable.length > 0 && !resolved && <ActionForm action={applyMacro.bind(null, id)} className="add-inline">
+            <select name="macro" className="adb-select" aria-label="Macro" defaultValue="" required><option value="" disabled>Insert a macro…</option>{usable.map(m => <option key={m.id} value={m.id}>{m.title}{m.internal ? " (internal)" : ""}</option>)}</select>
+            <button className="adb-btn" type="submit">Send macro</button><Link className="adb-link" href="/admin/support/macros">Manage macros</Link></ActionForm>}
         </section>
       </div>
 
@@ -143,6 +176,8 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
           <div className="adca-sla-b">
             <Gauge value={Math.max(0, Math.min(target, elapsed))} max={target} size={104} stroke={9} color={x.overdue ? "#ec3a52" : "#ec3a52"}><b className="adca-g">{x.overdue ? "Overdue" : x.left.replace(" left", "")}{!x.overdue && <small> left</small>}</b><small className="adca-gs">{x.target} SLA</small></Gauge>
             <dl><div><dt>Created</dt><dd>{stamp(c.created_at)}</dd></div><div><dt>SLA target</dt><dd>{x.targetH ?? "—"} hours</dd></div>
+              <div><dt>First response</dt><dd className={ops?.first_response_breached_at ? "red" : ""}>{ops?.first_responded_at ? `Sent ${stamp(ops.first_responded_at)}` : ops?.first_response_due_at ? `Due ${stamp(ops.first_response_due_at)}` : "—"}</dd></div>
+              {(ops?.sla_paused_at || (ops?.sla_paused_minutes ?? 0) > 0) && <div><dt>Paused</dt><dd>{ops?.sla_paused_at ? "Waiting on customer (clock paused)" : `${ops?.sla_paused_minutes} min waiting on customer`}</dd></div>}
               <div><dt>Time elapsed</dt><dd className="red">{fmtMins(elapsed).replace(" minutes", "m")}</dd></div><div><dt>Time remaining</dt><dd className="red">{x.overdue ? `${fmtMins(remaining)} overdue` : fmtMins(remaining)}</dd></div></dl>
           </div>
         </section>
@@ -153,7 +188,10 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
             {req && <LinkRow icon={UserRound} label="Customer" avatar={req.avatar} title={req.name} sub={req.email ?? ""} href={`/admin/users?q=${encodeURIComponent(req.email ?? req.name)}`} />}
             {r.provider && <LinkRow icon={Headset} label="Organizer" mark title={r.provider.name} sub={r.provider.ref} href={c.workspace_id ? `/admin/workspaces/${c.workspace_id}` : `/admin/workspaces?q=${encodeURIComponent(r.provider.name)}`} />}
             {r.venue && <LinkRow icon={Mail} label="Venue" img={r.venue.image} title={r.venue.name} sub={r.venue.ref} href={`/admin/marketplace?q=${encodeURIComponent(r.venue.name)}`} />}
-            {!ev && !r.order && !req && <li className="adb-none">No linked records.</li>}
+            {links.map(l => <li key={l.id}><Layers aria-hidden="true" className="adca-li" /><span className="adca-ll">{l.record_type.replace("_", " ")}</span><span />
+              <span className="adca-lt"><b>{l.label}</b><small className="add-mono">{l.record_id.slice(0, 18)}</small></span>
+              <span className="add-acts"><Link className="adb-link" href={linkHref(l)}>View <ArrowRight aria-hidden="true" /></Link>{c.status !== "closed" && <ActionButton action={unlinkRecord} args={[id, l.id]} variant="ghost" confirm={{ title: "Remove link", body: "The record itself is not changed.", cta: "Remove" }}>Unlink</ActionButton>}</span></li>)}
+            {!ev && !r.order && !req && !links.length && <li className="adb-none">No linked records. Link one from the Actions tab.</li>}
           </ul>
         </section>
         <section className="adb-panel adca-res">

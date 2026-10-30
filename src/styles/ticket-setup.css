@@ -2,7 +2,7 @@
 .ts { --ts-rail: 228px; --ts-side: 348px; }
 .ts-head { display: grid; grid-template-columns: var(--ts-rail) minmax(0, 1fr) auto; gap: 22px; align-items: start; margin-bottom: 16px; }
 .ts-crumb { display: inline-flex; align-items: center; gap: 6px; } .ts-crumb a { color: var(--k-blue); } .ts-crumb [aria-current] { color: var(--k-ink); font-weight: 500; }
-.ts-title { padding-left: 58px; } .ts-title h1 { margin: 6px 0 0; font-size: 29px; font-weight: 700; letter-spacing: -.02em; color: var(--k-ink); } .ts-title p { margin: 6px 0 0; font-size: 15px; color: #4a5470; }
+.ts-title { padding-left: 58px; } .ts-title h1 { margin: 6px 0 0; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: var(--k-ink); } .ts-title p { margin: 6px 0 0; font-size: 15px; color: #4a5470; }
 .ts-tools { display: flex; gap: 10px; } .ts-tools .k-btn { height: 42px !important; gap: 10px; color: var(--k-blue) !important; border-color: #cfdbf3 !important; font-size: 13.5px !important; } .ts-dis { opacity: .55; cursor: not-allowed; }
 .ts-grid { display: grid; grid-template-columns: var(--ts-rail) minmax(0, 1fr) var(--ts-side); gap: 18px; align-items: start; }
 .ts-main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
@@ -79,3 +79,78 @@
 @media (max-width: 700px) { .ts-models, .ts-rgrid, .ts-dgrid, .ts-refunds { grid-template-columns: minmax(0, 1fr); } .ts-tier { grid-template-columns: 20px minmax(0, 1fr) 36px; } .ts-grip { display: none; } .ts-field { grid-column: 2 / 4; } .ts-ph { display: none; } .ts-prow { grid-template-columns: 1fr 1fr; } }
 .ts-head .bk-crumbs { flex-wrap: wrap; white-space: normal; row-gap: 4px; padding-top: 4px; }
 .ts-pover b, .ts-pover small { color: #fff !important; }
+/* W02 (customer only): reference crumbs are one line across the top (y≈94), title below them starting ~64px into the main column
+   (step 1 title centre ≈131px). Ours wrapped the crumbs to two lines inside the 228px rail. */
+@media (min-width: 1401px) {
+  .ts.customer .ts-head { margin-top: -6px; row-gap: 2px; }
+  .ts.customer .ts-head .bk-crumbs { grid-column: 1 / -1; flex-wrap: nowrap; white-space: nowrap; font-size: 11.5px; overflow: visible; width: max-content; padding-top: 0; }
+  .ts.customer .ts-head .ts-title { grid-column: 2; }
+  .ts.customer .ts-head .bk-crumbs > *, .ts.customer .ts-head .ts-crumb > * { flex-shrink: 0; }
+  .ts.customer .ts-head .ts-crumb { display: inline-flex; align-items: center; gap: 6px; }
+  .ts.customer .ts-head .ts-crumb a { max-width: 160px; overflow: hidden; text-overflow: ellipsis; display: block; min-height: 0; line-height: 30px; }
+  .ts.customer .ts-title { padding-left: 64px; }
+}
+/* W02 r2 (customer only, ≥1401px): the reference starts the step rail beside the title (step 1 ≈158px, first card ≈193px) and
+   tier rows are ~63px. Ours sat ~50px / ~22px lower with ~80px rows: tighten the title block, lift the rail into the empty
+   rail cell of the title row, and compact the tier row fields. */
+@media (min-width: 1401px) {
+  .ts.customer .ts-head { margin-bottom: 6px; }
+  .ts.customer .ts-title h1 { margin-top: 2px; } .ts.customer .ts-title p { margin-top: 2px; }
+  .ts.customer .ts-grid > .ts-rail { margin-top: -34px; }
+  .ts.customer .ts-tier { padding: 5px 10px 5px 12px; }
+  .ts.customer .ts-tier .ts-field small { margin-bottom: 1px; line-height: 1.2; }
+  .ts.customer .ts-tier .ts-step { height: 28px; }
+  .ts.customer .ts-tier .ts-in-name, .ts.customer .ts-tier .ts-in-desc { padding: 0; line-height: 1.35; }
+  .ts.customer .ts-tiers { gap: 6px; }
+}
+/* Inline name/description inputs: 24px (WCAG 2.2 2.5.8 minimum) instead of the kit's 30px floor, which stacked to 60px per row. */
+@media (min-width: 1401px) { .c-root .ts.customer .ts-tier :is(input.ts-in-name, input.ts-in-desc) { min-height: 24px !important; height: 24px; } .c-root .ts.customer .ts-tname { gap: 0; } }
+/* W02 pass 3 (customer, ≥1401px): reference section heights are ~260 / 130 / 413 px with ~63px tier rows (ours 294 / 181 / 459,
+   66px). The General Admission card stretched to the two-card stack; the capacity input and venue note were taller. */
+@media (min-width: 1401px) {
+  .ts.customer .ts-sec { padding: 14px 16px !important; }
+  .ts.customer .ts-models { margin-top: 10px; align-items: start; }
+  .ts.customer .ts-models > .ts-mcard { align-self: start; }
+  .ts.customer .ts-mcard { padding: 11px 14px; gap: 6px; line-height: 1.45; }
+  .ts.customer .ts-cap { margin-top: 8px; align-items: center; }
+  .ts.customer .ts-num:not(.sm) { height: 40px; }
+  .ts.customer .ts-venue { padding: 8px 14px; } .ts.customer .ts-venue b { font-size: 15px; margin: 0; }
+  .ts.customer .ts-tier { padding: 3px 10px 3px 12px; }
+  .ts.customer .ts-tier .ts-step { height: 27px; }
+  .ts.customer .ts-tiers { margin-top: 10px; }
+}
+/* W02 pass 3: in the step 2 and step 3 references the title sits on the crumb row (crumbs end ≈345px, title ≈359px) and the
+   main column starts at ≈157–163px; ours put the title on its own row (≈30–45px lower). Rule rows and fee rows are ~26px. */
+@media (min-width: 1401px) {
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-head { margin-top: 6px; margin-bottom: 4px; }
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-head .bk-crumbs { grid-column: 1; grid-row: 1; font-size: 11px; padding-top: 10px; }
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-head .ts-title { grid-column: 2; grid-row: 1; padding-left: 92px; }
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-head .ts-tools { grid-row: 1; }
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-title p { font-size: 14px; }
+  .ts.customer:is([data-step="2"], [data-step="3"]) .ts-grid > .ts-rail { margin-top: -6px; }
+  .ts.customer .ts-rcard { padding: 10px 12px; gap: 9px; } .ts.customer .ts-rcard small { line-height: 1.35; }
+  .ts.customer[data-step="3"] .ts-dl > div { padding: 4px 0; }
+  .ts.customer[data-step="3"] .ts-fees > div { padding: 5px 12px; }
+  .ts.customer[data-step="3"] .ts-sum > img { height: 176px; }
+}
+/* W02 pass 4 (customer, ≥1401px): the three ticket-setup references are drawn ~10% denser than our type scale, so every section
+   ran tall and the tier list / footer fell below the fold. Reference tracks in design px (W02 consistency pass: no CSS zoom): step 1 rail 39→272, main 288→1123, side 1154→1487; step 2 main 290→1156, side 1169→1500;
+   step 3 main 289→1121, side 1137→1502. */
+@media (min-width: 1401px) {
+  .c-root .ts.customer { padding: 0 0 0 7px; }
+  .c-root .ts.customer .ts-grid { grid-template-columns: 233px minmax(0, 1fr) 349px; column-gap: 16px; }
+  .c-root .ts.customer .ts-grid > .ts-side { justify-self: end; width: 333px; }
+  .c-root .ts.customer[data-step="2"] .ts-grid { grid-template-columns: 233px minmax(0, 1fr) 331px; }
+  .c-root .ts.customer[data-step="2"] .ts-grid > .ts-side { width: 331px; }
+  .c-root .ts.customer[data-step="3"] .ts-grid { grid-template-columns: 233px minmax(0, 1fr) 365px; }
+  .c-root .ts.customer[data-step="3"] .ts-grid > .ts-side { width: 365px; }
+  .c-root .ts.customer .ts-head { grid-template-columns: 233px minmax(0, 1fr) auto; }
+  .c-root .ts.customer .ts-title { padding-left: 58px; }
+}
+@media (min-width: 1401px) {
+  /* Step 1: reference tracks. */
+  .c-root .ts.customer[data-step="1"] { padding-left: 7px; padding-right: 21px; }
+  .c-root .ts.customer[data-step="1"] .ts-grid { grid-template-columns: 233px minmax(0, 1fr) 348px; column-gap: 16px; }
+  .c-root .ts.customer[data-step="1"] .ts-grid > .ts-side { width: 333px; }
+  .c-root .ts.customer[data-step="1"] .ts-head { grid-template-columns: 233px minmax(0, 1fr) auto; }
+}

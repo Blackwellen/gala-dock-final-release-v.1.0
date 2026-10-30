@@ -156,8 +156,8 @@ function PartnerRail({ p, tab, qp }: { p: Partner; tab: string; qp: (e: Record<s
       <dl>
         <div><dt>Commission rate</dt><dd>{(p.commission_bps / 100).toFixed(0)}% <small>(of {p.commission_basis === "subscription_revenue" ? "subscription revenue" : "platform revenue"})</small> <Info aria-hidden="true" /></dd></div>
         <div><dt>Total earned (30d)</dt><dd>{money(earned30)}</dd></div>
-        <div className="gap"><dt>Paid</dt><dd>{money(Number(d.paid_30d ?? p.paid))}</dd><em>{d.last_paid ? `Last paid ${stamp(d.last_paid).split(",")[0]}` : ""}</em></div>
-        <div><dt>Pending</dt><dd>{money(pending)}</dd><em>{d.next_due ? `Due ${stamp(d.next_due).split(",")[0]}` : ""}</em></div>
+        <div className="gap"><dt>Paid</dt><dd>{money(Number(d.paid_30d ?? p.paid))}<em>{d.last_paid ? `Last paid ${stamp(d.last_paid).split(",")[0]}` : ""}</em></dd></div>
+        <div><dt>Pending</dt><dd>{money(pending)}<em>{d.next_due ? `Due ${stamp(d.next_due).split(",")[0]}` : ""}</em></dd></div>
         <div><dt>Held</dt><dd>{money(Number(d.held ?? 0))}</dd></div>
       </dl>
     </section>

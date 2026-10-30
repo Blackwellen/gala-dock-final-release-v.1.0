@@ -9,9 +9,9 @@ import { admin, createUser, cleanup, login, BASE } from "../phase1/helpers";
 // Exercise the actual server modules with a deterministic Stripe boundary. No payment/refund is sent.
 function serverModule(file:string,db:unknown,stripe:unknown){
  const loaded={exports:{} as {finalise:(ref:string)=>Promise<{ok:boolean;error?:string}>;processTicketRefunds:(limit:number)=>Promise<{refunded:number;failed:number;pending:number}>}};
- const require=(name:string)=>name==='server-only'?{}:name==='@/lib/supabase/admin'?{createAdminClient:()=>db}:name==='@/lib/workspace/db'?{untyped:(v:unknown)=>v}:name==='@/lib/stripe'?{stripe}:(()=>{throw new Error(`Unexpected test dependency: ${name}`);})();
+ const require=(name:string)=>name==='server-only'?{}:name==='@/lib/supabase/admin'?{createAdminClient:()=>db}:name==='@/lib/workspace/db'?{untyped:(v:unknown)=>v}:name==='@/lib/stripe'?{stripe}:name==='@/lib/payments/server'?{paymentDeps:()=>null}:name==='@/lib/payments/service'?{getDirectPaymentStatus:async()=>{throw new Error('Direct payments are not used by these platform-charge fixtures');},refundMerchantCharge:async()=>{throw new Error('Direct refunds are not used by these platform-charge fixtures');}}:name==='@/lib/payments/rules'?{}:(()=>{throw new Error(`Unexpected test dependency: ${name}`);})();
  const compiled=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- runInNewContext(compiled,{module:loaded,exports:loaded.exports,require,Date,Map,Math});return loaded.exports;
+ runInNewContext(compiled,{module:loaded,exports:loaded.exports,require,Date,Map,Math,URLSearchParams});return loaded.exports;
 }
 
 test.describe('refund completion is authoritative',()=>{
@@ -22,7 +22,7 @@ test.describe('refund completion is authoritative',()=>{
   ref=`GD-${randomBytes(5).toString('hex').toUpperCase()}`;
   const o=await db.from('checkout_orders').insert({order_ref:ref,buyer_id:owner.id,event_id:event,token:randomBytes(16).toString('hex'),amount:50,fee:5,status:'paid',stripe_session:'cs_test_refund_fixture',lines:[]});if(o.error)throw o.error;
  });
- test.afterAll(async()=>{if(ref)await db.from('checkout_orders').delete().eq('order_ref',ref);if(event)await db.from('events').delete().eq('id',event);await cleanup();});
+ test.afterAll(async()=>{if(ref){await db.from('tickets').delete().eq('order_ref',ref);await db.from('checkout_orders').delete().eq('order_ref',ref);}if(event)await db.from('events').delete().eq('id',event);await cleanup();});
  test('an expired paid hold queues a durable refund; repeat finalisation cannot issue tickets',async()=>{
   const calls:string[]=[];
   const source=serverModule('src/lib/checkout.ts',db,async(path:string)=>{calls.push(path);return{payment_status:'paid',amount_total:5500,metadata:{order_ref:ref}};});
@@ -40,6 +40,16 @@ test.describe('refund completion is authoritative',()=>{
   const updated=await db.from('checkout_orders').update({status:'refunded',refund_status:'refunded'}).eq('order_ref',ref);if(updated.error)throw updated.error;
   await page.reload();await expect(page.getByRole('heading',{name:'Payment refunded',exact:true})).toBeVisible();
  });
+ test('a cancelled ticket on an issued order cannot look active while its refund is queued',async({page})=>{
+  const tier=await db.from('ticket_tiers').insert({event_id:event,name:'Regression ticket',quantity:1,price:50}).select('id').single();if(tier.error)throw tier.error;
+  const code=`RF-${randomBytes(8).toString('hex').toUpperCase()}`;
+  const ticket=await db.from('tickets').insert({event_id:event,tier_id:tier.data.id,holder_id:owner.id,attendee_name:'Refund fixture',code,order_ref:ref,price_paid:50,status:'cancelled'});if(ticket.error)throw ticket.error;
+  const pending=await db.from('checkout_orders').update({status:'issued',refund_status:'processing'}).eq('order_ref',ref);if(pending.error)throw pending.error;
+  await login(page,owner.email);await page.goto(`${BASE}/checkout/${event}/confirmation?order=${ref}`);
+  await expect(page.getByRole('heading',{name:'Refund in progress',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'You’re going!',exact:true})).toHaveCount(0);await expect(page.getByText(code,{exact:true})).toHaveCount(0);
+  const inactive=await db.from('checkout_orders').update({refund_status:'none'}).eq('order_ref',ref);if(inactive.error)throw inactive.error;
+  await page.reload();await expect(page.getByRole('heading',{name:'Ticket status changed',exact:true})).toBeVisible();await expect(page.getByText(code,{exact:true})).toHaveCount(0);
+ });
 });
 
 test.describe('refund worker Stripe boundary',()=>{
@@ -47,7 +57,7 @@ test.describe('refund worker Stripe boundary',()=>{
   const writes:Array<{table:string;value:Record<string,unknown>}>=[],calls:string[]=[];
   const order={order_ref:'GD-TESTREFUND',stripe_session:'cs_test_boundary',stripe_refund_id:null,refund_reason:'hold_expired',event_id:'test-event'};
   const db={rpc:async()=>({data:[order],error:null}),from:(table:string)=>({update:(value:Record<string,unknown>)=>{writes.push({table,value});return{eq:()=>({error:null,in:async()=>({error:null})})};},select:()=>({eq:()=>({single:async()=>({data:{workspace_id:null}})})}),insert:async(value:Record<string,unknown>)=>{writes.push({table,value});return{error:null};}})};
-  const source=serverModule('src/lib/commerce/ticket-refunds.ts',db,async(path:string)=>{calls.push(path);return path.startsWith('checkout/')?{payment_intent:'pi_test_boundary'}:{id:'re_test_boundary',status,amount:5500};});
+  const source=serverModule('src/lib/commerce/ticket-refunds.ts',db,async(path:string)=>{calls.push(path);return path.startsWith('checkout/')?{payment_intent:'pi_test_boundary',amount_total:5500}:path.startsWith('payment_intents/')?{latest_charge:{paid:true,amount:5500,amount_refunded:2000}}:{id:'re_test_boundary',status,amount:3500};});
   const result=await source.processTicketRefunds(1);
   expect(result.refunded).toBe(status==='succeeded'?1:0);expect(result.failed).toBe(status==='failed'?1:0);
   expect(writes.some(w=>w.value.status==='refunded')).toBe(status==='succeeded');
@@ -58,5 +68,11 @@ test.describe('refund worker Stripe boundary',()=>{
   const db={rpc:async()=>({data:[{order_ref:'GD-POLLREFUND',stripe_session:'cs_test_poll',stripe_refund_id:'re_test_poll',event_id:'test-event'}]}),from:()=>({update:()=>({eq:()=>({error:null,in:async()=>({error:null})})}),select:()=>({eq:()=>({single:async()=>({data:{workspace_id:null}})})}),insert:async()=>({error:null})})};
   const source=serverModule('src/lib/commerce/ticket-refunds.ts',db,async(path:string)=>{calls.push(path);return path.startsWith('checkout/')?{payment_intent:'pi_test_poll'}:{id:'re_test_poll',status:'succeeded',amount:5500};});
   expect((await source.processTicketRefunds(1)).refunded).toBe(1);expect(calls).toEqual(['checkout/sessions/cs_test_poll','refunds/re_test_poll']);
+ });
+ for(const status of ['succeeded','pending'])test(status==='succeeded'?'a purchase fully returned by resale does not request another cancellation refund':'an allocated pending refund cannot confirm cancellation completion',async()=>{
+  const calls:string[]=[],writes:Record<string,unknown>[]=[];
+  const db={rpc:async()=>({data:[{order_ref:'GD-ALREADYRETURNED',stripe_session:'cs_test_returned',stripe_refund_id:null,event_id:'test-event'}]}),from:()=>({update:(value:Record<string,unknown>)=>{writes.push(value);return{eq:()=>({error:null,in:async()=>({error:null})})};},select:()=>({eq:()=>({single:async()=>({data:{workspace_id:null}})})}),insert:async()=>({error:null})})};
+  const source=serverModule('src/lib/commerce/ticket-refunds.ts',db,async(path:string)=>{calls.push(path);return path.startsWith('checkout/')?{payment_intent:'pi_test_returned',amount_total:2000}:path.startsWith('refunds?')?{data:[{id:'re_resale_confirmed',status,amount:2000}],has_more:false}:{latest_charge:{paid:true,amount:2000,amount_refunded:2000}};});
+  expect((await source.processTicketRefunds(1)).refunded).toBe(status==='succeeded'?1:0);expect(calls.some(p=>p==='refunds')).toBe(false);expect(writes.some(v=>v.status==='refunded')).toBe(status==='succeeded');
  });
 });

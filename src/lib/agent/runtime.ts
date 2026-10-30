@@ -5,6 +5,10 @@ import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError } from "./ll
 import { PRESETS, posterFromEvent } from "@/lib/media/document";
 import { watchHolds } from "./watch";
 import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, type Tool } from "./registry";
+import { minimise } from "./minimise";
+import { parsePlan, MAX_STEPS } from "./plan";
+import { SKILL, routeTier } from "./skills";
+import { routineNextRun } from "./schedule-db";
 
 /**
  * Durable Gala Agent runtime (§4–7, §12–14, §104–108). Every substantive job is an agent_runs row with persisted steps;
@@ -12,10 +16,9 @@ import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, ty
  * time with an idempotency key and a checkpoint after each side effect. Runs survive deploys, restarts and closed browsers.
  */
 type Db = ReturnType<typeof untyped>;
-type Run = { id: string; workspace_id: string; user_id: string; goal: string; status: string; surface: string; mode: string; quality?: string | null; interpretation: Record<string, unknown>; tokens: number; retries: number; created_at: string; routine_id: string | null };
+type Run = { id: string; workspace_id: string; user_id: string; goal: string; status: string; surface: string; mode: string; quality?: string | null; interpretation: Record<string, unknown>; tokens: number; retries: number; created_at: string; routine_id: string | null; mission?: string | null };
 type Step = { id: string; seq: number; tool_id: string; input: Record<string, unknown>; reason: string; status: string; idempotency_key: string; attempt: number };
 const svc = () => untyped(createAdminClient() as never);
-const MAX_STEPS = 12;
 
 export async function loadPolicy(db: Db, workspaceId: string): Promise<Policy> {
   const { data } = await db.from("agent_policies").select("mode,allowed_tools,auto_tools,autopilot_rules,quiet_hours,min_confidence").eq("workspace_id", workspaceId).maybeSingle();
@@ -32,10 +35,11 @@ const audit = (db: Db, run: Run, event: string, metadata: Record<string, unknown
   db.from("audit_events").insert({ actor_id: run.user_id, actor_type: "agent", workspace_id: run.workspace_id, agent_run_id: run.id, event, metadata });
 
 /** Executes one tool as the given human through agent_invoke (permissions + domain rules apply as that person). */
-export async function invoke(actor: string, workspaceId: string, tool: Tool, input: Record<string, unknown>) {
+export async function invoke(actor: string, workspaceId: string, tool: Tool, input: Record<string, unknown>, opts: { agent?: boolean } = {}) {
   const parsed = tool.input.safeParse(input);
   if (!parsed.success) throw new Error(`invalid_input: ${parsed.error.issues.map(i => `${i.path.join(".")} ${i.message}`).join("; ").slice(0, 300)}`);
   if (tool.id === "draft.note") return { draft: parsed.data };
+  if (opts.agent) await assertAgentEnabled(workspaceId);   // Gala Agent paths only; the developer API has its own key controls
   const { data: lvl } = await svc().rpc("maintenance_level" as never, { p_module: "agent" } as never);
   if (Number(lvl ?? 0) >= (tool.mutation ? 2 : 4)) throw new Error("maintenance: Gala Agent is temporarily restricted while maintenance is in progress.");
   let args = parsed.data as Record<string, unknown>;
@@ -50,6 +54,46 @@ export async function invoke(actor: string, workspaceId: string, tool: Tool, inp
   return data as unknown;
 }
 
+/** Q41 kill switches: the platform switch (Admin) and the workspace switch (owner/manager) stop every agent path, not only runs. */
+export async function assertAgentEnabled(workspaceId: string) {
+  const db = svc();
+  const [{ data: ctl }, { data: pol }] = await Promise.all([
+    db.from("agent_runtime_controls").select("kill_switch").eq("id", 1).maybeSingle(),
+    db.from("agent_policies").select("kill_switch").eq("workspace_id", workspaceId).maybeSingle(),
+  ]);
+  if (ctl?.kill_switch) throw new Error("refused: platform_kill_switch — Gala Agent is switched off by Gala Dock while an issue is investigated.");
+  if (pol?.kill_switch) throw new Error("refused: workspace_kill_switch — Gala Agent is switched off for this workspace.");
+}
+
+/**
+ * Governed tool call for a run step (Q41). agent_execute_tool re-checks in the database: kill switches, surface exposure (never
+ * customer), plan entitlement, membership + permission, R5 never, R3/R4 only with this approval or an explicit policy rule, the
+ * run's own workspace, the per-tool rate, and the idempotency key — a retry returns the recorded result instead of acting again.
+ */
+async function governedCall(run: Run, step: Step, tool: Tool, input: Record<string, unknown>, actor: string, opts: { approvalId?: string | null; policyAuto?: boolean }) {
+  const parsed = tool.input.safeParse(input);
+  if (!parsed.success) throw new Error(`invalid_input: ${parsed.error.issues.map(i => `${i.path.join(".")} ${i.message}`).join("; ").slice(0, 300)}`);
+  if (tool.id === "draft.note") return { draft: parsed.data };
+  const { data: lvl } = await svc().rpc("maintenance_level" as never, { p_module: "agent" } as never);
+  if (Number(lvl ?? 0) >= (tool.mutation ? 2 : 4)) throw new Error("maintenance: Gala Agent is temporarily restricted while maintenance is in progress.");
+  let args = parsed.data as Record<string, unknown>;
+  if (tool.id === "media.event_poster") {
+    const p = PRESETS.find(x => x.id === (args.preset ?? "a3")) ?? PRESETS[0]!;
+    const { data: ev } = await svc().from("events").select("cover_image").eq("id", String(args.event_id)).eq("workspace_id", run.workspace_id).maybeSingle();
+    args = { ...args, document: posterFromEvent(p.w, p.h, { imageSrc: ev?.cover_image ?? null }), title: args.title ?? `${p.label} — agent draft` };
+  }
+  // One key per step: a call that already succeeded for this step (even if the response was lost) is replayed, never repeated.
+  const db = svc();
+  const { data: done } = await db.from("agent_tool_calls").select("idempotency_key").eq("step_id", step.id).eq("status", "succeeded").maybeSingle();
+  const key = done?.idempotency_key ?? `${step.idempotency_key}:a${step.attempt + 1}`;
+  const { data, error } = await db.rpc("agent_execute_tool" as never, { p_run: run.id, p_step: step.id, p_actor: actor, p_tool: tool.id, p_args: args, p_idempotency: key,
+    p_approval: opts.approvalId ?? null, p_policy_auto: Boolean(opts.policyAuto) } as never);
+  if (error) throw new Error(error.message);
+  const r = data as { ok: boolean; refused?: boolean; error?: string | null; output?: unknown };
+  if (!r.ok) throw new Error(r.refused ? `refused: ${r.error}` : String(r.error ?? "tool_failed"));
+  return r.output;
+}
+
 // ───────────────────────── planning ─────────────────────────
 const PLANNER = (surface: string, catalog: unknown, now: string) => `${SAFETY}
 You are planning a Gala Agent run for the ${surface} workspace. Today is ${now}.
@@ -61,25 +105,39 @@ Rules:
 - If the goal is unclear or unsafe, return zero steps and explain in interpretation.summary.`;
 
 export async function planRun(db: Db, run: Run) {
+  await assertAgentEnabled(run.workspace_id);   // refuse before any model spend
   const policy = await loadPolicy(db, run.workspace_id);
   await setStatus(db, run, "planning");
   const surface = run.surface === "provider" ? "provider" : "organizer";
-  const catalog = catalogFor(surface, policy);
-  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, new Date().toISOString().slice(0, 10)) }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
-    { json: true, maxTokens: 1600, tier: run.quality === "deep" ? "deep" : "standard", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
-  let plan: { interpretation?: { summary?: string; scope?: string[] }; confidence?: number; steps?: { tool: string; input: Record<string, unknown>; why?: string }[] } = {};
-  try { plan = JSON.parse(r.text); } catch { /* handled below */ }
-  const steps = (plan.steps ?? []).filter(s => TOOL.has(s.tool) && catalog.some(c => c.id === s.tool)).slice(0, MAX_STEPS);
+  // Q42/Q43: plan gate (Starter = R0–R2), skill bindings and model routing per task tier. The database re-checks all of it.
+  const [{ data: actions }, { data: deep }, { data: credit }] = await Promise.all([
+    db.rpc("has_capability", { p_workspace: run.workspace_id, p_capability: "agent.actions" }),
+    db.rpc("has_capability", { p_workspace: run.workspace_id, p_capability: "agent.deep" }),
+    db.rpc("ai_credit_status", { p_workspace: run.workspace_id }),
+  ]);
+  const skill = run.mission ? SKILL.get(run.mission) ?? null : null;
+  const usable = skill && skill.surface === surface && (!skill.planCapability || actions === true) ? skill : null;
+  const catalog = catalogFor(surface, policy, { actions: actions === true }).filter(c => !usable || usable.tools.includes(c.id));
+  const available = Number((credit as { available?: number } | null)?.available ?? Infinity);
+  const tier = routeTier(usable, { deepAllowed: deep === true, lowCredit: available < 5, routine: Boolean(run.routine_id), requested: run.quality === "deep" ? "deep" : null });
+  const missionHint = usable?.mission.length ? `
+Mission template for "${usable.title}" (follow this order, skip steps that don't apply; use mission.wait_for {item_id} after asking a provider so the run pauses for their answer): ${usable.mission.join(" → ")}` : "";
+  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, new Date().toISOString().slice(0, 10)) + missionHint }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
+    { json: true, maxTokens: 1600, tier, meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
+  // The plan is untrusted model output: parsePlan keeps only catalogue tools with schema-valid inputs and backward references (Q41).
+  const parsed = parsePlan(r.text, catalog);
+  const plan = { interpretation: { summary: parsed.summary, scope: parsed.scope }, confidence: parsed.confidence ?? undefined };
+  const steps = parsed.steps;
   const rows = steps.map((s, i) => ({ run_id: run.id, seq: i + 1, tool_id: s.tool, input: s.input ?? {}, reason: String(s.why ?? "").slice(0, 400), idempotency_key: `${run.id}:${i + 1}` }));
   if (rows.length) { const { error } = await db.from("agent_run_steps").insert(rows); if (error) throw new Error(error.message); }
   const exposure = steps.reduce((a, s) => a + (TOOL.get(s.tool)?.amountMinor?.(s.input ?? {}) ?? 0), 0);
   const needsConfirm = steps.some(s => (TOOL.get(s.tool)?.risk ?? 0) >= 3);
   await setStatus(db, run, !rows.length ? "completed" : needsConfirm ? "awaiting_plan_confirmation" : "running", {
     interpretation: { ...(plan.interpretation ?? {}), confidence: plan.confidence ?? null }, plan: steps, financial_exposure_minor: exposure, tokens: (run.tokens ?? 0) + r.tokens,
-    cost_cents: Math.ceil(((run.tokens ?? 0) + r.tokens) / 1000 * 0.06), progress: 10, lease_until: null,
-    ...(rows.length ? {} : { summary: plan.interpretation?.summary ?? "Nothing to do for this goal.", finished_at: new Date().toISOString(), result: plan.interpretation?.summary ?? "" }),
+    progress: 10, lease_until: null, // cost_cents is maintained from metered usage (ai_usage_roll_run_cost trigger)
+    ...(rows.length ? {} : { summary: plan.interpretation?.summary || "Nothing to do for this goal.", finished_at: new Date().toISOString(), result: plan.interpretation?.summary ?? "" }),
   });
-  await audit(db, run, "agent.planned", { steps: rows.length, exposure_minor: exposure, needs_confirmation: needsConfirm });
+  await audit(db, run, "agent.planned", { steps: rows.length, exposure_minor: exposure, needs_confirmation: needsConfirm, dropped: parsed.dropped.slice(0, 12) });
 }
 
 // ───────────────────────── execution ─────────────────────────
@@ -122,6 +180,16 @@ export async function executeRun(db: Db, run: Run) {
       await notifyApprovers(db, run, tool.title);
       return;
     }
+    if (tool.id === "mission.wait_for") {
+      // Durable pause (no model tokens): agent_mission_wait parks the run until the request changes status or the wait expires.
+      const { data: w, error: we } = await db.rpc("agent_mission_wait", { p_run: run.id, p_step: step.id, p_item: String(input.item_id), p_hours: Number(input.hours ?? 72) });
+      if (we) { await db.from("agent_run_steps").update({ status: "failed", error: we.message.slice(0, 500), finished_at: new Date().toISOString() }).eq("id", step.id); continue; }
+      const wr = w as { waiting?: boolean; satisfied?: boolean; outcome?: string; detail?: unknown };
+      if (wr.waiting) return;   // the run is now waiting_external; the build_items trigger or the expiry re-queues it
+      outputs.set(step.seq, { outcome: wr.outcome, ...(wr.detail as object ?? {}) });
+      await db.from("agent_run_steps").update({ status: "succeeded", output: { outcome: wr.outcome, detail: wr.detail ?? null } as never, finished_at: new Date().toISOString() }).eq("id", step.id);
+      continue;
+    }
     if (tool.risk >= 3 && inQuietHours(policy)) {
       const wake = nextAfterQuiet(policy);
       await db.from("agent_run_steps").update({ status: "deferred" }).eq("id", step.id);
@@ -129,15 +197,15 @@ export async function executeRun(db: Db, run: Run) {
       await db.from("agent_waits").insert({ run_id: run.id, kind: "quiet_hours", until_at: wake.toISOString() });
       return;
     }
-    await runStep(db, run, step, tool, input, run.user_id, outputs);
+    await runStep(db, run, step, tool, input, run.user_id, outputs, { policyAuto: tool.risk >= 3 });
   }
   await finish(db, run);
 }
 
-async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<string, unknown>, actor: string, outputs: Map<number, unknown>) {
+async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<string, unknown>, actor: string, outputs: Map<number, unknown>, opts: { approvalId?: string | null; policyAuto?: boolean } = {}) {
   await db.from("agent_run_steps").update({ status: "running", started_at: new Date().toISOString(), attempt: step.attempt + 1 }).eq("id", step.id);
   try {
-    const out = await invoke(actor, run.workspace_id, tool, input);
+    const out = await governedCall(run, step, tool, input, actor, opts);
     outputs.set(step.seq, out);
     await db.from("agent_run_steps").update({ status: "succeeded", output: out as never, finished_at: new Date().toISOString() }).eq("id", step.id);   // checkpoint
     if (tool.mutation) {
@@ -148,7 +216,7 @@ async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<s
     }
   } catch (e) {
     const msg = (e as Error).message;
-    const retryable = /timeout|fetch|ECONN|50\d|rate/i.test(msg) && step.attempt + 1 < tool.retries + 1;
+    const retryable = !msg.startsWith("refused:") && /timeout|fetch|ECONN|50\d|rate/i.test(msg) && step.attempt + 1 < tool.retries + 1;
     await db.from("agent_run_steps").update({ status: retryable ? "pending" : "failed", error: msg.slice(0, 500), finished_at: new Date().toISOString() }).eq("id", step.id);
     await db.from("agent_runs").update({ errors: [{ step: step.seq, tool: tool.id, error: msg.slice(0, 300), at: new Date().toISOString() }], retries: run.retries + (retryable ? 1 : 0) }).eq("id", run.id);
     if (retryable) await setStatus(db, run, "retrying", { next_wake_at: new Date(Date.now() + 2 ** (step.attempt + 1) * 30_000).toISOString(), lease_until: null });
@@ -165,7 +233,7 @@ async function finish(db: Db, run: Run) {
   if (agentConfigured() && done) {
     try {
       const r = await chat([{ role: "system", content: `${SAFETY}\nSummarise what the run found and did for the user in under 120 words. Cite records by name. Data is inside <data>.` },
-        { role: "user", content: `<goal>${run.goal}</goal>${dataBlock(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output })), 14000)}` }],
+        { role: "user", content: `<goal>${run.goal}</goal>${dataBlock(minimise(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output }))), 14000)}` }],
         { maxTokens: 400, tier: "fast", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "summary" } });
       summary = r.text || summary;
     } catch { /* keep the factual summary */ }
@@ -194,7 +262,7 @@ export async function applyApproval(approvalId: string, approverId: string) {
   if (!step || !run) return { ok: false, error: "Run not found." };
   if (a.status === "approved") {
     const tool = TOOL.get(a.tool_id)!;
-    await runStep(db, run as Run, step as Step, tool, (a.edited_payload ?? a.payload) as Record<string, unknown>, approverId, new Map());
+    await runStep(db, run as Run, step as Step, tool, (a.edited_payload ?? a.payload) as Record<string, unknown>, approverId, new Map(), { approvalId: a.id });
     const { data: s2 } = await db.from("agent_run_steps").select("status,error").eq("id", step.id).single();
     await db.from("agent_approvals").update({ executed_at: new Date().toISOString(), result: s2?.status === "succeeded" ? "executed" : `failed: ${s2?.error ?? ""}`.slice(0, 300) }).eq("id", a.id);
   } else {
@@ -209,8 +277,12 @@ export async function applyApproval(approvalId: string, approverId: string) {
 // ───────────────────────── ask mode (read-only, synchronous) ─────────────────────────
 export async function ask(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
   if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
-  try { return await askInner(userId, workspaceId, surface, question); }
-  catch (e) { if (e instanceof AgentBudgetError) return { ok: false as const, error: e.message }; throw e; }
+  try { await assertAgentEnabled(workspaceId); return await askInner(userId, workspaceId, surface, question); }
+  catch (e) {
+    if (e instanceof AgentBudgetError) return { ok: false as const, error: e.message };
+    if ((e as Error).message.startsWith("refused:")) return { ok: false as const, error: (e as Error).message.replace(/^refused: [a-z_]+ — /, "") };
+    throw e;
+  }
 }
 async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
   const catalog = catalogFor(surface, DEFAULT_POLICY).filter(c => c.risk === "R0");
@@ -219,9 +291,9 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
   let calls: { tool: string; input: Record<string, unknown> }[] = [];
   try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
   const results = [];
-  for (const c of calls) { try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, c.input ?? {}) }); } catch (e) { results.push({ tool: c.tool, error: (e as Error).message.slice(0, 200) }); } }
+  for (const c of calls) { try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, c.input ?? {}, { agent: true }) }); } catch (e) { results.push({ tool: c.tool, error: (e as Error).message.slice(0, 200) }); } }
   const answer = await chat([{ role: "system", content: `${SAFETY}\nAnswer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
-    { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(results)}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
+    { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
   return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
 }
 
@@ -289,7 +361,7 @@ export async function workerTick() {
     if (a.status === "rejected") await db.from("agent_approvals").update({ executed_at: new Date().toISOString(), result: "rejected" }).eq("id", a.id);
   }
   // Due compiled routines → runs with pre-compiled steps (no free-text-only routines).
-  const { data: due } = await db.from("agent_routines").select("*").eq("enabled", true).lte("next_run_at", new Date().toISOString()).limit(20);
+  const { data: due } = await db.from("agent_routines").select("*").eq("enabled", true).lte("next_run_at", (await dbClock(db)).toISOString()).limit(20);
   for (const r of due ?? []) {
     const key = `routine:${r.id}:${r.next_run_at}`;
     const { data: ws } = await db.from("workspaces").select("kind,owner_id").eq("id", r.workspace_id).maybeSingle();
@@ -299,8 +371,11 @@ export async function workerTick() {
       await db.from("agent_run_steps").insert((r.actions as { tool: string; input: Record<string, unknown>; why?: string }[]).filter(a => TOOL.has(a.tool)).map((a, i) => ({ run_id: run.id, seq: i + 1, tool_id: a.tool, input: a.input ?? {}, reason: a.why ?? "", idempotency_key: `${run.id}:${i + 1}` })));
       await db.from("agent_runs").update({ status: "running" }).eq("id", run.id);
     }
-    const next = r.trigger?.type === "event" ? new Date(FAR_FUTURE) : r.trigger?.cron ? nextCron(r.trigger.cron, new Date()) : null;
-    await db.from("agent_routines").update({ last_run_at: new Date().toISOString(), next_run_at: (next ?? new Date(Date.now() + 864e5)).toISOString(), last_event: null }).eq("id", r.id);
+    // Q41/Q43 (W13 follow-up): one parser for cron + provider phrases + event-relative, in Europe/London. Unparseable schedules park
+    // at FAR_FUTURE (and the UI says so) instead of silently running every 24h.
+    const ranAt = new Date(), due = new Date(r.next_run_at ?? ranAt);
+    const next = await routineNextRun(db as never, r as never, due > ranAt ? due : ranAt, ranAt);
+    await db.from("agent_routines").update({ last_run_at: ranAt.toISOString(), next_run_at: (next ?? new Date(FAR_FUTURE)).toISOString(), last_event: null }).eq("id", r.id);
     out.routines++;
   }
   // Watches (§12 E): poll read-only tools as the human; fire on condition; exponential backoff; expire. No model calls.
@@ -316,6 +391,11 @@ export async function workerTick() {
       else if (["queued", "running", "retrying", "scheduled_wait"].includes(run.status)) { await executeRun(db, run); out.executed++; }
     } catch (e) {
       // Budget stops pause the run (never fail or retry-burn it); the owner sees why and can resume after topping up.
+      if ((e as Error).message.startsWith("refused:") && /kill_switch/.test((e as Error).message)) {
+        const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).single();
+        await setStatus(db, { ...run, status: cur?.status ?? run.status }, "paused", { waiting_reason: (e as Error).message.replace(/^refused: [a-z_]+ — /, "").slice(0, 300), lease_until: null });
+        continue;
+      }
       if (e instanceof AgentBudgetError) {
         const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).single();
         await setStatus(db, { ...run, status: cur?.status ?? run.status }, "paused", { waiting_reason: e.message.slice(0, 300) });
@@ -332,8 +412,13 @@ export async function workerTick() {
 type Watch = { id: string; workspace_id: string; user_id: string; title: string; tool_id: string; input: Record<string, unknown>; condition: { path: string; op: string; value?: unknown };
   check_every_minutes: number; backoff_factor: number; max_checks: number; checks: number; expires_at: string; last_value: unknown; status: string };
 const at = (o: unknown, path: string) => path.split(".").filter(Boolean).reduce<unknown>((v, k) => (v == null ? undefined : Array.isArray(v) && /^\d+$/.test(k) ? v[Number(k)] : (v as Record<string, unknown>)[k]), o);
+/** Database clock (Q03): due/lease comparisons use the database's time, never this server's (clock skew). */
+async function dbClock(db: Db) {
+  const { data } = await db.rpc("db_now" as never);
+  return data ? new Date(data as unknown as string) : new Date();
+}
 async function tickWatches(db: Db) {
-  const now = new Date();
+  const now = await dbClock(db);
   await db.from("agent_watches").update({ status: "expired" }).eq("status", "active").lt("expires_at", now.toISOString());
   const { data } = await db.from("agent_watches").select("*").eq("status", "active").lte("next_check_at", now.toISOString()).order("next_check_at").limit(25);
   let n = 0;
@@ -341,7 +426,7 @@ async function tickWatches(db: Db) {
     const tool = TOOL.get(w.tool_id);
     if (!tool || tool.risk !== 0) { await db.from("agent_watches").update({ status: "failed", last_error: "Tool is no longer available as read-only." }).eq("id", w.id); continue; }
     try {
-      const result = await invoke(w.user_id, w.workspace_id, tool, w.input ?? {});
+      const result = await invoke(w.user_id, w.workspace_id, tool, w.input ?? {}, { agent: true });
       const value = at(result, w.condition.path ?? "");
       const fired = watchHolds(w.condition, value, w.last_value);
       const checks = w.checks + 1;

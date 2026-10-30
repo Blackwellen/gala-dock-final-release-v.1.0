@@ -84,7 +84,7 @@ export function TimeGrid({ days, entries, colors, startHour = 8, endHour = 24, s
           return <button key={e.id} className={`tg-item ${selected === e.id ? "sel" : ""} ${e.layer === "events" ? "ev" : ""}`} style={{ top, height: h, ["--c" as string]: colors[e.layer], left: `calc(${(100 / overlap) * idx}% + 3px)`, width: `calc(${100 / overlap}% - 6px)` }} draggable onDragStart={() => setDrag(e)} onDragEnd={() => setDrag(null)} onClick={() => (e.layer === "events" ? select(e.id) : router.push(e.href))} title={`${e.title} · ${fmt(e.start)}`} aria-label={`${e.title} at ${fmt(e.start)}`}>
             <b>{e.title}</b><small>{fmt(e.start)}{e.end && ymd(e.end) === d ? ` – ${fmt(e.end)}` : ""}</small>{h > 70 && e.sub && <small>{e.sub}</small>}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {e.image && h > 110 && <img src={e.image} alt="" />}
+            {e.image && h > 110 && <img src={e.image || "/assets/gd/oe-neon.webp"} alt="" />}
           </button>; })}
       </div>)}
     </div>

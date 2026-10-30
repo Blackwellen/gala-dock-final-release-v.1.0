@@ -1,6 +1,7 @@
 import "server-only";
 import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
+import { stripeLive } from "@/lib/stripe";
 import { startOfDay, startOfMonth } from "@/lib/provider/queries";
 
 export type Tx = { id: string; kind: string; category: string; description: string; amount: number; status: string; source: string; source_type: string | null; source_id: string | null;
@@ -21,7 +22,7 @@ export function periodRange(p: string, now = Date.now()) {
 export async function loadMoney() {
   const ctx = await getProvider();
   const [txs, settings] = await Promise.all([
-    rows<Tx>(ctx.db.from("transactions").select("id,kind,category,description,amount,status,source,source_type,source_id,occurred_at,fee_amount,net_amount,currency,counterparty,stripe_ref").eq("workspace_id", ctx.workspace.id).order("occurred_at", { ascending: false })),
+    rows<Tx>(ctx.db.from("transactions").select("id,kind,category,description,amount,status,source,source_type,source_id,occurred_at,fee_amount,net_amount,currency,counterparty,stripe_ref").eq("workspace_id", ctx.workspace.id).eq("livemode", stripeLive()).order("occurred_at", { ascending: false })),
     // Providers can't read platform_settings directly; plan_catalog() exposes only the published plans and payout schedule.
     ctx.db.rpc("plan_catalog").then(r => (r.data ? { value: r.data as { plans?: Record<string, { monthly: number; commission_bps: number }>; payout_schedule?: string } } : null)),
   ]);

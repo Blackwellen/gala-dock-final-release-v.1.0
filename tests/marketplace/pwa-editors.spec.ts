@@ -3,6 +3,7 @@ import {createServerClient} from '@supabase/ssr';
 import type {SupabaseClient} from '@supabase/supabase-js';
 import {admin,createUser,seedWorkspace,cleanup,BASE} from '../phase1/helpers';
 import {blankDoc} from '../../src/lib/media/document';
+import AxeBuilder from '@axe-core/playwright';
 const db=admin as unknown as SupabaseClient;
 // Authentication fixture for disposable, admin-created identities only. This does not test password login
 // or disable CAPTCHA. A normal user-scoped OTP exchange creates the cookies used by real RLS assertions.
@@ -19,7 +20,7 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
   owner=await createUser('pwa-editors');workspace=await seedWorkspace(owner.id,'organizer','Isolated PWA editors');
   const e=await db.from('events').insert({owner_id:owner.id,workspace_id:workspace,name:'PWA editor test',management:'professional',starts_at:new Date(Date.now()+30*864e5).toISOString(),capacity:200}).select('id').single();if(e.error)throw e.error;event=e.data.id;
   const d=await db.from('designs').insert({owner_id:owner.id,workspace_id:workspace,title:'PWA Studio test',document:blankDoc(1080,1080)}).select('id').single();if(d.error)throw d.error;design=d.data.id;
-  const r=await db.from('agent_runs').insert({workspace_id:workspace,user_id:owner.id,surface:'organizer',goal:'PWA run detail read-only test',status:'queued',plan:[]}).select('id').single();if(r.error)throw r.error;run=r.data.id;
+  const r=await db.from('agent_runs').insert({workspace_id:workspace,user_id:owner.id,surface:'organizer',goal:'PWA run detail read-only test',status:'paused',plan:[]}).select('id').single();if(r.error)throw r.error;run=r.data.id;
  });
  test.afterAll(async()=>{if(workspace)await db.from('workspaces').delete().eq('id',workspace);await cleanup();});
  test('mobile and tablet editors reflow; inspector stays closed until requested; run refresh and inaccessible ID',async({page})=>{
@@ -42,7 +43,18 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
    await page.screenshot({path:`artifacts/pwa/event-map-${size.width}x${size.height}.png`});
   }
   await page.goto(`${BASE}/organizer/agent/runs/${run}`);await expect(page.getByRole('heading',{name:'PWA run detail read-only test'})).toBeVisible();await page.reload();await expect(page.getByRole('heading',{name:'Change audit'})).toBeVisible();
-  const response=await page.goto(`${BASE}/organizer/agent/runs/00000000-0000-4000-8000-000000000000`);expect(response?.status()).toBe(404);await expect(page.getByText('PWA run detail read-only test')).toHaveCount(0);
+  // Next 16 loading boundaries stream the shell before notFound: 200 + noindex is documented.
+  const response=await page.goto(`${BASE}/organizer/agent/runs/00000000-0000-4000-8000-000000000000`);expect([200,404]).toContain(response?.status());await expect(page.locator('meta[name="robots"][content="noindex"]').first()).toBeAttached();await expect(page.getByText('PWA run detail read-only test')).toHaveCount(0);
+ });
+ test('upcoming event actions work by keyboard without overflowing the mobile card',async({page})=>{
+  await fixtureSession(page,owner.email);await page.setViewportSize({width:320,height:844});await page.goto(`${BASE}/organizer`);
+  const menu=page.locator('.omh-event-menu').first();const trigger=menu.locator('summary');
+  await expect(page.locator('.pwa-route-loading')).toHaveCount(0);await trigger.press('Enter');await expect(menu).toHaveAttribute('open','');
+  await expect(menu.getByRole('link',{name:'Ticket setup',exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await page.keyboard.press('Escape');await expect(menu).not.toHaveAttribute('open','');await expect(trigger).toBeFocused();await trigger.press('Enter');
+  await menu.getByRole('link',{name:'Event Map Studio',exact:true}).click();await expect(page).toHaveURL(new RegExp(`/organizer/events/${event}/map`));
  });
  test('Studio keeps an offline draft, restores after reload and saves it on reconnection',async({page})=>{
   await fixtureSession(page,owner.email);await page.goto(`${BASE}/studio/${design}`);
@@ -61,15 +73,17 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
   const saved=await db.from('designs').select('title').eq('id',design).single();expect(saved.error).toBeNull();expect(saved.data?.title).toBe('Recovered offline design');
   expect(await page.evaluate(id=>localStorage.getItem(`gd_design_${id}`),design)).toBeNull();
  });
- test('professional ticket setup exposes three canonical stages and preserves nested allocation/review',async({page})=>{
+ test('professional ticket setup exposes the five design steps and keeps old three-stage links working',async({page})=>{
+  // Updated 2026-10-30: Ticket Pro follows the 5-step design (owner decision: flows match designs). The earlier three-stage URLs
+  // (?section=seating|policies|review) now redirect to steps 3/4/5 (tickets/setup/page.tsx), so the spec asserts that instead.
   await fixtureSession(page,owner.email);const base=`${BASE}/organizer/events/${event}/tickets/setup`;
-  await page.goto(`${base}?step=1`);await expect(page.locator('.tp-steps>li')).toHaveCount(3);
-  await page.goto(`${base}?step=1&section=seating`);await expect(page.getByRole('link',{name:'Seating & Allocation',exact:true})).toHaveAttribute('aria-current','page');
-  await page.goto(`${base}?step=3`);await expect(page.getByRole('heading',{name:'Transfer & resale',exact:true})).toBeVisible();
-  await page.goto(`${base}?step=4`);await expect(page).toHaveURL(/step=3&section=policies/);
-  await page.goto(`${base}?step=5`);await expect(page).toHaveURL(/step=3&section=review/);
-  await expect(page.getByRole('link',{name:'Review & Publish',exact:true})).toHaveAttribute('aria-current','page');
-  await page.reload();await expect(page.getByRole('link',{name:'Review & Publish',exact:true})).toHaveAttribute('aria-current','page');
+  await page.goto(`${base}?step=1`);await expect(page.locator('.tp-steps>li')).toHaveCount(5);
+  await page.goto(`${base}?step=1&section=seating`);await expect(page).toHaveURL(/step=3/);await expect(page.locator('.tp-steps a[aria-current="step"]')).toContainText('Seating & Allocation');
+  await page.goto(`${base}?step=4`);await expect(page.getByRole('heading',{name:'Transfer & resale',exact:true})).toBeVisible();
+  await page.goto(`${base}?step=3&section=policies`);await expect(page).toHaveURL(/step=4/);
+  await page.goto(`${base}?step=3&section=review`);await expect(page).toHaveURL(/step=5/);
+  await expect(page.locator('.tp-steps a[aria-current="step"]')).toContainText('Review & Activate');
+  await page.reload();await expect(page.locator('.tp-steps a[aria-current="step"]')).toContainText('Review & Activate');
  });
  test('a stale run control cannot retain authority after its creator loses membership',async({page})=>{
   await fixtureSession(page,owner.email);await page.waitForURL(/\/organizer$/);
@@ -81,6 +95,6 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
   await page.getByRole('button',{name:'Cancel run',exact:true}).click();
   await expect(page.locator('.ar-controls').getByRole('alert')).toContainText('Run not found.');
   const unchanged=await db.from('agent_runs').select('status').eq('id',run).single();
-  expect(unchanged.error).toBeNull();expect(unchanged.data?.status).toBe('queued');
+  expect(unchanged.error).toBeNull();expect(unchanged.data?.status).toBe('paused');
  });
 });

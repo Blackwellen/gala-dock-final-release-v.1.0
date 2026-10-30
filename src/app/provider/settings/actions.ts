@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
-import { createInviteToken } from "@/lib/security";
+import { createWorkspaceInvite, revokeWorkspaceInvite } from "@/lib/workspace/invites";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const on = (fd: FormData, k: string) => fd.get(k) === "on";
@@ -49,23 +49,34 @@ export async function saveTax(fd: FormData): Promise<ActionResult> {
 
 /** Owner invites a teammate (uses the same hashed, expiring invite tokens as onboarding). Returns the link to share. */
 export async function inviteMember(fd: FormData): Promise<ActionResult> {
-  const { db, workspace, role, userId } = await getProvider();
+  const { db, workspace, role } = await getProvider();
   if (role !== "owner") return { ok: false, error: "Only the workspace owner can invite members." };
   const email = t(fd, "email", 120).toLowerCase(), r = t(fd, "role", 20);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !["manager", "member", "finance"].includes(r)) return { ok: false, error: "Enter a valid email and role." };
-  const { token, hash } = createInviteToken();
-  const { error } = await db.from("workspace_invites").insert({ workspace_id: workspace.id, email, role: r, token_hash: hash, invited_by: userId });
-  if (error?.code === "23505") return { ok: false, error: "This person already has a pending invitation." };
-  if (error) return { ok: false, error: "Couldn’t create the invitation." };
+  const created = await createWorkspaceInvite(db, workspace.id, email, r);
+  if (!created.ok) return { ok: false, error: created.error };
   revalidatePath("/provider/settings");
-  return { ok: true, message: `Invitation created — share this link with ${email}: /invite/${token}` };
+  return { ok: true, message: `Invitation created — share this link with ${email}: /invite/${created.token}` };
+}
+
+/** Owner changes a login member's role (set_member_role: owner only, owner role locked, audited). */
+export async function changeMemberRole(userId: string, fd: FormData): Promise<ActionResult> {
+  const { db, workspace, role } = await getProvider();
+  if (role !== "owner") return { ok: false, error: "Only the workspace owner can change roles." };
+  const r = t(fd, "role", 20);
+  if (!/^[0-9a-f-]{36}$/i.test(userId) || !["manager", "member", "finance"].includes(r)) return { ok: false, error: "Choose a role." };
+  const { error } = await db.rpc("set_member_role", { p_ws: workspace.id, p_user: userId, p_role: r });
+  if (error) return { ok: false, error: error.message.includes("owner_locked") ? "The owner’s role can’t be changed." : friendly(error) };
+  revalidatePath("/provider/settings");
+  return { ok: true, message: "Role updated" };
 }
 
 export async function revokeInvite(id: string): Promise<ActionResult> {
-  const { db, workspace, role } = await getProvider();
+  const { db, role } = await getProvider();
   if (role !== "owner") return { ok: false, error: "Only the workspace owner can manage invitations." };
-  const { error } = await db.from("workspace_invites").update({ revoked_at: new Date().toISOString() }).eq("id", id).eq("workspace_id", workspace.id).is("accepted_at", null);
-  if (error) return { ok: false, error: "Couldn’t revoke the invitation." };
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { ok: false, error: "Couldn’t revoke the invitation." };
+  const revoked = await revokeWorkspaceInvite(db, id);
+  if (!revoked.ok) return { ok: false, error: revoked.error };
   revalidatePath("/provider/settings");
   return { ok: true, message: "Invitation revoked" };
 }

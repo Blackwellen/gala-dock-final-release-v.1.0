@@ -24,3 +24,7 @@
 .adm-login-side li{display:flex;gap:12px;align-items:center}
 .adm-login-side svg{width:22px;height:22px;color:#a9b4ff}
 @media (max-width:900px){.adm-login{grid-template-columns:1fr}.adm-login-side{display:none}}
+/* W10 (lane A re-check): the 3px #0038fd18 halo was too faint to read as a focus ring — kit ring (2px outline + halo). */
+.adm-input:focus-within{outline:2px solid #1b64f5;outline-offset:1px;box-shadow:0 0 0 3px #1b64f51a}
+.adm-login :is(a,button):focus-visible{outline:2px solid #1b64f5;outline-offset:2px;border-radius:6px}
+.adm-input button{min-width:24px;min-height:24px}

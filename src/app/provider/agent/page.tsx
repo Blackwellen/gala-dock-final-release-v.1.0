@@ -10,6 +10,7 @@ import { ActionButton } from "@/components/workspace/actions";
 import { money, relative, time, day, requestTime, titleCase } from "@/lib/workspace/format";
 import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
+import { parseSchedule, describeSchedule, FAR_FUTURE_ISO } from "@/lib/agent/schedule";
 import { workspaceItems, workspaceJobs, workspaceListings, reliability } from "@/lib/provider/queries";
 import { MenuButton } from "../_components/menu-button";
 import { AgentChat } from "./chat";
@@ -18,7 +19,7 @@ import { decideApproval, toggleRoutine, controlRun, startRun } from "./actions";
 export const metadata: Metadata = { title: "Gala Agent" };
 type Run = { id: string; goal: string; status: string; progress: number; scope: string[]; waiting_reason: string; result: string | null; created_at: string; updated_at: string; finished_at: string | null; routine_id: string | null; errors: { message: string }[] | null };
 type Approval = { id: string; run_id: string | null; title: string; detail: string; action: string; payload: Record<string, string>; impact: string; amount: number | null; status: string; created_at: string; expires_at: string | null; result: string | null; executed_at: string | null };
-type Routine = { id: string; title: string; detail: string; schedule: string; enabled: boolean; next_run_at: string | null; last_run_at: string | null; last_result: string | null; approval_policy: string };
+type Routine = { id: string; title: string; detail: string; schedule: string; trigger: { type?: string; cron?: string; event?: string } | null; enabled: boolean; next_run_at: string | null; last_run_at: string | null; last_result: string | null; approval_policy: string };
 const TOOLS: [string, string, typeof Wrench][] = [["", "All tools", Wrench], ["availability", "Availability", CalendarRange], ["spaces", "Spaces & Map", MapIcon], ["packages", "Packages", Package], ["quotes", "Quotes", FileText],
   ["bookings", "Bookings & BEO", ClipboardList], ["team", "Staffing", Users], ["holds", "Travel & Logistics", Truck], ["money", "Settlement", Wallet], ["reliability", "Reviews", Star]];
 const ACTIVE = ["queued", "planning", "running", "waiting_external", "waiting_approval", "scheduled", "paused"];
@@ -33,7 +34,7 @@ export default async function AgentPage(props: PageProps<"/provider/agent">) {
   const [runs, approvals, routines] = await Promise.all([
     rows<Run>(ctx.db.from("agent_runs").select("id,goal,status,progress,scope,waiting_reason,result,created_at,updated_at,finished_at,routine_id,errors").eq("workspace_id", ws).eq("surface", "provider").order("updated_at", { ascending: false }).limit(60)),
     rows<Approval>(ctx.db.from("agent_approvals").select("id,run_id,title,detail,action,payload,impact,amount,status,created_at,expires_at,result,executed_at").eq("workspace_id", ws).order("created_at", { ascending: false }).limit(60)),
-    rows<Routine>(ctx.db.from("agent_routines").select("id,title,detail,schedule,enabled,next_run_at,last_run_at,last_result,approval_policy").eq("workspace_id", ws).order("created_at")),
+    rows<Routine>(ctx.db.from("agent_routines").select("id,title,detail,schedule,trigger,enabled,next_run_at,last_run_at,last_result,approval_policy").eq("workspace_id", ws).order("created_at")),
   ]);
   const now = requestTime(), D = 864e5;
   const pending = approvals.filter(a => a.status === "pending" && (!a.expires_at || new Date(a.expires_at).getTime() > now));
@@ -46,7 +47,7 @@ export default async function AgentPage(props: PageProps<"/provider/agent">) {
   const respH = (() => { const r = recentItems.filter(i => !["sent", "awaiting", "expired"].includes(i.status)).map(i => (new Date(i.updated_at).getTime() - new Date(i.created_at).getTime()) / 36e5).filter(h => h >= 0 && h <= 168);
     return r.length ? r.reduce((a, h) => a + h, 0) / r.length : null; })();
   const upcoming = [...pending.slice(0, 2).map(a => ({ k: a.id, icon: ICON[a.action] ?? FileCheck2, title: a.title, when: `Waiting since ${relative(a.created_at, now)}`, href: "/provider/agent?tab=approvals" })),
-    ...routines.filter(r => r.enabled && r.next_run_at).sort((a, b) => a.next_run_at!.localeCompare(b.next_run_at!)).slice(0, 4).map(r => ({ k: r.id, icon: Calendar, title: r.title, when: `${day(r.next_run_at, { weekday: "short", day: "numeric", month: "short" })}, ${time(r.next_run_at)}`, href: "/provider/agent?tab=routines" }))].slice(0, 4);
+    ...routines.filter(r => r.enabled && r.next_run_at && r.next_run_at < FAR_FUTURE_ISO.slice(0, 4)).sort((a, b) => a.next_run_at!.localeCompare(b.next_run_at!)).slice(0, 4).map(r => ({ k: r.id, icon: Calendar, title: r.title, when: `${day(r.next_run_at, { weekday: "short", day: "numeric", month: "short" })}, ${time(r.next_run_at)}`, href: "/provider/agent?tab=routines" }))].slice(0, 4);
   const weekendDemand = items.filter(i => i.event?.starts_at && [0, 5, 6].includes(new Date(i.event.starts_at).getUTCDay())).length;
   const midweekFree = (() => { let n = 0; for (let k = 1; k <= 28; k++) { const d = new Date(now + k * D); if ([2, 3].includes(d.getUTCDay()) && !jobs.some(j => j.starts_at.slice(0, 10) === d.toISOString().slice(0, 10))) n++; } return n; })();
   const pkgConv = items.filter(i => i.package).length;
@@ -117,7 +118,7 @@ export default async function AgentPage(props: PageProps<"/provider/agent">) {
 
     {tab === "routines" && <section className="ws-panel pa-list"><h2>Routines</h2><p className="pa-sub">Routines create agent runs on schedule. Runs only read your data and propose actions for approval.</p>
       <table className="ws-table"><thead><tr><th>Routine</th><th>Schedule</th><th>Next run</th><th>Last run</th><th>Approval</th><th>On</th></tr></thead>
-        <tbody>{routines.map(r => <tr key={r.id}><td><b>{r.title}</b><small className="pa-d">{r.detail}</small></td><td>{r.schedule}</td><td>{r.enabled && r.next_run_at ? `${day(r.next_run_at, { day: "numeric", month: "short" })}, ${time(r.next_run_at)}` : "—"}</td>
+        <tbody>{routines.map(r => <tr key={r.id}><td><b>{r.title}</b><small className="pa-d">{r.detail}</small></td><td title={r.schedule}>{describeSchedule(parseSchedule(r.schedule, r.trigger), r.schedule)}</td><td>{!r.enabled ? "—" : !r.next_run_at ? "—" : r.next_run_at >= FAR_FUTURE_ISO.slice(0, 4) ? "Waits for the next booking or trigger" : `${day(r.next_run_at, { day: "numeric", month: "short" })}, ${time(r.next_run_at)}`}</td>
           <td>{r.last_run_at ? relative(r.last_run_at, now) : "Never"}{r.last_result ? <small className="pa-d">{r.last_result}</small> : null}</td><td>{titleCase(r.approval_policy ?? "required")}</td>
           <td><ActionButton action={toggleRoutine} args={[r.id, !r.enabled]} variant="ghost" className={`pa-sw${r.enabled ? " on" : ""}`}><i aria-hidden="true" /><span className="sr-only">{r.enabled ? "Turn off" : "Turn on"}</span></ActionButton></td></tr>)}</tbody></table></section>}
 

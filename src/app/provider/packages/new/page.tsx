@@ -14,6 +14,8 @@ import { PhotoManager } from "../../venues/_components/photo-manager";
 import { savePackagePhotos, setPackageLive } from "../actions";
 import { loadPackageContext } from "../data";
 import { PkgStep1, PkgStep2, PkgStep3 } from "./steps";
+import { ManagerOnly } from "../../_manager-only";
+import { getProvider } from "@/lib/provider/context";
 
 export const metadata: Metadata = { title: "Create package" };
 const STEPS = ["Offer Details", "Pricing, Rules & Publish", "Availability & Rules", "Media & Details", "Review & Publish"];
@@ -21,6 +23,7 @@ const SUB = ["Bundle your venue and services into a reusable offer.", "Set prici
 
 export default async function CreatePackage(props: PageProps<"/provider/packages/new">) {
   const sp = await props.searchParams;
+  if (!(await getProvider()).can.manage) return <ManagerOnly title="Create Package" back={{ href: "/provider/listings/packages", label: "Back to Packages" }} />;
   const id = typeof sp.package === "string" ? sp.package : null;
   const preset = typeof sp.listing === "string" && isUuid(sp.listing) ? sp.listing : null;
   const c = await loadPackageContext(id);

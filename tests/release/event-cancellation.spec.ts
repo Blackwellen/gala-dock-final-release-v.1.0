@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, BASE, cleanup, createUser, login, seedWorkspace, signedIn } from "../phase1/helpers";
+import { admin, BASE, cleanup, createUser, enrolTotp, login, seedWorkspace, signedIn, insertEventFixture } from "../phase1/helpers";
 
 // Cancellation & Refund Policy §2: organiser cancellation voids tickets, queues full refunds (incl. fees), tells buyers;
 // no path can cancel an event with paid orders without queuing refunds. Uses a fake Stripe session: no money moves.
@@ -20,7 +20,7 @@ test.describe("event cancellation refunds", () => {
     await db.from("workspaces").delete().eq("id", ws);
     await cleanup();
   });
-  const event = async (name: string) => ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name, status: "on_sale", starts_at: new Date(Date.now() + 10 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
+  const event = async (name: string) => ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name, status: "on_sale", starts_at: new Date(Date.now() + 10 * 864e5).toISOString() }, "event-cancellation").select("id").single()).data as { id: string }).id;
   const order = (ev: string, amount: number, ref: string) => db.from("checkout_orders").insert({ order_ref: ref, event_id: ev, buyer_id: buyer.id, token: `tok-${ref}`, amount, fee: amount ? 1.5 : 0, currency: "GBP", status: "issued", stripe_session: amount ? `cs_test_fake_${ref}` : null, kind: "primary" });
 
   test("direct status change is refused while paid orders exist", async () => {
@@ -58,6 +58,9 @@ test.describe("event cancellation refunds", () => {
 // Organizer Terms 2.4: buyers always refunded in full; organiser platform fees depend on why the event was cancelled.
 test.describe("cancellation fees by cause", () => {
   let owner: { id: string; email: string }, buyer: { id: string }, staff: { id: string; email: string }, ws: string;
+  // Q31: admin mutations need an aal2 session — sign the reviewer in once and enrol a TOTP factor.
+  let staffClient: SupabaseClient | undefined;
+  const staffC = async () => staffClient ??= await (async () => { const c = await signedIn(staff.email); await enrolTotp(c); return c as unknown as SupabaseClient; })();
   test.beforeAll(async () => {
     [owner, buyer, staff] = await Promise.all([createUser("cf-o"), createUser("cf-b"), createUser("cf-admin")]);
     ws = await seedWorkspace(owner.id, "organizer", "Fees Org");
@@ -75,7 +78,7 @@ test.describe("cancellation fees by cause", () => {
   });
   // 2 tickets at £20: £2 booking fees (buyer, incl. VAT) + £2 commission (5%) + £0.40 VAT on it → £4.40 platform fees.
   const sold = async (name: string) => {
-    const ev = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name, status: "on_sale", starts_at: new Date(Date.now() + 10 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
+    const ev = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name, status: "on_sale", starts_at: new Date(Date.now() + 10 * 864e5).toISOString() }, "event-cancellation").select("id").single()).data as { id: string }).id;
     const ref = `CF${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
     const r = await db.from("checkout_orders").insert({ order_ref: ref, event_id: ev, buyer_id: buyer.id, token: `tok-${ref}`, amount: 40, fee: 2, commission: 2, currency: "GBP", status: "issued", stripe_session: `cs_test_fake_${ref}`, kind: "primary" });
     expect(r.error).toBeNull();
@@ -107,7 +110,7 @@ test.describe("cancellation fees by cause", () => {
     expect(await charge(ev)).toEqual({ amount: 4.4, status: "on_hold" });
     // The organiser can't decide their own claim; a Gala Dock reviewer can.
     expect((await c.rpc("admin_review_force_majeure", { p_event: ev, p_approve: true, p_reason: "self-approve" })).error?.message).toMatch(/not_authorized/);
-    const s = await signedIn(staff.email) as unknown as SupabaseClient;
+    const s = await staffC();
     expect((await s.rpc("admin_review_force_majeure", { p_event: ev, p_approve: true, p_reason: "Council closure notice checked." })).error).toBeNull();
     expect(await charge(ev)).toEqual({ amount: 4.4, status: "waived" });
     expect((await db.from("event_cancellations").select("fm_status").eq("event_id", ev).single()).data?.fm_status).toBe("approved");
@@ -138,7 +141,7 @@ test.describe("cancellation fees by cause", () => {
     const ev = await sold("Headliner Pulled Out");
     const c = await signedIn(owner.email) as unknown as SupabaseClient;
     await c.rpc("cancel_event_with_refunds", { p_event: ev, p_reason: "Our headliner cancelled at short notice.", p_cause: "force_majeure", p_fm_detail: "The headline act cancelled their tour for personal reasons." });
-    const s = await signedIn(staff.email) as unknown as SupabaseClient;
+    const s = await staffC();
     expect((await s.rpc("admin_review_force_majeure", { p_event: ev, p_approve: false, p_reason: "A performer cancelling isn’t force majeure under 2.4(c)." })).error).toBeNull();
     expect(await charge(ev)).toEqual({ amount: 4.4, status: "due" });
     const { data: n } = await db.from("notifications").select("body").eq("user_id", owner.id).ilike("title", "Force majeure not accepted%");

@@ -2,7 +2,7 @@ import { MapContent, MapDefs, MAP_ATTRIBUTION, elBounds, type MapEl, type MapSpa
 
 /** Read-only render of a saved plan (venue base + event overlay), fitted to its contents. Same renderer as the editor. */
 export function PlanPreview({ base, overlay, spaces = [], height = 200, tierColor, label = "Event layout preview" }: {
-  base: MapEl[]; overlay: MapEl[]; spaces?: MapSpace[]; height?: number; tierColor?: Record<string, string>; label?: string;
+  base: MapEl[]; overlay: MapEl[]; spaces?: MapSpace[]; height?: number | string; tierColor?: Record<string, string>; label?: string;
 }) {
   const all = [...base, ...overlay].filter(e => !e.hidden && e.type !== "layer");
   const drawn = all.filter(e => e.type !== "basemap");

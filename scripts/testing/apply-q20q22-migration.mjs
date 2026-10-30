@@ -1,0 +1,83 @@
+// Applies ONE reviewed lane D migration (Q20 ticket inventory/checkout, Q22 resale/launch/waiting/fraud) to the shared Supabase
+// project and records it in supabase_migrations.schema_migrations in the same implicit transaction, so history does not drift.
+// Never logs credentials or records.
+// Usage:
+//   node --env-file=.env --env-file=.env.local scripts/testing/apply-q20q22-migration.mjs <file-name> --dry-run [--exercise=<file.sql>] | --apply
+//   node --env-file=.env --env-file=.env.local scripts/testing/apply-q20q22-migration.mjs --seed-machine=ticket_order --dry-run | --apply
+// --exercise runs the migration and then an exercise script (a DO block that calls every changed/new function with realistic
+// arguments and ends with `raise exception 'EXERCISE_OK: ...'`), so the transaction always aborts and nothing is kept.
+// --seed-machine applies only that machine's rows + guard trigger from the generator output (scripts/gen-foundation-sql.mjs,
+// the same text as 209912310001_state_seed.sql), so machines other lanes add concurrently are left to their own apply step.
+import fs from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+
+const REVIEWED = [
+  "202610294015_ticket_inventory_checkout.sql",
+  "202610294016_ticket_issue_serialise.sql",
+  "202610294017_ticket_resale_launch_fraud.sql",
+];
+const dryRun = process.argv.includes("--dry-run");
+if (!dryRun && !process.argv.includes("--apply")) throw new Error("Use --dry-run (rolled-back transaction) or --apply");
+if (!process.env.SUPABASE_PROJECT_REF || !process.env.SUPABASE_PAT_KEY) throw new Error("Missing database management configuration");
+
+const run = async query => {
+  const response = await fetch(`https://api.supabase.com/v1/projects/${process.env.SUPABASE_PROJECT_REF}/database/query`, {
+    method: "POST", headers: { Authorization: `Bearer ${process.env.SUPABASE_PAT_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query }), signal: AbortSignal.timeout(120_000) });
+  const text = await response.text();
+  if (!response.ok) throw new Error(`Database query failed: HTTP ${response.status} ${text.replace(/\s+/g, " ").slice(0, 4000)}`);
+  return JSON.parse(text);
+};
+
+// Reviewed machines and their guarded table (for the trigger statement).
+const MACHINES = { ticket_order: "checkout_orders" };
+const seedArg = process.argv.find(a => a.startsWith("--seed-machine="));
+if (seedArg) {
+  const machine = seedArg.split("=")[1];
+  if (!MACHINES[machine]) throw new Error(`Not a reviewed lane D machine: ${machine}`);
+  const generated = execFileSync(process.execPath, ["scripts/gen-foundation-sql.mjs"], { encoding: "utf8" });
+  const statements = generated.split(/;\n/).map(s => s.trim()).filter(Boolean);
+  const mine = statements.filter(s => s.includes(`values ('${machine}',`) || s.includes(`values\n  ('${machine}',`) || (new RegExp(`\\bon public\\.${MACHINES[machine]}\\b`).test(s) && s.includes(`${MACHINES[machine]}_state_guard`)));
+  if (mine.length !== 4) throw new Error(`Expected 4 generated statements for ${machine}, found ${mine.length}`);
+  const sql = [`delete from public.state_transitions where machine = '${machine}'`, `delete from public.state_machines where machine = '${machine}'`, ...mine].join(";\n") + ";";
+  await run(dryRun ? `begin;\n${sql}\nrollback;` : sql);
+  const rows = await run(`select (select count(*)::int from public.state_transitions where machine = '${machine}') as transitions, (select mode from public.state_machines where machine = '${machine}') as mode`);
+  console.log(`${dryRun ? "Dry run OK (rolled back)" : "Seeded"} machine ${machine}: ${JSON.stringify(rows[0])}`);
+  process.exit(0);
+}
+
+const file = process.argv[2];
+if (!REVIEWED.includes(file)) throw new Error(`Not a reviewed lane D migration: ${file ?? "(none)"}`);
+const [, version, name] = /^(\d{12})_(.+)\.sql$/.exec(file);
+const sql = await fs.readFile(`supabase/migrations/${file}`, "utf8");
+const tag = "$lane_d_migration$";
+if (sql.includes(tag)) throw new Error("Migration text collides with the history quote tag");
+if (/^\s*(begin|commit)\s*;/im.test(sql)) throw new Error("Migration must not manage its own transaction");
+
+const recorded = await run(`select count(*)::int as n from supabase_migrations.schema_migrations where version = '${version}'`);
+if (recorded[0]?.n) { console.log(`${file} is already recorded in schema_migrations; not re-applying.`); process.exit(0); }
+
+const exerciseArg = process.argv.find(a => a.startsWith("--exercise="));
+if (dryRun && exerciseArg) {
+  const exercise = await fs.readFile(exerciseArg.slice("--exercise=".length), "utf8");
+  try { await run(`begin;\n${sql}\n;\n${exercise}\n;\nrollback;`); }
+  catch (e) {
+    const m = /EXERCISE_OK: (.*?)(?:\\nCONTEXT|$)/.exec(e.message);
+    if (m) { console.log(`Dry run + exercise OK (rolled back): ${file}\n${m[1].replace(/\\"/g, "\"")}`); process.exit(0); }
+    throw e;
+  }
+  throw new Error("Exercise did not end with EXERCISE_OK; check the exercise script");
+}
+
+if (dryRun) {
+  // Runs the migration inside an explicit transaction that is always rolled back: proves it applies cleanly, changes nothing.
+  await run(`begin;\n${sql}\n;\nrollback;`);
+  console.log(`Dry run OK (rolled back): ${file}`);
+  process.exit(0);
+}
+
+// One request = one implicit transaction: the migration and its history row commit together or not at all.
+await run(`${sql}\n;\ninsert into supabase_migrations.schema_migrations(version, name, statements) values ('${version}', '${name}', array[${tag}${sql}${tag}]);`);
+const check = await run(`select count(*)::int as n from supabase_migrations.schema_migrations where version = '${version}'`);
+if (!check[0]?.n) throw new Error("Migration ran but its history row is missing");
+console.log(`Applied and recorded ${file}`);

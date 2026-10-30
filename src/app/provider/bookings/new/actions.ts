@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { DRAFT_COOKIE, POLICIES, readDraft, type BookingDraft } from "./draft";
+import { resolveTerm } from "@/lib/master-data";
 
 const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : undefined);
 const num = (v: unknown, min = 0, max = 1e7) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : undefined; };
@@ -64,7 +65,9 @@ export async function confirmBooking(patch: BookingDraft): Promise<ActionResult>
   const policy = POLICIES[d.policy ?? "standard"];
   const { data, error } = await db.rpc("provider_create_booking", { p_ws: workspace.id, p: {
     listing_id: d.venueId, space_id: d.spaceId, package_id: d.packageId || null, client_name: d.clientName, client_org: d.clientOrg ?? "", client_email: d.contactEmail ?? "",
-    event_name: d.eventName, event_type: d.eventType ?? "custom", starts_at: startsAt, ends_at: endsAt, guests: d.guests ?? null, layout: d.layout ?? "", hold: d.hold ? "true" : "false",
+    // The draft keeps the wording; the record stores the canonical key.
+    event_name: d.eventName, event_type: resolveTerm("event_type", d.eventType) ?? "custom",
+    starts_at: startsAt, ends_at: endsAt, guests: d.guests ?? null, layout: d.layout ?? "", hold: d.hold ? "true" : "false",
     value, deposit_pct: d.depositPct ?? 25, cancellation: policy.tiers,
     items: [{ label: "Venue hire", amount: hire }, ...(fnb ? [{ label: "Food & beverage", amount: fnb }] : []), ...(d.services ?? []).map(s => ({ label: s.label, amount: s.qty * s.unitPrice }))],
     details: { beo: { setup: `${d.setupHours ?? 0} hours before doors`, breakdown: `${d.breakdownHours ?? 0} hours after close`, fnb: d.fnbMode === "none" ? "No F&B" : (d.fnbIncludes ?? []).join(", "), access: "", compliance: [] },

@@ -7,8 +7,8 @@ import { Plus, Users, LayoutGrid, Sparkles, Save, CircleCheck, ArrowRight, Theat
 import type { LucideIcon } from "lucide-react";
 import { useToast } from "@/components/ui";
 import type { MapEl } from "./venue-map";
-import { PlanBuilder } from "@/components/venue-plan/plan-builder";
-import { saveSpace, saveStructure, type SpaceInput } from "../[id]/actions";
+import { StructureEditor } from "./structure-editor";
+import { saveSpace, type SpaceInput, type StructureMeta } from "../[id]/actions";
 import { setSpaceStatus } from "../../listings/actions";
 
 export type EditorSpace = Omit<SpaceInput, "status"> & { id: string; status: string; image: string };
@@ -18,9 +18,10 @@ const numOrNull = (v: string) => (v.trim() === "" ? null : Math.max(0, Number(v)
 
 /**
  * Spaces & structural map editor (venue profile "Spaces & Map" tab and Add Venue step 2).
- * Space edits save through provider_save_space; the map saves as a new structure version (draft or published) through provider_save_structure.
+ * Space edits save through provider_save_space; the map saves as a new, version-checked structure version (draft or published) through
+ * venue_structure_save (StructureEditor: stale-version reload-merge, calibration and rule pack).
  */
-export function SpacesEditor({ venueId, spaces, elements: initial, version, geo = null, footer }: { venueId: string; spaces: EditorSpace[]; elements: MapEl[]; version: number; geo?: { lat: number; lng: number } | null; footer?: React.ReactNode }) {
+export function SpacesEditor({ venueId, spaces, elements: initial, version, latestVersion, meta = {}, geo = null, footer }: { venueId: string; spaces: EditorSpace[]; elements: MapEl[]; version: number; latestVersion?: number; meta?: StructureMeta; geo?: { lat: number; lng: number } | null; footer?: React.ReactNode }) {
   const router = useRouter(), toast = useToast();
   const [pending, start] = useTransition();
   const [selId, setSelId] = useState<string>(spaces[0]?.id ?? "new");
@@ -91,7 +92,7 @@ export function SpacesEditor({ venueId, spaces, elements: initial, version, geo 
 
     <div className="se-right">
       <section className="ws-panel se-map"><div className="se-head"><div><h2>Venue map &amp; floor plan</h2><p>Overlay floor plans, aerials or the street map, drag in seating, tables and facilities, or draw your own.</p></div></div>
-        <PlanBuilder initial={initial} spaces={mapSpaces} version={version} geo={geo} height={460} onSave={(els, publish) => saveStructure(venueId, els, publish)} /></section>
+        <StructureEditor venueId={venueId} initial={initial} spaces={mapSpaces} version={version} latestVersion={latestVersion ?? version} geo={geo} meta={meta} /></section>
       <section className="ws-panel se-suggest"><h2><Sparkles aria-hidden="true" />Gala Agent suggestions</h2><p>Based on your current setup:</p>
         {suggestions.length ? <ul>{suggestions.map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul> : <p className="se-ok">Your spaces and map look complete.</p>}
         <Link className="ws-link" href={`/provider/agent?goal=${encodeURIComponent("Review my venue spaces, layouts and map")}`}>Refine with Gala Agent <ArrowRight aria-hidden="true" /></Link></section>

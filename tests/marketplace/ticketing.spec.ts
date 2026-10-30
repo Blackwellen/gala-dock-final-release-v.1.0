@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, anon, BASE, cleanup, createUser, login, signedIn } from "../phase1/helpers";
+import { admin, anon, BASE, cleanup, createUser, login, signedIn, insertEventFixture, seedWorkspace } from "../phase1/helpers";
 
 // Phase 7 ticketing (§46–51 + user additions): detailed scan outcomes, re-entry, session validity, rotating signed credentials
 // verified end-to-end through the scanner, two-step transfer invalidating old credentials, waiting lists, PDF tickets, oversell safety.
@@ -17,7 +17,7 @@ test.describe("ticketing", () => {
 
   test.beforeAll(async () => {
     [owner, buyer, friend, out] = await Promise.all([createUser("tk-own"), createUser("tk-buy"), createUser("tk-friend"), createUser("tk-out")]);
-    event = ((await db.from("events").insert({ owner_id: owner.id, name: "Ticket test", visibility: "public", status: "on_sale", starts_at: new Date(Date.now() + 864e5).toISOString(), settings: { reentry: false } }).select("id").single()).data as { id: string }).id;
+    event = ((await insertEventFixture({ owner_id: owner.id, name: "Ticket test", visibility: "public", status: "on_sale", starts_at: new Date(Date.now() + 864e5).toISOString(), settings: { reentry: false } }, "ticketing").select("id").single()).data as { id: string }).id;
     other = ((await db.from("events").insert({ owner_id: owner.id, name: "Other event", starts_at: new Date(Date.now() + 2 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
     tier = ((await db.from("ticket_tiers").insert({ event_id: event, name: "GA", price: 20, quantity: 5, status: "on_sale", order_limit: 10 }).select("id").single()).data as { id: string }).id;
     ticket = ((await db.from("tickets").insert({ code, event_id: event, tier_id: tier, holder_id: buyer.id, attendee_name: "Buyer Person", attendee_email: buyer.email, order_ref: "GD-TEST", price_paid: 20 }).select("id").single()).data as { id: string }).id;
@@ -114,6 +114,11 @@ test.describe("ticketing", () => {
   });
 
   test("waiting list: join, then notified when inventory frees", async () => {
+    // Paid tiers are offered only when the seller can take payment (202610293036, the checkout rule): the owner's workspace gets a
+    // ready Stripe account (as the webhook would record it) for this test.
+    const sellerWs = await seedWorkspace(owner.id, "organizer", "Ticket test seller");
+    expect((await db.from("connect_accounts").insert({ workspace_id: sellerWs, stripe_account_id: `acct_test_tk${randomUUID().slice(0, 8)}`, account_type: "standard", charges_enabled: true,
+      payouts_enabled: true, details_submitted: true, card_payments_capability: "active", transfers_capability: "active", verification_state: "verified" })).error).toBeNull();
     await db.from("ticket_tiers").update({ sold: 5 }).eq("id", tier);
     expect((await buyC.rpc("join_waitlist", { p_event: event, p_tier: tier, p_qty: 2 })).error).toBeNull();
     await db.from("ticket_tiers").update({ sold: 3 }).eq("id", tier);
@@ -128,6 +133,7 @@ test.describe("ticketing", () => {
     await db.rpc("notify_waitlists");
     expect(((await buyC.from("ticket_waitlist").select("status").eq("id", w.id).single()).data as { status: string }).status).toBe("expired");
     expect(((await db.from("ticket_tiers").select("held").eq("id", tier).single()).data as { held: number }).held).toBe(0);
+    await db.from("connect_accounts").delete().eq("workspace_id", sellerWs); await db.from("workspaces").delete().eq("id", sellerWs);
   });
 
   test("§47 inventory safety: 15 concurrent holds never oversell 5 tickets", async () => {

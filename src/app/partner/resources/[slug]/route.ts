@@ -54,7 +54,7 @@ Questions? Use Contact Support in the partner portal.
 </a>
 
 <!-- Event discovery link -->
-<a href="${origin}/events?ref=${encodeURIComponent(p.referral_code)}" target="_blank" rel="noopener">Browse events on Gala Dock</a>
+<a href="${origin}/?ref=${encodeURIComponent(p.referral_code)}" target="_blank" rel="noopener">Plan and book events on Gala Dock</a>
 `, "text/html; charset=utf-8");
     case "email-templates": return text("gala-dock-email-templates.txt", `Subject: The easier way to plan your next event
 

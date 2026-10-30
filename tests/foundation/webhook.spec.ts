@@ -16,6 +16,7 @@ const send = async (event: object, sign = true) => {
 test.describe("stripe webhook: idempotent, authoritative", () => {
   let owner: { id: string }, ws: string, eventId: string, ref: string;
   const acct = `acct_test_${randomUUID().slice(0, 8)}`;
+  const refs: string[] = [];
 
   test.beforeAll(async () => {
     expect(secret, "STRIPE_WEBHOOK_SECRET_SANDBOX in .env").toMatch(/^whsec_/);
@@ -24,11 +25,14 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
     await admin.from("workspaces").update({ stripe_account_id: acct } as never).eq("id", ws);
     const ev = await admin.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: "Webhook Event" } as never).select("id").single();
     eventId = (ev.data as { id: string }).id;
-    ref = `GD-T${randomUUID().slice(0, 6).toUpperCase()}`;
+  });
+  test.beforeEach(async () => {
+    ref = `GD-T${randomUUID().replaceAll("-", "").slice(0, 16).toUpperCase()}`;
+    refs.push(ref);
     const o = await admin.from("checkout_orders").insert({ order_ref: ref, event_id: eventId, buyer_id: owner.id, token: randomUUID(), amount: 50, fee: 5, currency: "GBP", status: "paid", lines: [], kind: "primary" } as never);
     expect(o.error).toBeNull();
   });
-  test.afterAll(async () => { await admin.from("checkout_orders").delete().eq("order_ref", ref); await cleanup(); });
+  test.afterAll(async () => { await admin.from("checkout_orders").delete().in("order_ref", refs); await cleanup(); });
 
   test("rejects unsigned/forged payloads", async () => {
     expect((await send({ id: "evt_x", type: "ping", data: { object: { id: "x" } } }, false)).status).toBe(400);
@@ -53,19 +57,19 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
 
   test("payment_intent.succeeded posts one balanced ledger transaction", async () => {
     const pi = `pi_${randomUUID().slice(0, 12)}`;
-    const event = { id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", data: { object: { id: pi, amount_received: 5000, currency: "gbp", metadata: { order_ref: ref } } } };
-    await send(event); await send({ ...event, id: `evt_${randomUUID()}` }); // a second delivery with a new event id must still not double-post
+    const event = { id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", data: { object: { id: pi, amount_received: 5500, currency: "gbp", metadata: { order_ref: ref } } } };
+    expect((await send(event)).status).toBe(200); expect((await send({ ...event, id: `evt_${randomUUID()}` })).status).toBe(200); // a second delivery with a new event id must still not double-post
     const { data: txs } = await admin.from("ledger_transactions" as never).select("id,kind").eq("stripe_ref", pi);
     expect(txs).toHaveLength(1);
     const { data: lines } = await admin.from("ledger_entries" as never).select("account,amount_minor").eq("transaction_id", (txs as { id: string }[])[0].id);
     const byAccount = Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]));
     // £5.00 booking fee includes £0.83 Gala Dock VAT, which is owed to HMRC rather than revenue.
-    expect(byAccount).toEqual({ cash_stripe: 5000, platform_fee: -417, tax_payable: -83, provider_payable: -4500 });
+    expect(byAccount).toEqual({ cash_stripe: 5500, platform_fee: -417, tax_payable: -83, provider_payable: -5000 });
   });
 
   test("charge.dispute.* mirrors the chargeback, opens one support case and posts funds movements once", async () => {
     const pi = `pi_${randomUUID().slice(0, 12)}`, dp = `dp_${randomUUID().slice(0, 12)}`;
-    await send({ id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", data: { object: { id: pi, amount_received: 4000, currency: "gbp", metadata: { order_ref: ref } } } });
+    expect((await send({ id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", data: { object: { id: pi, amount_received: 5500, currency: "gbp", metadata: { order_ref: ref } } } })).status).toBe(200);
     const dispute = (status: string) => ({ id: dp, amount: 4000, currency: "gbp", charge: `ch_${pi}`, payment_intent: pi, reason: "fraudulent", status, evidence_details: { due_by: Math.floor(Date.now() / 1000) + 7 * 86400, submission_count: 0 } });
     expect((await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.created", data: { object: dispute("needs_response") } })).body).toEqual({ received: true });
     await send({ id: `evt_${randomUUID()}`, type: "charge.dispute.funds_withdrawn", data: { object: dispute("needs_response") } });
@@ -86,7 +90,15 @@ test.describe("stripe webhook: idempotent, authoritative", () => {
     const ch = `ch_${randomUUID().slice(0, 12)}`;
     const refund = (amount: number) => ({ id: `evt_${randomUUID()}`, type: "charge.refunded", data: { object: { id: ch, amount_refunded: amount, currency: "gbp", metadata: { order_ref: ref } } } });
     await send(refund(1000)); await send(refund(1000)); await send(refund(2500));
-    const { data: txs } = await admin.from("ledger_transactions" as never).select("description").eq("stripe_ref", ch).order("posted_at");
-    expect((txs as { description: string }[]).map(t => t.description)).toEqual([`Refund ${ref} (cumulative 1000)`, `Refund ${ref} (cumulative 2500)`]);
+    const { data: txs } = await admin.from("ledger_transactions" as never).select("id").eq("stripe_ref", ch).order("posted_at");
+    expect(txs).toHaveLength(2);
+    const amounts: number[] = [];
+    for (const tx of txs as { id: string }[]) {
+      const { data: cash } = await admin.from("ledger_entries" as never).select("amount_minor").eq("transaction_id", tx.id).eq("account", "cash_stripe").single();
+      const entry = cash as unknown as { amount_minor: number } | null;
+      expect(entry).not.toBeNull();
+      amounts.push(Number(entry!.amount_minor));
+    }
+    expect(amounts).toEqual([-1000, -1500]); // Repeat cumulative 1000 posts no increment; cumulative 2500 posts only the difference.
   });
 });

@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, createHmac } from "node:crypto";
+import { presignR2 } from "@/lib/files/presign";
 
 /**
  * Minimal Cloudflare R2 client (S3 API, AWS Signature V4) — no SDK dependency. Environment contract:
@@ -60,3 +61,14 @@ export async function r2Get(key: string) { const r = await r2("GET", key); if (!
 export async function r2Delete(key: string) { const r = await r2("DELETE", key); if (!r.ok && r.status !== 404) throw new Error(`r2_delete_${r.status}`); }
 /** Bucket reachability check for health (lists at most one key). */
 export async function r2Ping() { const t0 = Date.now(); const r = await r2("GET", "", { query: { "list-type": "2", "max-keys": "1" } }); return { ok: r.ok, status: r.status, ms: Date.now() - t0 }; }
+
+/**
+ * Q04 presigned URL for one tenant-scoped key (see tenantKey in src/lib/files/policy.ts). Resolves the jurisdiction host like the
+ * signed client. Caller authorises the actor first; expiry is capped at 15 minutes.
+ */
+export async function r2PresignedUrl(method: "GET" | "PUT", key: string, expiresSeconds = 300, contentType?: string) {
+  if (!r2Configured()) throw new Error("r2_not_configured");
+  const host = await bucketHost();
+  return presignR2({ endpoint: `https://${host}`, bucket: process.env.CLOUDFLARE_R2_BUCKET!, accessKeyId: process.env.R2_ACCESS_KEY_ID!, secretAccessKey: process.env.R2_SECRET_ACCESS_KEY! },
+    { method, key, expiresSeconds, contentType });
+}

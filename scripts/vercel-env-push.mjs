@@ -8,8 +8,7 @@ const parse = file => Object.fromEntries(fs.existsSync(file) ? fs.readFileSync(f
   .filter(l => /^[A-Z0-9_]+=/.test(l)).map(l => { const i = l.indexOf("="); return [l.slice(0, i), l.slice(i + 1).trim().replace(/^["']|["']$/g, "")]; }) : []);
 const vars = { ...parse(".env"), ...parse(".env.local") };
 const EXCLUDE = new Set(["SUPABASE_PAT_KEY"]); // management token: local scripts only
-// Payout onboarding runs in Stripe test mode on Vercel until a live Connect key is deliberately configured.
-if (vars.STRIPE_SECRET_KEY_SANDBOX && !vars.STRIPE_CONNECT_SECRET_KEY) vars.STRIPE_CONNECT_SECRET_KEY = vars.STRIPE_SECRET_KEY_SANDBOX;
+// Stripe Connect must be configured explicitly. Never promote a sandbox credential to a production key.
 // The app reads RESEND_API_KEY; .env names the Resend key RESEND_API.
 if (vars.RESEND_API && !vars.RESEND_API_KEY) vars.RESEND_API_KEY = vars.RESEND_API;
 

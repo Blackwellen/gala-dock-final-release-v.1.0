@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Lock, Plus, MoreHorizontal, CalendarCheck, Ticket, MessageSquare, Megaphone, FileText, Clock4, KeyRound, Download, Trash2, Copy, Loader2, Check, Eye, EyeOff, CreditCard } from "lucide-react";
 import { Dialog, Menu, Toggle, useAction, useKitToast } from "@/components/kit/client";
-import { saveProfile, saveNotifications, changePassword, accountDeletion, calendarFeed, startAddCard, setDefaultCard, removeCard } from "@/lib/actions/account";
+import { saveProfile, saveEventPreferences, saveNotifications, changePassword, accountDeletion, calendarFeed, startAddCard, setDefaultCard, removeCard } from "@/lib/actions/account";
+import { customerInterests, currencies } from "@/lib/onboarding-schema";
 import { passwordChecks, passwordStrength } from "@/lib/password";
 import { createClient } from "@/lib/supabase/client";
 import type { SavedCard } from "@/lib/payments";
@@ -30,14 +31,15 @@ export function AvatarButton({ url, name }: { url: string | null; name: string }
 }
 
 type P = { full_name: string; phone: string; country: string; language: string; bio: string; date_of_birth: string };
-export function ProfileDetails({ profile, email, verified, countries, langs }: { profile: P; email: string; verified: boolean; countries: Record<string, string>; langs: Record<string, string> }) {
+export function ProfileDetails({ profile, email, verified, countries, langs, avatar }: { profile: P; email: string; verified: boolean; countries: Record<string, string>; langs: Record<string, string>; avatar?: string | null }) {
   const [open, setOpen] = useState(false); const [v, setV] = useState(profile); const { run, pending } = useAction(); const [now] = useState(() => Date.now());
   const dob = profile.date_of_birth ? new Date(`${profile.date_of_birth}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "Not set";
-  return <section className="ce-card ac-card">
+  return <section className="ce-card ac-card ac-profile-details">
+    <div className="ac-mobile-identity"><AvatarButton url={avatar ?? null} name={profile.full_name} /><div><b>{profile.full_name}</b><small>{email}</small><small>{profile.phone || "Phone not added"}</small>{verified && <span className="ac-verified">Verified email</span>}</div></div>
     <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Profile details</h2><p className="ac-hint">Keep your personal information up to date.</p></div><button className="k-btn outline ac-edit" onClick={() => { setV(profile); setOpen(true); }}>Edit</button></div>
     <div className="ac-fields">
       <div className="ac-f"><small>Full name</small><b>{profile.full_name}</b></div>
-      <div className="ac-f"><small>Email address</small><b className="k-between">{email}{verified && <i className="ac-ver">✓ Verified</i>}</b></div>
+      <div className="ac-f"><small>Email address</small><b className="k-between ac-email"><span title={email}>{email}</span>{verified && <i className="ac-ver">✓ Verified</i>}</b></div>
       <div className="ac-f"><small>Phone number</small><b>{profile.phone ? <><Flag cc={profile.country} />{profile.phone}</> : <span className="k-muted">Not added</span>}</b></div>
       <div className="ac-f"><small>Date of birth</small><b className="k-between">{dob}<Lock size={15} /></b><em>Only visible when required</em></div>
       <div className="ac-f"><small>Country</small><b><Flag cc={profile.country} />{countries[profile.country] ?? profile.country}</b></div>
@@ -55,6 +57,19 @@ export function ProfileDetails({ profile, email, verified, countries, langs }: {
         <div className="k-row wide" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending}>{pending && <Loader2 size={15} className="k-spin" />}Save changes</button></div>
       </form>
     </Dialog>
+  </section>;
+}
+
+export function EventPreferences({ preferences }: { preferences: { home_area: string; currency: string; interests: string[] } }) {
+  const [open, setOpen] = useState(false); const [value, setValue] = useState(preferences); const { run, pending } = useAction();
+  return <section className="ce-card ac-card"><div className="k-between"><h2>Event preferences</h2><button className="k-btn outline ac-edit" onClick={() => { setValue(preferences); setOpen(true); }}>Edit preferences</button></div>
+    <dl className="ac-preferences"><div><dt>Interests</dt><dd>{preferences.interests.join(", ") || "Not set"}</dd></div><div><dt>Preferred area</dt><dd>{preferences.home_area || "Not set"}</dd></div><div><dt>Currency</dt><dd>{preferences.currency}</dd></div></dl>
+    <Dialog open={open} onClose={() => setOpen(false)} title="Edit event preferences"><form className="ac-preference-form" onSubmit={async e => { e.preventDefault(); const result = await run(() => saveEventPreferences(value)); if (result.ok) setOpen(false); }}>
+      <label className="k-field"><span>Preferred area</span><input className="k-input" value={value.home_area} maxLength={150} onChange={e => setValue(v => ({ ...v, home_area: e.target.value }))} /></label>
+      <label className="k-field"><span>Currency</span><select aria-label="Currency" className="k-input" value={value.currency} onChange={e => setValue(v => ({ ...v, currency: e.target.value }))}>{currencies.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}</select></label>
+      <fieldset className="ac-interest-options"><legend>Interests</legend>{customerInterests.map(interest => <label key={interest}><input type="checkbox" checked={value.interests.includes(interest)} onChange={e => setValue(v => ({ ...v, interests: e.target.checked ? [...v.interests, interest] : v.interests.filter(i => i !== interest) }))} />{interest}</label>)}</fieldset>
+      <div className="k-row"><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending}>Save preferences</button></div>
+    </form></Dialog>
   </section>;
 }
 
@@ -84,15 +99,15 @@ function AddCard({ open, onClose }: { open: boolean; onClose: () => void }) {
   </Dialog>;
 }
 const BRAND: Record<string, string> = { visa: "VISA", mastercard: "MC", amex: "AMEX", discover: "DISC" };
-export function CardsPanel({ cards, compact }: { cards: SavedCard[]; compact?: boolean }) {
-  const [add, setAdd] = useState(false); const { run } = useAction();
+export function CardsPanel({ cards, compact, unavailable = false }: { cards: SavedCard[]; compact?: boolean; unavailable?: boolean }) {
+  const [add, setAdd] = useState(false); const { run } = useAction(); const router = useRouter();
   return <section className="ce-card ac-card">
     <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Payment methods</h2><p className="ac-hint">Securely store your payment methods for faster checkout.</p></div><button className="k-btn primary ac-addpm" onClick={() => setAdd(true)}><Plus size={17} />Add payment method</button></div>
     <ul className="ac-pms">{cards.slice(0, compact ? 4 : 10).map(c => <li key={c.id}><span className={`ac-brand ${c.brand}`}>{c.wallet === "apple_pay" ? "Pay" : BRAND[c.brand] ?? <CreditCard size={18} />}</span><span className="k-grow"><b>{c.wallet === "apple_pay" ? "Apple Pay" : c.wallet === "google_pay" ? "Google Pay" : `${c.brand[0]!.toUpperCase()}${c.brand.slice(1)} ending in ${c.last4}`}</b><small>Expires {c.exp}</small></span>{c.isDefault && <span className="ac-default">Default</span>}
       <Menu label={`Options for card ending ${c.last4}`} width={200} trigger={({ toggle, open, id }) => <button className="k-icon-btn ac-pm-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Options for card ending ${c.last4}`}><MoreHorizontal size={17} /></button>}>{close => <>
         {!c.isDefault && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setDefaultCard(c.id)); }}><Check size={14} />Make default</button>}
         <button role="menuitem" className="k-menu-item k-red" onClick={async () => { close(); if ((await confirmDialog({ title: `Remove card ending ${c.last4}?`, confirmLabel: "Remove", danger: true }))) void run(() => removeCard(c.id)); }}><Trash2 size={14} />Remove card</button></>}</Menu></li>)}
-      {!cards.length && <li className="ac-pm-empty"><CreditCard size={20} /><span>No saved cards yet. Add one for faster bookings and ticket checkout.</span></li>}</ul>
+      {unavailable ? <li className="ac-pm-empty"><span role="status">Payment methods are temporarily unavailable.</span><button className="k-btn outline" onClick={() => router.refresh()}>Retry</button></li> : !cards.length && <li className="ac-pm-empty"><CreditCard size={20} /><span>No saved cards yet. Add one for faster bookings and ticket checkout.</span></li>}</ul>
     <AddCard open={add} onClose={() => setAdd(false)} />
   </section>;
 }

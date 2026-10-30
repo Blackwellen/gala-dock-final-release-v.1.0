@@ -1,5 +1,6 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { isSealed, keyringStatus, open as openField, seal as sealField } from "@/lib/crypto/field-encryption";
 
 /** Google / Microsoft 365 calendar OAuth config. A provider is offered only when its client id + secret are configured;
  *  otherwise the UI falls back to the private ICS subscription link. */
@@ -62,11 +63,14 @@ function key() {
   return createHash("sha256").update(`gala-dock/calendar-tokens/${s}`).digest();
 }
 export function sealTokens(t: Tokens) {
+  // Shared field-encryption key ring when configured (rotatable, context-bound); legacy v1 key otherwise.
+  if (keyringStatus().status === "ready") return sealField(JSON.stringify(t), "calendar_tokens");
   const iv = randomBytes(12), c = createCipheriv("aes-256-gcm", key(), iv);
   const data = Buffer.concat([c.update(JSON.stringify(t), "utf8"), c.final()]);
   return `v1.${iv.toString("base64url")}.${c.getAuthTag().toString("base64url")}.${data.toString("base64url")}`;
 }
 export function openTokens(s: string): Tokens {
+  if (isSealed(s)) return JSON.parse(openField(s, "calendar_tokens")) as Tokens;
   const [v, iv, tag, data] = s.split("."); if (v !== "v1" || !iv || !tag || !data) throw new Error("bad_token_blob");
   const d = createDecipheriv("aes-256-gcm", key(), Buffer.from(iv, "base64url")); d.setAuthTag(Buffer.from(tag, "base64url"));
   return JSON.parse(Buffer.concat([d.update(Buffer.from(data, "base64url")), d.final()]).toString("utf8")) as Tokens;

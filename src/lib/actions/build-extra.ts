@@ -35,12 +35,12 @@ export async function replaceWith(eventId: string, oldItemId: string, listingId:
 }
 
 /** From Saved/Discover: add a listing to one of my events and go straight to its booking request. */
-export async function addAndRequest(eventId: string, listingId: string, category: string, mode: "add" | "quote" | "hold"): Promise<ActionResult> {
+export async function addAndRequest(eventId: string, listingId: string, category: string, mode: "add" | "quote" | "hold", date?: string): Promise<ActionResult> {
   const o = await ownEvent(eventId); if (!o) return { ok: false, error: "Event not found." };
   const lid = Id.safeParse(listingId); if (!lid.success) return { ok: false, error: "Listing not found." };
   const { data: existing } = await o.ctx.supabase.from("build_items").select("id").eq("event_id", o.e.id).eq("listing_id", lid.data).not("status", "in", "(cancelled,declined,expired)").maybeSingle();
   if (!existing) { const r = await addToBuild(eventId, lid.data, category); if (!r.ok) return r; }
   const { data: it } = await o.ctx.supabase.from("build_items").select("id").eq("event_id", o.e.id).eq("listing_id", lid.data).order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (!it) return { ok: false, error: "Could not add to your event." };
-  return mode !== "add" ? { ok: true, redirect: `/account/events/${o.e.id}/book?step=1&item=${it.id}${mode === "hold" ? "&option=hold" : ""}` } : { ok: true, message: existing ? "Already in that event's build." : "Added to your event build.", redirect: `/account/events/${o.e.id}/build` };
+  return mode !== "add" ? { ok: true, redirect: `/account/events/${o.e.id}/book?step=1&item=${it.id}${mode === "hold" ? "&option=hold" : ""}${date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? `&date=${date}` : ""}` } : { ok: true, message: existing ? "Already in that event's build." : "Added to your event build.", redirect: `/account/events/${o.e.id}/build` };
 }

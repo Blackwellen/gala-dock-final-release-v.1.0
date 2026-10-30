@@ -46,5 +46,12 @@
 .sv-acts { gap: 6px; } .sv-btn { padding: 0 8px; font-size: 12px; gap: 5px; min-width: 0; } .sv-acts > div:last-child { flex: 1.15; }
 /* Head rhythm re-measured: subtitle 92px, tabs 123px, column titles 160px. */
 .sv-head p { margin-top: 2px; font-size: 14.5px; color: var(--k-muted); } .sv-head { margin-bottom: 10px; }
+/* W02: search + sort sit on the subtitle line in the reference (centre 152px, ours was 137px); venue/service images are 108px there. */
+@media (min-width: 1001px) { .sv-tools { margin-bottom: -15px; } }
+.sv-col:is([data-col="venues"], [data-col="services"]) .sv-img { height: 108px; }
 .sv-tabs { margin-bottom: 12px; } .sv-tabs a { height: 42px; }
 .sv-col { padding-top: 10px !important; }
+/* W02 pass 4: the Saved reference keeps the wider 45→1498 content edge (the global gutter moved to 32/28px). */
+@media (min-width: 1280px) { .c-root .sv { padding: 0 10px 0 13px; } }
+/* W02 pass 4 — phone (≤480px), PWA #223: compact page title and subtitle like the other app screens. */
+@media (max-width: 480px) { .c-root .sv-head { margin: 0 0 10px; } .c-root .sv-head h1 { font-size: 20px; } .c-root .sv-head p { font-size: 12px; margin-top: 2px; } }

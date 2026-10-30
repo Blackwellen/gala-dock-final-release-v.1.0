@@ -59,7 +59,8 @@
 .pr-box em.up{color:#14a668}.pr-box em.down{color:#e5263f}
 .pr-box em.pend{display:flex;align-items:center;gap:8px;color:#f08a00;font-weight:500}
 .pr-box em.pend::before{content:"";width:8px;height:8px;border-radius:50%;background:#f39a1c}
-.pr-box em.plain{color:#14197a;font-weight:500;font-size:14px;padding-left:32px}
+.pr-box em.plain{color:#14197a;font-weight:500;font-size:14px}
+.pr-box b.ic+em.plain{padding-left:32px}
 
 /* Bottom tables */
 .pr-bottom{display:grid;grid-template-columns:minmax(0,466fr) minmax(0,406fr);gap:13px;margin-top:15px}
@@ -151,6 +152,6 @@
   .pr-banner h2{font-size:23px}
   .pt-panel.pr-rev{flex-direction:column}
   .pr-rev-side{width:auto}
-  .pr-box em.plain{padding-left:0}
+  .pr-box b.ic+em.plain{padding-left:0}
   .pr-share{flex-wrap:wrap}
 }

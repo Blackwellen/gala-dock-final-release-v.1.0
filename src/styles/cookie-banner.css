@@ -1,0 +1,16 @@
+/* Cookie choice banner (src/components/shared/cookie-banner.tsx). Bottom-left card; full-width sheet on phones above the PWA nav. */
+.gd-consent { position: fixed; z-index: 90; left: 20px; bottom: 20px; width: min(440px, calc(100vw - 40px)); padding: 18px 20px; border-radius: 14px; background: #fff; color: #0c1034; border: 1px solid #e3e8f4; box-shadow: 0 18px 50px rgba(12, 16, 52, .18); font: 14px/1.5 "Inter Variable", system-ui, sans-serif; display: flex; flex-direction: column; gap: 12px; }
+.gd-consent p { margin: 0; color: #46506f; } .gd-consent p b { display: block; margin-bottom: 4px; font-size: 15px; color: #0c1034; }
+.gd-consent a { color: #1b64f5; text-decoration: underline; text-underline-offset: 2px; }
+.gd-consent-acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.gd-consent-btn { min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #cfd8ee; background: #fff; color: #0c1034; font: inherit; font-weight: 600; cursor: pointer; }
+.gd-consent-btn.primary { background: #1b64f5; border-color: #1b64f5; color: #fff; }
+.gd-consent-btn:disabled { opacity: .6; cursor: progress; }
+.gd-consent-btn:focus-visible, .gd-consent a:focus-visible { outline: 3px solid #7d8bff; outline-offset: 2px; }
+.gd-consent small { color: #c0263f; }
+@media (max-width: 600px) {
+  .gd-consent { left: 12px; right: 12px; width: auto; bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .gd-consent-acts .gd-consent-btn { flex: 1; }
+}
+@media (max-height: 500px) and (orientation: landscape) { .gd-consent { bottom: 8px; padding: 12px 16px; gap: 8px; width: min(560px, calc(100vw - 24px)); } .gd-consent p { font-size: 13px; } }
+@media (prefers-color-scheme: dark) { .gd-consent { box-shadow: 0 18px 50px rgba(0, 0, 0, .45); } }

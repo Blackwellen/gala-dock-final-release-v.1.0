@@ -2,15 +2,17 @@
   "config": {
     "argv": [
       "C:\\Program Files\\nodejs\\node.exe",
-      "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
+      "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/foundation",
-      "--project=desktop",
-      "--trace",
-      "off"
+      "tests/release/tenant-security.spec.ts",
+      "tests/organizer/q40-event-composition.spec.ts",
+      "tests/organizer/s4-organiser-ui.spec.ts",
+      "tests/compliance/q26-licensing-safety.spec.ts",
+      "tests/release/organizer-plan-core.spec.ts",
+      "--project=desktop"
     ],
-    "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
-    "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+    "configFile": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\playwright.config.ts",
+    "rootDir": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/tests",
     "failOnFlakyTests": false,
     "forbidOnly": false,
     "fullyParallel": false,
@@ -26,7 +28,7 @@
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/test-results",
+        "outputDir": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -34,7 +36,7 @@
         },
         "id": "desktop",
         "name": "desktop",
-        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testDir": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/tests",
         "testIgnore": [
           "/responsive/"
         ],
@@ -44,7 +46,7 @@
         "timeout": 180000
       },
       {
-        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/test-results",
+        "outputDir": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -52,7 +54,7 @@
         },
         "id": "responsive",
         "name": "responsive",
-        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testDir": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/tests",
         "testIgnore": [],
         "testMatch": [
           "/responsive/"
@@ -64,23 +66,38 @@
       {
         "grep": {},
         "grepInvert": null,
-        "outputDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\test-results",
+        "outputDir": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
         "name": "desktop",
-        "testDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
-        "snapshotDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "testDir": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests",
+        "snapshotDir": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests",
         "testIgnore": {},
         "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
         "timeout": 180000,
         "use": {
           "baseURL": "http://localhost:3107",
-          "trace": "off",
+          "trace": "retain-on-failure",
           "launchOptions": {
             "executablePath": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+          },
+          "storageState": {
+            "cookies": [
+              {
+                "name": "gd_cc",
+                "value": "1",
+                "domain": "localhost",
+                "path": "/",
+                "expires": -1,
+                "httpOnly": false,
+                "secure": false,
+                "sameSite": "Lax"
+              }
+            ],
+            "origins": []
           },
           "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
           "viewport": {
@@ -128,26 +145,35 @@
   },
   "suites": [
     {
-      "title": "foundation\\foundation.spec.ts",
-      "file": "foundation/foundation.spec.ts",
+      "title": "compliance\\q26-licensing-safety.spec.ts",
+      "file": "compliance/q26-licensing-safety.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "foundation",
-          "file": "foundation/foundation.spec.ts",
-          "line": 8,
+          "title": "Q26 licensing, compliance, safety, accessibility & weather",
+          "file": "compliance/q26-licensing-safety.spec.ts",
+          "line": 23,
           "column": 6,
           "specs": [
             {
-              "title": "TypeScript and database agree on the permission matrix",
+              "title": "required failures are actionable readiness blockers (derived facts), visible in feasibility, readiness and the lifecycle hook",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 180000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
                   "expectedStatus": "passed",
                   "projectId": "desktop",
                   "projectName": "desktop",
@@ -156,32 +182,50 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1439,
+                      "duration": 696,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-11T09:40:43.858Z",
-                      "annotations": [],
+                      "startTime": "2026-10-29T14:10:09.203Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
                       "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "40e04d67599cc04f671a-3e7db6603513c243c033",
-              "file": "foundation/foundation.spec.ts",
-              "line": 20,
+              "id": "cc09161f300eeff268f3-065dad1707ca92421164",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 58,
               "column": 7
             },
             {
-              "title": "enforced machine rejects illegal agent run transitions; legal path works",
+              "title": "licences: lifecycle with evidence rules; venue's verified Q08 premises licence satisfies the rule; lapse before the event blocks",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 180000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
                   "expectedStatus": "passed",
                   "projectId": "desktop",
                   "projectName": "desktop",
@@ -190,32 +234,50 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 355,
+                      "duration": 1044,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-11T09:40:46.321Z",
-                      "annotations": [],
+                      "startTime": "2026-10-29T14:10:11.696Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
                       "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "40e04d67599cc04f671a-dd7119e10f971c3d7ee0",
-              "file": "foundation/foundation.spec.ts",
-              "line": 35,
+              "id": "cc09161f300eeff268f3-bcfce12b867514126680",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 78,
               "column": 7
             },
             {
-              "title": "audit-mode machine records violations without breaking existing flows",
+              "title": "expiry monitoring: the daily job expires lapsed licences and sends one reminder per threshold (idempotent)",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 180000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
                   "expectedStatus": "passed",
                   "projectId": "desktop",
                   "projectName": "desktop",
@@ -224,32 +286,50 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 394,
+                      "duration": 539,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-11T09:40:46.691Z",
-                      "annotations": [],
+                      "startTime": "2026-10-29T14:10:12.753Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
                       "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "40e04d67599cc04f671a-25762fdf0e741349a267",
-              "file": "foundation/foundation.spec.ts",
-              "line": 47,
+              "id": "cc09161f300eeff268f3-fcf2a35f10cc9ff3e68f",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 104,
               "column": 7
             },
             {
-              "title": "ledger: balanced, idempotent, immutable, finance-scoped",
+              "title": "safety plans: versioned, immutable once submitted, no self-approval for managers, approval satisfies the rule",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 180000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
                   "expectedStatus": "passed",
                   "projectId": "desktop",
                   "projectName": "desktop",
@@ -258,32 +338,50 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1234,
+                      "duration": 992,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-11T09:40:47.098Z",
-                      "annotations": [],
+                      "startTime": "2026-10-29T14:10:13.305Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
                       "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "40e04d67599cc04f671a-2cfe1ae6d080f53995d9",
-              "file": "foundation/foundation.spec.ts",
-              "line": 62,
+              "id": "cc09161f300eeff268f3-56b485c5384c89b1314c",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 119,
               "column": 7
             },
             {
-              "title": "webhook events are claimed exactly once, retried only after failure",
+              "title": "accessibility: guest requirements drive blockers; route refs validated against the map; public summary only once approved",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 180000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
                   "expectedStatus": "passed",
                   "projectId": "desktop",
                   "projectName": "desktop",
@@ -292,22 +390,2031 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 535,
+                      "duration": 634,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-11T09:40:48.345Z",
-                      "annotations": [],
+                      "startTime": "2026-10-29T14:10:14.313Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
                       "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "40e04d67599cc04f671a-a5b38cde87c6805c408c",
-              "file": "foundation/foundation.spec.ts",
-              "line": 87,
+              "id": "cc09161f300eeff268f3-17c2f36de892ffb50f28",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 139,
+              "column": 7
+            },
+            {
+              "title": "weather: no provider → BLOCKED_EXTERNAL shown; forecast breaches alert managers once; severe without approved contingency blocks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1162,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:14.962Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc09161f300eeff268f3-b931c8807e5ad3f8506c",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 156,
+              "column": 7
+            },
+            {
+              "title": "rule packs are data per jurisdiction: a ZZ pack applies only to ZZ events and never to GB ones",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 379,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:16.140Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc09161f300eeff268f3-a3a8c70dbe5b24eabb4a",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "lifecycle gating (3019): compliance blockers stop publish from planning/ready, never an event that is already selling",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 913,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:16.531Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\compliance\\q26-licensing-safety.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc09161f300eeff268f3-c10eb288f4bf398acdc3",
+              "file": "compliance/q26-licensing-safety.spec.ts",
+              "line": 187,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "organizer\\q40-event-composition.spec.ts",
+      "file": "organizer/q40-event-composition.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Q40 advanced event composition",
+          "file": "organizer/q40-event-composition.spec.ts",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "series: occurrences come from the Q14 engine, idempotently; this / following / all keep local overrides",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1627,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:18.697Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-496643ccceb6056a2ceb",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 42,
+              "column": 7
+            },
+            {
+              "title": "a season pass and single-date tickets never oversell any date, under concurrency",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5688,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:21.693Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-1c5a0b8a5e425ad208f8",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "parent/child: integrity, readiness roll-up, lifecycle blockers and an explicit cascade",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 724,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:27.402Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-72940f4dc42664b2c2ba",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "multi-venue, multi-day and multi-room bindings are enforced for every writer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 813,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:28.144Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-af23916d574b3f16f4d9",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 125,
+              "column": 7
+            },
+            {
+              "title": "forms and waivers: versioned, validated, minor consent, private signatures",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1157,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:28.980Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-deba884e95f09bab2735",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "stock is append-only and never negative; merchandise reserve → pay → collect → refund",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1113,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:30.157Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-d18f7e443036130ed72a",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "lost property matches explainably and stays private; sustainability derives CO2e with provenance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1260,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:31.284Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\q40-event-composition.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e92e98de94fdeb44462-6e63479a6f0c0ba0da36",
+              "file": "organizer/q40-event-composition.spec.ts",
+              "line": 182,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "organizer\\s4-organiser-ui.spec.ts",
+      "file": "organizer/s4-organiser-ui.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "S4 organiser screens over Q23/Q40 commands",
+          "file": "organizer/s4-organiser-ui.spec.ts",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "read helpers: media problems and campaign blockers are member-only",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 381,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:34.763Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-1df371ac336f8504fff7",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "campaign wizard: 5 steps, idempotent create, conflict, ads budget needs finance, blockers, links, blackout, report",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1636,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:36.100Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-23e203df91fd215589b4",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 55,
+              "column": 7
+            },
+            {
+              "title": "structure: series from this event, sub-event + readiness roll-up, days, venues, pass components; cascade owner/manager only",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1674,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:37.751Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-86c5a1be1d8a9afc5467",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 83,
+              "column": 7
+            },
+            {
+              "title": "forms & waivers: typed fields publish, versions immutable; waiver publish + attach + counts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 878,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:39.439Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-d5d5de5b7b326e41c0e1",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 109,
+              "column": 7
+            },
+            {
+              "title": "stock & merch: append-only movements, transfer, report; merch refund/collect refusals; refund route refuses without a session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1810,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:40.335Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-b5ba30ecc245ce14332a",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "lost property: lp-v1 explainable match, claim, verify, hand over; outsiders refused",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 717,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:42.158Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-71f59b3ec2fae91164a7",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "sustainability: measured entries, travel estimate split, indicative report with provenance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 370,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:42.887Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\organizer\\s4-organiser-ui.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3c66c454708def1168e0-1ebcb317661730484353",
+              "file": "organizer/s4-organiser-ui.spec.ts",
+              "line": 157,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "release\\organizer-plan-core.spec.ts",
+      "file": "release/organizer-plan-core.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "W03 S1 organiser plan core",
+          "file": "release/organizer-plan-core.spec.ts",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "dependencies: add, cycle refused, hard edge blocks completion, graph + critical path, task setter, remove",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 804,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:45.189Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-654ecb55e178fad76f41",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 55,
+              "column": 7
+            },
+            {
+              "title": "approval prerequisite: members can't decide, owner decides once with a reason",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 314,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:47.951Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-bb83bdeb50e800866b8f",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 80,
+              "column": 7
+            },
+            {
+              "title": "brief: versioned saves, stale expected version returns a conflict (no overwrite), finance can't edit",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 344,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:48.284Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-0686b14551d2dfba2980",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "templates: versioned family, create-from-template needs a future date, archive",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 811,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:48.641Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-4d61d4b79e3847201e02",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 105,
+              "column": 7
+            },
+            {
+              "title": "lifecycle: blockers preview, transition refusal with fix links, row guard detail, role rules",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 544,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:49.467Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-1ec106ae662a2346bb43",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 130,
+              "column": 7
+            },
+            {
+              "title": "W11 tiles: gala, charity and conference are organiser create-event tiles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 57,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:50.037Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-f98d204c0db48ff05f5b",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 149,
+              "column": 7
+            },
+            {
+              "title": "Q42 start_agent_run mission overload: refusals only, nothing left behind",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 611,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:50.110Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-8220f1ab7e6ea7a0a7c8",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 155,
+              "column": 7
+            },
+            {
+              "title": "friendly refusal text for agent codes (run and approval pages)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:50.733Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\organizer-plan-core.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e911b5252ebeb0c97c35-dfdb8cb6bfd8c81c3ae9",
+              "file": "release/organizer-plan-core.spec.ts",
+              "line": 175,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "release\\tenant-security.spec.ts",
+      "file": "release/tenant-security.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Q01 tenant & security foundation",
+          "file": "release/tenant-security.spec.ts",
+          "line": 157,
+          "column": 6,
+          "specs": [
+            {
+              "title": "catalogue: least-privilege grants, RLS everywhere, definer functions pinned and scoped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 134,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:52.569Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-d54016d2565864c8e3cd",
+              "file": "release/tenant-security.spec.ts",
+              "line": 188,
+              "column": 7
+            },
+            {
+              "title": "anonymous direct REST/RPC access is refused",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 564,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:54.069Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-af571b019862c718c0b6",
+              "file": "release/tenant-security.spec.ts",
+              "line": 204,
+              "column": 7
+            },
+            {
+              "title": "another tenant cannot read or write by guessed id (tables and definer RPCs)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1312,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:54.645Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-bd49fc271cc91da0d9a6",
+              "file": "release/tenant-security.spec.ts",
+              "line": 216,
+              "column": 7
+            },
+            {
+              "title": "space conflicts reveal only 'taken' to other tenants, full detail to the venue",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 429,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:55.970Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-9d49ec3356c882404926",
+              "file": "release/tenant-security.spec.ts",
+              "line": 243,
+              "column": 7
+            },
+            {
+              "title": "revoked membership loses access immediately, even to records the member created",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 853,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:56.412Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-2499671358bff66fd703",
+              "file": "release/tenant-security.spec.ts",
+              "line": 252,
+              "column": 7
+            },
+            {
+              "title": "a suspended workspace is blocked, including for its owner",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 585,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:57.290Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-47a6b5465376bba36f5a",
+              "file": "release/tenant-security.spec.ts",
+              "line": 270,
+              "column": 7
+            },
+            {
+              "title": "owners cannot self-grant entitlements, flags or security policy through REST",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 777,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:57.888Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-513645dc38ccdfecc4d8",
+              "file": "release/tenant-security.spec.ts",
+              "line": 283,
+              "column": 7
+            },
+            {
+              "title": "feature flags evaluate server-side and never leak another tenant's override",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1269,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:58.676Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-642258717a263d6447d1",
+              "file": "release/tenant-security.spec.ts",
+              "line": 297,
+              "column": 7
+            },
+            {
+              "title": "step-up: a user with a verified factor must be on an aal2 session for sensitive actions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3344,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:10:59.957Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-0b7180bf2eaa8893ea2e",
+              "file": "release/tenant-security.spec.ts",
+              "line": 320,
+              "column": 7
+            },
+            {
+              "title": "session revocation: a revoked session's unexpired token can no longer perform sensitive actions or refresh",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1271,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:11:03.313Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-ce8d238bedef27724dbf",
+              "file": "release/tenant-security.spec.ts",
+              "line": 336,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Q01 field / token encryption contract",
+          "file": "release/tenant-security.spec.ts",
+          "line": 351,
+          "column": 6,
+          "specs": [
+            {
+              "title": "seals with the active key, binds context and rotates without losing data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:11:07.012Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-a7cc1353ce64fc23833f",
+              "file": "release/tenant-security.spec.ts",
+              "line": 356,
+              "column": 7
+            },
+            {
+              "title": "reports configuration honestly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-29T14:11:07.037Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen\\Built\\Gala Dock\\tests\\release\\tenant-security.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8fa1c759b003b0125a46-880c5104a1aa74db75b9",
+              "file": "release/tenant-security.spec.ts",
+              "line": 369,
               "column": 7
             }
           ]
@@ -317,9 +2424,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-11T09:40:42.694Z",
-    "duration": 6639.764,
-    "expected": 5,
+    "startTime": "2026-10-29T14:10:07.737Z",
+    "duration": 59377.852000000006,
+    "expected": 42,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

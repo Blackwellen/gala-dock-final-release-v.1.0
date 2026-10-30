@@ -6,6 +6,8 @@ export const organizerPermissions = [
   "events.read", "events.write", "events.delete", "sales.read", "sales.write", "marketplace.request",
   "tickets.manage", "promotion.manage", "team.manage", "finance.read", "finance.write", "refunds.approve",
   "agent.use", "agent.approve", "settings.manage",
+  // Q18 scanner (migration 202610294011 granted it to owner/manager/member; recorded here in Q39 so the generated seed keeps it).
+  "checkin.scan",
 ] as const;
 
 export const providerPermissions = [
@@ -24,8 +26,8 @@ export type WorkspaceRole = "owner" | "manager" | "member" | "finance";
 export const rolePermissions: Record<WorkspaceKind, Record<WorkspaceRole, readonly Permission[]>> = {
   organizer: {
     owner: organizerPermissions,
-    manager: ["events.read", "events.write", "sales.read", "sales.write", "marketplace.request", "tickets.manage", "promotion.manage", "team.manage", "finance.read", "agent.use", "agent.approve"],
-    member: ["events.read", "events.write", "sales.read", "marketplace.request", "agent.use"],
+    manager: ["events.read", "events.write", "sales.read", "sales.write", "marketplace.request", "tickets.manage", "promotion.manage", "team.manage", "finance.read", "agent.use", "agent.approve", "checkin.scan"],
+    member: ["events.read", "events.write", "sales.read", "marketplace.request", "agent.use", "checkin.scan"],
     finance: ["events.read", "finance.read", "finance.write", "refunds.approve", "agent.use"],
   },
   provider: {

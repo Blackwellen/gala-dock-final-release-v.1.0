@@ -3,20 +3,23 @@ import Link from "next/link";
 import { useState } from "react";
 import { MoreHorizontal, ChevronDown, Copy, XCircle, Archive, Eye, Briefcase, AlertTriangle, ArrowRight, Check } from "lucide-react";
 import { Menu, Dialog, useAction } from "@/components/kit/client";
-import { duplicateMyEvent } from "@/lib/actions/events";
+import { useMyDuplicateDialog } from "./duplicate-dialog";
+import { upgradeEventToOrganizer } from "@/lib/actions/build-engine";
 import { cancellationImpact, cancelMyEvent, archiveMyEvent, upgradeToOrganizer, toggleMyTask, type CancelImpact } from "@/lib/actions/my-events";
 
 const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(n);
 export function EventMenu({ id, name, status }: { id: string; name: string; status: string }) {
   const { run, pending } = useAction(); const [cancel, setCancel] = useState(false); const [impact, setImpact] = useState<CancelImpact | null>(null); const [typed, setTyped] = useState("");
+  const dup = useMyDuplicateDialog();
   const openCancel = async () => { setCancel(true); setImpact(null); const r = await cancellationImpact(id); if (r.ok && r.data) setImpact(r.data); };
   return <>
     <Menu label={`Actions for ${name}`} width={210} trigger={({ toggle, open, id: mid }) => <button className="k-icon-btn plain" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label={`Actions for ${name}`}><MoreHorizontal size={18} /></button>}>
       {close => <><Link role="menuitem" className="k-menu-item" href={`/account/events/${id}`} onClick={close}><Eye size={15} />View details</Link>
-        <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); void run(() => duplicateMyEvent(id)); }}><Copy size={15} />Duplicate</button>
+        <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); dup.open({ id, name }); }}><Copy size={15} />Duplicate</button>
         {["draft", "completed", "cancelled"].includes(status) && <button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => archiveMyEvent(id)); }}><Archive size={15} />Archive</button>}
         {!["completed", "cancelled"].includes(status) && <><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); void openCancel(); }}><XCircle size={15} />Cancel event</button></>}</>}
     </Menu>
+    {dup.dialog}
     <Dialog open={cancel} onClose={() => setCancel(false)} title={`Cancel ${name}?`} sub="Here's exactly what happens before you confirm.">
       {!impact ? <p className="k-small">Checking bookings and payments…</p> : <div className="k-col" style={{ gap: 12 }}>
         <div className="k-grid k-g3" style={{ gap: 8 }}><div className="k-kpi"><div><div className="lbl">Non-refundable paid</div><div className="val k-red" style={{ fontSize: 17 }}>{gbp(impact.paidNonRefundable)}</div></div></div><div className="k-kpi"><div><div className="lbl">Possibly refundable</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.paidRefundable)}</div><div className="sub">per supplier terms</div></div></div><div className="k-kpi"><div><div className="lbl">Future payments</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.scheduled)}</div><div className="sub">won&apos;t be charged</div></div></div></div>
@@ -33,14 +36,17 @@ export function StatusPill({ status }: { status: string }) {
   const [l, c] = map[status] ?? [status, "#64748b"];
   return <span className="me-status" style={{ ["--c" as string]: c }}><i />{l}{status === "planning" && <ChevronDown size={13} />}</span>;
 }
-export function UpgradeButton({ eventId, workspaces }: { eventId: string; workspaces: { id: string; name: string }[] }) {
-  const { run, pending } = useAction(); const [open, setOpen] = useState(false); const [ws, setWs] = useState(workspaces[0]?.id ?? "");
-  if (!workspaces.length) return <Link className="k-btn outline" href="/onboarding/organizer?step=1">Switch to Organizer Mode <ArrowRight size={14} /></Link>;
+export function UpgradeButton({ eventId, eventName = "", workspaces, initialOpen = false }: { eventId: string; eventName?: string; workspaces: { id: string; name: string }[]; initialOpen?: boolean }) {
+  const { run, pending } = useAction(); const [open, setOpen] = useState(initialOpen); const [ws, setWs] = useState(workspaces[0]?.id ?? ""); const [name, setName] = useState(eventName ? `${eventName.split(" ")[0]} Events` : "");
+  // No Organizer workspace yet: the Q15 command creates one (same event id; everything moves with it).
+  const create = !workspaces.length;
   return <><button className="k-btn outline" onClick={() => setOpen(true)}>Switch to Organizer Mode <ArrowRight size={14} /></button>
     <Dialog open={open} onClose={() => setOpen(false)} title="Move this event to Organizer" sub="The event keeps its identity. Bookings, payments, guests, tickets and messages move with it.">
-      <div className="k-col" style={{ gap: 12 }}><label className="k-field"><span>Organizer workspace</span><select className="k-select" value={ws} onChange={e => setWs(e.target.value)}>{workspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}</select></label>
+      <div className="k-col" style={{ gap: 12 }}>{create
+        ? <label className="k-field"><span>Name your Organizer workspace</span><input className="k-input" value={name} onChange={e => setName(e.target.value)} maxLength={80} placeholder="e.g. Alex Events" /></label>
+        : <label className="k-field"><span>Organizer workspace</span><select className="k-select" value={ws} onChange={e => setWs(e.target.value)}>{workspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}</select></label>}
         <ul className="pl-agent-list"><li><Check size={15} className="k-green" />Same event — nothing is copied</li><li><Check size={15} className="k-green" />Workspace team can collaborate</li><li><Check size={15} className="k-green" />Advanced planning, ticketing and money tools</li></ul>
-        <div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending || !ws} onClick={() => void run(() => upgradeToOrganizer(eventId, ws))}><Briefcase size={15} />Move to Organizer</button></div></div>
+        <div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending || (create ? !name.trim() : !ws)} onClick={() => void run(() => create ? upgradeEventToOrganizer(eventId, name) : upgradeToOrganizer(eventId, ws))}><Briefcase size={15} />{create ? "Create workspace and move" : "Move to Organizer"}</button></div></div>
     </Dialog></>;
 }
 export function TaskCircle({ id, done, label }: { id: string; done: boolean; label: string }) {

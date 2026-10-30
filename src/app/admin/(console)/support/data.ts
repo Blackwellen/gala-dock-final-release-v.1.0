@@ -28,8 +28,10 @@ export function sla(c: Case, now: number) {
   const targetH = Math.max(1, Math.round((due - created) / 36e5));
   const end = c.resolved_at ? new Date(c.resolved_at).getTime() : now;
   const ms = due - end, mins = Math.round(Math.abs(ms) / 60000), h = Math.floor(mins / 60), m = mins % 60;
-  const span = h ? (m && h < 10 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
-  return { target: `${targetH}h`, left: ms < 0 ? "overdue" : `${span} left`, overdue: ms < 0, risk: !c.resolved_at && ms >= 0 && ms < 2 * 36e5, elapsed: Math.round((end - created) / 60000), remainingMin: Math.round(ms / 60000), targetH };
+  // Spans over three days read as days (W08: a 29,610-hour SLA was printed in hours).
+  const days = (x: number) => `${Math.round(x / 24)}d`;
+  const span = h > 72 ? days(h) : h ? (m && h < 10 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
+  return { target: targetH > 72 ? days(targetH) : `${targetH}h`, left: ms < 0 ? "overdue" : `${span} left`, overdue: ms < 0, risk: !c.resolved_at && ms >= 0 && ms < 2 * 36e5, elapsed: Math.round((end - created) / 60000), remainingMin: Math.round(ms / 60000), targetH };
 }
 
 /** Message role: explicit role column, else inferred from the author. */

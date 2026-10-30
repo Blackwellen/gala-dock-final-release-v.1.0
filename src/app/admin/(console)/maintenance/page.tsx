@@ -5,12 +5,14 @@ import { requestTime } from "@/lib/workspace/format";
 import { Head, Pill } from "../_b/kit";
 import { MaintenanceForm, EndWindow } from "./form";
 import "@/styles/admin-b.css";
+import "@/styles/admin-d.css";
 
 export const metadata: Metadata = { title: "Maintenance" };
 type W = { id: string; level: number; modules: string[]; title: string; message: string; starts_at: string; ends_at: string | null; ended_at: string | null; audience: string; severity: string; reference: string; created_at: string };
 const LEVELS: [number, string, string][] = [[1, "M1 Notice", "Banner only; everything works."], [2, "M2 Degraded", "Selected modules unavailable; the rest works."], [3, "M3 Read-only", "Selected modules (or all) read-only; check-in and tickets stay up."],
   [4, "M4 Full maintenance", "Maintenance page; writes off except admin. Tickets and check-in stay up."], [5, "M5 Security lockdown", "Sign-in, payments, Agent and API writes off. Admin responders only."]];
 const when = (iso: string | null) => iso ? new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" }) : "—";
+const AUDIENCES: [string, string][] = [["customers", "Customers"], ["organizers", "Organizers"], ["providers", "Providers"], ["admins", "Admins"]];
 const list: React.CSSProperties = { listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 };
 
 /** Maintenance control (release spec §9–10): schedule, scope and end maintenance windows. Every change is audit-logged in the DB. */
@@ -31,6 +33,19 @@ export default async function MaintenancePage() {
   </li>;
   return <div className="adb-page" style={{ display: "grid", gap: 16 }}>
     <Head title="Maintenance" subtitle={level ? `Current level M${level} — ${LEVELS[level - 1]![1].slice(3)}` : "Current level M0 — normal operation"} />
+    <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 style={{ fontSize: 15, margin: 0 }}>Status by audience</h2>
+      <table className="adb-table"><thead><tr><th>Audience</th><th>Level now</th><th>Modules affected</th><th>Next scheduled</th></tr></thead>
+        <tbody>{AUDIENCES.map(([key, name]) => { const mine = active.filter(w => w.audience === "all" || w.audience === key), next = scheduled.filter(w => w.audience === "all" || w.audience === key).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
+          const lv = Math.max(0, ...mine.map(w => w.level));
+          return <tr key={key}><td><b>{name}</b></td><td><Pill status={lv >= 4 ? "critical" : lv >= 2 ? "warning" : lv ? "info" : "healthy"} label={`M${lv}`} /></td>
+            <td>{mine.length ? [...new Set(mine.flatMap(w => w.modules.length ? w.modules : ["platform-wide"]))].join(", ") : "—"}</td><td>{next ? `M${next.level} · ${when(next.starts_at)}` : "—"}</td></tr>; })}</tbody></table></section>
+    <section className="adb-panel add-preview"><h2 style={{ fontSize: 15, margin: 0 }}>Preview what people see</h2>
+      <p className="add-note">A static preview of the banner and maintenance page. Previewing never starts a window or changes what anyone sees.</p>
+      <div className="gd-maint-row info"><b>Planned maintenance tonight</b><span>Some features may be briefly unavailable from 23:00.</span></div>
+      <div className="gd-maint-row warning"><b>Ticket resale is paused</b><span>Everything else works. Expected back within the hour.</span></div>
+      <div className="gd-maint-row critical"><b>Gala Dock is temporarily read-only</b><span>Your tickets still work and check-in stays up.</span></div>
+      <div className="add-mini-page"><div><small>Scheduled maintenance</small><b>We’ll be right back</b><p>This part of Gala Dock is briefly unavailable while we carry out maintenance. Your data is safe.</p><p>Tickets already in your wallet still work, and event check-in remains available.</p></div></div>
+    </section>
     <section style={{ display: "grid", gap: 8 }}><h2 style={{ fontSize: 15, margin: 0 }}>Active</h2><ul style={list}>{active.length ? active.map(w => row(w, true)) : <li className="adb-panel">No active maintenance.</li>}</ul></section>
     {scheduled.length > 0 && <section style={{ display: "grid", gap: 8 }}><h2 style={{ fontSize: 15, margin: 0 }}>Scheduled</h2><ul style={list}>{scheduled.map(w => row(w, true))}</ul></section>}
     <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 style={{ fontSize: 15, margin: 0 }}>Start or schedule a window</h2>

@@ -39,7 +39,7 @@
 .ce2-mb { display: flex; gap: 12px; margin-top: 10px; } .ce2-mi { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; } .ce2-mi.purple { background: #f1e8ff; color: #7c3aed; } .ce2-mi.green { background: #e2f7ec; color: #0a7a49; } .ce2-mi.red { background: #ffe4e8; color: #c8243d; } .ce2-mi.amber { background: #fff1d6; color: #9a5800; }
 .ce2-mb ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--k-ink-2); } .ce2-mb li { display: flex; gap: 6px; align-items: center; } .ce2-mb li svg { color: #fff; fill: var(--k-blue); flex-shrink: 0; } .ce2-mb label { display: flex; gap: 6px; align-items: center; } .ce2-mb input { accent-color: var(--k-blue); }
 .ce2-mod.goal { align-items: flex-start; } .ce2-mod.goal .ce2-ta { margin-top: 8px; } .ce2-gs { width: 230px; flex-shrink: 0; padding: 10px; border-radius: 8px; background: #f4f7fd; display: flex; flex-direction: column; gap: 6px; } .ce2-gs b { font-size: 12.5px; } .ce2-gs button { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--k-blue); text-align: left; }
-.ce2-bar { display: flex; justify-content: space-between; align-items: center; } .ce2-bar .k-btn { height: 42px; gap: 8px; } .ce2-go { min-width: 130px; }
+.ce2-bar { display: flex; justify-content: space-between; align-items: center; } .ce2-bar .k-btn { height: var(--k-btn-lg-h); gap: 8px; font-size: var(--k-btn-lg-fs); } .ce2-go { min-width: 130px; }
 .ce2-prev { padding: 14px !important; } .ce2-pimg { position: relative; margin-top: 10px; border-radius: 10px; overflow: hidden; } .ce2-pimg img { width: 100%; height: 210px; object-fit: cover; display: block; } .ce2-pimg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, #0b1437cc); }
 .ce2-pimg > div { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; z-index: 1; color: #fff; } .ce2-pimg b { display: block; font-size: 22px; color: #fff !important; } .ce2-pimg small { font-size: 13px; color: #fff; }
 .ce2-pl { display: flex; gap: 8px; align-items: center; margin: 8px 0 0; font-size: 12.5px; color: var(--k-ink-2); }
@@ -52,3 +52,10 @@
 @media (max-width: 1400px) { .ce2-grid { grid-template-columns: minmax(0, 1fr) 360px; } .ce2-steps { grid-template-columns: repeat(4, 1fr); row-gap: 10px; } .ce2-mods { grid-template-columns: 1fr 1fr; } .ce2-g3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 1100px) { .ce2-grid { grid-template-columns: minmax(0, 1fr); } .ce2-venues, .ce2-dt { grid-template-columns: minmax(0, 1fr); } .ce2-rec { border: 0; padding: 0; } }
 @media (max-width: 700px) { .ce2-steps { grid-template-columns: 1fr 1fr; } .ce2-types { grid-template-columns: repeat(2, 1fr); } .ce2-g2, .ce2-g3, .ce2-mods, .ce2-models, .ce2-vm { grid-template-columns: minmax(0, 1fr); } .ce2-mod.goal { flex-direction: column; } .ce2-gs { width: auto; } .ce2-fk { grid-template-columns: 1fr 1fr; } }.ce2-vm button[aria-pressed="true"] small, .ce2-vm button[aria-current="page"] small { color: #fff; opacity: 1; }
+/* W12 wizard sweep (≤700): the 7-step strip drops to two bare `1fr` tracks but the step names stay `nowrap`, so
+   "Commercial Model" / "Budget and pricing" ran past their track at 360; the type tiles get shrinkable tracks too. */
+@media (max-width: 700px) {
+  .ce2-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ce2-steps li > span { min-width: 0; }
+  .ce2-steps b, .ce2-steps small { white-space: normal; overflow-wrap: anywhere; }
+  .ce2-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

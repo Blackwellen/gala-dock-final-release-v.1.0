@@ -63,10 +63,10 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       <h3><CreditCard size={15} aria-hidden="true" />Payments</h3>
       {payments.map(p => { const [l, t] = PAYMENT_STATE[p.status] ?? [p.status, "grey"]; return <p key={p.id} className="mk-line"><Tag tone={t}>{l}</Tag><span>{p.description} · {money(p.amount_minor / 100)}{p.refunded_minor ? ` (refunded ${money(p.refunded_minor / 100)})` : ""} · {p.reference}</span></p>; })}
       {isEvent && payable && <PayButton kind={emergency ? "emergency_service" : "deposit"} itemId={item.id} returnPath={back} label={emergency ? `Pay ${money(item.amount)} and confirm` : "Pay deposit and confirm"} amount={emergency && item.amount != null ? Number(item.amount) : undefined}
-        note={emergency ? "Emergency bookings are paid in full. Payment is protected until delivery and then released to the provider." : "Your deposit confirms the booking. Payment is protected until the service is delivered, then released to the provider."} />}
+        note={emergency ? "Emergency bookings are paid in full, directly to the provider through Stripe. Gala Dock’s booking terms cover cancellations and problems." : "Your deposit confirms the booking and is paid to the provider through Stripe. Cancellations and refunds follow the booking’s agreed terms."} />}
       {isEvent && balanceDue > 0 && <PayButton kind="balance_payment" itemId={item.id} returnPath={back} label={`Pay balance ${money(balanceDue / 100)}`} amount={balanceDue / 100} />}
       {isEvent && openSb?.status === "accepted" && openSb.fee_status === "due" && <PayButton kind="standby_fee" standbyId={openSb.id} returnPath={back} label={`Pay standby fee ${money(openSb.standby_fee)}`} amount={Number(openSb.standby_fee)} />}
-      {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received and protected. It’s released to your Stripe account after delivery, once there’s no open dispute.</p>}
+      {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received in your Stripe account. Stripe pays it out on your payout schedule.</p>}
     </div>}
 
     {(openHold || (isEvent && holdable)) && <div className="mk-block">

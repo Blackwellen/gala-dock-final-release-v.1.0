@@ -3,6 +3,7 @@ import { icons as lucide } from "lucide-react";
 import { WidgetView } from "@/components/design-kit/widget-view";
 import { pathD } from "@/lib/media/path";
 import { fillCss } from "@/lib/media/render";
+import { sanitizeSvg } from "@/lib/security/svg-sanitize";
 import type { Fill, WidgetLayer } from "@/lib/media/document";
 
 /**
@@ -48,7 +49,8 @@ export function DesignElView({ e, selected, onDown }: { e: DesignEl; selected?: 
   switch (e.type) {
     case "glyph": {
       const k = e.glyph?.kind;
-      if (k === "icon" && e.glyph?.body) body = <svg x={x} y={y} width={w} height={h} viewBox={`0 0 ${e.glyph.vw ?? 24} ${e.glyph.vh ?? 24}`} color={s.color ?? "#090a2e"} dangerouslySetInnerHTML={{ __html: e.glyph.body }} />;
+      if (k === "icon" && e.glyph?.body) body = <svg x={x} y={y} width={w} height={h} viewBox={`0 0 ${e.glyph.vw ?? 24} ${e.glyph.vh ?? 24}`} color={s.color ?? "#090a2e"} dangerouslySetInnerHTML={{ __html: sanitizeSvg(e.glyph.body) }} />; // Q45-S01 client layer
+
       else if (k === "icon") { const I = lucide[(e.glyph?.name ?? "Info") as keyof typeof lucide] ?? lucide.Info; body = <I x={x} y={y} width={w} height={h} color={s.color ?? "#090a2e"} strokeWidth={1.8} />; }
       else body = <text x={cx} y={cy} fontSize={h * 0.86} textAnchor="middle" dominantBaseline="central" fill={s.color ?? "#090a2e"}
         fontFamily={k === "emoji" ? "'Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif" : "Inter,'Segoe UI Symbol',sans-serif"}>{e.glyph?.char}</text>;

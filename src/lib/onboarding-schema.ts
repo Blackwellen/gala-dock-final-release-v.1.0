@@ -1,5 +1,6 @@
 // Shared onboarding definitions and validation. Imported by client forms and the server route,
 // so both sides enforce the same rules. The server is authoritative.
+import * as md from "@/lib/master-data";
 
 export type Flow = "customer" | "organizer" | "provider";
 export type Values = Record<string, unknown>;
@@ -21,37 +22,21 @@ export const flowSteps = {
   ],
 } as const;
 
+// Countries, currencies, timezones and taxonomies come from canonical master data (src/lib/master-data, Q02).
 export type Country = { code: string; name: string; timezones: { value: string; label: string }[]; currency: string; tax: string[] };
-export const countries: Country[] = [
-  { code: "GB", name: "United Kingdom", timezones: [{ value: "Europe/London", label: "(GMT+0/+1) London" }], currency: "GBP", tax: ["UK VAT 20% (standard rate)", "UK VAT 5% (reduced rate)", "Not VAT registered"] },
-  { code: "IE", name: "Ireland", timezones: [{ value: "Europe/Dublin", label: "(GMT+0/+1) Dublin" }], currency: "EUR", tax: ["Irish VAT 23%", "Irish VAT 13.5%", "Not VAT registered"] },
-  { code: "US", name: "United States", timezones: [
-    { value: "America/New_York", label: "(GMT−5/−4) New York" }, { value: "America/Chicago", label: "(GMT−6/−5) Chicago" },
-    { value: "America/Denver", label: "(GMT−7/−6) Denver" }, { value: "America/Los_Angeles", label: "(GMT−8/−7) Los Angeles" }],
-    currency: "USD", tax: ["Sales tax by state (set per event location)", "Tax exempt organisation"] },
-  { code: "CA", name: "Canada", timezones: [{ value: "America/Toronto", label: "(GMT−5/−4) Toronto" }, { value: "America/Vancouver", label: "(GMT−8/−7) Vancouver" }], currency: "CAD", tax: ["GST/HST by province", "Not registered (small supplier)"] },
-  { code: "DE", name: "Germany", timezones: [{ value: "Europe/Berlin", label: "(GMT+1/+2) Berlin" }], currency: "EUR", tax: ["Umsatzsteuer 19%", "Kleinunternehmer (no VAT charged)"] },
-  { code: "FR", name: "France", timezones: [{ value: "Europe/Paris", label: "(GMT+1/+2) Paris" }], currency: "EUR", tax: ["TVA 20%", "Franchise en base (no VAT charged)"] },
-  { code: "AE", name: "United Arab Emirates", timezones: [{ value: "Asia/Dubai", label: "(GMT+4) Dubai" }], currency: "AED", tax: ["UAE VAT 5%", "Not VAT registered"] },
-  { code: "ZA", name: "South Africa", timezones: [{ value: "Africa/Johannesburg", label: "(GMT+2) Johannesburg" }], currency: "ZAR", tax: ["South African VAT 15%", "Not VAT registered"] },
-  { code: "AU", name: "Australia", timezones: [{ value: "Australia/Sydney", label: "(GMT+10/+11) Sydney" }, { value: "Australia/Perth", label: "(GMT+8) Perth" }], currency: "AUD", tax: ["GST 10%", "Not GST registered"] },
-];
-export const currencies = [
-  { value: "GBP", label: "GBP (£) – British Pound" }, { value: "EUR", label: "EUR (€) – Euro" },
-  { value: "USD", label: "USD ($) – US Dollar" }, { value: "CAD", label: "CAD ($) – Canadian Dollar" },
-  { value: "AED", label: "AED – UAE Dirham" }, { value: "ZAR", label: "ZAR (R) – South African Rand" },
-  { value: "AUD", label: "AUD ($) – Australian Dollar" },
-];
+export const countries: Country[] = md.countries({ business: true }).map(c => ({ code: c.code, name: c.name, currency: c.currency, tax: [...c.tax],
+  timezones: md.timezones(c.code).map(z => ({ value: z.tz, label: z.label })) }));
+export const currencies = md.currencies().map(md.currencyOption);
 export const countryByName = (name: unknown) => countries.find(c => c.name === name) ?? countries[0];
 
 export const customerInterests = ["Music & Concerts", "Food & Drink", "Nightlife", "Arts & Culture", "Sports", "Business & Networking", "Weddings", "Family & Kids", "Festivals", "Other"];
 export const organizerBusinessTypes = ["Event Management Company", "Event Agency", "Promoter", "Wedding Planner", "Corporate Events Team", "Venue Operator", "Community Organisation", "Independent Organiser"];
-export const organizerEventTypes = ["Weddings", "Corporate Events", "Festivals", "Conferences", "Private Events", "Nightclubs", "Concerts & Live Shows", "Remote / Hybrid", "Community Events", "Mixed / Custom"];
+export const organizerEventTypes = md.labelsFor("onboarding.organizer_event_types");
 export const capacityBands = ["1–50", "51–250", "251–1,000", "1,000+"];
-export const listingEventTypes = ["Weddings", "Corporate Events", "Private Parties", "Conferences", "Exhibitions", "Other"];
-export const serviceCategories = ["Catering", "Photography & Video", "DJs & Music", "Live Entertainment", "Décor & Florals", "Staffing", "Security", "AV & Production", "Transport", "Planning & Coordination"];
-export const venueTypes = ["Event hall", "Hotel or conference centre", "Outdoor venue", "Bar or nightclub", "Restaurant", "Unique space", "Arena or stadium"];
-export const amenities = ["Step-free access", "On-site parking", "In-house catering", "AV equipment", "Outdoor space", "Licensed bar", "Accommodation", "Wi-Fi"];
+export const listingEventTypes = md.labelsFor("onboarding.listing_event_types");
+export const serviceCategories = md.labelsFor("onboarding.service_categories");
+export const venueTypes = md.labelsFor("onboarding.venue_types");
+export const amenities = md.labelsFor("onboarding.amenities");
 export const bookingModes = ["Instant Book", "Request to Book", "Enquiry Only"];
 export const responseTimes = ["Within 2 hours", "Within 4 hours", "Within 8 hours", "Within 12 hours", "Up to 24 hours"];
 export const leadTimes = ["Same day", "At least 24 hours", "At least 7 days", "At least 30 days"];

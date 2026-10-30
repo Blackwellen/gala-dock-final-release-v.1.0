@@ -9,6 +9,7 @@ import { fillCss, assetSrc } from "@/lib/media/render";
 import { textFxShadow } from "@/lib/design-kit/effects";
 import { WidgetView } from "@/components/design-kit/widget-view";
 import { pathD } from "@/lib/media/path";
+import { sanitizeSvg, safeSvgColor } from "@/lib/security/svg-sanitize";
 export { pathD };
 
 export { fillCss, assetSrc, qrContrast } from "@/lib/media/render";
@@ -128,7 +129,7 @@ export function LayerView({ l, data, editing, onText }: { l: Layer; data: EventD
     }
     case "icon": {
       if (l.svg) return <div style={{ ...box, color: l.color, display: l.hidden ? "none" : "grid", placeItems: "center" }} data-layer={l.id}>
-        <svg viewBox={`0 0 ${l.svg.w} ${l.svg.h}`} width="100%" height="100%" dangerouslySetInnerHTML={{ __html: l.svg.body }} /></div>;
+        <svg viewBox={`0 0 ${l.svg.w} ${l.svg.h}`} width="100%" height="100%" dangerouslySetInnerHTML={{ __html: sanitizeSvg(l.svg.body) }} /></div>;
       const I = icons[l.icon as keyof typeof icons]; return <div style={{ ...box, color: l.color, display: l.hidden ? "none" : "grid", placeItems: "center" }} data-layer={l.id}>{I ? <I width="100%" height="100%" strokeWidth={1.75} /> : null}</div>;
     }
     case "path": return <PathView l={l} box={box} />;
@@ -145,8 +146,9 @@ function CodeView({ l, data, box }: { l: Extract<Layer, { type: "qr" | "barcode"
   const [svg, setSvg] = useState("");
   useEffect(() => {
     let live = true;
-    if (l.type === "barcode") { try { const s = code128Svg(value.replace(/[^\x20-\x7e]/g, "").slice(0, 80) || "GALADOCK", { height: 100, color: l.fg }); queueMicrotask(() => { if (live) setSvg(s); }); } catch { /* invalid */ } }
-    else void QRCode.toString(value || " ", { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: l.fg, light: l.bg } }).then(s => { if (live) setSvg(s); });
+    // Q45-S01: colours come from the stored design — validated before they reach SVG attributes, and the output is sanitised.
+    if (l.type === "barcode") { try { const s = sanitizeSvg(code128Svg(value.replace(/[^\x20-\x7e]/g, "").slice(0, 80) || "GALADOCK", { height: 100, color: safeSvgColor(l.fg) })); queueMicrotask(() => { if (live) setSvg(s); }); } catch { /* invalid */ } }
+    else void QRCode.toString(value || " ", { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: l.fg, light: l.bg } }).then(s => { if (live) setSvg(sanitizeSvg(s)); }).catch(() => { /* invalid colour */ });
     return () => { live = false; };
   }, [value, l.fg, l.bg, l.type]);
   return <div style={{ ...box, background: l.bg, display: box.display ?? "grid", gridTemplateRows: l.label ? "1fr auto" : "1fr", padding: l.type === "barcode" ? 4 : 0 }} data-layer={l.id}>

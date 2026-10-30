@@ -9,6 +9,10 @@ import { dateShort } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
 import { Head, TabBar, Pill } from "../../_b/kit";
 import { updatePrivacyRequest } from "./actions";
+import { ActionButton } from "@/components/workspace/actions";
+import { placeLegalHold, releaseLegalHold, retentionPreview, purgeDryRun } from "../../_d/actions";
+import { stamp } from "../../_b/format";
+import "@/styles/admin-d.css";
 import "@/styles/admin-b.css";
 import "@/styles/admin-conversations.css";
 
@@ -23,6 +27,10 @@ const TONE: Record<string, string> = { received: "pending", verifying: "pending"
 export default async function PrivacyRequestsPage(props: PageProps<"/admin/support/privacy">) {
   const sp = await props.searchParams;
   const admin = await getAdmin();
+  const privacy = admin.permissions.has("privacy") || admin.permissions.has("audit"), fixtures = admin.permissions.has("workspaces") || admin.permissions.has("audit");
+  if (!admin.permissions.has("support") && !privacy && !fixtures) return <Restricted area="Privacy requests" />;
+  const ops = ["holds", "retention", "fixtures"].includes(String(sp.tab)) ? String(sp.tab) as "holds" | "retention" | "fixtures" : null;
+  if (ops) return <PrivacyOps tab={ops} privacy={privacy} canFixtures={fixtures} />;
   if (!admin.permissions.has("support") && !admin.permissions.has("audit")) return <Restricted area="Privacy requests" />;
   const tab = sp.tab === "closed" ? "closed" : "open";
   const { data } = await untyped(admin.db as never).from("privacy_requests").select("id,reference,kind,status,requester_email,detail,received_at,due_at,extended_reason,refusal_reason,outcome,completed_at").order("due_at").limit(300);
@@ -34,7 +42,7 @@ export default async function PrivacyRequestsPage(props: PageProps<"/admin/suppo
   return <div className="adb acv">
     <Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Support</Link>
     <Head title="Privacy requests" subtitle="Requests to access, export, correct, erase, restrict or object to the use of personal data. Respond within one month; one extension of up to two months is allowed with a reason." />
-    <TabBar active={tab} tabs={[{ key: "open", label: "Open", href: "/admin/support/privacy", count: open.length }, { key: "closed", label: "Closed", href: "/admin/support/privacy?tab=closed", count: closed.length }]} />
+    <PrivacyTabs active={tab} open={open.length} closed={closed.length} />
     <div className={`acv-split ${sel ? "has-detail" : ""}`}>
       <section className="adb-panel"><table className="adb-table">
         <thead><tr><th>Reference</th><th>Request</th><th>Requester</th><th>Received</th><th>Due</th><th>Status</th></tr></thead>
@@ -62,4 +70,79 @@ export default async function PrivacyRequestsPage(props: PageProps<"/admin/suppo
       </section>}
     </div>
   </div>;
+}
+
+function PrivacyTabs({ active, open, closed }: { active: string; open?: number; closed?: number }) {
+  return <TabBar active={active} tabs={[{ key: "open", label: "Open requests", href: "/admin/support/privacy", count: open ?? null }, { key: "closed", label: "Closed", href: "/admin/support/privacy?tab=closed", count: closed ?? null },
+    { key: "holds", label: "Legal holds", href: "/admin/support/privacy?tab=holds" }, { key: "retention", label: "Retention", href: "/admin/support/privacy?tab=retention" },
+    { key: "fixtures", label: "Test fixtures", href: "/admin/support/privacy?tab=fixtures" }]} />;
+}
+
+type Hold = { id: string; reference: string; matter: string; reason: string; status: string; created_at: string; released_at: string | null; release_reason: string | null };
+type Rule = { key: string; table_name: string; action: string; retention_days: number; basis: string; enabled: boolean; legal_review_required: boolean; version: number };
+type Run = { id: string; started_at: string; preview: boolean; results: Record<string, { rows?: number; enabled?: boolean }> | null; error: string | null };
+type Purge = { id: string; reason: string; workspace_ids: string[]; dry_run: boolean; users_to_remove: string[] | null; created_at: string };
+
+/** Q32 legal holds, retention schedule + preview, and the test-fixture purge DRY RUN (the console never executes a purge). */
+async function PrivacyOps({ tab, privacy, canFixtures }: { tab: "holds" | "retention" | "fixtures"; privacy: boolean; canFixtures: boolean }) {
+  const admin = await getAdmin();
+  const db = untyped(admin.db as never);
+  const head = <><Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Support</Link>
+    <Head title="Privacy requests" subtitle="Data subject requests, legal holds, the retention schedule and test-data clean-up. Retention periods are drafts pending legal review." />
+    <PrivacyTabs active={tab} /></>;
+  if (tab !== "fixtures" && !privacy) return <div className="adb acv add">{head}<Restricted area="Legal holds and retention" /></div>;
+  if (tab === "fixtures" && !canFixtures) return <div className="adb acv add">{head}<Restricted area="Test fixtures" /></div>;
+  if (tab === "holds") {
+    const [{ data: h }, { data: subj }] = await Promise.all([db.from("legal_holds").select("id,reference,matter,reason,status,created_at,released_at,release_reason").order("created_at", { ascending: false }).limit(100),
+      db.from("legal_hold_subjects").select("hold_id,subject_type,subject_id")]);
+    const holds = (h ?? []) as Hold[], subjects = (subj ?? []) as { hold_id: string; subject_type: string; subject_id: string }[];
+    return <div className="adb acv add">{head}
+      <div className="add-split">
+        <section className="adb-panel"><div className="adb-sec-h"><h2>Legal holds</h2><small>Active holds block erasure, retention purges and fixture purges for their subjects, and pin their files.</small></div>
+          <table className="adb-table" tabIndex={0} data-pwa-scroll-region="true"><thead><tr><th>Reference</th><th>Matter</th><th>Subjects</th><th>Placed</th><th>Status</th><th /></tr></thead>
+            <tbody>{holds.length ? holds.map(x => <tr key={x.id}><td><b>{x.reference}</b></td><td>{x.matter}<small>{x.reason}</small></td>
+              <td>{subjects.filter(s => s.hold_id === x.id).map(s => <small key={s.subject_id} className="add-mono">{s.subject_type}:{s.subject_id.slice(0, 8)}</small>)}</td>
+              <td>{stamp(x.created_at)}</td><td><Pill status={x.status === "active" ? "hold" : "resolved"} label={x.status} />{x.released_at && <small>{stamp(x.released_at)} · {x.release_reason}</small>}</td>
+              <td>{x.status === "active" && <ActionButton action={releaseLegalHold} args={[x.id]} reason confirm={{ title: "Release legal hold", body: "Erasure and retention resume for these subjects. Files it pinned are unpinned.", cta: "Release" }}>Release</ActionButton>}</td></tr>)
+              : <tr><td colSpan={6} className="adb-none">No legal holds.</td></tr>}</tbody></table></section>
+        <section className="adb-panel"><div className="adb-sec-h"><h2>Place a hold</h2></div>
+          <ActionForm action={placeLegalHold} className="add-stack" resetOnSuccess>
+            <label>Matter<input name="matter" required minLength={3} maxLength={200} placeholder="e.g. Chargeback dispute DP-2231" /></label>
+            <label>Subjects <small>(user:&lt;id&gt;, workspace:&lt;id&gt; or event:&lt;id&gt;, separated by spaces)</small><textarea name="subjects" required rows={3} /></label>
+            <label>Reason (audited)<textarea name="reason" required minLength={5} rows={3} /></label>
+            <button className="adb-btn primary" type="submit">Place legal hold</button>
+          </ActionForm></section>
+      </div></div>;
+  }
+  if (tab === "retention") {
+    const [{ data: r }, { data: runs }] = await Promise.all([db.from("data_retention_rules").select("key,table_name,action,retention_days,basis,enabled,legal_review_required,version").order("key"),
+      db.from("retention_runs").select("id,started_at,preview,results,error").order("started_at", { ascending: false }).limit(10)]);
+    const rules = (r ?? []) as Rule[], list = (runs ?? []) as Run[], lastPreview = list.find(x => x.preview), lastRun = list.find(x => !x.preview);
+    return <div className="adb acv add">{head}
+      <section className="adb-panel"><div className="adb-sec-h"><h2>Retention schedule</h2>
+        <ActionButton action={retentionPreview} variant="primary" confirm={{ title: "Preview retention", body: "Counts what each rule would remove right now and records the preview. Nothing is deleted.", cta: "Run preview" }}>Preview what would be removed</ActionButton></div>
+        <table className="adb-table" tabIndex={0} data-pwa-scroll-region="true"><thead><tr><th>Rule</th><th>Data</th><th>Action</th><th className="r">Keep (days)</th><th>Basis</th><th>Status</th><th className="r">Last preview</th><th className="r">Last run</th></tr></thead>
+          <tbody>{rules.map(x => <tr key={x.key}><td><b>{x.key}</b><small>v{x.version}</small></td><td>{x.table_name}</td><td>{x.action}</td><td className="r">{x.retention_days}</td><td><small>{x.basis}</small></td>
+            <td><Pill status={x.enabled ? "active" : "paused"} label={x.enabled ? "Enabled" : x.legal_review_required ? "Awaiting legal review" : "Disabled"} /></td>
+            <td className="r">{lastPreview?.results?.[x.key]?.rows ?? "—"}</td><td className="r">{lastRun?.results?.[x.key]?.rows ?? "—"}</td></tr>)}</tbody></table>
+        <p className="add-note">Last preview {lastPreview ? stamp(lastPreview.started_at) : "never"} · last scheduled run {lastRun ? stamp(lastRun.started_at) : "never"}. The daily sweep (04:05) skips anything under a legal hold. Finance, audit, consent and privacy-request records are retained.</p>
+      </section></div>;
+  }
+  const [{ data: ws }, { data: purges }] = await Promise.all([db.from("workspaces").select("id,name,kind,created_at").eq("is_test_fixture", true).order("created_at", { ascending: false }).limit(200),
+    db.from("fixture_purges").select("id,reason,workspace_ids,dry_run,users_to_remove,created_at").order("created_at", { ascending: false }).limit(15)]);
+  const list = (ws ?? []) as { id: string; name: string; kind: string; created_at: string }[], log = (purges ?? []) as Purge[];
+  return <div className="adb acv add">{head}
+    <div className="add-split">
+      <section className="adb-panel"><div className="adb-sec-h"><h2>Flagged test workspaces</h2><small>{list.length} flagged by the test helpers</small></div>
+        <p className="add-warnbox">This console only runs a <b>dry run</b>: it lists what a purge would delete and records the dry run for review. The real purge is a reviewed script run by the coordinator. Workspaces under legal hold, with ledger postings, live Stripe objects or real members are refused.</p>
+        <ActionForm action={purgeDryRun} className="add-stack">
+          <ul className="add-checks">{list.length ? list.map(w => <li key={w.id}><label><input type="checkbox" name="ws" value={w.id} className="adb-check" />{w.name}<small>· {w.kind} · {stamp(w.created_at)}</small></label></li>)
+            : <li className="adb-none">No flagged test workspaces.</li>}</ul>
+          <label>Reason (audited)<input name="reason" required minLength={5} placeholder="e.g. Clean up Q16 fixtures after the regression run" /></label>
+          <button className="adb-btn primary" type="submit" disabled={!list.length}>Dry run — nothing is deleted</button>
+        </ActionForm></section>
+      <section className="adb-panel"><div className="adb-sec-h"><h2>Purge log</h2><small>Append-only</small></div>
+        <ul className="ads-trail">{log.length ? log.map(p => <li key={p.id}><b>{p.dry_run ? "Dry run" : "Purge executed"} · {p.workspace_ids.length} workspace{p.workspace_ids.length === 1 ? "" : "s"}</b><small>{stamp(p.created_at)} · {p.reason}{p.users_to_remove?.length ? ` · ${p.users_to_remove.length} test sign-ins` : ""}</small></li>)
+          : <li><small>No purges recorded.</small></li>}</ul></section>
+    </div></div>;
 }

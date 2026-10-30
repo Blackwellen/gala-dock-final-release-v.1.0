@@ -1,8 +1,9 @@
+import type { Metadata } from "next";
 import { getCustomer } from "@/lib/data/context";
 import { AcceptTransfer } from "./accept";
 import "@/styles/marketplace.css";
 
-export const metadata = { title: "Accept ticket" };
+export const metadata: Metadata = { title: "Accept ticket · Gala Dock", robots: { index: false, follow: false }, referrer: "no-referrer" };
 
 /** Recipient side of a two-step transfer (§49). The old ticket stops working only when this is accepted. */
 export default async function AcceptTicketPage({ params }: PageProps<"/tickets/accept/[token]">) {

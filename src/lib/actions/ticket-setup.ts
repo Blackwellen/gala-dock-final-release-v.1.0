@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "./shell";
+import { lifecycleError } from "@/lib/events/lifecycle";
 
 const Id = z.string().uuid();
 const Tier = z.object({ id: z.string().uuid().optional(), name: z.string().trim().min(1).max(60), description: z.string().max(200), price: z.number().min(0).max(100000), quantity: z.number().int().min(0).max(1000000), badge: z.string().max(30).nullable(), color: z.string().regex(/^#[0-9a-f]{6}$/i), kind: z.enum(["general", "vip", "group", "accessible", "comp", "student", "press", "early"]) });
@@ -66,7 +67,7 @@ export async function saveSalesRules(eventId: string, input: unknown): Promise<A
   if (new Set(r.promos.map(x => x.code)).size !== r.promos.length) return { ok: false, error: "Each promo code must be unique." };
   const { error } = await o.supabase.from("ticket_tiers").update({ sale_start: new Date(start).toISOString(), sale_end: end ? new Date(end).toISOString() : null, order_limit: r.order_limit }).eq("event_id", o.e.id);
   if (error) return { ok: false, error: "Could not save sale dates." };
-  const { data: codes } = await o.supabase.from("discount_codes").select("id,used").eq("event_id", o.e.id);
+  const { data: codes } = await o.supabase.from("discount_codes").select("id,used").eq("event_id", o.e.id).eq("purpose", "discount");
   const drop = (codes ?? []).filter(c => !r.promos.some(x => x.id === c.id));
   for (const c of drop) await (c.used > 0 ? o.supabase.from("discount_codes").update({ status: "disabled" }).eq("id", c.id) : o.supabase.from("discount_codes").delete().eq("id", c.id));
   for (const x of r.promos) {
@@ -80,6 +81,13 @@ export async function saveSalesRules(eventId: string, input: unknown): Promise<A
 }
 
 /** Step 3: publish. Paid tickets need a verified payout account; free tickets can go live straight away. */
+/** W11 ticketing guard refusals (event_ticketing_check reasons) → host-facing copy. */
+function ticketPolicyError(m: string): string | null {
+  if (/ticketing_not_enabled/.test(m)) return "Ticketing is off for this event type. Switch \"Sell tickets\" on first.";
+  if (/ticketing_private_only/.test(m)) return "Tickets for this event type are invite-only. Keep the event private and use its private guest link.";
+  return null;
+}
+
 export async function publishTickets(eventId: string, agreed: boolean): Promise<ActionResult> {
   const o = await access(eventId); if (!o) return { ok: false, error: "Event not found." };
   if (!agreed) return { ok: false, error: "Please agree to the ticketing terms." };
@@ -93,12 +101,33 @@ export async function publishTickets(eventId: string, agreed: boolean): Promise<
     if (ws?.payout_status !== "active") return { ok: false, error: o.e.management === "consumer" ? "Paid tickets need a payout account. Upgrade to Organizer mode to get paid — or make your tickets free." : "Finish payout setup in Money before selling paid tickets." };
   }
   const now = Date.now();
-  for (const t of tiers) await o.supabase.from("ticket_tiers").update({ status: Date.parse(t.sale_start!) > now ? "scheduled" : "on_sale" }).eq("id", t.id);
+  // W11: private_only types (children's party) only sell through a private invite link, and the tier guard checks for it —
+  // so the invite token must exist BEFORE any tier goes on sale.
+  const s = { ...(o.e.settings as Record<string, unknown>), ...(o.e.visibility === "private" && !(o.e.settings as Record<string, unknown>)?.invite_token ? { invite_token: randomBytes(16).toString("hex") } : {}) };
+  if (s.invite_token !== (o.e.settings as Record<string, unknown>)?.invite_token) {
+    const { error: invErr } = await o.supabase.from("events").update({ settings: s, updated_at: new Date().toISOString() }).eq("id", o.e.id);
+    if (invErr) return { ok: false, error: "Could not prepare the private ticket link." };
+  }
+  for (const t of tiers) {
+    const { error: tierErr } = await o.supabase.from("ticket_tiers").update({ status: Date.parse(t.sale_start!) > now ? "scheduled" : "on_sale" }).eq("id", t.id);
+    if (tierErr) return { ok: false, error: ticketPolicyError(tierErr.message) ?? lifecycleError(tierErr)?.message ?? "Could not put your tickets on sale." };
+  }
   let slug = o.e.slug;
   if (!slug) { slug = `${o.e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(3).toString("hex")}`; }
-  const s = { ...(o.e.settings as Record<string, unknown>), ticketing_live: true, ...(o.e.visibility === "private" && !(o.e.settings as Record<string, unknown>)?.invite_token ? { invite_token: randomBytes(16).toString("hex") } : {}) };
   const status = o.e.management === "professional" && ["draft", "planning", "ready", "published"].includes(o.e.status) ? "on_sale" : o.e.status;
-  const { error } = await o.supabase.from("events").update({ slug, settings: s, status, updated_at: new Date().toISOString() }).eq("id", o.e.id);
-  if (error) return { ok: false, error: "Could not publish tickets." };
+  const { error } = await o.supabase.from("events").update({ slug, settings: { ...s, ticketing_live: true }, status, updated_at: new Date().toISOString() }).eq("id", o.e.id);
+  if (error) return { ok: false, error: lifecycleError(error, status)?.message ?? "Could not publish tickets." };
   bump({ ...o.e, slug }); return { ok: true, message: "Tickets are live!", redirect: `${o.e.management === "consumer" ? `/account/events/${o.e.id}/guests-tickets` : `/organizer/events/${o.e.id}?tab=sell`}` };
+}
+
+/** W11: explicit "Sell tickets" switch for optional-off / private-only event types (event_set_ticketing; owner or events.write). */
+export async function setEventTicketing(eventId: string, on: boolean): Promise<ActionResult> {
+  if (!Id.safeParse(eventId).success) return { ok: false, error: "Event not found." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("event_set_ticketing" as never, { p_event: eventId, p_on: on } as never);
+  if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "You can't change ticketing for this event." : "Could not change ticketing." };
+  const r = (data ?? {}) as { ok?: boolean; message?: string; allowed?: boolean; reason?: string };
+  if (r.ok === false) return { ok: false, error: r.message ?? "Could not change ticketing." };
+  revalidatePath(`/account/events/${eventId}/guests-tickets`);
+  return { ok: true, message: on ? (r.allowed === false && r.reason ? r.reason : "Tickets are switched on — set them up next.") : "Ticketing is switched off." };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BarcodeSheet } from "./barcode-sheet";
 import QRCode from "qrcode";
 import { code128Svg } from "@/lib/tickets/code128";
 import "@/styles/ticket-credential.css";
@@ -14,11 +15,12 @@ const LABEL: Record<Mode, string> = { qr: "QR", visual: "Ticket", barcode: "Barc
  * One entitlement, three presentations (media spec §69–76): QR, visual admission ticket and Code 128 barcode. Switching changes the
  * view only — every mode encodes the same rotating, signed credential, so screenshots expire and old tickets die on transfer/resale.
  */
-export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = true, modes = ["qr", "visual", "barcode"] }: { ticket: TicketView; defaultMode?: Mode; allowSwitch?: boolean; modes?: Mode[] }) {
+export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = true, modes = ["qr", "visual", "barcode"], compact = false }: { ticket: TicketView; defaultMode?: Mode; allowSwitch?: boolean; modes?: Mode[]; /** QR/barcode only — the host page already shows the code, status and facts. */ compact?: boolean }) {
   const [mode, setMode] = useState<Mode>(defaultMode);
   const [payload, setPayload] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "valid" | "offline" | "inactive">("loading");
   const [qr, setQr] = useState("");
+  const [big, setBig] = useState(false);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>, live = true;
     const load = async () => {
@@ -40,7 +42,10 @@ export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = tru
   const seat = [ticket.section && `Section ${ticket.section}`, ticket.row && `Row ${ticket.row}`, ticket.seat && `Seat ${ticket.seat}`].filter(Boolean).join(" · ");
   const credential = state === "inactive" ? <div className="tc-void">Not valid for entry — {ticket.status.replace("_", " ")}</div>
     : !payload ? <div className="tc-loading">Loading your entry code…</div>
-    : mode === "barcode" ? <div className={`tc-barcode${dim}`} dangerouslySetInnerHTML={{ __html: code128Svg(payload, { height: 90, module: 1 }) }} />
+    : mode === "barcode" ? <><div className={`tc-barcode${dim}`} dangerouslySetInnerHTML={{ __html: code128Svg(payload, { height: 90, module: 1 }) }} />
+      {/* The inline barcode is capped to its card (<1 CSS px per module on phones — too fine to scan): enlarge fills the screen. */}
+      <button type="button" className="tc-enlarge" onClick={() => setBig(true)}>Enlarge barcode for scanning</button>
+      {big && <BarcodeSheet payload={payload} onClose={() => setBig(false)} />}</>
     : <div className={`tc-qr${dim}`} role="img" aria-label="Entry QR code" dangerouslySetInnerHTML={{ __html: qr }} />;
 
   return <div className="tc">
@@ -50,7 +55,7 @@ export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = tru
         <small>GALA DOCK · ADMISSION</small><h2>{ticket.event}</h2><p>{ticket.date} · {ticket.time}</p><p>{ticket.venue}</p></div>
       <div className="tc-stub"><dl><div><dt>Holder</dt><dd>{ticket.holder}</dd></div><div><dt>Ticket</dt><dd>{ticket.tier}</dd></div>{seat && <div><dt>Seat</dt><dd>{seat}</dd></div>}<div><dt>No.</dt><dd>{ticket.code}</dd></div></dl>
         <div className="tc-mini">{credential}</div></div>
-    </article> : <section className="tc-card">
+    </article> : compact ? <section className="tc-card tc-compact">{credential}</section> : <section className="tc-card">
       {credential}
       <p className="tc-ref">{ticket.code}</p>
       <dl className="tc-facts"><div><dt>Event</dt><dd>{ticket.event}</dd></div><div><dt>When</dt><dd>{ticket.date} · {ticket.time}</dd></div><div><dt>Venue</dt><dd>{ticket.venue}</dd></div>

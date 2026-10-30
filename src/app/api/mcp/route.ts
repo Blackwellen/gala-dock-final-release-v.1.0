@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ApiError, authenticate, callTool, newRequestId, toolsFor, scopeFor } from "@/lib/developer/gateway";
+import { ApiError, authenticate, callTool, logRequest, newRequestId, toolsFor, scopeFor, versionHeaders } from "@/lib/developer/gateway";
 import { z } from "zod";
 
 /**
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json(fail(null, -32700, "Parse error"), { status: 400 });
   const handle = async (m: Rpc) => {
     if (m.jsonrpc !== "2.0" || typeof m.method !== "string") return fail(m.id, -32600, "Invalid Request");
+    if (m.method !== "tools/call" && m.method !== "notifications/initialized") await logRequest(caller, { channel: "mcp", requestId: rid, method: "POST", path: `/api/mcp#${m.method.slice(0, 40)}`, status: 200 });
     switch (m.method) {
       case "initialize": return ok(m.id, { protocolVersion: PROTOCOL, capabilities: { tools: { listChanged: false } }, serverInfo: { name: "gala-dock", version: "1.0.0" },
         instructions: "Gala Dock workspace tools. Calls run with the permissions of the API key's creator. Commitments require approval in the Gala Dock app." });
@@ -31,8 +32,11 @@ export async function POST(request: Request) {
         inputSchema: z.toJSONSchema(t.input), annotations: { readOnlyHint: t.risk === 0, destructiveHint: false, idempotentHint: t.idempotent, openWorldHint: t.risk >= 3 } })) });
       case "tools/call": {
         const name = String(m.params?.name ?? ""), args = (m.params?.arguments ?? {}) as Record<string, unknown>;
+        // Idempotency for mutating calls: the Idempotency-Key header (single call) or params._meta["idempotency-key"] (per call in a batch).
+        const meta = (m.params?._meta ?? {}) as Record<string, unknown>;
+        const idem = typeof meta["idempotency-key"] === "string" ? String(meta["idempotency-key"]) : Array.isArray(body) ? null : request.headers.get("idempotency-key");
         try {
-          const r = await callTool(caller, name, args, { channel: "mcp", requestId: rid, method: "POST", path: "/api/mcp" });
+          const r = await callTool(caller, name, args, { channel: "mcp", requestId: rid, method: "POST", path: "/api/mcp", idempotencyKey: idem });
           return ok(m.id, { content: [{ type: "text", text: JSON.stringify((r.body as { data: unknown }).data) }], isError: false });
         } catch (e) {
           if (e instanceof ApiError && (e.code === "unknown_tool")) return fail(m.id, -32602, e.message);
@@ -44,10 +48,10 @@ export async function POST(request: Request) {
   };
   if (Array.isArray(body)) {
     const out = (await Promise.all(body.slice(0, 20).map(handle))).filter(Boolean);
-    return out.length ? NextResponse.json(out, { headers: { "X-Request-Id": rid } }) : new NextResponse(null, { status: 202 });
+    return out.length ? NextResponse.json(out, { headers: { "X-Request-Id": rid, ...versionHeaders } }) : new NextResponse(null, { status: 202 });
   }
   const out = await handle(body);
-  return out ? NextResponse.json(out, { headers: { "X-Request-Id": rid, "Mcp-Protocol-Version": PROTOCOL } }) : new NextResponse(null, { status: 202 });
+  return out ? NextResponse.json(out, { headers: { "X-Request-Id": rid, "Mcp-Protocol-Version": PROTOCOL, ...versionHeaders } }) : new NextResponse(null, { status: 202 });
 }
 
 export async function GET() {

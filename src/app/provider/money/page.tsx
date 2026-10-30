@@ -130,7 +130,7 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
       <li><Link href={qp("&tab=payouts")}><Landmark aria-hidden="true" /><span><b>Payouts</b><small>Automatic {schedule} payouts to your bank</small></span></Link></li>
       <li><Link href={`${base}/statement?month=${new Date(r.from + 864e5).toISOString().slice(0, 7)}`}><FileDown aria-hidden="true" /><span><b>Export statement</b><small>Download a detailed statement</small></span></Link></li>
       <li><Link href={qp("&tab=fees")}><PieChart aria-hidden="true" /><span><b>View fee breakdown</b><small>See how fees are calculated</small></span></Link></li>
-      <li><Link href="/provider/messages"><LifeBuoy aria-hidden="true" /><span><b>Resolve an issue</b><small>Get support with a transaction</small></span></Link></li>
+      <li><Link href="/provider/help?q=payments"><LifeBuoy aria-hidden="true" /><span><b>Resolve an issue</b><small>Get support with a transaction</small></span></Link></li>
       <li><Link href="/provider/settings?tab=billing"><Settings2 aria-hidden="true" /><span><b>Manage subscription</b><small>Change plan or payment method</small></span></Link></li></ul></aside>}
   </div>;
 }

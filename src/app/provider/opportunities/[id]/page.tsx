@@ -14,6 +14,7 @@ import { compatibility } from "@/lib/provider/fit";
 import { addInternalNote } from "./actions";
 import { QuickResponse, HeaderActions } from "./interactive";
 import { LifecyclePanel } from "@/components/marketplace/lifecycle-panel";
+import { labelOf } from "@/lib/master-data";
 
 export const metadata: Metadata = { title: "Opportunity" };
 const verdict: Record<string, Record<string, string>> = {
@@ -59,7 +60,7 @@ export default async function OpportunityPage(props: PageProps<"/provider/opport
     <header className="pq-head">
       <div className="pq-title"><h1>{e?.name ?? item.package}</h1>
         <div className="pq-sub"><Chip tone={statusChip.tone}>{statusChip.label}</Chip><span>Received {relative(item.created_at, now)}</span></div></div>
-      {open && <div className={`pq-deadline ${expired ? "expired" : ""}`}><Clock4 aria-hidden="true" /><span><b>{expired ? "Response window closed" : `${cd.label} remaining`}</b>
+      {open && item.response_deadline && <div className={`pq-deadline ${expired ? "expired" : ""}`}><Clock4 aria-hidden="true" /><span><b>{expired ? "Response window closed" : `${cd.label} remaining`}</b>
         <small>{expired ? "Expired / No response" : `Respond by ${day(item.response_deadline, { weekday: "short", day: "numeric", month: "short" })}, ${time(item.response_deadline)}`}</small></span></div>}
       <div className="pq-actions"><HeaderActions itemId={id} saved={saved.length > 0} /></div>
     </header>
@@ -78,7 +79,7 @@ export default async function OpportunityPage(props: PageProps<"/provider/opport
               <div className="pq-details-grid">
                 <dl className="pq-dl">
                   <div><dt>Date</dt><dd><CalendarDays aria-hidden="true" /><span><b>{day(e?.starts_at, { weekday: "long", day: "numeric", month: "long" })}, {e?.starts_at ? new Date(e.starts_at).getFullYear() : ""}</b><small>{time(e?.starts_at)} – {time(e?.ends_at)}</small></span></dd></div>
-                  <div><dt>Event type</dt><dd><PartyPopper aria-hidden="true" /><span><b>{titleCase(e?.event_type ?? "Event")}</b><small>{r?.scope?.split(". ")[0]}</small></span></dd></div>
+                  <div><dt>Event type</dt><dd><PartyPopper aria-hidden="true" /><span><b>{labelOf("event_type", e?.event_type, "Event")}</b><small>{r?.scope?.split(". ")[0]}</small></span></dd></div>
                   <div><dt>Location</dt><dd><MapPin aria-hidden="true" /><span><b>{e?.venue_name || e?.location}</b><small>{e?.location}</small>
                     <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e?.location ?? "")}`} target="_blank" rel="noopener noreferrer">View on map <ArrowRight aria-hidden="true" /></a></span></dd></div>
                   <div><dt>Expected guests</dt><dd><Users aria-hidden="true" /><span><b>{guests ? `${guests} guests` : "Not given"}</b></span></dd></div>
@@ -107,7 +108,7 @@ export default async function OpportunityPage(props: PageProps<"/provider/opport
                   {r?.emergency ? <li>Emergency / short-notice request</li> : null}
                   <li>Response window: {r?.response_hours ?? "—"} hours</li>
                 </ul></dd></div>
-                <div><dt>Attachments</dt><dd>{Array.isArray(req.attachments) && req.attachments.length ? (req.attachments as { name: string }[]).map(a => a.name).join(", ") : <span className="ws-muted">No attachments provided</span>}</dd></div>
+                <div><dt>Attachments</dt><dd>{Array.isArray(req.attachments) && req.attachments.length && r ? <ul>{(req.attachments as { name:string;path:string }[]).map(file=><li key={file.path}><a href={`/api/requests/${r.id}/files?path=${encodeURIComponent(file.path)}`}>{file.name}</a></li>)}</ul> : <span className="ws-muted">No attachments provided</span>}</dd></div>
               </dl>
             </section>
             <section className="ws-panel pq-fit">
@@ -153,7 +154,7 @@ export default async function OpportunityPage(props: PageProps<"/provider/opport
       </div>
 
       <aside className="pq-rail">
-        {open && <section className="ws-panel pq-card"><h2 className="pq-h"><Clock4 aria-hidden="true" className="red" />Response deadline</h2>
+        {open && item.response_deadline && <section className="ws-panel pq-card"><h2 className="pq-h"><Clock4 aria-hidden="true" className="red" />Response deadline</h2>
           <p className={`pq-due ${expired ? "expired" : ""}`}><Clock4 aria-hidden="true" /><span><b>{expired ? "Expired" : `${day(item.response_deadline, { weekday: "short" })}, ${time(item.response_deadline)}`}</b><small>{expired ? "No response was sent in time" : `${cd.label} remaining`}</small></span></p></section>}
         <section className="ws-panel pq-card"><h2 className="pq-h"><CalendarRange aria-hidden="true" />Request status</h2>
           <p className="pq-status"><FileText aria-hidden="true" /><span><b>{statusChip.label}</b><small>{open ? "No response yet" : `Updated ${relative(item.updated_at, now)}`}</small></span></p>

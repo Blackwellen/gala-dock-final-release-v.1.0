@@ -30,7 +30,7 @@
 .ae-drawer{gap:9px;padding-top:12px}
 .ae-drawer .aa-drawer-head{gap:12px}
 .ae-drawer .aa-drawer-head .ws-thumb{border-radius:6px}
-.ae-drawer .aa-drawer-head h2{font-size:15px;margin-top:5px}
+.ae-drawer .aa-drawer-head h2{font-size: var(--k-title-card);margin-top:5px}
 .ae-drawer .aa-drawer-head .aa-status{height:20px;font-size:10px}
 .ae-facts{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:11px;color:#1d2068}
 .ae-facts li{display:flex;align-items:center;gap:10px}

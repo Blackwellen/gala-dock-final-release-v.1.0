@@ -1,5 +1,8 @@
 // Code 128 (subset B) barcode → SVG, dependency-free (media spec §72: one approved symbology, chosen for scanner compatibility).
 // Encodes the same signed credential as the QR, so the barcode is a different *view* of one entitlement — never a second ticket.
+// Q45-S01: the colour can come from a stored design, so it is validated before it reaches the SVG attribute.
+import { safeSvgColor } from "@/lib/security/svg-sanitize";
+
 const P = [
   "212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132",
   "221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313",
@@ -23,11 +26,30 @@ export function code128B(text: string): number[] {
   return codes.flatMap(v => P[v]!.split("").map(Number));
 }
 
+/**
+ * Quiet zone: 10 modules each side (ISO/IEC 15417 minimum). crispEdges snaps bars to device pixels when the SVG is scaled to fit
+ * its card: antialiased fractional bars are unreadable, snapped bars decode from ~1.5 device px per module (decode spec).
+ */
 export function code128Svg(text: string, opts: { height?: number; module?: number; quiet?: number; color?: string } = {}) {
-  const { height = 80, module = 2, quiet = 10, color = "#000" } = opts;
+  const { height = 80, module = 2, quiet = 10 } = opts, color = safeSvgColor(opts.color, "#000");
   const widths = code128B(text);
   const total = widths.reduce((a, b) => a + b, 0) + quiet * 2;
   let x = quiet, rects = "";
   widths.forEach((w, i) => { if (i % 2 === 0) rects += `<rect x="${x}" y="0" width="${w}" height="${height}"/>`; x += w; });
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${height}" width="${total * module}" height="${height}" preserveAspectRatio="none" role="img" aria-label="Barcode"><rect width="100%" height="100%" fill="#fff"/><g fill="${color}">${rects}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${height}" width="${total * module}" height="${height}" preserveAspectRatio="none" shape-rendering="crispEdges" role="img" aria-label="Barcode"><rect width="100%" height="100%" fill="#fff"/><g fill="${color}">${rects}</g></svg>`;
+}
+
+/** Width of the barcode in modules (quiet zones included) — the viewBox width of code128Svg. */
+export function code128Modules(text: string, quiet = 10) { return code128B(text).reduce((a, b) => a + b, 0) + quiet * 2; }
+
+/**
+ * Enlarged-barcode layout for a viewport (CSS px) and device pixel ratio: lay the bars along whichever side gives more whole
+ * device px per module (portrait phones → rotated 90°). `dpx` = device px per module (integer), `module` = CSS px per module.
+ */
+export function barcodeSheetFit(modules: number, viewportW: number, viewportH: number, dpr: number) {
+  // Rotated: bars run the full height (12 px margins); close button and note sit beside them. Flat: full width, bars ≤200 tall.
+  const flatLen = viewportW - 32, turnedLen = viewportH - 24;
+  const along = (len: number) => Math.max(1, Math.floor((len * dpr) / modules));
+  const flat = along(flatLen), turned = along(turnedLen), rotate = turned > flat || (turned === flat && turnedLen > flatLen), dpx = rotate ? turned : flat;
+  return { rotate, dpx, module: dpx / dpr, height: Math.round(Math.max(60, Math.min(rotate ? viewportW - 112 : viewportH - 120, 200))) };
 }

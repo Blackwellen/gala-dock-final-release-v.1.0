@@ -7,7 +7,7 @@ const DATE_FILTERS = ["tonight", "weekend", "week", "month"] as const;
 
 /** Public, on-sale events with live ticket availability (RLS: public published/on_sale/live only). */
 export async function publicEvents(ctx: CustomerCtx, opts: { q?: string; cat?: string; date?: string; city?: string; limit?: number } = {}) {
-  let q = ctx.supabase.from("events").select("id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings").eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("ends_at", new Date().toISOString()).order("starts_at");
+  let q = ctx.supabase.from("events_public").select("id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings").eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("ends_at", new Date().toISOString()).order("starts_at");
   if (opts.q) { const t = opts.q.replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,venue_name.ilike.%${t}%,location.ilike.%${t}%,description.ilike.%${t}%`); }
   if (opts.city) q = q.ilike("location", `%${opts.city}%`);
   if (opts.date && (DATE_FILTERS as readonly string[]).includes(opts.date)) {

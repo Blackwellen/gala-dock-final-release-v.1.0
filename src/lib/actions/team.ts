@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
 import type { Json } from "@/types/database";
+import { untyped } from "@/lib/workspace/db";
 
 const Id = z.string().uuid();
 const MANAGE = ["owner", "admin", "manager"];
@@ -75,20 +76,107 @@ export async function setShiftStatus(id: string, status: "pending" | "confirmed"
 export async function requestAvailability(crew: string, from: string, to: string, note: string): Promise<ActionResult> {
   const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can request availability." };
   if (!Id.safeParse(crew).success || !(Date.parse(to) > Date.parse(from))) return { ok: false, error: "Choose a valid date range." };
-  const { data: c } = await ctx.supabase.from("crew_members").select("name").eq("id", crew).eq("workspace_id", ctx.workspace.id).maybeSingle();
-  if (!c) return { ok: false, error: "Person not found." };
-  await ctx.supabase.from("tasks").insert({ workspace_id: ctx.workspace.id, owner_id: ctx.user.id, title: `Availability request — ${c.name}`, detail: `${note.slice(0, 400)}\ncrew:${crew}\nfrom:${from}\nto:${to}`, category: "availability_request", assignee_name: c.name, due_at: new Date(Date.parse(from) - 2 * 864e5).toISOString(), priority: "medium", status: "todo" });
-  await audit(ctx, "team.availability_requested", { crew_id: crew }); bump(crew);
-  return { ok: true, message: `Availability requested from ${c.name}.` };
+  // Q17: one command records the request (task) and notifies the person in-app when their crew record is linked to a login.
+  const { error } = await untyped(ctx.supabase).rpc("request_crew_availability", { p_crew: crew, p_from: new Date(from).toISOString(), p_to: new Date(to).toISOString(), p_note: note.slice(0, 400) });
+  if (error) return { ok: false, error: error.message.includes("not_authorized") ? "Person not found." : "Could not send the request." };
+  bump(crew);
+  return { ok: true, message: "Availability requested." };
 }
 
+/** Q17 decision: notes about a person are not crew/shift writes — any active member may add one (crew_notes, RLS member insert). */
 export async function addNote(crew: string, body: string): Promise<ActionResult> {
-  const { ctx } = await ctxManage();
+  const ctx = await getOrganizer();
   const t = body.trim(); if (!Id.safeParse(crew).success || t.length < 2 || t.length > 1000) return { ok: false, error: "Write a short note." };
-  const { data: c } = await ctx.supabase.from("crew_members").select("details").eq("id", crew).eq("workspace_id", ctx.workspace.id).maybeSingle();
-  if (!c) return { ok: false, error: "Person not found." };
-  const d = (c.details ?? {}) as Record<string, unknown>; const notes = (d.notes as unknown[] | undefined) ?? [];
-  const { error } = await ctx.supabase.from("crew_members").update({ details: { ...d, notes: [{ by: ctx.name, at: new Date().toISOString(), body: t }, ...notes].slice(0, 50) } as Json }).eq("id", crew);
+  const { error } = await untyped(ctx.supabase).from("crew_notes").insert({ workspace_id: ctx.workspace.id, crew_id: crew, body: t, author_id: ctx.user.id, author_name: ctx.name });
   if (error) return { ok: false, error: "Could not save the note." };
   bump(crew); return { ok: true, message: "Note added." };
+}
+
+const pgErr = (m?: string) => /crew_conflict/.test(m ?? "") ? "Double booking: that person already has an overlapping shift or is unavailable then." : /not_authorized/.test(m ?? "") ? "Only workspace managers can do that." : /crew_unavailable/.test(m ?? "") ? "That person is unavailable or deactivated." : /shift_in_progress/.test(m ?? "") ? "This shift has started — check the person out first." : /already_decided/.test(m ?? "") ? "Already decided." : /crew_already_linked/.test(m ?? "") ? "This person already has a login."
+  : /crew_not_in_workspace/.test(m ?? "") ? "That person isn't in this workspace." : /not_cancellable/.test(m ?? "") ? "Only pending or approved leave can be cancelled."
+  : /crew_email_required/.test(m ?? "") ? "Add an email address to this person first." : /invalid_range/.test(m ?? "") ? "The end must be after the start." : null;
+
+/** Substitution (58.4): move a shift to someone else; the database re-checks capacity under the person's lock. */
+export async function reassignShift(shift: string, toCrew: string, reason: string): Promise<ActionResult> {
+  const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can reassign shifts." };
+  if (!Id.safeParse(shift).success || !Id.safeParse(toCrew).success) return { ok: false, error: "Choose a person." };
+  const { error } = await untyped(ctx.supabase).rpc("reassign_shift", { p_shift: shift, p_to_crew: toCrew, p_reason: reason.slice(0, 500) });
+  if (error) return { ok: false, error: pgErr(error.message) ?? "Could not reassign the shift." };
+  bump(toCrew); return { ok: true, message: "Shift reassigned — awaiting confirmation." };
+}
+
+export async function decideLeave(request: string, approve: boolean, note: string): Promise<ActionResult<{ conflicts: number }>> {
+  const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can decide leave." };
+  const { data, error } = await untyped(ctx.supabase).rpc("decide_leave", { p_request: request, p_approve: approve, p_note: note.slice(0, 500) });
+  if (error) return { ok: false, error: pgErr(error.message) ?? "Could not record the decision." };
+  const n = ((data as { conflicting_shifts?: unknown[] })?.conflicting_shifts ?? []).length;
+  bump(); return { ok: true, data: { conflicts: n }, message: approve ? (n ? `Leave approved — reassign ${n} overlapping shift${n > 1 ? "s" : ""}.` : "Leave approved.") : "Leave not approved." };
+}
+
+/** Invite a crew member to log in. Owner only (same rule as /api/invites); accepting links crew_members.user_id. No email is sent here. */
+export async function inviteCrewLogin(crew: string, role: "member" | "manager" | "finance" = "member"): Promise<ActionResult<{ inviteUrl: string }>> {
+  const ctx = await getOrganizer();
+  if (!Id.safeParse(crew).success) return { ok: false, error: "Person not found." };
+  if (String(ctx.role) !== "owner") return { ok: false, error: "Only the workspace owner can invite logins." };
+  const { data: c } = await ctx.supabase.from("crew_members").select("email,user_id").eq("id", crew).eq("workspace_id", ctx.workspace.id).maybeSingle();
+  if (!c) return { ok: false, error: "Person not found." };
+  if (c.user_id) return { ok: false, error: "This person already has a login." };
+  const email = (c.email ?? "").trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { ok: false, error: "Add an email address to this person first." };
+  const { createInviteToken } = await import("@/lib/security");
+  const { token, hash } = createInviteToken();
+  const { error } = await untyped(ctx.supabase).rpc("crew_invite_login", { p_crew: crew, p_token_hash: hash, p_role: role });
+  if (error) return { ok: false, error: error.code === "23505" ? "This person already has a pending invitation." : pgErr(error.message) ?? "Could not create the invitation." };
+  const { siteUrl } = await import("@/lib/site-url");
+  return { ok: true, message: "Invitation link created — share it with them (email delivery isn't configured here).", data: { inviteUrl: `${siteUrl()}/invite/${token}` } };
+}
+
+// ── Q17 team-page panels (leave approval, substitution, login invites): form-shaped wrappers for the shared FormDialog / ActionButton. ──
+const Reason = z.object({ note: z.string().trim().max(500).default("") });
+const fmtLeave = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
+
+/** Approve or reject a pending leave request; on approval returns the overlapping shifts that now need cover. */
+export async function decideLeaveForm(request: string, approve: boolean, values: Record<string, unknown> = {}): Promise<ActionResult> {
+  const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can decide leave." };
+  const n = Reason.safeParse(values); if (!Id.safeParse(request).success || !n.success) return { ok: false, error: "Leave request not found." };
+  if (!approve && n.data.note.length < 3) return { ok: false, error: "Add a short reason for the person." };
+  const { data, error } = await untyped(ctx.supabase).rpc("decide_leave", { p_request: request, p_approve: approve, p_note: n.data.note });
+  if (error) return { ok: false, error: pgErr(error.message) ?? "Could not record the decision." };
+  const clashes = ((data as { conflicting_shifts?: { title: string; starts_at: string }[] })?.conflicting_shifts ?? []);
+  bump();
+  if (!approve) return { ok: true, message: "Leave not approved — they've been notified if they have a login." };
+  return { ok: true, message: clashes.length ? `Leave approved — ${clashes.length} overlapping shift${clashes.length > 1 ? "s" : ""} need cover.` : "Leave approved — no shifts clash.",
+    data: clashes.length ? { title: "Shifts that now need cover", lines: [...clashes.map(c => `${c.title || "Shift"} (${fmtLeave(c.starts_at)})`), "Reassign them under Shifts needing cover."] } : undefined };
+}
+
+export async function cancelLeaveAction(request: string): Promise<ActionResult> {
+  const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can cancel leave here." };
+  if (!Id.safeParse(request).success) return { ok: false, error: "Leave request not found." };
+  const { error } = await untyped(ctx.supabase).rpc("cancel_leave", { p_request: request });
+  if (error) return { ok: false, error: pgErr(error.message) ?? "Could not cancel the leave." };
+  bump(); return { ok: true, message: "Leave cancelled — any availability block it created was removed." };
+}
+
+const LeaveForm = z.object({ crew: Id, kind: z.enum(["annual", "sick", "unpaid", "other"]), from: z.string().min(1), to: z.string().min(1), note: z.string().trim().max(500).default("") });
+/** Managers can record leave on someone's behalf (e.g. phoned-in sickness); it starts pending like any request. */
+export async function recordLeave(values: Record<string, unknown>): Promise<ActionResult> {
+  const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can record leave for someone." };
+  const p = LeaveForm.safeParse(values); if (!p.success) return { ok: false, error: "Choose the person, type and dates." };
+  const f = Date.parse(p.data.from), t = Date.parse(p.data.to); if (!(t > f)) return { ok: false, error: "The end must be after the start." };
+  const { error } = await untyped(ctx.supabase).rpc("request_leave", { p_ws: ctx.workspace.id, p_from: new Date(f).toISOString(), p_to: new Date(t).toISOString(), p_kind: p.data.kind, p_note: p.data.note, p_crew: p.data.crew });
+  if (error) return { ok: false, error: pgErr(error.message) ?? "Could not record the leave." };
+  bump(p.data.crew); return { ok: true, message: "Leave recorded as pending — approve or reject it below." };
+}
+
+export async function reassignShiftForm(shift: string, values: Record<string, unknown> = {}): Promise<ActionResult> {
+  const p = z.object({ to: Id, reason: z.string().trim().max(500).default("") }).safeParse(values);
+  if (!p.success) return { ok: false, error: "Choose the replacement person." };
+  return reassignShift(shift, p.data.to, p.data.reason);
+}
+
+export async function inviteLoginForm(crew: string, values: Record<string, unknown> = {}): Promise<ActionResult> {
+  const role = z.enum(["member", "manager", "finance"]).catch("member").parse(values.role);
+  const r = await inviteCrewLogin(crew, role);
+  if (!r.ok || !r.data) return r;
+  bump(crew);
+  return { ok: true, message: r.message, data: { copy: r.data.inviteUrl, title: "Invitation link — share it with them" } };
 }

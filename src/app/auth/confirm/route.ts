@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/redirects";
+import { attributePartnerSignup, PARTNER_COOKIE } from "@/lib/partners/referral";
 
 /** Server-side token-hash verification for email templates that link here. */
 export async function GET(request: NextRequest) {
@@ -15,7 +16,11 @@ export async function GET(request: NextRequest) {
     if (!error) {
       if (type === "recovery") return NextResponse.redirect(new URL("/reset-password", request.url));
       await supabase.rpc("log_auth_event", { p_event: "auth.email_verified" });
-      return NextResponse.redirect(new URL(`/verify-email?next=${encodeURIComponent(next)}`, request.url));
+      // Q27: a consented partner link credits this new account (once; fraud-checked in the database).
+      await attributePartnerSignup(supabase as never, request.cookies.get(PARTNER_COOKIE)?.value, request);
+      const res = NextResponse.redirect(new URL(`/verify-email?next=${encodeURIComponent(next)}`, request.url));
+      if (request.cookies.get(PARTNER_COOKIE)) res.cookies.delete(PARTNER_COOKIE);
+      return res;
     }
   }
   return NextResponse.redirect(new URL(type === "recovery" ? "/reset-password?state=expired" : `/verify-email?state=expired&next=${encodeURIComponent(next)}`, request.url));

@@ -11,6 +11,16 @@ import { FileUploader } from "./files-client";
 import { TeamConflicts } from "@/components/ops/readiness-panel";
 import { MessageButton } from "@/components/messaging/messaging-client";
 import { createClient } from "@/lib/supabase/server";
+import { GitBranch, Handshake, ShieldCheck, Accessibility, MonitorPlay, Network, ClipboardSignature } from "lucide-react";
+import { DependenciesSection } from "./sections/dependencies";
+import { PartnersSection } from "./sections/partners";
+import { ComplianceSection } from "./sections/compliance";
+import { AccessibilitySection } from "./sections/accessibility";
+import { OnlineSection } from "./sections/online";
+import { StructureSection } from "./sections/structure";
+import { FormsSection } from "./sections/forms";
+import { BriefEditor } from "./brief-client";
+import { untyped } from "@/lib/workspace/db";
 
 const ICONS: Record<string, React.ComponentType<{ size?: number }>> = { layers: Layers, utensils: UtensilsCrossed, wine: Wine, shield: Shield, tent: Tent, card: CreditCard, user: User, volume: Volume2 };
 /** Programme structure adapts to event type (not one universal timeline). */
@@ -28,10 +38,19 @@ export const modelFor = (t: string) => PROGRAMME_MODEL[t] ?? PROGRAMME_MODEL.def
 export function PlanTab({ e, d, section, role }: { e: ProEvent; d: EventData; section: string; role: string }) {
   const base = `/organizer/events/${e.id}?tab=plan`;
   const items = [["brief", "Brief", FileText], ["programme", "Programme", CalendarRange], ["venue", "Venue", Building2], ["suppliers", "Suppliers", Users], ["guests", "Guests", UserCheck], ["schedule", "Schedule", CalendarDays], ["tasks", "Tasks", ListChecks], ["files", "Files", Folder]] as const;
-  const s = items.some(i => i[0] === section) ? section : "brief";
+  const more = [["dependencies", "Dependencies", GitBranch], ["partners", "Partners", Handshake], ["compliance", "Compliance", ShieldCheck], ["accessibility", "Accessibility", Accessibility], ["online", "Online sessions", MonitorPlay], ["structure", "Structure", Network], ["forms", "Forms & waivers", ClipboardSignature]] as const;
+  const s = items.some(i => i[0] === section) || more.some(i => i[0] === section) ? section : "brief";
+  const sp = { e, d, role };
   return <>
-    <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: `${base}${k === "brief" ? "" : `&section=${k}`}` }))} />
-    {(s === "brief" || s === "schedule") && <TeamConflicts workspaceId={e.workspace_id as string} eventId={e.id} limit={5} />}
+    <SubTabs current={s} items={items.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: `${base}${k === "brief" ? "" : `&section=${k}`}` }))} more={more.map(([k, l, I]) => ({ key: k, label: l, icon: I, href: `${base}&section=${k}` }))} />
+    {s === "dependencies" && <DependenciesSection {...sp} />}
+    {s === "partners" && <PartnersSection {...sp} />}
+    {s === "compliance" && <ComplianceSection {...sp} />}
+    {s === "accessibility" && <AccessibilitySection {...sp} />}
+    {s === "online" && <OnlineSection {...sp} />}
+    {s === "structure" && <StructureSection {...sp} />}
+    {s === "forms" && <FormsSection {...sp} />}
+    {(s === "brief" || s === "schedule") && <TeamConflicts workspaceId={e.workspace_id as string} eventId={e.id} limit={5} hideEmpty />}
     {s === "brief" && <Brief e={e} d={d} />}
     {s === "programme" && <Card><ProgrammeList e={e} d={d} full /></Card>}
     {s === "venue" && <VenueSection e={e} d={d} />}
@@ -57,21 +76,50 @@ function checklist(e: ProEvent, d: EventData) {
   ] as [string, boolean][];
 }
 
-function Brief({ e, d }: { e: ProEvent; d: EventData }) {
+type BriefRow = Record<string, unknown> & { id: string; version: number; is_current: boolean; created_by: string | null; created_at: string; change_note: string };
+/** Canonical brief versions (event_briefs, append-only) + who may edit (save_event_brief needs events.write) + author names. */
+async function briefData(e: ProEvent) {
+  const sb = await createClient(); const db = untyped(sb);
+  const [{ data: rows }, { data: perm }, { data: { user } }] = await Promise.all([
+    db.from("event_briefs").select("*").eq("event_id", e.id).order("version", { ascending: false }).limit(12) as unknown as PromiseLike<{ data: BriefRow[] | null }>,
+    db.rpc("has_permission", { p_workspace: e.workspace_id, p_permission: "events.write" }),
+    sb.auth.getUser(),
+  ]);
+  const versions = rows ?? [];
+  const ids = [...new Set(versions.map(v => v.created_by).filter((x): x is string => !!x && x !== user?.id))];
+  const { data: crew } = ids.length ? await sb.from("crew_members").select("user_id,name").eq("workspace_id", e.workspace_id as string).in("user_id", ids) : { data: [] };
+  const names = new Map((crew ?? []).map(c => [c.user_id as string, c.name]));
+  const author = (id: string | null) => !id ? "a teammate" : id === user?.id ? "you" : names.get(id) ?? "a teammate";
+  return { current: versions.find(v => v.is_current) ?? null, versions, canEdit: perm === true, author };
+}
+const briefList = (v: unknown) => (Array.isArray(v) ? v : []).map(x => typeof x === "string" ? x : String((x as { text?: string })?.text ?? "")).filter(Boolean);
+
+async function Brief({ e, d }: { e: ProEvent; d: EventData }) {
   const cl = checklist(e, d); const done = cl.filter(c => c[1]).length;
-  const objectives = (e.settings.objectives as string[] | undefined) ?? (e.goal ? e.goal.split(/;\s*/) : []);
+  const bd = await briefData(e); const cur = bd.current;
+  const objectives = cur && briefList(cur.goals).length ? briefList(cur.goals) : (e.settings.objectives as string[] | undefined) ?? (e.goal ? e.goal.split(/;\s*/) : []);
   const typeSettings = (e.settings.type_settings as [string, string][] | undefined) ?? [];
   const venueItem = d.items.find(b => b.category === "venue");
   const confirmedGuests = d.guests.filter(g => g.status === "confirmed").length || d.validTickets;
+  const aud = (cur?.audience ?? {}) as { size?: number; profile?: string; ages?: string };
+  const facts = cur ? ([["Scope", String(cur.scope ?? "")], ["Client needs", String(cur.client_needs ?? "")], ["Audience", [aud.size ? `${num(aud.size)} guests` : "", aud.ages ?? "", aud.profile ?? ""].filter(Boolean).join(" · ")],
+    ["Budget", cur.budget_min != null || cur.budget_max != null ? [cur.budget_min, cur.budget_max].map(v => v == null ? "—" : money(Number(v))).join(" – ") : ""], ["Location", String(cur.location_needs ?? "")],
+    ["Must-haves", briefList(cur.must_haves).join("; ")], ["Constraints", briefList(cur.constraints).join("; ")], ["Success measures", briefList(cur.success_measures).join("; ")]] as const).filter(([, v]) => v) : [];
   return <div className="pl-grid">
     <div className="k-col" style={{ gap: 14 }}>
-      <Card><div className="k-between"><h2 className="ov-h" style={{ fontSize: 15.5 }}>Event brief</h2><Link className="k-link" href={`/organizer/events/${e.id}?tab=plan&section=brief&edit=1`}><PenLine size={14} />Edit brief</Link></div>
+      <Card><div className="k-between"><h2 className="ov-h" style={{ fontSize: 15.5 }}>Event brief {cur && <Chip tone="purple">v{cur.version}</Chip>}</h2><BriefEditor eventId={e.id} brief={cur} version={cur?.version ?? 0} canEdit={bd.canEdit} reason="Your role can view the brief but not edit it." /></div>
+        {cur && <p className="k-xs k-muted bf-meta">Version {cur.version} saved {relative(cur.created_at)} by {bd.author(cur.created_by)}{cur.change_note ? ` — “${cur.change_note}”` : ""}</p>}
         <p style={{ color: "var(--k-ink-2)", fontSize: 13.5, lineHeight: 1.55, margin: "8px 0 10px", maxWidth: 640 }}>{e.description || "No brief yet. Use Edit event to describe the concept, audience and goals."}</p>
         <div className="k-row k-wrap" style={{ gap: 6 }}>{[eventTypeLabel(e.event_type), ...e.tags.filter(t => t.toLowerCase() !== eventTypeLabel(e.event_type).toLowerCase()), ...(d.tiers.length ? ["Ticketed"] : [])].map((t, i) => <Chip key={t} lg tone={(["purple", "blue", "green", "gray", "red"] as const)[i % 5]}>{t}</Chip>)}</div>
         <div className="pl-two">
           <div className="pl-box"><h4>Key objectives</h4><ul>{objectives.map(o => <li key={o}><CheckCircle2 size={16} className="k-green" />{o}</li>)}{!objectives.length && <li className="k-muted">No objectives recorded.</li>}</ul></div>
           <div className="pl-box"><h4>Event type settings</h4><div className="pl-settings">{typeSettings.map(([l, ic]) => { const I = ICONS[ic] ?? Layers; return <span key={l}><I size={14} />{l}</span>; })}{!typeSettings.length && <span>{eventTypeLabel(e.event_type)} defaults</span>}</div></div>
-        </div></Card>
+        </div>
+        {facts.length > 0 && <dl className="bf-facts">{facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
+        {!cur && <p className="k-small k-muted" style={{ marginTop: 10 }}>No structured brief yet. {bd.canEdit ? "Use Edit brief to record goals, audience, budget range, must-haves and constraints — suppliers you book see a scoped copy." : ""}</p>}
+        {bd.versions.length > 0 && <details className="bf-history"><summary>Version history ({bd.versions.length}{bd.versions.length === 12 ? "+" : ""})</summary>
+          <ol>{bd.versions.map(v => <li key={v.id}><Chip tone={v.is_current ? "green" : "gray"}>v{v.version}</Chip><span className="k-grow"><b className="k-small">{v.is_current ? "Current" : `Version ${v.version}`}</b><small className="k-xs k-muted"> · {dateShort(v.created_at)} {time(v.created_at)} by {bd.author(v.created_by)}{v.change_note ? ` — “${v.change_note}”` : ""}</small>
+            <small className="k-xs k-muted bf-hgoals">{briefList(v.goals).slice(0, 3).join(" · ") || "No goals recorded"}</small></span></li>)}</ol></details>}</Card>
       <Card><ProgrammeList e={e} d={d} /></Card>
     </div>
     <div className="k-col" style={{ gap: 14 }}>

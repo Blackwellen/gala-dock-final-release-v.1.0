@@ -1,0 +1,172 @@
+{
+  "generated_at": "2026-10-30T00:09:59.798Z",
+  "account": "acct_1UW176Ae36uXyrUn",
+  "applied": true,
+  "items": [
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_business_month",
+      "amount_minor": 22900,
+      "interval": "month",
+      "old_sandbox": {
+        "product": "prod_VWgcfHiuGj7DIa",
+        "price": "price_1UVdFMPCqawznZLziTOsw7ol"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7dYq4QZSKQuQ",
+        "price": "price_1UW3ODAe36uXyrUnJatMrIeH"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_business_year",
+      "amount_minor": 229000,
+      "interval": "year",
+      "old_sandbox": {
+        "product": "prod_VWgcfHiuGj7DIa",
+        "price": "price_1UVdFNPCqawznZLzKOi955vL"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7dYq4QZSKQuQ",
+        "price": "price_1UW3OEAe36uXyrUn6Zntrq6E"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_pro_month",
+      "amount_minor": 4900,
+      "interval": "month",
+      "old_sandbox": {
+        "product": "prod_VWgcLCUCoSmLHh",
+        "price": "price_1UVdFOPCqawznZLzepOD5tiK"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d1SKvwyoeCI",
+        "price": "price_1UW3OFAe36uXyrUnLacjXnPv"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_pro_year",
+      "amount_minor": 49000,
+      "interval": "year",
+      "old_sandbox": {
+        "product": "prod_VWgcLCUCoSmLHh",
+        "price": "price_1UVdFPPCqawznZLzIQLxmK7s"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d1SKvwyoeCI",
+        "price": "price_1UW3OFAe36uXyrUnrCN23Fkm"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_business_month",
+      "amount_minor": 14900,
+      "interval": "month",
+      "old_sandbox": {
+        "product": "prod_VWgcqMdmAfRXjU",
+        "price": "price_1UVdFQPCqawznZLzexW4xpVM"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d2GuFXyZzQl",
+        "price": "price_1UW3OGAe36uXyrUnbpH1hAuh"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_business_year",
+      "amount_minor": 149000,
+      "interval": "year",
+      "old_sandbox": {
+        "product": "prod_VWgcqMdmAfRXjU",
+        "price": "price_1UVdFRPCqawznZLz9uN51y9E"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d2GuFXyZzQl",
+        "price": "price_1UW3OHAe36uXyrUnBb6pCywn"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_pro_month",
+      "amount_minor": 5900,
+      "interval": "month",
+      "old_sandbox": {
+        "product": "prod_VWgcGi6eUClfzD",
+        "price": "price_1UVdFKPCqawznZLzedLSAFJl"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d1TumhTDVVh",
+        "price": "price_1UW3OIAe36uXyrUnJhAjHzL5"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_pro_year",
+      "amount_minor": 59000,
+      "interval": "year",
+      "old_sandbox": {
+        "product": "prod_VX7d1TumhTDVVh",
+        "price": "price_1UW3O0Ae36uXyrUnTS93oMnt"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d1TumhTDVVh",
+        "price": "price_1UW3O0Ae36uXyrUnTS93oMnt"
+      },
+      "action": "found"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_l",
+      "amount_minor": 21900,
+      "interval": null,
+      "old_sandbox": {
+        "product": null,
+        "price": "price_1UVdm2PCqawznZLzb7VVAvnZ"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7dJstWRDG04M",
+        "price": "price_1UW3OJAe36uXyrUn0Cq1zeIp"
+      },
+      "action": "created"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_s",
+      "amount_minor": 2500,
+      "interval": null,
+      "old_sandbox": {
+        "product": null,
+        "price": "price_1UVdm3PCqawznZLz5ef6To4e"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7d3OhpedmKTI",
+        "price": "price_1UW3OKAe36uXyrUnLiug5mZ6"
+      },
+      "action": "created"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_m",
+      "amount_minor": 8900,
+      "interval": null,
+      "old_sandbox": {
+        "product": null,
+        "price": "price_1UVdm4PCqawznZLzcIUu2Sai"
+      },
+      "new_sandbox": {
+        "product": "prod_VX7dT9glwtXDHs",
+        "price": "price_1UW3OLAe36uXyrUnTkMezxis"
+      },
+      "action": "created"
+    }
+  ]
+}

@@ -37,7 +37,7 @@
 .ws-app .ads-case-st svg{width:13px;height:13px}
 .ads-case-t{display:grid;grid-template-columns:58px minmax(0,1fr);gap:10px;margin-top:8px}
 .ads-case-t>img{width:58px;height:66px;border-radius:5px;object-fit:cover}
-.ads-case-t h2{font-size:14.5px;font-weight:750;color:#0d0d63;letter-spacing:-.02em}
+.ads-case-t h2{font-size: var(--k-title-card);font-weight:750;color:#0d0d63;letter-spacing:-.02em}
 .ads-case-t p{font-size:12px;color:#3f4596;margin-top:1px}
 .ads-case-t p span{margin:0 4px}
 .ads-ev{display:flex;gap:8px;align-items:center;margin-top:6px}
@@ -46,7 +46,7 @@
 .ads-ev b{font-size:11px;font-weight:500;color:#0d0d63}
 .ads-ev small{font-size:10px;color:#3f4596}
 .ads-cd-h{margin:4px 0 4px}
-.ads-cd-h h2{font-size:13px}
+.ads-cd-h h2{font-size: var(--k-title-sub)}
 .ads-kv{gap:1px}
 .ads-kv>div{grid-template-columns:96px minmax(0,1fr);font-size:11.5px}
 .ads-kv dd{color:#1d2068}
@@ -59,7 +59,7 @@
 .ads-notes{display:grid;gap:10px}
 .ads-risk{padding:10px 12px}
 .ads-risk .adb-sec-h{margin-bottom:6px}
-.ads-risk h2{font-size:13.5px}
+.ads-risk h2{font-size: var(--k-title-sub)}
 .ads-risk-b{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:8px;align-items:center}
 .ads-risk ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .ads-risk li{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:10.5px;color:#0d0d63}
@@ -68,7 +68,7 @@
 .ads-g{font-size:16px;font-weight:750;color:#02032e}
 .ads-gs{font-size:10px;color:#3f4596}
 .ads-actions{padding:10px 10px}
-.ads-actions h2{font-size:13.5px;margin-bottom:8px}
+.ads-actions h2{font-size: var(--k-title-sub);margin-bottom:8px}
 .ads-act{display:grid;grid-template-columns:82px 1fr 1fr;gap:8px}
 .ads-act .ws-btn,.ads-act .adb-btn{height:34px;font-size:11.5px;width:100%;color:#1a1af2;border-color:#d6defa;padding:0 8px}
 .ads-act .adb-pop>summary{width:100%;gap:12px}
@@ -80,3 +80,6 @@
 .ads-act2 .ads-ok{border-color:#a9e3c4;color:#0f7a3f;background:#effbf4}
 @media (max-width:1360px){.ads-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.ads-grid{grid-template-columns:1fr}.ads-filters-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.ads-kpis,.ads-filters-row{grid-template-columns:1fr 1fr}.ads-table{min-width:880px}.ads-act{grid-template-columns:1fr}}
+
+/* W12/W13: long case titles (e.g. "Risk: payout / payout_destination_changed") break and clamp with an ellipsis; full text in title */
+.ads-title a { overflow-wrap: anywhere; text-overflow: ellipsis; }

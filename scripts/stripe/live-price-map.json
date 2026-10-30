@@ -1,0 +1,184 @@
+{
+  "generated_at": "2026-10-29T22:25:59.683Z",
+  "mode_of_key": "live",
+  "applied": true,
+  "note": "test → live Stripe object mapping. Live ids are filled by --apply with the live key (owner). Hard-coded Stripe ids in src/: none.",
+  "items": [
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_pro_year",
+      "amount_minor": 59000,
+      "currency": "GBP",
+      "interval": "year",
+      "test": {
+        "product": "prod_VWgcGi6eUClfzD",
+        "price": "price_1UVdFLPCqawznZLzmTZwZPMt"
+      },
+      "live": {
+        "product": "prod_VX5xzV4wrmNzNp",
+        "price": "price_1UW1laArv3W3VbtPAfoDXt0z"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_business_month",
+      "amount_minor": 22900,
+      "currency": "GBP",
+      "interval": "month",
+      "test": {
+        "product": "prod_VWgcfHiuGj7DIa",
+        "price": "price_1UVdFMPCqawznZLziTOsw7ol"
+      },
+      "live": {
+        "product": "prod_VX5xXo0TNmieN7",
+        "price": "price_1UW1lbArv3W3VbtPwOjXww39"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_business_year",
+      "amount_minor": 229000,
+      "currency": "GBP",
+      "interval": "year",
+      "test": {
+        "product": "prod_VWgcfHiuGj7DIa",
+        "price": "price_1UVdFNPCqawznZLzKOi955vL"
+      },
+      "live": {
+        "product": "prod_VX5xXo0TNmieN7",
+        "price": "price_1UW1lbArv3W3VbtPSZ8XJUjG"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_pro_month",
+      "amount_minor": 4900,
+      "currency": "GBP",
+      "interval": "month",
+      "test": {
+        "product": "prod_VWgcLCUCoSmLHh",
+        "price": "price_1UVdFOPCqawznZLzepOD5tiK"
+      },
+      "live": {
+        "product": "prod_VX5xWVBjcb0u2F",
+        "price": "price_1UW1lcArv3W3VbtPR2glM7uI"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_pro_year",
+      "amount_minor": 49000,
+      "currency": "GBP",
+      "interval": "year",
+      "test": {
+        "product": "prod_VWgcLCUCoSmLHh",
+        "price": "price_1UVdFPPCqawznZLzIQLxmK7s"
+      },
+      "live": {
+        "product": "prod_VX5xWVBjcb0u2F",
+        "price": "price_1UW1ldArv3W3VbtPzaPvKvsA"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_business_month",
+      "amount_minor": 14900,
+      "currency": "GBP",
+      "interval": "month",
+      "test": {
+        "product": "prod_VWgcqMdmAfRXjU",
+        "price": "price_1UVdFQPCqawznZLzexW4xpVM"
+      },
+      "live": {
+        "product": "prod_VX5xYdvCjMDbDy",
+        "price": "price_1UW1leArv3W3VbtP0DhQf1ET"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_provider_business_year",
+      "amount_minor": 149000,
+      "currency": "GBP",
+      "interval": "year",
+      "test": {
+        "product": "prod_VWgcqMdmAfRXjU",
+        "price": "price_1UVdFRPCqawznZLz9uN51y9E"
+      },
+      "live": {
+        "product": "prod_VX5xYdvCjMDbDy",
+        "price": "price_1UW1lfArv3W3VbtPrdRNaQoS"
+      },
+      "action": "created"
+    },
+    {
+      "table": "plan_prices",
+      "lookup_key": "gd_organizer_pro_month",
+      "amount_minor": 5900,
+      "currency": "GBP",
+      "interval": "month",
+      "test": {
+        "product": "prod_VWgcGi6eUClfzD",
+        "price": "price_1UVdFKPCqawznZLzedLSAFJl"
+      },
+      "live": {
+        "product": "prod_VX5xzV4wrmNzNp",
+        "price": "price_1UW1lDArv3W3VbtPFbwRN5nY"
+      },
+      "action": "found"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_l",
+      "amount_minor": 21900,
+      "currency": "GBP",
+      "interval": null,
+      "test": {
+        "product": null,
+        "price": "price_1UVdm2PCqawznZLzb7VVAvnZ"
+      },
+      "live": {
+        "product": "prod_VX5x17IeQrlBfN",
+        "price": "price_1UW1lgArv3W3VbtPBaAKKopY"
+      },
+      "action": "created"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_s",
+      "amount_minor": 2500,
+      "currency": "GBP",
+      "interval": null,
+      "test": {
+        "product": null,
+        "price": "price_1UVdm3PCqawznZLz5ef6To4e"
+      },
+      "live": {
+        "product": "prod_VX5xD4MfGB9fDN",
+        "price": "price_1UW1lhArv3W3VbtP3hihzocQ"
+      },
+      "action": "created"
+    },
+    {
+      "table": "credit_packs",
+      "lookup_key": "gd_pack_top_up_m",
+      "amount_minor": 8900,
+      "currency": "GBP",
+      "interval": null,
+      "test": {
+        "product": null,
+        "price": "price_1UVdm4PCqawznZLzcIUu2Sai"
+      },
+      "live": {
+        "product": "prod_VX5xG58gSewo9L",
+        "price": "price_1UW1lhArv3W3VbtPxhdjt7mL"
+      },
+      "action": "created"
+    }
+  ]
+}

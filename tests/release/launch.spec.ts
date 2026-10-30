@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { admin, anon, BASE, cleanup, createUser, seedWorkspace } from "../phase1/helpers";
+import { admin, anon, BASE, cleanup, createUser, seedWorkspace, insertEventFixture } from "../phase1/helpers";
 
 // Release spec §50–52: derived launch states; server-authoritative waiting room (no fake positions).
 const db = admin as unknown as SupabaseClient;
@@ -13,7 +13,7 @@ test.describe("launch states and waiting room", () => {
   test.beforeAll(async () => { owner = await createUser("ln-o"); ws = await seedWorkspace(owner.id, "organizer", "Launch Org"); });
   test.afterAll(async () => { await db.from("ticket_tiers").delete().in("event_id", ids); await db.from("events").delete().in("id", ids); await db.from("workspaces").delete().eq("id", ws); await cleanup(); });
   const ev = async (status: string, settings: object, tier?: { quantity: number; sold: number; name?: string }) => {
-    const id = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, name: `Launch ${status}`, status, settings, starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
+    const id = ((await insertEventFixture({ owner_id: owner.id, workspace_id: ws, name: `Launch ${status}`, status, settings, starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }, "launch").select("id").single()).data as { id: string }).id;
     ids.push(id);
     if (tier) await db.from("ticket_tiers").insert({ event_id: id, name: tier.name ?? "GA", price: 20, quantity: tier.quantity, sold: tier.sold, status: "on_sale" });
     return id;

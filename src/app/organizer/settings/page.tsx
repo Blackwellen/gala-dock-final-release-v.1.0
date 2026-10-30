@@ -3,6 +3,8 @@ import { StorageUsage } from "@/components/storage-usage";
 import { DemoCard } from "@/components/demo/demo-card";
 import { DevelopersPanel } from "@/components/developer/panel";
 import { AgentCredits } from "@/components/agent/credits";
+import { AgentControls } from "@/components/agent/agent-controls";
+import { PlanBilling } from "@/components/billing/plan-billing";
 import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
 import { mfaRequired, policyOf } from "@/lib/mfa/policy";
 import { ClipboardList, CheckCircle2, ExternalLink, Users, CreditCard, Mail, Plug, Sparkles, Bell, CalendarDays, CircleSlash, ShieldCheck, Gauge, KeyRound, Globe2, Clock, ArrowRight, MessageSquare } from "lucide-react";
@@ -11,6 +13,7 @@ import { Crumbs, LinkTabs } from "@/components/kit";
 import { EditCard, NotifToggles, RoleSelect } from "@/components/organizer/settings-client";
 import { BrandLogo } from "@/components/kit/brand-logo";
 import { requestTime } from "@/lib/workspace/format";
+import { currencies } from "@/lib/master-data";
 
 export const metadata = { title: "Settings" };
 type S = Record<string, unknown>;
@@ -23,7 +26,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     sb.from("workspace_members").select("user_id,role,status,created_at").eq("workspace_id", ws),
     sb.from("crew_members").select("id,avatar,member_type,role").eq("workspace_id", ws).neq("status", "deactivated"),
     sb.from("events").select("id", { count: "exact", head: true }).eq("workspace_id", ws).not("status", "in", "(archived,completed,cancelled)"),
-    sb.from("agent_runs").select("id,cost_cents,created_at").eq("workspace_id", ws).gte("created_at", new Date(requestTime() - 30 * 864e5).toISOString()),
+    // Customers see credits, never provider cost (economics.md §2): metered usage over 30 days.
+    sb.from("ai_usage_events").select("run_id,credits").eq("workspace_id", ws).gte("created_at", new Date(requestTime() - 30 * 864e5).toISOString()),
     tab === "team" ? sb.from("audit_events").select("event,created_at,metadata").eq("workspace_id", ws).order("created_at", { ascending: false }).limit(12) : Promise.resolve({ data: [] }),
   ]);
   const s = (w?.settings ?? {}) as S; const can = ["owner", "manager"].includes(String(ctx.role)); const owner = ctx.role === "owner";
@@ -31,7 +35,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const name = (id: string) => (profiles ?? []).find(p => p.id === id)?.full_name || "Member";
   const roleCounts = (members ?? []).reduce<Record<string, number>>((a, m) => ({ ...a, [m.role]: (a[m.role] ?? 0) + 1 }), {});
   const crewN = (crew ?? []).filter(c => c.member_type === "crew").length;
-  const spend = (runs ?? []).reduce((a, r) => a + Number(r.cost_cents ?? 0), 0) / 100;
+  const usage = (runs ?? []) as { run_id: string | null; credits: number }[];
+  const credits = usage.reduce((a, r) => a + Number(r.credits ?? 0), 0), runCount = new Set(usage.map(r => r.run_id).filter(Boolean)).size;
   const notif = { in_app: true, email: true, sms: false, agent: true, marketing: false, ...((s.notifications ?? {}) as Record<string, boolean>) };
   const agent = { approval_policy: "Require approval for high-impact actions", autopilot: "Limited (suggest & draft only)", access_scope: "All events and workspace data", ...((s.agent ?? {}) as Record<string, string>) };
   const integrations = [
@@ -53,7 +58,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div className="st-r1">
         <section className="k-card st-c st-profile"><div className="k-between"><h2>Workspace profile</h2><EditCard can={can} title="Edit workspace profile" fields={[{ key: "name", label: "Workspace name", value: w?.name ?? "" }, ...fields([["description", "Description"], ["website", "Workspace URL"], ["contact_email", "Contact email"], ["contact_phone", "Contact phone"]])]} /></div>
           <div className="st-id">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={w?.cover_image || "/assets/gd/av-alex-organizer.webp"} alt="" /><div><div className="k-row" style={{ gap: 10 }}><b>{w?.name}</b><span className="st-ok"><CheckCircle2 size={13} />{w?.status === "active" ? "Active" : w?.status}</span></div><p>{String(s.description ?? "")}</p></div></div>
-          <dl className="st-g">{([["Workspace type", w?.kind === "organizer" ? "Organizer" : String(w?.kind)], ["Workspace", String(s.website ?? "—")], ["Default country", String(s.country ?? "United Kingdom")], ["Default currency", `${String(s.currency ?? "GBP")} (${s.currency === "EUR" ? "€" : s.currency === "USD" ? "$" : "£"})`], ["Default timezone", String(s.timezone ?? "Europe/London")], ["Contact email", String(s.contact_email ?? "—")], ["Contact phone", String(s.contact_phone ?? "—")]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{k === "Workspace" && v !== "—" ? <span className="k-row" style={{ gap: 6 }}>{v}<ExternalLink size={13} className="k-blue" /></span> : v}</dd></div>)}</dl></section>
+          <dl className="st-g">{([["Workspace type", w?.kind === "organizer" ? "Organizer" : String(w?.kind)], ["Workspace", String(s.website ?? "—")], ["Default country", String(s.country ?? "United Kingdom")], ["Default currency", `${String(s.currency ?? "GBP")} (${(currencies().find(c => c.code === String(s.currency ?? "GBP"))?.symbol ?? "£")})`], ["Default timezone", String(s.timezone ?? "Europe/London")], ["Contact email", String(s.contact_email ?? "—")], ["Contact phone", String(s.contact_phone ?? "—")]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{k === "Workspace" && v !== "—" ? <span className="k-row" style={{ gap: 6 }}>{v}<ExternalLink size={13} className="k-blue" /></span> : v}</dd></div>)}</dl></section>
         <section className="k-card st-c st-plan"><div><h2>Subscription &amp; plan</h2><div className="st-pl"><span className="st-pro">{plan.slice(0, 3)}</span><span className="k-grow"><b>{plan}</b><small>Everything you need to run multiple events at scale.</small></span><Link className="k-btn outline" href="/organizer/settings?tab=billing">Change plan</Link></div>
           {price > 0 && <p className="st-price"><b>£{price}</b> / month</p>}
           <div className="st-limits">{limits.map(([I, l, v, max]) => <div key={l}><span><I size={18} /><small>{l}</small></span><b>{v.toLocaleString("en-GB")} / {max.toLocaleString("en-GB")}</b><span className="st-bar"><i style={{ width: `${Math.min(100, (v / max) * 100)}%` }} /></span></div>)}</div></div>
@@ -62,7 +67,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div className="st-r2">
         <section className="k-card st-c"><div className="k-between"><h2>Legal &amp; business information</h2><EditCard can={can} title="Legal & business information" fields={fields([["legal_name", "Business name"], ["registration", "Registration number"], ["vat", "VAT number"], ["address", "Registered address"]])} /></div>
           <dl className="st-dl">{([["Business name", s.legal_name], ["Registration number", s.registration], ["VAT number", s.vat], ["Registered address", s.address]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{String(v ?? "—")}</dd></div>)}</dl></section>
-        <section className="k-card st-c"><div className="k-between"><h2>Locale &amp; defaults</h2><EditCard can={can} title="Locale & defaults" fields={[...fields([["country", "Default country"], ["timezone", "Default timezone"], ["date_format", "Date format"], ["time_format", "Time format"]]), { key: "currency", label: "Default currency", value: String(s.currency ?? "GBP"), options: ["GBP", "EUR", "USD"] }]} /></div>
+        <section className="k-card st-c"><div className="k-between"><h2>Locale &amp; defaults</h2><EditCard can={can} title="Locale & defaults" fields={[...fields([["country", "Default country"], ["timezone", "Default timezone"], ["date_format", "Date format"], ["time_format", "Time format"]]), { key: "currency", label: "Default currency", value: String(s.currency ?? "GBP"), options: currencies({ transactional: true }).map(c => c.code) }]} /></div>
           <dl className="st-dl ic">{([[Globe2, "Default country", s.country], [CreditCard, "Default currency", `${String(s.currency ?? "GBP")}`], [Clock, "Default timezone", s.timezone], [CalendarDays, "Date format", s.date_format], [CalendarDays, "Time format", s.time_format]] as const).map(([I, k, v]) => <div key={k}><dt>{k}</dt><dd><I size={15} />{String(v ?? "—")}</dd></div>)}</dl></section>
         <section className="k-card st-c st-brand"><div className="k-between"><h2>Workspace cover &amp; branding</h2><EditCard can={can} title="Branding" fields={[{ key: "cover_image", label: "Cover image URL", value: w?.cover_image ?? "" }, { key: "brand_color", label: "Brand colour (hex)", value: String(s.brand_color ?? "#2563eb") }]} /></div>
           {/* eslint-disable-next-line @next/next/no-img-element */}<img className="st-cover" src="/assets/gd/hero-neon.webp" alt="" /><div className="st-bid">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={w?.cover_image || "/assets/gd/av-alex-organizer.webp"} alt="" /><span><b>{w?.name}</b><small>Primary brand for public pages and communications.</small></span></div></section>
@@ -78,7 +83,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Plug size={18} /></span><span className="k-grow"><b>Integrations</b><small>{integrations.filter(i => i.ok).length} connected</small></span><Link className="k-btn outline sm" href="/organizer/settings?tab=integrations">Manage</Link></div>
           <ul className="st-int">{integrations.map(i => <li key={i.n}><span className="st-ib">{i.b.map(x => <BrandLogo key={x} brand={x} size={22} tile />)}</span><span className="k-grow">{i.n}</span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? <CheckCircle2 size={12} /> : <CircleSlash size={12} />}{i.ok ? "Connected" : "Not connected"}</span></li>)}</ul></section>
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Sparkles size={18} /></span><span className="k-grow"><b>Gala Agent</b><small>Configure behaviour and approvals.</small></span><Link className="k-btn outline sm" href="/organizer/settings?tab=agent">Manage</Link></div>
-          <dl className="st-ag">{([[ShieldCheck, "Approval policy", agent.approval_policy], [Gauge, "Autopilot", agent.autopilot], [KeyRound, "Access scope", agent.access_scope], [ClipboardList, "Usage (30 days)", `${(runs ?? []).length} runs${spend ? ` · £${spend.toFixed(2)}` : ""}`]] as const).map(([I, k, v]) => <div key={k}><dt><I size={15} />{k}</dt><dd>{v}</dd></div>)}</dl></section>
+          <dl className="st-ag">{([[ShieldCheck, "Approval policy", agent.approval_policy], [Gauge, "Autopilot", agent.autopilot], [KeyRound, "Access scope", agent.access_scope], [ClipboardList, "Usage (30 days)", `${runCount} runs${credits ? ` · ${Math.ceil(credits).toLocaleString("en-GB")} credits` : ""}`]] as const).map(([I, k, v]) => <div key={k}><dt><I size={15} />{k}</dt><dd>{v}</dd></div>)}</dl></section>
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Bell size={18} /></span><span className="k-grow"><b>Notifications</b><small>5 channels</small></span></div><NotifToggles can={can} prefs={notif} /></section>
       </div>
     </>}
@@ -90,11 +95,13 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     {tab === "security" && <div className="st-sec" style={{ display: "grid", gap: 16, maxWidth: 720 }}><MfaCard required={mfaRequired(policyOf(ctx.workspace.settings), ctx.role) ? ctx.workspace.name : null} /><WorkspaceMfaPolicy workspaceId={ctx.workspace.id} policy={policyOf(ctx.workspace.settings)} owner={ctx.role === "owner"} /></div>}
     {tab === "notifications" && <section className="k-card st-c st-narrow"><h2>Notification channels</h2><NotifToggles can={can} prefs={notif} /></section>}
     {tab === "agent" && <AgentCredits db={ctx.supabase} workspaceId={ctx.workspace.id} canEdit={["owner", "manager"].includes(ctx.role)} canSeeUsage={ctx.canMoney} />}
+    {tab === "agent" && <AgentControls db={ctx.supabase} workspaceId={ctx.workspace.id} surface="organizer" canManage={["owner", "manager"].includes(ctx.role)} />}
     {tab === "agent" && <section className="k-card st-c st-narrow"><div className="k-between"><h2>Gala Agent behaviour</h2><EditCard can={can} title="Agent settings" fields={[{ key: "agent.approval_policy", label: "Approval policy", value: agent.approval_policy, options: ["Require approval for high-impact actions", "Require approval for all actions"] }, { key: "agent.autopilot", label: "Autopilot", value: agent.autopilot, options: ["Off", "Limited (suggest & draft only)", "Standard (low-risk actions)"] }, { key: "agent.access_scope", label: "Access scope", value: agent.access_scope, options: ["All events and workspace data", "Assigned events only"] }]} /></div><dl className="st-ag">{Object.entries(agent).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{v}</dd></div>)}</dl></section>}
+    {tab === "billing" && <PlanBilling db={ctx.supabase} workspaceId={ctx.workspace.id} kind="organizer" plan={w?.plan ?? "starter"} isOwner={ctx.role === "owner"} />}
     {tab === "billing" && <div style={{ maxWidth: 760 }}><StorageUsage db={ctx.supabase} workspaceId={ctx.workspace.id} /></div>}
     {["brand", "billing", "communications", "integrations"].includes(tab) && <section className="k-card st-c st-narrow"><h2>{tab === "integrations" ? "Integrations" : tab === "billing" ? "Payments & Billing" : tab === "brand" ? "Brand" : "Communications"}</h2>
       {tab === "integrations" ? <ul className="st-int lg">{integrations.map(i => <li key={i.n}><span className="st-ib">{i.b.map(x => <BrandLogo key={x} brand={x} size={34} tile />)}</span><span className="k-grow"><b>{i.n}</b><small>{i.d}</small></span><span className={`st-pill ${i.ok ? "ok" : ""}`}>{i.ok ? "Connected" : "Not connected"}</span>{i.href !== "#" && <Link className="k-link" href={i.href}>Open</Link>}</li>)}</ul>
-        : tab === "billing" ? <><p className="k-small">Current plan: <b>{plan}</b>{price ? ` · £${price}/month` : ""}. Plan changes are handled by Gala Dock support during the beta.</p><Link className="k-btn outline" href="/help?topic=billing">Contact billing support</Link></>
+        : tab === "billing" ? <><p className="k-small">Questions about an invoice or VAT? Our billing team can help.</p><Link className="k-btn outline" href="/help?topic=billing">Contact billing support</Link></>
         : <p className="k-small">Manage these from the Workspace tab cards. <Link href="/organizer/settings">Back to workspace</Link>.</p>}</section>}
   </div>;
 }

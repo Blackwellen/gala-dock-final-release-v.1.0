@@ -1,5 +1,8 @@
 import "server-only";
 import QRCode from "qrcode";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
+import { printCredential } from "@/lib/tickets/credentials";
 import type { CustomerCtx } from "./context";
 
 export type TicketRow = { id: string; code: string; status: string; seat: string; order_ref: string; attendee_name: string; attendee_email: string; price_paid: number; checked_in_at: string | null; created_at: string; qr_nonce: string | null; replaced_by: string | null;
@@ -39,9 +42,19 @@ function stateOf(g: TicketGroup, now: number) {
   return days > 30 && transfers ? { label: "Available to transfer", tone: "blue" } : { label: "Ready to attend", tone: "green" };
 }
 
-/** QR as an inline SVG data URL. Payload matches the door scanner: GD1:<code>:<nonce>. */
-export async function ticketQr(t: { code: string; qr_nonce: string | null }) {
-  return QRCode.toDataURL(t.qr_nonce ? `GD1:${t.code}:${t.qr_nonce}` : t.code, { errorCorrectionLevel: "H", margin: 0, width: 360, color: { dark: "#0b1437", light: "#ffffff" } });
+/**
+ * Static QR image (the "Download QR image" action, the tickets list, the dimmed code on a ticket that's no longer valid).
+ * A valid ticket whose event allows printing gets the signed print credential (GD2P — bound to the current nonce and print epoch,
+ * so refund/transfer/resale/reissue kill it, exactly like the PDF). Anything else gets the plain ticket code, which is already shown
+ * as text on the page. Never the legacy GD1:<code>:<nonce> form: that never expired and bypassed the print policy and print reissue.
+ */
+export async function ticketQr(t: { id: string; code: string; status: string; qr_nonce: string | null; event?: { settings?: Record<string, unknown> | null } | null }) {
+  let payload = t.code;
+  if (t.status === "valid" && t.qr_nonce && t.event?.settings?.print_tickets !== false) {
+    const { data } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce,print_epoch").eq("id", t.id).maybeSingle();
+    if (data?.qr_nonce) payload = printCredential(t.id, data.qr_nonce, Number(data.print_epoch ?? 0));
+  }
+  return QRCode.toDataURL(payload, { errorCorrectionLevel: "H", margin: 0, width: 360, color: { dark: "#0b1437", light: "#ffffff" } });
 }
 
 const dayFmt = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC";

@@ -11,9 +11,9 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows, isUuid } from "@/lib/workspace/db";
 import { money, day, relative, requestTime, delta, titleCase } from "@/lib/workspace/format";
 import { AdminMenu, ParamSelect, SearchBox, SelectAll, ReasonToggle } from "../_a/client";
-import { Pager, PillTabs, Status, DrawerClose, SectionHead, MiniStat, TimelineItem } from "../_a/ui";
-import { shortRef, str, pageOf, qs, rpc, hmRange, type SP } from "../_a/lib";
-import { EV_COLS, loadEventMetrics, loadWorkspaceNames, evStatus, readiness, typeTone, typeLabel, type Ev, type EvMetric } from "../_a/events";
+import { PillTabs, Status, DrawerClose, SectionHead, MiniStat, TimelineItem } from "../_a/ui";
+import { shortRef, str, qs, rpc, hmRange, type SP } from "../_a/lib";
+import { evStatus, readiness, typeTone, typeLabel, type Ev, type EvMetric } from "../_a/events";
 import { setEventRestriction, setEventFeatured } from "../_a/actions";
 
 export const metadata: Metadata = { title: "Events" };
@@ -26,48 +26,40 @@ export default async function EventsPage(props: PageProps<"/admin/events">) {
   const now = requestTime();
   const filter = ["public", "ticketed", "live", "flagged"].includes(str(sp, "filter")) ? str(sp, "filter") : "all";
   const q = str(sp, "q").trim().toLowerCase().slice(0, 80);
-  const { per, page, offset } = pageOf(sp);
-
-  const [all, metrics, wsNames, overview] = await Promise.all([
-    rows<Ev>(db.from("events").select(EV_COLS).order("created_at", { ascending: false }).limit(5000)),
-    loadEventMetrics(db, 30), loadWorkspaceNames(db),
+  // Q45 (lane A): filtering, sorting (incl. revenue) and keyset paging happen in SQL — admin_events_page (migration 202610291052).
+  const f = (k: string) => str(sp, k);
+  const SORTS = ["featured", "newest", "starts", "name"] as const;
+  const sort = (SORTS as readonly string[]).includes(f("sort")) ? f("sort") : "featured";
+  const per = 50, pg = Math.max(1, Math.floor(Number(f("pg")) || 1));
+  const decode = (v: string) => { try { return v ? JSON.parse(Buffer.from(v, "base64url").toString("utf8")) as Record<string, unknown> : null; } catch { return null; } };
+  const after = decode(f("after"));
+  const filters: Record<string, string> = { tab: filter };
+  if (q) filters.q = q;
+  for (const k of ["type", "status", "when", "vis", "tix", "owner", "city"]) if (f(k)) filters[k] = f(k);
+  type Row = Ev & { st: string; owner_label: string; owner_avatar: string | null; ws_reference: string | null; metrics: EvMetric | null };
+  type Page = { rows: Row[]; next: Record<string, unknown> | null; filtered: number; totals: { all: number; pub: number; tix: number; live: number; flag: number }; cities: string[]; types: string[] };
+  const [res, overview] = await Promise.all([
+    rpc<Page>(db, "admin_events_page", { p_filters: filters, p_sort: sort, p_limit: per, p_after: after }),
     rpc<{ events?: { total_prev: number; cumulative: number[]; created_series: number[] } }>(db, "admin_overview", { p_days: 30 }),
   ]);
-  const ownerIds = all.filter(e => !e.workspace_id).map(e => e.owner_id);
-  const owners = (permissions.has("users") || permissions.has("support")) && ownerIds.length
-    ? new Map((await rows<{ id: string; full_name: string; avatar_url: string }>(db.from("profiles").select("id,full_name,avatar_url").in("id", [...new Set(ownerIds)]))).map(p => [p.id, p])) : new Map();
-  const ownerName = (e: Ev) => (e.workspace_id ? wsNames.get(e.workspace_id)?.name : owners.get(e.owner_id)?.full_name) ?? "Personal";
-  const isLive = (e: Ev) => evStatus(e, now).key === "live";
-  const ticketed = (e: Ev) => (metrics.get(e.id)?.capacity ?? 0) > 0;
-  const flagged = (e: Ev) => (metrics.get(e.id)?.flags ?? 0) > 0;
-  const cities = [...new Set(all.map(e => e.city).filter(Boolean))].sort();
-  const types = [...new Set(all.map(e => e.event_type))].sort();
-  const f = (k: string) => str(sp, k);
-
-  const filtered = all.filter(e => {
-    const st = evStatus(e, now).key, start = e.starts_at ? new Date(e.starts_at).getTime() : 0;
-    if (filter === "public" && e.visibility !== "public") return false;
-    if (filter === "ticketed" && !ticketed(e)) return false;
-    if (filter === "live" && !isLive(e)) return false;
-    if (filter === "flagged" && !flagged(e)) return false;
-    if (q && !`${e.name} ${e.settings?.reference ?? ""} ${e.id} ${e.city} ${e.venue_name} ${ownerName(e)}`.toLowerCase().includes(q)) return false;
-    if (f("type") && e.event_type !== f("type")) return false;
-    if (f("status") && st !== f("status")) return false;
-    if (f("when") === "upcoming" && !(start > now)) return false;
-    if (f("when") === "past" && !(start && start < now)) return false;
-    if (f("when") === "30" && !(start > now && start < now + 30 * 864e5)) return false;
-    if (f("vis") && e.visibility !== f("vis")) return false;
-    if (f("tix") === "yes" && !ticketed(e)) return false;
-    if (f("tix") === "no" && ticketed(e)) return false;
-    if (f("owner") && e.management !== f("owner")) return false;
-    if (f("city") && e.city !== f("city")) return false;
-    return true;
-  }).sort((a, b) => Number(!!b.settings?.featured) - Number(!!a.settings?.featured) || (metrics.get(b.id)?.gross ?? 0) - (metrics.get(a.id)?.gross ?? 0) || b.created_at.localeCompare(a.created_at));
-  const list = filtered.slice(offset, offset + per);
-  const selId = f("sel") === "none" ? null : isUuid(f("sel")) ? f("sel") : list[0]?.id ?? null;
-  const sel = all.find(e => e.id === selId);
+  const list = res.rows;
+  const selParam = f("sel") === "none" ? null : isUuid(f("sel")) ? f("sel") : list[0]?.id ?? null;
+  const selRow = selParam ? list.find(e => e.id === selParam) ?? (await rpc<Page>(db, "admin_events_page", { p_filters: { id: selParam }, p_sort: "featured", p_limit: 1, p_after: null })).rows[0] : undefined;
+  const known = selRow && !list.some(e => e.id === selRow.id) ? [...list, selRow] : list;
+  const num = (m: EvMetric | null) => m ? { ...m, gross: Number(m.gross), capacity: Number(m.capacity), sold: Number(m.sold) } : undefined;
+  const metrics = new Map(known.map(e => [e.id, num(e.metrics)] as const).filter((x): x is [string, EvMetric] => !!x[1]));
+  const wsNames = new Map(known.filter(e => e.workspace_id).map(e => [e.workspace_id!, { name: e.owner_label, cover_image: e.owner_avatar ?? "", settings: { reference: e.ws_reference ?? undefined } }]));
+  const owners = new Map(known.filter(e => !e.workspace_id).map(e => [e.owner_id, { full_name: e.owner_label, avatar_url: e.owner_avatar ?? "" }]));
+  const ownerName = (e: Ev) => (known.find(x => x.id === e.id)?.owner_label) ?? "Personal";
+  const cities = res.cities, types = res.types;
+  const selId = selRow?.id ?? null;
+  const sel = selRow;
   const base = "/admin/events";
-  const n = { pub: all.filter(e => e.visibility === "public").length, tix: all.filter(ticketed).length, live: all.filter(isLive).length, flag: all.filter(flagged).length };
+  const n = res.totals;
+  const encode = (c: Record<string, unknown>) => Buffer.from(JSON.stringify(c), "utf8").toString("base64url");
+  const nextHref = res.next ? qs(base, sp, { after: encode(res.next), pg: pg + 1, sel: null }) : null;
+  const firstHref = pg > 1 ? qs(base, sp, { after: null, pg: null, sel: null }) : null;
+  const from = res.filtered ? (pg - 1) * per + 1 : 0, to = Math.min(res.filtered, (pg - 1) * per + list.length);
 
   return <div className="aa ae">
     <header className="ws-page-head">
@@ -75,7 +67,7 @@ export default async function EventsPage(props: PageProps<"/admin/events">) {
       <div className="aa-head-actions"><a className="ws-btn outline" href={qs(`${base}/export`, sp, { page: null, sel: null, per: null })}><Download aria-hidden="true" />Export</a></div>
     </header>
     <section className="aa-kpis ae-kpis" aria-label="Event metrics">
-      <Kpi icon={Users} tone="blue" label="Total Events" value={all.length.toLocaleString("en-GB")} delta={overview.events ? delta(all.length, overview.events.total_prev) : null} deltaSuffix="vs last 30 days" series={overview.events?.cumulative} />
+      <Kpi icon={Users} tone="blue" label="Total Events" value={n.all.toLocaleString("en-GB")} delta={overview.events ? delta(n.all, overview.events.total_prev) : null} deltaSuffix="vs last 30 days" series={overview.events?.cumulative} />
       <Kpi icon={Globe} tone="purple" label="Public Events" value={n.pub.toLocaleString("en-GB")} delta={null} />
       <Kpi icon={Ticket} tone="blue" label="Ticketed Events" value={n.tix.toLocaleString("en-GB")} delta={null} />
       <Kpi icon={Radio} tone="red" label="Live Events" value={n.live.toLocaleString("en-GB")} delta={null} />
@@ -84,7 +76,7 @@ export default async function EventsPage(props: PageProps<"/admin/events">) {
 
     <div className="aa-split">
       <div className="aa-listcol">
-        <div className="aa-bar"><PillTabs base={base} sp={sp} active={filter} tabs={[{ key: "all", label: "All Events", count: all.length }, { key: "public", label: "Public", count: n.pub },
+        <div className="aa-bar"><PillTabs base={base} sp={sp} active={filter} tabs={[{ key: "all", label: "All Events", count: n.all }, { key: "public", label: "Public", count: n.pub },
           { key: "ticketed", label: "Ticketed", count: n.tix }, { key: "live", label: "Live", count: n.live }, { key: "flagged", label: "Flagged", count: n.flag, tone: "red" }]} /></div>
         <div className="aa-bar"><Suspense><SearchBox placeholder="Search by event name, owner, event ID, location, venue, or keyword..." /></Suspense>
           <Link className="ws-btn outline aa-filters-btn" href={qs(base, {}, { filter: filter === "all" ? null : filter })}><Filter aria-hidden="true" />Clear filters</Link></div>
@@ -132,7 +124,13 @@ export default async function EventsPage(props: PageProps<"/admin/events">) {
             </table></div>
           </div>
         </form>
-        <Pager base={base} sp={sp} page={page} per={per} total={filtered.length} />
+        <nav className="aa-pager" aria-label="Pagination">
+          <span className="aa-pager-per">Sort <Suspense><ParamSelect param="sort" label="Sort events" value={sort === "featured" ? "" : sort} className="aa-select sm"
+            options={[{ value: "", label: "Featured, then revenue" }, { value: "newest", label: "Newest" }, { value: "starts", label: "Event date" }, { value: "name", label: "Name A–Z" }]} /></Suspense></span>
+          <span className="aa-pager-range">{from.toLocaleString("en-GB")}–{to.toLocaleString("en-GB")} of {res.filtered.toLocaleString("en-GB")}</span>
+          <span className="aa-pager-nums">{firstHref && <Link className="ws-btn outline sm" href={firstHref} scroll={false}>First page</Link>}
+            {nextHref ? <Link className="ws-btn outline sm" href={nextHref} scroll={false}>Next 50</Link> : <span className="ws-btn outline sm" aria-disabled="true">Next 50</span>}</span>
+        </nav>
       </div>
       {sel ? <Suspense fallback={<aside className="aa-drawer" aria-busy="true" />}><EventDrawer e={sel} m={metrics.get(sel.id)} sp={sp} ownerLabel={ownerName(sel)} wsRef={sel.workspace_id ? wsNames.get(sel.workspace_id)?.settings?.reference : undefined}
         canTrust={permissions.has("trust")} canAudit={permissions.has("audit")} canSupport={permissions.has("support")} canTickets={permissions.has("tickets")} canMarket={permissions.has("marketplace")} /></Suspense>

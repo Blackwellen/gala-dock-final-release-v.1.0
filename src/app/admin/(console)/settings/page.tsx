@@ -11,6 +11,7 @@ import { requestTime } from "@/lib/workspace/format";
 import { Head, TabBar, Pill } from "../_b/kit";
 import { stamp, ago } from "../_b/format";
 import { saveSettingsDraft, publishSettingsDraft, discardSettingsDraft, rollbackSetting } from "../_b/actions";
+import { countryBy, currencies, timezones } from "@/lib/master-data";
 
 export const metadata: Metadata = { title: "Platform settings" };
 
@@ -18,7 +19,10 @@ type Setting = { id: string; section: string; version: number; status: string; v
 const SECTIONS: [string, string, string][] = [["general", "General", "Platform identity, localization and core defaults."], ["commerce", "Commerce", "Commission plans, ticket fees and payout schedule."], ["marketplace", "Marketplace", "Response windows, holds and emergency supply."],
   ["ticketing", "Ticketing", "Resale, transfers and order limits."], ["trust", "Trust", "Automated restrictions and verification rules."], ["agent", "Agent", "Gala Agent approval policy and tool limits."],
   ["communications", "Communications", "Sender identity and reminder policy."], ["integrations", "Integrations", "Connector defaults and webhook retries."]];
-const COUNTRIES: [string, string][] = [["GB", "United Kingdom (GBP)"], ["US", "United States (USD)"], ["CA", "Canada (CAD)"], ["IE", "Ireland (EUR)"], ["AU", "Australia (AUD)"]];
+// Locale options come from canonical master data (Q02); this screen offers a subset.
+const COUNTRIES: [string, string][] = ["GB", "US", "CA", "IE", "AU"].map(code => { const c = countryBy(code)!; return [c.code, `${c.name} (${c.currency})`]; });
+const ZONES: [string, string][] = ["Europe/London", "Europe/Dublin", "America/New_York", "America/Toronto"].map(tz => [tz, timezones().find(z => z.tz === tz)!.label]);
+const CURRENCY_OPTIONS: [string, string][] = ["GBP", "USD", "CAD", "EUR"].map(code => { const c = currencies().find(x => x.code === code)!; return [c.code, `${c.code} (${c.symbol})`]; });
 const HOURS = [1, 2, 4, 6, 8, 12, 24, 48, 72];
 const SYSTEMS: [string, string[]][] = [["Marketplace", []], ["Ticketing", []], ["Commerce", ["payments"]], ["SaaS & Subscriptions", ["payments"]], ["Communications", ["email", "sms", "messaging"]], ["Integrations", ["calendar", "sync", "automation", "crm", "maps", "marketing"]], ["Agent Runtime", ["ai", "agent"]], ["Trust & Safety", []]];
 
@@ -129,8 +133,8 @@ function GeneralForm({ v }: { v: Record<string, unknown> }) {
         <div className="adst-rows">
           <label><span>Platform name</span><input name="f:s:platform_name" defaultValue={String(v.platform_name ?? "")} required maxLength={60} /></label>
           <label><span>Support email</span><input name="f:s:support_email" type="email" defaultValue={String(v.support_email ?? "")} required /></label>
-          <label><span>Default timezone</span><Sel name="f:s:timezone" v={v.timezone} options={[["Europe/London", "(GMT+00:00) London"], ["Europe/Dublin", "(GMT+00:00) Dublin"], ["America/New_York", "(GMT-05:00) New York"], ["America/Toronto", "(GMT-05:00) Toronto"]]} /></label>
-          <label><span>Default currency</span><Sel name="f:s:default_currency" v={v.default_currency} options={[["GBP", "GBP (£)"], ["USD", "USD ($)"], ["CAD", "CAD ($)"], ["EUR", "EUR (€)"]]} /></label>
+          <label><span>Default timezone</span><Sel name="f:s:timezone" v={v.timezone} options={ZONES} /></label>
+          <label><span>Default currency</span><Sel name="f:s:default_currency" v={v.default_currency} options={CURRENCY_OPTIONS} /></label>
         </div>
         <div className="adst-rows">
           <label className="adst-desc"><span>Platform description</span><textarea name="f:s:description" defaultValue={desc} maxLength={500} rows={4} /><small>{desc.length}/500</small></label>
@@ -141,7 +145,7 @@ function GeneralForm({ v }: { v: Record<string, unknown> }) {
     <fieldset className="adst-fs"><legend>Localization &amp; regions<small>Available countries, currencies and tax settings.</small></legend>
       <div className="adst-loc">
         <div><span className="adst-lbl">Supported countries</span>
-          <div className="adst-chips"><input type="hidden" name="lists" value="supported_countries" />{COUNTRIES.map(([code, l]) => <label key={code} className="adst-chip"><input type="checkbox" name="f:l:supported_countries" value={code} defaultChecked={countries.includes(code)} /><span>{l}<X aria-hidden="true" /></span></label>)}
+          <div className="adst-chips"><input type="hidden" name="lists" value="supported_countries" />{COUNTRIES.map(([code, l]) => <label key={code} className="adst-chip"><input type="checkbox" name="f:l:supported_countries" aria-label={l} value={code} defaultChecked={countries.includes(code)} /><span>{l}<X aria-hidden="true" /></span></label>)}
             <span className="adst-add"><Plus aria-hidden="true" />Add country</span></div></div>
         <label><span className="adst-lbl">Default country for new accounts</span><span className="adst-flagsel"><UkFlag /><Sel name="f:s:default_country" v={v.default_country} options={COUNTRIES.map(([c, l]) => [c, l.replace(/ \(.*/, "")])} /></span></label>
         <label><span className="adst-lbl">Tax handling</span><span className="adst-tax"><Sel name="f:s:tax_handling" v={v.tax_handling} options={[["platform_uk_vat", "Platform collects and remits (UK VAT only)"], ["provider", "Providers handle their own tax"], ["none", "No tax collected"]]} /><Info aria-hidden="true" /></span></label>
@@ -177,3 +181,4 @@ function GenericForm({ v }: { v: Record<string, unknown> }) {
 function UkFlag() {
   return <svg className="adst-flag" viewBox="0 0 60 30" aria-hidden="true"><path d="M0,0 v30 h60 v-30 z" fill="#012169" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" /><path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" /><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" /></svg>;
 }
+

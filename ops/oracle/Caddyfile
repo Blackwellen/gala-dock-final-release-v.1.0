@@ -1,11 +1,4 @@
-# Automatic HTTPS (Let's Encrypt) for the three ops hostnames. Point their DNS A records at the VM's public IP first.
-{$SCAN_HOST} {
-	reverse_proxy av-scanner:8080
-	request_body {
-		max_size 26MB
-	}
-}
-
+# Automatic HTTPS (Let's Encrypt) for the two ops hostnames. Point their DNS A records at the VM's public IP first.
 {$STATUS_HOST} {
 	reverse_proxy uptime-kuma:3001
 }

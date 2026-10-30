@@ -2,8 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Phone, Mail, Briefcase, Users, Crown, Banknote, Languages, CalendarCheck, CalendarDays, Clock, ArrowRight, CheckCircle2, FileText, Upload, Activity } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
+import { untyped } from "@/lib/workspace/db";
 import { Crumbs, LinkTabs } from "@/components/kit";
 import { ProfileHeaderActions, QuickActionsCard, NoteForm, ProfileShiftMenu } from "@/components/organizer/team-profile-client";
+import { FormDialog } from "@/components/organizer/event/sections/ops-forms-client";
+import { inviteLoginForm } from "@/lib/actions/team";
+import { KeyRound } from "lucide-react";
 
 export const metadata = { title: "Team member" };
 const TZ = "Europe/London";
@@ -30,7 +34,14 @@ export default async function TeamProfile({ params, searchParams }: { params: Pr
   const hours = Math.round(month.reduce((a, s) => a + (Date.parse(s.ends_at) - Date.parse(s.starts_at)) / 36e5, 0));
   const nextEv = up.find(s => s.status === "confirmed") ?? up[0];
   const conflict = up.some((s, i) => i > 0 && s.starts_at < up[i - 1]!.ends_at);
-  const d = (p.details ?? {}) as Record<string, unknown>; const notes = (d.notes as { by: string; at: string; body: string }[] | undefined) ?? [];
+  // Q17: notes live in crew_notes (any member may add); legacy details.notes are still shown.
+  // Q17 crew ↔ login: linked when crew_members.user_id is set; owners can also see a pending invitation (RLS: owner-only read).
+  const isOwner = String(ctx.role) === "owner";
+  const { data: inv } = isOwner ? await sb.from("workspace_invites").select("id,created_at,expires_at,role").eq("workspace_id", ctx.workspace.id).eq("crew_id", id).is("accepted_at", null).is("revoked_at", null).is("declined_at", null).gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }).limit(1).maybeSingle() : { data: null };
+  const linked = !!p.user_id;
+  const inviteReason = linked ? "This person already has a login." : !isOwner ? "Only the workspace owner can invite logins." : !p.email ? "Add an email address to this person first (Edit profile)." : inv ? "An invitation is already pending." : null;
+  const { data: crewNotes } = await untyped(sb).from("crew_notes").select("author_name,body,created_at").eq("crew_id", id).order("created_at", { ascending: false }).limit(20);
+  const d = (p.details ?? {}) as Record<string, unknown>; const notes = [...((crewNotes ?? []) as { author_name: string; body: string; created_at: string }[]).map(n => ({ by: n.author_name || "Team", at: n.created_at, body: n.body })), ...((d.notes as { by: string; at: string; body: string }[] | undefined) ?? [])];
   const files = (d.files as { name: string; size: string; at: string }[] | undefined) ?? [];
   const fmtD = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ });
   const fmtT = (iso: string) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
@@ -50,10 +61,12 @@ export default async function TeamProfile({ params, searchParams }: { params: Pr
     <div className="tp-r1">
       <section className="k-card tp-bio">{p.avatar ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.avatar} alt="" /> : <span className="tp-av lg">{p.name.slice(0, 1)}</span>}
         <div><h2>{p.name}</h2><p className="tp-role">{p.role}</p><p className="tp-text">{p.bio || "No bio yet."}</p><div className="tp-skills">{(p.skills ?? []).map((s: string) => <span key={s}>{s}</span>)}</div></div></section>
-      <section className="k-card tp-facts">{facts.map(([I, t, s]) => <div key={t}><I size={20} /><span><b>{t}</b><small>{s}</small></span></div>)}</section>
+      <section className="k-card tp-facts">{facts.map(([I, t, s]) => <div key={t}><I size={20} /><span><b>{t}</b><small>{s}</small></span></div>)}
+        <div className="tp-login"><KeyRound size={20} /><span className="k-grow"><b>{linked ? "Login linked" : inv ? "Invitation pending" : "No login"}</b><small>{linked ? "Signs in to see their shifts, respond and request leave." : inv ? `Sent ${fmtD(inv.created_at)} · expires ${fmtD(inv.expires_at)} · as ${inv.role}` : "Scheduled without workspace access. Invite them to log in to see My shifts."}</small></span>
+          {!linked && <FormDialog label={inv ? "Invited" : "Invite to log in"} icon="key" variant="outline" title={`Invite ${p.name} to log in`} sub={`Creates an invitation link for ${p.email || "their email"}. Email delivery isn't configured here — copy the link and share it. Accepting links this profile to their login.`} submitLabel="Create invitation link" disabledReason={inviteReason} action={inviteLoginForm.bind(null, p.id)} fields={[{ name: "role", label: "Workspace role", type: "select", required: true, options: [["member", "Member"], ["manager", "Manager"], ["finance", "Finance"]] }]} />}</div></section>
       <QuickActionsCard crew={p.id} name={p.name} status={p.status} profile={{ role: p.role, location: p.location, phone: p.phone, bio: p.bio, skills: p.skills ?? [] }} events={(events ?? []).map(e => ({ id: e.id, name: e.name, starts_at: e.starts_at, ends_at: e.ends_at }))} />
     </div>
-    <div className="tp-kpis">{([[Users, "Total assignments", S.length, `${up.length} upcoming`], [CalendarCheck, "This month", month.length, `${new Set(month.map(s => s.event_id)).size} events`], [Clock, "Hours this month", `${hours}h`, month.length ? `${Math.round(hours / Math.max(1, new Set(month.map(s => s.event_id)).size))}h avg / event` : "No shifts"], [CalendarDays, "Upcoming events", new Set(up.map(s => s.event_id)).size, nextEv ? `Next: ${nextEv.title}` : "None scheduled"]] as const).map(([I, l, v, s]) => <div key={l} className="k-card tm-kpi"><span><small>{l}</small><b>{v}</b><em>{s}</em></span><span className="tm-ki blue"><I size={20} /></span></div>)}
+    <div className="tpr-kpis">{([[Users, "Total assignments", S.length, `${up.length} upcoming`], [CalendarCheck, "This month", month.length, `${new Set(month.map(s => s.event_id)).size} events`], [Clock, "Hours this month", `${hours}h`, month.length ? `${Math.round(hours / Math.max(1, new Set(month.map(s => s.event_id)).size))}h avg / event` : "No shifts"], [CalendarDays, "Upcoming events", new Set(up.map(s => s.event_id)).size, nextEv ? `Next: ${nextEv.title}` : "None scheduled"]] as const).map(([I, l, v, s]) => <div key={l} className="k-card tm-kpi"><span><small>{l}</small><b>{v}</b><em>{s}</em></span><span className="tm-ki blue"><I size={20} /></span></div>)}
       <div className="k-card tm-kpi"><span><small>Availability</small><b className={conflict || p.status === "unavailable" ? "k-amber" : "k-green"}><i className={`tp-dot ${conflict || p.status === "unavailable" ? "amber" : ""}`} />{p.status === "unavailable" ? "Unavailable" : conflict ? "Has conflicts" : "Available"}</b><em>{conflict ? "Overlapping shifts — review below" : "No conflicts next 30 days"}</em></span></div></div>
     <div className="tp-r2">
       <section className="k-card tp-asg"><div className="k-between"><h2>Upcoming assignments</h2><Link className="k-link" href={`${base}?tab=assignments`}>View all <ArrowRight size={13} /></Link></div>

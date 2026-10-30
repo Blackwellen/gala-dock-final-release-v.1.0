@@ -14,7 +14,7 @@
 .ao-row2{display:grid;grid-template-columns:minmax(0,1fr) 432px;gap:12px;margin-bottom:12px}
 .ao-stack{display:grid;gap:12px}
 .ao-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.ao-ph h2{font-size:15px;font-weight:720;letter-spacing:-.02em}
+.ao-ph h2{font-size: var(--k-title-card);font-weight:720;letter-spacing:-.02em}
 .ao-seg{display:inline-flex;background:#f5f7fd;border-radius:6px;padding:2px;margin-left:auto}
 .ao-seg a{padding:5px 14px;border-radius:5px;font-size:11.5px;color:#3f4596}
 .ao-seg a.on{background:#3524f5;color:#fff}
@@ -74,6 +74,12 @@
 .ao-plist li{display:grid;grid-template-columns:28px 90px 1fr auto;gap:10px;align-items:center;font-size:11.5px}
 .ao-plist b{font-weight:600}
 .ao-plist small{color:var(--aa-muted);font-size:11px}
+/* W08: Partner Activity rows link to the partner (real partner programme rows). */
+.ao-plist li:has(.ao-plink){grid-template-columns:minmax(0,1fr) auto}
+.ao-plink{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:10px;align-items:center;min-width:0;color:inherit;text-decoration:none}
+.ao-plink .ao-logo{grid-row:span 2}
+.ao-plink b,.ao-plink small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ao-plink:hover b{text-decoration:underline}
 .ao-logo{width:28px;height:28px;border-radius:7px;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0}
 .ao-logo svg{width:16px!important;height:16px!important}
 .ao-health{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#3f4596}

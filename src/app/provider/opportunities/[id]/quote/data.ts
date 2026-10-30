@@ -5,6 +5,7 @@ import { rows } from "@/lib/workspace/db";
 import { workspaceItems, workspaceJobs, workspaceListings, workspaceSpaces, startOfDay } from "@/lib/provider/queries";
 import { workspaceBlocks, workspaceQuotes, type Quote } from "@/lib/provider/commercial";
 import { compatibility } from "@/lib/provider/fit";
+import { labelOf } from "@/lib/master-data";
 
 export type Line = { label: string; detail: string; qty: number; unit: string; unit_price: number; kind: string; ref?: string; image?: string };
 export type Catalog = { key: string; label: string; detail: string; unit: string; unit_price: number; kind: string; image: string }[];
@@ -32,13 +33,13 @@ export async function quoteContext(itemId: string, quoteId?: string, fromId?: st
   const catalog: Catalog = [
     ...spaces.filter(s => s.status === "published" && s.rate_hourly).map(s => ({ key: `space:${s.id}`, label: `${s.name}`, detail: `Venue space · ${Math.max(s.capacity_seated ?? 0, s.capacity_standing ?? 0)} capacity`, unit: "hours", unit_price: Number(s.rate_hourly), kind: "space", image: s.image })),
     ...packages.map(p => ({ key: `package:${p.id}`, label: p.name, detail: p.description.slice(0, 60), unit: p.price_basis === "per_person" ? "guests" : p.price_basis === "hourly" ? "hours" : "package", unit_price: Number(p.base_price), kind: "package", image: p.image })),
-    ...listings.filter(l => l.kind === "service" && l.price_from).map(l => ({ key: `service:${l.id}`, label: l.name, detail: `${l.category} · ${l.price_unit}`, unit: l.price_unit.includes("guest") ? "guests" : "service", unit_price: Number(l.price_from), kind: "service", image: l.image })),
+    ...listings.filter(l => l.kind === "service" && l.price_from).map(l => ({ key: `service:${l.id}`, label: l.name, detail: `${labelOf("service_category", l.category, "Service")} · ${l.price_unit}`, unit: l.price_unit.includes("guest") ? "guests" : "service", unit_price: Number(l.price_from), kind: "service", image: l.image })),
   ];
   const qtyFor = (c: Catalog[number]) => c.unit === "hours" ? hours : c.unit === "guests" ? Math.max(guests, 1) : 1;
 
   const starting: Line[] = (draft ?? source)?.items?.map(i => ({ detail: "", ...i })) as Line[] | undefined
     ?? (space?.rate_hourly ? [{ label: `${space.name} hire`, detail: `Venue space · ${hours} hours`, qty: hours, unit: "hours", unit_price: Number(space.rate_hourly), kind: "space", ref: `space:${space.id}`, image: space.image }]
-      : listing?.price_from ? [{ label: listing.name, detail: listing.category, qty: listing.price_unit.includes("guest") ? Math.max(guests, 1) : 1, unit: listing.price_unit.includes("guest") ? "guests" : "service", unit_price: Number(listing.price_from), kind: "service", ref: `service:${listing.id}`, image: listing.image }] : []);
+      : listing?.price_from ? [{ label: listing.name, detail: labelOf(listing.kind === "venue" ? "venue_type" : "service_category", listing.category, listing.kind === "venue" ? "Venue" : "Service"), qty: listing.price_unit.includes("guest") ? Math.max(guests, 1) : 1, unit: listing.price_unit.includes("guest") ? "guests" : "service", unit_price: Number(listing.price_from), kind: "service", ref: `service:${listing.id}`, image: listing.image }] : []);
 
   const tax = ((ctx.workspace.settings as Record<string, Record<string, unknown>>)?.tax ?? {}) as { vat_registered?: boolean; rate_bps?: number; number?: string };
   const commercial = (listing?.details?.commercial ?? {}) as { deposit_pct?: number; cancellation?: { window: string; refund: number }[]; holds?: { enabled?: boolean; hours?: number }; standby?: { enabled?: boolean; fee?: number } };

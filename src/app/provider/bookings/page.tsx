@@ -122,8 +122,8 @@ export default async function BookingsPage(props: PageProps<"/provider/bookings"
                 ]} /></td>
               </tr>;
             })}</tbody></table></div>
-            : <Empty icon={CalendarDays} title={`No ${tab} bookings`} text={q || type || status || range ? "Try clearing the filters." : tab === "upcoming" ? "Confirmed bookings and direct bookings appear here." : undefined}
-              action={tab === "upcoming" ? <Link className="ws-btn primary" href="/provider/bookings/new?step=1">Create booking</Link> : undefined} />}
+            : <Empty icon={CalendarDays} title={`No ${tab} bookings`} text={q || type || status || range ? "Try clearing the filters." : tab === "upcoming" ? (ctx.workspace.capabilities.includes("venue") ? "Confirmed bookings and direct bookings appear here." : "Bookings confirmed through the marketplace appear here.") : undefined}
+              action={tab === "upcoming" && ctx.workspace.capabilities.includes("venue") ? <Link className="ws-btn primary" href="/provider/bookings/new?step=1">Create booking</Link> : undefined} />}
           <div className="ws-pager"><span>Showing {list.length ? (page - 1) * PAGE + 1 : 0}–{Math.min(page * PAGE, list.length)} of {list.length} bookings</span>
             {pages > 1 && <nav aria-label="Pages">{Array.from({ length: pages }, (_, n) => n + 1).map(n => n === page ? <span key={n} className="cur" aria-current="page">{n}</span> : <Link key={n} href={qs({ page: String(n) })}>{n}</Link>)}</nav>}</div>
         </section>

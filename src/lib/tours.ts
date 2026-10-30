@@ -10,7 +10,7 @@ export const TOURS: Tour[] = [
   { key: "organizer-home", title: "Welcome to your Organizer workspace", match: /^\/organizer\/?$/, steps: [
     { title: "Hi, I’m your Gala Dock guide", body: "I’ll show you around in under a minute. You can skip any time, and restart from the Help menu." },
     { target: nav("Organizer", "/organizer/events"), title: "Events", body: "Every event lives here: plans, budgets, suppliers, tickets, run sheets and live mode.", placement: "right" },
-    { target: nav("Organizer", "/organizer/marketplace"), title: "Marketplace", body: "Find venues and suppliers, request quotes, place holds and line up backups — payments are protected until delivery.", placement: "right" },
+    { target: nav("Organizer", "/organizer/marketplace"), title: "Marketplace", body: "Find venues and suppliers, request quotes, place holds and line up backups; payments go straight to providers through Stripe.", placement: "right" },
     { target: nav("Organizer", "/organizer/tickets"), title: "Tickets & Promotion", body: "Set up ticket tiers, sales windows, resale rules and promoter links. Scan tickets at the door from the event page.", placement: "right" },
     { target: nav("Organizer", "/organizer/media"), title: "Media Studio", body: "Design posters, social posts and screens. Event details and ticket QR codes stay in sync automatically.", placement: "right" },
     { target: nav("Organizer", "/organizer/money"), title: "Money", body: "Payouts, invoices, supplier payments and settlement — all reconciled with Stripe.", placement: "right" },
@@ -20,7 +20,7 @@ export const TOURS: Tour[] = [
   { key: "provider-home", title: "Welcome to your Provider workspace", match: /^\/provider\/?$/, steps: [
     { title: "Hi, I’m your Gala Dock guide", body: "Here’s where the work comes in and how you get paid." },
     { target: nav("Provider workspace", "/provider/opportunities"), title: "Opportunities", body: "New requests from organisers and customers. Respond before the deadline to keep your reliability score high.", placement: "right" },
-    { target: nav("Provider workspace", "/provider/bookings"), title: "Bookings", body: "Confirmed work, event orders and day-of check-in. Payments are released to you after delivery.", placement: "right" },
+    { target: nav("Provider workspace", "/provider/bookings"), title: "Bookings", body: "Confirmed work, event orders and day-of check-in. Customers pay you through your Stripe account.", placement: "right" },
     { target: nav("Provider workspace", "/provider/calendar"), title: "Calendar", body: "Availability, holds and blocks across all your spaces and team — conflicts are flagged automatically.", placement: "right" },
     { target: nav("Provider workspace", "/provider/listings"), title: "Listings", body: "Your venues, spaces, services and packages — what customers see in the marketplace.", placement: "right" },
     { target: nav("Provider workspace", "/provider/money"), title: "Money", body: "Payouts, commission and invoices. Finish Stripe payout setup to receive transfers.", placement: "right" },
@@ -52,10 +52,10 @@ export const TOURS: Tour[] = [
     { target: "main .mn-c", title: "Revenue vs costs", body: "How each event is tracking against its budget, with profit and loss as the figures come in.", placement: "bottom" },
     { target: 'a[href="/organizer/money/invoices/new"]', title: "Invoices", body: "Raise an invoice for a client. Gala Dock tracks payment and sends reminders.", placement: "bottom" },
     { target: 'a[href="/api/export/transactions"]', title: "Export", body: "Download every transaction as CSV for your accountant.", placement: "bottom" },
-    { title: "Payouts", body: "Ticket proceeds are paid out to your connected Stripe account. Supplier payments stay protected until the service is delivered." },
+    { title: "Payouts", body: "Ticket proceeds are paid out to your connected Stripe account. Supplier payments go directly to each supplier’s Stripe account." },
   ] },
   { key: "provider-money", title: "Money", match: /^\/provider\/money\/?$/, steps: [
-    { title: "How you get paid", body: "Customers pay through Gala Dock. Your share is held safely and released to you after you deliver." },
+    { title: "How you get paid", body: "Customers pay you directly through your Stripe account, less Gala Dock’s platform fee. Stripe pays out to your bank." },
     { target: ".pm-chartbox", title: "Earnings overview", body: "Gross, fees and net earnings over time.", placement: "bottom" },
     { target: ".pm-pay", title: "Upcoming payouts", body: "What’s protected, what’s releasing and when it reaches your bank.", placement: "left" },
     { target: ".pm-break", title: "Earnings breakdown", body: "Where your money comes from — venue hire, services, packages and add-ons — and the commission on each.", placement: "left" },

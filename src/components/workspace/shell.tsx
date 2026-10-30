@@ -17,17 +17,15 @@ import {
 import { Suspense } from "react";
 import { DesignScale, DensityPicker } from "./design-scale";
 import { DesignOverlay } from "./design-overlay";
+import { GalaLogo } from "@/components/brand/gala-logo";
 import { switchWorkspace as switchAnyWorkspace } from "@/lib/actions/shell";
 import { markNotificationsRead } from "@/lib/actions/shell";
 
 const DEV = process.env.NODE_ENV === "development";
 
-/** The primary app header uses the official circular symbol alone. */
+/** The app header lockup: G mark + purple wordmark (provider/admin shell designs). */
 export function BrandLogo({ href = "/" }: { href?: string }) {
-  return <Link href={href} className="ws-logo ws-logo-mark" aria-label="Gala Dock home">
-    {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src="/brand/favicon-48.png" alt="" width={44} height={44} />
-  </Link>;
+  return <Link href={href} className="ws-logo ws-logo-mark" aria-label="Gala Dock home"><GalaLogo /></Link>;
 }
 function ShellTools() {
   return <><DesignScale />{DEV && <Suspense><DesignOverlay /></Suspense>}</>;
@@ -189,7 +187,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
   ].filter(Boolean) as { href: string; label: string }[];
   const mobileMenu: NavEntry[] = nav.filter(n => n.label !== "Money" || canFinance).map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
   return <div className={`ws-app provider ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={[...mobileMenu, { href: "/provider/inbox", label: "Messages", icon: MessageSquareText }, ...listingChildren, { href: "/help", label: "Help", icon: CircleHelp }]} tabs={nav.filter(n => ["Home", "Bookings", "Calendar", "Listings"].includes(n.label)).map(n => n.href === "/provider/listings" ? { ...n, match: /^\/provider\/(listings|venues|services|packages)(\/|$)/ } : n)}
+    <MobileNav menu={[...mobileMenu, { href: "/provider/inbox", label: "Messages", icon: MessageSquareText }, ...listingChildren, { href: "/help?from=provider", label: "Help", icon: CircleHelp }]} tabs={nav.filter(n => ["Home", "Bookings", "Calendar", "Listings"].includes(n.label)).map(n => n.href === "/provider/listings" ? { ...n, match: /^\/provider\/(listings|venues|services|packages)(\/|$)/ } : n)}
       title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} create={[...(canManage ? create : []), ...(canDesign ? [{ href: "/provider/media?create=1", label: "New design", icon: Palette }] : [])]}
       messagesHref="/provider/inbox" unreadMessages={messages.some(t => t.unread)} notifications={notifications.map(n => ({ ...n, link: n.href }))} unread={counts.notifications} onReadNotifications={() => { if (counts.notifications) void markNotificationsRead(); }}
       workspaceSwitcher={<div role="menu" aria-label="Switch workspace">{workspaces.map(w => <WorkspaceOption key={w.id} {...w} active={w.id === activeId} onSwitch={switchWorkspace} />)}</div>} />
@@ -220,7 +218,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
           <div className="ws-pop-head"><b>Notifications</b></div>
           <NoticeList items={notifications} empty="You’re all caught up." />
         </Popover>
-        <Link href="/provider/help" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
+        <Link href="/help?from=provider" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
         <AccountMenu name={user.name} subtitle={workspace.name} avatar={user.avatar} links={[{ href: "/provider/settings", label: "Workspace settings" }, { href: "/discover", label: "Switch to Customer" }]} />
       </div>
     </header>

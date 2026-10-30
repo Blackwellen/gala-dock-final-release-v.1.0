@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,12 +7,14 @@ import { VSteps } from "@/components/kit";
 import { NumberStepper, SaveHeart, useAction, useKitToast, Menu } from "@/components/kit/client";
 import { saveBookingDraft, submitBooking, acceptQuote, checkAvailability, type Availability, type BookingRequirements } from "@/lib/actions/booking";
 import type { BookingQuestion } from "@/lib/booking-questions";
+import { RequestAttachments } from "@/components/shared/request-attachments";
 import { bookingAdminFee, gbpPence, BOOKING_ADMIN_FEE } from "@/lib/fees";
+import { labelOf } from "@/lib/master-data";
 
 type QuoteItem = { label?: string; description?: string; name?: string; qty?: number; unit_price?: number };
 export type BookingData = {
   event: { id: string; name: string; date: string; start: string; end: string; guests: number; adults: number | null; children: number | null; location: string };
-  item: { id: string; title: string; status: string; category: string; amount: number | null; deposit: number; package: string; image: string; quote: { items?: QuoteItem[]; total?: number; valid_until?: string; reference?: string; terms?: Record<string, string> }; hold_expires_at: string | null; response_deadline: string | null };
+  item: { id: string; title: string; status: string; category: string; amount: number | null; deposit: number; package: string; image: string; quote: { deposit_pct?: number; items?: QuoteItem[]; total?: number; valid_until?: string; reference?: string; terms?: Record<string, string> }; hold_expires_at: string | null; response_deadline: string | null };
   listing: { id: string; name: string; kind: string; category: string; location: string; image: string; gallery: string[]; rating: number; reviews: number; capacity: number | null; price_from: number | null; price_unit: string; response_hours: number; description: string; setting: string; tags: string[]; href: string } | null;
   pkg: { name: string; description: string; price: number; image: string } | null;
   reviews: { rating: number; body: string }[];
@@ -21,28 +23,38 @@ export type BookingData = {
   savedOption: "request" | "hold" | "standby" | null;
   submitted: boolean;
   card: { brand: string; last4: string; exp: string; test: boolean } | null;
+  cardUnavailable?:boolean;
 };
 type Opt = "accept" | "request" | "hold" | "standby";
 const gbp = (n: number | null | undefined) => n == null ? "—" : `£${Math.round(n).toLocaleString("en-GB")}`;
 const TIMES = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "30" : "00"}`);
+/** Listing category (supplier taxonomy) or, without a listing, the build line category — never the raw key ("catering_full", "food"). */
+const catLabel = (L: BookingData["listing"], buildCat: string) => L?.category ? labelOf("service_category", L.category) : labelOf("build_category", buildCat, "Provider");
 const fmtDate = (d: string) => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "Date to be confirmed";
 
 export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: string; data: BookingData; steps: { title: string; sub?: string }[] }) {
   const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
-  const [r, setR] = useState<BookingRequirements>(data.saved);
+  const [r, setR] = useState<BookingRequirements>(data.saved);const [attachmentUploading,setAttachmentUploading]=useState(false);
   const [errs, setErrs] = useState<Record<string, boolean>>({});
   const [avail, setAvail] = useState<Availability | null>(null); const [checking, setChecking] = useState(false);
-  const quoted = ["quoted", "available", "held"].includes(data.item.status) && data.item.amount != null;
+  const availabilityGeneration=useRef(0);
+  const quoted = ["quoted", "available", "held", "quote_received", "quote_revised", "customer_reviewing"].includes(data.item.status) && data.item.amount != null;
   const [opt, setOpt] = useState<Opt>(quoted ? "accept" : data.savedOption ?? "request");
+  useEffect(()=>{if(quoted&&opt==="request")queueMicrotask(()=>setOpt("accept"));},[quoted,opt]);
+  useEffect(()=>()=>{availabilityGeneration.current++;},[]);
   const [agree, setAgree] = useState(false); const [tip, setTip] = useState<string | null>(null);
-  const set = <K extends keyof BookingRequirements>(k: K, v: BookingRequirements[K]) => setR(p => ({ ...p, [k]: v }));
+  const set = <K extends keyof BookingRequirements>(k: K, v: BookingRequirements[K]) => {if(["date","start","end"].includes(k)){availabilityGeneration.current++;setAvail(null);setChecking(false);}setR(p => ({ ...p, [k]: v }));};
   const L = data.listing; const isVenue = (L?.kind ?? data.item.category) === "venue" || data.item.category === "venue";
   const kind = isVenue ? "venue" : "provider";
 
   const check = async (silent = false) => {
     if (!L || !r.date) { if (!silent) toast("Add a date to check availability"); return; }
-    setChecking(true); const res = await checkAvailability(L.id, r.date, r.start, r.end); setChecking(false);
-    if (res.ok) { setAvail(res.data ?? "unknown"); if (!silent) toast(res.data === "available" ? "This date looks available" : res.data === "limited" ? "Limited availability — the provider will confirm" : res.data === "unavailable" ? "Not available on this date" : "Availability will be confirmed by the provider"); }
+    const generation=++availabilityGeneration.current;setChecking(true);setAvail(null);
+    try{const res=await checkAvailability(L.id,r.date,r.start,r.end);if(generation!==availabilityGeneration.current)return;
+      if(res.ok){setAvail(res.data??"unknown");if(!silent)toast(res.data==="available"?"This date looks available":res.data==="limited"?"Limited availability — the provider will confirm":res.data==="unavailable"?"Not available on this date":"Availability will be confirmed by the provider");}
+      else if(!silent)toast(res.error??"Could not check availability.","error");
+    }catch{if(generation===availabilityGeneration.current&&!silent)toast("Could not check availability. Try again when connected.","error");}
+    finally{if(generation===availabilityGeneration.current)setChecking(false);}
   };
   const first = useRef(true);
   useEffect(() => { if (first.current) { first.current = false; void check(true); return; } const t = setTimeout(() => void check(true), 450); return () => clearTimeout(t); // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,6 +68,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
     return !Object.keys(e).length;
   };
   const save = async (then: "next" | "exit") => {
+    if(attachmentUploading)return;
     if (then === "next" && !validate()) return;
     const res = await run(() => saveBookingDraft(data.event.id, data.item.id, r, opt === "accept" ? "request" : opt));
     if (res.ok) router.push(then === "next" ? `${base}&step=2` : `/account/events/${data.event.id}/build`);
@@ -72,7 +85,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
     if (res.ok) router.push(`${base}&step=3`);
   };
 
-  const fillFromEvent = () => { setR(p => ({ ...p, date: data.event.date, start: data.event.start, end: data.event.end, guests: data.event.guests, adults: data.event.adults ?? undefined, children: data.event.children ?? undefined })); toast("Filled in from your event"); };
+  const fillFromEvent = () => { if(r.date!==data.event.date||r.start!==data.event.start||r.end!==data.event.end){availabilityGeneration.current++;setAvail(null);setChecking(false);}setR(p => ({ ...p, date: data.event.date, start: data.event.start, end: data.event.end, guests: data.event.guests, adults: data.event.adults ?? undefined, children: data.event.children ?? undefined })); toast("Filled in from your event"); };
   const tips = useMemo(() => {
     const t: string[] = [];
     if (Number(r.start.slice(0, 2)) >= 18) t.push(`Consider a slightly earlier start time — evening slots at popular ${kind}s book fast.`);
@@ -104,7 +117,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <button className="bk-agent-btn" onClick={() => setTip(tip === "best" ? null : "best")} aria-expanded={tip === "best"}><Sparkles size={16} />Which option is best?</button>
           <button className="bk-agent-btn" onClick={() => setTip(tip === "costs" ? null : "costs")} aria-expanded={tip === "costs"}><Sparkles size={16} />Explain the costs</button>
           <button className="bk-agent-btn" onClick={() => void check()} disabled={checking}><Sparkles size={16} />Compare availability</button>
-          {tip && <div className="bk-agent-ans" role="status">{tip === "best" ? (quoted ? `You already have a quote of ${gbp(data.item.amount)}. If you're ready, accepting books it now. If you're still comparing, a 72-hour hold keeps the date while you decide.` : avail === "limited" || avail === "unavailable" ? "Availability is tight on your date. A conditional hold or standby gives you the best chance without committing." : "A booking request is free and gets you a formal quote within 48 hours — the best first step for most events.") : `${quoted ? `The quote total is ${gbp(data.item.amount)}. Booking charges a ${gbp(depositOf(data))} deposit now; the balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} is scheduled before your event.` : `The estimate is ${gbp(estimateOf(data))}. Nothing is charged for a request. A hold only places a refundable authorisation of ${gbp(authOf(data))}.`}`}</div>}
+          {tip && <div className="bk-agent-ans" role="status">{tip === "best" ? (quoted ? `You already have a quote of ${gbp(data.item.amount)}. If you're ready, accepting books it now. If you're still comparing, a conditional hold can be requested, subject to provider confirmation.` : avail === "limited" || avail === "unavailable" ? "Availability is tight on your date. A conditional hold or standby gives you the best chance without committing." : "A booking request is free and gets you a formal quote within 48 hours — the best first step for most events.") : `${quoted ? `The quote total is ${gbp(data.item.amount)}. Booking charges a ${gbp(depositOf(data))} deposit now; the balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} is scheduled before your event.` : `The estimate is ${gbp(estimateOf(data))}. Nothing is charged for a request. A conditional hold request does not charge or authorize your card. The provider must confirm it.`}`}</div>}
         </>}
       </section>
     </aside>
@@ -116,7 +129,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <div className="bk-gal">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="bk-gal-main" src={L?.image || data.item.image || "/assets/gd/oe-neon.webp"} alt="" />
             <div className="bk-gal-row">{(L?.gallery ?? []).slice(0, 4).map((g, i) => <span key={g + i} className="bk-gal-th">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={g} alt="" />{i === 3 && (L?.gallery.length ?? 0) > 4 && <b>+{(L?.gallery.length ?? 0) - 3}</b>}</span>)}</div></div>
           <div className="bk-sel-body">
-            <div className="k-between" style={{ alignItems: "flex-start" }}><div><span className="bk-kind">{isVenue ? "VENUE" : (L?.category ?? data.item.category).toUpperCase()}</span><h3 className="bk-name">{L?.name ?? data.item.title}</h3></div>{L && <Link className="k-link" href={L.href}>More details</Link>}</div>
+            <div className="k-between" style={{ alignItems: "flex-start" }}><div><span className="bk-kind">{isVenue ? "VENUE" : catLabel(L, data.item.category).toUpperCase()}</span><h3 className="bk-name">{L?.name ?? data.item.title}</h3></div>{L && <Link className="k-link" href={L.href}>More details</Link>}</div>
             {L && <div className="bk-loc"><span><MapPin size={14} />{L.location}</span><span><Star size={14} fill="#f59e0b" color="#f59e0b" />{L.rating.toFixed(1)} ({L.reviews} reviews)</span></div>}
             <div className="bk-pills">{L?.setting && <span>{L.setting}</span>}{L?.capacity && <span>Up to {L.capacity} guests</span>}{L?.tags.slice(0, 1).map(t => <span key={t}>{t}</span>)}</div>
             <div className="bk-pkg">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={data.pkg?.image || data.item.image || L?.image || ""} alt="" /><div className="k-grow"><b>{data.pkg?.name ?? data.item.package ?? "Standard package"}</b><small>{data.pkg?.description || data.item.quote.items?.map(i => i.label ?? i.description ?? i.name).filter(Boolean).slice(0, 3).join(", ") || L?.description?.slice(0, 110)}</small></div><div className="bk-pkg-price"><b>{gbp(data.item.amount ?? data.pkg?.price ?? L?.price_from)}</b><small>{quoted ? "Quoted" : "Starting from"}</small></div></div>
@@ -163,13 +176,14 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
           <div className="bk-note"><Info size={14} />Standby options can help secure a {kind} if your preferred date becomes available due to cancellations.</div></section>
         <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="bk-spark" /><b>Tips</b></div><p>Based on your event and this {kind}, here are a few tips:</p>
           <ul>{tips.map(t => <li key={t}><Lightbulb size={18} />{t}</li>)}</ul></section>
-        <button className="k-btn primary bk-continue" onClick={() => void save("next")} disabled={pending}>{pending ? <Loader2 size={16} className="k-spin" /> : null}Continue to Review &amp; Quote <ArrowRight size={17} /></button>
+        <RequestAttachments files={r.attachments??[]} onChange={files=>set("attachments",files)} onBusy={setAttachmentUploading}/>
+        <button className="k-btn primary bk-continue" onClick={() => void save("next")} disabled={pending||attachmentUploading}>{pending ? <Loader2 size={16} className="k-spin" /> : null}Continue to Review &amp; Quote <ArrowRight size={17} /></button>
       </> : <>
         <section className="ce-card bk-key"><b>Key information</b><dl>
           <div><dt><Clock size={15} />Response time</dt><dd>Within {L?.response_hours ?? 48} hours</dd></div>
-          <div><dt><Lock size={15} />Hold period</dt><dd>72 hours (if selected)</dd></div>
+          <div><dt><Lock size={15} />Hold period</dt><dd>Provider-confirmed deadline</dd></div>
           <div><dt><Clock size={15} />Cancellation</dt><dd>{data.item.quote.terms?.cancellation ?? "Free until you approve a quote"}</dd></div>
-          <div><dt><CreditCard size={15} />Payment</dt><dd>{quoted ? `${gbp(depositOf(data))} deposit + ${gbpPence(bookingAdminFee(depositOf(data)))} admin fee on booking` : "Refundable authorisation"}</dd></div>
+          <div><dt><CreditCard size={15} />Payment</dt><dd>{quoted ? `${gbp(depositOf(data))} deposit + ${gbpPence(bookingAdminFee(depositOf(data)))} admin fee on booking` : "No payment for a request or conditional hold"}</dd></div>
           <div><dt><FileText size={15} />Full terms</dt><dd>{L ? <Link className="k-link" href={`${L.href}#terms`}>View {kind} terms <ArrowRight size={13} /></Link> : "Shared with your quote"}</dd></div></dl></section>
         <section className="ce-card bk-tips"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="bk-spark" /><b>Tips</b></div><p>Here&apos;s what will happen when you submit:</p>
           <ol className="bk-steps4">{whatHappens(opt, data).map((t, i) => <li key={t}><span>{i + 1}</span>{t}</li>)}</ol></section>
@@ -179,18 +193,17 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
     {step === 2 && <div className="bk-bar">
       <Link className="k-btn outline" href={`${base}&step=1`}><ArrowLeft size={16} />Back to Requirements</Link>
       <label className="bk-check bk-agree"><input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} />I agree to the {kind}&apos;s {L ? <Link href={`${L.href}#terms`} className="k-underline">terms and conditions</Link> : "terms and conditions"}<span className="k-red">*</span></label>
-      <button className="k-btn primary bk-submit" onClick={() => void submit()} disabled={pending || (opt === "hold" && !data.card) || (opt === "accept" && !data.card)}>{pending && <Loader2 size={16} className="k-spin" />}{opt === "accept" ? `Book & pay ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))}` : opt === "hold" ? "Request Hold" : opt === "standby" ? "Join Standby List" : data.submitted ? "Update Booking Request" : "Submit Booking Request"}<ArrowRight size={17} /></button>
+      <button className="k-btn primary bk-submit" onClick={() => void submit()} disabled={pending}>{pending && <Loader2 size={16} className="k-spin" />}{opt === "accept" ? `Book & pay ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))}` : opt === "hold" ? "Request Hold" : opt === "standby" ? "Join Standby List" : data.submitted ? "Update Booking Request" : "Submit Booking Request"}<ArrowRight size={17} /></button>
     </div>}
   </div>;
 }
 
-const depositOf = (d: BookingData) => Math.min(d.item.amount ?? 0, d.item.deposit || Math.round((d.item.amount ?? 0) * 0.3));
+const depositOf = (d: BookingData) => Math.min(d.item.amount ?? 0, d.item.deposit || Math.round((d.item.amount ?? 0) * Number(d.item.quote.deposit_pct ?? 30)) / 100);
 const estimateOf = (d: BookingData) => d.item.amount ?? d.pkg?.price ?? d.listing?.price_from ?? null;
-const authOf = (d: BookingData) => Math.max(50, Math.min(500, Math.round(d.item.deposit || (estimateOf(d) ?? 0) * 0.1)));
 function whatHappens(opt: Opt, d: BookingData) {
   const who = d.listing?.kind === "venue" ? "venue" : "provider";
-  if (opt === "accept") return [`We'll charge your ${gbp(depositOf(d))} deposit plus a ${gbpPence(bookingAdminFee(depositOf(d)))} booking admin fee`, `Your booking with ${d.item.title} is confirmed instantly`, "The balance is scheduled in Money", "You can message the provider any time"];
-  if (opt === "hold") return [`We'll place a refundable ${gbp(authOf(d))} authorisation`, `The ${who} holds your date for 72 hours`, "You'll receive a formal quote to review", "The hold is released if you don't book"];
+  if (opt === "accept") return [`We'll charge your ${gbp(depositOf(d))} deposit plus a ${gbpPence(bookingAdminFee(depositOf(d)))} booking admin fee`, `Your booking with ${d.item.title} confirms after successful payment`, "The balance is scheduled in Money", "You can message the provider any time"];
+  if (opt === "hold") return [`We'll ask the ${who} for a conditional hold`, "No card authorization or charge", "The provider must confirm the hold and its deadline", "Review the quote before approving any payment"];
   if (opt === "standby") return [`We'll add you to the ${who}'s standby list`, "You'll be alerted if your date opens up", "There's no charge and no commitment", "You can request a quote at any time"];
   return [`We'll send your booking request to the ${who}`, `They'll respond within ${d.listing?.response_hours ?? 48} hours`, "You'll receive a formal quote to review", "No payment is taken unless you approve the quote"];
 }
@@ -223,18 +236,18 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
   const est = estimateOf(data);
   const lines = items.length ? items : est != null ? [{ label: data.pkg?.name ?? (data.item.package || "Package estimate"), total: est }] : [];
   const options: { k: Opt; title: string; badge?: string; tone?: string; icon: typeof Lock; text: string; bullets: string[]; disabled?: string }[] = [
-    quoted ? { k: "accept", title: "Accept quote & book", badge: "RECOMMENDED", tone: "green", icon: CheckCircle2, text: `Approve the ${gbp(data.item.amount)} quote${data.item.quote.reference ? ` (${data.item.quote.reference})` : ""} and confirm your booking now.`, bullets: [`${gbp(depositOf(data))} deposit charged now`, `Balance ${gbp((data.item.amount ?? 0) - depositOf(data))} scheduled`, "Booking confirmed instantly"], disabled: data.card ? undefined : "Add a card to book" }
+    quoted ? { k: "accept", title: "Accept quote & book", badge: "RECOMMENDED", tone: "green", icon: CheckCircle2, text: `Approve the ${gbp(data.item.amount)} quote${data.item.quote.reference ? ` (${data.item.quote.reference})` : ""} and confirm your booking now.`, bullets: [`${gbp(depositOf(data))} deposit charged now`, `Balance ${gbp((data.item.amount ?? 0) - depositOf(data))} scheduled`, "Booking confirms after successful payment"], disabled: undefined }
       : { k: "request", title: "Send a booking request", badge: "RECOMMENDED", tone: "green", icon: CalendarDays, text: "Send your requirements to the provider. They'll confirm availability and send a formal quote.", bullets: ["No payment taken now", `Response within ${L?.response_hours ?? 48} hours`, "Option to upgrade to a hold"] },
-    { k: "hold", title: "Request a conditional hold", badge: "MOST POPULAR", tone: "purple", icon: Lock, text: `Secure a provisional hold while the provider reviews your request.`, bullets: ["Small refundable authorisation", "Held for 72 hours", "Converted to quote or released"], disabled: held ? "Already held" : data.card ? undefined : "Add a card to hold" },
+    { k: "hold", title: "Request a conditional hold", badge: "MOST POPULAR", tone: "purple", icon: Lock, text: `Secure a provisional hold while the provider reviews your request.`, bullets: ["No card authorization or charge", "Provider confirmation required", "Agreed hold expires at its recorded deadline"], disabled: held ? "Already held" : undefined },
     { k: "standby", title: "Add to standby list", icon: ShieldCheck, text: "If your dates aren't available, we'll ask the provider to consider alternative dates and add you to their standby list.", bullets: ["No standby fee", "Get alerted if availability opens", "No commitment to book"] },
   ];
   return <div className="bk-main">
     <section className="ce-card bk-sec">
       <div className="k-between"><h2 className="bk-h">1. Selected {isVenue ? "venue" : "provider"} &amp; dates</h2></div>
       <div className="bk-sum">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={L?.image || data.item.image} alt="" />
-        <div className="k-grow"><div className="k-between" style={{ alignItems: "flex-start" }}><div><span className="bk-kind">{isVenue ? "VENUE" : (L?.category ?? data.item.category).toUpperCase()}</span><h3 className="bk-name">{L?.name ?? data.item.title}</h3></div><Link className="k-btn outline bk-change" href={`${base}&step=1`}><CalendarDays size={15} />Change details</Link></div>
+        <div className="k-grow"><div className="k-between" style={{ alignItems: "flex-start" }}><div><span className="bk-kind">{isVenue ? "VENUE" : catLabel(L, data.item.category).toUpperCase()}</span><h3 className="bk-name">{L?.name ?? data.item.title}</h3></div><Link className="k-btn outline bk-change" href={`${base}&step=1`}><CalendarDays size={15} />Change details</Link></div>
           {L && <div className="bk-loc"><span><MapPin size={14} />{L.location}</span><span><Star size={14} fill="#f59e0b" color="#f59e0b" />{L.rating.toFixed(1)} ({L.reviews} reviews)</span></div>}
-          <div className="bk-facts"><span><CalendarDays size={19} /><span><b>{fmtDate(r.date)}</b><small>{r.start} – {r.end}{r.flexible_dates ? " · flexible" : ""}</small></span></span><span><Users size={19} /><span><b>{r.guests} guests</b><small>{r.adults || r.children ? `${r.adults ?? 0} adults, ${r.children ?? 0} children` : "Breakdown not set"}</small></span></span><span><Building2 size={19} /><span><b>{data.pkg?.name ?? data.item.package ?? "Standard"}</b><small>{r.answers.layout ? `${data.questions.find(q => q.id === "layout")?.options.find(o => o.value === r.answers.layout)?.label ?? ""}` : isVenue ? "Layout to confirm" : (L?.category ?? data.item.category)}</small></span></span></div></div></div>
+          <div className="bk-facts"><span><CalendarDays size={19} /><span><b>{fmtDate(r.date)}</b><small>{r.start} – {r.end}{r.flexible_dates ? " · flexible" : ""}</small></span></span><span><Users size={19} /><span><b>{r.guests} guests</b><small>{r.adults || r.children ? `${r.adults ?? 0} adults, ${r.children ?? 0} children` : "Breakdown not set"}</small></span></span><span><Building2 size={19} /><span><b>{data.pkg?.name ?? data.item.package ?? "Standard"}</b><small>{r.answers.layout ? `${data.questions.find(q => q.id === "layout")?.options.find(o => o.value === r.answers.layout)?.label ?? ""}` : isVenue ? "Layout to confirm" : catLabel(L, data.item.category)}</small></span></span></div></div></div>
     </section>
 
     <section className="ce-card bk-sec">
@@ -252,23 +265,24 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
       <div className="bk-price">
         <div className="bk-price-est"><small>{quoted ? "Quoted price" : "Estimated price"}</small><b>{gbp(quoted ? data.item.amount : est)}</b><span>{data.pkg?.name ?? data.item.package}</span></div>
         <dl className="bk-price-lines">{lines.slice(0, 5).map(l => <div key={l.label}><dt>{l.label}</dt><dd>{gbp(l.total)}</dd></div>)}{!lines.length && <div><dt>Quote to follow</dt><dd>—</dd></div>}</dl>
-        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Deposit / authorisation"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "Refundable"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : opt === "hold" ? authOf(data) : 0)}</strong><small>{opt === "accept" ? `Plus a ${gbpPence(bookingAdminFee(depositOf(data)))} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))} today. Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} (plus its admin fee) scheduled before your event.` : opt === "hold" ? "Pre-authorisation only. No charge unless you approve the quote." : "Nothing is charged for a request or standby."}</small></div>
+        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Payment on submission"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "No charge"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : 0)}</strong><small>{opt === "accept" ? `Plus a ${gbpPence(bookingAdminFee(depositOf(data)))} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))} today. Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} (plus its admin fee) scheduled before your event.` : opt === "hold" ? "No card authorization or charge. A hold needs provider confirmation." : "Nothing is charged for a request or standby."}</small></div>
       </div>
       <div className="bk-info3">
         <div><Clock size={22} /><span><small>Response deadline</small><b>{data.item.response_deadline && ["sent", "awaiting"].includes(data.item.status) ? new Date(data.item.response_deadline).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) : `${L?.response_hours ?? 48} hours`}</b><em>You&apos;ll be notified by email and in your event.</em></span></div>
-        <div><Lock size={22} /><span><small>Hold period (if selected)</small><b>{held && data.item.hold_expires_at ? `Until ${new Date(data.item.hold_expires_at).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" })}` : "72 hours"}</b><em>Your date is held while the provider reviews your request.</em></span></div>
+        <div><Lock size={22} /><span><small>Hold period (if selected)</small><b>{held && data.item.hold_expires_at ? `Until ${new Date(data.item.hold_expires_at).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" })}` : "Subject to provider confirmation"}</b><em>A request does not reserve your date.</em></span></div>
         <div><FileText size={22} /><span><small>Cancellation terms (summary)</small>{L ? <Link className="k-link" href={`${L.href}#terms`}>See full terms</Link> : <b>With your quote</b>}<em>{data.item.quote.terms?.cancellation ?? "Requests and holds can be cancelled free of charge."}</em></span></div>
       </div>
     </section>
 
     <section className="ce-card bk-sec">
-      <h2 className="bk-h">4. Payment method <span className="bk-h-sub">(required for holds{quoted ? " and bookings" : ""})</span></h2><p className="bk-sub">Add a payment method for the refundable authorisation or for quick acceptance later.</p>
+      <h2 className="bk-h">4. Payment method</h2><p className="bk-sub">Requests, holds and standby do not need a saved card. Quote payments are confirmed in secure checkout, where you can add a payment method.</p>
       <div className="bk-pay">
-        {data.card ? <label className="bk-card-row" data-on><input type="radio" name="pm" defaultChecked /><span className="bk-radio on"><Check size={11} strokeWidth={3} /></span><span className="bk-mc" aria-hidden><i /><i /></span><b>Card ending {data.card.last4}</b><small>Expires {data.card.exp}</small><span className="bk-default">{data.card.test ? "Test mode" : "Default"}</span></label>
-          : <div className="bk-card-row empty"><CreditCard size={18} /><span>No card on file — requests and standby don&apos;t need one.</span></div>}
+        {data.card ? <label className="bk-card-row" data-on><input type="radio" name="pm" defaultChecked /><span className="bk-radio on"><Check size={11} strokeWidth={3} /></span><CreditCard size={24} aria-hidden="true"/><b>{data.card.brand.toUpperCase()} ending {data.card.last4}</b><small>Expires {data.card.exp}</small><span className="bk-default">{data.card.test ? "Test mode" : "Default"}</span></label>
+          : <div className="bk-card-row empty"><CreditCard size={18} /><span>{data.cardUnavailable ? "Saved payment methods couldn't load. Requests, holds and standby still work." : "No card on file. Add a payment method in secure checkout when accepting a quote."}</span></div>}
         <Link className="bk-card-row add" href="/account?tab=payments"><span className="bk-radio" /><CreditCard size={18} /><b>Add a new card</b></Link>
         <Menu label="Payment options" width={220} trigger={({ toggle, open, id }) => <button className="k-icon-btn bk-pay-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Payment options"><MoreHorizontal size={16} /></button>}>{close => <><Link role="menuitem" className="k-menu-item" href="/account/settings?tab=payments" onClick={close}><CreditCard size={14} />Manage payment methods</Link><button role="menuitem" className="k-menu-item" onClick={close}><X size={14} />Close</button></>}</Menu>
       </div>
     </section>
   </div>;
 }
+

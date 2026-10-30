@@ -1,0 +1,88 @@
+/* Lane D S1 (W03): Plan › Dependencies, brief versions, status menu blockers, readiness gates, template library, agent skill picker. */
+
+/* ── Dependencies ── */
+.dp { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.dp-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.dp-kpi { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+.dp-kpi b { display: block; font-size: 18px; font-weight: 700; color: var(--k-ink); line-height: 1.1; }
+.dp-kpi small { font-size: 11.5px; color: var(--k-muted); }
+.dp-path-card h2 { display: inline-flex; align-items: center; gap: 6px; }
+.dp-path { list-style: none; margin: 12px 0 0; padding: 0 0 4px; display: flex; gap: 6px; overflow-x: auto; align-items: stretch; }
+.dp-path li { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.dp-path-l { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid var(--k-line); border-radius: 10px; background: #fbfcff; max-width: 220px; }
+.dp-path-l b { font-size: 12.5px; font-weight: 600; color: var(--k-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dp-path-l small { font-size: 11px; color: var(--k-muted); }
+.dp-path li.met .dp-path-l { opacity: .65; }
+.dp-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--k-red); flex: 0 0 auto; }
+.dp-dot.met { background: var(--k-green); } .dp-dot.end { background: var(--k-purple, #7c3aed); }
+.dp-none { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; }
+.dp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+.dp-head { padding: 14px 16px; gap: 12px; align-items: flex-start; }
+.dp-ro { display: inline-flex; align-items: center; gap: 5px; max-width: 260px; }
+.dp-groups { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--k-line); }
+.dp-group { padding: 12px 16px; border-bottom: 1px solid var(--k-line); }
+.dp-group.blocked { background: linear-gradient(90deg, #fff6f7 0, transparent 140px); }
+.dp-gh { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dp-gh b { font-size: 13px; font-weight: 600; color: var(--k-ink); overflow-wrap: anywhere; }
+.dp-by { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 6px; }
+.dp-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: #fff0f2; color: #b4232f; font-size: 10.5px; font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dp-edges { list-style: none; margin: 8px 0 0 10px; padding: 0 0 0 12px; border-left: 2px solid var(--k-line); display: flex; flex-direction: column; gap: 6px; }
+.dp-edges li { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 8px; background: #fbfcff; }
+.dp-edges li.unmet { background: #fff8f8; } .dp-edges li.soft { background: #fffbf3; }
+.dp-pre { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dp-pre b { font-size: 12.5px; font-weight: 600; color: var(--k-ink); overflow-wrap: anywhere; }
+.dp-pre small { font-size: 11px; color: var(--k-muted); overflow-wrap: anywhere; }
+.dp-tags, .dp-act { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.dp-blocked { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dp-blocked li { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; }
+.dp-blocked li b { font-weight: 600; color: var(--k-ink); }
+.dp-checks { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow: auto; }
+.dp-form .dp-fs { border: 1px solid var(--k-line); border-radius: 10px; padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.dp-form .dp-fs legend { font-size: 11px; font-weight: 650; color: var(--k-ink-2); padding: 0 4px; }
+@media (max-width: 1180px) { .dp-grid { grid-template-columns: minmax(0, 1fr); } .dp-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .dp-edges { margin-left: 0; padding-left: 8px; }
+  .dp-edges li { grid-template-columns: minmax(0, 1fr); gap: 6px; } .dp-wait { display: none; }
+  .dp-tags, .dp-act { justify-content: flex-start; }
+  .dp-head { flex-direction: column; }
+}
+
+/* ── Brief versions ── */
+.bf-meta { margin: 4px 0 0; }
+.bf-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 12px 0 0; }
+.bf-facts div { min-width: 0; } .bf-facts dt { font-size: 11px; font-weight: 600; color: var(--k-muted); } .bf-facts dd { margin: 2px 0 0; font-size: 12.5px; color: var(--k-ink-2); overflow-wrap: anywhere; }
+.bf-history { margin-top: 12px; border-top: 1px solid var(--k-line); padding-top: 10px; }
+.bf-history summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--k-blue); }
+.bf-history ol { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.bf-history li { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.bf-hgoals { display: block; margin-top: 2px; overflow-wrap: anywhere; }
+.bf-conflict { margin-bottom: 12px; }
+.bf-diff td { vertical-align: top; white-space: pre-wrap; font-size: 12px; max-width: 280px; overflow-wrap: anywhere; } .bf-diff td.bf-mine { background: #f4f8ff; }
+@media (max-width: 640px) { .bf-facts { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── Status menu + blockers ── */
+.ev-status-opt { display: flex !important; align-items: center; gap: 8px; flex-wrap: wrap; text-align: left; }
+.ev-status-opt small { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; }
+.ev-blockers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ev-blockers li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 11px; border-radius: 9px; background: #fffaf2; font-size: 12.5px; color: var(--k-ink-2); }
+
+/* ── Readiness: lifecycle gates ── */
+.op-gate + .op-gate { margin-top: 8px; }
+.op-gate-h { display: block; font-size: 11px; font-weight: 650; color: #5157a4; margin: 0 0 4px; }
+
+/* ── Template library ── */
+.tpl-card { display: flex; flex-direction: column; }
+.tpl-actions { display: flex; gap: 8px; align-items: center; margin-top: auto; flex-wrap: wrap; }
+.tpl-actions .k-btn { flex: 1 1 auto; justify-content: center; }
+.tw-family { border: 1px solid var(--k-line); border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.tw-family legend { padding: 0 4px; }
+.tw-family label { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+.tw-family select { flex: 1 1 220px; min-width: 0; }
+.tw-family small { flex: 1 1 100%; font-size: 11px; color: var(--k-muted); }
+
+/* ── Agent skill picker ── */
+.ag-boxbar { flex-wrap: wrap; } .ag-boxbar select { max-width: 100%; min-width: 0; }
+.ag-skill-help { margin: 8px 0 0; font-size: 12px; color: var(--k-ink-2); line-height: 1.45; }
+.ag-skill-steps { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; }
+.ag-skill-steps > span { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--k-muted); }
+.ag-skill-steps > span > span, .ag-skill-steps > span { white-space: nowrap; }

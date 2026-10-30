@@ -8,3 +8,7 @@
 .pv-menu-panel a:hover,.pv-menu-panel button:hover{background:#f3f6fd}
 .pv-menu-panel .danger{color:var(--ws-red)}
 .pv-mapbox .vm-room{cursor:pointer}
+
+/* Owner standard: one provider page-title size — the 34px `.ws-page-head h1` the provider references were matched at (inbox 18px,
+   Media Studio 20px and statement 24px were outliers). Organiser/customer use --k-title-page (28px), admin lists --k-title-admin. */
+.ws-app.provider .ms-list-head h1, .ws-app.provider .ml-head h1, .ws-app.provider .pm-st h1 { font-size: 34px; line-height: 1.12; letter-spacing: -.035em; }

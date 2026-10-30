@@ -6,8 +6,10 @@ import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
 import { workspaceJobs, workspaceListings, workspaceSpaces, startOfDay } from "@/lib/provider/queries";
 import { workspaceBlocks } from "@/lib/provider/commercial";
+import { labelOf } from "@/lib/master-data";
 import { readDraft, POLICIES } from "./draft";
 import { StepEvent, StepSpace, StepPricing } from "./steps";
+import { ManagerOnly } from "../../_manager-only";
 
 export const metadata: Metadata = { title: "Create venue booking" };
 const STEPS = ["Event & Client", "Space & Package", "Pricing & Terms", "Review & Create"];
@@ -28,6 +30,7 @@ export default async function NewBooking(props: PageProps<"/provider/bookings/ne
   // Steps can't be skipped: later steps need the earlier ones saved.
   const step = requested >= 3 && draft.spaceId ? 3 : requested >= 2 && draft.eventName && draft.date ? 2 : 1;
   const [ctx, listings, spaces, jobs, blocks] = await Promise.all([getProvider(), workspaceListings(), workspaceSpaces(), workspaceJobs(), workspaceBlocks()]);
+  if (!ctx.can.manage) return <ManagerOnly title="Create Venue Booking" back={{ href: "/provider/bookings", label: "Back to Bookings" }} />;
   const venues = listings.filter(l => l.kind === "venue");
   const venue = venues.find(v => v.id === draft.venueId) ?? venues[0];
   const venueSpaces = spaces.filter(s => s.venue_id === venue?.id);
@@ -51,6 +54,15 @@ export default async function NewBooking(props: PageProps<"/provider/bookings/ne
   const taxBps = tax.vat_registered ? Number(tax.rate_bps ?? 0) : 0;
   const commercial = (venue?.details?.commercial ?? {}) as { rate_from?: number; minimum_spend?: number; deposit_pct?: number };
 
+  // Direct bookings are venue/space bookings; a services-only workspace has nothing to book here.
+  if (!venues.length) return <div className="wz">
+    <Link href="/provider/bookings" className="ws-back wz-back"><ArrowLeft aria-hidden="true" />Back to Bookings</Link>
+    <header className="wz-head"><h1>Create Venue Booking</h1><p>Direct bookings need a venue listing in this workspace.</p></header>
+    <section className="ws-panel" style={{ padding: 20, maxWidth: 640 }}><p>{ctx.workspace.capabilities.includes("venue") ? "Add a venue first, then you can book its spaces directly." : "This workspace offers services only. Service bookings are confirmed through marketplace requests and quotes."}</p>
+      <p style={{ marginTop: 12, display: "flex", gap: 8 }}>{ctx.workspace.capabilities.includes("venue") ? <Link className="ws-btn primary" href="/provider/venues/new?step=1">Add a venue</Link> : <Link className="ws-btn primary" href="/provider/opportunities">View opportunities</Link>}
+        <Link className="ws-btn outline" href="/provider/bookings">Back to Bookings</Link></p></section>
+  </div>;
+
   return <div className="wz">
     <Link href={step === 1 ? "/provider/bookings" : `/provider/bookings/new?step=${step - 1}`} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? "Back to Bookings" : "Back to Create Booking"}</Link>
     <header className="wz-head"><h1>Create Venue Booking</h1><p>{SUB[step - 1]}</p></header>
@@ -62,7 +74,7 @@ export default async function NewBooking(props: PageProps<"/provider/bookings/ne
       layouts={Object.fromEntries((await rows<{ id: string; layouts: Record<string, number> }>(ctx.db.from("spaces").select("id,layouts").in("id", venueSpaces.map(s => s.id).length ? venueSpaces.map(s => s.id) : ["00000000-0000-0000-0000-000000000000"]))).map(s => [s.id, s.layouts]))}
       packages={packages.filter(p => p.listing_id === venue.id)} busy={busy} dayStart={day} reqStart={reqStart} reqEnd={reqEnd} />}
     {step === 3 && venue && <StepPricing draft={draft} venue={{ id: venue.id, name: venue.name, image: venue.image }} space={venueSpaces.find(s => s.id === draft.spaceId) ?? null}
-      packages={packages.filter(p => p.listing_id === venue.id)} services={services.map(s => ({ id: s.id, name: s.name, category: s.category, price: Number(s.price_from), unit: s.price_unit, image: s.image }))}
+      packages={packages.filter(p => p.listing_id === venue.id)} services={services.map(s => ({ id: s.id, name: s.name, category: labelOf("service_category", s.category), price: Number(s.price_from), unit: s.price_unit, image: s.image }))}
       taxBps={taxBps} defaults={{ hire: commercial.rate_from ?? Number(venueSpaces.find(s => s.id === draft.spaceId)?.rate_hourly ?? 0), minimumSpend: commercial.minimum_spend ?? 0, depositPct: commercial.deposit_pct ?? 25 }}
       policies={Object.fromEntries(Object.entries(POLICIES).map(([k, v]) => [k, v.label]))} conflict={busy.find(b => b.spaceId === draft.spaceId)?.conflict?.label ?? null} />}
   </div>;

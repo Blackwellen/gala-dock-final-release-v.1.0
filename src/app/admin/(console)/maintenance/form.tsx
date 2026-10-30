@@ -34,8 +34,9 @@ export function MaintenanceForm() {
     <label style={field}>Ends (optional)<input type="datetime-local" name="ends_at" style={input} /></label>
     <label style={field}>Expected restoration<input type="datetime-local" name="expected_restore" style={input} /></label>
     <label style={field}>Status page URL<input type="url" name="status_url" placeholder="https://" style={input} /></label>
-    <label style={field}>Audience<select name="audience" style={input}><option value="all">Everyone</option><option value="customers">Customers</option><option value="organizers">Organizers</option><option value="providers">Providers</option><option value="admins">Admins</option></select></label>
+    <label style={field} title="Who the window applies to: the banner and the M2+ restrictions both follow the audience (Everyone = all users).">Banner audience<select name="audience" style={input}><option value="all">Everyone</option><option value="customers">Customers</option><option value="organizers">Organizers</option><option value="providers">Providers</option><option value="admins">Admins</option></select></label>
     <label style={field}>Banner severity<select name="severity" style={input}><option value="">Automatic</option><option value="info">Info</option><option value="warning">Warning</option><option value="critical">Critical</option></select></label>
+    <label style={{ ...field, gridColumn: "1/-1" }}>Reason for this change (audited)<input name="reason" required minLength={5} maxLength={500} placeholder="e.g. Database upgrade CHG-1042, agreed with on-call" style={input} /></label>
     <label style={field}>Reference<input name="reference" maxLength={60} placeholder="e.g. CHG-1042" style={input} /></label>
     <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 12.5 }}><input type="checkbox" name="dismissible" defaultChecked />Banner can be dismissed (M1–M3)</label>
     <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 12.5 }}><input type="checkbox" name="bypass" defaultChecked />Platform admins bypass the write freeze</label>

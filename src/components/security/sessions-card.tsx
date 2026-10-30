@@ -21,7 +21,7 @@ export function SessionsCard() {
     <h2 id="sess-h" style={{ display: "flex", gap: 8, alignItems: "center" }}><MonitorSmartphone size={18} aria-hidden="true" />Where you’re signed in</h2>
     {rows === null ? <p className="ac-hint">Loading…</p> : <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>{rows.map(s =>
       <li key={s.id} style={{ display: "grid", gap: 2, padding: "8px 10px", border: "1px solid #eef2fb", borderRadius: 8 }}>
-        <b>{device(s.user_agent)}{s.current && <span style={{ marginLeft: 8, fontSize: 11, color: "#0f8a4e" }}>This device</span>}</b>
+        <b>{device(s.user_agent)}{s.current && <span style={{ marginLeft: 8, fontSize: 11, color: "#087443" }}>This device</span>}</b>
         <small className="ac-hint">{s.ip ?? "Unknown IP"} · last active {new Date(s.last_active).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}{s.aal === "aal2" ? " · verified with 2-step" : ""}</small>
       </li>)}</ul>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

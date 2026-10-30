@@ -9,7 +9,7 @@ import { LayerBar, LayerList, SavedViews, AddEntry, TimeGrid } from "@/component
 import { PhaseChip } from "@/components/organizer/event-bits";
 import { money, num, dateShort, timeRange, time, eventTypeLabel } from "@/lib/format";
 import { CalendarConnectSection } from "@/components/shared/calendar-connect-section";
-import { TeamConflicts } from "@/components/ops/readiness-panel";
+import { ConflictsStrip } from "@/components/organizer/conflicts-strip";
 
 export const metadata = { title: "Calendar" };
 const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -50,7 +50,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
         <AddEntry events={events.map(e => ({ id: e.id, name: e.name }))} defaultDate={anchor} />
       </div>
     </div>
-    <TeamConflicts workspaceId={ctx.workspace.id} limit={4} />
+    <ConflictsStrip workspaceId={ctx.workspace.id} limit={5} />
     <div className="k-between" style={{ gap: 10 }}><LayerBar layers={LAYERS.map(l => ({ ...l }))} active={active} /><a className="k-btn ghost" href="#layers"><Layers size={15} />Layers</a></div>
     <div className="cal-grid">
       <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
@@ -75,7 +75,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
         <Card id="layers"><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 15 }}>Calendar layers</h2><Link className="k-link" href="/organizer/settings?tab=integrations">Manage <ArrowRight size={12} /></Link></div><LayerList layers={LAYERS.map(l => ({ ...l }))} active={active} counts={counts} />
           <div className="oc-sync"><b>Sync to your calendar</b><small>Subscribe once — your events stay up to date in Google, Outlook or Apple Calendar.</small><CalendarConnectSection returnTo="/organizer/calendar" /></div></Card>
         <Card><div className="k-between" style={{ marginBottom: 8 }}><h2 style={{ fontSize: 15 }}>Upcoming</h2><Link className="k-link" href="/organizer/events?tab=upcoming">View all <ArrowRight size={12} /></Link></div>
-          <div className="k-list">{upcoming.map(e => <Link key={e.id} href={qs({ sel: `ev-${e.id}`, date: e.starts_at!.slice(0, 10) })} className="k-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" className="k-thumb" /><div className="k-grow"><b className="k-small k-strong">{e.name}</b><div className="k-xs k-muted">{dateShort(e.starts_at)} · {time(e.starts_at)}</div><div className="k-xs k-muted k-row" style={{ gap: 3 }}><MapPin size={10} />{e.venue_name}</div></div><PhaseChip e={e} /></Link>)}</div></Card>
+          <div className="k-list">{upcoming.map(e => <Link key={e.id} href={qs({ sel: `ev-${e.id}`, date: e.starts_at!.slice(0, 10) })} className="k-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" className="k-thumb" /><div className="k-grow"><b className="k-small k-strong">{e.name}</b><div className="k-xs k-muted">{dateShort(e.starts_at)} · {time(e.starts_at)}</div><div className="k-xs k-muted k-row" style={{ gap: 3 }}><MapPin size={10} />{e.venue_name}</div></div><PhaseChip e={e} /></Link>)}</div></Card>
       </div>
     </div>
   </>;

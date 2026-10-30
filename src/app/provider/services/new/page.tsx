@@ -13,6 +13,7 @@ import { workspaceListings } from "@/lib/provider/queries";
 import { publishListing } from "../../listings/actions";
 import { PhotoManager } from "../../venues/_components/photo-manager";
 import { SvcStep1, SvcStep2, SvcStep3, type Svc, type Pkg } from "./steps";
+import { ManagerOnly } from "../../_manager-only";
 
 export const metadata: Metadata = { title: "Add service" };
 const STEPS = ["Service & Coverage", "Pricing & Packages", "Availability & Requirements", "Media & Details", "Review & Publish"];
@@ -23,6 +24,7 @@ export default async function AddService(props: PageProps<"/provider/services/ne
   const id = typeof sp.service === "string" ? sp.service : null;
   if (id && !isUuid(id)) notFound();
   const [ctx, listings] = await Promise.all([getProvider(), workspaceListings()]);
+  if (!ctx.can.manage) return <ManagerOnly title="Add Service" back={{ href: "/provider/listings/services", label: "Back to Services" }} />;
   const s = id ? listings.find(l => l.id === id && l.kind === "service") ?? null : null;
   if (id && !s) notFound();
   const step = s ? Math.min(5, Math.max(1, Number(sp.step) || 1)) : 1;

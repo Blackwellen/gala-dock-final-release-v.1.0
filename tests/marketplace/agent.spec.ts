@@ -18,6 +18,8 @@ test.describe("gala agent runtime", () => {
   test.beforeAll(async () => {
     [owner, member] = await Promise.all([createUser("ag-own"), createUser("ag-mem")]);
     ws = await seedWorkspace(owner.id, "organizer", "Agent Org");
+    // R3/R4 tools need `agent.actions` (Pro and above; coordinator decision 2026-10-29, migration 4032) — entitle this fixture like a Pro workspace.
+    await db.from("workspaces").update({ settings: { entitlements: { "agent.actions": true } } }).eq("id", ws);
     await db.from("workspace_members").insert({ workspace_id: ws, user_id: member.id, role: "member" });
     event = ((await db.from("events").insert({ owner_id: owner.id, workspace_id: ws, management: "professional", name: "Agent event", starts_at: new Date(Date.now() + 20 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
     tier = ((await db.from("ticket_tiers").insert({ event_id: event, name: "GA", price: 15, quantity: 100, status: "draft", order_limit: 10 }).select("id").single()).data as { id: string }).id;

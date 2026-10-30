@@ -127,3 +127,8 @@
 .pm-dot{fill:#1a1fd6}
 .pm-ax{font-size:10px;fill:#3f4596}
 .pm-grid{stroke:#edf1f8}
+
+/* W12: the statement no longer pushes the page (and the phone tab bar) sideways at 390px */
+.pm-statement, .pm-st { min-width: 0; }
+.pm-st table { display: block; max-width: 100%; overflow-x: auto; }
+@media (max-width:600px) { .pm-st { padding: 18px 16px; } .pm-st header { flex-wrap: wrap; gap: 10px; } .pm-st-who { justify-items: start; } }

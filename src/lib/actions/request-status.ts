@@ -4,7 +4,11 @@ import { getOrganizer } from "@/lib/data/context";
 import { can } from "@/lib/domain/permissions";
 import type { ActionResult } from "./shell";
 
-const NEXT: Record<string, string[]> = { sent: ["closed", "cancelled"], closed: ["sent", "cancelled"], draft: ["cancelled"] };
+// Q10: open requests now carry a derived state (awaiting / clarification / quote_received / declined / expired_no_response);
+// all of them can be closed or cancelled like `sent`.
+const OPEN = ["closed", "cancelled"];
+const NEXT: Record<string, string[]> = { sent: OPEN, awaiting: OPEN, clarification: OPEN, quote_received: OPEN, declined: OPEN, expired_no_response: OPEN,
+  closed: ["sent", "cancelled"], draft: ["cancelled"] };
 const MSG: Record<string, string> = { closed: "Request closed to new quotes.", sent: "Request reopened for quotes.", cancelled: "Request cancelled." };
 
 /** Close a marketplace request to new quotes, reopen it, or cancel it. Quotes already received are kept. */

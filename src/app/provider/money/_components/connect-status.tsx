@@ -10,7 +10,7 @@ const STATE: Record<string, [string, "green" | "orange" | "red" | "grey" | "blue
 };
 
 /** Payout account status line (spec §29). Reads authoritative Stripe state synced by the webhook. */
-export async function ConnectStatus({ workspaceId, canManage }: { workspaceId: string; canManage: boolean }) {
+export async function ConnectStatus({ workspaceId, canManage, kind = "provider" }: { workspaceId: string; canManage: boolean; kind?: "provider" | "organizer" }) {
   const supabase = await createClient();
   const { data } = await supabase.from("connect_accounts" as never).select("verification_state,payouts_enabled,requirements_currently_due,requirements_past_due,disabled_reason").eq("workspace_id", workspaceId).maybeSingle();
   const a = data as Account | null;
@@ -19,6 +19,6 @@ export async function ConnectStatus({ workspaceId, canManage }: { workspaceId: s
   return <div className="pc-connect" role="status">
     <Chip tone={tone} dot>{label}</Chip>
     <small>{!a ? "Connect a Stripe account to receive payouts." : a.payouts_enabled ? "Payouts are sent to your Stripe account." : due ? `${due} item${due === 1 ? "" : "s"} needed by Stripe before payouts can start.` : "Payouts are paused until Stripe completes checks."}</small>
-    {canManage && (!a || !a.payouts_enabled) && <ConnectButton label={a ? "Continue with Stripe" : "Set up payouts"} />}
+    {canManage && (!a || !a.payouts_enabled) && <ConnectButton kind={kind} label={a ? "Continue with Stripe" : "Set up payouts"} />}
   </div>;
 }

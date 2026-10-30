@@ -17,7 +17,7 @@ export async function loadTicketSetup(sb: SupabaseClient, eventId: string): Prom
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const [{ data: tiers }, { data: codes }, { data: venue }, { data: ws }] = await Promise.all([
     sb.from("ticket_tiers").select("id,name,description,price,quantity,badge,color,kind,sold,status,sale_start,sale_end,order_limit").eq("event_id", e.id).order("sort"),
-    sb.from("discount_codes").select("id,code,kind,amount,valid_from,valid_until,max_uses,status").eq("event_id", e.id).neq("status", "disabled"),
+    sb.from("discount_codes").select("id,code,kind,amount,valid_from,valid_until,max_uses,status").eq("event_id", e.id).eq("purpose", "discount").neq("status", "disabled"),
     e.venue_listing_id ? sb.from("listings").select("capacity_max").eq("id", e.venue_listing_id).maybeSingle() : Promise.resolve({ data: null }),
     e.workspace_id ? sb.from("workspaces").select("payout_status").eq("id", e.workspace_id).maybeSingle() : Promise.resolve({ data: null }),
   ]);

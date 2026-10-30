@@ -1,0 +1,29 @@
+/* Gala·Dock lockup (src/components/brand/gala-logo.tsx). Proportions measured on the Account Dashboard design at 1536:
+   mark 44px, 13px gap, wordmark 120px wide (≈18.5px tall). Everything scales from --gd-h (the mark height). */
+.gd-lockup{--gd-h:44px;display:inline-flex;align-items:center;gap:calc(var(--gd-h)*.3);height:var(--gd-h);flex-shrink:0;line-height:0;vertical-align:middle}
+.gd-lockup>img.gd-lockup-mark{height:var(--gd-h);width:auto;max-width:none;display:block;margin:0;object-fit:contain}
+.gd-lockup>img.gd-lockup-word{height:calc(var(--gd-h)*.42);width:auto;max-width:none;display:block;margin:0;object-fit:contain}
+.gd-lockup.gd-light>img{filter:brightness(0) invert(1)}
+/* Phone: the mark alone, as in the PWA mocks (favicon G, no wordmark) — every header, auth card and checkout. Footers and
+   document previews opt out with .gd-keep-word. */
+@media(max-width:640px){.gd-lockup:not(.gd-keep-word)>img.gd-lockup-word{display:none}.lp-footer-brand .gd-lockup>img.gd-lockup-word{display:block}}
+/* The shared <Logo> (auth, landing, onboarding) sizes by its placement's font-size, as the old lockup image did. */
+/* Owner 2026-10-29: explicit px per breakpoint (the old 1.69em made the logo tiny wherever the placement's font-size was small).
+   Public standard: header mark 40–44px with the full lockup above 640px, 34px mark-only on phones; footer lockups 40px; auth cards below. */
+.logo .gd-lockup.logo-img{--gd-h:44px;display:inline-flex}
+.logo.small .gd-lockup.logo-img{--gd-h:40px}
+.logo.mark-only .gd-lockup.logo-img{--gd-h:34px}
+.lp .lp-header .logo .gd-lockup.logo-img{--gd-h:40px}
+.lp .lp-footer-brand .logo .gd-lockup.logo-img,.dir-footer .dir-footer-brand .gd-lockup{--gd-h:40px}
+.co-top .co-logo .gd-lockup,.pub-top .c-logo .gd-lockup{--gd-h:44px}
+/* Never squeezed by a flex/grid header or an img max-width rule. */
+.logo,.c-logo,.co-logo,.dir-footer-brand,.lp-footer-brand .logo{flex-shrink:0;min-width:max-content}
+.gd-lockup>img{max-width:none!important;min-width:0}
+@media(max-width:640px){
+  .logo .gd-lockup.logo-img,.lp .lp-header .logo .gd-lockup.logo-img,.co-top .co-logo .gd-lockup,.pub-top .c-logo .gd-lockup{--gd-h:34px}
+  .logo.mark-only .gd-lockup.logo-img{--gd-h:34px}
+}
+/* W10: auth cards (AUTH-001…008) — older globals.css rules hid the card logo (span opacity 0 + a background image that no longer applies). */
+.auth-page .auth-card>.logo{width:auto;height:auto;background:none;display:inline-flex}
+.auth-page .auth-card>.logo>.gd-lockup.logo-img{opacity:1;position:static;--gd-h:46px}
+@media(max-width:700px){.auth-page .auth-card>.logo>.gd-lockup.logo-img{--gd-h:38px}}

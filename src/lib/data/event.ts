@@ -1,4 +1,5 @@
 import "server-only";
+import { untyped } from "@/lib/workspace/db";
 import { notFound } from "next/navigation";
 import type { OrganizerCtx } from "./context";
 
@@ -17,15 +18,23 @@ export async function getProEvent(ctx: OrganizerCtx, id: string) {
 }
 
 /** Everything the five tabs need, loaded in parallel (each tab reads what it uses). */
+/** Q32: merges manager-only guest_care dietary needs into guest rows (empty for roles RLS does not allow). */
+function withCare<G extends { id: string }>(rows: G[], care: { guest_id: string; dietary: string | null }[]) {
+  const m = new Map(care.map(c => [c.guest_id, c.dietary ?? ""]));
+  return rows.map(g => ({ ...g, dietary: m.get(g.id) ?? "" }));
+}
+
 export async function loadEventData(ctx: OrganizerCtx, eventId: string, days = 30) {
   const sb = ctx.supabase;
   const since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 10);
-  const [tiers, items, programme, tasks, guests, shifts, payments, txs, incidents, promos, promoters, media, metrics, series, checkins, crew, invoices, codes, requests] = await Promise.all([
+  const [care, tiers, items, programme, tasks, guests, shifts, payments, txs, incidents, promos, promoters, media, metrics, series, checkins, crew, invoices, codes, requests] = await Promise.all([
+    // Q32: dietary needs live in guest_care (event owner + workspace owners/managers via RLS); other roles get none.
+    untyped(sb as never).from("guest_care").select("guest_id,dietary").eq("event_id", eventId) as unknown as PromiseLike<{ data: { guest_id: string; dietary: string | null }[] | null }>,
     sb.from("ticket_tiers").select("*").eq("event_id", eventId).order("sort"),
     sb.from("build_items").select("*").eq("event_id", eventId).order("sort"),
     sb.from("programme_items").select("*").eq("event_id", eventId).order("starts_at"),
     sb.from("tasks").select("*").eq("event_id", eventId).order("due_at", { ascending: true, nullsFirst: false }),
-    sb.from("guests").select("id,name,email,status,plus_one,tickets,group_name,dietary,invited_at,checked_in_at").eq("event_id", eventId).order("name"),
+    sb.from("guests").select("id,name,email,status,plus_one,tickets,group_name,invited_at,checked_in_at").eq("event_id", eventId).order("name"),
     sb.from("shifts").select("*").eq("event_id", eventId).order("starts_at"),
     ctx.canMoney ? sb.from("payments").select("*").eq("event_id", eventId).order("due_at") : Promise.resolve({ data: [] }),
     ctx.canMoney ? sb.from("transactions").select("*").eq("event_id", eventId).order("occurred_at", { ascending: false }) : Promise.resolve({ data: [] }),
@@ -62,7 +71,7 @@ export async function loadEventData(ctx: OrganizerCtx, eventId: string, days = 3
   const assigned = new Set(S.filter(s => s.crew_id && ["confirmed", "pending"].includes(s.status)).map(s => s.crew_id)).size;
   const crewNeeded = Math.max(assigned, S.reduce((s, x) => s + (x.headcount ?? 1), 0));
   return {
-    tiers: T, items: B, primary, programme: programme.data ?? [], tasks: tasks.data ?? [], guests: guests.data ?? [], shifts: S, crewMap,
+    tiers: T, items: B, primary, programme: programme.data ?? [], tasks: tasks.data ?? [], guests: withCare(guests.data ?? [], care.data ?? []), shifts: S, crewMap,
     payments: payments.data ?? [], txs: txs.data ?? [], incidents: incidents.data ?? [], promos: promos.data ?? [], promoters: promoters.data ?? [],
     rangeDays: days, media: media.data ?? [], metrics: metrics.data ?? [], series: (series.data ?? []) as { day: string; tickets: number; gross: number }[],
     checkins: checkins.data ?? [], invoices: invoices.data ?? [], codes: codes.data ?? [], requests: requests.data ?? [],

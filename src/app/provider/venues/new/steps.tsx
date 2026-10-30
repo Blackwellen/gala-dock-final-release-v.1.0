@@ -9,6 +9,7 @@ import { saveIdentity, saveCommercialStep, saveOperations } from "./actions";
 import { PhotoManager } from "../_components/photo-manager";
 import { publishListing } from "../../listings/actions";
 import { VenuePreview, RunCheck, Counted } from "./preview";
+import { optionsFor, resolveTerm } from "@/lib/master-data";
 
 type D = Record<string, unknown> & {
   type?: string; timezone?: string; address?: { line1?: string; line2?: string; city?: string; postcode?: string; country?: string }; geo?: { lat: number; lng: number } | null;
@@ -19,7 +20,10 @@ type D = Record<string, unknown> & {
   operations?: Record<string, string | boolean>; fnb?: Record<string, string | boolean>; suppliers?: Record<string, string>; access?: Record<string, string | boolean>;
   compliance?: { name: string; reference?: string; expires?: string; file?: string | null }[];
 };
-const TYPES = ["Event Space / Multi-Purpose", "Arena", "Conference Centre", "Hotel", "Restaurant / Bar", "Outdoor / Garden", "Studio", "Historic / Unique", "Other"];
+const TYPES = optionsFor("provider.venue_types");
+/** The type option for a stored value (details.type, else the listing category — older venues only have the category), matched by canonical key
+ *  so any spelling selects the right option; an unrecognised value is kept as its own option rather than silently replaced. */
+const typeOf = (v: string) => TYPES.find(o => o.key === resolveTerm("venue_type", v))?.label ?? v;
 const Toggle = ({ name, label, sub, on }: { name: string; label: string; sub?: string; on?: boolean }) =>
   <label className="vw-switch"><input type="checkbox" name={name} defaultChecked={!!on} /><i aria-hidden="true" /><span><b>{label}</b>{sub && <small>{sub}</small>}</span></label>;
 const Foot = ({ back, next, step }: { back?: string; next: string; step: number }) => <div className="vw-foot">
@@ -31,6 +35,7 @@ export function StepIdentity({ venue, next }: { venue: Listing | null; next: str
   const d = (venue?.details ?? {}) as D, a = d.address ?? {}, c = d.contact ?? {};
   const photos = venue ? [venue.image, ...(venue.gallery ?? [])].filter(Boolean) : [];
   const geo = d.geo ?? (venue?.lat != null && venue?.lng != null ? { lat: Number(venue.lat), lng: Number(venue.lng) } : null);
+  const type = typeOf(d.type || venue?.category || "") || TYPES[0].label;
   const goal = (g: string) => `/provider/agent?goal=${encodeURIComponent(`${g}${venue ? ` for ${venue.name}` : ""}`)}`;
   return <div className="vw vw-s1">
     <ActionForm action={saveIdentity.bind(null, venue?.id ?? null, next)} className="vw-s1-form">
@@ -38,7 +43,8 @@ export function StepIdentity({ venue, next }: { venue: Listing | null; next: str
         <div className="vw-grid2">
           <label>Venue name <i>*</i><input name="name" defaultValue={venue?.name ?? ""} required minLength={2} maxLength={100} /></label>
           <label>Timezone <i>*</i><select name="timezone" className="ws-select" defaultValue={d.timezone ?? "Europe/London"}><option value="Europe/London">Europe/London (UK)</option><option value="Europe/Dublin">Europe/Dublin (IE)</option></select></label>
-          <label>Venue type <i>*</i><select name="type" className="ws-select" defaultValue={d.type ?? TYPES[0]}>{TYPES.map(t => <option key={t}>{t}</option>)}</select></label>
+          <label>Venue type <i>*</i><select name="type" className="ws-select" defaultValue={type}>
+            {!TYPES.some(o => o.label === type) && <option>{type}</option>}{TYPES.map(o => <option key={o.key}>{o.label}</option>)}</select></label>
           <label>Contact person <i>*</i><input name="person" defaultValue={c.person ?? ""} required maxLength={80} /></label>
           <label className="vw-summary">Short summary <i>*</i><textarea name="summary" defaultValue={venue?.description ?? ""} required minLength={40} maxLength={500} rows={5} /></label>
           <div className="vw-stack">

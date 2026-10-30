@@ -57,7 +57,10 @@
 .ce-addmore b { display: block; font-size: 13px; } .ce-addmore small { font-size: 11.5px; color: var(--k-muted); }
 .ce-addmore-it { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--k-ink-2); min-width: 54px; }
 .ce-addmore-it svg { color: #5b6b99; } .ce-addmore-it small { font-size: 11px; white-space: nowrap; }
-.ce-addmore-hit { position: absolute; inset: 0; } .ce-addmore-hit .k-link { position: absolute; inset: 0; opacity: 0; }
+.ce-addmore-hit { position: absolute; inset: 0; }
+/* W13 P1: only the tile's own trigger is stretched. The old descendant selector also caught every .k-link inside the (non-portalled)
+   provider dialog — its "Browse the marketplace" link became an invisible full-screen layer that swallowed every click (Add went to /discover). */
+.ce-addmore-hit > .k-link { position: absolute; inset: 0; opacity: 0; }
 .ce-h3 { font-size: 17px; font-weight: 700; margin: 18px 0 10px; }
 .ce-sugg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 28px; gap: 10px; align-items: center; }
 .ce-sg { display: flex; align-items: center; gap: 10px; padding: 0 10px 0 0; border: 1px solid var(--k-line); border-radius: 10px; overflow: hidden; height: 62px; }
@@ -132,3 +135,58 @@
 .ce-meta > .ce-ontrack-c { margin-left: 0; flex: none; }
 .ce-meta b, .ce-meta small { white-space: nowrap; }
 @media (max-width: 1320px) { .ce-hero.compact .ce-meta, .ce-meta { gap: 22px; flex-wrap: wrap; row-gap: 8px; } }
+.ce-blockers { margin: 10px 0 0; font-size: 12px; color: #9a5800; line-height: 1.45; } .ce-blockers b { font-weight: 600; }
+/* W02 r2 responsive: below 900px the compact hero grows instead of clipping its meta row under the action buttons. */
+@media (max-width: 900px) { .ce-hero.compact { height: auto; min-height: 149px; flex-wrap: wrap; padding: 14px 16px; row-gap: 10px; } }
+
+/* W02 pass 4 — phone (≤480px), PWA #172–#176 / #190: every event tab opens with a plain title row (name, date · place, visibility
+   chip, compact Share + "…"), then a pill tab row, then the at-a-glance strip (guests · readiness ring · estimated cost). The
+   event profile (#176, "full") keeps its photo as a banner above the title. No dark overlay hero, no "Back to My Events" (the
+   app header's Back does that). */
+.ce-mstats { display: none; }
+@media (max-width: 480px) {
+  .c-root .ce-hero.compact, .c-root .ce-hero.full { height: auto; min-height: 0; margin: 0; padding: 0; background: transparent; border-radius: 0; overflow: visible;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 4px 10px; color: var(--k-ink); }
+  .c-root .ce-hero::after, .c-root .ce-hero .ce-thumb { display: none; }
+  .c-root .ce-hero.compact > .ce-hero-bg { display: none; }
+  .c-root .ce-hero.full > .ce-hero-bg { position: static; grid-column: 1 / -1; height: 150px; border-radius: 14px; margin-bottom: 6px; }
+  .c-root .ce-hero .ce-hero-text { padding: 0 !important; min-width: 0; }
+  .c-root .ce-hero h1 { color: var(--k-ink); font-size: 18px !important; margin: 0 0 2px !important; line-height: 1.25; }
+  .c-root .ce-hero .ce-chips { order: 2; margin-top: 4px; } .c-root .ce-hero .ce-chips .ce-chip.purple { display: none; }
+  .c-root .ce-hero .ce-chip { height: 20px !important; font-size: 10.5px !important; background: #fdecf3; border-color: #fbcfe0; color: #be185d; padding: 0 8px !important; }
+  .c-root .ce-hero .ce-hero-text { display: flex; flex-direction: column; }
+  .c-root .ce-hero .ce-meta { order: 1; display: flex; flex-direction: row; flex-wrap: wrap; gap: 2px 10px !important; color: var(--k-ink-2); }
+  .c-root .ce-hero .ce-meta > span { gap: 5px !important; }
+  .c-root .ce-hero .ce-meta svg { width: 13px; height: 13px; color: var(--k-muted); }
+  .c-root .ce-hero .ce-meta b { font-size: 11.5px !important; font-weight: 500 !important; color: var(--k-ink-2); }
+  .c-root .ce-hero .ce-meta small, .c-root .ce-hero .ce-meta > span:nth-child(3), .c-root .ce-hero .ce-ontrack, .c-root .ce-hero .ce-track, .c-root .ce-hero .ce-count { display: none !important; }
+  .c-root .ce-hero .ce-hero-right { margin: 0; padding: 0 !important; align-self: start; flex-direction: row; }
+  .c-root .ce-hero .ce-hero-right .ce-btn.ghost { display: none; }
+  .c-root .ce-hero .ce-hero-right .ce-btn { height: 32px !important; padding: 0 10px !important; font-size: 12px !important; }
+  .c-root .ce-hero .ce-hero-right .ce-more { width: 32px !important; height: 32px !important; background: #fff !important; border: 1px solid var(--k-line) !important; color: var(--k-ink) !important; }
+  .c-root .ce-tabs { height: auto; margin: 2px 0 0; padding: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; }
+  .c-root .ce-tabs .ce-back { display: none; }
+  .c-root .ce-tabcard { height: auto; padding: 3px; background: #eef2fa; border: 0; border-radius: 12px; box-shadow: none; overflow-x: auto; scrollbar-width: none; }
+  .c-root .ce-tablist { gap: 2px; height: auto; }
+  .c-root .ce-tab { height: 32px; padding: 0 11px; border-radius: 9px; font-size: 12px; white-space: nowrap; color: var(--k-ink-2); }
+  .c-root .ce-tab svg, .c-root .ce-tab[aria-current="page"]::after { display: none; }
+  .c-root .ce-tab[aria-current="page"] { background: var(--k-blue); color: #fff; font-weight: 600; }
+  .c-root .ce-mstats { display: grid; grid-template-columns: 1fr 1fr 1.25fr; align-items: center; background: #fff; border: 1px solid var(--k-line); border-radius: 12px; padding: 10px 12px; }
+  .c-root .ce-mstats > span { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--k-ink-2); }
+  .c-root .ce-mstats > span + span { border-left: 1px solid var(--k-line-2); padding-left: 10px; }
+  .c-root .ce-mstats b { display: block; font-size: 14px; color: var(--k-ink); line-height: 1.2; } .c-root .ce-mstats small { display: block; font-size: 10px; color: var(--k-muted); line-height: 1.25; }
+  .c-root .ce-mring { --v: 0; width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; background: radial-gradient(closest-side, #fff 72%, transparent 73%), conic-gradient(#10b981 calc(var(--v) * 1%), #e5e9f2 0); }
+  .c-root .ce { gap: 10px; }
+}
+@media (max-width: 480px) {
+  /* #176: package rows are one compact card each — 92px photo left; status, name, one fact line and price right. */
+  .c-root .ce-item { grid-template-columns: 92px minmax(0, 1fr) 28px; gap: 2px 10px; height: auto; min-height: 92px; padding: 0 6px 0 0; }
+  .c-root .ce-item-img { height: 100%; min-height: 92px; grid-row: 1 / span 2; }
+  .c-root .ce-item-img .ce-st { top: auto; bottom: 6px; left: 6px; right: auto; height: 20px; font-size: 10px; padding: 0 7px; }
+  .c-root .ce-item-body { padding-top: 8px; gap: 3px; }
+  .c-root .ce-item-name { font-size: 13px; }
+  .c-root .ce-item .ce-tags, .c-root .ce-item .ce-facts > span:not(:first-child), .c-root .ce-item .ce-rate { display: none; }
+  .c-root .ce-item .ce-facts { font-size: 11px; }
+  .c-root .ce-item-price { grid-column: 2; padding: 0 0 8px; border: 0; flex-direction: row; align-items: baseline; gap: 6px; }
+  .c-root .ce-item-price b { font-size: 13.5px; }
+}

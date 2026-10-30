@@ -12,9 +12,11 @@ import { rows, one, isUuid } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { publishListing } from "../../listings/actions";
 import { SpacesEditor } from "../_components/spaces-editor";
+import type { StructureMeta } from "../[id]/actions";
 import { PhotoManager } from "../_components/photo-manager";
 import type { MapEl } from "../_components/venue-map";
 import { StepIdentity, StepCommercial, StepOperations } from "./steps";
+import { ManagerOnly } from "../../_manager-only";
 
 export const metadata: Metadata = { title: "Add venue" };
 const STEPS = ["Identity & Location", "Spaces & Map", "Commercial & Booking Rules", "Operations", "Media & Details", "Review & Publish"];
@@ -28,6 +30,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
   const venueId = typeof sp.venue === "string" ? sp.venue : null;
   if (venueId && !isUuid(venueId)) notFound();
   const [ctx, listings] = await Promise.all([getProvider(), workspaceListings()]);
+  if (!ctx.can.manage) return <ManagerOnly title="Add Venue" back={{ href: "/provider/listings/venues", label: "Back to Venues" }} />;
   const venue = venueId ? listings.find(l => l.id === venueId && l.kind === "venue") ?? null : null;
   if (venueId && !venue) notFound();
   const step = venue ? Math.min(6, Math.max(1, Number(sp.step) || 1)) : 1;
@@ -35,13 +38,14 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
   const editing = !!venue?.published;
   const fixHref = (l: string) => l.startsWith("Payout") ? "/provider/money" : url(l.startsWith("Venue") ? 1 : l.includes("space") ? 2 : l.startsWith("Pricing") ? 3 : l.startsWith("Photos") ? 5 : 4);
 
-  const [spaces, structure, readinessRaw] = venue ? await Promise.all([
+  const [spaces, structure, latestStructure, readinessRaw] = venue ? await Promise.all([
     rows<{ id: string; name: string; status: string; indoor: boolean; image: string; capacity_standing: number | null; capacity_seated: number | null; rate_hourly: number | null; area_sqm: number | null;
       layouts: Record<string, number>; amenities: string[]; turnaround_minutes: number; min_hours: number; details: Record<string, unknown> }>(
       ctx.db.from("spaces").select("id,name,status,indoor,image,capacity_standing,capacity_seated,rate_hourly,area_sqm,layouts,amenities,turnaround_minutes,min_hours,details").eq("venue_id", venue.id).order("created_at", { ascending: false })),
     one<{ version: number; elements: MapEl[] }>(ctx.db.from("venue_structures").select("version,elements").eq("venue_id", venue.id).eq("status", "published").maybeSingle()),
+    one<{ version: number; status: string; elements: MapEl[]; calibration: StructureMeta["calibration"] | null; capacity_max: number | null; rule_pack: string | null }>(ctx.db.from("venue_structures").select("version,status,elements,calibration,capacity_max,rule_pack").eq("venue_id", venue.id).order("version", { ascending: false }).limit(1).maybeSingle()),
     ctx.db.rpc("listing_readiness", { p_listing: venue.id }).then(r => (r.data ?? { missing: [] }) as { missing: string[]; eligible: boolean }),
-  ]) : [[], null, { missing: [] as string[], eligible: false }];
+  ]) : [[], null, null, { missing: [] as string[], eligible: false }];
   const d = (venue?.details ?? {}) as Record<string, unknown>;
   const com = d.commercial as { cancellation?: unknown[] } | undefined;
   const readiness: [string, boolean][] = venue ? [
@@ -62,7 +66,8 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
       {venue && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
 
     {step === 1 && <StepIdentity venue={venue} next={venue ? url(2) : "/provider/venues/new?venue={venue}&step=2"} />}
-    {step === 2 && venue && <SpacesEditor venueId={venue.id} version={structure?.version ?? 0} elements={structure?.elements ?? []} geo={geo}
+    {step === 2 && venue && <SpacesEditor venueId={venue.id} version={structure?.version ?? 0} elements={latestStructure?.elements ?? structure?.elements ?? []} geo={geo}
+      latestVersion={latestStructure?.version ?? 0} meta={{ calibration: latestStructure?.calibration ?? undefined, capacity_max: latestStructure?.capacity_max ?? null, rule_pack: latestStructure?.rule_pack ?? "uk_default" }}
       spaces={spaces.map(s => ({ id: s.id, name: s.name, status: s.status, indoor: s.indoor, image: s.image, capacity_standing: s.capacity_standing, capacity_seated: s.capacity_seated, rate_hourly: s.rate_hourly,
         area_sqm: s.area_sqm, layouts: s.layouts ?? {}, amenities: s.amenities ?? [], turnaround_minutes: s.turnaround_minutes, min_hours: Number(s.min_hours), description: String(s.details?.description ?? "") }))}
       footer={<div className="vw-foot se-foot"><Link href={url(1)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 2 of 6</span>

@@ -7,6 +7,7 @@ import { useState, createContext, useContext, type ReactNode, type ButtonHTMLAtt
 import { ArrowRight, Check, X, Sparkles, ChevronDown, type LucideIcon } from "lucide-react";
 import regeneratedAssets from "@/lib/regenerated-assets.json";
 import assetDimensions from "@/lib/asset-dimensions.json";
+import { GalaLogo } from "@/components/brand/gala-logo";
 
 const ToastContext = createContext<(message: string) => void>(() => {});
 export const useToast = () => useContext(ToastContext);
@@ -20,10 +21,11 @@ export function Providers({ children }: { children: ReactNode }) {
   return <MotionConfig reducedMotion="user"><ToastContext.Provider value={notify}>{children}<AnimatePresence>{toast && <motion.div role="status" className="toast" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0, y: 20 }}><Check size={20} />{toast}<button aria-label="Dismiss notification" onClick={() => setToast("")}><X size={18} /></button></motion.div>}</AnimatePresence></ToastContext.Provider></MotionConfig>;
 }
 
-/** Official Gala·Dock wordmark (public/brand). `light` renders it white for dark backgrounds; `mark` shows the symbol only. */
+/** Gala·Dock lockup (G mark + purple wordmark, src/components/brand/gala-logo.tsx). Sized by each placement's font-size;
+ *  `light` renders it white for dark backgrounds; `mark` shows the symbol only. */
 export function Logo({ light = false, small = false, mark = false, href = "/" }: { light?: boolean; small?: boolean; mark?: boolean; href?: string }) {
   return <Link href={href} className={`logo ${light ? "light" : ""} ${small ? "small" : ""} ${mark ? "mark-only" : ""}`} aria-label="Gala Dock home">
-    <Image className="logo-img" src={mark ? "/brand/gala-dock-mark-trim.png" : "/brand/gala-dock-logo-trim.png"} alt="Gala·Dock" width={mark ? 116 : 431} height={115} sizes={mark ? "64px" : "260px"} priority />
+    <GalaLogo className="logo-img" markOnly={mark} />
   </Link>;
 }
 

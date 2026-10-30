@@ -76,7 +76,7 @@
 .adst-ro code{font-size:10.5px;background:#f6f9fe;border-radius:6px;padding:6px 8px;color:#3f4596;overflow-wrap:anywhere;text-transform:none}
 .adst-rail{display:grid;gap:10px;min-width:0}
 .adst-hist{padding:10px 12px}
-.adst-hist h2,.adst-sys h2,.adst-qa h2{font-size:14px}
+.adst-hist h2,.adst-sys h2,.adst-qa h2{font-size: var(--k-title-card)}
 .adst-hist ol{list-style:none;margin:0;padding:0 0 0 18px;display:grid;gap:12px;position:relative}
 .adst-hist ol::before{content:"";position:absolute;left:5px;top:6px;bottom:30px;width:1.5px;background:#cfe9dc}
 .adst-hist li{display:grid;grid-template-columns:minmax(0,1fr) 28px;gap:8px;position:relative}

@@ -6,6 +6,8 @@ import { Crumbs, Card, Chip, Empty, Tag } from "@/components/kit";
 import { SaveHeart } from "@/components/kit/client";
 import { MarketFilters, TypeChips, SortMenu, EventPicker, MarketMap } from "@/components/organizer/marketplace-client";
 import { money, dateShort, time, num } from "@/lib/format";
+import { serveSponsored } from "@/lib/ads/serve";
+import { SponsoredRow } from "@/components/ads/sponsored";
 
 export const metadata = { title: "Marketplace" };
 const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -45,6 +47,8 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   if (section === "saved") list = list.filter(l => savedKeys.has(`listing:${l.id}`));
   const fit = new Map(list.map(l => [l.id, fitFor(l, ev)]));
   const sort = str(sp.sort) || "recommended";
+  // Sponsored listings (Q23 'marketplace_top'): a separate labelled row above results; never mixed into the organic sort.
+  const mkAds = (await serveSponsored("marketplace_top", { city: str(sp.city) || null, category: str(sp.cat) && str(sp.cat) !== "all" ? str(sp.cat) : null })).filter(a => a.listing?.kind === (tab === "venues" ? "venue" : "service"));
   list.sort((a, b) => sort === "rating" ? b.rating - a.rating : sort === "price_asc" ? (a.price_from ?? 1e9) - (b.price_from ?? 1e9) : sort === "price_desc" ? (b.price_from ?? 0) - (a.price_from ?? 0) : sort === "capacity" ? (b.capacity_max ?? 0) - (a.capacity_max ?? 0) : sort === "response" ? a.response_hours - b.response_hours : fit.get(b.id)!.score - fit.get(a.id)!.score);
   const avail = await availabilityFor(ctx, list.map(l => l.id), ev);
   const cats = [...new Set((catsRaw ?? []).map(c => c.category).filter(Boolean))].sort();
@@ -75,6 +79,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       <div className={`mk-body ${view === "map" ? "full-map" : ""}`}>
         <div className="k-col" style={{ gap: 12, minWidth: 0 }}>
           <div className="k-between"><div className="k-row" style={{ gap: 12 }}><div className="k-seg solid">{([["cards", "Cards", LayoutGrid], ["list", "List", List], ["map", "Map", MapIcon]] as const).map(([k, l, I]) => <Link key={k} aria-current={(view === k) ? "page" : undefined} href={qs({ view: k === "cards" ? null : k })}><I size={14} />{l}</Link>)}</div><span className="k-row k-small k-muted" style={{ gap: 6 }}><RotateCw size={13} />{num(list.length)} {label} found</span></div><SortMenu value={sort} /></div>
+          <SponsoredRow items={mkAds} title="Sponsored" />
           {!list.length ? <Card><Empty icon={Search} title={`No ${label} match`} text="Try widening the location, capacity or price." /></Card>
             : view === "list" ? <Card flush><table className="k-table"><thead><tr><th>{tab === "venues" ? "Venue" : "Supplier"}</th><th>Location</th>{tab === "venues" ? <th>Capacity</th> : <th>Category</th>}<th>Rating</th><th>Response</th><th>Availability</th><th>Fit</th><th className="num">From</th><th /></tr></thead>
               <tbody>{list.map(l => { const a = avail.get(l.id)!; const f = fit.get(l.id)!; return <tr key={l.id}><td><Link href={href(l)} className="k-row" style={{ gap: 10 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || "/assets/gd/covers/summer-sessions.webp"} alt="" className="k-thumb sm" /><b className="k-strong">{l.name}</b>{l.verified && <BadgeCheck size={14} className="k-blue" />}</Link></td><td>{l.city}</td><td>{tab === "venues" ? num(l.capacity_max) : l.category}</td><td><span className="k-row" style={{ gap: 4 }}><Star size={12} fill="#f59e0b" color="#f59e0b" />{l.rating.toFixed(1)} ({l.review_count})</span></td><td>{l.response_hours}h</td><td><Chip tone={AV[a.state]}>{a.label}</Chip></td><td title={f.reasons.join(" · ")}><b>{f.score}%</b></td><td className="num">{money(l.price_from)}</td><td><Link className="k-btn primary sm" href={reqHref(l)}>Request</Link></td></tr>; })}</tbody></table></Card>

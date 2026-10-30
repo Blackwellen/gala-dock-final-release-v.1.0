@@ -25,7 +25,9 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
   const sp = await props.searchParams;
   const str = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
   const tab = ["people", "availability", "assignments"].includes(str("tab")) ? str("tab") : "people";
-  const { crew, shifts, blocks, jobs, conflicts, unstaffed } = await loadTeam();
+  const { ctx, crew, shifts, blocks, jobs, conflicts, unstaffed } = await loadTeam();
+  // Team management is owner/manager (provider_save_crew, provider_set_crew_status, provider_request_availability); invites are owner-only.
+  const manage = ctx.can.manage, owner = ctx.role === "owner";
   const now = requestTime();
   const active = crew.filter(c => c.status !== "deactivated");
   const state = new Map(active.map(c => [c.id, crewState(c, shifts, blocks, now)]));
@@ -35,7 +37,6 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
   const dow = (new Date(anchor + 12 * 36e5).getUTCDay() + 6) % 7, weekStart = startOfDay(-dow, anchor);
   const days = Array.from({ length: 7 }, (_, i) => startOfDay(i, weekStart));
   const wk = (o: number) => new Date(startOfDay(o * 7, weekStart) + 12 * 36e5).toISOString().slice(0, 10);
-  const inDay = (a: string, b: string, d: number) => new Date(a).getTime() < d + 864e5 && new Date(b).getTime() > d;
   const q = str("q").toLowerCase(), role = str("role"), status = str("status"), skill = str("skill"), loc = str("loc");
   const list = active.filter(c => (!q || `${c.name} ${c.role} ${c.skills.join(" ")}`.toLowerCase().includes(q)) && (!role || c.role === role) && (!loc || c.location === loc)
     && (!skill || c.skills.includes(skill)) && (!status || (status === "available" ? state.get(c.id) === "available" : status === "busy" ? state.get(c.id)?.startsWith("on_assignment") : state.get(c.id) === "unavailable")));
@@ -50,17 +51,19 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
   const nextShift = (id: string) => shifts.find(s => s.crew_id === id && new Date(s.ends_at).getTime() > now);
   const opts = (vals: string[], label: string) => [{ value: "", label }, ...[...new Set(vals.filter(Boolean))].sort().map(v => ({ value: v, label: v }))];
   const base = "/provider/team";
-  const action = str("action");
+  const action = manage ? str("action") : "";
+  const noTeam = unstaffed.filter(j => !shifts.some(s => s.job_id === j.id));
 
   return <div className="pt">
     <header className="ws-page-head pt-head">
       <div><h1>Team</h1><p>Manage your staff and resource availability for seamless event delivery.</p></div>
-      <div className="ws-page-actions">
-        <Link href={`${base}?action=add&member_type=member`} className="ws-btn outline"><UserPlus aria-hidden="true" />Invite member</Link>
+      {manage && <div className="ws-page-actions">
+        {/* A login invite is a real workspace_invites row (Settings → Team & access, owner only); the crew dialog below never grants access. */}
+        {owner && <Link href="/provider/settings?tab=team" className="ws-btn outline"><UserPlus aria-hidden="true" />Invite member</Link>}
         <Link href={`${base}?action=request`} className="ws-btn outline"><CalendarClock aria-hidden="true" />Request availability</Link>
         <MenuButton label="Add team member" className="ws-btn primary pt-add" trigger={<><Plus aria-hidden="true" />Add team member<ChevronDown aria-hidden="true" /></>} entries={[
-          { kind: "link", label: "Add staff / crew", href: `${base}?action=add` }, { kind: "link", label: "Invite a workspace user", href: `${base}?action=add&member_type=member` }]} />
-      </div>
+          { kind: "link", label: "Add staff / crew", href: `${base}?action=add` }, ...(owner ? [{ kind: "link" as const, label: "Invite a workspace user", href: "/provider/settings?tab=team" }] : [])]} />
+      </div>}
     </header>
     <Tabs base={base} active={tab} tabs={[{ key: "people", label: "People" }, { key: "availability", label: "Availability" }, { key: "assignments", label: "Assignments" }]} />
 
@@ -100,8 +103,8 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
               return <tr key={c.id}><td><Link href={`${base}/${c.id}`} className="pt-name"><Avatar src={c.avatar} name={c.name} size={30} /><b>{c.name}</b></Link></td><td>{c.role}</td>
                 <td><span className="pt-skills">{c.skills.slice(0, 3).map(s => <i key={s}>{s}</i>)}</span></td><td>{c.location || "—"}</td><td><span className={`pt-type ${emp}`}>{EMP[emp]}</span></td>
                 <td><span className={`pt-st ${st[1]}`}>{st[0]}</span></td><td>{nx ? <span className="pt-asg"><b>{nx.title}</b><small>{day(nx.starts_at, { weekday: "short", day: "numeric", month: "short" })}</small></span> : "–"}</td>
-                <td><RowMenu label={`Actions for ${c.name}`} entries={[{ kind: "link", label: "View profile", href: `${base}/${c.id}` }, { kind: "link", label: "Request availability", href: `${base}?action=request&crew=${c.id}` },
-                  { kind: "action", label: "Deactivate", danger: true, confirm: `Deactivate ${c.name}? Their history is kept.`, run: setCrewStatus.bind(null, c.id, "deactivated") }]} /></td></tr>; })}</tbody></table>
+                <td><RowMenu label={`Actions for ${c.name}`} entries={[{ kind: "link", label: "View profile", href: `${base}/${c.id}` }, ...(manage ? [{ kind: "link" as const, label: "Request availability", href: `${base}?action=request&crew=${c.id}` },
+                  { kind: "action" as const, label: "Deactivate", danger: true, confirm: `Deactivate ${c.name}? Their history is kept.`, run: setCrewStatus.bind(null, c.id, "deactivated") }] : [])]} /></td></tr>; })}</tbody></table>
         </section>}
 
         {tab === "assignments" && <section className="ws-panel pt-members"><h2>Upcoming assignments</h2>
@@ -123,23 +126,23 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
           {upcomingJobs.length ? <ul>{upcomingJobs.map(j => <li key={j.id}><Link href={`/provider/bookings/${j.id}`}><Thumb src={j.image} w={56} h={46} /><span><b>{j.event_name}</b><small>{day(j.starts_at, { weekday: "short", day: "numeric", month: "short" })}, {time(j.starts_at)} – {time(j.ends_at)}</small>
             <small>{shifts.filter(s => s.job_id === j.id && s.crew_id).length} team member{shifts.filter(s => s.job_id === j.id && s.crew_id).length === 1 ? "" : "s"}</small></span><ChevronRight aria-hidden="true" /></Link></li>)}</ul>
             : <p className="pv-none">Nothing scheduled.</p>}
-          {unstaffed.filter(j => !shifts.some(s => s.job_id === j.id)).length > 0 && <p className="pt-warn"><CircleAlert aria-hidden="true" />{unstaffed.filter(j => !shifts.some(s => s.job_id === j.id)).length} upcoming booking(s) have no team assigned.</p>}</section>
+          {noTeam.length > 0 && <Link className="pt-warn" href={`/provider/bookings/${noTeam[0].id}`}><CircleAlert aria-hidden="true" />{noTeam.length === 1 ? `${noTeam[0].event_name} has no team assigned — assign now` : `${noTeam.length} upcoming bookings have no team assigned — start with ${noTeam[0].event_name}`}</Link>}</section>
       </aside>
     </div>
 
     {(action === "add" || action === "request") && <div className="ws-dialog-backdrop">
       {action === "add" ? <ActionForm action={saveCrew.bind(null, null)} className="ws-dialog pt-dialog">
-        <div className="ws-dialog-head"><h2>{str("member_type") === "member" ? "Invite a workspace user" : "Add team member"}</h2><Link href={base} aria-label="Close"><X aria-hidden="true" /></Link></div>
-        <input type="hidden" name="member_type" value={str("member_type") === "member" ? "member" : "crew"} />
+        <div className="ws-dialog-head"><h2>Add team member</h2><Link href={base} aria-label="Close"><X aria-hidden="true" /></Link></div>
+        <input type="hidden" name="member_type" value="crew" />
         <div className="pt-form">
           <label>Full name<input name="name" required minLength={2} maxLength={80} /></label><label>Role<input name="role" placeholder="e.g. Bar Supervisor" maxLength={60} /></label>
-          <label>Email<input name="email" type="email" maxLength={120} required={str("member_type") === "member"} /></label><label>Phone<input name="phone" inputMode="tel" maxLength={40} /></label>
+          <label>Email<input name="email" type="email" maxLength={120} /></label><label>Phone<input name="phone" inputMode="tel" maxLength={40} /></label>
           <label>Employment type<select name="employment" className="ws-select"><option value="employee">Employee</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="external">External</option></select></label>
           <label>Location<input name="location" defaultValue="London" maxLength={60} /></label>
           <label>Hourly rate (£)<input name="hourly_rate" type="number" min={0} step={0.5} /></label><label>Start date<input name="start_date" type="date" /></label>
           <label className="wide">Skills <small>comma separated</small><input name="skills" placeholder="Bar Management, Mixology, Customer Service" /></label>
         </div>
-        {str("member_type") === "member" && <p className="pt-note">They’ll get access once they accept the invite from Settings → Team access. Until then they appear here as staff.</p>}
+        <p className="pt-note">Adds them to schedules and assignments. It doesn’t give them a Gala Dock login{owner ? <> — <Link href="/provider/settings?tab=team">invite them from Settings → Team &amp; access</Link> for that</> : ""}.</p>
         <div className="ws-dialog-actions"><Link href={base} className="ws-btn outline">Cancel</Link><button className="ws-btn primary">Add member</button></div></ActionForm>
         : <ActionForm action={requestAvailability} className="ws-dialog pt-dialog">
           <div className="ws-dialog-head"><h2>Request availability</h2><Link href={base} aria-label="Close"><X aria-hidden="true" /></Link></div>

@@ -1,0 +1,60 @@
+/* Public free/busy calendar (venue + service pages) and the event "Getting there" section. Phone first; shared --k-* tokens; no zoom. */
+.la-head h2 { margin: 0; }
+.la-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; min-width: 0; }
+.la-top { display: flex; flex-direction: column; gap: 12px; }
+.la-note { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 13px; line-height: 1.5; color: var(--k-ink-2); }
+.la-note svg { flex-shrink: 0; margin-top: 2px; color: var(--k-blue); }
+.la-space { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--k-muted); }
+.la-space select { height: var(--k-input-h, 40px); padding: 0 10px; border: 1px solid var(--k-line); border-radius: 10px; background: #fff; color: var(--k-ink); font: inherit; font-size: 14px; font-weight: 500; }
+.la-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.la-nav h3 { display: inline-flex; gap: 8px; align-items: center; margin: 0; font-size: 16px; font-weight: 700; color: var(--k-ink); }
+.la-navbtn { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--k-line); border-radius: 10px; background: #fff; color: var(--k-ink); cursor: pointer; }
+.la-navbtn:disabled { opacity: .4; cursor: default; }
+.la-navbtn:focus-visible, .la-btn:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 2px; }
+.la-grid { display: flex; flex-direction: column; gap: 4px; }
+.la-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.la-wk span { text-align: center; font-size: 11.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--k-muted); padding: 2px 0; }
+.la-cell { display: block; min-width: 0; }
+.la-btn, .la-out { position: relative; width: 100%; aspect-ratio: 1 / 1; min-height: 40px; max-height: 64px; display: grid; place-items: center; border-radius: 10px; border: 1px solid transparent; font: inherit; font-size: 14px; font-weight: 600; }
+.la-btn { cursor: pointer; background: var(--k-soft, #f6f7fb); color: var(--k-ink); }
+.la-btn i { position: absolute; left: 50%; bottom: 6px; width: 6px; height: 6px; margin-left: -3px; border-radius: 999px; }
+.la-btn.s-free { background: var(--k-green-soft, #e7f7ef); border-color: color-mix(in srgb, var(--k-green, #0e9f6e) 30%, transparent); }
+.la-btn.s-free i, .la-legend .s-free { background: var(--k-green, #0e9f6e); }
+.la-btn.s-limited { background: var(--k-amber-soft, #fff4e0); border-color: color-mix(in srgb, var(--k-amber, #d97706) 30%, transparent); }
+.la-btn.s-limited i, .la-legend .s-limited { background: var(--k-amber, #d97706); }
+.la-btn.s-booked { background: var(--k-red-soft, #fdecec); color: var(--k-muted); text-decoration: line-through; cursor: not-allowed; }
+.la-btn.s-booked i, .la-legend .s-booked { background: var(--k-red, #dc2626); }
+.la-btn.s-closed { background: transparent; border-color: var(--k-line); color: var(--k-muted-2, #9aa1b2); cursor: not-allowed; }
+.la-btn.s-closed i, .la-legend .s-closed { background: var(--k-line-2, #c9cedb); }
+.la-btn.on { border-color: var(--k-blue); box-shadow: 0 0 0 2px var(--k-blue); }
+.la-btn:not([aria-disabled="true"]):hover { border-color: var(--k-blue); }
+.la-out { color: var(--k-muted-2, #9aa1b2); font-weight: 500; }
+.la-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12.5px; color: var(--k-ink-2); }
+.la-legend li { display: inline-flex; gap: 6px; align-items: center; }
+.la-legend i { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+.la-legend small { color: var(--k-muted); }
+.la-pick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 24px; font-size: 13.5px; color: var(--k-ink); }
+.la-pick svg { color: var(--k-green, #0e9f6e); }
+.la-err { margin: 0; font-size: 13px; color: var(--k-red); }
+.pl-picked { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 10px; background: var(--k-blue-soft, #eef3ff); font-size: 13px; color: var(--k-ink); }
+.pl-picked button { border: 0; background: none; color: var(--k-blue); font: inherit; font-weight: 600; cursor: pointer; }
+@media (min-width: 720px) {
+  .la-card { padding: 20px 22px; }
+  .la-top { flex-direction: row; justify-content: space-between; align-items: flex-start; }
+  .la-space { min-width: 220px; }
+  .la-row, .la-grid { gap: 6px; }
+}
+@media (min-width: 1100px) { .la-card { max-width: 760px; } }
+
+/* Event page + ticket page: Getting there. */
+.gt { display: flex; flex-direction: column; gap: 14px; }
+.gt h2 { margin: 0; }
+.gt-g { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, max(260px, calc((100% - 24px) / 3))), 1fr)); gap: 12px; }   /* sized by its container: at most 3 columns, side card = 1 */
+.gt-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border: 1px solid var(--k-line); border-radius: 12px; min-width: 0; }
+.gt-item > span { width: 36px; height: 36px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; background: var(--k-blue-soft, #eef3ff); color: var(--k-blue); }
+.gt-item h3 { margin: 0 0 4px; font-size: 14.5px; font-weight: 700; color: var(--k-ink); }
+.gt-item p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--k-ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.gt-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; color: var(--k-ink-2); }
+.gt-list b { color: var(--k-ink); font-weight: 650; } .gt-list small { display: block; color: var(--k-muted); font-size: 12.5px; }
+.gt-acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.gt-foot { margin: 0; font-size: 12.5px; color: var(--k-muted); }

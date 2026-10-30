@@ -61,7 +61,7 @@ test.describe("venue hire, BEO, food & drink", () => {
     expect(c2).toEqual([]);
     await db.from("availability_blocks").insert({ workspace_id: ws, listing_id: venue, space_id: hall, kind: "maintenance", starts_at: at(day + 1, 0), ends_at: at(day + 2, 0), note: "Floor sanding" });
     const { data: c3 } = await orgC.rpc("space_conflicts", { p_space: hall, p_starts: at(day + 1, 10), p_ends: at(day + 1, 12) });
-    expect((c3 as { level: string; reason: string }[])[0]).toMatchObject({ level: "hard", reason: "Maintenance: Floor sanding" });
+    expect((c3 as { level: string; reason: string }[])[0]).toMatchObject({ level: "hard", reason: "Maintenance" }); // Q01: the provider's private note is redacted for other workspaces
   });
 
   test("§61 venue hold names space, window, expiry and blocking level; hard holds block others", async () => {

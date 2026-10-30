@@ -3,13 +3,13 @@
 import { useState } from "react";
 
 /** Starts or resumes Stripe-hosted payout onboarding (no bank details touch Gala Dock). */
-export function ConnectButton({ label }: { label: string }) {
+export function ConnectButton({ label, kind = "provider" }: { label: string; kind?: "provider" | "organizer" }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function go() {
     setBusy(true); setError("");
     try {
-      const res = await fetch("/api/payouts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "provider", step: 4 }) });
+      const res = await fetch("/api/payouts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, step: 4, from: "money" }) });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Couldn’t open Stripe."); setBusy(false); return; }
       window.location.assign(data.url);

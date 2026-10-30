@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { untyped, one, type Db } from "@/lib/workspace/db";
 
 export const adminPermissions = ["support", "trust", "commerce", "users", "workspaces", "events", "marketplace", "tickets",
-  "partners", "settings", "agent_ops", "analytics", "audit", "support.break_glass_conversation.read"] as const;
+  "partners", "settings", "agent_ops", "analytics", "audit", "privacy", "support.break_glass_conversation.read"] as const;
 export type AdminPermission = typeof adminPermissions[number];
 
 export type AdminContext = { db: Db; userId: string; name: string; title: string; avatar: string; permissions: Set<AdminPermission> };

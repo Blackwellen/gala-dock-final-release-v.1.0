@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { readFile } from "node:fs/promises";
+import { PDFDocument } from "pdf-lib";
 import { admin, BASE, cleanup, createUser, login, seedWorkspace, signedIn } from "../phase1/helpers";
 
 // Media Studio: permissions, optimistic concurrency, versions, template publishing/stripping, community moderation, editor UI.
@@ -81,6 +83,24 @@ test.describe("media studio", () => {
     // Library lists it.
     await page.goto(`${BASE}/organizer/media`);
     await expect(page.getByText("UI design")).toBeVisible();
+  });
+  test("mobile Studio exports real PNG dimensions and a readable PDF after editing", async ({ page }) => {
+    const ca = await signedIn(a.email) as unknown as SupabaseClient;
+    const created = await ca.rpc("create_design", { p_workspace: wsA, p_event: ev, p_title: "Export fixture", p_document: doc("Export fixture") });
+    expect(created.error).toBeNull();
+    await page.setViewportSize({ width: 390, height: 844 }); await login(page, a.email, `/studio/${created.data}`);
+    await expect(page.getByLabel("Design name")).toHaveValue("Export fixture");
+    await page.getByRole("button", { name: "Export", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Export", exact: true }); await expect(dialog).toBeVisible();
+    for (const format of ["png", "pdf"]) {
+      await dialog.getByRole("combobox", { name: /Format/ }).selectOption(format);
+      const pending = page.waitForEvent("download", { timeout: 60_000 }); await dialog.getByRole("button", { name: "Download", exact: true }).click();
+      const download = await pending, file = await download.path(); expect(file).toBeTruthy(); const bytes = await readFile(file!);
+      if (format === "png") { expect(bytes.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])); expect(bytes.readUInt32BE(16)).toBe(1080); expect(bytes.readUInt32BE(20)).toBe(1080); }
+      else { expect(bytes.subarray(0, 5).toString()).toBe("%PDF-"); expect((await PDFDocument.load(bytes)).getPageCount()).toBe(1); }
+      await expect(dialog.getByRole("button", { name: "Download", exact: true })).toBeEnabled();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   });
   test("agent drafts an event poster as the human, never for another workspace", async () => {
     const r = await db.rpc("agent_invoke", { p_actor: a.id, p_workspace: wsA, p_tool: "media.event_poster", p_args: { event_id: ev, document: doc("{{event.name}}"), title: "Agent poster" } });

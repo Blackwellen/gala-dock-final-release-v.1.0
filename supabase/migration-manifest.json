@@ -1,0 +1,432 @@
+{
+  "reviewed": [
+    {
+      "file": "202610291052_admin_events_page.sql",
+      "sha256": "8107f10538061826ee55ca64640f9909a38f3e9eac2cf7648c04df1aaa91a33b",
+      "lane": "A",
+      "reviewer": "lane-A-opus",
+      "reviewedAt": "2026-10-29T21:23:54.029Z",
+      "exercise": "scripts/db/exercises/202610291052_admin_events_page.sql",
+      "waivers": [],
+      "rollback": "drop function public.admin_events_page(jsonb, text, integer, jsonb); page falls back to previous commit",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293029_analytics_warehouse.sql",
+      "sha256": "9aa338c9fa62da7d61de77bcc35d05e203b758d5549e36f92a00daabadf81094",
+      "lane": "C",
+      "reviewer": "lane-C-agent",
+      "reviewedAt": "2026-10-29T10:19:04.816Z",
+      "exercise": null,
+      "waivers": [],
+      "rollback": "see docs/release/governance.md (Q35-Q37 family)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610293030_experiments.sql",
+      "sha256": "673a7c87cfe84a07e4d86a3c5dfced606824fa70585c08c45447778458829845",
+      "lane": "C",
+      "reviewer": "lane-C-agent",
+      "reviewedAt": "2026-10-29T10:19:04.986Z",
+      "exercise": null,
+      "waivers": [],
+      "rollback": "see docs/release/governance.md (Q35-Q37 family)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610293031_push_devices.sql",
+      "sha256": "650082159a5c7df5a23450a621be3956da24f1ff04a2a298caa6015eaf2733e1",
+      "lane": "C",
+      "reviewer": "lane-C-agent",
+      "reviewedAt": "2026-10-29T10:19:05.182Z",
+      "exercise": null,
+      "waivers": [],
+      "rollback": "see docs/release/governance.md (Q35-Q37 family)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610293032_lifecycle_service_override_required.sql",
+      "sha256": "c8aefca26385198770a22528f46ce11db2c8fbf3462b7f09349eb9a9cf7bd5f5",
+      "lane": "C",
+      "reviewer": "agent-C-opus",
+      "reviewedAt": "2026-10-29T10:44:38.253Z",
+      "exercise": "scripts/db/exercises/202610293032_lifecycle_service_override_required.sql",
+      "waivers": [],
+      "rollback": "re-apply trg_event_lifecycle_row_guard from 202610293026 (log instead of refuse); helpers inert without callers",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293033_q45_design_active_content_guard.sql",
+      "sha256": "c02121b83a5f3e9989ff29e6f623d560b37e1c3cd7352e36b1432d66634e1480",
+      "lane": "C",
+      "reviewer": "lane-c-q45",
+      "reviewedAt": "2026-10-29T14:37:38.005Z",
+      "exercise": "scripts/db/exercises/202610293033_q45_design_active_content_guard.sql",
+      "waivers": [],
+      "rollback": "drop trigger gd_q45_active_content on designs, design_versions, design_templates, design_elements, venue_maps, venue_structures",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293034_q45_admin_powers_require_aal2.sql",
+      "sha256": "4abfa1bd0ac1c5c224438ce857a99b2ed64b1bfe71c01b6a5f1633ff437936dc",
+      "lane": "C",
+      "reviewer": "lane-c-q45",
+      "reviewedAt": "2026-10-29T14:49:17.533Z",
+      "exercise": "scripts/db/exercises/202610293034_q45_admin_powers_require_aal2.sql",
+      "waivers": [],
+      "rollback": "re-create has_admin_permission/is_platform_admin (202610130001), admin_mfa_required + admin_require (202610292001)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293035_q45_ticket_lookup_indexes.sql",
+      "sha256": "14d71f0b44067ff3976a32abbe538632bd1cc273744b891d2368f6153c1c782c",
+      "lane": "C",
+      "reviewer": "lane-c-q45",
+      "reviewedAt": "2026-10-29T15:04:00.818Z",
+      "exercise": "scripts/db/exercises/202610293035_q45_ticket_lookup_indexes.sql",
+      "waivers": [],
+      "rollback": "drop index if exists public.tickets_order_ref_idx, public.tickets_attendee_email_idx, public.check_ins_event_idx",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293036_waitlist_skip_seller_not_ready.sql",
+      "sha256": "a58dfe5e0ba17f6d68b1f9803fddf224bafb361c15927f8034f1242d17d6c290",
+      "lane": "C",
+      "reviewer": "lane-c",
+      "reviewedAt": "2026-10-29T15:27:27.442Z",
+      "exercise": "scripts/db/exercises/202610293036_waitlist_skip_seller_not_ready.sql",
+      "waivers": [],
+      "rollback": "re-apply previous notify_waitlists body (identical minus the readiness predicate)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610293037_calendar_window_timezone_fast_check.sql",
+      "sha256": "8f95393d872d7062ffc383daf1773ad0ee19227c20300a2c49a27df3569ffeae",
+      "lane": "C",
+      "reviewer": "lane-c",
+      "reviewedAt": "2026-10-29T15:33:48.849Z",
+      "exercise": "scripts/db/exercises/202610293037_calendar_window_timezone_fast_check.sql",
+      "waivers": [],
+      "rollback": "re-apply previous calendar_window body (pg_timezone_names check); timezone_valid may stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294060_public_event_extras.sql",
+      "sha256": "b8d7c3f4c3cc006e30ac36b6804d5fa13981df12ee4c355925166ff3f3e8b564",
+      "lane": "C",
+      "reviewer": "lane-c-public-event",
+      "reviewedAt": "2026-10-29T19:24:05.478Z",
+      "exercise": "scripts/db/exercises/202610294060_public_event_extras.sql",
+      "waivers": [],
+      "rollback": "drop function public.public_event_extras(uuid) (new, no dependants)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294061_menus_anon_read.sql",
+      "sha256": "4e55b434f277d2e76a64be0d33d199d42ecdaaf10bdacb0c92d26eeac42b70f6",
+      "lane": "C",
+      "reviewer": "lane-c-public-listing",
+      "reviewedAt": "2026-10-29T19:36:00.175Z",
+      "exercise": "scripts/db/exercises/202610294061_menus_anon_read.sql",
+      "waivers": [],
+      "rollback": "alter policy menus_write/menu_sections_write/menu_items_write ... to public",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294062_public_role_policy_scope.sql",
+      "sha256": "3892c38403c685d3fbd88c5531741ad13935966e24f118b5fa72422dbdfa155a",
+      "lane": "C",
+      "reviewer": "lane-c-public-event",
+      "reviewedAt": "2026-10-29T20:04:03.305Z",
+      "exercise": "scripts/db/exercises/202610294062_public_role_policy_scope.sql",
+      "waivers": [],
+      "rollback": "alter policy <each> to public; drop policy the five *_anon_read",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294063_party_logos.sql",
+      "sha256": "f9c27a245967b4811c6f5df1751b9108729de1617df79e79b464ca35352c5ff4",
+      "lane": "C",
+      "reviewer": "lane-c-public-event",
+      "reviewedAt": "2026-10-29T20:13:39.975Z",
+      "exercise": "scripts/db/exercises/202610294063_party_logos.sql",
+      "waivers": [],
+      "rollback": "drop function party_set_logo; restore 4060 public_event_extras; column left in place (additive)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294080_public_listing_availability.sql",
+      "sha256": "b61c45f06f09a6c606f204b84492ae4bdf72d416e5dc7cc497059d012f293c93",
+      "lane": "D",
+      "reviewer": "lane-d-public-availability",
+      "reviewedAt": "2026-10-29T20:17:09.011Z",
+      "exercise": "scripts/db/exercises/202610294080_public_listing_availability.sql",
+      "waivers": [],
+      "rollback": "drop function public.public_listing_availability(uuid,date,date,uuid) (new, no dependants); drop index if exists public.build_items_listing_held_idx",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294081_public_event_getting_there.sql",
+      "sha256": "622a6233d09146baebd4f51035982fa09a8f8d7b1b2d250e3ba79303fc06f192",
+      "lane": "D",
+      "reviewer": "lane-d-getting-there",
+      "reviewedAt": "2026-10-29T20:17:09.163Z",
+      "exercise": "scripts/db/exercises/202610294081_public_event_getting_there.sql",
+      "waivers": [],
+      "rollback": "drop functions public_event_getting_there(uuid) / event_getting_there_save(uuid,jsonb) (new); public_page columns default false may stay (unused)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294082_public_listing_availability_related_spaces.sql",
+      "sha256": "8ca5bff142bbb1484c4b040352c82da0f39f1e3e2d7dcc67efc0eafbff8fe55f",
+      "lane": "D",
+      "reviewer": "lane-d-public-availability",
+      "reviewedAt": "2026-10-29T20:29:57.422Z",
+      "exercise": "scripts/db/exercises/202610294082_public_listing_availability_related_spaces.sql",
+      "waivers": [],
+      "rollback": "re-apply the 202610294080 body (same signature)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610294083_event_getting_there_private_notes.sql",
+      "sha256": "f4293a506154d3a3d03422269f35e3255494dbc4a1e5d008f87f8ac96d0eac11",
+      "lane": "D",
+      "reviewer": "lane-d-getting-there",
+      "reviewedAt": "2026-10-29T20:43:49.735Z",
+      "exercise": "scripts/db/exercises/202610294083_event_getting_there_private_notes.sql",
+      "waivers": [],
+      "rollback": "re-apply 202610294081 function bodies; table may stay (notes copy back: update events set settings = settings || jsonb_build_object('getting_there', notes || jsonb_build_object('public', public)) from event_getting_there)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610294084_events_public_projection.sql",
+      "sha256": "7d69974314d557301b7fa84b7e132fd69d943adfaca7568d1dc4183cf38cc9a2",
+      "lane": "D",
+      "reviewer": "lane-d-events-exposure",
+      "reviewedAt": "2026-10-29T20:57:34.743Z",
+      "exercise": "scripts/db/exercises/202610294084_events_public_projection.sql",
+      "waivers": [],
+      "rollback": "drop view public.events_public; drop trigger events_zz_public_settings on public.events; drop functions event_public_settings/events_public_settings_sync/event_is_public; public_settings column may stay (unused)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610294086_fixture_purge_fk_sweep.sql",
+      "sha256": "e4df61105a5b909e1b8e952ca0baac22353d3c5701cc2f7bba74e1c4d45ec7ac",
+      "lane": "D",
+      "reviewer": "lane-d-fixture-purge",
+      "reviewedAt": "2026-10-29T22:18:03.300Z",
+      "exercise": "scripts/db/exercises/202610294086_fixture_purge_fk_sweep.sql",
+      "waivers": [],
+      "rollback": "re-apply the 202610294031 admin_purge_test_workspaces body (same signature)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610295001_stripe_mode_separation.sql",
+      "sha256": "70d3ccaeb1c91983aa14f974763a93e8c865936a39b126a0f558ebe5208fa91a",
+      "lane": "A2",
+      "reviewer": "lane-a2-stripe-live",
+      "reviewedAt": "2026-10-29T21:47:37.460Z",
+      "exercise": "scripts/db/exercises/202610295001_stripe_mode_separation.sql",
+      "waivers": [],
+      "rollback": "Additive: columns/table/functions stay; to undo behaviour re-run the 202610291009/1047/294019 function bodies (no mode predicate). Backfills only set NULL livemode→false and fill new shadow columns.",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "bulk_update",
+          "bulk_update",
+          "bulk_update",
+          "bulk_update",
+          "bulk_update",
+          "bulk_update",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202610295002_vat_summary_mode.sql",
+      "sha256": "0fa4950f489e750c2726d6f3d75a10b7beb4b101faf23de218b6a321862580d8",
+      "lane": "A2",
+      "reviewer": "lane-a2-stripe-live",
+      "reviewedAt": "2026-10-29T22:05:10.191Z",
+      "exercise": "scripts/db/exercises/202610295002_vat_summary_mode.sql",
+      "waivers": [],
+      "rollback": "Re-run the 202610280020 admin_vat_summary body; the column stays.",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610295003_billing_customer_mode.sql",
+      "sha256": "6e7feac4783ee46b8eeef266f9ca24a48d4cfaeda15473187d53881558b090dc",
+      "lane": "A2",
+      "reviewer": "lane-a2-stripe-live",
+      "reviewedAt": "2026-10-29T22:17:31.168Z",
+      "exercise": "scripts/db/exercises/202610295003_billing_customer_mode.sql",
+      "waivers": [],
+      "rollback": "Re-run the 202610291013 bodies of billing_link_customer / billing_overage_due.",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202610295020_taxonomy_spelling_webinar_online.sql",
+      "sha256": "62e45e8e307b2a7934da5aebcb0543c56eb639a225625dfb46ad20be35bdfcdd",
+      "lane": "D",
+      "reviewer": "lane-d-master-data",
+      "reviewedAt": "2026-10-30T00:12:05.313Z",
+      "exercise": "scripts/db/exercises/202610295020_taxonomy_spelling_webinar_online.sql",
+      "waivers": [],
+      "rollback": "delete from public.taxonomy_spellings where taxonomy='event_type' and spelling='webinar (online)'",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "recordedOnly": [
+    {
+      "file": "202610280026_resale_original_payment_refunds.sql",
+      "sha256": "9de4467e639c5f6834364ce79af6aa1dd51e3c5cd748a8776b7dcab9ea7f2b7c",
+      "recordedAt": "2026-10-29T10:18:16.915Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280027_resale_liability_accounting.sql",
+      "sha256": "ac05ed56564fc0f21bc46619634b3da36f53ff8af6acb23dcde6e7d6689dfbe0",
+      "recordedAt": "2026-10-29T10:18:18.044Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280031_customer_date_change.sql",
+      "sha256": "0d3b173c6116f089ff40e30b3720b0bb8fda53c25cc1685216c256a81407c0cd",
+      "recordedAt": "2026-10-29T10:18:19.102Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280032_request_attachment_ownership.sql",
+      "sha256": "0510efaf6d6a8841911a3a00a880bca0a8d3ffa5f516dfd9c2078caceb7ea456",
+      "recordedAt": "2026-10-29T10:18:20.757Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280033_verified_private_uploads.sql",
+      "sha256": "a9315e4d9fb7b15200cf6183968129dd5f10669034cc5cf6f48117ccd1d83503",
+      "recordedAt": "2026-10-29T10:18:22.352Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280034_upload_object_binding.sql",
+      "sha256": "3adcbd5ceb891ed3663855a8ac34d582d36e723675108ab109531c342fbf383c",
+      "recordedAt": "2026-10-29T10:18:23.662Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280035_customer_date_booking_states.sql",
+      "sha256": "55c1ab3aad4500b931652e4c1f5ba829caa14fa498db321ba1f12589f3560121",
+      "recordedAt": "2026-10-29T10:18:24.992Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280036_event_file_provenance.sql",
+      "sha256": "5de1b8b7aa170d2330b4eda17d1990f90ee712472266980e3a700c3b1e6da763",
+      "recordedAt": "2026-10-29T10:18:26.606Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280037_booking_local_availability.sql",
+      "sha256": "1e306e82c546d91ec03f50c78544e89dcb96da164d7c331cf0f93e6f7a6f5bc8",
+      "recordedAt": "2026-10-29T10:18:27.681Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    },
+    {
+      "file": "202610280038_event_plan_version_lock.sql",
+      "sha256": "a047540d8f1540e1faf2a9aeccc3b8b9a963abe0ca5ae13005dd2172ec2d47f7",
+      "recordedAt": "2026-10-29T10:18:28.687Z",
+      "note": "Q00 finding: applied via Management API 2026-10-28 without history; every created function/table/column verified present 2026-10-29 (Q39)"
+    }
+  ]
+}

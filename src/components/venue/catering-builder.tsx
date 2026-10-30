@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { saveCatering, priceCatering } from "@/lib/venue/actions";
-import { DIETARY } from "./menus-client";
+import { DIETARY } from "./menu-constants";
 
 type Item = { id: string; section_id: string | null; name: string; description: string; price: number | null; dietary: string[]; allergens: string[]; allergen_note: string };
 export type CMenu = { id: string; name: string; description: string; serving_style: string | null; pricing: string; price: number | null; min_guests: number | null; max_guests: number | null;

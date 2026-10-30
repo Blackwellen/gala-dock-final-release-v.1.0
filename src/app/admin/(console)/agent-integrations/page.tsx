@@ -103,7 +103,7 @@ export default async function AgentPage(props: PageProps<"/admin/agent-integrati
       <Kpi icon={CircleCheck} tone="green" label="Successful runs" value={ok} delta={delta(ok, by(prev, "completed").length)} note={`${Math.round((100 * ok) / finished)}% success rate`} series={series(by(cur, "completed"))} />
       <Kpi icon={TriangleAlert} tone="red" label="Failed runs" value={failed} delta={delta(failed, by(prev, "failed").length)} invert note={`${Math.round((100 * failed) / (cur.length || 1))}% failure rate`} series={series(by(cur, "failed"))} />
       <Kpi icon={Clock3} tone="orange" label="Pending approvals" value={approvals.length} delta={delta(approvals.filter(a => new Date(a.created_at).getTime() >= split).length, approvals.filter(a => new Date(a.created_at).getTime() < split).length)} invert note="" series={cumulative(buckets(approvals, a => a.created_at, () => 1, days, 10, now))} />
-      <Kpi icon={Layers} tone="purple" label="Tool incidents" value={incidents.length} note={incidents.length ? incidents.map(i => i.name).join(", ") : "All connectors healthy"} series={series(by(cur, "failed"))} />
+      <Kpi icon={Layers} tone="purple" label="Tool incidents" value={incidents.length} note={incidents.length ? `${incidents[0]!.name}${incidents.length > 1 ? ` +${incidents.length - 1} more` : ""}` : "All connectors healthy"} series={series(by(cur, "failed"))} />
     </section>
     <div className="adag-grid">
       <div className="adag-main">

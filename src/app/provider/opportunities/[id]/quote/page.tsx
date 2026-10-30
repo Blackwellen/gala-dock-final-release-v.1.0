@@ -4,11 +4,12 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, CalendarDays, MapPin, Wallet, Clock4, Sparkles, CircleCheck, CircleAlert, CalendarCheck } from "lucide-react";
 import "@/styles/provider-quote.css";
 import { Thumb } from "@/components/workspace/kit";
-import { money, day, time, relative, countdown, titleCase, requestTime } from "@/lib/workspace/format";
+import { money, day, time, relative, countdown, requestTime } from "@/lib/workspace/format";
 import { startOfDay } from "@/lib/provider/queries";
 import { quoteContext } from "./data";
 import { QuoteBuilder } from "./builder";
 import { QuoteReview } from "./review";
+import { labelOf } from "@/lib/master-data";
 
 export const metadata: Metadata = { title: "Respond with quote" };
 const fmtTime = (iso?: string | null) => iso ? new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" }).format(new Date(iso)) : "—";
@@ -27,7 +28,7 @@ export default async function QuoteWizard(props: PageProps<"/provider/opportunit
   const top = <section className="ws-panel qw-opp">
     <Thumb src={e?.cover_image || q.item.image} w={126} h={72} />
     <div><h2>{e?.name}</h2>
-      <p className="qw-meta"><span>{titleCase(e?.event_type ?? "Event")}</span><span>{q.guests} guests</span><span>{day(e?.starts_at, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}</span><span>{fmtTime(e?.starts_at)} – {fmtTime(e?.ends_at)}</span></p>
+      <p className="qw-meta"><span>{labelOf("event_type", e?.event_type, "Event")}</span><span>{q.guests} guests</span><span>{day(e?.starts_at, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}</span><span>{fmtTime(e?.starts_at)} – {fmtTime(e?.ends_at)}</span></p>
       <p className="qw-meta icons"><span><MapPin aria-hidden="true" />{e?.location}</span><span><Wallet aria-hidden="true" />Budget: {r?.budget_max ? `${money(r.budget_min ?? 0)} – ${money(r.budget_max)}` : "Not disclosed"}</span><span><Clock4 aria-hidden="true" />Enquiry received {relative(q.item.created_at, now)}</span></p></div>
     <Link href={`/provider/opportunities/${id}`} className="ws-btn outline">View full opportunity <ArrowRight aria-hidden="true" /></Link>
   </section>;

@@ -6,12 +6,15 @@ import { Sparkles, CircleCheck, Lightbulb, Plus, Check, X, Save, ArrowRight, Rul
 import { useToast } from "@/components/ui";
 import { saveSpaceFields } from "../[id]/spaces/actions";
 import { LayoutGlyph, LAYOUT_LABEL, SEATED } from "./layout-glyph";
+import { resolveTerm, terms } from "@/lib/master-data";
 
 type Basics = { id: string | null; name: string; indoor: boolean; area_sqm: number | null; capacity_standing: number | null; layouts: Record<string, number>;
   details: { space_type?: string; description?: string; dimensions?: { length?: number; width?: number; ceiling?: number }; default_layout?: string; layout_notes?: Record<string, string>;
     min_capacity?: number; use_cases?: string[]; layout_features?: string[] } };
 const TYPES = ["Event Hall", "Conference Room", "Meeting Room", "Studio", "Terrace", "Garden", "Private Dining", "Bar / Lounge", "Other"];
-const USE_CASES = ["Concerts", "Corporate Events", "Weddings", "Parties", "Exhibitions", "Product Launches", "Conferences"];
+/** Use cases are event types: every catalogue type (plural wording). Stored chips that match a type by any spelling select it. */
+const USE_CASES = terms("event_type").map(t => t.plural ?? t.label);
+const sameUse = (a: string, b: string) => a === b || (!!resolveTerm("event_type", a) && resolveTerm("event_type", a) === resolveTerm("event_type", b));
 const FEATURES = ["Stage", "Bar", "Dance Floor", "DJ Booth", "Fixed Seating", "VIP Area", "Screen / Projector", "Lighting Rig"];
 // Standard per-person floor allowances (m²) used for the guide figures.
 const ALLOW: [string, number][] = [["standing", 0.8], ["theatre", 1.15], ["banquet", 1.45], ["cabaret", 1.75]];
@@ -57,7 +60,7 @@ export function SpaceBasicsForm({ venueId, initial, next, submitLabel = "Save sp
     <section className="ws-panel sb-basic"><h2>Basic details</h2><p>Give your space a clear name and define its physical details.</p>
       <label>Space name <i>*</i><input value={f.name} maxLength={80} onChange={e => setF({ ...f, name: e.target.value })} placeholder="e.g. Main Hall" /></label>
       <label>Space type <i>*</i><select className="ws-select" value={d.space_type ?? ""} onChange={e => { setD({ space_type: e.target.value }); setF(x => ({ ...x, indoor: !["Terrace", "Garden"].includes(e.target.value) })); }}>
-        <option value="" disabled>Choose a type</option>{TYPES.map(t => <option key={t}>{t}</option>)}</select></label>
+        <option value="" disabled>Choose a type</option>{d.space_type && !TYPES.includes(d.space_type) && <option>{d.space_type}</option>}{TYPES.map(t => <option key={t}>{t}</option>)}</select></label>
       <label>Short description<textarea rows={4} maxLength={500} value={d.description ?? ""} onChange={e => setD({ description: e.target.value })} placeholder="What makes this space great for events?" /><small>{(d.description ?? "").length}/500</small></label>
     </section>
 
@@ -117,7 +120,8 @@ export function SpaceBasicsForm({ venueId, initial, next, submitLabel = "Save sp
     </section>
 
     <section className="ws-panel sb-chips"><h2>Use cases</h2><p>Select the typical event types for this space.</p>
-      <ul>{[...new Set([...USE_CASES, ...(d.use_cases ?? [])])].map(u => <li key={u}><button type="button" aria-pressed={(d.use_cases ?? []).includes(u)} onClick={() => setD({ use_cases: toggle(d.use_cases, u) })}>{(d.use_cases ?? []).includes(u) && <Check aria-hidden="true" />}{u}</button></li>)}
+      <ul>{[...USE_CASES, ...(d.use_cases ?? []).filter(x => !USE_CASES.some(u => sameUse(u, x)))].map(u => { const on = (d.use_cases ?? []).some(x => sameUse(u, x));
+        return <li key={u}><button type="button" aria-pressed={on} onClick={() => setD({ use_cases: on ? (d.use_cases ?? []).filter(x => !sameUse(u, x)) : [...(d.use_cases ?? []), u] })}>{on && <Check aria-hidden="true" />}{u}</button></li>; })}
         <li>{custom?.kind === "use" ? <form onSubmit={e => { e.preventDefault(); if (custom.text.trim()) setD({ use_cases: [...(d.use_cases ?? []), custom.text.trim().slice(0, 40)] }); setCustom(null); }}><input autoFocus value={custom.text} onChange={e => setCustom({ kind: "use", text: e.target.value })} aria-label="Custom use case" /></form>
           : <button type="button" className="sb-addchip" onClick={() => setCustom({ kind: "use", text: "" })}><Plus aria-hidden="true" />Add custom</button>}</li></ul></section>
     <section className="ws-panel sb-chips"><h2>Layout features</h2><p>Add fixed features for this space (stage, bar, etc.).</p>

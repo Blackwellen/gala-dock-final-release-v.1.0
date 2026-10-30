@@ -51,13 +51,38 @@ async function fixtureToken(email: string) {
 }
 
 export async function cleanup() {
-  for (const id of created.splice(0)) await admin.auth.admin.deleteUser(id);
+  const ids = created.splice(0);
+  // Q39: fixtures that could not be deleted (ledger postings, append-only history) must never stay visible on the live site.
+  // Hide every public event/listing owned by this process's disposable identities before removing them.
+  if (ids.length) {
+    try {
+      const ws = ((await admin.from("workspaces").select("id").in("owner_id", ids)).data ?? []).map(w => w.id);
+      await admin.from("events").update({ visibility: "private" } as never).in("owner_id", ids).eq("visibility", "public");
+      if (ws.length) {
+        await admin.from("events").update({ visibility: "private" } as never).in("workspace_id", ws).eq("visibility", "public");
+        await admin.from("listings").update({ published: false } as never).in("workspace_id", ws).eq("published", true);
+      }
+    } catch { /* cleanup is best effort; the purge tooling catches the rest */ }
+  }
+  for (const id of ids) await admin.auth.admin.deleteUser(id);
   fixtureEmails.clear();
 }
 
+// Q39 (migration 202610293032): a service-role write that moves an event INTO ready / published / on_sale past its lifecycle
+// blockers is refused (lifecycle_override_required). Fixtures that need such an event go through the explicit, audited override:
+// same columns and defaults as a direct insert/update, visibility untouched, every row logged in event_lifecycle_overrides.
+const untyped = admin as unknown as SupabaseClient;
+/** Fixture insert of one event (chain `.select("id").single()` as with `.from("events").insert(...)`). */
+export const insertEventFixture = (row: Record<string, unknown>, reason = "event fixture") =>
+  untyped.rpc("service_insert_event", { p_row: row, p_reason: `spec fixture: ${reason}` });
+/** Fixture update of one or more events (replaces `.from("events").update(patch).eq/in("id", …)`). */
+export const updateEventFixture = (ids: string | string[], patch: Record<string, unknown>, reason = "event fixture") =>
+  untyped.rpc("service_update_events", { p_ids: Array.isArray(ids) ? ids : [ids], p_patch: patch, p_reason: `spec fixture: ${reason}` });
+
 /** Creates an active, completed workspace owned by `ownerId` (setup shortcut for authorization tests). */
 export async function seedWorkspace(ownerId: string, kind: "organizer" | "provider", name: string) {
-  const { data, error } = await admin.from("workspaces").insert({ owner_id: ownerId, kind, name, capabilities: kind === "provider" ? ["venue"] : [], settings: {} }).select("id").single();
+  // is_test_fixture (Q32): marks the workspace as purgeable by admin_purge_test_workspaces (service role only can set it).
+  const { data, error } = await admin.from("workspaces").insert({ owner_id: ownerId, kind, name, capabilities: kind === "provider" ? ["venue"] : [], settings: {}, is_test_fixture: true } as never).select("id").single();
   if (error) throw error;
   await admin.from("workspaces").update({ onboarding_complete: true, onboarding_step: "complete" }).eq("id", data.id);
   return data.id;
@@ -96,4 +121,13 @@ export function totp(secret: string, offset = 0) {
 
 export async function expectPath(page: Page, path: RegExp) {
   await expect(page).toHaveURL(path, { timeout: 60_000 });
+}
+
+/** Q31: platform-admin mutations need an aal2 session. Enrols and verifies a TOTP factor on this client (upgrading it to aal2). */
+export async function enrolTotp(client: SupabaseClient<Database>, name = "test-totp") {
+  const { data: f, error } = await client.auth.mfa.enroll({ factorType: "totp", friendlyName: `${name}-${randomBytes(3).toString("hex")}` });
+  if (error || !f) throw error ?? new Error("enrol failed");
+  const v = await client.auth.mfa.challengeAndVerify({ factorId: f.id, code: totp(f.totp.secret) });
+  if (v.error) throw v.error;
+  return f.totp.secret;
 }

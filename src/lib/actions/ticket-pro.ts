@@ -7,6 +7,8 @@ import { can } from "@/lib/domain/permissions";
 import type { Json } from "@/types/database";
 import type { ActionResult } from "./shell";
 import type { ProSettings } from "@/lib/ticket-pro-model";
+import { untyped } from "@/lib/workspace/db";
+import { transitionEvent, type EventBlocker } from "@/lib/events/lifecycle";
 
 const Id = z.string().uuid();
 const Iso = z.string().refine(v => !Number.isNaN(Date.parse(v)), "date");
@@ -119,7 +121,7 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
     ids.push(res.data.id);
   }
   for (const [i, t] of tiers.entries()) if (t.after >= 0) await sb.from("ticket_tiers").update({ after_tier: ids[t.after]! }).eq("id", ids[i]!);
-  const { data: codes } = await sb.from("discount_codes").select("id,used").eq("event_id", o.e.id);
+  const { data: codes } = await sb.from("discount_codes").select("id,used").eq("event_id", o.e.id).eq("purpose", "discount");
   for (const c of (codes ?? []).filter(c => !promos.some(x => x.id === c.id))) await (c.used > 0 ? sb.from("discount_codes").update({ status: "disabled" }).eq("id", c.id) : sb.from("discount_codes").delete().eq("id", c.id));
   for (const x of promos) {
     const row = { code: x.code, kind: x.kind, amount: x.amount, valid_from: x.valid_from, valid_until: x.valid_until, max_uses: x.max_uses, status: !sales.discount_codes ? "disabled" : x.valid_from && Date.parse(x.valid_from) > Date.now() ? "scheduled" : "active" };
@@ -189,17 +191,36 @@ export async function activateTickets(eventId: string, agreed: boolean): Promise
     const { data: ws } = await sb.from("workspaces").select("payout_status").eq("id", o.ctx.workspace.id).maybeSingle();
     if (ws?.payout_status !== "active") return { ok: false, error: "Finish payout setup in Money before selling paid tickets." };
   }
-  const now = Date.now();
+  const status = ["draft", "planning", "ready", "published"].includes(o.e.status) ? "on_sale" : o.e.status;
+  // W11: going on sale is a lifecycle transition. Preview its preconditions (event-type, ticketing policy, composition, venue,
+  // payouts…) before touching any tier; "tickets" is ignored here because this step is what opens the tiers.
+  if (status !== o.e.status) {
+    const { data: pre } = await untyped(sb).rpc("event_lifecycle_blockers", { p_event: o.e.id, p_to: status });
+    const blockers = ((pre ?? []) as EventBlocker[]).filter(b => b.key !== "tickets");
+    if (blockers.length) return { ok: false, error: `Before tickets can go on sale: ${blockers.map(b => b.label.replace(/\.$/, "")).join("; ")}.`, data: { blockers } };
+  }
+  const now = Date.now(); const changed: { id: string; from: string }[] = [];
+  const revert = async () => { for (const c of changed.reverse()) await sb.from("ticket_tiers").update({ status: c.from }).eq("id", c.id); };
+  const setTier = async (t: { id: string; status: string }, to: string) => {
+    if (to === t.status) return null;
+    const { error } = await sb.from("ticket_tiers").update({ status: to }).eq("id", t.id);
+    if (error) return /blocked_by_dependencies/.test(error.message) ? "A ticket tier is waiting on a dependency (Plan › Dependencies) before it can go on sale." : error.code === "22023" ? error.message.replace(/^[a-z_]+:\s*/, "") : "Could not open a ticket tier.";   // ticketing policy guard: '<code>: <reason>'
+    changed.push({ id: t.id, from: t.status }); t.status = to; return null;
+  };
   for (const t of active) {
-    const status = t.sold >= t.quantity && t.quantity > 0 ? "sold_out" : t.after_tier ? "scheduled" : Date.parse(t.sale_start!) > now ? "scheduled" : "on_sale";
-    if (status !== t.status) await sb.from("ticket_tiers").update({ status }).eq("id", t.id);
+    const to = t.sold >= t.quantity && t.quantity > 0 ? "sold_out" : t.after_tier ? "scheduled" : Date.parse(t.sale_start!) > now ? "scheduled" : "on_sale";
+    const err = await setTier(t, to); if (err) { await revert(); return { ok: false, error: err }; }
   }
   // A tier released "after" one that is already sold out opens straight away.
   const soldOut = new Set(active.filter(t => t.sold >= t.quantity && t.quantity > 0).map(t => t.id));
-  for (const t of active) if (t.after_tier && soldOut.has(t.after_tier)) await sb.from("ticket_tiers").update({ status: "on_sale" }).eq("id", t.id);
+  for (const t of active) if (t.after_tier && soldOut.has(t.after_tier)) { const err = await setTier(t, "on_sale"); if (err) { await revert(); return { ok: false, error: err }; } }
   const slug = o.e.slug ?? `${o.e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(3).toString("hex")}`;
-  const status = ["draft", "planning", "ready", "published"].includes(o.e.status) ? "on_sale" : o.e.status;
-  const { error } = await sb.from("events").update({ slug, status, settings: { ...o.settings, ticketing_live: true, ticket_pro: { ...o.pro, activated_at: new Date().toISOString() } } as Json, updated_at: new Date().toISOString() }).eq("id", o.e.id);
-  if (error) return { ok: false, error: "Could not activate tickets." };
+  const { error } = await sb.from("events").update({ slug, settings: { ...o.settings, ticketing_live: true, ticket_pro: { ...o.pro, activated_at: new Date().toISOString() } } as Json, updated_at: new Date().toISOString() }).eq("id", o.e.id);
+  if (error) { await revert(); return { ok: false, error: "Could not activate tickets." }; }
+  if (status !== o.e.status) {
+    // Through the guarded lifecycle command (permission, state machine, preconditions, audit), never a direct status write.
+    const t = await transitionEvent(sb, o.e.id, status, o.e.status);
+    if (!t.ok) { await revert(); await sb.from("events").update({ settings: o.settings as Json }).eq("id", o.e.id); return { ok: false, error: t.error ?? "Could not put the event on sale.", data: t.data }; }
+  }
   bump(o.e.id, slug); return { ok: true, message: "Tickets are live!", redirect: `/organizer/events/${o.e.id}?tab=sell` };
 }

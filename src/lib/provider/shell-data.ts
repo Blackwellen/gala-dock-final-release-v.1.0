@@ -19,6 +19,6 @@ export async function providerShellData(ctx: ProviderContext) {
   return {
     counts: { opportunities, bookings, messages: messages.filter(m => m.unread).length, notifications: unreadNotes },
     messages,
-    notifications: notes.map(n => ({ id: n.id, title: n.title, body: n.body, href: n.link || "/provider", unread: !n.read_at })),
+    notifications: notes.map(n => ({ id: n.id, title: n.title, body: n.body, href: n.link?.startsWith("/provider/") ? `/provider/notifications/${n.id}` : n.link || "/provider", unread: !n.read_at })),
   };
 }

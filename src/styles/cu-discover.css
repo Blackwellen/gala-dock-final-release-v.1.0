@@ -28,6 +28,8 @@
 .ds-card { background: #fff; border: 1px solid var(--k-line); border-radius: 14px; padding: 14px 14px; box-shadow: var(--k-card-shadow); min-width: 0; }
 .ds-sec-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
 .ds-sec-head h2 { font-size: 18px; font-weight: 700; } .ds-sec-head p { font-size: 12px; margin-top: 2px; }
+/* Narrow cards: the "View all …" link wraps under the title instead of pushing past the card edge. */
+.ds-sec-head { flex-wrap: wrap; row-gap: 6px; } .ds-sec-head > div { flex: 1 1 220px; min-width: 0; } .ds-sec-head > .k-link { flex: 0 0 auto; white-space: nowrap; }
 .ds-events { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .ds-events-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ds-ev { position: relative; border: 1px solid var(--k-line); border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; }
@@ -93,3 +95,6 @@
  .ds .ds-tabs a { justify-content:center; min-width:0; min-height:44px; height:auto; padding:8px 4px; gap:5px; font-size:12px; }
  .ds .ds-tabs svg { flex-shrink:0; }
 }
+/* W02 pass 4 — phone (≤480px), PWA #208 "Premium Event Discovery App": the screen opens on the Events / Venues / Services switch and
+   the search fields; the photo hero banner is not shown. */
+@media (max-width: 480px) { .c-root .ds-hero { display: none; } }

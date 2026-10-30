@@ -62,7 +62,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
     <Head back={{ href: "/admin/commerce", label: "Back to Commerce" }} title={`Transaction #${ref}`} badges={<span className="adt-badge"><Pill status={st.key} label={st.label} dot /></span>}
       subtitle={<>{type} <span className="adt-sep">•</span> {stamp(t.occurred_at).replace(",", " at")}</>}
       actions={<>
-        <Link className="adb-btn blue" href={t.event_id ? `/admin/events/${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev?.ref ?? ev?.name ?? "")}`}><ExternalLink aria-hidden="true" />Open event</Link>
+        <Link className="adb-btn blue" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev?.ref ?? ev?.name ?? "")}`}><ExternalLink aria-hidden="true" />Open event</Link>
         <Link className="adb-btn blue" href={`/admin/tickets?q=${encodeURIComponent(d.order ?? ref)}`}><Navigation aria-hidden="true" />View order</Link>
         <Link className="adb-btn blue" href={custLink}><UserRound aria-hidden="true" />View customer</Link>
         <Menu label="More actions" className="adb-btn adt-more" entries={[{ kind: "link", label: "Export ledger (CSV)", href: "/admin/commerce/export" }, { kind: "link", label: "Payouts", href: "/admin/commerce/payouts" }]} />
@@ -86,7 +86,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
               <dl className="adb-kv">
                 <div><dt>Transaction ID</dt><dd>{ref} <CopyButton value={ref} /></dd></div>
                 <div><dt>Type</dt><dd>{type}</dd></div>
-                <div><dt>Source</dt><dd>{ev ? <Link href={t.event_id ? `/admin/events/${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>Event: {ev.name} ({ev.ref}) <ExternalLink aria-hidden="true" /></Link> : t.source}</dd></div>
+                <div><dt>Source</dt><dd>{ev ? <Link href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>Event: {ev.name} ({ev.ref}) <ExternalLink aria-hidden="true" /></Link> : t.source}</dd></div>
                 <div><dt>Order ID</dt><dd>{d.order ? <Link href={`/admin/tickets?q=${encodeURIComponent(d.order)}`}>{d.order} <ExternalLink aria-hidden="true" /></Link> : "—"}</dd></div>
                 {d.ticket_label && <div><dt>Ticket(s)</dt><dd>{d.ticket_label}</dd></div>}
                 <div><dt>Date &amp; time</dt><dd>{new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZoneName: "short" }).format(new Date(t.occurred_at)).replace(/ at /, ", ").replace("BST", "(BST)").replace("GMT", "(GMT)")}</dd></div>
@@ -103,7 +103,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
               <h3>Provider / Organizer</h3>
               <div className="adt-party"><Mark text="G" color="#0d0d63" size={38} /><span><b>{d.provider_party?.name ?? "—"}</b><small>{d.provider_party?.ref ?? ""}</small></span>{t.workspace_id && <Link className="adb-link" href={`/admin/workspaces/${t.workspace_id}`}>View workspace <ArrowRight aria-hidden="true" /></Link>}</div>
               {ev && <><h3>Event</h3>
-                          <div className="adt-party"><Img src={ev.image} alt="" width={52} height={40} /><span><b>{ev.name}</b><small>{ev.ref}</small></span><Link className="adb-link" href={t.event_id ? `/admin/events/${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View event <ArrowRight aria-hidden="true" /></Link></div></>}
+                          <div className="adt-party"><Img src={ev.image} alt="" width={52} height={40} /><span><b>{ev.name}</b><small>{ev.ref}</small></span><Link className="adb-link" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View event <ArrowRight aria-hidden="true" /></Link></div></>}
             </section>
           </div>
           <div className="adt-r3">
@@ -125,7 +125,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
               </div>
               <section className="adb-panel adt-related"><h2>Related records</h2>
                 <ul>
-                  {ev && <li><CalendarClock aria-hidden="true" /><span>Event</span><b>{ev.name} ({ev.ref})</b><Link className="adb-link" href={t.event_id ? `/admin/events/${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View <ArrowRight aria-hidden="true" /></Link></li>}
+                  {ev && <li><CalendarClock aria-hidden="true" /><span>Event</span><b>{ev.name} ({ev.ref})</b><Link className="adb-link" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View <ArrowRight aria-hidden="true" /></Link></li>}
                   {d.order && <li><Receipt aria-hidden="true" /><span>Order</span><b>{d.order}</b><Link className="adb-link" href={`/admin/tickets?q=${encodeURIComponent(d.order)}`}>View <ArrowRight aria-hidden="true" /></Link></li>}
                   {d.tickets ? <li><Ticket aria-hidden="true" /><span>Tickets</span><b>{d.tickets} tickets</b><Link className="adb-link" href={`/admin/tickets?q=${encodeURIComponent(d.order ?? ref)}`}>View <ArrowRight aria-hidden="true" /></Link></li> : null}
                   {!ev && !d.order && <li><Receipt aria-hidden="true" /><span>Counterparty</span><b>{t.counterparty}</b></li>}

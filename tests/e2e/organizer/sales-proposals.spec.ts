@@ -32,15 +32,36 @@ test("proposal: draft → pricing → issue → client accepts → convert", asy
   await page.locator('input[type="date"]').first().fill("2027-03-14");
   await page.getByLabel("Location *").fill("London, UK");
   await page.getByLabel("Expected attendance *").fill("300");
-  await page.getByRole("button", { name: /Continue to Offer/ }).click();
+  // D01: five steps — Client & Event → Services & Options → Pricing & Terms → Presentation → Review & Send.
+  await expect(page.getByLabel("Linked lead")).toContainText(`${tag} Lead`);
+  await page.getByRole("button", { name: /Continue to Services/ }).click();
   await page.waitForURL(/step=2&id=/);
   await page.waitForLoadState("networkidle");
   const id = new URL(page.url()).searchParams.get("id")!;
+  // Steps ahead of the saved progress are not reachable by URL.
+  await page.goto(`/organizer/proposals/new?step=5&id=${id}`, { waitUntil: "networkidle" });
+  await expect(page).toHaveURL(/step=2&id=/);
   await page.getByLabel("Item 1 name").fill("Venue hire");
   await page.getByLabel("Unit price").first().fill("10000");
-  await page.getByRole("button", { name: /Continue to Review/ }).click();
+  await page.getByRole("button", { name: /Continue to Pricing/ }).click();
   await page.waitForURL(/step=3/);
   await page.waitForLoadState("networkidle");
+  await page.getByLabel("Deposit required (%)").fill("25");
+  await page.getByRole("button", { name: /Continue to Presentation/ }).click();
+  await page.waitForURL(/step=4/);
+  // Reload mid-flow: resumes on Presentation; earlier steps keep their saved values.
+  await page.goto(`/organizer/proposals/new?id=${id}`, { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: /Brand & presentation/ })).toBeVisible();
+  await page.goto(`/organizer/proposals/new?step=2&id=${id}`, { waitUntil: "networkidle" });
+  await expect(page.getByLabel("Item 1 name")).toHaveValue("Venue hire");
+  await page.goto(`/organizer/proposals/new?step=4&id=${id}`, { waitUntil: "networkidle" });
+  await page.getByLabel("Headline").fill("A great night out");
+  await page.getByRole("button", { name: /Continue to Review/ }).click();
+  await page.waitForURL(/step=5/);
+  await page.waitForLoadState("networkidle");
+  const { data: saved } = await admin().from("proposals").select("deposit_pct,content").eq("id", id).single();
+  expect(saved!.deposit_pct).toBe(25);
+  expect((saved!.content as { wizard_step: number; presentation: { headline: string } })).toMatchObject({ wizard_step: 4, presentation: { headline: "A great night out" } });
   // Server-computed totals: 10,000 + 20% VAT
   let { data: p } = await admin().from("proposals").select("subtotal,tax,total,status,share_token").eq("id", id).single();
   expect(Number(p!.total)).toBe(12000);

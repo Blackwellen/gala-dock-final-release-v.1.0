@@ -7,6 +7,8 @@ import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { addGuest, importGuests, sendInvites, setGuestStatus, removeGuest, createTier } from "@/lib/actions/guests";
 import { sendMessage, markThreadRead } from "@/lib/actions/messages";
 import { CheckInScanner } from "@/components/shared/checkin-scanner";
+import { createRsvpLink } from "@/lib/guests/access";
+import { setEventTicketing } from "@/lib/actions/ticket-setup";
 
 export function GuestToolbar({ eventId, rows }: { eventId: string; rows: Record<string, string>[] }) {
   const { run, pending } = useAction(); const toast = useKitToast(); const [add, setAdd] = useState(false); const [imp, setImp] = useState(false);
@@ -32,9 +34,12 @@ export function GuestToolbar({ eventId, rows }: { eventId: string; rows: Record<
   </div>;
 }
 export function GuestRowMenu({ eventId, id, name }: { eventId: string; id: string; name: string }) {
-  const { run } = useAction();
-  return <Menu label={`Actions for ${name}`} width={190} trigger={({ toggle, open, id: m }) => <button className="k-icon-btn plain" onClick={toggle} aria-expanded={open} aria-controls={m} aria-label={`Actions for ${name}`}><MoreHorizontal size={16} /></button>}>
-    {close => <>{(["confirmed", "pending", "declined"] as const).map(s => <button key={s} role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setGuestStatus(eventId, id, s)); }}>Mark {s}</button>)}<button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => sendInvites(eventId, [id])); }}>Send invite</button><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); void run(() => removeGuest(eventId, id)); }}>Remove</button></>}
+  const { run } = useAction(); const toast = useKitToast();
+  // Q18: a personal RSVP link (no account needed). Creating one replaces the guest's earlier link; only its hash is stored.
+  const copyRsvp = async () => { const r = await run(() => createRsvpLink(id), { refresh: false }); const path = (r as { data?: { path: string } }).data?.path; if (!r.ok || !path) return;
+    try { await navigator.clipboard.writeText(`${location.origin}${path}`); toast("RSVP link copied — it replaces any earlier link for this guest"); } catch { toast("Couldn't copy — your browser blocked clipboard access", "error"); } };
+  return <Menu label={`Actions for ${name}`} width={210} trigger={({ toggle, open, id: m }) => <button className="k-icon-btn plain" onClick={toggle} aria-expanded={open} aria-controls={m} aria-label={`Actions for ${name}`}><MoreHorizontal size={16} /></button>}>
+    {close => <>{(["confirmed", "pending", "declined"] as const).map(s => <button key={s} role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => setGuestStatus(eventId, id, s)); }}>Mark {s}</button>)}<button role="menuitem" className="k-menu-item" onClick={() => { close(); void run(() => sendInvites(eventId, [id])); }}>Send invite</button><button role="menuitem" className="k-menu-item" onClick={() => { close(); void copyRsvp(); }}>Copy RSVP link</button><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); void run(() => removeGuest(eventId, id)); }}>Remove</button></>}
   </Menu>;
 }
 export function NewTierButton({ eventId }: { eventId: string }) {
@@ -70,4 +75,15 @@ export function Conversation({ threadId, title, messages, myName, avatar }: { th
       {tab === "tpl" ? <div className="cm-tpls">{tpls.map(x => <button key={x} onClick={() => { setT(x); setTab("msg"); }}>{x}</button>)}</div> : <textarea ref={box} value={t} onChange={e => setT(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} placeholder={`Type a message to ${title}...`} aria-label="Message" maxLength={5000} />}
       <div className="k-between"><div className="k-row" style={{ gap: 14 }}><button className="k-icon-btn plain" aria-label="Attach file" title="Attachments open with the file service"><Paperclip size={18} /></button><button className="k-icon-btn plain" aria-label="Attach image"><ImageIcon size={18} /></button><button className="k-icon-btn plain" aria-label="Attach document"><FileText size={18} /></button><span className="cm-ref">Booking reference</span></div><div className="k-row" style={{ gap: 12 }}><Smile size={20} className="k-muted" /><button className="k-btn primary cm-send" disabled={pending} onClick={() => void send()}><SendHorizontal size={16} />Send</button></div></div></div>
   </>;
+}
+
+/** W11 "Sell tickets" switch for wedding / birthday / gala (optional_off) and children's party (private_only) events. */
+export function SellTicketsToggle({ eventId, on, label, privateOnly, canTurnOff }: { eventId: string; on: boolean; label: string; privateOnly: boolean; canTurnOff: boolean }) {
+  const { run, pending } = useAction();
+  if (on) return canTurnOff ? <button type="button" className="k-btn ghost sm" disabled={pending} onClick={() => void run(() => setEventTicketing(eventId, false))}>Switch tickets off</button> : null;
+  return <div className="gt-sell" role="group" aria-labelledby="gt-sell-h">
+    <div><b id="gt-sell-h">Sell tickets for this {label.toLowerCase()}?</b>
+      <p>Tickets are off by default for this kind of event — most hosts just invite guests and track RSVPs.{privateOnly ? " Tickets stay invite-only: guests buy through your private guest link, never a public page." : " Switch them on if guests should buy or claim a ticket."}</p></div>
+    <button type="button" className="k-btn primary" disabled={pending} aria-pressed={false} onClick={() => void run(() => setEventTicketing(eventId, true))}>Switch tickets on</button>
+  </div>;
 }

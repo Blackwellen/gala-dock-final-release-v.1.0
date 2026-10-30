@@ -60,6 +60,9 @@ test.describe("readiness, feasibility, team conflicts, live check-ins", () => {
 
   test("§85 team conflicts: double booking, unfilled shift, unavailable crew", async () => {
     const crew = ((await db.from("crew_members").insert({ workspace_id: ws, name: "Sam Crew", role: "Steward", member_type: "crew", skills: [] }).select("id").single()).data as { id: string }).id;
+    // Since Q12 (migration 202610291023) overlapping shifts are refused unless the person's capacity policy is "warn";
+    // this fixture needs the overlap to exist so the conflict report can be checked.
+    expect((await db.from("provider_capacity_rules").insert({ workspace_id: ws, scope: "crew", crew_id: crew, policy: "warn" })).error).toBeNull();
     const { error: se } = await db.from("shifts").insert([
       { workspace_id: ws, event_id: event, crew_id: crew, role: "Steward", title: "Doors", starts_at: iso(-1), ends_at: iso(2), status: "confirmed", location: "Ops Hall" },
       { workspace_id: ws, event_id: event, crew_id: crew, role: "Steward", title: "Bar float", starts_at: iso(1), ends_at: iso(4), status: "confirmed", location: "Ops Hall" },

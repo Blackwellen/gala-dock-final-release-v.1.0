@@ -45,7 +45,7 @@ export function EventPicker({ events, current }: { events: { id: string; name: s
   const { set } = useQueryNav(); const e = events.find(x => x.id === current);
   return <Menu label="Choose event" width={280} trigger={({ toggle, open, id }) => <button className="mk-ctx" onClick={toggle} aria-expanded={open} aria-controls={id}>
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    {e ? <img src={e.cover_image} alt="" /> : <span className="k-tile sm"><CalendarDays size={14} /></span>}
+    {e?.cover_image ? <img src={e.cover_image} alt="" /> : <span className="k-tile sm"><CalendarDays size={14} /></span>}
     <span className="k-grow"><small>For event</small><b className="k-ellipsis">{e?.name ?? "No event selected"}</b>{e?.starts_at && <small>{new Date(e.starts_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</small>}</span></button>}>
     {close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); set({ event: null }); }}>No event (browse)</button>{events.map(x => <button key={x.id} role="menuitem" className="k-menu-item" onClick={() => { close(); set({ event: x.id }); }}>{x.name}</button>)}</>}
   </Menu>;

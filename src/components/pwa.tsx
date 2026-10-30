@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import "@/styles/pwa-lifecycle.css";
+import { clearOffline } from "@/lib/pwa/offline-store";
+import { enablePush } from "@/lib/pwa/push-client";
+import { track } from "@/lib/analytics/client";
 
 /** Registers the static-asset service worker (production only) and re-validates the session on resume. */
 export function PwaLifecycle() {
@@ -22,6 +26,7 @@ export function PwaLifecycle() {
       const form = event.target;
       if (!(form instanceof HTMLFormElement) || new URL(form.action, location.href).pathname !== "/auth/signout") return;
       try { for (const key of Object.keys(localStorage)) if (key.startsWith("gd_design_")) localStorage.removeItem(key); } catch { /* storage unavailable */ }
+      void clearOffline(); // Q37: offline passes / run sheets never outlive the session on this device
     };
     // Returning to an installed app re-runs server checks so revoked access takes effect.
     let hiddenAt = 0;
@@ -29,6 +34,9 @@ export function PwaLifecycle() {
       if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
       if (navigator.onLine && hiddenAt && Date.now() - hiddenAt > 60_000) router.refresh();
     };
+    // Q37: the push service rotated this device's subscription → re-register it (only if the user already granted permission).
+    const onWorkerMessage = (event: MessageEvent) => { if (event.data?.type === "PUSH_RESUBSCRIBE" && "Notification" in window && Notification.permission === "granted") void enablePush(); };
+    if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", onWorkerMessage);
     queueMicrotask(() => { if (live) setOffline(!navigator.onLine); });
     window.addEventListener("online", sync);
     window.addEventListener("offline", sync);
@@ -40,9 +48,10 @@ export function PwaLifecycle() {
       window.removeEventListener("offline", sync);
       document.removeEventListener("visibilitychange", resume);
       document.removeEventListener("submit", signout, true);
+      if ("serviceWorker" in navigator) navigator.serviceWorker.removeEventListener("message", onWorkerMessage);
     };
   }, [router]);
   if (offline) return <div className="offline-banner" role="status">You’re offline. Changes can’t be saved until you reconnect.</div>;
-  if (update) return <div className="offline-banner pwa-update" role="status"><span>An update is ready. Save your work before reloading.</span><button type="button" onClick={() => { navigator.serviceWorker.addEventListener("controllerchange", () => location.reload(), { once: true }); update.postMessage({ type: "ACTIVATE_UPDATE" }); }}>Reload to update</button></div>;
+  if (update) return <div className="offline-banner pwa-update" role="status"><span>An update is ready. Save your work before reloading.</span><button type="button" onClick={() => { track({ name: "pwa.updated" }); navigator.serviceWorker.addEventListener("controllerchange", () => location.reload(), { once: true }); update.postMessage({ type: "ACTIVATE_UPDATE" }); }}>Reload to update</button></div>;
   return null;
 }

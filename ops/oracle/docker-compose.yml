@@ -1,6 +1,8 @@
 # Gala Dock operations stack for one Oracle Cloud "Always Free" Ampere A1 VM (4 OCPU / 24 GB RAM, Ubuntu 22.04/24.04 arm64).
-# Services: ClamAV + scanner API (malware scanning), Uptime Kuma (uptime + alerts), GlitchTip (Sentry-compatible error tracking),
-# Caddy (automatic HTTPS). See docs/operations/oracle-setup.md. Copy env.example to .env and fill it in first.
+# Services: Uptime Kuma (uptime + alerts), GlitchTip (Sentry-compatible error tracking), Caddy (automatic HTTPS).
+# Malware scanning is NOT here: ClamAV is a shared Blackwellen service (blackwellen-operations: services/av-scan-gateway,
+# infra/containers/av-scan-gateway, ops/runbooks/av-scan-gateway.md) on the Recovery & Security host. Gala Dock only holds its
+# brand token (CLAMAV_SCAN_TOKEN) and the gateway URL (CLAMAV_SCAN_URL). See docs/operations/oracle-setup.md. Copy env.example to .env and fill it in first.
 services:
   caddy:
     image: caddy:2.8
@@ -8,21 +10,6 @@ services:
     ports: ["80:80", "443:443"]
     volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data", "caddy_config:/config"]
     env_file: .env
-
-  clamav:
-    image: clamav/clamav:1.4          # multi-arch (arm64); freshclam updates signatures automatically
-    restart: unless-stopped
-    volumes: ["clamav_db:/var/lib/clamav"]
-    healthcheck: { test: ["CMD", "clamdcheck.sh"], interval: 60s, timeout: 30s, retries: 5, start_period: 300s }
-
-  av-scanner:
-    image: node:22-alpine
-    restart: unless-stopped
-    working_dir: /app
-    command: ["node", "server.mjs"]
-    volumes: ["../av-scanner/server.mjs:/app/server.mjs:ro"]
-    environment: { SCAN_TOKEN: "${SCAN_TOKEN}", CLAMD_HOST: clamav, CLAMD_PORT: "3310", PORT: "8080", MAX_BYTES: "26214400" }
-    depends_on: [clamav]
 
   uptime-kuma:
     image: louislam/uptime-kuma:1
@@ -61,4 +48,4 @@ services:
     command: ./bin/run-migrate.sh
     environment: *gt
 
-volumes: { caddy_data: {}, caddy_config: {}, clamav_db: {}, kuma_data: {}, glitchtip_pg: {} }
+volumes: { caddy_data: {}, caddy_config: {}, kuma_data: {}, glitchtip_pg: {} }

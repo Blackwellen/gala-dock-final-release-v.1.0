@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { GalaLogo } from "@/components/brand/gala-logo";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Search, MessageSquare, Bell, CircleHelp, ChevronDown, User, Ticket, Heart, CalendarDays, Sparkles, Star, LogOut, Briefcase, Compass, Menu as MenuIcon, X, House } from "lucide-react";
@@ -20,6 +21,9 @@ export const CU_NAV = [
   { href: "/account/saved", label: "Saved", icon: Heart },
 ] as const;
 
+/** Top-level customer destinations (tab bar + menu): the PWA references show no Back link on these. */
+const CU_TOP_LEVEL = ["/discover", "/plan", "/home", "/account", "/account/events", "/account/tickets", "/account/saved", "/account/reviews", "/account/inbox", "/account/help"] as const;
+
 type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; unread: number; notifications: { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string }[]; threads: RecentConversation[]; hasWorkspace: boolean };
 
 export function CustomerShell({ children, user, unread, notifications, threads, hasWorkspace }: Props) {
@@ -31,14 +35,14 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
   const active = (href: string) => pathname === href || pathname.startsWith(href + "/") || (href === "/plan" && pathname.startsWith("/plan"));
   return <div className="k-root c-root">
     <a href="#main" className="k-sr">Skip to content</a>
-    <MobileNav home="/discover" title="Gala Dock" search={{ seat: null, placeholder: "Search events, venues, artists…" }}
+    <MobileNav home="/discover" topLevel={CU_TOP_LEVEL} search={{ seat: null, placeholder: "Search events, venues, artists…" }}
       tabs={CU_NAV.slice(0, 4).map(n => ({ ...n, label: n.label === "Plan an Event" ? "Plan" : n.label }))}
-      menu={[...CU_NAV, { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "Account", icon: User, exact: true }, { href: "/account?tab=security", label: "Security", icon: User, exact: true }, { href: "/account/help", label: "Help", icon: CircleHelp }]}
+      menu={[...CU_NAV, { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "Account", icon: User, exact: true, titleOnly: true }, { href: "/account?tab=security", label: "Security", icon: User, exact: true }, { href: "/account/help", label: "Help", icon: CircleHelp, titleOnly: true }]}
       create={[{ href: "/plan?step=1", label: "Plan an event", icon: CalendarDays }]}
       messagesHref="/account/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }} />
     <header className="c-top pwa-hide-desktop-nav">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><img src="/brand/favicon-48.png" alt="" width={44} height={44} /></Link>
+      <Link href="/home" className="c-logo" aria-label="Gala Dock — Home"><GalaLogo /></Link>
       <div className="c-search c-gs"><GlobalSearch seat={null} placeholder="Search events, venues, artists, or experiences..." /></div>
       <nav className="c-nav" aria-label="Main">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</Link>)}</nav>
       <div className="c-icons">
@@ -48,7 +52,7 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
         <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="c-icon" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead()); }} aria-expanded={open} aria-controls={id} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}><Bell size={21} />{unread > 0 && <i className="o-dot" />}</button>}>
           {close => <><div style={{ padding: "6px 10px" }}><b>Notifications</b></div>{notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} className={n.read_at ? "k-muted" : "k-blue"} aria-hidden /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}</>}
         </Menu>
-        <Link className="c-icon" href="/account/help" aria-label="Help"><CircleHelp size={21} /></Link>
+        <Link className="c-icon" href="/help?from=customer" aria-label="Help"><CircleHelp size={21} /></Link>
         <Menu label="Account" width={240} trigger={({ open, toggle, id }) => <button className="c-avatar" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Account menu">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {user.avatar ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={user.avatar} alt="" /> : <span className="c-initials" aria-hidden>{user.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()}</span>}<ChevronDown size={16} aria-hidden /></button>}>

@@ -1,22 +1,30 @@
 import Link from "next/link";
-import { Plus, ChevronDown, List, LayoutGrid, CalendarDays, CalendarCheck, Radio, CheckCircle2, BarChart3, TrendingUp, ChevronLeft, ChevronRight, MapPin, Users, Clock, Heart, MoreHorizontal, ArrowRight, LayoutTemplate, Calendar } from "lucide-react";
+import { cookies } from "next/headers";
+import { Plus, ChevronDown, CalendarDays, CalendarCheck, Radio, CheckCircle2, BarChart3, TrendingUp, ChevronLeft, ChevronRight, MapPin, Users, Clock, Heart, MoreHorizontal, ArrowRight, LayoutTemplate, Calendar } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { listWorkspaceEvents, withStats, type EventStats } from "@/lib/data/organizer";
 import { Crumbs, Chip, Bar, Ring, Avatars, Avatar, Card, Empty } from "@/components/kit";
-import { EventFilters, EventRowMenu, ImportExport, CreateEventSplit, PerPageMenu } from "@/components/organizer/events-client";
+import { EventsViewSeg } from "@/components/organizer/events-view-seg";
+import { EventFilters, EventRowMenu, ImportExport, CreateEventSplit, PerPageMenu, SelectAllEvents } from "@/components/organizer/events-client";
 import { TypeChip, PhaseChip, nextAction, readinessTone, phaseOf } from "@/components/organizer/event-bits";
 import { MonthCalendar, MiniMonth, londonYmd, type CalItem } from "@/components/organizer/month-calendar";
 import { money, num, dateShort, timeRange, eventTypeLabel, EVENT_TYPE_LABEL, time } from "@/lib/format";
 import { requestTime } from "@/lib/workspace/format";
+import { untyped } from "@/lib/workspace/db";
+import { TemplateActions } from "@/components/organizer/template-actions";
 
 export const metadata = { title: "Events" };
+const EVENTS_VIEW_COOKIE = "gd_org_events_view";
 type SP = Record<string, string | string[] | undefined>;
 const str = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
 export default async function EventsPage({ searchParams }: PageProps<"/organizer/events">) {
   const sp = await searchParams as SP;
   const tab = (["all", "upcoming", "live", "completed", "templates"].includes(str(sp.tab)) ? str(sp.tab) : "all");
-  const view = (["list", "cards", "calendar"].includes(str(sp.view)) ? str(sp.view) : "list");
+  // Cards by default (ORG-002 design); an explicit ?view wins, otherwise the organizer's last choice (cookie set by the view switcher).
+  const VIEWS = ["list", "cards", "calendar"];
+  const remembered = (await cookies()).get(EVENTS_VIEW_COOKIE)?.value ?? "";
+  const view = VIEWS.includes(str(sp.view)) ? str(sp.view) : VIEWS.includes(remembered) ? remembered : "cards";
   const ctx = await getOrganizer(); const sb = ctx.supabase;
   const all = (await withStats(sb, await listWorkspaceEvents(sb, ctx.workspace.id))).filter(e => e.status !== "archived" || str(sp.status) === "archived");
   const now = new Date().toISOString();
@@ -24,7 +32,8 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
   const isDone = (e: EventStats) => ["completed", "closed"].includes(e.status) || (!!e.ends_at && e.ends_at < now);
   const isUpcoming = (e: EventStats) => !!e.starts_at && e.starts_at > now && !["cancelled", "completed", "closed"].includes(e.status);
   const counts = { all: all.length, upcoming: all.filter(isUpcoming).length, live: all.filter(isLive).length, completed: all.filter(isDone).length };
-  const { data: templates } = await sb.from("event_templates").select("id,name,description,event_types,modules,created_at,source_event_id").eq("workspace_id", ctx.workspace.id).order("created_at", { ascending: false });
+  const { data: templates } = await untyped(sb).from("event_templates").select("id,name,description,event_types,modules,created_at,updated_at,source_event_id,scope,version,workspace_id").or(`workspace_id.eq.${ctx.workspace.id},scope.eq.platform`).eq("status", "active").order("created_at", { ascending: false }) as unknown as { data: TemplateRow[] | null };
+  const canWriteEvents = ["owner", "manager", "member"].includes(String(ctx.role));
   // Filters (server-side)
   let rows = tab === "upcoming" ? all.filter(isUpcoming) : tab === "live" ? all.filter(isLive) : tab === "completed" ? all.filter(isDone) : all;
   const q = str(sp.q).toLowerCase();
@@ -45,7 +54,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
   const qs = (patch: Record<string, string | number | null>) => { const p = new URLSearchParams(); for (const [k, v] of Object.entries(sp)) if (typeof v === "string") p.set(k, v); for (const [k, v] of Object.entries(patch)) v == null ? p.delete(k) : p.set(k, String(v)); return `/organizer/events?${p}`; };
   const me = { name: ctx.name, avatar: "/assets/gd/av-alex-organizer.webp" };
   const types = [...new Set(all.map(e => e.event_type))].map(t => ({ key: t, label: EVENT_TYPE_LABEL[t] ?? eventTypeLabel(t) }));
-  const exportRows = rows.map(e => ({ name: e.name, type: eventTypeLabel(e.event_type), date: e.starts_at ?? "", venue: e.venue_name, client: e.client_name, status: phaseOf(e).label, readiness: e.readiness, tickets_sold: e.sold, ticket_capacity: e.ticketCap, budget: Number(e.budget_total ?? 0), forecast_profit: Number(e.target_profit ?? 0) }));
+  const exportRows = rows.map(e => ({ id: e.id, name: e.name, type: eventTypeLabel(e.event_type), date: e.starts_at ?? "", venue: e.venue_name, client: e.client_name, status: phaseOf(e).label, readiness: e.readiness, tickets_sold: e.sold, ticket_capacity: e.ticketCap, budget: Number(e.budget_total ?? 0), forecast_profit: Number(e.target_profit ?? 0) }));
 
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events" }]} />
@@ -57,9 +66,9 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
     </div>
     <div className="k-between ev-tabs-row">
       <nav className="k-tabs" aria-label="Event lists" style={{ borderBottom: 0 }}>{([["all", "All", counts.all], ["upcoming", "Upcoming", counts.upcoming], ["live", "Live", counts.live], ["completed", "Completed", counts.completed], ["templates", "Templates", templates?.length ?? 0]] as const).map(([k, l, c]) => <Link key={k} href={qs({ tab: k === "all" ? null : k, page: null })} className="k-tab" aria-current={tab === k ? "page" : undefined}>{l}<span className="ev-count">{c}</span></Link>)}</nav>
-      <div className="k-seg" role="group" aria-label="View">{([["list", "List", List], ["cards", "Cards", LayoutGrid], ["calendar", "Calendar", CalendarDays]] as const).map(([k, l, I]) => <Link key={k} href={qs({ view: k === "list" ? null : k })} aria-current={(view === k) ? "page" : undefined}><I size={15} />{l}</Link>)}</div>
+      <EventsViewSeg view={view} hrefs={{ list: qs({ view: "list" }), cards: qs({ view: "cards" }), calendar: qs({ view: "calendar" }) }} cookie={EVENTS_VIEW_COOKIE} />
     </div>
-    {tab === "templates" ? <TemplatesGrid templates={templates ?? []} /> : <>
+    {tab === "templates" ? <TemplatesGrid templates={templates ?? []} workspaceId={ctx.workspace.id} canWrite={canWriteEvents} /> : <>
       <EventFilters clients={[...new Set(all.map(e => e.client_name).filter(Boolean))]} venues={[...new Set(all.map(e => e.venue_name).filter(Boolean))]} types={types} owners={[ctx.name]} />
       {view === "list" && <div className="k-grid k-g6 ev-kpis">
         {[[CalendarDays, "blue", num(counts.all), "Total events"], [CalendarCheck, "green", num(counts.upcoming), "Upcoming"], [Radio, "red", num(counts.live), "Live now"], [CheckCircle2, "blue", num(counts.completed), "Completed"], [BarChart3, "blue", money(totalRevenue), "Total revenue"], [TrendingUp, "green", money(forecast), "Forecast profit"]].map(([I, t, v, l]) => { const Icon = I as typeof Radio; return <div key={l as string} className="ev-kpi"><span className={`k-tile ${t as string}`}><Icon size={19} /></span><div><b>{v as string}</b><span>{l as string}</span></div></div>; })}
@@ -67,9 +76,9 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
       {rows.length === 0 ? <Card><Empty icon={CalendarDays} title="No events match these filters" text="Try clearing filters, or create a new event." action={<Link className="k-btn primary" href="/organizer/events/new?step=1"><Plus size={15} />Create Event</Link>} /></Card>
         : view === "list" ? <Card flush aria-label="Events list">
           <div className="k-table-wrap"><table className="k-table ev-table">
-            <thead><tr><th style={{ width: 36 }}><input type="checkbox" aria-label="Select all events on this page" /></th><th>Event</th><th>Type</th><th>Date</th><th>Venue</th><th>Owner</th><th>Readiness</th><th>Tickets</th><th>Budget</th><th>Forecast</th><th>Status</th><th>Next action</th><th style={{ width: 44 }}><span className="k-sr">Actions</span></th></tr></thead>
+            <thead><tr><th style={{ width: 36 }}><SelectAllEvents /></th><th>Event</th><th>Type</th><th>Date</th><th>Venue</th><th>Owner</th><th>Readiness</th><th>Tickets</th><th>Budget</th><th>Forecast</th><th>Status</th><th>Next action</th><th style={{ width: 44 }}><span className="k-sr">Actions</span></th></tr></thead>
             <tbody>{pageRows.map(e => { const na = nextAction(e); const tp = e.ticketCap ? Math.round((100 * e.sold) / e.ticketCap) : 0; return <tr key={e.id}>
-              <td><input type="checkbox" aria-label={`Select ${e.name}`} /></td>
+              <td><input type="checkbox" name="ev-select" value={e.id} aria-label={`Select ${e.name}`} /></td>
               <td><Link href={`/organizer/events/${e.id}`} className="k-row" style={{ gap: 12 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" className="ev-thumb" /><span><b className="ev-name">{e.name}</b>{e.client_name && <span className="k-small k-muted">{e.client_name}</span>}</span></Link></td>
               <td><TypeChip type={e.event_type} /></td>
               <td className="k-nowrap"><div style={{ color: "var(--k-ink)" }}>{dateShort(e.starts_at)}</div><div className="k-small k-muted">{timeRange(e.starts_at, e.ends_at)}</div></td>
@@ -105,7 +114,7 @@ function Pager({ page, pages, per, total, qs }: { page: number; pages: number; p
 function EventCard({ e, me }: { e: EventStats; me: { name: string; avatar: string } }) {
   const na = nextAction(e); const tp = e.ticketCap ? Math.round((100 * e.sold) / e.ticketCap) : 0; const ph = phaseOf(e);
   return <article className="ev-card">
-    <Link href={`/organizer/events/${e.id}`} className="ev-card-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image} alt="" />
+    <Link href={`/organizer/events/${e.id}`} className="ev-card-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" />
       <span className="ev-card-chips"><Chip tone={ph.tone === "gray" ? "gray" : `solid-${ph.tone === "red" ? "purple" : ph.tone === "amber" ? "purple" : ph.tone === "green" ? "green" : "blue"}` as "solid-green"} className={ph.tone === "red" ? "ev-chip-red" : ph.tone === "amber" ? "ev-chip-amber" : ""}>{ph.label}</Chip><TypeChip type={e.event_type} /></span>
       <span className="ev-card-btns"><span className="ev-card-btn" aria-hidden><Heart size={14} /></span><span className="ev-card-btn sq" aria-hidden><MoreHorizontal size={14} /></span></span>
     </Link>
@@ -153,10 +162,16 @@ async function CalendarView({ events, sp, qs, supabase, workspaceId, counts, tot
   </div>;
 }
 
-function TemplatesGrid({ templates }: { templates: { id: string; name: string; description: string; event_types: string[]; modules: unknown; created_at: string }[] }) {
-  if (!templates.length) return <Card><Empty icon={LayoutTemplate} title="No templates yet" text="Save any event as a reusable template from its menu. Templates exclude guests, payments, private messages and booking history." /></Card>;
-  return <div className="k-grid k-g3">{templates.map(t => { const mods = Object.entries((t.modules ?? {}) as Record<string, boolean>).filter(([, v]) => v).map(([k]) => k); return <Card key={t.id}><div className="k-row" style={{ gap: 10, marginBottom: 8 }}><span className="k-tile purple"><LayoutTemplate size={17} /></span><div><b className="k-strong">{t.name}</b><div className="k-xs k-muted">Created {dateShort(t.created_at)}</div></div></div>
-    <p className="k-small" style={{ marginBottom: 10 }}>{t.description}</p><div className="k-row k-wrap" style={{ gap: 5, marginBottom: 12 }}>{t.event_types.map(x => <Chip key={x} tone="blue">{x}</Chip>)}</div>
-    <div className="k-xs k-muted" style={{ marginBottom: 12 }}>Includes: {mods.join(", ") || "—"}</div>
-    <Link href={`/organizer/events/new?step=1&template=${t.id}`} className="k-btn primary block">Use template</Link></Card>; })}</div>;
+type TemplateRow = { id: string; name: string; description: string; event_types: string[]; modules: unknown; created_at: string; updated_at: string | null; source_event_id: string | null; scope: string; version: number; workspace_id: string | null };
+/** Template library (Q14): workspace templates (versioned families; archiving retires every version) and Gala Dock starter templates, each usable straight
+ * into a dated draft event or through the full create-event wizard. */
+function TemplatesGrid({ templates, workspaceId, canWrite }: { templates: TemplateRow[]; workspaceId: string; canWrite: boolean }) {
+  if (!templates.length) return <Card><Empty icon={LayoutTemplate} title="No templates yet" text="Save any event as a reusable template from its menu (More actions › Save as template). Templates exclude guests, payments, private messages and booking history." action={<Link className="k-btn primary" href="/organizer/events">Choose an event</Link>} /></Card>;
+  const groups = [["Your templates", templates.filter(t => t.workspace_id === workspaceId)], ["Gala Dock templates", templates.filter(t => t.scope === "platform")]] as const;
+  return <div className="k-col" style={{ gap: 18 }}>{groups.filter(([, list]) => list.length).map(([title, list]) => <section key={title} aria-label={title}>
+    <h2 className="k-small k-strong" style={{ marginBottom: 8 }}>{title} <span className="k-muted">· {list.length}</span></h2>
+    <div className="k-grid k-g3 tpl-grid">{list.map(t => { const mods = Object.entries((t.modules ?? {}) as Record<string, unknown>).filter(([, v]) => v === true).map(([k]) => k); const own = t.workspace_id === workspaceId; return <Card key={t.id} className="tpl-card"><div className="k-row" style={{ gap: 10, marginBottom: 8 }}><span className="k-tile purple"><LayoutTemplate size={17} /></span><div className="k-grow"><b className="k-strong">{t.name}</b><div className="k-xs k-muted">{own ? `Version ${t.version} · updated ${dateShort(t.updated_at ?? t.created_at)}` : "Starter template by Gala Dock"}</div></div>{own && t.version > 1 && <Chip tone="purple">v{t.version}</Chip>}</div>
+      <p className="k-small" style={{ marginBottom: 10 }}>{t.description || "No description."}</p><div className="k-row k-wrap" style={{ gap: 5, marginBottom: 12 }}>{t.event_types.map(x => <Chip key={x} tone="blue">{eventTypeLabel(x)}</Chip>)}</div>
+      <div className="k-xs k-muted" style={{ marginBottom: 12 }}>Includes: {mods.join(", ") || "—"}{own && t.source_event_id && <> · <Link className="k-link" href={`/organizer/events/${t.source_event_id}/template?step=1`}>Save a new version</Link></>}</div>
+      <TemplateActions id={t.id} name={t.name} canWrite={canWrite} canArchive={own && canWrite} /></Card>; })}</div></section>)}</div>;
 }

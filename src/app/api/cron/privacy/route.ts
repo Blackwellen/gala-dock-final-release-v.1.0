@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
+import { withObservability } from "@/lib/observability/http";
 
 export const maxDuration = 60;
 const authorised = (h: string | null) => {
@@ -14,11 +15,11 @@ const authorised = (h: string | null) => {
  * (the user is told what to resolve). Erasure de-identifies the auth identity too: the email is replaced, metadata cleared and the
  * account banned so it can never sign in again; retained financial/audit rows keep only the opaque user id.
  */
-export async function POST(request: Request) {
+export const POST = withObservability("cron.privacy", async (request: Request) => {
   if (!authorised(request.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
   const admin = createAdminClient(), db = untyped(admin as never);
   const { data: due } = await db.rpc("due_deletions");
-  const out = { erased: 0, blocked: 0, failed: 0 };
+  const out = { erased: 0, blocked: 0, held: 0, failed: 0 };
   for (const d of (due ?? []) as { user_id: string }[]) {
     try {
       const { data: blockers } = await db.rpc("deletion_blockers", { p_user: d.user_id });
@@ -38,10 +39,16 @@ export async function POST(request: Request) {
       else await db.from("privacy_requests").insert({ user_id: d.user_id, requester_email: "erased", kind: "erasure", status: "completed", completed_at: new Date().toISOString(), outcome: JSON.stringify(manifest).slice(0, 1000), detail: "Self-service account deletion" });
       out.erased++;
     } catch (e) {
+      // Q32: a legal hold defers erasure without telling the subject (no tipping-off). Retried daily; visible to privacy admins.
+      if ((e as Error).message === "legal_hold") {
+        out.held++;
+        await db.from("audit_events").insert({ actor_type: "system", event: "privacy.erasure_deferred", metadata: { user: d.user_id, reason: "legal_hold" } });
+        continue;
+      }
       out.failed++;
       await db.from("audit_events").insert({ actor_type: "system", event: "privacy.erasure_failed", metadata: { user: d.user_id, error: (e as Error).message.slice(0, 200) } });
     }
   }
   return NextResponse.json(out, { headers: { "Cache-Control": "no-store" } });
-}
+}, { kind: "worker" });
 export const GET = POST;

@@ -7,10 +7,15 @@ import type { ProEvent, EventData } from "@/lib/data/event";
 import { EventPlanCard } from "./plan-card";
 import { SubTabs } from "./header";
 import { PublicPageToggles, CopyLink } from "./controls";
+import { Boxes, Repeat, ClipboardList, Rocket } from "lucide-react";
+import { InventorySection } from "./sections/inventory";
+import { ResaleSection } from "./sections/resale";
+import { RegistrationSection } from "./sections/registration";
+import { CampaignsSection } from "./sections/campaigns";
 
 const TIER_STATUS: Record<string, [string, "green" | "blue" | "gray" | "amber" | "red"]> = { on_sale: ["On sale", "green"], scheduled: ["Scheduled", "blue"], draft: ["Draft", "gray"], paused: ["Paused", "amber"], sold_out: ["Sold out", "red"], hidden: ["Hidden", "gray"] };
 
-export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section: string }) {
+export function SellTab({ e, d, section, role = "" }: { e: ProEvent; d: EventData; section: string; role?: string }) {
   const id = e.id; const base = `/organizer/events/${id}`;
   const items = [
     { key: "tickets", label: "Tickets", icon: Ticket, href: `${base}?tab=sell` },
@@ -22,6 +27,23 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
     { key: "audience", label: "Audience", icon: Users, href: `${base}/promotion?tab=audience` },
     { key: "performance", label: "Performance", icon: BarChart3, href: `${base}/promotion?tab=performance` },
   ];
+  const more = [
+    { key: "inventory", label: "Inventory & allocations", icon: Boxes, href: `${base}?tab=sell&section=inventory` },
+    { key: "resale", label: "Resale & risk", icon: Repeat, href: `${base}?tab=sell&section=resale` },
+    { key: "registration", label: "Registration", icon: ClipboardList, href: `${base}?tab=sell&section=registration` },
+    { key: "campaigns", label: "Campaigns", icon: Rocket, href: `${base}?tab=sell&section=campaigns` },
+  ];
+  const extra = more.find(m => m.key === section);
+  if (extra) {
+    const sp = { e, d, role };
+    return <>
+      <SubTabs current={extra.key} items={items} more={more} />
+      {extra.key === "inventory" && <InventorySection {...sp} />}
+      {extra.key === "resale" && <ResaleSection {...sp} />}
+      {extra.key === "registration" && <RegistrationSection {...sp} />}
+      {extra.key === "campaigns" && <CampaignsSection {...sp} />}
+    </>;
+  }
   const views = d.metrics.reduce((s, m) => s + m.page_views, 0);
   const viewsSpark = d.metrics.map(m => m.page_views);
   const half = Math.floor(d.metrics.length / 2), firstHalf = d.metrics.slice(0, half).reduce((s, m) => s + m.page_views, 0), secondHalf = d.metrics.slice(half).reduce((s, m) => s + m.page_views, 0);
@@ -36,7 +58,7 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
   const srcs = (d.metrics.at(-1)?.sources ?? {}) as Record<string, number>;
   const srcColors = ["#ec4899", "#6366f1", "#0f172a", "#94a3b8", "#cbd5e1"];
   return <>
-    <SubTabs current="tickets" items={items} />
+    <SubTabs current="tickets" items={items} more={more} />
     <div className="sl-grid">
       <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
         <div className="k-grid k-g4 sl-kpis">
@@ -50,7 +72,7 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
             <table className="k-table" style={{ marginTop: 8 }}><thead><tr><th>Tier</th><th>Price</th><th>Sold / Capacity</th><th>Status</th><th /></tr></thead>
               <tbody>{d.tiers.filter(t => t.kind !== "comp").map(t => { const [l, tone] = TIER_STATUS[t.status] ?? [t.status, "gray"]; return <tr key={t.id}><td><span className="k-row" style={{ gap: 8 }}><i className="k-dot" style={{ background: t.color }} /><b style={{ fontWeight: 550, color: "var(--k-ink)" }} className="k-ellipsis">{t.name}</b></span></td><td>{money(t.price, "GBP", { decimals: true })}</td><td style={{ minWidth: 110 }}><span className="k-small">{num(t.sold)} / {num(t.quantity)}</span><Bar value={pct(t.sold, t.quantity)} thin tone={t.kind === "vip" ? "purple" : t.kind === "group" ? "amber" : t.kind === "early" ? "green" : undefined} label={`${t.name} sold`} /></td><td><Chip tone={tone}>{l}</Chip></td><td><Link href={`${base}/tickets/setup?step=2&tier=${t.id}`} className="k-icon-btn" aria-label={`Edit ${t.name}`}><MoreHorizontal size={15} /></Link></td></tr>; })}</tbody></table>
             {!d.tiers.length && <p className="k-small" style={{ padding: 12 }}>No ticket tiers yet. <Link className="k-link" href={`${base}/tickets/setup?step=1`}>Set up tickets</Link></p>}
-            <div style={{ textAlign: "right", marginTop: 10 }}><Link className="k-link" href={`${base}/tickets/setup?step=3`}>Manage ticket settings <ArrowRight size={12} /></Link></div></Card>
+            <div style={{ textAlign: "right", marginTop: 10 }}><Link className="k-link" href={`${base}/tickets/setup?step=4`}>Manage ticket settings <ArrowRight size={12} /></Link></div></Card>
           <Card><div className="k-between"><h3 className="ov-h" style={{ fontSize: 15 }}>Venue map & ticketing</h3><Link href={`${base}/map`} className="k-btn outline sm"><PenLine size={13} />Edit map</Link></div>
             <EventPlanCard eventId={e.id} venueListingId={(e as { venue_listing_id?: string | null }).venue_listing_id} tiers={d.tiers.map(t => ({ id: t.id, name: t.name, color: (t as { color?: string | null }).color, sold: Number(t.sold ?? 0), quantity: Number(t.quantity ?? 0) }))} height={180} /></Card>
         </div>
@@ -60,7 +82,7 @@ export function SellTab({ e, d, section }: { e: ProEvent; d: EventData; section:
               <div className="k-grid k-g2" style={{ gap: 6, marginTop: 10 }}>{isPublic && e.slug ? <Link href={`/events/${e.slug}`} target="_blank" className="k-btn outline sm"><Link2 size={13} />View public page</Link> : <span className="k-btn outline sm" aria-disabled style={{ opacity: .6 }}>Not published</span>}<Link href={`${base}/page`} className="k-btn outline sm">Edit page</Link></div></div>
               <div><PublicPageToggles eventId={id} initial={page} /><div style={{ marginTop: 10 }}>{e.slug && <CopyLink path={`/events/${e.slug}`} />}</div></div></div></Card>
           <Card><div className="k-between"><h3 className="ov-h" style={{ fontSize: 15 }}>Posters & media</h3><Link className="k-link" href={`${base}/media?tab=library`}>View all <ArrowRight size={12} /></Link></div>
-            <div className="sl-posters">{posters.slice(0, 4).map(p => /* eslint-disable-next-line @next/next/no-img-element */ <img key={p.id} src={p.url.startsWith("/") ? p.url : `/api/files/${p.id}`} alt={p.title} />)}{[e.cover_image, "/assets/gd/ev-neon.webp", "/assets/gd/oe-sunset.webp"].slice(0, Math.max(0, 3 - posters.length)).map((s, i) => /* eslint-disable-next-line @next/next/no-img-element */ <img key={i} src={s} alt="" className="placeholder" />)}<Link href={`${base}/media`} className="sl-add"><Plus size={18} />Create poster</Link></div>
+            <div className="sl-posters">{posters.slice(0, 4).map(p => /* eslint-disable-next-line @next/next/no-img-element */ <img key={p.id} src={p.url.startsWith("/") || p.url.includes("/storage/v1/object/public/") ? p.url : `/api/files/${p.id}`} alt={p.title} />)}{[e.cover_image, "/assets/gd/ev-neon.webp", "/assets/gd/oe-sunset.webp"].slice(0, Math.max(0, 3 - posters.length)).map((s, i) => /* eslint-disable-next-line @next/next/no-img-element */ <img key={i} src={s} alt="" className="placeholder" />)}<Link href={`${base}/media`} className="sl-add"><Plus size={18} />Create poster</Link></div>
             {!posters.length && <p className="k-xs k-muted" style={{ marginTop: 6 }}>No posters yet — event photography shown. Create posters in the Poster & Media builder.</p>}</Card>
         </div>
         <div className="sl-row3">

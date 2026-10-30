@@ -60,6 +60,10 @@ export default async function AdminOverview(props: PageProps<"/admin">) {
     rows<{ id: string; name: string; category: string; status: string; metrics: { label?: string; sort?: number } | null }>(db.from("integrations").select("id,name,category,status,metrics")),
     rows<{ rating: number | null; published: boolean }>(db.from("listings").select("rating,published").eq("published", true)),
   ]);
+  // W08: Partner Activity reads the real partner programme (the old list was seeded connector "health" for Eventbrite/Slack/Zoom/Salesforce,
+  // which have no connector). Gated on the Partners permission like /admin/partners.
+  const partnerRows = can("partners") ? await rows<{ id: string; name: string; kind: string; status: string; referrals: number | null; earned: number | string | null }>(
+    db.from("partners").select("id,name,kind,status,referrals,earned").order("earned", { ascending: false, nullsFirst: false }).limit(5)) : null;
   const avatars = cases?.length && (can("users") || can("support"))
     ? new Map((await rows<{ id: string; avatar_url: string }>(db.from("profiles").select("id,avatar_url").in("id", cases.map(c => c.requester_id).filter(Boolean) as string[]))).map(p => [p.id, p.avatar_url])) : new Map<string, string>();
 
@@ -87,7 +91,6 @@ export default async function AdminOverview(props: PageProps<"/admin">) {
     return { open: open.length, review: review.length, done: done.length, dOpen: delta(inWin(open, sinceIso), inWin(open, prevIso, sinceIso)), dReview: delta(inWin(review, sinceIso), inWin(review, prevIso, sinceIso)), dDone: delta(inWin(done, sinceIso), inWin(done, prevIso, sinceIso)), cats };
   })();
   const catIcon = (cat: string) => /content/i.test(cat) ? Ban : /fraud/i.test(cat) ? CircleAlert : /policy/i.test(cat) ? Flag : /harass/i.test(cat) ? MessageSquareWarning : /copyright|ip/i.test(cat) ? Copyright : ShieldCheck;
-  const partnersInt = integrations.filter(i => ["sync", "payments", "messaging", "meetings", "crm"].includes(i.category) && i.metrics?.label && !i.metrics?.sort).slice(0, 5);
   const agentInt = integrations.filter(i => ["agent", "ai", "automation", "calendar"].includes(i.category)).sort((a, b) => (a.category === "agent" ? -1 : b.category === "agent" ? 1 : 0)).slice(0, 4);
   const aov = c && c.orders ? Number(c.gmv) / c.orders : 0, aovPrev = c && c.orders_prev ? Number(c.gmv_prev) / c.orders_prev : 0;
   const rated = listings.filter(l => l.rating), avgRating = rated.length ? rated.reduce((a, l) => a + Number(l.rating), 0) / rated.length : null;
@@ -169,9 +172,10 @@ export default async function AdminOverview(props: PageProps<"/admin">) {
       </section>
       <section className="aa-panel ao-partners">
         <div className="ao-ph"><h2>Partner Activity</h2>{can("partners") && <Link className="aa-link" href="/admin/partners">View All <ArrowRight aria-hidden="true" /></Link>}</div>
-        <ul className="ao-plist">{partnersInt.map(i => <li key={i.id}><span className="ao-logo" style={{ background: logoTone(i.name) }}>{i.name[0]}</span><b>{i.name}</b><small>{i.metrics?.label}</small>
-          <span className={`ao-health ${i.status}`}>{statusLabel(i.status)}</span></li>)}
-          {!partnersInt.length && <li className="aa-empty">No partner integrations connected.</li>}</ul>
+        {partnerRows ? <ul className="ao-plist">{partnerRows.map(i => <li key={i.id}><Link href={`/admin/partners?q=${encodeURIComponent(i.name)}`} className="ao-plink"><span className="ao-logo" style={{ background: logoTone(i.name) }}>{i.name[0]}</span><b>{i.name}</b>
+          <small>{titleCase(i.kind)} · {Number(i.referrals ?? 0).toLocaleString("en-GB")} referrals · £{Math.round(Number(i.earned ?? 0)).toLocaleString("en-GB")} earned</small></Link>
+          <span className={`ao-health ${i.status === "active" ? "healthy" : i.status === "paused" ? "degraded" : "down"}`}>{titleCase(i.status)}</span></li>)}
+          {!partnerRows.length && <li className="aa-empty">No partners yet.</li>}</ul> : <p className="aa-empty">Needs the Partners permission.</p>}
       </section>
     </div>
 

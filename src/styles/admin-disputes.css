@@ -4,7 +4,7 @@
 .add-split{display:grid;gap:14px;align-items:start}
 .add-split.has-detail{grid-template-columns:minmax(0,1fr) 420px}
 .add-detail{display:grid;gap:12px}
-.add-detail h2{font-size:15px;font-weight:700;color:#0d0d63;margin:0}
+.add-detail h2{font-size: var(--k-title-card);font-weight:700;color:#0d0d63;margin:0}
 .add-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
 .add-kv div{background:#f8fafe;border-radius:8px;padding:8px 10px}
 .add-kv dt{font-size:10.5px;color:#3f4596}.add-kv dd{margin:2px 0 0;font-weight:600;color:#0d0d63;font-size:12.5px}

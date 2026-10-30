@@ -11,7 +11,7 @@
 .wz-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
 .wz-h { font-size: 17px; font-weight: 700; color: var(--k-ink); }
 .wz-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border: 1px solid var(--k-line); border-radius: 12px; position: sticky; bottom: 10px; z-index: 5; box-shadow: 0 -4px 20px #0f173a0a; }
-.pr-edit td { padding: 5px 6px; } .pr-edit .k-input { height: 32px; }
+.pr-edit td { padding: 5px 6px; } .pr-edit .k-input { height: var(--k-input-dense-h); }
 .pr-opt { display: grid; grid-template-columns: auto 1fr 1.4fr auto auto; gap: 8px; align-items: center; }
 .pr-preview { border: 1px solid var(--k-line); border-radius: 12px; padding: 22px; background: #fff; }
 .pr-prev-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--k-line-2); padding-bottom: 12px; }
@@ -39,3 +39,37 @@
 @media print { .o-top, .o-side, .o-tabbar, .k-tabs, .ld-head .k-btn, .k-agent, .wz-foot { display: none !important; } .o-main { margin: 0 !important; } }
 @media (max-width: 1280px) { .wz-grid, .pr-ov { grid-template-columns: minmax(0, 1fr); } .pr-three, .pr-conv { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .pr-two, .pr-three, .pr-conv { grid-template-columns: minmax(0, 1fr); } .pr-opt { grid-template-columns: auto 1fr; } }
+/* D01 proposals (ORG-W02, five steps): linked-lead card, presentation settings and client preview. */
+.pr-lead { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 10px; border: 1px solid var(--k-line); border-radius: 10px; background: #fff; }
+.pr-lead-ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: #f1ebff; color: #7c3aed; flex-shrink: 0; }
+.pr-lead b { display: block; font-size: 13.5px; color: var(--k-ink); } .pr-lead small { font-size: 12px; color: var(--k-muted); }
+.pr-lead-st { font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: #e8f7ee; color: #16803c; white-space: nowrap; }
+.pr-lead-link { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-end; font-size: 12.5px; margin-top: 6px; }
+.pr-lead-sum { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: #f7f9fd; border: 1px solid var(--k-line-2); font-size: 12.5px; }
+.pr-lead-sum ul { margin: 6px 0 0; padding-left: 18px; color: var(--k-ink-2); display: grid; gap: 3px; }
+.pr-color { width: 44px; height: 40px; padding: 2px; border: 1px solid var(--k-line); border-radius: 8px; background: #fff; flex-shrink: 0; }
+.pr-covers { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.pr-covers > button { width: 110px; height: 66px; border-radius: 10px; overflow: hidden; border: 2px solid transparent; padding: 0; background: #f2f5fb; box-shadow: 0 0 0 1px var(--k-line); }
+.pr-covers > button[data-on] { border-color: var(--k-blue); }
+.pr-covers img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pr-cover-none { font-size: 12.5px; color: var(--k-muted); }
+.pr-pv { --pr-c: #2563eb; border: 1px solid var(--k-line); border-radius: 12px; padding: 18px; background: #fff; font-size: 12.5px; color: var(--k-ink-2); }
+.pr-pv.mobile { max-width: 360px; margin: 0 auto; }
+.pr-pv-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; color: var(--k-ink); }
+.pr-pv-head span { text-align: right; display: grid; } .pr-pv-head span b { color: var(--pr-c); font-size: 12px; letter-spacing: .06em; }
+.pr-pv-cover { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-top: 12px; display: block; }
+.pr-pv.mobile .pr-pv-cover { height: 120px; }
+.pr-pv h3 { font-size: 20px; margin: 12px 0 2px; color: var(--k-ink); } .pr-pv-tag { margin: 0; color: var(--pr-c); }
+.pr-pv-facts { display: flex; flex-wrap: wrap; gap: 14px; margin: 10px 0; } .pr-pv-facts span { display: inline-flex; gap: 5px; align-items: center; }
+.pr-pv h4 { font-size: 13px; margin: 14px 0 6px; color: var(--k-ink); } .pr-pv-p { margin: 0; line-height: 1.55; }
+.pr-pv-items, .pr-pv-terms, .pr-pv-next { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pr-pv-items li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--k-line-2); padding-bottom: 5px; } .pr-pv-items em { font-style: normal; font-size: 11px; color: #7c3aed; }
+.pr-pv-total { display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px; color: var(--k-ink); } .pr-pv-total b { color: var(--pr-c); }
+.pr-pv-dep { color: var(--k-muted); }
+.pr-pv-next li { display: flex; gap: 6px; align-items: center; } .pr-pv-next svg { color: var(--pr-c); }
+.pr-pv-classic h3 { font-family: Georgia, "Times New Roman", serif; } .pr-pv-classic .pr-pv-head { border-bottom: 2px solid var(--pr-c); padding-bottom: 8px; }
+.pr-pv-minimal { border-color: transparent; box-shadow: none; padding: 6px 2px; } .pr-pv-minimal .pr-pv-cover { height: 90px; }
+/* W12 wizard sweep (≤1279, phone/tablet shell): the sticky Back/Continue bar sat at bottom:10px, under the fixed .pwa-tabs bar
+   (z-index 65), so it was hidden while scrolling the RFQ, proposal and lead wizards — park it above the tab bar (as the
+   provider wizards do in provider-pwa.css). */
+@media (max-width: 1279px) { .k-root.o-root .wz-foot { bottom: calc(var(--pwa-bottom, 70px) + 10px); } }

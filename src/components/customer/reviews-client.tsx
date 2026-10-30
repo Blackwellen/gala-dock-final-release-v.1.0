@@ -14,7 +14,7 @@ function Stars({ value, onChange, label }: { value: number; onChange: (n: number
   const [hover, setHover] = useState(0); const v = hover || value;
   return <div className="rv-rate" role="radiogroup" aria-label={label} onMouseLeave={() => setHover(0)}>
     {[1, 2, 3, 4, 5].map(n => <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} star${n > 1 ? "s" : ""} — ${WORD[n]}`} className={n <= v ? "on" : ""} onMouseEnter={() => setHover(n)} onClick={() => onChange(n)}
-      onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); onChange(Math.min(5, value + 1)); } if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); onChange(Math.max(1, value - 1)); } }} tabIndex={value === n || (!value && n === 1) ? 0 : -1}><Star size={21} /></button>)}
+      onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); onChange(Math.min(5, value + 1)); } if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); onChange(Math.max(1, value - 1)); } }} tabIndex={value === n || (!value && n === 1) ? 0 : -1}><Star size={20} /></button>)}
   </div>;
 }
 

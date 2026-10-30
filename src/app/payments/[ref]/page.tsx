@@ -31,7 +31,7 @@ export default async function PaymentStatusPage({ params, searchParams }: PagePr
       <p className="mk-note">{po.description} · {money(po.amount_minor / 100, po.currency)}</p>
       <span className={`mk-tag ${tone}`}>{label}</span>
       <p className="mk-note">{pending ? "We confirm payments with Stripe directly. This usually takes a few seconds — this page updates automatically."
-        : failed ? "You haven’t been charged. You can try again from your booking." : "Your payment is protected until the service is delivered, then released to the provider."}</p>
+        : failed ? "You haven’t been charged. You can try again from your booking." : "Your payment was processed by Stripe and paid to the provider. Cancellations and refunds follow the booking’s agreed terms."}</p>
       <p className="mk-note">Reference {po.reference}</p>
       <Link className="mk-btn primary" href={back}>Back to your booking</Link>
       {pending && <RefreshWhilePending />}

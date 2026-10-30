@@ -961,7 +961,6 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .auth-page.auth-secure-access .auth-card>h2{margin-bottom:8px!important}
 .auth-page.auth-secure-access .auth-card>.auth-description{letter-spacing:0.2px!important}
 .auth-page.auth-secure-access .auth-card form{margin-top:-4px!important}
-.auth-page.auth-secure-access .auth-card form{zoom:1.01!important}
 .auth-page.auth-secure-access .auth-card .auth-security{margin-top:16px!important}
 .auth-page.auth-secure-access .auth-card .auth-security small{font-size:11.0px!important}
 
@@ -1064,13 +1063,11 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* tuned onboarding: provider-business */
 .onboarding-page.setup-provider-business .setup-main{padding-top:27px!important}
-.onboarding-page.setup-provider-business .form-main{zoom:1.03!important}
-.onboarding-page.setup-provider-business .form-main>h2{font-size:44px!important}
-.onboarding-page.setup-provider-business .form-main>h2{letter-spacing:-2.0px!important}
+.onboarding-page.setup-provider-business .form-main>h2{font-size:45.5px!important}
+.onboarding-page.setup-provider-business .form-main>h2{letter-spacing:-2.1px!important}
 .onboarding-page.setup-provider-business .form-main>h2{margin-bottom:6px!important}
-.onboarding-page.setup-provider-business .form-main .field>label{font-size:14.0px!important}
+.onboarding-page.setup-provider-business .form-main .field>label{font-size:14.5px!important}
 .onboarding-page.setup-provider-business .form-wide{margin-top:-20px!important}
-.onboarding-page.setup-provider-business .setup-assistant{zoom:0.99!important}
 .onboarding-page.setup-provider-business .setup-story h1{font-size:43.5px!important}
 .onboarding-page.setup-provider-business .setup-story .setup-story-description{font-size:15.0px!important}
 .onboarding-page.setup-provider-business .setup-story .setup-features{row-gap:24px!important}
@@ -1078,15 +1075,13 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* tuned onboarding: organizer-brand */
 .onboarding-page.setup-organizer-brand .setup-main{padding-top:36px!important}
-.onboarding-page.setup-organizer-brand .form-main{zoom:0.95!important}
-.onboarding-page.setup-organizer-brand .form-main>h2{font-size:42px!important}
+.onboarding-page.setup-organizer-brand .form-main>h2{font-size:40px!important}
 .onboarding-page.setup-organizer-brand .form-main>h2{margin-bottom:0px!important}
-.onboarding-page.setup-organizer-brand .setup-subtitle{font-size:14.0px!important}
+.onboarding-page.setup-organizer-brand .setup-subtitle{font-size:13.3px!important}
 .onboarding-page.setup-organizer-brand .setup-subtitle{margin-bottom:4px!important}
-.onboarding-page.setup-organizer-brand .form-main .setup-panel{padding-top:10px!important}
-.onboarding-page.setup-organizer-brand .form-main .field>label{font-size:11.5px!important}
-.onboarding-page.setup-organizer-brand .setup-assistant{zoom:0.98!important}
-.onboarding-page.setup-organizer-brand .setup-assistant{margin-top:-48px!important}
+.onboarding-page.setup-organizer-brand .form-main .setup-panel{padding-top:9.5px!important}
+.onboarding-page.setup-organizer-brand .form-main .field>label{font-size:11px!important}
+.onboarding-page.setup-organizer-brand .setup-assistant{margin-top:-47px!important}
 .onboarding-page.setup-organizer-brand .setup-story h1{font-size:45.0px!important}
 .onboarding-page.setup-organizer-brand .setup-story h1{line-height:1.06!important}
 .onboarding-page.setup-organizer-brand .setup-story .setup-story-description{font-size:15.0px!important}
@@ -1094,29 +1089,25 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* tuned onboarding: organizer-team */
 .onboarding-page.setup-organizer-team .setup-main{padding-top:24px!important}
-.onboarding-page.setup-organizer-team .form-main>h2{font-size:36px!important}
+.onboarding-page.setup-organizer-team .form-main>h2{font-size:37px!important}
 .onboarding-page.setup-organizer-team .form-main>h2{margin-bottom:6px!important}
-.onboarding-page.setup-organizer-team .setup-subtitle{font-size:15.0px!important}
-.onboarding-page.setup-organizer-team .form-main .setup-panel{margin-bottom:22px!important}
-.onboarding-page.setup-organizer-team .setup-assistant{zoom:1.03!important}
+.onboarding-page.setup-organizer-team .setup-subtitle{font-size:15.5px!important}
+.onboarding-page.setup-organizer-team .form-main .setup-panel{margin-bottom:22.5px!important}
 .onboarding-page.setup-organizer-team .setup-story h1{font-size:48.0px!important}
 .onboarding-page.setup-organizer-team .setup-story h1{line-height:1.1!important}
 .onboarding-page.setup-organizer-team .setup-story .setup-story-description{font-size:17.0px!important}
 .onboarding-page.setup-organizer-team .setup-story .setup-features{row-gap:18px!important}
-.onboarding-page.setup-organizer-team .form-main{zoom:1.03!important}
 .onboarding-page.setup-organizer-team .setup-subtitle{letter-spacing:0.2px!important}
-.onboarding-page.setup-organizer-team .form-main .setup-panel{padding-top:24px!important}
+.onboarding-page.setup-organizer-team .form-main .setup-panel{padding-top:24.7px!important}
 .onboarding-page.setup-organizer-team .form-main .field{margin-top:8px!important}
-.onboarding-page.setup-organizer-team .setup-assistant{margin-top:-30px!important}
+.onboarding-page.setup-organizer-team .setup-assistant{margin-top:-31px!important}
 
 /* tuned onboarding: provider-rules */
-.onboarding-page.setup-provider-rules .form-main{zoom:0.96!important}
-.onboarding-page.setup-provider-rules .form-main>h2{letter-spacing:-1.6px!important}
-.onboarding-page.setup-provider-rules .form-main>h2{margin-bottom:10px!important}
-.onboarding-page.setup-provider-rules .setup-subtitle{font-size:14.5px!important}
+.onboarding-page.setup-provider-rules .form-main>h2{letter-spacing:-1.55px!important}
+.onboarding-page.setup-provider-rules .form-main>h2{margin-bottom:9.6px!important}
+.onboarding-page.setup-provider-rules .setup-subtitle{font-size:13.9px!important}
 .onboarding-page.setup-provider-rules .setup-subtitle{margin-bottom:4px!important}
-.onboarding-page.setup-provider-rules .setup-assistant{zoom:0.95!important}
-.onboarding-page.setup-provider-rules .setup-assistant{margin-top:-12px!important}
+.onboarding-page.setup-provider-rules .setup-assistant{margin-top:-11.4px!important}
 .onboarding-page.setup-provider-rules .setup-story h1{font-size:48.0px!important}
 .onboarding-page.setup-provider-rules .setup-story .setup-story-description{font-size:16.5px!important}
 
@@ -1127,7 +1118,6 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .onboarding-page.setup-organizer-business .form-main>h2{margin-bottom:6px!important}
 .onboarding-page.setup-organizer-business .setup-subtitle{font-size:14.0px!important}
 .onboarding-page.setup-organizer-business .setup-subtitle{letter-spacing:0.1px!important}
-.onboarding-page.setup-organizer-business .setup-assistant{zoom:1.02!important}
 .onboarding-page.setup-organizer-business .setup-story h1{font-size:46.5px!important}
 .onboarding-page.setup-organizer-business .setup-story .setup-story-description{font-size:17.0px!important}
 .onboarding-page.setup-organizer-business .setup-story .setup-features{row-gap:16px!important}
@@ -1139,33 +1129,28 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 .onboarding-page.setup-organizer-events .setup-subtitle{font-size:14.0px!important}
 .onboarding-page.setup-organizer-events .setup-subtitle{letter-spacing:-0.3px!important}
 .onboarding-page.setup-organizer-events .form-wide{margin-top:-20px!important}
-.onboarding-page.setup-organizer-events .setup-assistant{zoom:0.96!important}
-.onboarding-page.setup-organizer-events .setup-assistant{margin-top:-54px!important}
+.onboarding-page.setup-organizer-events .setup-assistant{margin-top:-52px!important}
 
 /* tuned onboarding: provider-listing */
 .onboarding-page.setup-provider-listing .setup-main{padding-top:24px!important}
-.onboarding-page.setup-provider-listing .form-main{zoom:0.98!important}
-.onboarding-page.setup-provider-listing .form-main>h2{font-size:44px!important}
+.onboarding-page.setup-provider-listing .form-main>h2{font-size:43px!important}
 .onboarding-page.setup-provider-listing .form-main>h2{letter-spacing:-2.0px!important}
-.onboarding-page.setup-provider-listing .form-main>h2{margin-bottom:12px!important}
+.onboarding-page.setup-provider-listing .form-main>h2{margin-bottom:11.8px!important}
 .onboarding-page.setup-provider-listing .setup-subtitle{margin-bottom:12px!important}
 .onboarding-page.setup-provider-listing .form-wide{margin-top:-20px!important}
-.onboarding-page.setup-provider-listing .setup-assistant{zoom:0.97!important}
 .onboarding-page.setup-provider-listing .setup-story h1{font-size:42.0px!important}
 .onboarding-page.setup-provider-listing .setup-story h1{line-height:1.1!important}
 .onboarding-page.setup-provider-listing .setup-story .setup-story-description{font-size:16.0px!important}
 .onboarding-page.setup-provider-listing .setup-story .setup-features{row-gap:18px!important}
-.onboarding-page.setup-provider-listing .setup-assistant{margin-top:-36px!important}
+.onboarding-page.setup-provider-listing .setup-assistant{margin-top:-35px!important}
 
 /* tuned onboarding: provider-publish */
 .onboarding-page.setup-provider-publish .setup-main{padding-top:27px!important}
-.onboarding-page.setup-provider-publish .form-main{zoom:0.95!important}
-.onboarding-page.setup-provider-publish .form-main>h2{font-size:34px!important}
+.onboarding-page.setup-provider-publish .form-main>h2{font-size:32.3px!important}
 .onboarding-page.setup-provider-publish .form-main>h2{margin-bottom:0px!important}
-.onboarding-page.setup-provider-publish .setup-subtitle{font-size:14.0px!important}
-.onboarding-page.setup-provider-publish .setup-subtitle{margin-bottom:12px!important}
-.onboarding-page.setup-provider-publish .setup-assistant{zoom:0.95!important}
-.onboarding-page.setup-provider-publish .setup-assistant{margin-top:-60px!important}
+.onboarding-page.setup-provider-publish .setup-subtitle{font-size:13.3px!important}
+.onboarding-page.setup-provider-publish .setup-subtitle{margin-bottom:11.4px!important}
+.onboarding-page.setup-provider-publish .setup-assistant{margin-top:-57px!important}
 .onboarding-page.setup-provider-publish .setup-story h1{line-height:1.06!important}
 .onboarding-page.setup-provider-publish .setup-story .setup-story-description{font-size:17.0px!important}
 .onboarding-page.setup-provider-publish .setup-story .setup-features{row-gap:26px!important}
@@ -1220,3 +1205,64 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 
 /* A single sign-in provider (e.g. only Google) spans the card instead of sitting in the left column. */
 .social-buttons>:only-child{grid-column:1/-1;width:100%;justify-content:center}
+
+/* W10: the invite heading (40px, no bottom margin) overlapped the description pulled up by -6px. */
+.auth-page.auth-invite .auth-card>h2{margin-bottom:6px}
+.auth-page.auth-invite .auth-card>.auth-description{margin-top:0}
+
+/* W12 (auth, coordinator decision 3): a visible focus ring on auth inputs matching the kit (.k-input: blue border + 3px halo),
+   and the forgot-password title may wrap below 1101px (its nowrap 38px heading ran 11px past the window at 1024/768/150%/200%). */
+.auth-page :is(input:not([type=checkbox]):not([type=radio]), select, textarea):focus-visible { outline: 2px solid #1b64f5; outline-offset: 1px; box-shadow: 0 0 0 3px #1b64f51a; }
+.auth-page .auth-field > div:focus-within { box-shadow: 0 0 0 3px #1b64f51a; }
+.auth-page :is(a, button):focus-visible { outline: 2px solid #1b64f5; outline-offset: 2px; }
+@media (max-width: 1100px) { .auth-page.auth-forgot-password .auth-card > h2 { white-space: normal; overflow-wrap: anywhere; } .auth-page .auth-card { max-width: 100%; } }
+/* W12 visual check (390): the access status pills ran into the card edge, and the provider "What do you offer?" choices were
+   squeezed into three ~90px columns of wrapped text — stack them on phones. */
+@media (max-width: 480px) {
+  .auth-page .status-steps { flex-wrap: wrap; gap: 6px; }
+  .auth-page .status-steps > * { flex: 1 1 auto; min-width: 0; }
+  .onboarding-page .choice-group:not(.chips) { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 900px) { .auth-page .status-steps { flex-wrap: wrap; gap: 6px; max-width: 100%; } .auth-page .status-steps > * { flex: 1 1 auto; min-width: 0; } .auth-page .auth-card { max-width: 100%; min-width: 0; } }
+/* W12 wizard sweep (onboarding): the event-type and category lists now carry every catalogue term behind "+ More …", which
+   sat as one squeezed cell in the image-tile grid — give it its own row; and the organiser tiles' `nowrap` labels get an
+   ellipsis instead of running past the tile for the longer catalogue names. */
+.choice-group.with-images > .chip-more { grid-column: 1 / -1; justify-self: start; min-height: 32px; }
+.setup-organizer-events .choice-group.with-images .choice > span > b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* W12 onboarding (organiser team, 360): notification rows could not shrink, so the switch ran 3px past the window. */
+.notification-grid>label{min-width:0}.notification-grid>label>span{min-width:0;flex:1 1 auto;overflow-wrap:anywhere}
+@media (max-width:640px){.onboarding-page .notification-grid{grid-template-columns:minmax(0,1fr)}}
+/* W10 (lane A re-check): onboarding header — visible focus ring on the search field and links (kit ring), and the header stays
+   pinned while the setup form scrolls (the sticky story panel already assumes a 64px header at top). */
+.setup-header{position:sticky;top:0;z-index:30}
+.setup-search:focus-within{outline:2px solid #1b64f5;outline-offset:1px;box-shadow:0 0 0 3px #1b64f51a}
+.setup-header :is(a,button):focus-visible{outline:2px solid #1b64f5;outline-offset:2px;border-radius:6px}
+/* W10 (WCAG 2.5.8, lane A re-check): auth and onboarding targets that measured under 24px (footer links 12px, help links 15px,
+   "Forgot password?" 18px, the remember-me info icon 15px, header nav links / search field 13px, "Save & exit" 16px). */
+.auth-footer a, .auth-help a, .auth-card .text-link, .setup-header nav a, .setup-header a.header-icon { display: inline-flex; align-items: center; min-height: 24px; min-width: 24px; }
+.check-row .tooltip-anchor { display: inline-grid; place-items: center; min-width: 24px; min-height: 24px; }
+.setup-search input { min-height: 24px; }
+.onboarding-page a:has(> svg.lucide-arrow-right) { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; }
+.auth-page .auth-card a[href="/forgot-password"] { display: inline-flex; align-items: center; min-height: 24px; }
+/* Onboarding renders inside the display-fit scale (--gd-fit-setup), so 24px targets are sized in pre-scale px to stay ≥24px on screen. */
+.onboarding-page .setup-header nav a, .onboarding-page .setup-header a.header-icon, .onboarding-page .setup-search input, .onboarding-page a:has(> svg.lucide-arrow-right) { min-height: calc(24px / var(--gd-fit-setup, 1)); }
+/* Auth renders inside the display-fit scale (--gd-fit-auth): size its small links in pre-scale px so they stay ≥24px on screen. */
+.auth-page :is(.auth-footer a, .auth-help a, .auth-back, .auth-security > a, .auth-card a[href="/forgot-password"]) { display: inline-flex; align-items: center; min-height: calc(24px / var(--gd-fit-auth, 1)); }
+.auth-page .check-row .tooltip-anchor { min-width: calc(24px / var(--gd-fit-auth, 1)); min-height: calc(24px / var(--gd-fit-auth, 1)); }
+/* Onboarding "Popular organizer types" buttons had no focus ring. */
+.organizer-type:focus-visible { outline: 2px solid #1b64f5; outline-offset: 2px; border-radius: 8px; }
+
+/* W10 a11y (WCAG AA 4.5:1, axe on the preview auth + onboarding screens). Text on the pale blue "selected" tints and soft
+   buttons used the brand blue (#1664fe, 4.2–4.46:1); helper greys were 3.0–3.9:1. One darker ink per family, same look. */
+:root { --gd-blue-ink: #0049d9; --gd-muted-ink: #5d6585; }
+.choice.selected, .choice.selected > span > b, .chips .choice.selected b, .button.soft, .onboarding-page u { color: var(--gd-blue-ink); }
+.choice.selected > span > b > small, .choice.selected small { color: #4f577a; }
+.input-wrap .counter, .textarea-wrap .counter { color: var(--gd-muted-ink); }
+.setup-disclaimer { color: var(--gd-muted-ink); }
+.auth-note small { color: #4f5a88; }
+.auth-page .auth-card ul li { color: #4f5784; }
+.credential .badge.muted { color: #0a6b45; }
+/* Checkboxes keep the 18–21px visual box; a 3px margin gives each a 24px target (WCAG 2.5.8 spacing). */
+.check-row input { margin: 1.5px; }
+.onboarding-page .check-row input { width: 21px; height: 21px; margin: 1.5px; }
+.onboarding-page .choice-group > .selected > span > b, .onboarding-page .setup-option-grid .choice-group > .selected > span > b { color: var(--gd-blue-ink); }

@@ -38,7 +38,7 @@
 .adsu-bottom{display:grid;grid-template-columns:minmax(0,319fr) minmax(0,290fr) minmax(0,281fr);gap:9px}
 .adsu-bottom .adb-panel{padding:8px 12px}
 .adsu-bottom .adb-sec-h{margin-bottom:6px}
-.adsu-bottom h2{font-size:13.5px}
+.adsu-bottom h2{font-size: var(--k-title-sub)}
 .adsu-em ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .adsu-em li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:start}
 .adsu-em li i{width:24px;height:24px;border-radius:6px;background:#eef3ff;color:#1a4fe0;display:grid;place-items:center}
@@ -79,7 +79,7 @@
 .adsu-ctabs a b{font-size:9.5px;font-weight:600;background:#eceffa;border-radius:4px;padding:1px 5px;color:#3d4592}
 .adsu-cd{margin:2px 0 0}
 .adsu-cd .ads-edit{height:24px}
-.adsu-cd h2{font-size:13px}
+.adsu-cd h2{font-size: var(--k-title-sub)}
 .adsu-kv{gap:2px}
 .adsu-kv>div{grid-template-columns:120px minmax(0,1fr);font-size:11.5px;line-height:1.35}
 .adsu-kv>div.pad{padding:3px 0}
@@ -95,7 +95,7 @@
 .adsu-who img{width:26px;height:22px;border-radius:3px;object-fit:cover}
 .ws-app .adsu-oi{width:18px!important;height:18px!important;color:#1a1af2}
 .adsu-qa{padding:10px 12px}
-.adsu-qa h2{font-size:13.5px;margin-bottom:8px}
+.adsu-qa h2{font-size: var(--k-title-sub);margin-bottom:8px}
 .adsu-qa-g{display:grid;grid-template-columns:142fr 80fr 104fr;gap:8px}
 .adsu-qa-g .adb-btn,.adsu-qa-g .ws-btn{height:30px;font-size:11px;padding:0 8px;color:#1a1af2;border-color:#d6defa;width:100%}
 .adsu-qa-g2{display:grid;grid-template-columns:minmax(0,162fr) minmax(0,144fr) 30px;gap:6px;margin-top:8px}
@@ -105,7 +105,7 @@
 .adsu-find{background:#fff6e8!important;color:#d86d00!important;border-color:#f7d9a8!important}
 .adsu-qa-g2 .adb-dots{width:30px;height:30px}
 .adsu-tl{padding:10px 12px}
-.adsu-tl h2{font-size:13.5px}
+.adsu-tl h2{font-size: var(--k-title-sub)}
 .adsu-tl ol{list-style:none;margin:4px 0 0;padding:0 0 0 14px;display:grid;gap:12px;position:relative}
 .adsu-tl ol::before{content:"";position:absolute;left:4px;top:6px;bottom:8px;width:1.5px;background:#cfe9dc}
 .adsu-tl li{display:grid;grid-template-columns:64px 26px minmax(0,1fr);gap:8px;align-items:start;position:relative}

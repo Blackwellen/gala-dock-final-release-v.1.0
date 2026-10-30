@@ -1,22 +1,47 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, ExternalLink, Share2, MoreHorizontal, Pencil, Copy, Trash2, Radio, LayoutTemplate, Archive, Check, Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, ExternalLink, Share2, MoreHorizontal, Pencil, Copy, Trash2, Radio, LayoutTemplate, Archive, Check, Plus, X, Loader2, AlertTriangle, Lock } from "lucide-react";
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { setEventStatus, updateEventBasics, addProgrammeItem, deleteProgrammeItem, addTask, toggleTask, reportIncident, resolveIncident, setRunSheetStatus, transitionItem, confirmVenueOffPlatform, savePublicPageSettings } from "@/lib/actions/event-profile";
-import { duplicateEvent, archiveEvent, cancelEvent } from "@/lib/actions/events";
+import { archiveEvent, cancelEvent } from "@/lib/actions/events";
+import { createGuestLink } from "@/lib/actions/event-guest-links";
+import { useDuplicateDialog } from "./duplicate-dialog";
+import { eventStatusOptions, type StatusOptions } from "@/lib/actions/event-lifecycle";
 
 const LABEL: Record<string, string> = { draft: "Draft", planning: "Planning", ready: "Ready", published: "Published", on_sale: "On sale", live: "Live", completed: "Completed", closed: "Closed", archived: "Archived", cancelled: "Cancelled", postponed: "Postponed", suspended: "Suspended" };
-const NEXT: Record<string, string[]> = { draft: ["planning"], planning: ["ready", "postponed", "cancelled"], ready: ["published", "planning", "postponed", "cancelled"], published: ["on_sale", "postponed", "cancelled"], on_sale: ["live", "published", "postponed", "suspended", "cancelled"], live: ["completed", "suspended"], suspended: ["on_sale", "live", "cancelled"], postponed: ["planning", "cancelled"], completed: ["closed"], closed: ["archived"], cancelled: ["archived"], archived: [] };
+type Blocker = { key: string; label: string; fix?: string };
 
 export function StatusMenu({ id, status }: { id: string; status: string }) {
-  const { run, pending } = useAction(); const [confirm, setConfirm] = useState<string | null>(null); const [reason, setReason] = useState(""); const [cause, setCause] = useState<"organiser" | "force_majeure">("organiser"); const [fm, setFm] = useState("");
+  const { run, pending } = useAction(); const toast = useKitToast(); const router = useRouter(); const [confirm, setConfirm] = useState<string | null>(null); const [reason, setReason] = useState(""); const [cause, setCause] = useState<"organiser" | "force_majeure">("organiser"); const [fm, setFm] = useState("");
+  // Options come from the server on open: state machine + role rule + live event_lifecycle_blockers preview (W11).
+  const [opts, setOpts] = useState<StatusOptions | null>(null); const [loading, setLoading] = useState(false); const [loadErr, setLoadErr] = useState(""); const [blocked, setBlocked] = useState<{ to: string; blockers: Blocker[] } | null>(null); const [busy, setBusy] = useState(false);
+  const load = async () => { setLoading(true); setLoadErr(""); const r = await eventStatusOptions(id); setLoading(false); if (r.ok && r.data) setOpts(r.data); else setLoadErr(r.error ?? "Couldn’t load the status options."); };
+  const move = async (to: string) => {
+    setBusy(true); const r = await setEventStatus(id, to); setBusy(false);
+    const b = (r.data as { blockers?: Blocker[] } | undefined)?.blockers;
+    if (!r.ok && b?.length) { setBlocked({ to, blockers: b }); return; }
+    if (!r.ok) { toast(r.error ?? "Could not update the event status.", "error"); return; }
+    toast(r.message ?? "Status updated."); setOpts(null); router.refresh();
+  };
   const tone = ["live", "on_sale", "published", "ready", "completed"].includes(status) ? "green" : ["cancelled", "suspended"].includes(status) ? "red" : status === "draft" ? "gray" : "blue";
+  const current = opts?.status === status ? opts : null;
   return <>
-    <Menu label="Change event status" width={230} trigger={({ toggle, open, id: mid }) => <div className={`eh-status ${tone}`}><span>{LABEL[status] ?? status}</span><button onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="Change status"><ChevronDown size={16} /></button></div>}>
+    <Menu label="Change event status" width={280} trigger={({ toggle, open, id: mid }) => <div className={`eh-status ${tone}`}><span>{LABEL[status] ?? status}</span><button onClick={() => { toggle(); if (!open && !current && !loading) void load(); }} aria-expanded={open} aria-controls={mid} aria-label="Change status"><ChevronDown size={16} /></button></div>}>
       {close => <><div className="k-xs k-muted" style={{ padding: "6px 10px" }}>Move event to…</div>
-        {(NEXT[status] ?? []).length ? NEXT[status]!.map(s => <button key={s} role="menuitem" className={`k-menu-item ${["cancelled", "suspended"].includes(s) ? "k-red" : ""}`} disabled={pending} onClick={() => { close(); if (["cancelled", "suspended", "postponed", "completed"].includes(s)) setConfirm(s); else void run(() => setEventStatus(id, s)); }}>{LABEL[s]}</button>) : <p className="k-small" style={{ padding: 10 }}>No further status changes.</p>}</>}
+        {loading || (!current && !loadErr) ? <p className="k-small" style={{ padding: 10 }} role="status"><Loader2 size={13} className="k-spin" /> Checking what this event can move to…</p>
+          : loadErr ? <p className="k-small" style={{ padding: 10 }} role="alert">{loadErr} <button className="k-link" onClick={() => void load()}>Try again</button></p>
+          : !current!.canWrite ? <p className="k-small" style={{ padding: 10 }}>{current!.options[0]?.reason ?? `Your role (${current!.role}) can view this event but can't change its status.`}</p>
+          : current!.options.length ? current!.options.map(o => <button key={o.to} role="menuitem" className={`k-menu-item ev-status-opt ${["cancelled", "suspended"].includes(o.to) ? "k-red" : ""}`} disabled={pending || busy || (!o.allowed && !o.blockers.length)} title={o.reason ?? undefined} aria-describedby={o.reason ? `st-${o.to}` : undefined}
+              onClick={() => { close(); if (!o.allowed && o.blockers.length) setBlocked({ to: o.to, blockers: o.blockers }); else if (["cancelled", "suspended", "postponed", "completed"].includes(o.to)) setConfirm(o.to); else void move(o.to); }}>
+              <span className="k-grow">{LABEL[o.to] ?? o.to}</span>{o.reason && <small id={`st-${o.to}`} className={o.blockers.length ? "k-amber" : "k-muted"}>{o.blockers.length ? <AlertTriangle size={12} aria-hidden /> : <Lock size={12} aria-hidden />}{o.reason}</small>}</button>)
+          : <p className="k-small" style={{ padding: 10 }}>No further status changes.</p>}</>}
     </Menu>
+    <Dialog open={!!blocked} onClose={() => setBlocked(null)} title={`Before moving to ${blocked ? LABEL[blocked.to]?.toLowerCase() ?? blocked.to : ""}`} sub="Gala Dock checks these before an event can move on. Fix each one, then try again."
+      footer={<><button className="k-btn ghost" onClick={() => setBlocked(null)}>Close</button><button className="k-btn primary" disabled={busy} onClick={() => { setBlocked(null); setOpts(null); void load(); }}>Check again</button></>}>
+      <ul className="ev-blockers">{blocked?.blockers.map((b, i) => <li key={`${b.key}-${i}`}><AlertTriangle size={15} className="k-amber" aria-hidden /><span className="k-grow">{b.label}</span>{b.fix && b.fix.startsWith("/") && <Link className="k-link" href={b.fix} onClick={() => setBlocked(null)}>Fix</Link>}</li>)}</ul>
+    </Dialog>
     <Dialog open={!!confirm} onClose={() => setConfirm(null)} title={`Mark event as ${confirm ? LABEL[confirm]?.toLowerCase() : ""}?`} sub={confirm === "cancelled" ? "Cancellation is permanent. Every ticket is voided and each buyer is refunded in full, including fees, automatically. Confirmed supplier bookings keep their own cancellation terms." : confirm === "completed" ? "Completing closes check-in and opens settlement." : "Ticket holders and suppliers will see the updated status."}
       footer={<><button className="k-btn ghost" onClick={() => setConfirm(null)}>Keep current status</button><button className={`k-btn ${confirm === "completed" ? "primary" : "danger"}`} disabled={pending || (confirm === "cancelled" && (reason.trim().length < 10 || (cause === "force_majeure" && fm.trim().length < 30)))} onClick={async () => { const r = await run(() => confirm === "cancelled" ? cancelEvent(id, reason, cause, fm) : setEventStatus(id, confirm!), { refresh: true }); if (r.ok) { setConfirm(null); setReason(""); } }}>Confirm</button></>}>
       {confirm === "cancelled" ? <div className="k-col" style={{ gap: 12 }}>
@@ -35,26 +60,30 @@ export function StatusMenu({ id, status }: { id: string; status: string }) {
 }
 
 export function HeroActions({ id, name, slug, isPublic }: { id: string; name: string; slug: string | null; isPublic: boolean }) {
-  const toast = useKitToast(); const { run, pending } = useAction();
+  const toast = useKitToast(); const { run, pending } = useAction(); const dup = useDuplicateDialog();
   const url = slug ? `${typeof window === "undefined" ? "" : window.location.origin}/events/${slug}` : "";
   return <div className="k-row" style={{ gap: 8 }}>
     {isPublic && slug ? <Link href={`/events/${slug}`} target="_blank" className="k-btn ghost"><ExternalLink size={15} />View public page</Link> : <span className="k-btn ghost" title="Publish the event to enable its public page" aria-disabled style={{ opacity: .75 }}><ExternalLink size={15} />Page not published</span>}
-    <button className="k-btn ghost" onClick={async () => { if (!isPublic || !slug) { toast("Publish the event page before sharing it.", "error"); return; } try { await navigator.clipboard.writeText(url); toast("Public link copied"); } catch { toast(url); } }}><Share2 size={15} />Share</button>
+    <button className="k-btn ghost" disabled={pending} title={isPublic && slug ? "Copy the public event link" : "Copy a private guest link (expires; revocable)"} onClick={async () => {
+      if (isPublic && slug) { try { await navigator.clipboard.writeText(url); toast("Public link copied"); } catch { toast(url); } return; }
+      const r = await run(() => createGuestLink(id), { refresh: false }); const path = (r as { data?: { path: string } }).data?.path; if (!r.ok || !path) return;
+      const link = `${window.location.origin}${path}`; try { await navigator.clipboard.writeText(link); toast("Private guest link copied"); } catch { toast(link); } }}><Share2 size={15} />Share</button>
     <Menu label={`More actions for ${name}`} width={220} trigger={({ toggle, open, id: mid }) => <button className="k-icon-btn" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="More actions"><MoreHorizontal size={17} /></button>}>
-      {close => <><button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); void run(() => duplicateEvent(id)); }}><Copy size={15} />Duplicate event</button>
+      {close => <><button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); dup.open({ id, name }); }}><Copy size={15} />Duplicate event</button>
         <Link role="menuitem" className="k-menu-item" href={`/organizer/events/${id}/template?step=1`} onClick={close}><LayoutTemplate size={15} />Save as template</Link>
         <div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" disabled={pending} onClick={() => { close(); void run(() => archiveEvent(id)); }}><Archive size={15} />Archive event</button></>}
     </Menu>
+    {dup.dialog}
   </div>;
 }
 
 type Basic = { name: string; description: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; capacity: number | null; client_name: string; tags: string[] };
 const local = (iso: string | null) => { if (!iso) return ""; const d = new Date(iso); const off = d.getTimezoneOffset(); return new Date(d.getTime() - off * 6e4).toISOString().slice(0, 16); };
 export function TabActions({ id, name, status, basics }: { id: string; name: string; status: string; basics: Basic }) {
-  const { run, pending } = useAction(); const [edit, setEdit] = useState(false); const [close, setClose] = useState(false);
+  const { run, pending } = useAction(); const [edit, setEdit] = useState(false); const [close, setClose] = useState(false); const dup = useDuplicateDialog();
   return <div className="k-row eh-tabactions" style={{ gap: 8 }}>
     <button className="k-btn outline" onClick={() => setEdit(true)}><Pencil size={15} />Edit event</button>
-    <button className="k-btn outline" disabled={pending} onClick={() => void run(() => duplicateEvent(id))}><Copy size={15} />Duplicate</button>
+    <button className="k-btn outline" disabled={pending} onClick={() => dup.open({ id, name })}><Copy size={15} />Duplicate</button>{dup.dialog}
     <button className="k-btn outline" onClick={() => setClose(true)} disabled={!["live", "on_sale", "completed"].includes(status)} title={["live", "on_sale", "completed"].includes(status) ? "" : "Only live, on-sale or completed events can be closed"}><Trash2 size={15} />Close event</button>
     <Link href={`/organizer/events/${id}?tab=operations&section=live`} className="k-btn primary"><Radio size={15} />Live Mode</Link>
     <Dialog open={edit} onClose={() => setEdit(false)} title="Edit event" sub={name} wide>

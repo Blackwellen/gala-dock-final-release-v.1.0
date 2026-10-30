@@ -25,7 +25,7 @@ export function AgentBrief() {
   const go = (text: string) => router.push(`/plan?step=1&brief=${encodeURIComponent(text)}`);
   return <div className="ds-agent">
     <p className="ds-agent-q">Describe what you&apos;re looking for and we&apos;ll start a plan with it.</p>
-    <form className="ds-agent-box" onSubmit={e => { e.preventDefault(); if (t.trim()) go(t); }}><textarea value={t} onChange={e => setT(e.target.value)} placeholder="e.g. a rooftop venue for 100 people in July with catering and a DJ" aria-label="Describe what you need" maxLength={600} /><button aria-label="Start a plan"><Send size={15} /></button></form>
+    <form className="ds-agent-box" onSubmit={e => { e.preventDefault(); if (t.trim()) go(t); }}><textarea value={t} onChange={e => setT(e.target.value)} placeholder="e.g. a rooftop venue for 100 people in July with catering and a DJ" aria-label="Describe what you need" maxLength={600} /><button aria-label="Start a plan" disabled={!t.trim()} title={t.trim() ? undefined : "Describe what you need first"}><Send size={15} /></button></form>
     <div className="ds-agent-acts">
       <button onClick={() => router.push("/discover?tab=events&date=weekend&results=1")}><Calendar size={18} />Find events near me this weekend</button>
       <button onClick={() => router.push("/discover?tab=venues&results=1&q=party")}><Building2 size={18} />Suggest a venue for my birthday</button>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin, Play, LayoutDashboard, ListChecks, Megaphone, Settings2, Wallet, Video } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Play, LayoutDashboard, ListChecks, Megaphone, Settings2, Wallet, Video, MoreHorizontal, ChevronDown } from "lucide-react";
 import { Crumbs } from "@/components/kit";
 import { dateLong, timeRange, eventTypeLabel } from "@/lib/format";
 import type { ProEvent } from "@/lib/data/event";
@@ -39,6 +39,14 @@ export function EventHeader({ e, tab, canMoney }: { e: ProEvent; tab: EventTab |
 }
 
 /** Section sub-tabs (URL driven). External sections link to dedicated editor routes. */
-export function SubTabs({ items, current }: { items: { key: string; label: string; href: string; icon: React.ComponentType<{ size?: number }> }[]; current: string }) {
-  return <nav className="eh-sub" aria-label="Section">{items.map(i => <Link key={i.key} href={i.href} className="eh-subtab" aria-current={i.key === current ? "page" : undefined} scroll={false}><i.icon size={16} />{i.label}</Link>)}</nav>;
+type SubTab = { key: string; label: string; href: string; icon: React.ComponentType<{ size?: number }> };
+/** `more` sections sit behind a "More" disclosure so the row stays on one line at 1536. When one of them is active, the disclosure
+ *  itself shows that section (highlighted, current) and the menu lists the others — the row never grows. */
+export function SubTabs({ items, current, more = [] }: { items: SubTab[]; current: string; more?: SubTab[] }) {
+  const active = more.find(i => i.key === current);
+  const nav = <nav className="eh-sub" aria-label="Section">{items.map(i => <Link key={i.key} href={i.href} className="eh-subtab" aria-current={i.key === current ? "page" : undefined} scroll={false}><i.icon size={16} />{i.label}</Link>)}</nav>;
+  if (!more.length) return nav;
+  return <div className="eh-sub-wrap">{nav}
+    <details className="eh-more"><summary className={`eh-subtab${active ? " on" : ""}`} aria-label={active ? `${active.label} (more sections)` : "More sections"}>{active ? <><active.icon size={16} />{active.label}</> : <><MoreHorizontal size={16} />More</>}<ChevronDown size={14} aria-hidden /></summary>
+      <div className="eh-more-menu" role="menu">{more.map(i => <Link key={i.key} href={i.href} className="eh-more-item" role="menuitem" aria-label={i.label} aria-current={i.key === current ? "page" : undefined} scroll={false}><i.icon size={15} />{i.label}</Link>)}</div></details></div>;
 }
