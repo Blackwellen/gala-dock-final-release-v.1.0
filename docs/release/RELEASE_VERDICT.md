@@ -404,3 +404,6 @@ Verdict: ⟦ ⟧ · Date: ⟦ ⟧ · Commit / deployment id: ⟦ ⟧ · Approved
 | C16 | Uptime Kuma status URL given in runbooks.md, while Q34 lists Uptime Kuma as BLOCKED | runbooks.md vs queue Q34 |
 | C17 | Customer resale: the W02 approved deviations include "Q22 buy-back resale", while the queue still lists "customer Connect resale (decision)" as an open owner item | W02 §4 vs queue Lane plan "External or owner items" |
 | C18 | W04 report: provider plans "Contact us to switch" (W10) vs self-serve plans built (W04 F26, W05) | W10 vs W04/W05 |
+
+## Payments provider (owner decision 2026-10-30)
+Stripe stays in **test mode** until just before launch; payments then move to **Ryft or Mangopay** (regulated party — no Gala Dock FCA authorisation or payments counsel needed for the flow of funds). Not set up yet; production Connect key is back on the sandbox. See `docs/release/payments-provider-decision.md`.

@@ -160,3 +160,6 @@ These items were raised and then closed by later work:
 - W10 provider self-serve plans
 - Partner Activity fake connector panel
 - AD-016/AD-013 fixes
+
+## Payments provider (owner decision 2026-10-30)
+Stripe stays in **test mode** until just before launch; payments then move to **Ryft or Mangopay** (regulated party — no Gala Dock FCA authorisation or payments counsel needed for the flow of funds). Not set up yet; production Connect key is back on the sandbox. See `docs/release/payments-provider-decision.md`.

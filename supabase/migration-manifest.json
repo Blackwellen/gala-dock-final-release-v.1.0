@@ -365,6 +365,20 @@
         "errors": [],
         "warnings": []
       }
+    },
+    {
+      "file": "202610295030_merch_items_public_event_only.sql",
+      "sha256": "71ee4729129c00faf29fd206b96e739f456ba38ac457868e307e1eb4864ab97f",
+      "lane": "coordinator",
+      "reviewer": "coordinator",
+      "reviewedAt": "2026-10-30T07:54:20.213Z",
+      "exercise": "scripts/db/exercises/202610295030_merch_items_public_event_only.sql",
+      "waivers": [],
+      "rollback": "recreate merch_items_public using (status = 'on_sale')",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
     }
   ],
   "recordedOnly": [

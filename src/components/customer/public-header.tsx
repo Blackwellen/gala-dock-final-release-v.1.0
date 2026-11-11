@@ -7,8 +7,10 @@ import { createClient } from "@/lib/supabase/server";
  *  Signed-out Discover/search go to the public /events directory instead of a sign-in wall (W01). */
 export async function PublicHeader() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: p } = user ? await supabase.from("profiles").select("full_name,avatar_url").eq("id", user.id).maybeSingle() : { data: null };
+  // A transient auth/profile failure (e.g. a Supabase 520) must never take the public header — or the page — down with it:
+  // render the signed-out header instead (regression run 3: the 404 page lost its header during an upstream 520).
+  const user = await supabase.auth.getUser().then(r => r.data.user, () => null);
+  const { data: p } = user ? await supabase.from("profiles").select("full_name,avatar_url").eq("id", user.id).maybeSingle().then(r => r, () => ({ data: null })) : { data: null };
   const name = p?.full_name || user?.email?.split("@")[0] || "";
   return <header className="c-top pub-top">
     <Link href={user ? "/home" : "/"} className="c-logo" aria-label="Gala Dock"><GalaLogo /></Link>
