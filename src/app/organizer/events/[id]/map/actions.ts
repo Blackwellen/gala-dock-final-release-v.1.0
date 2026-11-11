@@ -31,10 +31,13 @@ const explain = (e: { message: string; details?: string }) => {
  */
 export async function saveEventMap(eventId: string, overlay: MapEl[], publish: boolean, baseVersion: number): Promise<MapSaveResult> {
   if (!UUID.test(eventId)) return { ok: false, error: "Event not found." };
+  if (!Array.isArray(overlay)) return { ok: false, error: MSG.invalid_elements };
+  // Refuse instead of silently dropping elements past the limit (seats from dropped elements would otherwise still be synced).
+  if (overlay.length > 5000) return { ok: false, error: MSG.too_many_elements };
   const ctx = await getOrganizer();
   let seats;
   try { seats = planSeats(overlay); } catch (e) { return { ok: false, error: (e as Error).message }; }
-  const clean = overlay.slice(0, 5000).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  const clean = overlay.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   const { data, error } = await (untyped(ctx.supabase) as unknown as Rpc).rpc("event_map_save", { p_event: eventId, p_overlay: clean, p_seats: seats, p_publish: publish, p_base_version: Math.max(0, Math.round(baseVersion)) });
   if (error) {
     const stale = /stale_version:(\d+)/.exec(error.message);

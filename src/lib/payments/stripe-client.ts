@@ -54,6 +54,32 @@ export type CheckoutSession = { id: string; url: string | null; status: string; 
   client_reference_id: string | null; metadata?: Record<string, string>; livemode?: boolean;
   payment_intent: null | string | { id: string; status: string; amount_received: number; latest_charge: string | null; application_fee_amount?: number | null; metadata?: Record<string, string> } };
 export type Refund = { id: string; status: string; amount: number; currency: string; payment_intent: string; metadata?: Record<string, string> };
+export type StripeCharge = { id: string; amount: number; amount_refunded: number; currency: string; disputed?: boolean; paid?: boolean;
+  application_fee: string | null | { id: string }; application_fee_amount: number | null };
+export type ApplicationFee = { id: string; amount: number; amount_refunded: number; currency: string; account: string };
+
+/**
+ * Gala Dock's application fees (platform objects). DEC-107: the seller fee on a refunded part goes back to the seller's balance
+ * as an application-fee refund; nothing else here can move money.
+ */
+export function platformFeeStripe(client: StripeClient) {
+  const id = (fee: string) => { if (!/^fee_[A-Za-z0-9_]+$/.test(fee)) throw new PaymentRouteError("invalid_application_fee"); return fee; };
+  return {
+    retrieve(fee: string) { return client.request<ApplicationFee>({ method: "GET", path: `application_fees/${id(fee)}` }); },
+    /** The fee for a connected-account charge, looked up on the platform (the charge's own link can arrive later). */
+    async forCharge(charge: string) {
+      if (!/^(ch|py)_[A-Za-z0-9_]+$/.test(charge)) throw new PaymentRouteError("invalid_charge");
+      const list = await client.request<{ data: ApplicationFee[] }>({ method: "GET", path: `application_fees?charge=${encodeURIComponent(charge)}&limit=1` });
+      return list.data[0] ?? null;
+    },
+    refund(fee: string, amountMinor: number, metadata: Record<string, string>, idempotencyKey: string) {
+      if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0) throw new PaymentRouteError("invalid_fee_refund");
+      const params: Record<string, string> = { amount: String(amountMinor) };
+      for (const [k, v] of Object.entries(metadata)) params[`metadata[${k}]`] = v;
+      return client.request<{ id: string; amount: number }>({ method: "POST", path: `application_fees/${id(fee)}/refunds`, params, idempotencyKey });
+    },
+  };
+}
 
 export function connectedMerchantStripe(client: StripeClient) {
   const ctx = (account: string) => {
@@ -85,6 +111,23 @@ export function connectedMerchantStripe(client: StripeClient) {
     retrieve<T>(account: string, path: string) {
       if (/^(transfers|payouts\/[^/]+\/cancel)/.test(path)) throw new PaymentRouteError("forbidden_path");
       return client.request<T>({ method: "GET", path, stripeAccount: ctx(account) });
+    },
+    /** The charge behind a payment, read in the seller's context (amounts, refunds and the platform application fee id). */
+    charge(account: string, paymentIntent: string) {
+      return client.request<{ id: string; latest_charge: StripeCharge | null }>({ method: "GET", path: `payment_intents/${encodeURIComponent(paymentIntent)}?expand[]=latest_charge`, stripeAccount: ctx(account) })
+        .then(pi => pi.latest_charge);
+    },
+    /** The seller's own Stripe balance (DEC-107: money stays here until a release trigger). */
+    balance(account: string) {
+      return client.request<{ available: { amount: number; currency: string }[]; pending: { amount: number; currency: string }[] }>({ method: "GET", path: "balance", stripeAccount: ctx(account) });
+    },
+    /** DEC-107 release: a payout from the seller's own balance to the seller's bank. Never a platform transfer. */
+    payout(account: string, p: { amountMinor: number; currency: string; description: string; metadata: Record<string, string> }, idempotencyKey: string) {
+      if (!Number.isSafeInteger(p.amountMinor) || p.amountMinor <= 0) throw new PaymentRouteError("invalid_payout_amount");
+      const params: Record<string, string> = { amount: String(p.amountMinor), currency: p.currency.toLowerCase(), description: p.description.slice(0, 200) };
+      for (const [k, v] of Object.entries(p.metadata)) params[`metadata[${k}]`] = v;
+      assertDirectChargeParams(params);
+      return client.request<{ id: string; status: string; amount: number }>({ method: "POST", path: "payouts", params, idempotencyKey, stripeAccount: ctx(account) });
     },
     /** Saved cards (card 124.C): clone a platform PaymentMethod onto the connected account for one direct charge. */
     clonePaymentMethod(account: string, p: { customer: string; paymentMethod: string }, idempotencyKey: string) {

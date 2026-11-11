@@ -122,3 +122,5 @@
   .c-root .me-card .me-foot > .k-btn { height: 40px; min-height: 40px; font-size: 12.5px; padding: 0 8px; }
   .c-root .me-card .me-steps { margin: 0; }
 }
+/* Playbook §3 sweep (2026-11-11): at 320–380px the three filter tabs overflowed by 19px; share the row evenly instead. */
+@media (max-width: 380px) { .me-tabs { display: flex; } .me-tabs a, .me-tabs a[aria-current="page"], .me-tabs a[aria-selected="true"] { flex: 1 1 0; min-width: 0; padding: 0 6px; gap: 6px; justify-content: center; font-size: 13px; } }

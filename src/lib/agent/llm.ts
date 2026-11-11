@@ -49,8 +49,19 @@ export async function chat(messages: ChatMessage[], opts: { model?: "mini" | "na
     const { error } = await admin.rpc("ai_preflight" as never, { p_workspace: opts.meter.workspaceId, p_run: opts.meter.runId ?? null, p_tier: tier, p_estimate: Math.round(est * 1000) / 1000 } as never);
     if (error) { const code = Object.keys(BUDGET_MESSAGES).find(k => error.message.includes(k)); throw new AgentBudgetError(code ? BUDGET_MESSAGES[code]! : "Gala Agent budget check failed."); }
   }
+  // Provider rate budgets (playbook §7): every attempt is counted in the database before the call; a spent deployment is skipped in
+  // favour of the next one, and when all are spent the caller gets a plain "busy" message (AgentBudgetError: the worker pauses the
+  // run, it never queues a retry). Admins are alerted at 80 % (ai_provider_attempt).
+  const order: Tier[] = [tier, ...(["standard", "fast", "deep"] as Tier[]).filter(t => t !== tier && t !== "deep")];
+  let use: Tier | null = null;
+  for (const t of order) {
+    if (!deployment(t) || (use && deployment(use) === deployment(t))) continue;
+    const { data: okBudget, error: budgetError } = await admin.rpc("ai_provider_attempt" as never, { p_provider: `azure:${String(deployment(t)).toLowerCase().replace(/[^a-z0-9._-]/g, "-")}` } as never);
+    if (budgetError || okBudget === true) { use = t; break; }   // a budget-store error never blocks the answer (fail open, logged)
+  }
+  if (!use) throw new AgentBudgetError("Gala Agent is very busy right now and has reached today’s limit with our AI provider. Please try again later — nothing was charged.");
   const base = process.env.AZURE_OPENAI_ENDPOINT!.replace(/\/+$/, "").split("/openai")[0];
-  const res = await fetch(`${base}/openai/deployments/${deployment(tier)}/chat/completions?api-version=${process.env.AZURE_OPENAI_API_VERSION ?? "2024-10-21"}`, {
+  const res = await fetch(`${base}/openai/deployments/${deployment(use)}/chat/completions?api-version=${process.env.AZURE_OPENAI_API_VERSION ?? "2024-10-21"}`, {
     method: "POST",
     headers: { "api-key": process.env.AZURE_OPENAI_API_KEY!, "content-type": "application/json" },
     body: JSON.stringify({ messages, max_completion_tokens: maxTokens, ...(opts.json ? { response_format: { type: "json_object" } } : {}) }),
@@ -62,7 +73,7 @@ export async function chat(messages: ChatMessage[], opts: { model?: "mini" | "na
   if (opts.meter) {
     // Metering failures are logged but never lose the answer; the usage row is the cost source of truth.
     const { error } = await admin.rpc("record_ai_usage" as never, { p_workspace: opts.meter.workspaceId, p_user: opts.meter.userId, p_run: opts.meter.runId ?? null, p_purpose: opts.meter.purpose,
-      p_model: priceKey(tier), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0 } as never);
+      p_model: priceKey(use), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0 } as never);
     if (error) console.error("ai_usage_record_failed", error.message);
   }
   return { text: j.choices?.[0]?.message?.content?.trim() ?? "", tokens: u.total_tokens ?? 0 };

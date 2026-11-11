@@ -1,0 +1,16 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: false, args: ["--disable-blink-features=AutomationControlled"], ignoreDefaultArgs: ["--enable-automation"] });
+const p = await b.newPage();
+const seen = [];
+p.on("request", r => { const u = new URL(r.url()); if (/google|supabase/.test(u.host) || u.pathname.startsWith("/api/auth/google")) seen.push(`${r.method()} ${u.host}${u.pathname}`); });
+await p.goto("https://www.galadock.com/login", { waitUntil: "load" });
+const btn = p.getByRole("button", { name: "Continue with Google" });
+console.log("button visible:", await btn.isVisible().catch(() => false));
+for (let i = 0; i < 20 && !(await p.evaluate(() => (window.turnstile?.getResponse() ?? "").length)); i++) await p.waitForTimeout(500);
+await btn.click();
+await p.waitForURL(u => u.host === "accounts.google.com", { timeout: 20000 }).catch(() => {});
+const u = new URL(p.url());
+console.log("now on:", u.host + u.pathname);
+console.log("page mentions galadock.com:", (await p.content()).includes("galadock.com"), "| mentions supabase.co:", (await p.content()).includes("supabase.co"));
+console.log(seen.filter(s => !s.includes("gstatic")).slice(0, 8).join("\n"));
+await b.close();

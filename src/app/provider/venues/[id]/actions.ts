@@ -86,8 +86,10 @@ export type StructureSaveResult = ActionResult & { version?: number; conflict?: 
  * Without `baseVersion` (older callers) it falls back to the legacy unchecked `provider_save_structure`.
  */
 export async function saveStructure(venueId: string, elements: MapEl[], publish: boolean, baseVersion?: number, meta?: StructureMeta): Promise<StructureSaveResult> {
+  // Refuse rather than silently dropping elements past the limit (the editor would show a plan that was never saved).
+  if (!Array.isArray(elements) || elements.length > 2000) return { ok: false, error: "That plan has more than 2,000 elements, which is more than a single venue plan supports. Remove some, then save again." };
   const { db, workspace } = await getProvider();
-  const clean = elements.slice(0, 2000).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  const clean = elements.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   if (baseVersion === undefined) {
     const { data, error } = await db.rpc("provider_save_structure", { p_ws: workspace.id, p_venue: venueId, p_elements: clean.slice(0, 200), p_publish: publish });
     if (error) return { ok: false, error: friendly(error) };

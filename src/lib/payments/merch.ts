@@ -18,7 +18,10 @@ export function supabaseMerchData(db: Db = untyped(createAdminClient() as never)
     setMerchSession: async (ref, session) => { await rpc("merch_set_session", { p_ref: ref, p_session: session }); },
     claimCardRefund: async id => {
       const c = await rpc<{ claimed: boolean; id: string; order_ref: string; account: string; payment_intent: string; amount_minor: number; reason: RefundReason; idempotency_key: string }>("merch_card_refund_claim", { p_id: id });
-      return c?.claimed ? { id: c.id, order_ref: c.order_ref, account: c.account, payment_intent: c.payment_intent, amount_minor: Number(c.amount_minor), reason: c.reason, idempotency_key: c.idempotency_key } : null;
+      if (!c?.claimed) return null;
+      const { data: o } = await db.from("merch_orders").select("total_minor,application_fee_minor").eq("order_ref", c.order_ref).maybeSingle();
+      const split = o ? { sellerAmountMinor: Number(o.total_minor), sellerFeeMinor: Number(o.application_fee_minor ?? 0) } : undefined;
+      return { id: c.id, order_ref: c.order_ref, account: c.account, payment_intent: c.payment_intent, amount_minor: Number(c.amount_minor), reason: c.reason, idempotency_key: c.idempotency_key, split };
     },
     cardRefundResult: async (id, refund, status, error) => { await rpc("merch_card_refund_result", { p_id: id, p_stripe_refund: refund, p_status: status, p_error: error ?? null }); },
   };

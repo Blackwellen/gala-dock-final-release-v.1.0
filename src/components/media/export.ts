@@ -28,7 +28,10 @@ async function fontCss(page: Page) {
 
 export async function renderPage(el: HTMLElement, page: Page, scale = 1, transparent = false): Promise<HTMLCanvasElement> {
   const clone = el.cloneNode(true) as HTMLElement;
-  clone.style.transform = "none"; clone.style.position = "relative"; clone.style.left = "0"; clone.style.top = "0";
+  clone.style.transform = "none"; clone.style.position = "relative"; clone.style.left = "0"; clone.style.top = "0"; clone.style.display = "block"; clone.style.cursor = "";
+  // Editor-only chrome inside the page node (transparency checkerboard, in-progress pen/line preview) never reaches the file.
+  for (const n of [...clone.querySelectorAll(".st-checker, .st-live")]) n.remove();
+  for (const n of [...clone.querySelectorAll("[contenteditable]")]) n.removeAttribute("contenteditable");
   if (transparent) clone.style.background = "transparent";
   for (const img of [...clone.querySelectorAll("img")]) { try { img.src = await toDataUrl(img.src); } catch { img.remove(); } }
   const css = await fontCss(page);

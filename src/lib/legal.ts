@@ -27,4 +27,5 @@ export const LEGAL_DOCS = [
   { href: "/ticket-terms", title: "Ticket Purchase & Resale Terms" },
   { href: "/cookies", title: "Cookie Policy" },
   { href: "/data-retention", title: "Data Retention Schedule" },
+  { href: "/accessibility", title: "Accessibility Statement" },
 ] as const;

@@ -395,6 +395,208 @@
         "errors": [],
         "warnings": []
       }
+    },
+    {
+      "file": "202611116001_dec107_manual_payouts.sql",
+      "sha256": "eab989d8055aaeda899cc0284b0275ba428d40d1077aeb1b3273504311ec0d06",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T02:03:15.789Z",
+      "exercise": "scripts/db/exercises/202611116001_dec107_manual_payouts.sql",
+      "waivers": [],
+      "rollback": "drop the new dec107_* functions, payout_releases, payout_pauses, dec107_refund_instructions, dec107_settings, the dec107_bind_release_model triggers and the added columns (all new; no existing object changed)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116002_dec107_disputes.sql",
+      "sha256": "07444be3276c7696f0b3092a84e0c766d00e7a8ec499ae15fd2e9b83adef2485",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T02:11:34.532Z",
+      "exercise": "scripts/db/exercises/202611116002_dec107_disputes.sql",
+      "waivers": [],
+      "rollback": "restore the 202610170001/Q31 bodies of open_booking_dispute, admin_dispute_update, accept_dispute_resolution, decide_cancellation; drop the new dispute_* / dec107_dispute_* / adm_dispute_award_* functions and the settlements/awards tables",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116003_dec107_reserve_release_fix.sql",
+      "sha256": "12306c11a8fb1e320f92146c51f0ed199b575051e0d50a11373f4f1887d6805b",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T15:32:41.558Z",
+      "exercise": "scripts/db/exercises/202611116003_dec107_reserve_release_fix.sql",
+      "waivers": [],
+      "rollback": "re-issue dec107_release_paid from 202611116001",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611116004_dec107_payout_failed_terms_nudge.sql",
+      "sha256": "113717812e1565eae661d354800682704924f74899e5b656dcadfa0d142e722b",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T15:44:47.591Z",
+      "exercise": "scripts/db/exercises/202611116004_dec107_payout_failed_terms_nudge.sql",
+      "waivers": [],
+      "rollback": "drop the two triggers and three functions; restore the original consent purpose/source check lists (only if no new-purpose rows exist)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611116005_dec107_seller_chargebacks.sql",
+      "sha256": "94b8a37feccca74e86319a1c1eb56de60685b5f2a98088be00efefc3e68ffe4b",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T15:46:33.370Z",
+      "exercise": "scripts/db/exercises/202611116005_dec107_seller_chargebacks.sql",
+      "waivers": [],
+      "rollback": "drop policy stripe_disputes_seller_read; drop table chargeback_evidence_submissions",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116006_ai_provider_rate_budgets.sql",
+      "sha256": "f3e8aec3da33f4ed38ecc2d2f077c2d824771ca8a1e8adbccbd5be44c2f49e39",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:00:50.035Z",
+      "exercise": "scripts/db/exercises/202611116006_ai_provider_rate_budgets.sql",
+      "waivers": [],
+      "rollback": "drop function ai_provider_attempt; drop table ai_provider_budgets",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116007_dec107_dispute_window_filing_lapse.sql",
+      "sha256": "67fcdce89c8903d9ca5c4345a2b20c06096f16e4de650ab8cbfb4b859366932b",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:17:37.490Z",
+      "exercise": "scripts/db/exercises/202611116007_dec107_dispute_window_filing_lapse.sql",
+      "waivers": [],
+      "rollback": "re-issue open_booking_dispute, dec107_dispute_close and dec107_dispute_deadlines from 202611116002; drop dispute_request_independent and dispute_record_filing",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611116008_trader_status_declaration.sql",
+      "sha256": "ced1ed39e3c1ab6d5de3d798e0374e810d2307674aa6a3da8dbb5428e23bd3c5",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:18:40.363Z",
+      "exercise": "scripts/db/exercises/202611116008_trader_status_declaration.sql",
+      "waivers": [],
+      "rollback": "drop the 5 functions and seller_trader_declarations; drop column dec107_settings.trader_declaration_version",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116009_demo_public_visible_switch.sql",
+      "sha256": "cec7c357d8a4e830d3f73c5c451d4e6c3dd49086df2bc4891f3a607b7661b780",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:20:33.541Z",
+      "exercise": "scripts/db/exercises/202611116009_demo_public_visible_switch.sql",
+      "waivers": [],
+      "rollback": "re-issue events_public from 202610294084 and listings_public_read (published or is_workspace_member); drop launch_settings and the 3 functions",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116010_dec107_ticket_payout_window_losses.sql",
+      "sha256": "6bddd8cb9ff9f8eb670036182863a31bab30e07442e22fe3142ed1ce34329efc",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:31:54.566Z",
+      "exercise": "scripts/db/exercises/202611116010_dec107_ticket_payout_window_losses.sql",
+      "waivers": [],
+      "rollback": "re-issue dec107_bind_release_model and dec107_release_sweep from 202611116001; drop trigger ticket_tier_sale_window_guard and the new functions/table",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611116011_build_items_cancel_guard_hide.sql",
+      "sha256": "9d072ef24362100aa40b6ac31106758fafb5e864159456e1129422f03338998d",
+      "lane": "canvas-map",
+      "reviewer": "claude-canvas-lane",
+      "reviewedAt": "2026-11-11T15:33:48.600Z",
+      "exercise": "scripts/db/exercises/202611116011_build_items_cancel_guard_hide.sql",
+      "waivers": [],
+      "rollback": "restore transition_build_item from 202610291028; drop index build_items_event_listing_open_uidx; drop trigger build_items_hidden_guard; drop function set_build_item_hidden, build_items_hidden_guard; column hidden_at may stay (nullable)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611116020_cron_status_nulls_last.sql",
+      "sha256": "da7ced6c48f550e00a438e641e61f5b3fa2e122879b6b72c0d803df29637d17d",
+      "lane": "ops-wiring",
+      "reviewer": "claude-ops-lane",
+      "reviewedAt": "2026-11-11T15:37:48.219Z",
+      "exercise": "scripts/db/exercises/202611116020_cron_status_nulls_last.sql",
+      "waivers": [],
+      "rollback": "restore cron_job_status from 202610270006_ops_health.sql (order by start_time desc)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611116150_uk_bank_holidays.sql",
+      "sha256": "dbe1455012bc6722b5d683de44f8977fc505fb93e42c0b27cfd63c0792e00a01",
+      "lane": "playbook",
+      "reviewer": "claude-playbook-lane",
+      "reviewedAt": "2026-11-11T16:42:10.450Z",
+      "exercise": "scripts/db/exercises/202611116150_uk_bank_holidays.sql",
+      "waivers": [],
+      "rollback": "re-issue dec107_add_business_days from 202611116010 (weekdays only); drop dec107_add_business_days_in and uk_bank_holidays",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
     }
   ],
   "recordedOnly": [

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowRight, BadgeCheck, CalendarCheck2, Check, Clock, ExternalLink, MapPin, Plus, Search, SlidersHorizontal, Star, Users, Zap } from "lucide-react";
 import { Dialog, useAction } from "@/components/kit/client";
 import { addToBuild } from "@/lib/actions/build";
@@ -22,14 +23,19 @@ const AVAIL: Record<ProviderHit["availability"], [string, string] | null> = { av
  */
 export function AddProvider({ eventId, category: initialCat, label, trigger, replaceId, initialOpen = false }: { eventId: string; category: string; label: string; trigger: "button" | "tile" | "link"; replaceId?: string; initialOpen?: boolean }) {
   const [open, setOpen] = useState(initialOpen);
+  // The triggers sit inside small tiles (.ce-addmore-it, .cb-more-it, .ce-sg) whose descendant rules (stretched hit areas, img and
+  // svg sizing, nowrap smalls) leaked into the dialog when it rendered in place — the W13 P1 click-blocker was one of them. The
+  // dialog renders in the page's main column instead (still inside the shell, so its tokens and form rules apply).
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const anchor = useCallback((el: HTMLButtonElement | null) => { if (el) setHost((el.closest(".c-main, .k-root") as HTMLElement | null) ?? document.body); }, []);
   return <>
-    {trigger === "button" ? <button className="k-btn outline lg" onClick={() => setOpen(true)}><Plus size={16} />{label}</button>
-      : trigger === "tile" ? <button className="cb-add-tile" aria-label={label} onClick={() => setOpen(true)}><Plus size={16} /></button>
-      : <button className="k-link" onClick={() => setOpen(true)}>{label}</button>}
-    <Dialog open={open} onClose={() => setOpen(false)} title={label} wide
+    {trigger === "button" ? <button ref={anchor} type="button" className="k-btn outline lg" onClick={() => setOpen(true)}><Plus size={16} />{label}</button>
+      : trigger === "tile" ? <button ref={anchor} type="button" className="cb-add-tile" aria-label={label} onClick={() => setOpen(true)}><Plus size={16} /></button>
+      : <button ref={anchor} type="button" className="k-link" onClick={() => setOpen(true)}>{label}</button>}
+    {host && createPortal(<Dialog open={open} onClose={() => setOpen(false)} title={label} wide
       sub={replaceId ? "Pick a replacement. Your current option is kept as a backup. Nothing is booked until you confirm." : "Add a few options to compare. Nothing is booked until you confirm."}>
       {open && <Finder eventId={eventId} initialCat={initialCat} replaceId={replaceId} onDone={() => setOpen(false)} />}
-    </Dialog>
+    </Dialog>, host)}
   </>;
 }
 

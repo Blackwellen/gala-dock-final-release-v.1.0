@@ -10,7 +10,7 @@ import { TemplateFacetFields, facetsFrom } from "./template-filters";
  * Event details become placeholders and private uploads are replaced with safe public copies (publishTemplate).
  * Used from the design ⋯ menu (library card and editor).
  */
-export function ShareToCommunity({ designId, title, onClose, audience = "both" }: { designId: string; title: string; onClose: () => void; audience?: string }) {
+export function ShareToCommunity({ designId, title, onClose, audience = "both", flush }: { designId: string; title: string; onClose: () => void; audience?: string; flush?: () => Promise<void> }) {
   const [busy, setBusy] = useState(false), [done, setDone] = useState(false), [err, setErr] = useState(""), [agree, setAgree] = useState(false);
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === "Escape" && onClose(); addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, [onClose]);
   return <div className="sc-backdrop" onPointerDown={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -18,6 +18,7 @@ export function ShareToCommunity({ designId, title, onClose, audience = "both" }
       <div className="sc-head"><Users size={18} aria-hidden="true" /><h2 id="sc-title">Share to community</h2><button type="button" className="sc-x" onClick={onClose} aria-label="Close"><X size={16} /></button></div>
       {done ? <><p className="sc-ok" role="status">Shared. Your template is now in the Community tab for every Gala Dock user.</p><button type="button" className="sc-btn primary" onClick={onClose}>Done</button></>
         : <form onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); setErr("");
+          if (flush) { try { await flush(); } catch (e) { setBusy(false); setErr((e instanceof Error ? e.message : "Couldn’t save your latest changes — try again.")); return; } }
           const r = await publishTemplate(designId, { title: String(f.get("title") ?? ""), description: String(f.get("description") ?? ""), category: String(f.get("category") ?? "announcement"), ...facetsFrom(f),
             tags: String(f.get("tags") ?? "").split(",").map(s => s.trim()).filter(Boolean).slice(0, 10), visibility: "public" });
           setBusy(false); if (r.ok) setDone(true); else setErr(r.error); }}>

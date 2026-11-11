@@ -1,4 +1,5 @@
 "use server";
+import { ticketWindowMessage } from "@/lib/payments/ticket-window";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -48,7 +49,7 @@ export async function saveTicketModel(eventId: string, input: unknown): Promise<
   for (const [i, t] of tiers.entries()) {
     const row = { name: t.name, description: t.description, price: t.price, quantity: t.quantity, badge: t.badge, color: t.color, kind: t.kind, sort: i + 1 };
     const res = t.id && (existing ?? []).some(ex => ex.id === t.id) ? await o.supabase.from("ticket_tiers").update(row).eq("id", t.id).eq("event_id", o.e.id) : await o.supabase.from("ticket_tiers").insert({ ...row, event_id: o.e.id, status: "draft" });
-    if (res.error) return { ok: false, error: `Could not save ${t.name}.` };
+    if (res.error) return { ok: false, error: ticketWindowMessage(res.error) ?? `Could not save ${t.name}.` };
   }
   await o.supabase.from("events").update({ settings: { ...(o.e.settings as Record<string, unknown>), ticket_model: model, ticket_capacity: capacity, ticketed: true }, updated_at: new Date().toISOString() }).eq("id", o.e.id);
   bump(o.e); return { ok: true, message: "Ticket tiers saved." };
@@ -66,7 +67,7 @@ export async function saveSalesRules(eventId: string, input: unknown): Promise<A
   if (r.promos.some(x => x.kind === "percent" && x.amount > 100)) return { ok: false, error: "Percentage discounts can't exceed 100%." };
   if (new Set(r.promos.map(x => x.code)).size !== r.promos.length) return { ok: false, error: "Each promo code must be unique." };
   const { error } = await o.supabase.from("ticket_tiers").update({ sale_start: new Date(start).toISOString(), sale_end: end ? new Date(end).toISOString() : null, order_limit: r.order_limit }).eq("event_id", o.e.id);
-  if (error) return { ok: false, error: "Could not save sale dates." };
+  if (error) return { ok: false, error: ticketWindowMessage(error) ?? "Could not save sale dates." };
   const { data: codes } = await o.supabase.from("discount_codes").select("id,used").eq("event_id", o.e.id).eq("purpose", "discount");
   const drop = (codes ?? []).filter(c => !r.promos.some(x => x.id === c.id));
   for (const c of drop) await (c.used > 0 ? o.supabase.from("discount_codes").update({ status: "disabled" }).eq("id", c.id) : o.supabase.from("discount_codes").delete().eq("id", c.id));
@@ -110,7 +111,7 @@ export async function publishTickets(eventId: string, agreed: boolean): Promise<
   }
   for (const t of tiers) {
     const { error: tierErr } = await o.supabase.from("ticket_tiers").update({ status: Date.parse(t.sale_start!) > now ? "scheduled" : "on_sale" }).eq("id", t.id);
-    if (tierErr) return { ok: false, error: ticketPolicyError(tierErr.message) ?? lifecycleError(tierErr)?.message ?? "Could not put your tickets on sale." };
+    if (tierErr) return { ok: false, error: ticketWindowMessage(tierErr) ?? ticketPolicyError(tierErr.message) ?? lifecycleError(tierErr)?.message ?? "Could not put your tickets on sale." };
   }
   let slug = o.e.slug;
   if (!slug) { slug = `${o.e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(3).toString("hex")}`; }

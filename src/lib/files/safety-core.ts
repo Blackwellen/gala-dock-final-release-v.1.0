@@ -7,7 +7,8 @@
  *  • SVG: refused when it carries scripts, handlers, external references or entity declarations; comments/metadata removed.
  *  • Malware: the shared Blackwellen ClamAV gateway (POST /scan) — fails closed on any error or malformed reply.
  */
-export type Verdict = { ok: true; bytes: Uint8Array } | { ok: false; reason: "infected" | "active_content" | "scanner_unavailable"; detail?: string };
+/** `via` = which AV gateway gave the answer (absent when no gateway was asked). */
+export type Verdict = { ok: true; bytes: Uint8Array; via?: "primary" | "secondary" } | { ok: false; reason: "infected" | "active_content" | "scanner_unavailable"; detail?: string; via?: "primary" | "secondary" };
 
 function stripJpeg(b: Uint8Array): Uint8Array {
   if (b[0] !== 0xff || b[1] !== 0xd8) return b;
@@ -72,14 +73,38 @@ export function sanitize(bytes: Uint8Array, type: string): Verdict {
   return { ok: true, bytes };
 }
 
-/** Scan with the ClamAV gateway contract `{ clean: boolean, signature?: string }`. Any HTTP error, timeout or malformed reply is
- *  `scanner_unavailable` (fail closed). `fetchImpl` is injectable so tests can mock the gateway (EICAR reply) without a network. */
-export async function scanWith(o: { url: string; token: string; fetchImpl?: typeof fetch; timeoutMs?: number }, bytes: Uint8Array): Promise<Verdict> {
+export type ScanGateway = { url: string; token: string };
+export type GatewayRole = "primary" | "secondary";
+/** A main gateway seen unavailable is skipped for this long while a standby is configured (Blackwellen ops: same rule as Gigvora). */
+export const PRIMARY_SKIP_MS = 60_000;
+const primaryDownUntil = new Map<string, number>();
+
+/** One raw-bytes scan against one gateway. `failover` is true only when the gateway was unavailable (network error, timeout, 5xx);
+ *  a refusal (401/4xx) or a malformed reply is final, so a bad token or a broken contract never silently moves to the standby. */
+async function scanOnce(g: ScanGateway, bytes: Uint8Array, fetchImpl: typeof fetch, timeoutMs: number, via: GatewayRole): Promise<{ verdict: Verdict; failover: boolean }> {
   try {
-    const r = await (o.fetchImpl ?? fetch)(`${o.url.replace(/\/+$/, "")}/scan`, { method: "POST", body: new Uint8Array(bytes),
-      headers: { Authorization: `Bearer ${o.token}`, "Content-Type": "application/octet-stream" }, signal: AbortSignal.timeout(o.timeoutMs ?? 20_000) });
+    const r = await fetchImpl(`${g.url.replace(/\/+$/, "")}/scan`, { method: "POST", body: new Uint8Array(bytes),
+      headers: { Authorization: `Bearer ${g.token}`, "Content-Type": "application/octet-stream" }, signal: AbortSignal.timeout(timeoutMs) });
+    if (r.status >= 500) return { verdict: { ok: false, reason: "scanner_unavailable", via }, failover: true };
     const j = await r.json().catch(() => ({})) as { clean?: boolean; signature?: string };
-    if (!r.ok || typeof j.clean !== "boolean") return { ok: false, reason: "scanner_unavailable" };
-    return j.clean === true ? { ok: true, bytes } : { ok: false, reason: "infected", detail: typeof j.signature === "string" ? j.signature.slice(0, 120) : undefined };
-  } catch { return { ok: false, reason: "scanner_unavailable" }; }
+    if (!r.ok || typeof j.clean !== "boolean") return { verdict: { ok: false, reason: "scanner_unavailable", via }, failover: false };
+    return { verdict: j.clean === true ? { ok: true, bytes, via } : { ok: false, reason: "infected", detail: typeof j.signature === "string" ? j.signature.slice(0, 120) : undefined, via }, failover: false };
+  } catch { return { verdict: { ok: false, reason: "scanner_unavailable", via }, failover: true }; }
+}
+
+/** Scan with the ClamAV gateway contract `{ clean: boolean, signature?: string }` (Blackwellen AV gateway, raw-bytes `/scan`, bearer per brand).
+ *  Only an explicit `clean: true` is clean. Any HTTP error, timeout or malformed reply is `scanner_unavailable` (fail closed).
+ *  With a `secondary` (standby gateway, own engine), the standby is used only when the main gateway is unavailable (network error,
+ *  timeout, 5xx); a main gateway seen down is skipped for 60 s; both down → `scanner_unavailable`. A standby never turns an error into "clean".
+ *  `fetchImpl` / `now` are injectable so tests can mock the gateways (EICAR reply, outages) without a network. */
+export async function scanWith(o: ScanGateway & { secondary?: ScanGateway | null; fetchImpl?: typeof fetch; timeoutMs?: number; now?: () => number }, bytes: Uint8Array): Promise<Verdict> {
+  const f = o.fetchImpl ?? fetch, now = o.now ?? Date.now, secondary = o.secondary?.url && o.secondary.token ? o.secondary : null;
+  const timeoutMs = o.timeoutMs ?? (secondary ? 15_000 : 20_000);
+  const key = o.url.replace(/\/+$/, "");
+  if (!secondary || (primaryDownUntil.get(key) ?? 0) <= now()) {
+    const a = await scanOnce(o, bytes, f, timeoutMs, "primary");
+    if (!a.failover || !secondary) return a.verdict;
+    primaryDownUntil.set(key, now() + PRIMARY_SKIP_MS);
+  }
+  return (await scanOnce(secondary, bytes, f, timeoutMs, "secondary")).verdict;
 }

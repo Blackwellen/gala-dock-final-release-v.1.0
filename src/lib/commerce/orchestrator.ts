@@ -13,13 +13,14 @@ import { refundLegacyPlatformOrder } from "@/lib/commerce/legacy-platform-refund
  *  - startPayment(): canonical payment order (DB computes the amount + commission snapshot). Marketplace bookings become a
  *    Stripe Connect DIRECT charge on the provider's connected account with Gala Dock's commission as the application fee;
  *    promotion boosts (Gala Dock's own product) stay a platform charge.
- *  - processPayments(): cancellation refunds on the original charge. There is no release/transfer step: direct charges settle
- *    in the seller's own Stripe balance and Stripe pays the seller out on the seller's schedule.
+ *  - processPayments(): cancellation refunds on the original charge. There is no platform transfer: direct charges settle in the
+ *    seller's own Stripe balance. DEC-107 (2026-11-11): DEC-107 accounts pay out manually, only when a release trigger is met
+ *    (src/lib/commerce/releases.ts); legacy Q07 accounts still pay out on their own Stripe schedule.
  * Webhooks confirm every state change; redirects never mark anything paid.
  */
 
 export type PayKind = "deposit" | "balance_payment" | "standby_fee" | "emergency_service" | "platform_boost";
-type Order = MarketplaceOrder & { id: string; refunded_minor: number; transferred_minor: number; build_item_id: string | null; event_id: string | null;
+export type Order = MarketplaceOrder & { id: string; refunded_minor: number; transferred_minor: number; build_item_id: string | null; event_id: string | null;
   stripe_payment_intent: string | null; stripe_charge: string | null; stripe_transfer: string | null };
 
 const ERR: [RegExp, string][] = [
@@ -109,11 +110,15 @@ export async function processPayments(limit = 20) {
       try {
         if (po.strategy === "direct" && po.payee_connected_account_id) {
           // Refund on the seller's connected-account charge; the application fee follows the disclosed policy (125.D).
-          const { refund, policy } = await refundMerchantCharge(deps, { account: po.payee_connected_account_id, paymentIntent: po.stripe_payment_intent!, amountMinor: amt,
+          // DEC-107: the seller fee on the refunded part goes back pro rata; the admin fee only when the provider/platform cancelled.
+          const custFee = Number(po.customer_fee_minor ?? 0), gross = po.amount_minor + custFee;
+          const split = { sellerAmountMinor: po.amount_minor, sellerFeeMinor: Math.max(0, Number(po.application_fee_minor ?? po.platform_fee_minor) - custFee),
+            customerFeeRefundMinor: feeBack && gross > 0 ? Math.min(custFee, Math.round((custFee * amt) / gross)) : 0 };
+          const { refund, policy, feeRefund } = await refundMerchantCharge(deps, { account: po.payee_connected_account_id, paymentIntent: po.stripe_payment_intent!, amountMinor: amt,
             reason: reasonFor(c.party), idempotencyKey: `refund:${c.id}:${po.reference}`, metadata: { payment_order: po.reference, cancellation: c.id },
-            mode: { rowLivemode: (po as { livemode?: boolean | null }).livemode, platformLive: stripeLive() } });
+            mode: { rowLivemode: (po as { livemode?: boolean | null }).livemode, platformLive: stripeLive() }, split });
           await db.from("payment_refunds").upsert({ stripe_refund_id: refund.id, stripe_account_id: po.payee_connected_account_id, payment_intent_id: po.stripe_payment_intent,
-            source_type: "booking_cancellation", source_ref: c.id, amount_minor: amt, refund_application_fee: policy !== "retained", fee_policy: policy, reason_code: reasonFor(c.party),
+            source_type: "booking_cancellation", source_ref: c.id, amount_minor: amt, refund_application_fee: !!feeRefund, fee_policy: policy, reason_code: reasonFor(c.party),
             idempotency_key: `refund:${c.id}:${po.reference}`, status: refund.status === "succeeded" ? "succeeded" : "pending" }, { onConflict: "idempotency_key" });
         } else await refundLegacyPlatformOrder(deps.stripe, po, amt, c.id);
         remaining -= amt; refunded += amt;

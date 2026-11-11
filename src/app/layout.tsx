@@ -39,12 +39,16 @@ const fitScript = `(function(){function f(){var w=innerWidth,h=innerHeight,c=fun
 if(w<1101){d.setProperty("--gd-fit-auth","1");d.setProperty("--gd-fit-setup","1");return}
 var z=function(dw,dh,k){return c(Math.max(Math.min(w/dw,h/dh),w/(dw*k)))};d.setProperty("--gd-fit-auth",z(1448,1086,1.6));d.setProperty("--gd-fit-setup",z(1536,1024,1.3))}f();addEventListener("resize",f)})()`;
 
+// Public website motion (src/components/site/motion.tsx): entrance choreography exists only when the visitor has not asked for
+// reduced motion. Set before first paint so server HTML is never hidden for crawlers, no-JS or reduced-motion visitors.
+const motionScript = `(function(){try{var m=matchMedia("(prefers-reduced-motion: no-preference)"),r=document.documentElement.classList,s=function(){m.matches?r.add("gp-motion"):r.remove("gp-motion")};s();m.addEventListener("change",s)}catch(e){}})()`;
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // H-02: the proxy's per-request CSP nonce (src/lib/security/csp.ts). Next nonces its own scripts; this is for ours.
   const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
   return (
     <html lang="en" suppressHydrationWarning>
-      <head><InlineScript id="gd-fit" html={fitScript} nonce={nonce} /></head>
+      <head><InlineScript id="gd-fit" html={fitScript} nonce={nonce} /><InlineScript id="gp-motion" html={motionScript} nonce={nonce} /></head>
       <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers><MaintenanceBanner /><PopoverFit /><SelectUpgrade /><Suspense fallback={null}><KeyboardScrollRegions /></Suspense>{children}<Suspense fallback={null}><GuidedTour /></Suspense><PwaLifecycle /><CookieBanner /><Suspense fallback={null}><AnalyticsBeacon /></Suspense></Providers></body>
     </html>
   );

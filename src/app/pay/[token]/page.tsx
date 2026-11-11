@@ -37,8 +37,19 @@ async function pay(formData: FormData) {
   if (!inv || !deps) return;
   if (!(await rateLimit(`pay:${token}`, 10, 600))) return;
   const due = Math.round((Number(inv.total) - Number(inv.amount_paid)) * 100); if (due <= 0) return;
-  const { readiness } = await issuer(inv.id);
+  const { readiness, workspaceId } = await issuer(inv.id);
   if (!readiness.ready) return;
+  // DEC-107 express term (playbook §4): the payer ticks the payment terms before paying. Recorded with version and time for every
+  // payer (pay links are often businesses without a Gala Dock account); a signed-in payer also gets a consent record.
+  const { data: cfg } = await createAdminClient().from("dec107_settings" as never).select("payment_terms_version").eq("id", true).maybeSingle();
+  const version = (cfg as { payment_terms_version: string } | null)?.payment_terms_version ?? "";
+  if (!version || String(formData.get("terms") ?? "") !== version) return;
+  const { createClient } = await import("@/lib/supabase/server");
+  const sb = await createClient();
+  const { data: { user } } = await sb.auth.getUser();
+  if (user) await sb.rpc("accept_payment_terms" as never, { p_role: "customer", p_version: version, p_source: "checkout" } as never);
+  await createAdminClient().from("audit_events").insert({ actor_id: user?.id ?? null, actor_type: user ? "user" : "system", workspace_id: workspaceId, event: "payment.terms_accepted",
+    metadata: { invoice_id: inv.id, version, source: "pay_link", accepted_at: new Date().toISOString() } } as never);
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3107";
   // Gala Dock takes no fee on an organiser's own invoices; the application fee is explicit (0) so the charge stays direct.
   const fee = 0;
@@ -75,12 +86,19 @@ export default async function PayPage({ params, searchParams }: { params: Promis
   const due = Number(inv.total) - Number(inv.amount_paid); const paid = inv.status === "paid" || due <= 0;
   const { readiness } = paid ? { readiness: null } : await issuer(inv.id);
   const blocked = !paid && (!deps || !readiness?.ready);
+  const { data: tcfg } = await createAdminClient().from("dec107_settings" as never).select("payment_terms_version").eq("id", true).maybeSingle();
+  const termsVersion = (tcfg as { payment_terms_version: string } | null)?.payment_terms_version ?? "";
   const gbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   return <div className="pay"><section className="ce-card pay-card">
     <small className="pay-from">Invoice from {inv.workspace_name}</small><h1>{inv.number}</h1>{inv.event_name && <p className="pay-ev">{inv.event_name}</p>}
     <dl><div><dt>Billed to</dt><dd>{inv.client_name}</dd></div><div><dt>Invoice total</dt><dd>{gbp(Number(inv.total))}</dd></div><div><dt>Paid</dt><dd>{gbp(Number(inv.amount_paid))}</dd></div>{inv.due_date && <div><dt>Due date</dt><dd>{new Date(inv.due_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</dd></div>}<div className="b"><dt>Amount due</dt><dd>{gbp(Math.max(0, due))}</dd></div></dl>
     {paid ? <div className="pay-done"><CheckCircle2 size={22} /><b>Paid in full — thank you.</b></div>
       : blocked ? <p className="pay-note" role="status"><CircleAlert size={14} />{!deps ? "Card payments aren’t configured in this environment yet." : readiness && !readiness.ready ? `${NOT_READY_COPY[readiness.reason]} Please contact ${inv.workspace_name} to pay another way.` : ""}</p>
-      : <form action={pay}><input type="hidden" name="token" value={token} /><button className="k-btn primary pay-btn"><Lock size={16} />Pay {gbp(due)} securely</button></form>}
+      : <form action={pay}><input type="hidden" name="token" value={token} />
+          <label className="pay-terms" style={{ display: "flex", gap: 8, alignItems: "flex-start", margin: "10px 0", fontSize: 14 }}>
+            <input type="checkbox" name="terms" value={termsVersion} required />
+            <span>I accept the payment terms (version {termsVersion}): I am paying {inv.workspace_name} directly through Stripe; Gala Dock does not hold the money; refunds and disputes are between me and {inv.workspace_name}, and card chargebacks stay open to me. <a href="/terms" target="_blank" rel="noreferrer">Full terms</a></span>
+          </label>
+          <button className="k-btn primary pay-btn"><Lock size={16} />Pay {gbp(due)} securely</button></form>}
     <p className="pay-note"><ShieldCheck size={14} />Paid to {inv.workspace_name} through Stripe. Gala Dock never sees your card details.</p></section></div>;
 }

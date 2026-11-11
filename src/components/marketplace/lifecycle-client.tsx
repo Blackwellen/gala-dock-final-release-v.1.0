@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomerTermsTick } from "@/components/payments/payment-terms-tick";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
@@ -185,12 +186,17 @@ export function DisputeOpenForm({ itemId, reasons, base }: { itemId: string; rea
 export function PayButton({ kind, itemId, standbyId, label, returnPath, note, amount }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string; amount?: number }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
+  const [terms, setTerms] = useState<string | null>(null);
+  const [ticked, setTicked] = useState(false);
   const go = () => start(async () => {
     setError("");
-    const r = await A.payBooking(kind, { itemId, standbyId }, returnPath);
+    if (terms && !ticked) { setError("Tick the box to accept the payment terms."); return; }
+    const r = await A.payBooking(kind, { itemId, standbyId }, returnPath, terms && ticked ? { acceptTerms: true, termsVersion: terms } : {});
+    // DEC-107 express term at the first payment: the tick appears, the next click records it (version, user, time).
+    if (!r.ok && r.error.startsWith("TERMS_REQUIRED:")) { setTerms(r.error.slice("TERMS_REQUIRED:".length)); setTicked(false); return; }
     if (!r.ok) setError(r.error); else if (r.data) window.location.assign(r.data);
   });
   const fee = amount != null ? bookingAdminFee(amount) : null;
   return <div className="mk-pay">{note && <p className="mk-note">{note}</p>}
-    <p className="mk-note">{fee != null ? `Plus a ${gbpPence(fee)} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence((amount ?? 0) + fee)} in total.` : `Plus a Gala Dock booking admin fee of ${BOOKING_ADMIN_FEE.pct}% (min £${BOOKING_ADMIN_FEE.minimum}), shown before you pay.`}</p><Btn tone="primary" type="button" pending={pending} onClick={go}>{label}</Btn><Err e={error} /></div>;
+    <p className="mk-note">{fee != null ? `Plus a ${gbpPence(fee)} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence((amount ?? 0) + fee)} in total.` : `Plus a Gala Dock booking admin fee of ${BOOKING_ADMIN_FEE.pct}% (min £${BOOKING_ADMIN_FEE.minimum}), shown before you pay.`}</p>{terms && <CustomerTermsTick version={terms} checked={ticked} onChange={setTicked} />}<Btn tone="primary" type="button" pending={pending} onClick={go}>{terms ? `Accept and ${label.toLowerCase()}` : label}</Btn><Err e={error} /></div>;
 }

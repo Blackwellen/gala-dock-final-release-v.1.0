@@ -5,7 +5,7 @@ import { getAdmin } from "@/lib/admin/context";
 import { money, dateShort, time } from "@/lib/format";
 import { DISPUTE_REASONS, DISPUTE_STATUS } from "@/lib/marketplace/lifecycle";
 import { Head, TabBar, Pill } from "../_b/kit";
-import { DisputeDecision, CancellationDecision } from "./decide";
+import { DisputeDecision, CancellationDecision, AwardEntry } from "./decide";
 import "@/styles/admin-b.css";
 import "@/styles/admin-disputes.css";
 
@@ -40,6 +40,9 @@ export default async function DisputesPage(props: PageProps<"/admin/disputes">) 
   const current = tab === "disputes" && sel ? D.find(d => d.id === sel) : null;
   const { data: entries } = current ? await db.from("booking_dispute_entries").select("id,party,kind,body,files,created_at,internal").eq("dispute_id", current.id).order("created_at") : { data: null };
   const { data: itemRow } = current ? await db.from("build_items").select("title").eq("id", current.build_item_id).maybeSingle() : { data: null };
+  // DEC-107: independent awards (entered by one person, checked by another) and the resolution route for this amount/customer.
+  const { data: awardRows } = current ? await db.from("booking_dispute_awards").select("id,refund_minor,provider,reference,status,entered_by").eq("dispute_id", current.id).order("created_at") : { data: null };
+  const awards = ((awardRows ?? []) as { id: string; refund_minor: number; provider: string; reference: string; status: string; entered_by: string }[]).map(a => ({ ...a, mine: a.entered_by === admin.userId }));
 
   return <div className="adb add">
     <Head title="Booking disputes" subtitle="Mediate booking disputes, review cancellations and track card chargebacks." />
@@ -58,7 +61,9 @@ export default async function DisputesPage(props: PageProps<"/admin/disputes">) 
         {Object.keys(current.terms_snapshot ?? {}).length > 0 && <details className="add-terms"><summary>Booking terms at opening</summary><pre>{JSON.stringify(current.terms_snapshot, null, 2)}</pre></details>}
         <ol className="add-thread">{((entries ?? []) as Entry[]).map(e => <li key={e.id} className={e.party}><header><b>{PARTY[e.party]}{e.internal ? " · internal" : ""}</b><span>{stamp(e.created_at)}</span></header>
           {e.body && <p>{e.body}</p>}{e.files?.map(f => <a key={f.path} href={`/api/disputes/${current.id}/files?path=${encodeURIComponent(f.path)}`} target="_blank" rel="noopener noreferrer">{f.name}</a>)}</li>)}</ol>
+        <p className="add-muted">Gala Dock recommends only. Money moves when both parties accept, they settle, an independent award is entered and checked, or the payment hold-limit default rule applies. <a href={`/api/disputes/${current.id}/case-pack`}>Download case pack</a></p>
         <DisputeDecision id={current.id} status={current.status} />
+        {current.status !== "resolved" && <details className="add-terms"><summary>Independent award (ADR, arbitration or court)</summary><AwardEntry id={current.id} awards={awards} /></details>}
       </aside>}
     </div>}
     {tab === "cancellations" && <section className="adb-panel"><table className="adb-table"><thead><tr><th>Requested</th><th>Party</th><th>Type</th><th>Reason</th><th className="r">Paid</th><th className="r">Policy refund</th><th>Decision</th></tr></thead>

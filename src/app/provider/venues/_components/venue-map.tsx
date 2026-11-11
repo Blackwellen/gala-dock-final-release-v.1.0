@@ -61,6 +61,12 @@ export function basemapTiles(e: MapEl, span: { x?: number; y?: number; w: number
 }
 export { MAP_ATTRIBUTION };
 
+/** Drawings/aerials come from our own upload store (/api/listing-media → Supabase public bucket). Anything else in a saved or
+ *  imported plan file (third-party hosts, data:/javascript: URLs) is not drawn, so a plan can't make public map viewers load
+ *  arbitrary remote content. */
+const STORE = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/+$/, "") + "/storage/v1/object/public/";
+export const safeUnderlayUrl = (u?: string) => (u && ((STORE.length > 30 && u.startsWith(STORE)) || /^\/(?!\/)/.test(u)) ? u : undefined);
+
 /** Map content (no <svg>) so the read-only map and the builder share one renderer. */
 export function MapContent({ elements, spaces, dim, selected, selectedIndex = null, selectedSet, labelSize = 13, onElDown, span, children, detail = false, tierColor, seatState, selectedSeats, onSeat, px }: {
   elements: MapEl[]; spaces: MapSpace[]; dim?: (spaceId: string | undefined) => boolean; selected?: string | null; selectedIndex?: number | null; selectedSet?: Set<number>; labelSize?: number;
@@ -80,7 +86,7 @@ export function MapContent({ elements, spaces, dim, selected, selectedIndex = nu
     {layer(e => e.type === "basemap", (e, i) => <g key={`b${i}`} opacity={e.opacity ?? 0.6} className="vm-base" onPointerDown={down(i)} transform={e.rot ? `rotate(${e.rot} ${e.x ?? 0} ${e.y ?? 0})` : undefined}>
       {basemapTiles(e, span, px).map(t => <image key={t.href} href={t.href} x={t.x} y={t.y} width={t.s + 0.6} height={t.s + 0.6} preserveAspectRatio="none" />)}</g>)}
     {layer(e => e.type === "underlay", (e, i) => <g key={`u${i}`} className={`vm-under${on(i, e) ? " on" : ""}`} onPointerDown={down(i)}>
-      <image href={e.url} x={e.x} y={e.y} width={e.w} height={e.h} opacity={e.opacity ?? 0.7} preserveAspectRatio="none" />
+      <image href={safeUnderlayUrl(e.url)} x={e.x} y={e.y} width={e.w} height={e.h} opacity={e.opacity ?? 0.7} preserveAspectRatio="none" />
       {on(i, e) && <rect x={e.x} y={e.y} width={e.w} height={e.h} fill="none" stroke="#1a1af2" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />}</g>)}
     {layer(e => e.type === "water", (e, i) => <g key={`w${i}`} className={on(i, e) ? "vm-sel" : ""} onPointerDown={down(i)}><rect x={e.x} y={e.y} width={e.w} height={e.h} fill="#cfe6fb" /><rect x={e.x} y={e.y} width={e.w} height={e.h} fill="url(#vm-water)" />
       <text x={(e.x ?? 0) + (e.w ?? 0) / 2} y={(e.y ?? 0) + (e.h ?? 0) / 2 + 4 * k} textAnchor="middle" className="vm-water" style={{ fontSize: 11 * k }}>{e.label.toUpperCase()}</text></g>)}

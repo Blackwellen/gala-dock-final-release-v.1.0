@@ -15,7 +15,7 @@ export function PlanPreview({ base, overlay, spaces = [], height = 200, tierColo
   const colors = tierColor ?? {};
   // Wide cards show more than the viewBox (meet scaling), so street-map tiles cover a wider span than the plan itself.
   const tiles = { x: view.x - view.w * 1.5, y: view.y - view.h, w: view.w * 4, h: view.h * 3 };
-  return <svg className="vm" viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} style={{ width: "100%", height, display: "block" }} role="img" aria-label={label} preserveAspectRatio="xMidYMid meet">
+  return <svg className="vm vm-static" viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} style={{ width: "100%", height, display: "block" }} role="img" aria-label={label} preserveAspectRatio="xMidYMid meet">
     <MapDefs /><rect x={tiles.x} y={tiles.y} width={tiles.w} height={tiles.h} fill="#f6f9fc" />
     {base.length > 0 && <g opacity={0.85}><MapContent elements={base} spaces={spaces} span={tiles} labelSize={view.w / 50} px={600} /></g>}
     <MapContent elements={overlay} spaces={spaces} span={tiles} labelSize={view.w / 50} px={600} tierColor={t => (t ? colors[t] : undefined)} />

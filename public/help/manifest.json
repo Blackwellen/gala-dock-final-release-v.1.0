@@ -1,123 +1,123 @@
 {
   "getting-started-organizers": {
-    "version": 6,
-    "captured_at": "2026-10-12T03:48:32.446Z",
+    "version": 8,
+    "captured_at": "2026-11-11T18:06:49.295Z",
     "route": "/organizer",
     "width": 1280,
     "height": 800,
-    "signature": "afe42ae9a1cbeddb",
+    "signature": "6fdbc723cc883289",
     "annotations": [
       {
         "n": 1,
         "caption": "All your events",
         "found": true,
-        "x": 6,
-        "y": 94,
-        "w": 151,
-        "h": 34
+        "x": 7,
+        "y": 106,
+        "w": 171,
+        "h": 38
       },
       {
         "n": 2,
         "caption": "Venues and suppliers",
         "found": true,
-        "x": 6,
-        "y": 200,
-        "w": 151,
-        "h": 34
+        "x": 7,
+        "y": 226,
+        "w": 171,
+        "h": 38
       },
       {
         "n": 3,
         "caption": "Tickets & promotion",
         "found": true,
-        "x": 6,
-        "y": 235,
-        "w": 151,
-        "h": 34
+        "x": 7,
+        "y": 266,
+        "w": 171,
+        "h": 38
       },
       {
         "n": 4,
         "caption": "Gala Agent",
         "found": true,
-        "x": 6,
-        "y": 376,
-        "w": 151,
-        "h": 34
+        "x": 7,
+        "y": 426,
+        "w": 171,
+        "h": 38
       }
     ]
   },
   "events": {
-    "version": 6,
-    "captured_at": "2026-10-12T03:48:36.994Z",
+    "version": 7,
+    "captured_at": "2026-11-11T18:02:10.845Z",
     "route": "/organizer/events",
     "width": 1280,
     "height": 800,
-    "signature": "7f07746ef481305e",
+    "signature": "d118e20251f53190",
     "annotations": [
       {
         "n": 1,
         "caption": "Create an event",
         "found": true,
-        "x": 701,
-        "y": 9,
-        "w": 79,
-        "h": 30
+        "x": 990,
+        "y": 11,
+        "w": 88,
+        "h": 34
       }
     ]
   },
   "tickets": {
-    "version": 6,
-    "captured_at": "2026-10-12T03:48:42.411Z",
+    "version": 7,
+    "captured_at": "2026-11-11T18:02:25.291Z",
     "route": "/organizer/tickets",
     "width": 1280,
     "height": 800,
-    "signature": "5a3803c1692e9638",
+    "signature": "31d33ba49b436671",
     "annotations": [
       {
         "n": 1,
         "caption": "Ticket sales across events",
         "found": true,
-        "x": 177,
-        "y": 92,
-        "w": 280,
-        "h": 24
+        "x": 201,
+        "y": 104,
+        "w": 318,
+        "h": 27
       }
     ]
   },
   "media-studio": {
-    "version": 6,
-    "captured_at": "2026-10-12T03:48:45.997Z",
+    "version": 7,
+    "captured_at": "2026-11-11T18:03:13.843Z",
     "route": "/organizer/media",
     "width": 1280,
     "height": 800,
-    "signature": "07916e34a60fb17f",
+    "signature": "a84935057b4e4ba5",
     "annotations": [
       {
         "n": 1,
         "caption": "Designs, templates, community",
         "found": true,
-        "x": 177,
-        "y": 96,
-        "w": 1090,
-        "h": 24
+        "x": 201,
+        "y": 109,
+        "w": 1064,
+        "h": 27
       }
     ]
   },
   "gala-agent": {
-    "version": 6,
-    "captured_at": "2026-10-12T03:48:50.228Z",
+    "version": 7,
+    "captured_at": "2026-11-11T18:03:43.800Z",
     "route": "/organizer/agent",
     "width": 1280,
     "height": 800,
-    "signature": "fe587292bd4dc1e2",
+    "signature": "b1fb1c6c91786495",
     "annotations": [
       {
         "n": 1,
         "caption": "Runs, approvals and routines",
         "found": true,
-        "x": 177,
-        "y": 92,
-        "w": 108,
-        "h": 29
+        "x": 201,
+        "y": 104,
+        "w": 123,
+        "h": 33
       }
     ]
   },
@@ -196,39 +196,39 @@
     ]
   },
   "team": {
-    "version": 4,
-    "captured_at": "2026-10-12T03:48:59.336Z",
+    "version": 5,
+    "captured_at": "2026-11-11T18:06:19.721Z",
     "route": "/organizer/team",
     "width": 1280,
     "height": 800,
-    "signature": "34f93bc7fa2893ee",
+    "signature": "51df638dc05ce158",
     "annotations": [
       {
         "n": 1,
         "caption": "Invite members or crew",
         "found": true,
-        "x": 1139,
-        "y": 101,
-        "w": 128,
-        "h": 30
+        "x": 1118,
+        "y": 115,
+        "w": 147,
+        "h": 34
       },
       {
         "n": 2,
         "caption": "Availability and assignments",
         "found": true,
-        "x": 230,
-        "y": 140,
-        "w": 53,
-        "h": 29
+        "x": 261,
+        "y": 159,
+        "w": 60,
+        "h": 32
       },
       {
         "n": 3,
         "caption": "Team members & crew",
         "found": true,
-        "x": 177,
-        "y": 506,
-        "w": 1090,
-        "h": 521
+        "x": 201,
+        "y": 397,
+        "w": 1064,
+        "h": 588
       }
     ]
   },

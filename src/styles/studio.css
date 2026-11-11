@@ -205,3 +205,7 @@ dialog.st-new-design::backdrop { background:#090a286b; }
 .st-new-design button,.st-new-design input,.st-new-design select { min-height:44px; }
 .st-new-design .st-icon { min-width:44px; }.st-new-design :focus-visible { outline:2px solid #0b08f8;outline-offset:2px; }
 @media(max-width:600px){.st-new-design input,.st-new-design select{font-size:16px}}
+/* Touch: larger resize/rotate/point handles so they can be grabbed with a finger (hit area grows, the drawn handle stays small). */
+@media (pointer:coarse){.st-h,.st-pt{width:22px;height:22px;margin:-11px 0 0 -11px;background:transparent;border:0;border-radius:50%}.st-h::after,.st-pt::after{content:"";position:absolute;inset:5px;background:#fff;border:1.5px solid var(--st-blue);border-radius:3px}.st-h.rot::after,.st-pt::after{border-radius:50%}.st-h.rot{top:-34px}}
+/* Overflowing (zoomed-in) canvas stays fully scrollable/pannable: auto margins centre it only while it fits. */
+.st .st-stage{place-items:start}.st .st-canvas{margin:auto}

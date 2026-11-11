@@ -1,0 +1,12 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: false, args: ["--disable-blink-features=AutomationControlled"], ignoreDefaultArgs: ["--enable-automation"] });
+const p = await b.newPage();
+await p.goto("https://www.galadock.com/login", { waitUntil: "load" });
+await p.getByLabel("Email").fill("alex.events@example.com");
+await p.getByLabel("Password", { exact: true }).fill(process.env.DEMO_ORGANIZER_PASSWORD);
+for (let i = 0; i < 20 && !(await p.evaluate(() => (window.turnstile?.getResponse() ?? "").length)); i++) await p.waitForTimeout(500);
+await p.getByRole("button", { name: "Log in" }).click();
+await p.waitForURL(u => !u.pathname.startsWith("/login"), { timeout: 30000 }).catch(() => {});
+const err = await p.locator('[role="alert"]').first().textContent().catch(() => "");
+console.log("after login:", new URL(p.url()).pathname, err ? `alert: ${err}` : "");
+await b.close();

@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 
 type W = { id: string; level: number; modules: string[]; title: string; message: string; status_url: string | null; expected_restore: string | null; audience: string; dismissible: boolean; severity: string; reference: string };
 const KEY = "gd_maint_dismissed";
-const audienceFor = (path: string) => path.startsWith("/admin") ? "admins" : path.startsWith("/organizer") ? "organizers" : path.startsWith("/provider") ? "providers" : "customers";
+// Whole path segments only, so the public /providers and /organizers/[id] pages count as customer-facing.
+const audienceFor = (path: string) => /^\/admin(\/|$)/.test(path) ? "admins" : /^\/organizer(\/|$)/.test(path) ? "organizers" : /^\/provider(\/|$)/.test(path) ? "providers" : "customers";
 
 /**
  * Global maintenance notice (release spec §9–10). Client-side so static pages and the installed PWA get it too; polls the cached

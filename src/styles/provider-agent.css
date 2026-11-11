@@ -119,3 +119,13 @@
 .pa-list .pa-acts{flex-direction:row}
 @media (max-width:1360px){.pa-grid{grid-template-columns:1fr 1fr}.pa-side{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}.pa-bottom{grid-template-columns:1fr}.pa-quick ul{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:860px){.pa-grid,.pa-side,.pa-ins ul{grid-template-columns:1fr}.pa-quick ul{grid-template-columns:repeat(2,minmax(0,1fr))}.pa-list table{display:block;overflow-x:auto}}
+/* Playbook §3/§7 (2026-11-11): on phones and tablets the agent chat is the first full-height view; the other sections follow and the
+   composer stays at the bottom of the chat (above the on-screen keyboard: the chat is sized to the dynamic viewport). */
+@media (max-width: 1024px) {
+  .pa { display: flex; flex-direction: column; }
+  .pa > * { order: 2; }
+  .pa > .pa-head { order: 0; }
+  .pa > .pa-grid { order: 1; display: flex; flex-direction: column; }
+  .pa-grid > .pa-chat { min-height: calc(100dvh - 150px); }
+  .pa-grid > .pa-chat form { margin-top: auto; position: sticky; bottom: 0; background: #fff; }
+}

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 
-// Owner request 2026-10-29: every public page carries the shared public header and footer (or the landing header/footer on `/`).
+// Owner request 2026-10-29: every public page carries the shared public header and footer (since 2026-11-11 the landing page too).
 // Token portals, checkout and auth keep their minimal branded header by design but get the slim legal footer. `/maintenance`
 // stays minimal. CHROME_OUT=<file> also writes the route × width table.
 
@@ -9,11 +9,12 @@ type Want = { header: "public" | "landing" | "brand" | "none"; footer: "public" 
 const PUBLIC: Want = { header: "public", footer: "public" };
 const TOKEN: Want = { header: "brand", footer: "legal" };
 const ROUTES: [string, Want][] = [
-  ["/", { header: "landing", footer: "landing" }],
+  // Public website blueprint (2026-11-11): one global header and footer on every public page, the landing page included.
+  ["/", PUBLIC], ["/organisers", PUBLIC], ["/providers", PUBLIC], ["/build-an-event", PUBLIC], ["/developers", PUBLIC], ["/about", PUBLIC], ["/pricing", PUBLIC],
   ["/events", PUBLIC], ["/events/in/london", PUBLIC], ["/events/calendar", PUBLIC], ["/events/category/music", PUBLIC], ["/events/neon-nights", PUBLIC],
   ["/events/neon-nights/register", PUBLIC], ["/venues/riverside-arena", PUBLIC], ["/services/elite-sounds-dj", PUBLIC],
   ["/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01", PUBLIC], ["/p/alex-events-winter-nights", PUBLIC], ["/help", PUBLIC], ["/help/getting-started-organizers", PUBLIC],
-  ["/terms", PUBLIC], ["/privacy", PUBLIC], ["/cookies", PUBLIC], ["/ticket-terms", PUBLIC], ["/data-retention", PUBLIC], ["/this-page-does-not-exist", PUBLIC],
+  ["/terms", PUBLIC], ["/privacy", PUBLIC], ["/cookies", PUBLIC], ["/ticket-terms", PUBLIC], ["/data-retention", PUBLIC], ["/accessibility", PUBLIC], ["/this-page-does-not-exist", PUBLIC],
   ["/rsvp/not-a-real-token", PUBLIC],
   ["/checkout/neon-nights", TOKEN],
   // Signed out, the confirmation and invite links show the sign-in card (auth cards keep their own branded card, no footer, by design).

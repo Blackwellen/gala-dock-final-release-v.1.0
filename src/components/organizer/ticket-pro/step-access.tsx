@@ -63,9 +63,9 @@ export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref =
       <Card title="Payout & verification" sub="Set up how you receive funds from ticket sales.">
         {data.payoutReady ? <div className="tp-ok"><CheckCircle2 size={20} /><span><b>Connected account verified</b><small>Your Stripe account is verified and ready to receive payouts.</small></span></div>
           : <div className="tp-warn"><AlertTriangle size={20} /><span><b>Payouts not set up</b><small>Paid tickets can&apos;t go on sale until payouts are verified.</small></span></div>}
-        <div className="tp-g2f"><label className="tp-f"><span>Payout currency</span><span className="tp-in ro">GBP (£)</span></label><label className="tp-f"><span>Payout schedule</span><span className="tp-in ro">7 days after event</span></label></div>
+        <div className="tp-g2f"><label className="tp-f"><span>Payout currency</span><span className="tp-in ro">GBP (£)</span></label><label className="tp-f"><span>Payout schedule</span><span className="tp-in ro">24 hours after the event</span></label></div>
         <label className="tp-f"><span>Bank account</span><span className="tp-in ro"><Landmark size={14} />{data.payoutLabel ?? (data.payoutReady ? "Connected via Stripe" : "Not connected")}<Link className="k-link tp-chg" href="/organizer/money?tab=payouts">{data.payoutReady ? "Change" : "Set up"}</Link></span></label>
-        <p className="tp-note">Ticket revenue (minus platform fees) will be paid to your verified Stripe account according to your payout schedule.</p>
+        <p className="tp-note">Ticket and resale revenue (minus Gala Dock fees) goes straight into your own Stripe account and is paid out to your bank, grouped by event, 24 hours after the event ends. New sellers keep a 10% reserve for 30 days.</p>
       </Card>
     </div>
     <Card title="Terms and disclosures" sub="Set the ticket terms and important information for buyers." className="tp-terms">

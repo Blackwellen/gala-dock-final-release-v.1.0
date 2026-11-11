@@ -28,11 +28,11 @@ for (const [secret, publicKey, expected] of [["sk_test_fixture", "pk_test_fixtur
   });
 }
 
-test("scanner readiness requires a healthy engine rather than HTTP 200 alone", async () => {
-  for (const body of [{ ok: true, clamd: "PONG" }, { ok: true, clamd: "ERROR" }, { ok: false }, {}]) {
-    const m = moduleAt("src/lib/release/integrations.ts", { CLAMAV_SCAN_URL: keys.CLAMAV_SCAN_URL, CLAMAV_SCAN_TOKEN: keys.CLAMAV_SCAN_TOKEN }, async () => response(body));
+test("scanner readiness requires an explicit clean probe verdict rather than HTTP 200 alone", async () => {
+  for (const [body, status] of [[{ clean: true }, 200], [{ clean: false, signature: "x" }, 200], [{ clean: "true" }, 200], [{}, 200], [{ error: "unauthorised" }, 401], [{ error: "signature_stale" }, 503]] as const) {
+    const m = moduleAt("src/lib/release/integrations.ts", { CLAMAV_SCAN_URL: keys.CLAMAV_SCAN_URL, CLAMAV_SCAN_TOKEN: keys.CLAMAV_SCAN_TOKEN }, async () => response(body, status));
     const rows = await m.readiness(true) as Array<{ key: string; status: string; critical: boolean }>;
-    expect(rows.find(r => r.key === "av_scanner")).toMatchObject({ critical: true, status: "clamd" in body && body.clamd === "PONG" ? "ready" : "degraded" });
+    expect(rows.find(r => r.key === "av_scanner")).toMatchObject({ critical: true, status: status === 200 && body.clean === true ? "ready" : "degraded" });
   }
 });
 
@@ -52,4 +52,37 @@ test("scanner accepts only explicit clean verdicts and refuses infected, malform
     expect(verdict.ok).toBe(expected === "clean");
     if (expected !== "clean") expect(verdict.reason).toBe(expected);
   }
+});
+
+test("standby gateway: used only when the main gateway is unavailable; refusals never fail over; both down fails closed", async () => {
+  const env = { ...keys, CLAMAV_SCAN_URL_SECONDARY: "https://standby.test" };
+  const run = async (main: () => Promise<Response>, standby: () => Promise<Response>) => {
+    const calls: string[] = [];
+    const m = moduleAt("src/lib/upload-safety.ts", env, (async (url: string) => { const s = String(url).startsWith("https://standby.test"); calls.push(s ? "standby" : "main"); return s ? standby() : main(); }) as unknown as typeof fetch);
+    return { verdict: await m.scan(new Uint8Array([1])) as { ok: boolean; reason?: string; via?: string }, calls };
+  };
+  const down = async () => { throw new Error("ECONNREFUSED"); };
+  let r = await run(async () => response({ clean: true }), async () => response({ clean: true }));
+  expect(r.calls).toEqual(["main"]); expect(r.verdict).toMatchObject({ ok: true, via: "primary" });
+  r = await run(down, async () => response({ clean: false, signature: "Eicar-Test-Signature" }));
+  expect(r.calls).toEqual(["main", "standby"]); expect(r.verdict).toMatchObject({ ok: false, reason: "infected", via: "secondary" });
+  r = await run(async () => response({ error: "clamd_unavailable" }, 503), async () => response({ clean: true }));
+  expect(r.verdict).toMatchObject({ ok: true, via: "secondary" });
+  r = await run(async () => response({ error: "unauthorised" }, 401), async () => response({ clean: true }));
+  expect(r.calls).toEqual(["main"]); expect(r.verdict).toMatchObject({ ok: false, reason: "scanner_unavailable" });
+  r = await run(down, async () => response({ error: "busy" }, 503));
+  expect(r.verdict).toMatchObject({ ok: false, reason: "scanner_unavailable" });
+});
+
+test("a main gateway seen down is skipped for 60 s, then tried again", async () => {
+  const { scanWith } = moduleAt("src/lib/files/safety-core.ts", {}, async () => response({})) as unknown as { scanWith: (o: Record<string, unknown>, b: Uint8Array) => Promise<{ ok: boolean; via?: string }> };
+  let t = 1_000_000, mainUp = false; const calls: string[] = [];
+  const fetchImpl = async (url: string) => { const main = String(url).startsWith("https://scanner.test"); calls.push(main ? "main" : "standby"); if (main && !mainUp) throw new Error("down"); return response({ clean: true }); };
+  const o = { url: "https://scanner.test", token: "t", secondary: { url: "https://standby.test", token: "t" }, fetchImpl, now: () => t };
+  expect(await scanWith(o, new Uint8Array([1]))).toMatchObject({ ok: true, via: "secondary" });
+  mainUp = true; t += 30_000;
+  expect(await scanWith(o, new Uint8Array([1]))).toMatchObject({ ok: true, via: "secondary" });
+  t += 31_000;
+  expect(await scanWith(o, new Uint8Array([1]))).toMatchObject({ ok: true, via: "primary" });
+  expect(calls).toEqual(["main", "standby", "standby", "main"]);
 });

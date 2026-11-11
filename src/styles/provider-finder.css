@@ -1,5 +1,7 @@
 /* Customer "Add to your event" provider finder (components/customer/add-provider.tsx). Prefix pf- (ap- is used by Admin profiles). */
 .k-backdrop .k-dialog.wide:has(.pf) { width: min(1040px, calc(100vw - 32px)); max-width: none; }
+/* Phones: the kit turns dialogs into full-width bottom sheets; the wider rule above kept a 16px gap each side of a square-cornered sheet. */
+@media (max-width: 720px) { .k-backdrop .k-dialog.wide:has(.pf) { width: 100%; } }
 .pf { --pf-ink: #0b1033; --pf-muted: #5b6283; --pf-line: #e6eaf4; --pf-blue: #0038fd; display: grid; gap: 12px; color: var(--pf-ink); min-width: 0; }
 .pf-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .pf .pf-search { flex: 1 1 260px; display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1px solid #d9e0ef; border-radius: 11px; background: #fff; color: var(--pf-muted); min-width: 0; }

@@ -30,7 +30,13 @@ export async function processTicketRefunds(limit = 25) {
       else if(direct){
         if(!deps)throw new Error("stripe_not_configured");
         const reason = o.refund_reason === "hold_expired" ? "hold_expired" : "event_cancelled";
-        const done = await refundMerchantCharge(deps, { account: o.connected_account_id!, paymentIntent: s.payment_intent, reason, idempotencyKey: `ticket-refund:${o.order_ref}`, metadata: { order_ref: o.order_ref } });
+        // DEC-107: an event cancellation (or our expired hold) refunds the whole purchase by law, so the seller fee and the
+        // booking fee both go back to the organiser's balance as an application-fee refund.
+        const { data: fees } = await db.from("checkout_orders").select("application_fee_minor").eq("order_ref", o.order_ref).maybeSingle();
+        const priceMinor = Math.round(Number(o.amount) * 100), bookingFeeMinor = Math.round(Number(o.fee) * 100);
+        const appFee = Number((fees as { application_fee_minor: number | null } | null)?.application_fee_minor ?? bookingFeeMinor);
+        const done = await refundMerchantCharge(deps, { account: o.connected_account_id!, paymentIntent: s.payment_intent, reason, idempotencyKey: `ticket-refund:${o.order_ref}`, metadata: { order_ref: o.order_ref },
+          split: { sellerAmountMinor: priceMinor, sellerFeeMinor: Math.max(0, appFee - bookingFeeMinor), customerFeeRefundMinor: bookingFeeMinor } });
         r = { id: done.refund.id, status: done.refund.status, amount: done.refund.amount };
       }
       else {

@@ -18,7 +18,9 @@ export interface MerchPaymentData {
   prepareMerchOrder(ref: string, account: string, merchant: Record<string, unknown>): Promise<MerchOrder>;
   setMerchSession(ref: string, sessionId: string): Promise<void>;
   /** merch_card_refund_claim → null when nothing to do (already done / in flight / exhausted). */
-  claimCardRefund(id: string): Promise<{ id: string; order_ref: string; account: string; payment_intent: string; amount_minor: number; reason: RefundReason; idempotency_key: string } | null>;
+  claimCardRefund(id: string): Promise<{ id: string; order_ref: string; account: string; payment_intent: string; amount_minor: number; reason: RefundReason; idempotency_key: string;
+    /** DEC-107 (2026-11-11): the order's price and Gala Dock's seller fee, so the fee on the refunded part goes back pro rata. */
+    split?: { sellerAmountMinor: number; sellerFeeMinor: number } } | null>;
   cardRefundResult(id: string, stripeRefund: string | null, status: "pending" | "succeeded" | "failed", error?: string | null): Promise<void>;
 }
 export type MerchDeps = { stripe: StripeClient; data: MerchPaymentData; now?: () => number };
@@ -87,7 +89,9 @@ export async function executeMerchCardRefund(deps: MerchDeps, id: string) {
   if (!c) return { id, result: "skipped" as const };
   try {
     const { refund, policy } = await refundMerchantCharge({ stripe: deps.stripe, data: null as never }, { account: c.account, paymentIntent: c.payment_intent, amountMinor: c.amount_minor,
-      reason: c.reason, idempotencyKey: c.idempotency_key, metadata: { merch_order: c.order_ref, merch_refund: c.id } });
+      reason: c.reason, idempotencyKey: c.idempotency_key, metadata: { merch_order: c.order_ref, merch_refund: c.id },
+      // DEC-107: merch has no buyer admin fee, so the whole application fee is the seller fee and goes back pro rata on any refund.
+      ...(c.split ? { split: { ...c.split, customerFeeRefundMinor: 0 } } : {}) });
     const status = refund.status === "succeeded" ? "succeeded" : ["failed", "canceled"].includes(refund.status) ? "failed" : "pending";
     await deps.data.cardRefundResult(c.id, refund.id, status, status === "failed" ? `stripe_refund_${refund.status}` : null);
     return { id, result: status, refund: refund.id, policy };

@@ -40,7 +40,12 @@ export function SeatPicker({ elements, base = [], seats, tiers, max, selected, o
   const [tip, setTip] = useState<{ key: string; x: number; y: number } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [panning, setPanning] = useState(false);
-  const pan = useRef<{ sx: number; sy: number; v: View; moved: boolean } | null>(null);
+  // `seat`: the press began on a seat; it toggles on release only if the finger/mouse didn't move (so a swipe that starts on a seat pans).
+  const pan = useRef<{ sx: number; sy: number; v: View; moved: boolean; seat?: string; el?: number } | null>(null);
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ d: number; z: number } | null>(null);
+  const [listOpen, setListOpen] = useState(false);
+  const [listSection, setListSection] = useState("");
 
   useEffect(() => {
     const el = wrap.current; if (!el) return;
@@ -106,23 +111,49 @@ export function SeatPicker({ elements, base = [], seats, tiers, max, selected, o
     onChange([...selected, key]);
   };
   const onSeat = (_i: number, key: string, ev: RPE<SVGCircleElement>) => {
-    const r = wrap.current!.getBoundingClientRect(); setTip({ key, x: ev.clientX - r.left, y: ev.clientY - r.top }); toggle(key);
+    if (ev.pointerType === "touch") { if (ev.isPrimary) { touches.current.clear(); pinch.current = null; } touches.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY }); }
+    if (touches.current.size >= 2) { const [a, b] = [...touches.current.values()]; pinch.current = { d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), z: (view ?? fitView()).z }; pan.current = null; setPanning(false); setTip(null); return; }
+    if (ev.button !== 0 || pinch.current) return;
+    // Zoomed out, seats are too small to aim at: a tap anywhere on a section zooms into it (as the hint says) instead of picking a seat.
+    if (!detail) { pan.current = { sx: ev.clientX, sy: ev.clientY, v, moved: false, el: _i }; svg.current?.setPointerCapture(ev.pointerId); return; }
+    const r = wrap.current!.getBoundingClientRect(); setTip({ key, x: ev.clientX - r.left, y: ev.clientY - r.top });
+    pan.current = { sx: ev.clientX, sy: ev.clientY, v, moved: false, seat: key }; svg.current?.setPointerCapture(ev.pointerId);
   };
+  /** Section press: zooms in on release if the pointer didn't move (a drag that starts on a section still pans the plan). */
   const onElDown = (ev: RPE<SVGGElement>, i: number) => {
-    if (detail) return; const e = els[i], d = ASSET[e.asset ?? ""];
+    if (detail || ev.button !== 0 || pinch.current) return; const d = ASSET[els[i]?.asset ?? ""];
     if (!d || (d.kind !== "seating" && d.kind !== "table")) return;
-    ev.stopPropagation(); const b = elBounds(e), pad = Math.max(b.w, b.h) * 0.25;
+    if (ev.pointerType === "touch") { if (ev.isPrimary) { touches.current.clear(); pinch.current = null; } touches.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY }); }
+    ev.stopPropagation(); pan.current = { sx: ev.clientX, sy: ev.clientY, v, moved: false, el: i }; svg.current?.setPointerCapture(ev.pointerId);
+  };
+  const zoomToEl = (i: number) => {
+    const e = els[i]; if (!e) return; const b = elBounds(e), pad = Math.max(b.w, b.h) * 0.25;
     const z = Math.max(Math.min(size.w / (b.w + pad * 2), size.h / (b.h + pad * 2)), 3.6 / pitch);
     setView({ cx: b.x + b.w / 2, cy: b.y + b.h / 2, z: clampZ(z) });
   };
-  const down = (e: RPE<SVGSVGElement>) => { if (e.button !== 0) return; pan.current = { sx: e.clientX, sy: e.clientY, v, moved: false }; svg.current?.setPointerCapture(e.pointerId); };
+  const down = (e: RPE<SVGSVGElement>) => {
+    // The first finger of a new gesture starts clean (a lost pointerup must not leave a stale finger or pinch behind).
+    if (e.pointerType === "touch") { if (e.isPrimary) { touches.current.clear(); pinch.current = null; } touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY }); }
+    if (touches.current.size >= 2) { const [a, b] = [...touches.current.values()]; pinch.current = { d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), z: (view ?? fitView()).z }; pan.current = null; setPanning(false); setTip(null); return; }
+    if (e.button !== 0) return; pan.current = { sx: e.clientX, sy: e.clientY, v, moved: false }; svg.current?.setPointerCapture(e.pointerId);
+  };
   const move = (e: RPE<SVGSVGElement>) => {
+    if (touches.current.has(e.pointerId)) touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch.current && touches.current.size >= 2) {
+      // Two-finger pinch: zoom about the midpoint between the fingers.
+      const [a, b] = [...touches.current.values()], d = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), r = svg.current!.getBoundingClientRect(), cur = view ?? fitView();
+      zoomAt(clampZ(pinch.current.z * (d / pinch.current.d)) / cur.z, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); return;
+    }
     const p = pan.current;
     if (p) { const dx = e.clientX - p.sx, dy = e.clientY - p.sy; if (!p.moved && Math.abs(dx) + Math.abs(dy) > 3) { p.moved = true; setPanning(true); } setView({ ...p.v, cx: p.v.cx - dx / p.v.z, cy: p.v.cy - dy / p.v.z }); setTip(null); return; }
     const t = (e.target as Element).closest?.("[data-seat]"); const key = t?.getAttribute("data-seat");
     if (key) { const r = wrap.current!.getBoundingClientRect(); setTip({ key, x: e.clientX - r.left, y: e.clientY - r.top }); } else if (tip) setTip(null);
   };
-  const up = () => { pan.current = null; setPanning(false); };
+  const up = (e: RPE<SVGSVGElement>) => {
+    touches.current.delete(e.pointerId); if (touches.current.size < 2) pinch.current = null;
+    const p = pan.current; pan.current = null; setPanning(false);
+    if (p && !p.moved && e.type === "pointerup") { if (p.seat) toggle(p.seat); else if (p.el !== undefined) zoomToEl(p.el); }
+  };
 
   const priceOf = (key: string) => { const t = tierBy.get(seatBy.get(key)?.tier_id ?? ""); return t ? t.price : null; };
   const labelOf = (key: string) => { const i = info.get(key); if (!i) return key; return i.table ? `${i.section} · Seat ${i.num}` : `${i.section} · Row ${i.row} · Seat ${i.num}`; };
@@ -130,6 +161,9 @@ export function SeatPicker({ elements, base = [], seats, tiers, max, selected, o
   const total = selected.reduce((a, k) => a + (priceOf(k) ?? 0), 0);
   const left = useMemo(() => { const m = new Map<string, number>(); for (const s of seats) if (s.status === "available" && s.tier_id) m.set(s.tier_id, (m.get(s.tier_id) ?? 0) + 1); return m; }, [seats]);
   const tierColor = useCallback((t?: string | null) => (t ? tierBy.get(t)?.color : undefined), [tierBy]);
+  /** Sections for the list alternative (keyboard and screen-reader users can't pick SVG seats): section → its seats in plan order. */
+  const sections = useMemo(() => { const m = new Map<string, string[]>(); for (const [k, i] of info) { const l = m.get(i.section); if (l) l.push(k); else m.set(i.section, [k]); } return m; }, [info]);
+  const curSection = sections.has(listSection) ? listSection : ([...sections.keys()][0] ?? "");
 
   const tipSeat = tip ? seatBy.get(tip.key) : undefined, tipTier = tipSeat?.tier_id ? tierBy.get(tipSeat.tier_id) : undefined;
   const tipStatus = tip ? (sel.has(tip.key) ? "Selected — tap to remove" : tipSeat?.status === "available" ? null : tipSeat?.status === "sold" ? "Sold" : tipSeat?.status === "held" ? "Reserved" : "Not available") : null;
@@ -160,6 +194,16 @@ export function SeatPicker({ elements, base = [], seats, tiers, max, selected, o
       <span className="st"><i style={{ background: "#1a1af2", borderColor: "#1a1af2" }} />Your seats</span>
       <span className="st"><i style={{ background: "#d5d9e5" }} />Unavailable</span>
       <span className="acc"><i />Accessible</span>
+    </div>
+    <div className="sp-list">
+      <button type="button" className="sp-list-toggle" aria-expanded={listOpen} aria-controls="sp-list-body" onClick={() => setListOpen(o => !o)}>{listOpen ? "Hide seat list" : "Choose seats from a list"}</button>
+      {listOpen && <div id="sp-list-body" className="sp-list-body">
+        <label>Section <select className="k-select" value={curSection} onChange={e => setListSection(e.target.value)}>
+          {[...sections.entries()].map(([name, keys]) => <option key={name} value={name}>{name} · {keys.filter(k => seatBy.get(k)?.status === "available").length} available</option>)}</select></label>
+        <ul aria-label={`Seats in ${curSection}`}>{(sections.get(curSection) ?? []).map(k => { const st = seatBy.get(k), on = sel.has(k), ok = st?.status === "available", t = tierBy.get(st?.tier_id ?? "");
+          return <li key={k}><button type="button" aria-pressed={on} disabled={!ok && !on} onClick={() => toggle(k)}>
+            {labelOf(k).replace(`${curSection} · `, "")}{t ? ` · ${money(t.price, currency)}` : ""}{st?.accessible ? " · accessible" : ""}{!ok && !on ? (st?.status === "sold" ? " · sold" : " · unavailable") : ""}</button></li>; })}</ul>
+      </div>}
     </div>
     <div className="sp-sum" aria-live="polite">
       <b>{selected.length ? `${selected.length} of ${max} seat${max === 1 ? "" : "s"}` : "No seats selected"}</b>

@@ -58,3 +58,7 @@
   .om-tabs button{flex:1;padding:9px 6px;font-size:12.5px}
   .om-actions .k-btn{flex:1 1 auto}
 }
+.om-ro{margin-top:10px;border:1px solid var(--k-line,#e3e6f0);border-radius:12px;overflow:hidden;background:#fff}
+/* Publish confirm on phones and short landscape screens: a fixed sheet above the bottom tab bar (the absolute popover ran off the
+ left edge at 390px and sat under the tab bar in landscape — checklist 2026-11-11). */
+@media (max-width:720px),(max-height:520px){.om-pop{position:fixed;left:16px;right:16px;top:auto;bottom:calc(var(--pwa-bottom,0px) + 12px);width:auto;z-index:80}}

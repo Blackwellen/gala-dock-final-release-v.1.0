@@ -23,7 +23,7 @@ for (const a of ARTICLES.filter(x => x.shot)) {
   if (!fs.existsSync(state)) { console.warn(`skip ${a.slug}: no auth state for ${a.shot.persona}`); continue; }
   const ctx = await browser.newContext({ storageState: state, viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, reducedMotion: "reduce" });
   const page = await ctx.newPage();
-  await page.goto(`${BASE}${a.shot.route}`, { waitUntil: "networkidle", timeout: 60_000 }).catch(() => {});
+  for (let attempt = 0; attempt < 3; attempt++) { await page.goto(`${BASE}${a.shot.route}`, { waitUntil: "domcontentloaded", timeout: 120_000 }).catch(() => {}); if (!page.url().startsWith("chrome-error")) break; /* shared dev server restarting: wait for it */ for (let i = 0; i < 48; i++) { try { if ((await fetch(`${BASE}/api/health`)).status < 500) break; } catch { /* restarting */ } await new Promise(r => setTimeout(r, 5000)); } } await page.waitForLoadState("load", { timeout: 30_000 }).catch(() => {}); await page.waitForTimeout(1500); // realtime sockets never reach networkidle (cross-brand notes §6)
   if (!page.url().includes(a.shot.route.split("?")[0])) { console.warn(`skip ${a.slug}: redirected to ${page.url()} (refresh auth states with ws-auth)`); await ctx.close(); continue; }
   await page.addStyleTag({ content: ".gd-tour,.gd-maint,nextjs-portal,[data-design-overlay]{display:none!important} *{caret-color:transparent!important}" });
   // Remove dev-only floating tools (Next.js indicator, design overlay) so captures match production.

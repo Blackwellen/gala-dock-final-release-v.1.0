@@ -1,3 +1,5 @@
+> **2026-11-11 (owner): DEC-107 on Stripe is built and proven in the sandbox.** The current model, code, evidence and open decisions are in `docs/backend/payments/dec107-gala-dock.md`. Where this page differs, that doc wins: releases are 24 hours after the event (not automatic Stripe schedules), the hold limit is a setting (90 days, funding lead 58 days, not 80), resale is built as organiser buy-back under the event, staff recommend only, and arbitration is never offered to consumers at £5,000 or less.
+
 # Gala Dock: payments and disputes setup
 
 Status: owner's decided model for all Blackwellen marketplaces (Propvora DEC-107, 2026-11-10). It is a draft until the payments solicitor gives a written opinion, and live marketplace payments stay off until then. The shared reasoning is in the Propvora repo at `docs/requirements/payments-insulation-model.md`.

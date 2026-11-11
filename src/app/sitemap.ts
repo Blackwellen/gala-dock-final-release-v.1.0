@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 import { siteUrl } from "@/lib/site-url";
+import { SITE_ROUTES } from "@/lib/public/site";
 
 export const revalidate = 3600;
 
@@ -11,8 +12,11 @@ export const revalidate = 3600;
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const fixed: MetadataRoute.Sitemap = ["", "/help", "/terms", "/privacy", "/cookies", "/ticket-terms", "/data-retention"]
-    .map(path => ({ url: `${base}${path || "/"}`, changeFrequency: path ? "monthly" : "weekly", priority: path ? 0.4 : 1 }));
+  // The seven public website routes (blueprint §10.6), then help and legal.
+  const fixed: MetadataRoute.Sitemap = [
+    ...SITE_ROUTES.map(path => ({ url: `${base}${path}`, changeFrequency: "weekly" as const, priority: path === "/" ? 1 : 0.9 })),
+    ...["/help", "/terms", "/privacy", "/cookies", "/ticket-terms", "/data-retention", "/accessibility"].map(path => ({ url: `${base}${path}`, changeFrequency: "monthly" as const, priority: 0.4 })),
+  ];
   try {
     const { url, anonKey } = getSupabaseConfig();
     const db = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });

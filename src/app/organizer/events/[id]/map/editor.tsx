@@ -2,10 +2,12 @@
 
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, CircleAlert, CircleCheck, Copy, GitCompare, GitMerge, History, RefreshCw, Upload, X } from "lucide-react";
+import { AlertTriangle, CircleAlert, CircleCheck, Copy, GitCompare, GitMerge, History, Info, RefreshCw, Upload, X } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { PlanBuilder, type PlanApi, type PlanHighlight, type Tier } from "@/components/venue-plan/plan-builder";
 import { PlanPreview } from "@/components/venue-plan/plan-preview";
+import { PlanZoom } from "@/components/venue-plan/plan-zoom";
+import "@/styles/public-plan.css";
 import { ASSET } from "@/components/venue-plan/assets";
 import { mergeElements } from "@/lib/maps/merge";
 import type { MapEl, MapSpace } from "@/app/provider/venues/_components/venue-map";
@@ -149,9 +151,10 @@ export function EventMapEditor(p: {
         <div hidden={tab !== "design"}>
           {cmp && <div className="om-cmp" role="status"><GitCompare aria-hidden="true" /><span>v{cmp.a} → v{cmp.b}: <b>{cmp.added.length}</b> added · <b>{cmp.changed.length}</b> changed · <b>{cmp.removed.length}</b> removed{cmp.removed.length ? ` (${cmp.removed.slice(0, 4).join(", ")}${cmp.removed.length > 4 ? "…" : ""})` : ""}. Added and changed elements are outlined.</span>
             <button type="button" className="k-btn ghost sm" onClick={() => setCmp(null)} aria-label="Close comparison"><X aria-hidden="true" /></button></div>}
-          <PlanBuilder key={seed.key} mode="event" base={p.base} initial={seed.overlay} spaces={p.spaces} tiers={p.tiers} version={p.publishedVersion}
+          {!p.canEdit && <p className="om-note" role="note"><Info aria-hidden="true" />View only: your workspace role can see this layout but not change it. Ask an owner or manager for edit access.</p>}
+          {!p.canEdit ? <div className="om-ro"><PlanZoom label="Event layout (view only)"><PlanPreview base={p.base} overlay={base.overlay} spaces={p.spaces} height="100%" tierColor={tierColor} label="Event layout (view only)" /></PlanZoom></div> : <PlanBuilder key={seed.key} mode="event" base={p.base} initial={seed.overlay} spaces={p.spaces} tiers={p.tiers} version={p.publishedVersion}
             draftVersion={base.version > p.publishedVersion ? base.version : 0} geo={p.geo} height={640} apiRef={api} highlights={highlights} onDirtyChange={setDirty} hidePublish
-            onSave={(els, publish) => save(els, publish)} />
+            onSave={(els, publish) => save(els, publish)} />}
         </div>
         {tab === "ticketing" && <section className="k-card om-panel"><h2>Ticket tiers on the layout</h2>
           <p className="om-sub">Seats and areas assigned to each tier on the {p.publishedVersion ? `published layout (v${p.publishedVersion})` : "latest draft"}. Assign tiers on the Design tab: select seats, tables or areas and choose a tier.</p>

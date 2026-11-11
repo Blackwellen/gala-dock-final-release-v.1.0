@@ -23,6 +23,9 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
 .o-root, .c-root { zoom: var(--k-zoom); min-height: calc(100dvh / var(--k-zoom)); }
 .ws-app { zoom: var(--k-zoom); --ws-vh: calc(100dvh / var(--k-zoom)); }
 .pt-app { zoom: var(--k-zoom); min-height: calc(100dvh / var(--k-zoom)); }
+/* Public website root (src/app/(site)): the same single display scale as the public .c-root shells, so the shared header,
+   footer and type read identically on every public page. */
+.gp-root { zoom: var(--k-zoom); min-height: calc(100dvh / var(--k-zoom)); }
 .pt-app .pt-side { height: calc(100dvh / var(--k-zoom) - var(--pt-top)); }
 
 /* W14 consistency tokens — also defined in kit.css, which only customer/public/legal layouts load. Admin, provider and portal

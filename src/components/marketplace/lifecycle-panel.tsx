@@ -66,7 +66,7 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
         note={emergency ? "Emergency bookings are paid in full, directly to the provider through Stripe. Gala Dock’s booking terms cover cancellations and problems." : "Your deposit confirms the booking and is paid to the provider through Stripe. Cancellations and refunds follow the booking’s agreed terms."} />}
       {isEvent && balanceDue > 0 && <PayButton kind="balance_payment" itemId={item.id} returnPath={back} label={`Pay balance ${money(balanceDue / 100)}`} amount={balanceDue / 100} />}
       {isEvent && openSb?.status === "accepted" && openSb.fee_status === "due" && <PayButton kind="standby_fee" standbyId={openSb.id} returnPath={back} label={`Pay standby fee ${money(openSb.standby_fee)}`} amount={Number(openSb.standby_fee)} />}
-      {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received in your Stripe account. Stripe pays it out on your payout schedule.</p>}
+      {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received in your Stripe account. It is paid out to your bank once the booking is complete (the customer confirms, or 24 hours after the event with no issue raised).</p>}
     </div>}
 
     {(openHold || (isEvent && holdable)) && <div className="mk-block">

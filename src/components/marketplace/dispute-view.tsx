@@ -5,7 +5,7 @@ import { untyped } from "@/lib/workspace/db";
 import { DISPUTE_REASONS, DISPUTE_STATUS } from "@/lib/marketplace/lifecycle";
 import { money, dateShort, time } from "@/lib/format";
 import { ActButton } from "./lifecycle-client";
-import { DisputeEntryForm } from "./dispute-client";
+import { DisputeEntryForm, SettlementPanel, IndependentResolution } from "./dispute-client";
 import "@/styles/marketplace.css";
 
 type Dispute = { id: string; reference: string; build_item_id: string; event_id: string; status: string; reason: string; summary: string; opened_by_party: string; amount_claimed: number | null;
@@ -21,11 +21,16 @@ export async function DisputeView({ client, id, viewer, bookingHref }: { client:
   const { data } = await db.from("booking_disputes").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const d = data as Dispute;
-  const [{ data: entries }, { data: item }] = await Promise.all([
+  const [{ data: entries }, { data: item }, { data: offers }, { data: route }, { data: { user } }] = await Promise.all([
     db.from("booking_dispute_entries").select("id,party,kind,body,files,created_at").eq("dispute_id", id).eq("internal", false).order("created_at"),
     db.from("build_items").select("title").eq("id", d.build_item_id).maybeSingle(),
+    db.from("booking_dispute_settlements").select("id,refund_minor,party,offered_by,status").eq("dispute_id", id).eq("status", "open").limit(1),
+    db.rpc("dispute_route", { p_dispute: id }),
+    (client as { auth: { getUser: () => Promise<{ data: { user: { id: string } | null } }> } }).auth.getUser(),
   ]);
-  const closed = d.status === "resolved" || d.status === "escalated";
+  const offer = ((offers ?? []) as { id: string; refund_minor: number; party: string; offered_by: string }[])[0];
+  const r = (route ?? null) as { tier: string; consumer: boolean; options: string[]; note: string | null; filing: string } | null;
+  const closed = d.status === "resolved";
   const mine = viewer === "customer" ? d.customer_accepted_at : d.provider_accepted_at;
   const when = (iso: string) => `${dateShort(iso)}, ${time(iso)}`;
   return <div className="mk-page">
@@ -43,9 +48,19 @@ export async function DisputeView({ client, id, viewer, bookingHref }: { client:
         {!closed && <DisputeEntryForm disputeId={d.id} />}
       </section>
       <aside className="k-col" style={{ display: "grid", gap: 16 }}>
-        {d.status === "resolution_proposed" && d.resolution && <section className="mk-card" aria-labelledby="dp-res"><h2 id="dp-res">Proposed resolution</h2>
+        {d.status === "resolution_proposed" && d.resolution && <section className="mk-card" aria-labelledby="dp-res"><h2 id="dp-res">Gala Dock’s recommendation</h2>
+          <p className="mk-note">This is a recommendation, not a decision. Money moves only if both of you accept it or you settle; otherwise either of you can go to independent resolution or court.</p>
           <dl className="mk-dl">{Object.entries(d.resolution).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{typeof v === "number" && /refund|amount|credit/.test(k) ? money(v) : String(v)}</dd></div>)}</dl>
-          {mine ? <p className="mk-note">You accepted this. Waiting for the other side.</p> : <ActButton label="Accept resolution" action="acceptDisputeResolution" args={d.id} tone="primary" confirm="Once both sides accept, the dispute is resolved on these terms." />}
+          {mine ? <p className="mk-note">You accepted this. Waiting for the other side.</p> : <ActButton label="Accept recommendation" action="acceptDisputeResolution" args={d.id} tone="primary" confirm="Once both sides accept, Gala Dock carries out the recommendation: any refund goes back to the original card and the rest is released to the provider." />}
+        </section>}
+        {!closed && <section className="mk-card" aria-labelledby="dp-settle"><h2 id="dp-settle">Settle</h2>
+          <SettlementPanel disputeId={d.id} open={offer ? { id: offer.id, refund_minor: offer.refund_minor, party: offer.party, mine: offer.offered_by === user?.id } : null} />
+        </section>}
+        {r && <section className="mk-card" aria-labelledby="dp-route"><h2 id="dp-route">If you can’t agree</h2>
+          <p className="mk-note">{r.filing}</p>
+          {r.note && <p className="mk-note">{r.note}</p>}
+          <p><a className="mk-link" href={`/api/disputes/${d.id}/case-pack`}>Download the case pack</a></p>
+          {d.status !== "resolved" && <IndependentResolution disputeId={d.id} options={r.options} escalated={d.status === "escalated"} filed={!!(d.resolution as { filing?: unknown } | null)?.filing} />}
         </section>}
         <section className="mk-card" aria-labelledby="dp-facts"><h2 id="dp-facts">Booking record</h2>
           <dl className="mk-dl">
@@ -54,7 +69,7 @@ export async function DisputeView({ client, id, viewer, bookingHref }: { client:
             <div><dt>Paid</dt><dd>{d.payment_snapshot.paid_amount != null ? money(Number(d.payment_snapshot.paid_amount)) : "—"}</dd></div>
             <div><dt>Response due</dt><dd>{dateShort(d.response_due_at)}</dd></div>
           </dl>
-          <p className="mk-note">The booking terms and payment state were captured when the dispute opened. If the parties don’t agree, Gala Dock reviews and proposes a resolution. Card chargebacks are decided by the card issuer, not by Gala Dock.</p>
+          <p className="mk-note">The booking terms and payment state were captured when the dispute opened. Gala Dock can review and recommend, but does not decide: you settle, accept the recommendation, or use independent resolution or court. If the payment provider’s hold limit is reached first, the default rule in the Payment Terms applies. Card chargebacks are decided by the card issuer, not by Gala Dock.</p>
         </section>
       </aside>
     </div>

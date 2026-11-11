@@ -8,7 +8,8 @@ import { restoreDesign } from "@/lib/media/design-actions";
 import { ShareToCommunity } from "./share-community";
 
 /** Duplicate / delete for a design, from a library card or the editor top bar. Delete asks first; the library then offers Undo. */
-export function DesignMenu({ id, title, library, inEditor = false, canEdit = true }: { id: string; title: string; library: string; inEditor?: boolean; canEdit?: boolean }) {
+export function DesignMenu({ id, title, library, inEditor = false, canEdit = true, flush }: { id: string; title: string; library: string; inEditor?: boolean; canEdit?: boolean;
+  /** Editor only: saves pending edits so Duplicate / Share use what's on screen, not the last autosave. */ flush?: () => Promise<void> }) {
   const router = useRouter(); const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false), [sharing, setSharing] = useState(false), [confirm, setConfirm] = useState(false), [busy, setBusy] = useState<"" | "copy" | "delete">(""), [err, setErr] = useState("");
   useEffect(() => {
@@ -19,7 +20,9 @@ export function DesignMenu({ id, title, library, inEditor = false, canEdit = tru
     return () => { document.removeEventListener("pointerdown", off); document.removeEventListener("keydown", esc); };
   }, [open]);
   const copy = async () => {
-    setBusy("copy"); setErr(""); const r = await deriveDesign(id, "duplicate"); setBusy("");
+    setBusy("copy"); setErr("");
+    if (flush) { try { await flush(); } catch (e) { setBusy(""); setErr((e instanceof Error ? e.message : "Couldn’t save your latest changes — try again.")); return; } }
+    const r = await deriveDesign(id, "duplicate"); setBusy("");
     if (!r.ok) { setErr(r.error); return; }
     setOpen(false);
     const copyId = r.data?.[0]; if (inEditor && copyId) router.push(`/studio/${copyId}`); else router.refresh();
@@ -41,7 +44,7 @@ export function DesignMenu({ id, title, library, inEditor = false, canEdit = tru
         : <button type="button" role="menuitem" className="danger" onClick={() => setConfirm(true)}><Trash2 size={14} aria-hidden="true" />Delete</button>)}
       {err && <p className="dm-err" role="alert">{err}</p>}
     </div>}
-    {sharing && <ShareToCommunity designId={id} title={title} audience={library.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setSharing(false)} />}
+    {sharing && <ShareToCommunity designId={id} title={title} flush={flush} audience={library.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setSharing(false)} />}
   </div>;
 }
 

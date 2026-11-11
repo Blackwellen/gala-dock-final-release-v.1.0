@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { agentRefusalCode, agentRefusalText } from "./refusals";
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { rateLimit } from "@/lib/security";
-import { ask, applyApproval, compileRoutine, FAR_FUTURE } from "./runtime";
+import { ask, applyApproval, compileRoutine, FAR_FUTURE, workerTick } from "./runtime";
 import { parseSchedule, nextRunAt } from "./schedule";
 import { TOOL } from "./registry";
 
@@ -17,6 +18,12 @@ type R<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PATHS = ["/organizer/agent", "/provider/agent"];
 const bump = () => PATHS.forEach(p => revalidatePath(p, "page"));
+/**
+ * Playbook §7 (Gigvora root cause 2): the worker must not wait for the once-a-minute cron. Every request that creates or unblocks a
+ * run kicks the worker right after the response (next/server after()); the cron stays as the safety net. Leases make a concurrent
+ * cron tick harmless (claim_agent_runs is skip-locked).
+ */
+const kick = () => { try { after(async () => { try { await workerTick(); } catch (e) { console.error("agent_worker_kick_failed", (e as Error).message); } }); } catch { /* outside a request: the cron picks it up */ } };
 
 async function seat(workspaceId: string, roles = ["owner", "manager", "member", "finance"]) {
   if (!UUID.test(workspaceId)) return null;
@@ -44,7 +51,7 @@ export async function startRun(workspaceId: string, goal: string, mission?: stri
     goal: goal.trim().slice(0, 2000), status: "queued", idempotency_key: key, plan: [], triggered_by: "user", quality: ["fast", "standard", "deep"].includes(quality) ? quality : "standard" }).select("id").single();
   if (error) return error.code === "23505" ? { ok: false, error: "That run was already started." } : { ok: false, error: "Couldn’t start the run." };
   await db.from("audit_events").insert({ actor_id: s.user.id, actor_type: "user", workspace_id: workspaceId, agent_run_id: data.id, event: "agent.run_started", metadata: { mission: mission ?? null } });
-  bump();
+  bump(); kick();
   return { ok: true, data: data.id };
 }
 
@@ -62,7 +69,7 @@ export async function confirmPlan(runId: string): Promise<R> {
   const o = await ownRun(runId); if (!o) return { ok: false, error: "Run not found." };
   if (o.run.status !== "awaiting_plan_confirmation") return { ok: false, error: "This plan isn’t waiting for confirmation." };
   await untyped(createAdminClient() as never).from("agent_runs").update({ status: "running", next_wake_at: null, updated_at: new Date().toISOString() }).eq("id", runId);
-  bump(); return { ok: true };
+  bump(); kick(); return { ok: true };
 }
 export async function controlRun(runId: string, action: "cancel" | "pause" | "resume"): Promise<R> {
   if (!["cancel", "pause", "resume"].includes(action)) return { ok: false, error: "Unknown run action." };
@@ -73,7 +80,7 @@ export async function controlRun(runId: string, action: "cancel" | "pause" | "re
   if (error) return { ok: false, error: "That isn’t possible from the run’s current state." };
   if (action === "cancel") await db.from("agent_approvals").update({ status: "cancelled" }).eq("run_id", runId).eq("status", "pending");
   await db.from("audit_events").insert({ actor_id: o.userId, actor_type: "user", workspace_id: o.run.workspace_id, agent_run_id: runId, event: `agent.run_${action}`, metadata: {} });
-  bump(); return { ok: true };
+  bump(); if (action === "resume") kick(); return { ok: true };
 }
 
 /** Approve / reject / edit-and-approve; approved actions run immediately as the approver. Batches only share low-risk tools of one run. */
@@ -86,7 +93,7 @@ export async function decideApproval(approvalId: string, approve: boolean, edite
   const { error } = await sb.rpc("decide_agent_approval" as never, { p_approval: approvalId, p_approve: approve, p_edited: edited ? { ...(before?.payload as object), ...edited } : null } as never);
   if (error) return { ok: false, error: agentRefusalCode(error.message) && !/^not_authorized/.test(error.message) ? agentRefusalText(error.message) : "You can’t decide this approval." };
   const r = await applyApproval(approvalId, user.id);
-  bump(); return r.ok ? { ok: true } : { ok: false, error: r.error ? agentRefusalText(r.error) : "Couldn’t apply the decision." };
+  bump(); kick(); return r.ok ? { ok: true } : { ok: false, error: r.error ? agentRefusalText(r.error) : "Couldn’t apply the decision." };
 }
 export async function approveBatch(runId: string, batchKey: string): Promise<R<number>> {
   const sb = await createClient();
@@ -176,5 +183,5 @@ export async function startBatch(workspaceId: string, title: string, tool: strin
   if (se) return { ok: false, error: "Couldn’t create the batch steps." };
   await db.from("agent_runs").update({ status: "planning" }).eq("id", run.id);
   await db.from("agent_runs").update({ status: "awaiting_plan_confirmation", interpretation: { summary: `${t.title} for ${inputs.length} records`, scope: [tool] } }).eq("id", run.id);
-  bump(); return { ok: true, data: run.id };
+  bump(); kick(); return { ok: true, data: run.id };
 }

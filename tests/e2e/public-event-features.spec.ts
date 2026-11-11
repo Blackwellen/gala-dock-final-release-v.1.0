@@ -22,7 +22,7 @@ const STATE_LABELS = [...Object.values(CLOSED_LABEL), "Join the waitlist", "Join
 const BLOCK_ID: Partial<Record<Block, string>> = { about: "about", tickets: "tickets", performers: "lineup", programme: "schedule", venue: "venue", map: "event-map", organiser: "info", accessibility: "info", sponsors: "sponsors", gallery: "photos", faqs: "faqs", related: "related" };
 
 async function expected(id: string) {
-  const { data: e } = await anon.from("events").select("settings").eq("id", id).single();
+  const { data: e } = await anon.from("events_public").select("settings").eq("id", id).single(); // anon reads public events through the events_public view (base table is RLS-closed to anon)
   const settings = ((e as { settings: Record<string, unknown> | null }).settings ?? {}) as Record<string, unknown>;
   const { data: plan } = await anon.rpc("public_event_plan", { p_event: id });
   const p = (plan ?? { base: [], overlay: [] }) as { base: { type: string; hidden?: boolean }[]; overlay: { type: string; hidden?: boolean }[] };

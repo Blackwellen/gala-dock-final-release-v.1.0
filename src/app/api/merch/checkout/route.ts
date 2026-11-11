@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { customerTermsGate } from "@/lib/payments/customer-terms";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
@@ -19,7 +20,10 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return json({ error: "Please sign in to pay for your order.", login: true }, 401);
   if (!(await rateLimit(`merch-checkout:${user.id}`, 12, 300))) return json({ error: "Too many attempts — please wait a few minutes." }, 429);
-  const body = await request.json().catch(() => null) as { order_ref?: string } | null;
+  const body = await request.json().catch(() => null) as { order_ref?: string; acceptTerms?: boolean; termsVersion?: string } | null;
+  // DEC-107 express term at the first payment (version, user, time); demo/QA exempt (same gate as ticket checkout and bookings).
+  const terms = await customerTermsGate(sb as never, body ?? {}, "checkout");
+  if (terms) return json(terms, 409);
   const ref = String(body?.order_ref ?? "");
   if (!/^GD-M-[A-Z0-9]{10}$/.test(ref)) return json({ error: "Order not found." }, 400);
   const db = untyped(createAdminClient() as never);

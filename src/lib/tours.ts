@@ -55,7 +55,7 @@ export const TOURS: Tour[] = [
     { title: "Payouts", body: "Ticket proceeds are paid out to your connected Stripe account. Supplier payments go directly to each supplier’s Stripe account." },
   ] },
   { key: "provider-money", title: "Money", match: /^\/provider\/money\/?$/, steps: [
-    { title: "How you get paid", body: "Customers pay you directly through your Stripe account, less Gala Dock’s platform fee. Stripe pays out to your bank." },
+    { title: "How you get paid", body: "Customers pay you directly through your Stripe account, less Gala Dock’s platform fee. It is paid out to your bank once each booking or event is complete." },
     { target: ".pm-chartbox", title: "Earnings overview", body: "Gross, fees and net earnings over time.", placement: "bottom" },
     { target: ".pm-pay", title: "Upcoming payouts", body: "What’s protected, what’s releasing and when it reaches your bank.", placement: "left" },
     { target: ".pm-break", title: "Earnings breakdown", body: "Where your money comes from — venue hire, services, packages and add-ons — and the commission on each.", placement: "left" },

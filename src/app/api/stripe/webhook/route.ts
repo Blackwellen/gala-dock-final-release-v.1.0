@@ -7,7 +7,7 @@ import { syncConnectAccount, type StripeAccount } from "@/lib/commerce/connect";
 import { syncStripeDispute, type StripeDispute } from "@/lib/commerce/disputes";
 import { ledgerForTicketPayment } from "@/lib/commerce/ticket-ledger";
 import { contextIsConsistent, routeEvent, verifyStripeSignature, webhookDedupeKey, type StripeEvent } from "@/lib/payments/webhook-core";
-import { webhookModeDecision, webhookSecrets } from "@/lib/payments/stripe-mode";
+import { isStaleAccountError, webhookModeDecision, webhookSecrets } from "@/lib/payments/stripe-mode";
 import { withObservability } from "@/lib/observability/http";
 
 type Obj = StripeEvent["data"]["object"];
@@ -107,7 +107,11 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         break;
       }
       case "account_updated": {
-        const acct = event.type === "account.updated" ? (object as unknown as StripeAccount) : account ? await stripe<StripeAccount>(`accounts/${account}`) : null;
+        // capability.* carries no Account object, so it is fetched. A connected account this key can no longer see (deleted, or
+        // created under another platform/sandbox: Stripe 403 account_invalid / 404 resource_missing) has nothing to sync: acknowledge
+        // instead of failing, or Stripe retries it for days and the webhook failure-rate alert fires.
+        const acct = event.type === "account.updated" ? (object as unknown as StripeAccount)
+          : account ? await stripe<StripeAccount>(`accounts/${account}`).catch((e: unknown) => { if (isStaleAccountError(e)) return null; throw e; }) : null;
         if (acct) await syncConnectAccount(acct, platform);
         break;
       }

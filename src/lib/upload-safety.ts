@@ -4,19 +4,26 @@ import { sanitize, scanWith, type Verdict } from "@/lib/files/safety-core";
 /**
  * Upload sanitising and malware scanning (release spec §74; Q04). The pure rules live in `src/lib/files/safety-core.ts`.
  * Malware: when CLAMAV_SCAN_URL + CLAMAV_SCAN_TOKEN are configured (the shared Blackwellen ClamAV gateway —
- * docs/operations/oracle-setup.md §Malware scanning), every file is scanned. Unconfigured → files are still sanitised, the verdict is
+ * docs/operations/oracle-setup.md §Malware scanning), every file is scanned. Optional standby: CLAMAV_SCAN_URL_SECONDARY. Unconfigured → files are still sanitised, the verdict is
  * recorded as `not_scanned`, and sensitive/private-document classes stay quarantined (not downloadable) until a clean verdict.
  */
 export { sanitize, type Verdict } from "@/lib/files/safety-core";
 
 export const scannerConfigured = () => Boolean(process.env.CLAMAV_SCAN_URL && process.env.CLAMAV_SCAN_TOKEN);
-/** Half-configured scanner = misconfiguration → fail closed. */
-export const scannerMisconfigured = () => !scannerConfigured() && Boolean(process.env.CLAMAV_SCAN_URL || process.env.CLAMAV_SCAN_TOKEN);
+/** Half-configured scanner = misconfiguration → fail closed (a standby URL without the main gateway counts as half-configured). */
+export const scannerMisconfigured = () => !scannerConfigured() && Boolean(process.env.CLAMAV_SCAN_URL || process.env.CLAMAV_SCAN_TOKEN || process.env.CLAMAV_SCAN_URL_SECONDARY);
+
+/** Standby gateway (Blackwellen OPS-A, own engine). Same brand token unless CLAMAV_SCAN_TOKEN_SECONDARY is set. Used only when the main
+ *  gateway is unavailable (src/lib/files/safety-core.ts `scanWith`). */
+export function secondaryGateway(env: Record<string, string | undefined> = process.env) {
+  const url = env.CLAMAV_SCAN_URL_SECONDARY?.trim(), token = (env.CLAMAV_SCAN_TOKEN_SECONDARY || env.CLAMAV_SCAN_TOKEN)?.trim();
+  return url && token ? { url, token } : null;
+}
 
 /** Scans with the shared ClamAV gateway. Not configured → `{ ok: true }` (caller records `not_scanned`); misconfigured or unreachable → refused. */
 export async function scan(bytes: Uint8Array): Promise<Verdict> {
   if (!scannerConfigured()) return scannerMisconfigured() ? { ok: false, reason: "scanner_unavailable" } : { ok: true, bytes };
-  return scanWith({ url: process.env.CLAMAV_SCAN_URL!, token: process.env.CLAMAV_SCAN_TOKEN! }, bytes);
+  return scanWith({ url: process.env.CLAMAV_SCAN_URL!, token: process.env.CLAMAV_SCAN_TOKEN!, secondary: secondaryGateway() }, bytes);
 }
 
 /** Sanitise then scan. Returns the bytes to store. */

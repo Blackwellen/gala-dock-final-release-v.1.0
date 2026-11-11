@@ -32,6 +32,14 @@ const nextConfig: NextConfig = {
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Service-Worker-Allowed", value: "/" }] },
     ];
   },
+  // Public website (blueprint §10.6: redirect behaviour for renamed routes). /pricing is now a real page; these are aliases.
+  async redirects() {
+    return [
+      { source: "/about-us", destination: "/about", permanent: true },
+      { source: "/customers", destination: "/build-an-event", permanent: true },
+      { source: "/build", destination: "/build-an-event", permanent: true },
+      { source: "/developer", destination: "/developers", permanent: true },    ];
+  },
 };
 
 export default nextConfig;

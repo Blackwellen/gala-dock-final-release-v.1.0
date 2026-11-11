@@ -130,12 +130,20 @@ Mission template for "${usable.title}" (follow this order, skip steps that don't
   const steps = parsed.steps;
   const rows = steps.map((s, i) => ({ run_id: run.id, seq: i + 1, tool_id: s.tool, input: s.input ?? {}, reason: String(s.why ?? "").slice(0, 400), idempotency_key: `${run.id}:${i + 1}` }));
   if (rows.length) { const { error } = await db.from("agent_run_steps").insert(rows); if (error) throw new Error(error.message); }
+  // Playbook §7 (Gigvora root cause 1): greetings, how-to and plain questions plan to zero steps. That is not an error and must not
+  // end as "Nothing to do": answer conversationally with the read-only ask path (credits are preflighted by chat()).
+  let reply: string | null = null;
+  if (!rows.length) {
+    try { reply = (await askInner(run.user_id, run.workspace_id, surface, run.goal)).answer; }
+    catch (e) { if (e instanceof AgentBudgetError) throw e; reply = null; }
+  }
   const exposure = steps.reduce((a, s) => a + (TOOL.get(s.tool)?.amountMinor?.(s.input ?? {}) ?? 0), 0);
   const needsConfirm = steps.some(s => (TOOL.get(s.tool)?.risk ?? 0) >= 3);
   await setStatus(db, run, !rows.length ? "completed" : needsConfirm ? "awaiting_plan_confirmation" : "running", {
     interpretation: { ...(plan.interpretation ?? {}), confidence: plan.confidence ?? null }, plan: steps, financial_exposure_minor: exposure, tokens: (run.tokens ?? 0) + r.tokens,
     progress: 10, lease_until: null, // cost_cents is maintained from metered usage (ai_usage_roll_run_cost trigger)
-    ...(rows.length ? {} : { summary: plan.interpretation?.summary || "Nothing to do for this goal.", finished_at: new Date().toISOString(), result: plan.interpretation?.summary ?? "" }),
+    ...(rows.length ? {} : { summary: (reply ?? plan.interpretation?.summary) || "I couldn’t find anything to do for that. Try describing the task, for example “Find three caterers for 120 guests on 14 March”.",
+      finished_at: new Date().toISOString(), result: reply ?? plan.interpretation?.summary ?? "" }),
   });
   await audit(db, run, "agent.planned", { steps: rows.length, exposure_minor: exposure, needs_confirmation: needsConfirm, dropped: parsed.dropped.slice(0, 12) });
 }
@@ -292,8 +300,13 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
   try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
   const results = [];
   for (const c of calls) { try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, c.input ?? {}, { agent: true }) }); } catch (e) { results.push({ tool: c.tool, error: (e as Error).message.slice(0, 200) }); } }
-  const answer = await chat([{ role: "system", content: `${SAFETY}\nAnswer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
-    { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
+  // Conversation layer (playbook §7, Gigvora root cause 3): the last few exchanges with this person in this workspace.
+  const { data: prior } = await svc().from("agent_runs").select("goal,result,summary").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "completed")
+    .order("created_at", { ascending: false }).limit(6);
+  const history = ((prior ?? []) as { goal: string; result: string | null; summary: string | null }[]).reverse()
+    .flatMap(h => [{ role: "user" as const, content: h.goal.slice(0, 600) }, { role: "assistant" as const, content: String(h.result ?? h.summary ?? "").slice(0, 800) }]);
+  const answer = await chat([{ role: "system", content: `${SAFETY}\nYou are Gala Agent, a helpful assistant inside Gala Dock. Reply conversationally and briefly to greetings and how-to questions. If the person wants something done, say you can propose a run they confirm. Answer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
+    ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
   return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
 }
 

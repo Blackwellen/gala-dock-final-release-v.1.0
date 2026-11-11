@@ -30,9 +30,12 @@ const ANON_DEFINER_ALLOWLIST = new Set([
   "event_payment_readiness",
   // Q27: partner referral click counter for signed-out visitors (mirrors promoter_track_click; rate-limited, visitor hash only); approved 2026-10-29 under owner delegation.
   "partner_track_click",
+  // Playbook lane 2026-11-11 (reviewed): consumer-law non-trader flag for an event/listing (boolean only, migration 202611116008) and the
+  // demo-visibility switch + per-workspace policy helper used by events_public / listings RLS (booleans only, 202611116009).
+  "event_seller_non_trader", "listing_seller_non_trader", "demo_public_visible", "demo_hidden_for_viewer",
 ]);
 // Internal/worker functions that take a workspace/user id or move money/state and must never be callable by a client role.
-const SERVICE_ONLY = ["payout_eligible", "service_backfill_provider_job", "entitlement", "has_capability", "hit_rate_limit", "space_conflicts_internal", "security_catalog_audit",
+const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_release_paid", "dec107_release_failed", "dec107_reserve_for", "dec107_dispute_deadlines", "dec107_retry_failed_payouts", "ai_provider_attempt", "payout_eligible", "service_backfill_provider_job", "entitlement", "has_capability", "hit_rate_limit", "space_conflicts_internal", "security_catalog_audit",
   "notify_workspace", "notify_event", "dispatch_worker", "post_ledger_transaction", "issue_tickets", "issue_checkout", "storage_usage_internal",
   "resolve_api_key", "record_ai_usage", "erase_user_data", "claim_webhook_event", "payment_order_succeeded", "portal_link_for",
   // Q02/Q03 foundation primitives (service-only)

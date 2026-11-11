@@ -1,6 +1,9 @@
 /* Venue/event plan renderer + builder (shared by provider venues and organiser events). */
 /* Floor plan SVG */
 .vm{user-select:none;touch-action:none;font-family:inherit}
+/* Read-only renders (PlanPreview: public event/venue/ticket/checkout maps, organiser previews) must not swallow touch scrolling: the
+   editors keep touch-action:none on .mb-svg/.sp-svg; a static plan lets the page (or the zoomed .pp-scroll frame) pan natively. */
+.vm.vm-static{touch-action:auto}
 .vm-label{font-weight:650;fill:#0d0d63}
 .vm-cap{font-size:10px;font-weight:700;fill:#fff}
 .vm-water{font-size:11px;font-weight:600;letter-spacing:.14em;fill:#3f78b5}
@@ -234,6 +237,16 @@ svg.sp-svg.panning{cursor:grabbing}
 .sp-legend .st i{border:1px solid #c9cede}
 .sp-legend .acc i{border:1.5px solid #0284c7;background:#fff}
 .sp-sum{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 12px;border:1px solid #eef4fc;border-radius:10px;background:#fff}
+/* Seat list: keyboard and screen-reader alternative to picking seats on the plan. */
+.sp-list{display:grid;gap:8px}
+.sp-list-toggle{justify-self:start;background:none;border:0;padding:4px 2px;color:#1a1af2;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.sp-list-toggle:focus-visible,.sp-list-body button:focus-visible{outline:2px solid #1a1af2;outline-offset:2px}
+.sp-list-body{display:grid;gap:8px;padding:10px 12px;border:1px solid #eef4fc;border-radius:10px;background:#fff}
+.sp-list-body label{display:grid;gap:4px;font-size:12px;font-weight:600;color:#0d0d63;max-width:360px}
+.sp-list-body ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;max-height:220px;overflow:auto}
+.sp-list-body li button{min-height:36px;padding:6px 10px;border:1px solid #d5d9e5;border-radius:8px;background:#fff;color:#0d0d63;font:inherit;font-size:12px;cursor:pointer}
+.sp-list-body li button[aria-pressed=true]{background:#1a1af2;border-color:#1a1af2;color:#fff}
+.sp-list-body li button:disabled{color:#8a90b4;background:#f4f6fb;cursor:not-allowed}
 .sp-sum>b{font-size:12px;color:#02032e;margin-right:4px}
 .sp-sum>small{font-size:11px;color:#5157a4}
 .sp-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 4px 0 10px;border-radius:14px;background:#f2f5ff;border:1px solid #e1e8fd;font-size:11px;color:#0d0d63}

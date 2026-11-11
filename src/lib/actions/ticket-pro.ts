@@ -1,4 +1,5 @@
 "use server";
+import { ticketWindowMessage } from "@/lib/payments/ticket-window";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -117,7 +118,7 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
     const status = !t.enabled ? (live ? "paused" : "hidden") : !live ? "draft" : ex && ["on_sale", "scheduled", "sold_out"].includes(ex.status) ? ex.status : t.after >= 0 || (t.sale_start && Date.parse(t.sale_start) > Date.now()) ? "scheduled" : "on_sale";
     const row = { name: t.name, description: t.description, kind: t.kind, price: t.price, quantity: t.quantity, sale_start: t.sale_start, sale_end: t.sale_end, release_name: t.release_name ?? "", order_limit: Math.min(t.order_limit, sales.order_limit), image: t.image, badge: t.badge, color: t.color, sort: i + 1, status, after_tier: null, valid_from: t.valid_from, valid_to: t.valid_to };
     const res = ex ? await sb.from("ticket_tiers").update(row).eq("id", ex.id).eq("event_id", o.e.id).select("id").single() : await sb.from("ticket_tiers").insert({ ...row, event_id: o.e.id }).select("id").single();
-    if (res.error || !res.data) return { ok: false, error: `Could not save ${t.name}.` };
+    if (res.error || !res.data) return { ok: false, error: ticketWindowMessage(res.error) ?? `Could not save ${t.name}.` };
     ids.push(res.data.id);
   }
   for (const [i, t] of tiers.entries()) if (t.after >= 0) await sb.from("ticket_tiers").update({ after_tier: ids[t.after]! }).eq("id", ids[i]!);

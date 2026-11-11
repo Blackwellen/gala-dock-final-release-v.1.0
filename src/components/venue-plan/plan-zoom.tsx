@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPE } from "react";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import { useHydrated } from "@/lib/use-hydrated";
 
 const STEPS = [1, 1.5, 2, 3, 4];
 
@@ -15,6 +16,8 @@ export function PlanZoom({ children, label }: { children: ReactNode; label: stri
   const drag = useRef<{ x: number; y: number; l: number; t: number } | null>(null);
   const prev = useRef(1);
   const z = STEPS[i]!;
+  // The zoom buttons stay disabled until hydration, so a click before React attaches handlers can't be swallowed.
+  const ready = useHydrated();
 
   useEffect(() => {
     const el = box.current; if (!el) return;
@@ -29,9 +32,9 @@ export function PlanZoom({ children, label }: { children: ReactNode; label: stri
 
   return <div className="pp-frame">
     <div className="pp-tools" role="toolbar" aria-label="Map zoom">
-      <button type="button" onClick={() => setI(v => Math.min(STEPS.length - 1, v + 1))} disabled={i === STEPS.length - 1} aria-label="Zoom in"><ZoomIn size={16} /></button>
-      <button type="button" onClick={() => setI(v => Math.max(0, v - 1))} disabled={i === 0} aria-label="Zoom out"><ZoomOut size={16} /></button>
-      <button type="button" onClick={() => setI(0)} disabled={i === 0} aria-label="Fit map to width"><Maximize2 size={15} /></button>
+      <button type="button" onClick={() => setI(v => Math.min(STEPS.length - 1, v + 1))} disabled={!ready || i === STEPS.length - 1} aria-label="Zoom in"><ZoomIn size={16} /></button>
+      <button type="button" onClick={() => setI(v => Math.max(0, v - 1))} disabled={!ready || i === 0} aria-label="Zoom out"><ZoomOut size={16} /></button>
+      <button type="button" onClick={() => setI(0)} disabled={!ready || i === 0} aria-label="Fit map to width"><Maximize2 size={15} /></button>
     </div>
     <div ref={box} className={`pp-scroll${z > 1 ? " zoomed" : ""}`} tabIndex={0} role="group" aria-label={`${label}. Use plus and minus to zoom.`}
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}

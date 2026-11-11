@@ -13,7 +13,7 @@ test("design, export and save a poster", async ({ page }) => {
   await login(page, "organizer", `/organizer/events/${eventId}/media`);
   await page.goto(`/organizer/events/${eventId}/media`, { waitUntil: "load" });
   const canvas = page.locator(".pb-sel canvas");
-  await expect(canvas).toHaveJSProperty("width", 1240);
+  await expect(canvas).toHaveJSProperty("width", 1754);
   await expect(page.locator(".pb-tpls img")).toHaveCount(10, { timeout: 30_000 });
 
   await page.getByRole("button", { name: /^Square/ }).first().click();

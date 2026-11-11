@@ -3915,6 +3915,7 @@ export type Database = {
           deposit: number
           event_day_id: string | null
           event_id: string
+          hidden_at: string | null
           hold_expires_at: string | null
           id: string
           image: string
@@ -3946,6 +3947,7 @@ export type Database = {
           deposit?: number
           event_day_id?: string | null
           event_id: string
+          hidden_at?: string | null
           hold_expires_at?: string | null
           id?: string
           image?: string
@@ -3977,6 +3979,7 @@ export type Database = {
           deposit?: number
           event_day_id?: string | null
           event_id?: string
+          hidden_at?: string | null
           hold_expires_at?: string | null
           id?: string
           image?: string
@@ -34232,6 +34235,10 @@ export type Database = {
       }
       transfer_ticket: {
         Args: { p_email: string; p_name: string; p_ticket: string }
+        Returns: string
+      }
+      set_build_item_hidden: {
+        Args: { p_hidden: boolean; p_item: string }
         Returns: string
       }
       transition_build_item: {

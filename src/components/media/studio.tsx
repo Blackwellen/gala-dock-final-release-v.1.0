@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
 import Link from "next/link";
 import { ArrowLeft, Undo2, Redo2, ZoomIn, ZoomOut, Maximize, Type, Square, Circle, QrCode, Barcode, Layers, Pencil, Sparkles, Download, Eye, EyeOff, Lock, Unlock,
   Trash2, Copy, ChevronUp, ChevronDown, History, Share2, Plus, Upload, Loader2, LayoutTemplate, Ruler, Palette, MessageSquare, Smile, Shapes, LayoutDashboard, FileImage,
-  Spline, Eraser, Crop, Brush as BrushIcon, Highlighter, SprayCan, PenTool, MousePointer2, Check, X } from "lucide-react";
+  Spline, Eraser, Crop, Brush as BrushIcon, Highlighter, SprayCan, PenTool, MousePointer2, Check, X, Hand } from "lucide-react";
 import { LayerView, fillCss, qrContrast, pathD } from "./layer-view";
 import { exportDesign } from "./export";
 import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-panel";
@@ -26,7 +26,7 @@ import "@/styles/design-kit.css";
 
 type Version = { version: number; label: string; created_at: string };
 type Asset = { src: string; path?: string; title: string };
-type Tool = "select" | "pen" | "line" | "erase" | "crop";
+type Tool = "select" | "pen" | "line" | "erase" | "crop" | "pan";
 const HISTORY = 80;
 const TABS = ["Templates", "Elements", "Text", "Icons", "Emoji", "Widgets", "Uploads", "Draw", "Brand", "Layers", "Page", "Resize"] as const;
 const TAB_ICON = { Templates: LayoutTemplate, Elements: Shapes, Text: Type, Icons: Sparkles, Emoji: Smile, Widgets: LayoutDashboard, Uploads: Upload, Draw: Pencil, Brand: Palette, Layers, Page: FileImage, Resize: Ruler } as const;
@@ -95,17 +95,24 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   // ── history + mutation
   const [hist, setHist] = useState({ undo: 0, redo: 0 });
   const syncHist = useCallback(() => setHist({ undo: past.current.length, redo: future.current.length }), []);
+  // A typing burst (one field, one layer) records a single undo step; any other recorded edit ends the burst.
+  const burst = useRef("");
+  const pushPast = useCallback((snapshot: string) => { burst.current = ""; past.current = [...past.current.slice(-HISTORY + 1), snapshot]; future.current = []; syncHist(); }, [syncHist]);
   const commit = useCallback((next: DesignDoc, record = true) => {
     if (!design.canEdit) return;
-    if (record) { past.current = [...past.current.slice(-HISTORY + 1), JSON.stringify(doc)]; future.current = []; syncHist(); }
+    if (record) pushPast(JSON.stringify(doc));
     setDoc(next); setSave("dirty");
-  }, [doc, design.canEdit, syncHist]);
+  }, [doc, design.canEdit, pushPast]);
+  // Latest document, so async saves can tell whether the user kept editing while they were in flight.
+  const latest = useRef(doc);
+  useEffect(() => { latest.current = doc; }, [doc]);
   const updatePage = (fn: (p: Page) => Page, record = true) => commit({ ...doc, pages: doc.pages.map((p, i) => (i === pageIdx ? fn(p) : p)) }, record);
   const updateLayers = (ids: string[], patch: (l: Layer) => Layer, record = true) => updatePage(p => ({ ...p, layers: p.layers.map(l => (ids.includes(l.id) ? patch(l) : l)) }), record);
   const set = (patch: Partial<Layer>, record = true) => one && updateLayers([one.id], l => ({ ...l, ...patch }) as Layer, record);
   const setFx = (patch: Partial<Effects>) => updateLayers(sel, l => ({ ...l, effects: { ...(l.effects ?? {}), ...patch } }));
-  const undo = () => { const p = past.current.pop(); if (!p) return; future.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(p)); setSave("dirty"); };
-  const redo = () => { const f = future.current.pop(); if (!f) return; past.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(f)); setSave("dirty"); };
+  const typing = (key: string, patch: Partial<Layer>) => { const rec = burst.current !== key; set(patch, rec); burst.current = key; };
+  const undo = () => { const p = past.current.pop(); if (!p) return; burst.current = ""; future.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(p)); setSave("dirty"); };
+  const redo = () => { const f = future.current.pop(); if (!f) return; burst.current = ""; past.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(f)); setSave("dirty"); };
   const add = (l: Layer) => { updatePage(p => ({ ...p, layers: [...p.layers, l] })); setSel([l.id]); setTool("select"); };
   const center = (w: number, h: number) => ({ x: (page.width - w) / 2, y: (page.height - h) / 2, w, h, rotation: 0 });
   const unit = Math.min(page.width, page.height);
@@ -137,9 +144,27 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     return () => clearTimeout(t);
   }, [save, doc, title, design.id, online]);
   useEffect(() => { const sync = () => { setOnline(navigator.onLine); if (navigator.onLine) setSave(s => s === "error" ? "dirty" : s); }; sync(); addEventListener("online", sync); addEventListener("offline", sync); return () => { removeEventListener("online", sync); removeEventListener("offline", sync); }; }, []);
+  /** Saves now, queued behind any autosave in flight (so it never races it into a self-inflicted version conflict). */
+  const saveNow = (label?: string) => {
+    const snap = doc, run = inflight.current.then(async () => {
+      if (!label && latest.current === snap && save === "saved") return;
+      const r = await saveDesign(design.id, snap, version.current, title, label); if (!r.ok) throw new Error(r.error);
+      version.current = r.data!; if (latest.current === snap) { setSave("saved"); setNotice(""); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }
+      return r.data!;
+    });
+    inflight.current = run.then(() => undefined, () => undefined);
+    return run;
+  };
 
   const fit = useCallback(() => { const el = stage.current; if (!el) return; setZoom(Math.max(0.05, Math.min((el.clientWidth - 64) / page.width, (el.clientHeight - 64) / page.height, 2))); }, [page.width, page.height]);
   useEffect(() => { const t = setTimeout(fit, 0); return () => clearTimeout(t); }, [fit, pageIdx]);
+  // Ctrl/⌘ + wheel (and trackpad pinch) zooms the canvas. React's onWheel is passive, so preventDefault there can't stop the
+  // browser zooming the whole page — a native non-passive listener is needed.
+  useEffect(() => {
+    const el = stage.current; if (!el) return;
+    const wheel = (e: WheelEvent) => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); setZoom(z => Math.max(0.05, Math.min(4, z * (e.deltaY < 0 ? 1.1 : 0.9)))); };
+    el.addEventListener("wheel", wheel, { passive: false }); return () => el.removeEventListener("wheel", wheel);
+  }, []);
 
   const duplicate = () => { const copies = selected.map(l => ({ ...structuredClone(l), id: uid(), name: `${l.name} copy`, x: l.x + 20, y: l.y + 20 })); updatePage(p => ({ ...p, layers: [...p.layers, ...copies] })); setSel(copies.map(c => c.id)); };
   const remove = () => { updatePage(p => ({ ...p, layers: p.layers.filter(l => !sel.includes(l.id) || l.locked) })); setSel([]); };
@@ -164,7 +189,15 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      // Popovers, dialogs and menus own their keys (Backspace/Delete on a focused "Restore" must not delete the selected layer).
+      if (target.closest?.(".st-pop, [role=dialog], [role=menu], dialog")) return;
       const mod = e.metaKey || e.ctrlKey;
+      // Hold Space to pan, release to return to the previous tool (not while a button or link has focus — Space activates those).
+      if (e.code === "Space") {
+        if (spaceTool.current) e.preventDefault();
+        else if (!e.repeat && tool !== "pan" && !target.closest?.("button, a, summary, label")) { e.preventDefault(); spaceTool.current = tool; setTool("pan"); }
+        return;
+      }
       if (tool === "line" && e.key === "Enter") { e.preventDefault(); finishLine(); return; }
       if (mod && e.key.toLowerCase() === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
       else if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
@@ -175,12 +208,14 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       else if (!mod && e.key.toLowerCase() === "v") setTool("select");
       else if (!mod && e.key.toLowerCase() === "p") setTool("pen");
       else if (!mod && e.key.toLowerCase() === "l") setTool("line");
+      else if (!mod && e.key.toLowerCase() === "h") { setTool("pan"); setLineDraft(null); }
       else if (e.key.startsWith("Arrow") && sel.length) {
         e.preventDefault(); const d = e.shiftKey ? 10 : 1;
         updateLayers(sel.filter(id => !page.layers.find(l => l.id === id)?.locked), l => ({ ...l, x: l.x + (e.key === "ArrowLeft" ? -d : e.key === "ArrowRight" ? d : 0), y: l.y + (e.key === "ArrowUp" ? -d : e.key === "ArrowDown" ? d : 0) }));
       }
     };
-    addEventListener("keydown", onKey); return () => removeEventListener("keydown", onKey);
+    const onKeyUp = (e: KeyboardEvent) => { if (e.code === "Space" && spaceTool.current) { const t = spaceTool.current; spaceTool.current = null; setTool(t); } };
+    addEventListener("keydown", onKey); addEventListener("keyup", onKeyUp); return () => { removeEventListener("keydown", onKey); removeEventListener("keyup", onKeyUp); };
   });
   const order = (dir: 1 | -1 | "top" | "bottom") => updatePage(p => {
     const ls = [...p.layers]; for (const id of dir === -1 || dir === "bottom" ? sel : [...sel].reverse()) {
@@ -196,7 +231,27 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     const cx = l.x + l.w / 2, cy = l.y + l.h / 2, a = (-l.rotation * Math.PI) / 180, dx = p.x - cx, dy = p.y - cy;
     return { x: dx * Math.cos(a) - dy * Math.sin(a) + l.w / 2, y: dx * Math.sin(a) + dy * Math.cos(a) + l.h / 2 };
   };
-  const drag = useRef<{ mode: "move" | "resize" | "rotate" | "marquee" | "draw" | "erase" | "point"; start: { x: number; y: number }; orig: Layer[]; handle?: string; path?: string; point?: number } | null>(null);
+  // `snap` is the document before the gesture; it becomes one undo step on the first real change (a plain click records nothing).
+  // Pan (hand tool, Space-hold, middle button) and two-finger touch pan/pinch. Viewers can pan too.
+  const spaceTool = useRef<Tool | null>(null);
+  const pan = useRef<{ x: number; y: number; l: number; t: number } | null>(null);
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ d: number; z: number; mx: number; my: number; l: number; t: number } | null>(null);
+  const pendingScroll = useRef<{ l: number; t: number } | null>(null);
+  // A pinch changes zoom and scroll together; the scroll is applied once the canvas has its new size.
+  useLayoutEffect(() => { const el = stage.current, p = pendingScroll.current; if (!el || !p) return; el.scrollLeft = p.l; el.scrollTop = p.t; pendingScroll.current = null; }, [zoom]);
+  const onTouchDown = (e: RPE) => {
+    if (e.pointerType !== "touch") return;
+    touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touches.current.size < 2) return;
+    e.stopPropagation();                                     // a second finger never selects, draws or edits
+    if (touches.current.size > 2) return;
+    drag.current = null; pan.current = null; setMarquee(null); setGuides({ x: [], y: [] }); setLivePath(null);
+    const [a, b] = [...touches.current.values()] as [{ x: number; y: number }, { x: number; y: number }], el = stage.current!;
+    pinch.current = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: zoom, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, l: el.scrollLeft, t: el.scrollTop };
+    el.setPointerCapture?.(e.pointerId);
+  };
+  const drag = useRef<{ mode: "move" | "resize" | "rotate" | "marquee" | "draw" | "erase" | "point"; start: { x: number; y: number }; orig: Layer[]; handle?: string; path?: string; point?: number; snap?: string } | null>(null);
   const snap = (x: number, y: number, w: number, h: number, ignore: string[]) => {
     const th = 6 / zoom, xs = [0, page.width / 2, page.width], ys = [0, page.height / 2, page.height];
     for (const l of page.layers) if (!ignore.includes(l.id) && !l.hidden) { xs.push(l.x, l.x + l.w / 2, l.x + l.w); ys.push(l.y, l.y + l.h / 2, l.y + l.h); }
@@ -212,30 +267,50 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     return { x: (1 - cw) * (l.focusX / 100), y: (1 - ch) * (l.focusY / 100), w: cw, h: ch };
   };
   const onDown = (e: RPE, layer?: Layer, handle?: string) => {
+    if ((tool === "pan" && e.button === 0) || e.button === 1) {
+      e.stopPropagation(); e.preventDefault(); const el = stage.current!;
+      pan.current = { x: e.clientX, y: e.clientY, l: el.scrollLeft, t: el.scrollTop }; el.setPointerCapture?.(e.pointerId); return;
+    }
     if (!design.canEdit || e.button !== 0) return;
     const p = toPage(e);
+    // Pen and rubber start once per press (the layer and the page both receive it).
+    if (tool === "pen" || tool === "erase") e.stopPropagation();
     if (tool === "pen") { drag.current = { mode: "draw", start: p, orig: [], path: `M${p.x.toFixed(1)} ${p.y.toFixed(1)}` }; (e.target as Element).setPointerCapture?.(e.pointerId); return; }
     if (tool === "line") { e.stopPropagation(); if (e.detail >= 2) { finishLine(); return; } setLineDraft(d => ({ pts: [...(d?.pts ?? []), p], hover: null })); return; }
     if (tool === "erase") {
       const target = one && (one.type === "image" || one.type === "drawing") ? one : null;
       if (!target) { setNotice("Select an image or drawing first, then rub out parts of it."); return; }
-      const lp = toLocal(target, p); past.current = [...past.current.slice(-HISTORY + 1), JSON.stringify(doc)]; future.current = []; syncHist();
-      drag.current = { mode: "erase", start: p, orig: [target], path: `M${lp.x.toFixed(1)} ${lp.y.toFixed(1)}` }; (e.target as Element).setPointerCapture?.(e.pointerId); return;
+      const lp = toLocal(target, p);
+      drag.current = { mode: "erase", start: p, orig: [target], path: `M${lp.x.toFixed(1)} ${lp.y.toFixed(1)}`, snap: JSON.stringify(doc) }; (e.target as Element).setPointerCapture?.(e.pointerId); return;
     }
     e.stopPropagation();
-    if (handle?.startsWith("pt") && layer) { past.current = [...past.current.slice(-HISTORY + 1), JSON.stringify(doc)]; future.current = []; syncHist(); drag.current = { mode: "point", start: p, orig: [structuredClone(layer)], point: Number(handle.slice(2)) }; (e.target as Element).setPointerCapture?.(e.pointerId); return; }
+    if (handle?.startsWith("pt") && layer) { drag.current = { mode: "point", start: p, orig: [structuredClone(layer)], point: Number(handle.slice(2)), snap: JSON.stringify(doc) }; (e.target as Element).setPointerCapture?.(e.pointerId); return; }
     if (!layer) { setSel([]); setEditingText(null); drag.current = { mode: "marquee", start: p, orig: [] }; (e.currentTarget as Element).setPointerCapture?.(e.pointerId); return; }
     if (layer.locked) { setSel([layer.id]); return; }
     const ids = e.shiftKey ? (sel.includes(layer.id) ? sel.filter(x => x !== layer.id) : [...sel, layer.id]) : sel.includes(layer.id) ? sel : [layer.id];
     setSel(ids);
-    past.current = [...past.current.slice(-HISTORY + 1), JSON.stringify(doc)]; future.current = []; syncHist();
-    drag.current = { mode: handle === "rot" ? "rotate" : handle ? "resize" : "move", start: p, orig: page.layers.filter(l => ids.includes(l.id)).map(l => structuredClone(l)), handle };
+    drag.current = { mode: handle === "rot" ? "rotate" : handle ? "resize" : "move", start: p, orig: page.layers.filter(l => ids.includes(l.id)).map(l => structuredClone(l)), handle, snap: JSON.stringify(doc) };
     (e.target as Element).setPointerCapture?.(e.pointerId);
   };
   const onMove = (e: RPE) => {
+    const el = stage.current;
+    if (e.pointerType === "touch" && touches.current.has(e.pointerId)) {
+      touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const pc = pinch.current;
+      if (pc && el && touches.current.size >= 2) {
+        const [a, b] = [...touches.current.values()] as [{ x: number; y: number }, { x: number; y: number }];
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, z = Math.max(0.05, Math.min(4, pc.z * (Math.hypot(a.x - b.x, a.y - b.y) / pc.d))), k = z / pc.z, r = el.getBoundingClientRect();
+        // Keep the point that was under the fingers' midpoint under it as they move and spread.
+        const next = { l: (pc.mx - r.left + pc.l) * k - (mx - r.left), t: (pc.my - r.top + pc.t) * k - (my - r.top) };
+        if (z === zoom) { el.scrollLeft = next.l; el.scrollTop = next.t; } else { pendingScroll.current = next; setZoom(z); }
+        return;
+      }
+    }
+    if (pan.current && el) { el.scrollLeft = pan.current.l - (e.clientX - pan.current.x); el.scrollTop = pan.current.t - (e.clientY - pan.current.y); return; }
     if (tool === "line" && lineDraft) { const p = toPage(e); setLineDraft(d => (d ? { ...d, hover: p } : d)); }
     const d = drag.current; if (!d) return;
     const p = toPage(e), dx = p.x - d.start.x, dy = p.y - d.start.y;
+    if (d.snap) { if (!dx && !dy) return; pushPast(d.snap); d.snap = undefined; }
     if (d.mode === "draw") { d.path += ` L${p.x.toFixed(1)} ${p.y.toFixed(1)}`; setLivePath(d.path!); return; }
     if (d.mode === "erase") { const lp = toLocal(d.orig[0]!, p); d.path += ` L${lp.x.toFixed(1)} ${lp.y.toFixed(1)}`; const o = d.orig[0]!;
       updateLayers([o.id], l => ({ ...l, erase: [...((o as { erase?: { d: string; width: number }[] }).erase ?? []), { d: d.path!, width: eraseW }] }) as Layer, false); return; }
@@ -267,7 +342,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       }, false);
     }
   };
-  const onUp = () => {
+  const onUp = (e: RPE) => {
+    touches.current.delete(e.pointerId); if (touches.current.size < 2) pinch.current = null;
+    if (pan.current) { pan.current = null; return; }
     const d = drag.current; drag.current = null; setGuides({ x: [], y: [] }); setLivePath(null);
     if (d?.mode === "draw" && d.path && d.path.includes("L")) add({ id: uid(), name: brush.brush === "airbrush" ? "Airbrush" : brush.brush === "highlighter" ? "Highlight" : "Drawing", type: "drawing", x: 0, y: 0, w: page.width, h: page.height, rotation: 0,
       paths: [{ d: d.path, color: brush.color, width: brush.width, opacity: brush.opacity, brush: brush.brush }] });
@@ -324,7 +401,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
 
   const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
   const status = { saved: "Saved", dirty: "Unsaved", saving: "Saving…", error: "Save failed", conflict: "Conflict" }[save];
-  const cursor = tool === "pen" || tool === "line" ? "crosshair" : tool === "erase" ? "cell" : "default";
+  const cursor = tool === "pan" ? "grab" : tool === "pen" || tool === "line" ? "crosshair" : tool === "erase" ? "cell" : "default";
 
   return <div className="st">
     {fontHrefs.map(h => <link key={h} rel="stylesheet" href={h} />)}
@@ -344,12 +421,13 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <span className="st-zoom">{Math.round(zoom * 100)}%</span>
       <button className="st-icon" onClick={() => setZoom(z => Math.min(4, z * 1.25))} aria-label="Zoom in"><ZoomIn size={17} /></button>
       <button className="st-icon" onClick={fit} aria-label="Fit to screen"><Maximize size={16} /></button>
+      <button className={`st-icon ${tool === "pan" ? "on" : ""}`} onClick={() => { setTool(tool === "pan" ? "select" : "pan"); setLineDraft(null); }} aria-label="Pan (H, or hold Space)" title="Pan (H, or hold Space) — two fingers pan and pinch on touch" aria-pressed={tool === "pan"}><Hand size={16} /></button>
       <button type="button" className="st-btn st-properties-toggle" aria-expanded={propertiesOpen} aria-controls="studio-properties" onClick={() => setPropertiesOpen(v => !v)}>Properties</button>
       <button className="st-btn" onClick={() => setPanel(panel === "comments" ? "" : "comments")} aria-pressed={panel === "comments"}><MessageSquare size={15} />Comments{openCount ? <span className="st-count">{openCount}</span> : null}</button>
       <button className="st-btn" onClick={() => setPanel(panel === "versions" ? "" : "versions")}><History size={15} />Versions</button>
       {design.canEdit && <button className="st-btn" onClick={() => setPanel(panel === "publish" ? "" : "publish")}><Share2 size={15} />Share template</button>}
       <button className="st-btn primary" onClick={() => setPanel(panel === "export" ? "" : "export")}><Download size={15} />Export</button>
-      <DesignMenu id={design.id} title={title} library={back} inEditor canEdit={design.canEdit} />
+      <DesignMenu id={design.id} title={title} library={back} inEditor canEdit={design.canEdit} flush={design.canEdit ? async () => { await saveNow(); } : undefined} />
     </header>
     {localDraft && <div className="st-notice" role="status">Unsaved changes from this device are available.<button type="button" className="st-link" onClick={() => { setDoc(localDraft.doc); setPageIdx(0); if (localDraft.title) setTitle(localDraft.title); setLocalDraft(null); setSave("dirty"); }}>Restore local draft</button><button type="button" className="st-link" onClick={() => { setLocalDraft(null); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }}>Discard local draft</button></div>}
     {notice && <p className="st-notice" role="alert">{notice}{save === "conflict" && <button className="st-link" onClick={() => location.reload()}>Reload</button>}<button className="st-link" onClick={() => setNotice("")} aria-label="Dismiss"><X size={13} /></button></p>}
@@ -423,8 +501,8 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
         {tab === "Brand" && brand && <BrandPanel brand={brand} canEdit={design.canEdit} onColor={applyColor} onFont={applyFont} onFontsChange={setCustomFonts} onLogo={(src, path, name) => addImage({ src, path, title: name })} />}
         {tab === "Layers" && <ol className="st-layers">{[...page.layers].reverse().map(l => <li key={l.id} className={sel.includes(l.id) ? "on" : ""}>
           <button className="st-lname" onClick={e => setSel(e.shiftKey ? [...sel, l.id] : [l.id])}>{l.name}<small>{l.type}</small></button>
-          <button className="st-icon sm" aria-label={l.hidden ? "Show" : "Hide"} onClick={() => updateLayers([l.id], x => ({ ...x, hidden: !x.hidden }))}>{l.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
-          <button className="st-icon sm" aria-label={l.locked ? "Unlock" : "Lock"} onClick={() => updateLayers([l.id], x => ({ ...x, locked: !x.locked }))}>{l.locked ? <Lock size={14} /> : <Unlock size={14} />}</button>
+          <button className="st-icon sm" aria-label={`${l.hidden ? "Show" : "Hide"} ${l.name}`} onClick={() => updateLayers([l.id], x => ({ ...x, hidden: !x.hidden }))}>{l.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+          <button className="st-icon sm" aria-label={`${l.locked ? "Unlock" : "Lock"} ${l.name}`} onClick={() => updateLayers([l.id], x => ({ ...x, locked: !x.locked }))}>{l.locked ? <Lock size={14} /> : <Unlock size={14} />}</button>
         </li>)}{!page.layers.length && <li className="st-hint">No layers yet.</li>}</ol>}
         {tab === "Page" && <>
           <h3>Pages</h3>
@@ -435,7 +513,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             {doc.pages.length > 1 && <button className="st-btn" onClick={() => { commit({ ...doc, pages: doc.pages.filter((_, i) => i !== pageIdx) }); setPageIdx(0); }}><Trash2 size={14} />Delete</button>}
             {pageIdx > 0 && <button className="st-btn" onClick={() => { const ps = [...doc.pages]; [ps[pageIdx - 1], ps[pageIdx]] = [ps[pageIdx]!, ps[pageIdx - 1]!]; commit({ ...doc, pages: ps }); setPageIdx(pageIdx - 1); }}><ChevronUp size={14} />Up</button>}
           </div>}
-          <label className="st-field"><span>Page name</span><input value={page.name} onChange={e => updatePage(p => ({ ...p, name: e.target.value.slice(0, 60) }), false)} /></label>
+          <label className="st-field"><span>Page name</span><input value={page.name} onChange={e => { const rec = burst.current !== `page:${page.id}`; updatePage(p => ({ ...p, name: e.target.value.slice(0, 60) }), rec); burst.current = `page:${page.id}`; }} /></label>
           <h3>Background</h3>
           <FillButton label="Background" fill={page.background ?? { type: "solid", color: "#ffffff" }} onChange={f => updatePage(p => ({ ...p, background: f }))} docColors={docColors} />
           <button className="st-btn" onClick={() => updatePage(p => ({ ...p, background: null }))}>Transparent background</button>
@@ -446,17 +524,17 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
         {tab === "Resize" && <ResizePanel designId={design.id} />}
       </aside>
 
-      <main className="st-stage" ref={stage} onPointerMove={onMove} onPointerUp={onUp} onWheel={e => { if (e.ctrlKey) { e.preventDefault(); setZoom(z => Math.max(0.05, Math.min(4, z * (e.deltaY < 0 ? 1.1 : 0.9)))); } }}>
+      <main className="st-stage" ref={stage} onPointerDownCapture={onTouchDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
         {tool === "line" && <p className="st-toolhint" role="status">{lineDraft?.pts.length ? `${lineDraft.pts.length} point${lineDraft.pts.length === 1 ? "" : "s"} — double-click or Enter to finish, Esc to cancel` : "Click to start a line"}
           {lineDraft && lineDraft.pts.length >= 2 && <button className="st-btn primary" onClick={finishLine}><Check size={14} />Finish</button>}</p>}
         {tool === "crop" && <p className="st-toolhint" role="status">{one?.type === "image" ? "Drag the handles to crop. Choose Select (V) when you’re done." : "Select an image to crop it."}{one?.type === "image" && one.crop && <button className="st-btn" onClick={() => set({ crop: null } as Partial<Layer>)}>Reset crop</button>}</p>}
         <div className="st-canvas" style={{ width: page.width * zoom, height: page.height * zoom }}>
-          {doc.pages.map((p, i) => <div key={p.id} ref={el => { pageRefs.current[i] = el; }} className="st-page" aria-label={p.name}
+          {doc.pages.map((p, i) => <div key={p.id} ref={el => { pageRefs.current[i] = el; }} className="st-page" role="group" aria-roledescription="design page" aria-label={`${p.name} — ${p.layers.length} layer${p.layers.length === 1 ? "" : "s"}; the Layers tab lists them`}
             style={{ width: p.width, height: p.height, transform: `scale(${zoom})`, background: fillCss(p.background) || undefined, display: i === pageIdx ? "block" : "none", cursor }}
             onPointerDown={e => onDown(e)}>
             {p.background === null && <div className="st-checker" aria-hidden="true" />}
             {p.layers.map(l => <div key={l.id} onPointerDown={e => onDown(e, l)} onKeyDown={e => { if (editingText === l.id && e.key === "{") { e.preventDefault(); setInsertOpen(true); } }} onDoubleClick={() => l.type === "text" && tool === "select" && design.canEdit && !l.locked && setEditingText(l.id)}>
-              <LayerView l={l} data={eventData} editing={editingText === l.id} onText={t => { updateLayers([l.id], x => ({ ...x, text: t, bind: undefined }) as Layer); setEditingText(null); }} /></div>)}
+              <LayerView l={l} data={eventData} editing={editingText === l.id} onText={t => { if (l.type === "text" && t !== l.text) updateLayers([l.id], x => ({ ...x, text: t, bind: undefined }) as Layer); setEditingText(null); }} /></div>)}
             {livePath && <svg className="st-live" viewBox={`0 0 ${p.width} ${p.height}`} aria-hidden="true"><path d={livePath} stroke={brush.color} strokeWidth={brush.width} strokeOpacity={brush.brush === "highlighter" ? 0.4 : brush.opacity} fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {lineDraft && <svg className="st-live" viewBox={`0 0 ${p.width} ${p.height}`} aria-hidden="true">
               <path d={pathD([...lineDraft.pts, ...(lineDraft.hover ? [lineDraft.hover] : [])], lineOpts.smooth, false)} stroke={lineOpts.color} strokeWidth={lineOpts.width} fill="none" strokeLinecap="round" />
@@ -493,11 +571,12 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
             <button className="st-icon" aria-label="Duplicate" onClick={duplicate}><Copy size={16} /></button><button className="st-icon" aria-label="Delete" onClick={remove}><Trash2 size={16} /></button>
           </div>
           {one && <>
-            <label className="st-field"><span>Name</span><input value={one.name} onChange={e => set({ name: e.target.value.slice(0, 60) }, false)} /></label>
-            <div className="st-grid4">{(["x", "y", "w", "h"] as const).map(k => <label key={k} className="st-field"><span>{k.toUpperCase()}</span><input type="number" value={Math.round(one[k])} onChange={e => set({ [k]: Number(e.target.value) } as Partial<Layer>)} /></label>)}</div>
-            <div className="st-row"><label className="st-field"><span>Rotate</span><input type="number" value={one.rotation} onChange={e => set({ rotation: Number(e.target.value) })} /></label>
-              <button className="st-btn" onClick={() => set({ flipX: !one.flipX })}>Flip H</button><button className="st-btn" onClick={() => set({ flipY: !one.flipY })}>Flip V</button></div>
-            {one.type === "text" && <TextProps l={one} set={set} custom={[...new Set(customFonts.map(f => f.family))]} docColors={docColors} data={eventData} />}
+            <label className="st-field"><span>Name</span><input value={one.name} onChange={e => typing(`name:${one.id}`, { name: e.target.value.slice(0, 60) })} /></label>
+            <div className="st-grid4">{(["x", "y", "w", "h"] as const).map(k => <label key={k} className="st-field"><span>{k.toUpperCase()}</span><input type="number" disabled={!!one.locked} value={Math.round(one[k])} onChange={e => { const v = e.target.valueAsNumber; if (Number.isFinite(v)) set({ [k]: k === "w" || k === "h" ? Math.max(1, v) : v } as Partial<Layer>); }} /></label>)}</div>
+            <div className="st-row"><label className="st-field"><span>Rotate</span><input type="number" disabled={!!one.locked} value={one.rotation} onChange={e => { const v = e.target.valueAsNumber; if (Number.isFinite(v)) set({ rotation: v }); }} /></label>
+              <button className="st-btn" disabled={!!one.locked} onClick={() => set({ flipX: !one.flipX })}>Flip H</button><button className="st-btn" disabled={!!one.locked} onClick={() => set({ flipY: !one.flipY })}>Flip V</button></div>
+            {one.locked && <p className="st-hint">This layer is locked — unlock it in Layers to move or resize it.</p>}
+            {one.type === "text" && <TextProps l={one} set={set} typing={p => typing(`text:${one.id}`, p)} custom={[...new Set(customFonts.map(f => f.family))]} docColors={docColors} data={eventData} />}
             {one.type === "image" && <>
               <h3>Image</h3>
               <div className="st-row">
@@ -536,17 +615,17 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
 
     {panel === "versions" && <Popover onClose={() => setPanel("")} title="Version history">
       {design.canEdit && <form className="st-row" onSubmit={async e => { e.preventDefault(); const label = String(new FormData(e.currentTarget).get("label") || "Named version");
-        const r = await saveDesign(design.id, doc, version.current, title, label); if (r.ok) { version.current = r.data!; setSave("saved"); setVersions(v => [{ version: r.data!, label, created_at: new Date().toISOString() }, ...v]); } else setNotice(r.error); }}>
+        try { const v = (await saveNow(label))!; setVersions(vs => [{ version: v, label, created_at: new Date().toISOString() }, ...vs]); } catch (err) { setNotice(err instanceof Error ? err.message : "Couldn’t save — try again."); } }}>
         <input name="label" placeholder="e.g. Final poster" maxLength={80} className="st-input" /><button className="st-btn primary">Save version</button></form>}
       <ul className="st-versions">{versions.map(v => <li key={v.version}><span><b>{v.label}</b><small>v{v.version} · {new Date(v.created_at).toLocaleString("en-GB")}</small></span>
-        {design.canEdit && <button className="st-btn" onClick={async () => { const r = await restoreVersion(design.id, v.version); if (r.ok) location.reload(); else setNotice(r.error); }}>Restore</button>}</li>)}</ul>
+        {design.canEdit && <button className="st-btn" onClick={async () => { try { await saveNow(); } catch (err) { setNotice(err instanceof Error ? err.message : "Couldn’t save — try again."); return; } const r = await restoreVersion(design.id, v.version); if (r.ok) location.reload(); else setNotice(r.error); }}>Restore</button>}</li>)}</ul>
       <p className="st-hint">Restoring saves your current state first, so nothing is lost.</p>
     </Popover>}
     {panel === "comments" && <Popover onClose={() => setPanel("")} title="Comments">
       <CommentsPanel designId={design.id} canEdit={design.canEdit} pageId={page.id} layer={one ? { id: one.id, name: one.name } : null} onJump={jumpTo} onCount={setOpenCount} />
     </Popover>}
     {panel === "export" && <ExportPanel pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
-    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (!navigator.onLine) throw new Error("Reconnect before publishing a template."); await inflight.current; if (save !== "saved") { const r = await saveDesign(design.id, doc, version.current, title); if (!r.ok) throw new Error(r.error); version.current = r.data!; setSave("saved"); } }} />}
+    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (!navigator.onLine) throw new Error("Reconnect before publishing a template."); await saveNow(); }} />}
   </div>;
 }
 
@@ -590,11 +669,11 @@ function MiniThumb({ doc }: { doc: DesignDoc }) {
     {p.layers.map(l => <LayerView key={l.id} l={l} data={SAMPLE} />)}</div></div>;
 }
 
-function TextProps({ l, set, custom, docColors, data }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void; custom: string[]; docColors: string[]; data: EventData }) {
+function TextProps({ l, set, typing, custom, docColors, data }: { l: TextLayer; set: (p: Partial<Layer>, record?: boolean) => void; typing: (p: Partial<Layer>) => void; custom: string[]; docColors: string[]; data: EventData }) {
   const [fonts, setFonts] = useState(false);
   return <>
     <h3>Text</h3>
-    <FriendlyField label="Text" multiline value={l.text} data={data} onChange={v => set({ text: v, bind: undefined } as Partial<Layer>, false)} />
+    <FriendlyField label="Text" multiline value={l.text} data={data} onChange={v => typing({ text: v, bind: undefined } as Partial<Layer>)} />
     {l.bind && <p className="st-hint">Shows your event’s <b>{FIELD_LABELS[l.bind as keyof typeof FIELD_LABELS]?.toLowerCase() ?? "details"}</b> — updates automatically.</p>}
     <button className="dk-cbtn-trigger" onClick={() => setFonts(f => !f)} aria-expanded={fonts} style={{ fontFamily: `'${l.font}', Inter` }}><b>{l.font}</b><code>{l.weight}{l.italic ? " italic" : ""}</code></button>
     {fonts && <FontPicker value={{ family: l.font, weight: l.weight, italic: !!l.italic }} custom={custom} onChange={f => set({ font: f.family, weight: f.weight, italic: f.italic } as Partial<Layer>)} />}
@@ -719,8 +798,9 @@ function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; p
       const all = els(), list = format === "pdf" ? pages : [pages[pageIdx]!], nodes = format === "pdf" ? all : [all[pageIdx]!];
       const prev = nodes.map(n => [n.style.display, n.style.transform] as const);
       nodes.forEach(n => { n.style.display = "block"; });
-      const blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent });
-      nodes.forEach((n, i) => { n.style.display = prev[i]![0]; n.style.transform = prev[i]![1]; });
+      let blob: Blob;
+      try { blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent }); }
+      finally { nodes.forEach((n, i) => { n.style.display = prev[i]![0]; n.style.transform = prev[i]![1]; }); }
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[^\w\- ]+/g, "").trim() || "design"}.${format === "jpeg" ? "jpg" : format}`; a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     } catch { setErr("Export failed. Try a smaller scale, or remove images that can’t be loaded."); } finally { setBusy(false); }

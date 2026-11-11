@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { customerTermsGate } from "@/lib/payments/customer-terms";
 import { cookies } from "next/headers";
 import { randomBytes, createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
@@ -22,7 +23,10 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return json({ error: "Please sign in to complete your order.", login: true }, 401);
   if (!(await rateLimit(`checkout:${user.id}`, 12, 300))) return json({ error: "Too many attempts — please wait a few minutes." }, 429);
-  const body = await request.json().catch(() => null) as { event?: string } | null;
+  const body = await request.json().catch(() => null) as { event?: string; acceptTerms?: boolean; termsVersion?: string } | null;
+  // DEC-107 express term at the first payment (version, user, time); demo/QA exempt. The gate and its write path ship together.
+  const terms = await customerTermsGate(sb as never, body ?? {}, "checkout");
+  if (terms) return json(terms, 409);
   const eventId = String(body?.event ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(eventId)) return json({ error: "Event not found." }, 400);
   const jar = await cookies(), token = jar.get(CHECKOUT_COOKIE(eventId))?.value, ref = jar.get("gd_ref")?.value ?? "";

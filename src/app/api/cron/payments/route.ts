@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { processPayments } from "@/lib/commerce/orchestrator";
 import { processTicketRefunds } from "@/lib/commerce/ticket-refunds";
 import { processResaleRefunds } from "@/lib/commerce/resale-refunds";
+import { processReleases } from "@/lib/commerce/releases";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withObservability } from "@/lib/observability/http";
 
@@ -12,7 +13,7 @@ const authorised = (h: string | null) => {
   const a = Buffer.from(h), b = Buffer.from(`Bearer ${secret}`); return a.length === b.length && timingSafeEqual(a, b);
 };
 
-/** Payment worker (§38/§43): release scan, provider transfers, cancellation refunds. Called by pg_cron via pg_net with the CRON_SECRET bearer. */
+/** Payment worker (§38/§43): cancellation, ticket and resale refunds, then DEC-107 releases (payouts from sellers' own balances). Called by pg_cron via pg_net with the CRON_SECRET bearer. */
 export const POST = withObservability("cron.payments", async (request: Request) => {
   if (!authorised(request.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
   // Security lockdown / full maintenance on payments halts outbound money movement (release spec §9 M4–M5); webhooks still record state.
@@ -21,6 +22,8 @@ export const POST = withObservability("cron.payments", async (request: Request) 
   const result = await processPayments();
   const resale = await processResaleRefunds();
   const tickets = await processTicketRefunds();
-  return NextResponse.json({ ...result, ticket_refunds: tickets, resale_refunds: resale }, { headers: { "Cache-Control": "no-store" } });
+  // DEC-107 (2026-11-11): releases from sellers' own balances on approved triggers, after this run's refunds.
+  const releases = await processReleases();
+  return NextResponse.json({ ...result, ticket_refunds: tickets, resale_refunds: resale, releases }, { headers: { "Cache-Control": "no-store" } });
 }, { kind: "worker" });
 export const GET = POST;

@@ -12,6 +12,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MESSAGES: [RegExp, string][] = [
   [/not_authorized|42501/, "You don’t have permission to do that."],
   [/admin_review_required/, "This needs a Gala Dock review before it can be decided."],
+  [/dispute_window_closed/, "Disputes about a booking must be opened within 24 hours after the event ends. Contact support if something prevented you."],
+  [/other_party_must_accept/, "Only the other side can accept this offer."],
+  [/no_escalation/, "Request independent resolution first."],
   [/not_holdable|not_open|not_offered|not_accepted|not_quoted|request_closed|dispute_closed|no_proposal|not_cancellable|not_disputable/, "This has already moved on. Refresh to see the latest status."],
   [/invalid_hold_window/, "Choose a hold between 2 hours and 14 days."],
   [/invalid_dependency|invalid_primary/, "Pick a booking from the same event."],
@@ -97,6 +100,21 @@ export async function addDisputeEntry(disputeId: string, kind: "statement" | "ev
   return call("add_dispute_entry", { p_dispute: disputeId, p_kind: kind, p_body: text(body, 6000), p_files: safe }, DISPUTE_PATHS);
 }
 export async function acceptDisputeResolution(disputeId: string) { return call<string>("accept_dispute_resolution", { p_dispute: disputeId }, DISPUTE_PATHS); }
+// DEC-107: the parties settle between themselves; Gala Dock carries out exactly what they agreed (refund to the original card).
+export async function offerDisputeSettlement(disputeId: string, refund: number, note: string) {
+  if (!Number.isFinite(refund) || refund < 0) return { ok: false, error: "Enter the refund you offer (0 or more)." } as ActionResult<string>;
+  return call<string>("dispute_offer_settlement", { p_dispute: disputeId, p_refund: Math.round(refund * 100) / 100, p_note: text(note, 1000) || null }, DISPUTE_PATHS);
+}
+export async function acceptDisputeSettlement(settlementId: string) { return call<string>("dispute_accept_settlement", { p_settlement: settlementId }, DISPUTE_PATHS); }
+// Disputes Policy clause 8.3: a party asks for independent resolution, then records proof of filing (provider + reference).
+export async function requestIndependentResolution(disputeId: string, route: string) {
+  if (!/^[a-z_]{3,60}$/.test(route)) return { ok: false, error: "Choose a route." } as ActionResult;
+  return call("dispute_request_independent", { p_dispute: disputeId, p_route: route }, DISPUTE_PATHS);
+}
+export async function recordDisputeFiling(disputeId: string, provider: string, reference: string) {
+  if (text(provider, 120).length < 2 || text(reference, 120).length < 3) return { ok: false, error: "Enter the provider or court and the case or claim reference." } as ActionResult;
+  return call("dispute_record_filing", { p_dispute: disputeId, p_provider: text(provider, 120), p_reference: text(reference, 120) }, DISPUTE_PATHS);
+}
 
 // ── §37 emergency supply
 const EM_PATHS = ["/organizer/marketplace/emergency", "/organizer/marketplace/emergency/[id]", "/provider/emergency", "/provider/emergency/[id]"];
@@ -131,8 +149,14 @@ export async function saveEmergencyProfile(workspaceId: string, input: { enabled
 }
 
 // ── §38 payments (orchestrated: payment order → Stripe Checkout; webhooks confirm)
-export async function payBooking(kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service", ids: { itemId?: string; standbyId?: string }, returnPath: string): Promise<ActionResult<string>> {
+export async function payBooking(kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service", ids: { itemId?: string; standbyId?: string }, returnPath: string,
+  terms: { acceptTerms?: boolean; termsVersion?: string } = {}): Promise<ActionResult<string>> {
   if ((ids.itemId && !UUID.test(ids.itemId)) || (ids.standbyId && !UUID.test(ids.standbyId))) return { ok: false, error: "That record could not be found." };
+  // DEC-107 express term at the first payment (version, user, time); demo/QA exempt. Error starts with TERMS_REQUIRED: <version>.
+  const { createClient: serverClient } = await import("@/lib/supabase/server");
+  const { customerTermsGate } = await import("@/lib/payments/customer-terms");
+  const gate = await customerTermsGate((await serverClient()) as never, terms, "booking_payment");
+  if (gate) return { ok: false, error: `TERMS_REQUIRED:${gate.termsVersion}` };
   const { headers } = await import("next/headers");
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "www.galadock.com";

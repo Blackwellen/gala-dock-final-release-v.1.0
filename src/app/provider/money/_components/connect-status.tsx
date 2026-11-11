@@ -1,6 +1,7 @@
 import { Chip } from "@/components/workspace/kit";
 import { createClient } from "@/lib/supabase/server";
 import { ConnectButton } from "./connect-button";
+import { SellerPayouts } from "@/components/payments/seller-payouts";
 import "@/styles/provider-credentials.css";
 
 type Account = { verification_state: string; payouts_enabled: boolean; requirements_currently_due: string[]; requirements_past_due: string[]; disabled_reason: string | null };
@@ -18,7 +19,9 @@ export async function ConnectStatus({ workspaceId, canManage, kind = "provider" 
   const due = (a?.requirements_past_due.length ?? 0) + (a?.requirements_currently_due.length ?? 0);
   return <div className="pc-connect" role="status">
     <Chip tone={tone} dot>{label}</Chip>
-    <small>{!a ? "Connect a Stripe account to receive payouts." : a.payouts_enabled ? "Payouts are sent to your Stripe account." : due ? `${due} item${due === 1 ? "" : "s"} needed by Stripe before payouts can start.` : "Payouts are paused until Stripe completes checks."}</small>
+    <small>{!a ? "Connect a Stripe account to receive payouts." : a.payouts_enabled ? "Customers pay into your Stripe account; each payment is paid out to your bank when its booking or event is complete." : due ? `${due} item${due === 1 ? "" : "s"} needed by Stripe before payouts can start.` : "Payouts are paused until Stripe completes checks."}</small>
     {canManage && (!a || !a.payouts_enabled) && <ConnectButton kind={kind} label={a ? "Continue with Stripe" : "Set up payouts"} />}
+    {/* DEC-107: releases from the seller's own balance + chargebacks with evidence (organiser and provider Money). */}
+    <SellerPayouts workspaceId={workspaceId} canManage={canManage} />
   </div>;
 }

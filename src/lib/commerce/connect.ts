@@ -11,6 +11,7 @@ export type StripeAccount = {
   capabilities?: { transfers?: string; card_payments?: string }; business_type?: string | null;
   controller?: { type?: string; is_controller?: boolean; fees?: { payer?: string }; losses?: { payments?: string }; stripe_dashboard?: { type?: string }; requirement_collection?: string };
   requirements?: { currently_due?: string[]; eventually_due?: string[]; past_due?: string[]; disabled_reason?: string | null };
+  settings?: { payouts?: { schedule?: { interval?: string }; debit_negative_balances?: boolean } };
 };
 
 export type VerificationState = "unverified" | "pending" | "verified" | "action_required" | "restricted" | "suspended";
@@ -69,6 +70,8 @@ export async function syncConnectAccount(account: StripeAccount, mode: StripeMod
     business_type: account.business_type ?? null, capabilities_json: account.capabilities ?? {},
     requirements_json: { currently_due: r.currently_due ?? [], eventually_due: r.eventually_due ?? [], past_due: r.past_due ?? [], disabled_reason: r.disabled_reason ?? null },
     last_synced_at: new Date().toISOString(),
+    // DEC-107: a manual payout schedule is what makes new records 'manual_release' (dec107_bind_release_model).
+    payout_interval: account.settings?.payouts?.schedule?.interval ?? null, debit_negative_balances: account.settings?.payouts?.debit_negative_balances ?? null,
   }, { onConflict: "workspace_id" });
   if (error) throw new Error(`connect sync: ${error.message}`);
   if ((platformLive === true) !== live) return { workspaceId, state, skipped: "not_platform_mode" as const };

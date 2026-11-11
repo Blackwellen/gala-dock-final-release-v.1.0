@@ -130,17 +130,20 @@ test.describe("Q04 hostile uploads against the app + database", () => {
     expect(count ?? 0).toBe(0);                                                                                 // nothing was stored
   });
 
-  test("a clean PDF is stored but quarantined (no gateway): owner gets 423, others 404, anon 401; clean verdict releases; infected → 410", async () => {
+  test("a clean PDF: quarantined without a gateway (owner 423) or scanned clean with one (owner 200); others 404, anon 401; infected → 410", async () => {
+    // Local dev may run with the shared Blackwellen AV gateway (CLAMAV_SCAN_URL/TOKEN in .env, docs/operations/oracle-setup.md §6) or without it.
+    const gateway = Boolean(process.env.CLAMAV_SCAN_URL && process.env.CLAMAV_SCAN_TOKEN);
     const r = await post("/api/uploads", form(enc("%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\ntrailer << >>\n%%EOF"), "../../etc/passwd.pdf", "application/pdf", { purpose: "document" }));
     expect(r.status).toBe(200);
     const j = await r.json() as { path: string; name: string; status: string };
     fixtures.push({ bucket: "workspace-files", name: j.path });
-    expect(j.name).toBe("passwd.pdf"); expect(j.status).toBe("checking");
+    expect(j.name).toBe("passwd.pdf"); expect(j.status).toBe(gateway ? "ready" : "checking");
     const row = (await db.from("storage_attribution").select("file_class,av_verdict,scan_status,sha256,sniffed_mime,display_name").eq("bucket", "workspace-files").eq("name", j.path).single()).data;
-    expect(row).toMatchObject({ file_class: "private_document", av_verdict: "not_scanned", scan_status: "quarantined", sniffed_mime: "application/pdf", display_name: "passwd.pdf" });
+    expect(row).toMatchObject({ file_class: "private_document", av_verdict: gateway ? "clean" : "not_scanned", sniffed_mime: "application/pdf", display_name: "passwd.pdf" });
+    if (!gateway) expect(row!.scan_status).toBe("quarantined");
     expect(row!.sha256).toMatch(/^[a-f0-9]{64}$/);
     const signed = (c?: string) => fetch(`${BASE}/api/files/signed?path=${encodeURIComponent(j.path)}`, { headers: c ? { cookie: c } : {}, redirect: "manual" });
-    expect((await signed(cookie)).status).toBe(423);
+    expect((await signed(cookie)).status).toBe(gateway ? 200 : 423);
     expect((await signed(otherCookie)).status).toBe(404);
     expect((await signed()).status).toBe(401);
     expect((await fetch(`${BASE}/api/files/signed?path=${encodeURIComponent(`${owner.id}/../${other.id}/x.pdf`)}`, { headers: { cookie } })).status).toBe(404);
@@ -170,7 +173,8 @@ test.describe("Q04 hostile uploads against the app + database", () => {
     expect(served.length).toBeGreaterThan(0);
     expect(served.includes("SECRET")).toBe(false);                                                                // GPS/EXIF never public
     const row = (await db.from("storage_attribution").select("file_class,av_verdict,display_name").eq("bucket", "event-media").eq("name", j.path).single()).data;
-    expect(row).toMatchObject({ file_class: "public_media", av_verdict: "not_scanned", display_name: "photo.jpg" });
+    // With the shared AV gateway configured (local .env, docs/operations/oracle-setup.md §6) public media is scanned too.
+    expect(row).toMatchObject({ file_class: "public_media", av_verdict: process.env.CLAMAV_SCAN_URL && process.env.CLAMAV_SCAN_TOKEN ? "clean" : "not_scanned", display_name: "photo.jpg" });
     // A private class can never be recorded against a public bucket.
     const bad = await db.from("storage_attribution").update({ file_class: "sensitive" }).eq("bucket", "event-media").eq("name", j.path);
     expect(bad.error?.message).toMatch(/public_class_check/);

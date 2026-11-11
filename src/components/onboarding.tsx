@@ -1,5 +1,6 @@
 "use client";
 
+import { PaymentTermsTick, TraderQuestion, type TraderValue } from "@/components/payments/payment-terms-tick";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
@@ -162,19 +163,34 @@ function PayoutPanel({ kind, status, preview, step }: { kind: "organizer" | "pro
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [label, tone] = payoutLabels[status] ?? payoutLabels.not_connected;
+  const [terms, setTerms] = useState<string | null>(null);
+  const [ticked, setTicked] = useState(false);
+  const [traderVersion, setTraderVersion] = useState<string | null>(null);
+  const [trader, setTrader] = useState<TraderValue>({ status: "business", form: "company" });
   async function connect() {
     if (preview) { setError("Preview only — sign in to connect payouts."); return; }
+    if (terms && !ticked) { setError("Tick the box to accept the Payment Terms."); return; }
     setBusy(true); setError("");
     try {
-      const response = await fetch("/api/payouts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, step }) });
+      const response = await fetch("/api/payouts", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, step, ...(terms && ticked ? { acceptTerms: true, termsVersion: terms } : {}), ...(traderVersion ? { trader: { ...trader, version: traderVersion } } : {}) }) });
       const data = await response.json();
+      // DEC-107 express term: the Payment Terms tick appears before Stripe opens (recorded with version, user and time).
+      if (response.status === 409 && (data.termsRequired || data.traderRequired)) {
+        if (data.traderRequired && !traderVersion) setTraderVersion(data.traderVersion);
+        if (data.termsRequired && terms !== data.termsVersion) { setTerms(data.termsVersion); setTicked(false); }
+        if (data.traderRequired && traderVersion) setError(data.error ?? "Couldn’t save your seller status.");
+        setBusy(false); return;
+      }
       if (!response.ok) { setError(data.error); setBusy(false); return; }
       window.location.assign(data.url);
     } catch { setError("Couldn’t reach Stripe. Please try again."); setBusy(false); }
   }
   if (kind === "provider") return <div className="stripe-panel stripe-brand">
     <strong className="stripe-word" aria-label="Stripe">stripe</strong>
-    <CheckList items={["Secure and regulated payments", "Automatic payouts to your bank", "Support for multiple currencies", "Full transaction history"]} />
+    <CheckList items={["Secure and regulated payments", "Paid out to your bank when each booking is complete", "Support for multiple currencies", "Full transaction history"]} />
+    {traderVersion && <TraderQuestion version={traderVersion} value={trader} onChange={setTrader} />}
+    {terms && <PaymentTermsTick version={terms} checked={ticked} onChange={setTicked} />}
     <div className="stripe-actions"><Button onClick={connect} disabled={busy || status === "active"}>{busy ? "Opening Stripe…" : status === "active" ? "Connected" : status === "not_connected" ? "Connect with Stripe" : "Continue Stripe setup"}</Button>
       <span className={`status-pill ${tone}`}>{label}</span>
       {error && <p className="field-error" role="alert">{error}</p>}</div>
@@ -183,6 +199,8 @@ function PayoutPanel({ kind, status, preview, step }: { kind: "organizer" | "pro
     <IconTile icon={CreditCard} />
     <div><b>Payments and payouts</b><p>Stripe hosts payout onboarding, so your bank details never touch Gala Dock. Payment-dependent actions stay blocked until Stripe confirms your account.</p>
       <span className={`status-pill ${tone}`}>{label}</span>
+      {traderVersion && <TraderQuestion version={traderVersion} value={trader} onChange={setTrader} />}
+      {terms && <PaymentTermsTick version={terms} checked={ticked} onChange={setTicked} />}
       {error && <p className="field-error" role="alert">{error}</p>}</div>
     <Button onClick={connect} disabled={busy || status === "active"}>{busy ? "Opening Stripe…" : status === "active" ? "Connected" : status === "not_connected" ? "Connect with Stripe" : "Continue Stripe setup"}</Button>
   </div>;

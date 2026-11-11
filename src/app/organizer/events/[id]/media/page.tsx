@@ -13,10 +13,12 @@ export default async function MediaBuilderPage({ params, searchParams }: { param
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host") ?? "localhost:3107"}`;
   const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,cover_image,settings,tags").eq("id", id).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) notFound();
-  const [{ data: lineup }, { data: tiers }, { data: library }] = await Promise.all([
+  const [{ data: lineup }, { data: tiers }, { data: library }, { data: last }] = await Promise.all([
     sb.from("programme_items").select("title").eq("event_id", id).eq("kind", "programme").order("starts_at"),
     sb.from("ticket_tiers").select("price").eq("event_id", id).gt("price", 0).order("price").limit(1),
     sb.from("media_assets").select("id,url,title,format,version,created_at").eq("event_id", id).order("created_at", { ascending: false }).limit(40),
+    // The builder's last saved content for this event (its fields re-open as they were saved).
+    sb.from("media_assets").select("data").eq("event_id", id).eq("kind", "poster").not("data", "is", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
   const { data: prev } = await sb.from("media_assets").select("id,url,title,format,version,created_at,events!media_assets_event_id_fkey!inner(name,workspace_id)").neq("event_id", id).eq("events.workspace_id", ctx.workspace.id).order("created_at", { ascending: false }).limit(40);
   const s = (e.settings ?? {}) as Record<string, unknown>;
@@ -24,7 +26,7 @@ export default async function MediaBuilderPage({ params, searchParams }: { param
   const performers = (lineup ?? []).map(l => l.title).filter(x => !/gates|doors|close|open/i.test(x)).slice(0, 4);
   return <div className="pb">
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Poster & Media Builder" }]} />
-    <PosterBuilder site={site} tab={sp.tab === "library" || sp.tab === "previous" ? sp.tab : "create"} workspaceId={ctx.workspace.id} workspaceName={ctx.workspace.name}
+    <PosterBuilder site={site} saved={last?.data && typeof last.data === "object" && !Array.isArray(last.data) ? last.data as Record<string, unknown> : null} tab={sp.tab === "library" || sp.tab === "previous" ? sp.tab : "create"} workspaceId={ctx.workspace.id} workspaceName={ctx.workspace.name}
       event={{ id, name: e.name, slug: e.slug, status: e.status, when: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }).toUpperCase() : "DATE TBC", date: d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "", time: `${t(e.starts_at)}${e.ends_at ? ` – ${t(e.ends_at)}` : ""}`, venue: [e.venue_name, e.location.split(",").map(x => x.trim()).filter(Boolean).at(-2) ?? e.location].filter(Boolean).join(", "), cover: (s.hero_image as string) || e.cover_image || "/assets/gd/hero-neon.webp", tags: e.tags ?? [], performers, price: tiers?.[0]?.price ? Number(tiers[0].price) : null, gallery: ((s.gallery as string[]) ?? []).slice(0, 6) }}
       library={(library ?? []).map(m => ({ id: m.id, url: m.url, title: m.title, format: m.format, version: m.version, at: m.created_at }))}
       previous={(prev ?? []).map(m => ({ id: m.id, url: m.url, title: m.title, format: m.format, version: m.version, at: m.created_at, event: m.events.name }))} />

@@ -69,6 +69,25 @@ export function feePolicyFor(reason: RefundReason): FeePolicy {
     default: return "retained";
   }
 }
+/**
+ * DEC-107 fee refund (owner 2026-11-11). On any refund the seller fee (Gala Dock's commission) on the refunded part of the price
+ * goes back pro rata; the client admin / booking fee does not, except where the law requires it or for Gala Dock's own error
+ * (callers include `customerFeeRefundMinor` > 0 only then: provider/event/platform cancellation, duplicate, expired hold).
+ * The refund itself always comes out of the seller's balance; this is the part of Gala Dock's application fee returned to it.
+ */
+export function dec107FeeRefund(p: { refundMinor: number; customerFeeRefundMinor: number; sellerAmountMinor: number; sellerFeeMinor: number; feeRemainingMinor?: number }) {
+  for (const v of [p.refundMinor, p.customerFeeRefundMinor, p.sellerAmountMinor, p.sellerFeeMinor]) if (!Number.isSafeInteger(v) || v < 0) throw new Error("invalid_amount");
+  if (p.customerFeeRefundMinor > p.refundMinor) throw new Error("fee_part_exceeds_refund");
+  const priceMinor = p.refundMinor - p.customerFeeRefundMinor;
+  if (priceMinor > p.sellerAmountMinor) throw new Error("refund_exceeds_price");
+  const sellerFeeRefundMinor = p.sellerAmountMinor === 0 ? 0 : Math.floor((p.sellerFeeMinor * priceMinor) / p.sellerAmountMinor);
+  const total = sellerFeeRefundMinor + p.customerFeeRefundMinor;
+  return { priceMinor, sellerFeeRefundMinor, customerFeeRefundMinor: p.customerFeeRefundMinor,
+    applicationFeeRefundMinor: p.feeRemainingMinor === undefined ? total : Math.min(total, Math.max(0, p.feeRemainingMinor)) };
+}
+/** Whether the client admin/booking fee comes back with this refund (law or Gala Dock's error only). */
+export const adminFeeRefundable = (reason: RefundReason) => feePolicyFor(reason) === "full";
+
 /** Stripe's refund_application_fee refunds the fee pro rata to the refunded amount, which serves both full and proportional. */
 export const refundApplicationFee = (policy: FeePolicy) => policy !== "retained";
 export function feeRefundMinor(policy: FeePolicy, p: { refundMinor: number; grossMinor: number; feeMinor: number }) {

@@ -1,0 +1,1409 @@
+{
+ "generatedAt": "2026-10-30T02:29:06.758Z",
+ "summary": {
+  "functions": 139,
+  "aalRefused": 70,
+  "otherError": 51,
+  "succeeded": 18,
+  "succeededWithData": 4,
+  "succeededWithWrites": 1
+ },
+ "rows": [
+  {
+   "name": "admin_actor_name",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "\"Alex Morgan\"",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_add_note",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_add_record_note",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_analytics_rebuild",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_apply_support_macro",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_archive_support_macro",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_assign_case",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_assign_case_to",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_assign_trust",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_break_glass_approvers",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_break_glass_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_cancel_money_request",
+   "ok": false,
+   "state": "P0002",
+   "msg": "not_found",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_case_conversations",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_close_break_glass",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_create_support_case",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_create_trust_case",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_cron_job_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_decide_agent_approval",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_decide_break_glass",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_decide_trust",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_discard_setting_draft",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_dispute_update",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_email_backlog",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_email_deliveries",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_escalate_case_to_trust",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_event_metrics",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_events_page",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_experiment_holdout",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_experiment_save",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_experiment_transition",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_experiments_overview",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_grant_conversations",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_grant_credits",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_job_cancel",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_job_list",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_job_retry",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_link_case_record",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_listing_metrics",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_metric_activate",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_metric_publish",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_mfa_required",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_open_conversation",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_open_email",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_alert_ack",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_incident_detail",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_incident_open",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_incident_update",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_observability",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ops_overview",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_outbox_list",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_outbox_replay",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_overview",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_paid",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_publish_setting",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_publish_setting_draft",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_purge_test_workspaces",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_record_ai_provider_invoice",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_reply_case",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_request_break_glass",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_request_money",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_request_trust_evidence",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_require",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_review_counts",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_review_force_majeure",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_review_listing",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_revoke_sessions",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_rollback_setting",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_save_setting_draft",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_save_support_macro",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_agent_kill_switch",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_case_priority",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_event_featured",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_event_restriction",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_integration",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_partner_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_partner_terms",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_sla_policy",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_ticket_sales",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_user_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_workspace_commission",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_workspace_flag",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_workspace_plan",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_workspace_region",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_set_workspace_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_support_assignees",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_ticket_daily",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_touch_conversation",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "void",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_unlink_case_record",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_update_case",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_user_directory",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_user_identity",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_user_stats",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_vat_summary",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_workspace_daily",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_workspace_metrics",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "agent_control_run",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "agent_run_cost",
+   "ok": false,
+   "state": "P0002",
+   "msg": "not_found",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "ai_credit_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "ai_profitability_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_can_read",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_funnel",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_platform_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_reconcile",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_retention",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_supply_gaps",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "analytics_trend",
+   "ok": false,
+   "state": "P0002",
+   "msg": "unknown_metric",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "assert_writable",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "void",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "boost_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "can_see_agent_run",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "cancel_event_with_refunds",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "cancellation_quote",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "contact_support",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "\"SUP-4422\"",
+   "writes": {
+    "rate_limits": 1,
+    "audit_events": 1,
+    "support_cases": 1,
+    "support_messages": 1,
+    "support_case_events": 1
+   },
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "decide_cancellation",
+   "ok": false,
+   "state": "P0002",
+   "msg": "not_found",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "deletion_blockers",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "design_access",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "null",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "event_ticket_inventory",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "experiment_evaluate",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "has_admin_permission",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "is_platform_admin",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "listing_trust",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-10-30T02:29:06.126964+00:00\", \"identity_verified\": true}",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "may_contact",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "moderate_review",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "moderate_template",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "ops_can_read",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "privacy_admin_can_read",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "promoter_allocation_referrals",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "provider_document_access",
+   "ok": false,
+   "state": "P0002",
+   "msg": "not_found",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "push_health",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "reliability_explain",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "null",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "set_directory_featured",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "space_conflicts",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "[]",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "start_agent_run",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "storage_usage",
+   "ok": false,
+   "state": "42501",
+   "msg": "forbidden",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "support_case_access",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "ticket_risk_review",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "trust_review_document",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "trust_summary",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "{\"badge\": false, \"scope\": \"Verified means Gala Dock or Stripe checked the business identity and Gala Dock reviewed the required, current compliance documents. I",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "update_privacy_request",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "workspace_credential_status",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "[]",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  }
+ ]
+}

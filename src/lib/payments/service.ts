@@ -6,8 +6,8 @@
  * Dependencies are injected (Stripe client + data layer), so tests run it with a fake Stripe and an in-memory store.
  * Pure module: no `server-only`, no Supabase import.
  */
-import { connectedMerchantStripe, platformSalesStripe, PaymentRouteError, type CheckoutSession, type PlatformPurpose, type StripeClient } from "./stripe-client";
-import { assertFeeInvariants, feePolicyFor, refundApplicationFee, sellerReadiness, NOT_READY_COPY, type FeePolicy, type RefundReason, type SellerAccount } from "./rules";
+import { connectedMerchantStripe, platformFeeStripe, platformSalesStripe, PaymentRouteError, type CheckoutSession, type PlatformPurpose, type StripeClient } from "./stripe-client";
+import { assertFeeInvariants, dec107FeeRefund, feePolicyFor, refundApplicationFee, sellerReadiness, NOT_READY_COPY, type FeePolicy, type RefundReason, type SellerAccount } from "./rules";
 
 export type MarketplaceOrder = {
   reference: string; kind: string; status: string; amount_minor: number; customer_fee_minor: number; platform_fee_minor: number;
@@ -71,7 +71,9 @@ export async function createDirectMerchantCheckout(deps: PaymentDeps, input: {
       "payment_intent_data[description]": `${po.reference} · ${po.description}`.slice(0, 300),
       ...(input.group ? { "metadata[order_group]": input.group } : {}),
     };
-    const s = await stripe.createCheckout(ready.account, p, `${po.reference}:direct:${ready.account}:${hourBucket(now)}`);
+    // Idempotency (playbook §1.6): a closed (expired/cancelled) attempt frees the key — the key names the previous session, so a
+    // retry after an expired Checkout gets a new session instead of Stripe's cached, expired one.
+    const s = await stripe.createCheckout(ready.account, p, `${po.reference}:direct:${ready.account}:${po.stripe_checkout_session ?? "first"}:${hourBucket(now)}`);
     await deps.data.markMarketplacePending(po.reference, s.id);
     return { ok: true, url: s.url ?? "", sessionId: s.id, account: ready.account, reused: false };
   } catch {
@@ -107,7 +109,12 @@ export async function createTicketDirectCheckout(deps: PaymentDeps, t: TicketChe
   if (t.lines.some(l => !Number.isSafeInteger(l.unitMinor) || l.unitMinor < 0 || !Number.isInteger(l.qty) || l.qty <= 0)) return { ok: false, code: "invalid_order", message: "Invalid order." };
   assertFeeInvariants(gross, fee);
   try { await deps.data.prepareTicketOrder(t.orderRef, t.sellerWorkspaceId, ready.account, fee, merchantSnapshot(seller!), t.feeRule); }
-  catch { return { ok: false, code: "seller_not_ready", message: NOT_READY_COPY.charges_disabled }; }
+  catch (e) {
+    // Owner 2026-11-11: paid tickets can't be sold before the window that keeps ticket money until after the event.
+    const m = /tickets_on_sale_from:(\d{4}-\d{2}-\d{2})/.exec((e as Error).message ?? "");
+    if (m) return { ok: false, code: "invalid_order", message: `Tickets for this event go on sale from ${new Date(`${m[1]}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.` };
+    return { ok: false, code: "seller_not_ready", message: NOT_READY_COPY.charges_disabled };
+  }
   const cur = t.currency.toLowerCase();
   const p: Record<string, string> = {
     mode: "payment", customer_email: t.customerEmail, client_reference_id: t.orderRef, success_url: t.successUrl, cancel_url: t.cancelUrl,
@@ -141,15 +148,45 @@ export async function getDirectPaymentStatus(deps: PaymentDeps, account: string,
 /** Refund against the original connected-account charge, applying the disclosed application-fee policy (130, 125.D). */
 export async function refundMerchantCharge(deps: PaymentDeps, r: { account: string; paymentIntent: string; amountMinor?: number; reason: RefundReason; idempotencyKey: string; metadata?: Record<string, string>;
   /** Go-live (A2): the payment row's livemode and the platform's. When both are given and differ, nothing is sent to Stripe. */
-  mode?: { rowLivemode: boolean | null | undefined; platformLive: boolean } }) {
+  mode?: { rowLivemode: boolean | null | undefined; platformLive: boolean };
+  /**
+   * DEC-107 split (owner 2026-11-11). With it, the refund never auto-refunds the application fee; instead Gala Dock refunds the
+   * seller fee on the refunded part of the price pro rata, plus `customerFeeRefundMinor` of the admin fee (law / our error only),
+   * as an application-fee refund to the seller's balance. `sellerAmountMinor` = the price before the admin fee; `sellerFeeMinor` =
+   * the commission inside the application fee.
+   */
+  split?: { sellerAmountMinor: number; sellerFeeMinor: number; customerFeeRefundMinor: number } }) {
   if (r.mode && (r.mode.rowLivemode === true) !== r.mode.platformLive) throw new PaymentRouteError("wrong_stripe_mode");
   const policy: FeePolicy = feePolicyFor(r.reason);
   if (r.amountMinor !== undefined && (!Number.isSafeInteger(r.amountMinor) || r.amountMinor <= 0)) throw new Error("invalid_refund_amount");
-  const refund = await connectedMerchantStripe(deps.stripe).refund(r.account, {
-    paymentIntent: r.paymentIntent, amountMinor: r.amountMinor, refundApplicationFee: refundApplicationFee(policy),
-    metadata: { ...(r.metadata ?? {}), reason: r.reason, fee_policy: policy },
-  }, r.idempotencyKey);
-  return { refund, policy };
+  const merchant = connectedMerchantStripe(deps.stripe);
+  if (!r.split) {
+    const refund = await merchant.refund(r.account, {
+      paymentIntent: r.paymentIntent, amountMinor: r.amountMinor, refundApplicationFee: refundApplicationFee(policy),
+      metadata: { ...(r.metadata ?? {}), reason: r.reason, fee_policy: policy },
+    }, r.idempotencyKey);
+    return { refund, policy, feeRefund: null as null | { id: string; amount: number } };
+  }
+  // DEC-107: read the charge first (application fee id + what is left), so the fee refund can never exceed the fee.
+  const charge = await merchant.charge(r.account, r.paymentIntent);
+  if (!charge) throw new Error("no_charge");
+  const refundMinor = r.amountMinor ?? charge.amount - charge.amount_refunded;
+  if (refundMinor <= 0) throw new Error("nothing_to_refund");
+  const fees = platformFeeStripe(deps.stripe);
+  let feeId = typeof charge.application_fee === "string" ? charge.application_fee : charge.application_fee?.id ?? null;
+  // The charge's link to the fee can lag the charge (seen in the sandbox proof); look the fee up on the platform by charge.
+  const fee = feeId ? await fees.retrieve(feeId) : await fees.forCharge(charge.id);
+  if (fee) feeId = fee.id;
+  const plan = dec107FeeRefund({ refundMinor, customerFeeRefundMinor: Math.min(r.split.customerFeeRefundMinor, refundMinor), sellerAmountMinor: r.split.sellerAmountMinor,
+    sellerFeeMinor: r.split.sellerFeeMinor, feeRemainingMinor: fee ? fee.amount - fee.amount_refunded : undefined });
+  // The application fee id can arrive after the charge (Gigvora 0900): refuse before refunding, so the worker retries whole.
+  if (plan.applicationFeeRefundMinor > 0 && !feeId) throw new Error("application_fee_not_linked");
+  const refund = await merchant.refund(r.account, { paymentIntent: r.paymentIntent, amountMinor: refundMinor, refundApplicationFee: false,
+    metadata: { ...(r.metadata ?? {}), reason: r.reason, fee_policy: "dec107", seller_fee_refund_minor: String(plan.sellerFeeRefundMinor), admin_fee_refund_minor: String(plan.customerFeeRefundMinor) } }, r.idempotencyKey);
+  const feeRefund = plan.applicationFeeRefundMinor > 0 && feeId
+    ? await fees.refund(feeId, plan.applicationFeeRefundMinor, { refund: refund.id, reason: r.reason }, `${r.idempotencyKey}:fee`)
+    : null;
+  return { refund, policy, feeRefund, plan };
 }
 
 /** Gala Dock's own sales stay platform charges (124.2, 124.6). */

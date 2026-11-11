@@ -27,3 +27,18 @@
 @media (max-width: 1300px) { .ag-r1, .ag-r2 { grid-template-columns: minmax(0, 1fr); } .ag-head { flex-direction: column; } .ag-tools { align-items: flex-start; } }
 @media (max-width: 800px) { .ag-usage { min-width: 0; width: 100%; flex-wrap: wrap; } .ag-run { grid-template-columns: 40px minmax(0, 1fr) 90px; } .ag-rp, .ag-rn { display: none; } .ag-aps li { grid-template-columns: 50px minmax(0, 1fr); } .ag-ai { display: none; } .ag-ad { grid-column: 1 / -1; text-align: left; } }
 .ag-r2 { grid-template-columns: 1.08fr .92fr; } .ag-rt small:empty { display: none; }
+/* Playbook §3/§7 (2026-11-11): on phones and tablets the agent conversation is the first full-height view. The composer card moves
+   directly under the title, fills the screen below the shell header, and the other agent sections (tools, tabs, runs) follow. */
+@media (max-width: 1024px) {
+  .ag > * { order: 2; }
+  .ag > nav:first-child { order: 0; }
+  .ag > .ag-head { display: contents; }
+  .ag > .ag-head > .k-grow { order: 0; }
+  .ag > .ag-head > .ag-tools { order: 2; align-items: stretch; }
+  .ag > .ag-r1 { order: 1; grid-template-columns: minmax(0, 1fr); }
+  .ag > .ag-r1 > section:first-child { min-height: calc(100dvh - 150px); display: flex; flex-direction: column; }
+  .ag > .ag-r1 > section:first-child .ag-comp { flex: 1; display: flex; flex-direction: column; }
+  .ag > .ag-r1 > section:first-child .ag-box { flex: 1; display: flex; flex-direction: column; }
+  .ag > .ag-r1 > section:first-child .ag-box textarea { flex: 1; min-height: 160px; }
+  .ag-usage { min-width: 0; }
+}

@@ -7,8 +7,8 @@ import fs from "node:fs";
 // --gd-fit-auth, owner decision) scales the whole page, so rendered px are divided by the element's currentCSSZoom.
 // LOGO_MEASURE=1 also writes the full route × width table.
 
-const ROUTES = ["/", "/events", "/events/in/london", "/events/calendar", "/events/neon-nights", "/venues/riverside-arena", "/services/elite-sounds-dj",
-  "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01", "/help", "/help/getting-started-organizers", "/terms", "/privacy", "/cookies", "/ticket-terms", "/data-retention",
+const ROUTES = ["/", "/organisers", "/providers", "/build-an-event", "/developers", "/about", "/pricing", "/events", "/events/in/london", "/events/calendar", "/events/neon-nights", "/venues/riverside-arena", "/services/elite-sounds-dj",
+  "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01", "/help", "/help/getting-started-organizers", "/terms", "/privacy", "/cookies", "/ticket-terms", "/data-retention", "/accessibility",
   "/rsvp/not-a-real-token", "/checkout/neon-nights", "/checkout/neon-nights/confirmation", "/login", "/register", "/forgot-password", "/access",
   "/p/alex-events-winter-nights", "/r/NOTACODE", "/partner", "/maintenance", "/this-page-does-not-exist", "/pay/not-a-real-token", "/guest/not-a-real-token", "/events/category/music", "/ref/NOTACODE", "/r/NOTACODE/consent", "/payments/NOTAREF"];
 const ALL_WIDTHS = [360, 390, 430, 768, 1024, 1280, 1536, 1920];

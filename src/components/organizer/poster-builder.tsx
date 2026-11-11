@@ -12,10 +12,10 @@ type Ev = { id: string; name: string; slug: string | null; status: string; when:
 type Asset = { id: string; url: string; title: string; format: string; version: number; at: string; event?: string };
 type Fmt = { key: string; label: string; sub: string; w: number; h: number; banner?: string; qr?: boolean };
 const FORMATS: Fmt[] = [
-  { key: "a3", label: "A3 Poster", sub: "297 × 420 mm", w: 1240, h: 1754 }, { key: "a4", label: "A4 Poster", sub: "210 × 297 mm", w: 1240, h: 1754 },
+  { key: "a3", label: "A3 Poster", sub: "297 × 420 mm", w: 1754, h: 2480 }, { key: "a4", label: "A4 Poster", sub: "210 × 297 mm", w: 1240, h: 1754 },
   { key: "square", label: "Square", sub: "1080 × 1080 px", w: 1080, h: 1080 }, { key: "portrait", label: "Portrait", sub: "4:5 (1080 × 1350)", w: 1080, h: 1350 },
   { key: "story", label: "Story", sub: "9:16 (1080 × 1920)", w: 1080, h: 1920 }, { key: "landscape", label: "Landscape", sub: "16:9 (1920 × 1080)", w: 1920, h: 1080 },
-  { key: "qr", label: "QR Poster", sub: "A3 with QR", w: 1240, h: 1754, qr: true }, { key: "launch", label: "Ticket Launch", sub: "Social + Web", w: 1080, h: 1350, banner: "ON SALE NOW" },
+  { key: "qr", label: "QR Poster", sub: "A3 with QR", w: 1754, h: 2480, qr: true }, { key: "launch", label: "Ticket Launch", sub: "Social + Web", w: 1080, h: 1350, banner: "ON SALE NOW" },
   { key: "final", label: "Final Tickets", sub: "Last chance", w: 1080, h: 1350, banner: "FINAL TICKETS" }, { key: "soldout", label: "Sold Out", sub: "Announcement", w: 1080, h: 1350, banner: "SOLD OUT" },
 ];
 const VARIANTS: { key: string; label: string; sub: string }[] = [
@@ -28,6 +28,20 @@ const FONTS = { impact: "Impact, 'Arial Narrow Bold', sans-serif", black: "'Aria
 // Print-quality stock backdrops, used when the event's own imagery is too small for a poster.
 const STOCK = ["/assets/gd/builder/poster/bg-neon-portrait.webp", "/assets/gd/builder/poster/bg-event-hero.webp", "/assets/gd/builder/poster/bg-neon-stage.webp"];
 const fmtOf = (k: string) => FORMATS.find(f => f.key === k) ?? FORMATS[0]!;
+/** Fields from the last saved poster (media_assets.data), each type-checked; anything missing or malformed keeps the event default. */
+function restore(base: Content, saved: Record<string, unknown> | null): Content {
+  if (!saved) return base;
+  const out: Content = { ...base };
+  const str = (k: "name" | "when" | "time" | "venue" | "tagline" | "strap" | "performers" | "tickets" | "url" | "presenter", max: number) => { const v = saved[k]; if (typeof v === "string") out[k] = v.slice(0, max); };
+  str("name", 100); str("when", 30); str("time", 20); str("venue", 80); str("tagline", 100); str("strap", 60); str("performers", 100); str("tickets", 100); str("presenter", 40);
+  if (typeof saved.url === "string" && /^https?:\/\//i.test(saved.url)) out.url = saved.url.slice(0, 200);
+  if (typeof saved.bg === "string" && /^(https:\/\/|\/(?!\/))/.test(saved.bg)) out.bg = saved.bg;
+  if (typeof saved.accent === "string" && /^#[0-9a-f]{6}$/i.test(saved.accent)) out.accent = saved.accent;
+  if (saved.font === "impact" || saved.font === "black" || saved.font === "sans") out.font = saved.font;
+  if (typeof saved.shade === "number" && saved.shade >= 0 && saved.shade <= 100) out.shade = saved.shade;
+  for (const k of ["showQr", "brandGd", "brandWs", "brandVenue"] as const) if (typeof saved[k] === "boolean") out[k] = saved[k] as boolean;
+  return out;
+}
 
 const imgCache = new Map<string, Promise<HTMLImageElement>>();
 function loadImg(src: string) {
@@ -113,13 +127,16 @@ async function render(cv: HTMLCanvasElement, f: Fmt, c: Content, wsName: string)
   }
 }
 
-export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName, library, previous }: { site: string; tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[] }) {
+export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName, library, previous, saved = null }: { site: string; tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[]; saved?: Record<string, unknown> | null }) {
   const toast = useKitToast(); const { run } = useAction(); const cv = useRef<HTMLCanvasElement>(null);
   const [fmt, setFmt] = useState<Fmt>(FORMATS[0]!); const [zoom, setZoom] = useState(100); const [pane, setPane] = useState<"details" | "style" | "media" | "branding">("details");
-  const [c, setC] = useState<Content>({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `${site.replace(/\/$/, "")}/events/${e.slug}` : site, showQr: true, presenter: `${workspaceName} presents`, accent: ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true });
+  const [c, setC] = useState<Content>(() => restore({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `${site.replace(/\/$/, "")}/events/${e.slug}` : site, showQr: true, presenter: `${workspaceName} presents`, accent: ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true }, saved));
   const [hist, setHist] = useState<Content[]>([]); const [fut, setFut] = useState<Content[]>([]);
   const [opts, setOpts] = useState({ gallery: true, promo: true, library: true }); const [busy, setBusy] = useState<string | null>(null); const [menu, setMenu] = useState(false);
-  const [thumbs, setThumbs] = useState<Record<string, string>>({}); const [extra, setExtra] = useState<string[]>([]);
+  const [thumbs, setThumbs] = useState<Record<string, string>>({}); const [extra, setExtra] = useState<string[]>(() => c.bg && ![e.cover, ...e.gallery, ...STOCK].includes(c.bg) ? [c.bg] : []);
+  // Export menu closes on Escape or a press outside it.
+  useEffect(() => { if (!menu) return; const off = (ev: PointerEvent) => { if (!(ev.target as Element).closest?.(".pb-split")) setMenu(false); }; const esc = (ev: KeyboardEvent) => { if (ev.key === "Escape") setMenu(false); };
+    document.addEventListener("pointerdown", off); document.addEventListener("keydown", esc); return () => { document.removeEventListener("pointerdown", off); document.removeEventListener("keydown", esc); }; }, [menu]);
   useEffect(() => { loadImg(e.cover).then(im => { if (im.naturalHeight < 600) setC(x => x.bg === e.cover ? { ...x, bg: STOCK[0]! } : x); }, () => setC(x => ({ ...x, bg: STOCK[0]! }))); }, [e.cover]);
   const set = (p: Partial<Content>) => { setHist(h => [...h.slice(-30), c]); setFut([]); setC(x => ({ ...x, ...p })); };
   // Render offscreen and copy only the latest result, so overlapping async renders never interleave on screen.
@@ -141,7 +158,10 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
   }, [c, workspaceName]);
   const blobOf = useCallback(async (f: Fmt, type = "image/png") => { const k = document.createElement("canvas"); await render(k, f, c, workspaceName); return new Promise<Blob>((res, rej) => k.toBlob(b => b ? res(b) : rej(new Error("render")), type, .92)); }, [c, workspaceName]);
   const fileBase = e.name.replace(/[^\w]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
-  const download = async (f: Fmt, type: "png" | "jpg" = "png") => { const b = await blobOf(f, type === "png" ? "image/png" : "image/jpeg"); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `${fileBase}-${f.key}.${type}`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+  const download = async (f: Fmt, type: "png" | "jpg" = "png") => {
+    try { const b = await blobOf(f, type === "png" ? "image/png" : "image/jpeg"); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `${fileBase}-${f.key}.${type}`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+    catch { toast("Export failed — try again, or choose another background image", "error"); }
+  };
   const put = (b: Blob, ext: string) => uploadPublicMedia(workspaceId, b, `${fileBase || "poster"}.${ext}`);   // Q04: server-validated public upload
   const upload = async (f: Fmt, primary: boolean) => {
     const url = await put(await blobOf(f), "png");
@@ -178,7 +198,7 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
         <span className="k-row" style={{ gap: 6 }}><span className="pb-ur"><button disabled={!hist.length} onClick={() => { setFut(f => [c, ...f]); setC(hist.at(-1)!); setHist(h => h.slice(0, -1)); }} aria-label="Undo"><Undo2 size={15} /></button><button disabled={!fut.length} onClick={() => { setHist(h => [...h, c]); setC(fut[0]!); setFut(f => f.slice(1)); }} aria-label="Redo"><Redo2 size={15} /></button></span>
           <span className="pb-zoom"><button onClick={() => setZoom(z => Math.max(40, z - 10))} aria-label="Zoom out"><Minus size={14} /></button><b>{zoom}%</b><button onClick={() => setZoom(z => Math.min(160, z + 10))} aria-label="Zoom in"><Plus size={14} /></button></span><button className="pb-fit" onClick={() => setZoom(100)}><Maximize size={13} />Fit</button></span></div>
         <div className="pb-stage"><div className="pb-tools">{tools.map(([I, l, fn]) => <button key={l} onClick={fn} aria-pressed={l === "QR Code" ? c.showQr : undefined}><I size={17} strokeWidth={1.6} /><span>{l}</span></button>)}</div>
-          <div className="pb-canvas"><div className="pb-sel" style={{ height: `${(fmt.h >= fmt.w ? 520 : 300) * zoom / 100}px`, aspectRatio: `${fmt.w} / ${fmt.h}` }}><canvas ref={cv} aria-label={`${fmt.label} preview`} />{["tl", "tm", "tr", "ml", "mr", "bl", "bm", "br"].map(h => <i key={h} className={`h-${h}`} />)}</div></div></div></section>
+          <div className="pb-canvas"><div className="pb-sel" style={{ height: `${(fmt.h >= fmt.w ? 520 : 300) * zoom / 100}px`, aspectRatio: `${fmt.w} / ${fmt.h}` }}><canvas ref={cv} role="img" aria-label={`${fmt.label} preview of ${c.name || e.name}`} />{["tl", "tm", "tr", "ml", "mr", "bl", "bm", "br"].map(h => <i key={h} className={`h-${h}`} />)}</div></div></div></section>
       <section className="k-card pb-c pb-edit"><h2>3. Edit content</h2>
         <nav className="pb-etabs" role="tablist">{(["details", "style", "media", "branding"] as const).map(p => <button key={p} role="tab" aria-selected={pane === p} onClick={() => setPane(p)}>{{ details: "Event Details", style: "Style", media: "Media", branding: "Branding" }[p]}</button>)}</nav>
         {pane === "details" && <div className="pb-fields">

@@ -1,0 +1,343 @@
+{
+  "run": "p1-dec107-mwcbaafj",
+  "platform": "acct_1UW176Ae36uXyrUn",
+  "accounts": {
+    "organiser": "acct_1Uae2iAa8GuEVEY9",
+    "supplier": "acct_1Uae2iPMlfUBG509"
+  },
+  "steps": [
+    {
+      "step": "accounts",
+      "ok": true,
+      "ids": {
+        "organiser": "acct_1Uae2iAa8GuEVEY9",
+        "supplier": "acct_1Uae2iPMlfUBG509",
+        "dashboard": "none",
+        "payouts": "manual"
+      }
+    },
+    {
+      "step": "db_seller_bound",
+      "ok": true,
+      "ids": {
+        "organiser_workspace": "e2722ab1-045d-408e-93d6-a24cf7c54ce6",
+        "supplier_workspace": "09be9d54-8c4e-4c13-a465-4e6d291e5a9e",
+        "event": "b93ace74-1f46-4051-919a-ced43502e070"
+      }
+    },
+    {
+      "step": "ticket_purchase",
+      "ok": true,
+      "ids": {
+        "pi": "pi_3Uae3gAa8GuEVEY91bt9k4ra",
+        "status": "succeeded",
+        "charge": "ch_3Uae3gAa8GuEVEY91c7aScqT",
+        "fee": "fee_1Uae3jAa8GuEVEY9oOf7EhcF",
+        "feeAmount": 1500,
+        "order": "p1-dec107-mwcbaafj-ticket_T1",
+        "recordedBy": "webhook"
+      }
+    },
+    {
+      "step": "ticket_refund_pro_rata",
+      "ok": true,
+      "ids": {
+        "pi": "pi_3Uae3lAa8GuEVEY90cQjnknb",
+        "refund": "re_3Uae3lAa8GuEVEY90yi18ife",
+        "fee_refund": "fr_1Uae3sAa8GuEVEY9GrRVXeD6",
+        "fee_refund_minor": 125
+      },
+      "note": "£25 of £50 refunded: seller fee 125 of 250 back, £5 booking fee kept"
+    },
+    {
+      "step": "event_cancellation_refund",
+      "ok": true,
+      "ids": {
+        "pi": "pi_3Uae3tAa8GuEVEY914nKK3nE",
+        "refund": "re_3Uae3tAa8GuEVEY91KqcviVq",
+        "amount": 5500,
+        "fee_refund": "fr_1Uae3zAa8GuEVEY9cBd7w4VZ",
+        "fee_refund_minor": 750
+      },
+      "note": "whole purchase incl. booking fee (law)"
+    },
+    {
+      "step": "resale",
+      "ok": true,
+      "ids": {
+        "original": "pi_3Uae40Aa8GuEVEY93T8rpnax",
+        "resale": "pi_3Uae46Aa8GuEVEY91rmJNXrb",
+        "original_refund": "re_3Uae40Aa8GuEVEY93hqwibkH",
+        "fee_refund": "fr_1Uae4CAa8GuEVEY9Ba44aqms",
+        "fee_refund_minor": 250,
+        "event": "b93ace74-1f46-4051-919a-ced43502e070"
+      },
+      "note": "original face value refunded; its seller fee back pro rata; booking fee kept"
+    },
+    {
+      "step": "db_records_manual_release",
+      "ok": true,
+      "ids": {
+        "rows": [
+          {
+            "order_ref": "p1-dec107-mwcbaafj-ticket_T1",
+            "release_model": "manual_release",
+            "charged_at": "2026-11-11T16:07:38.370111+00:00"
+          },
+          {
+            "order_ref": "p1-dec107-mwcbaafj-ticket_T2",
+            "release_model": "manual_release",
+            "charged_at": "2026-11-11T16:07:43.64308+00:00"
+          },
+          {
+            "order_ref": "p1-dec107-mwcbaafj-ticket_T3",
+            "release_model": "manual_release",
+            "charged_at": "2026-11-11T16:07:50.83737+00:00"
+          },
+          {
+            "order_ref": "p1-dec107-mwcbaafj-resale_original_R0",
+            "release_model": "manual_release",
+            "charged_at": "2026-11-11T16:07:58.709769+00:00"
+          },
+          {
+            "order_ref": "p1-dec107-mwcbaafj-resale_purchase_R1",
+            "release_model": "manual_release",
+            "charged_at": "2026-11-11T16:08:03.922461+00:00"
+          }
+        ]
+      },
+      "note": "every order recorded before its charge; payments recorded by the webhook path (checkout_order_direct_paid)"
+    },
+    {
+      "step": "supplier_deposit_and_balance",
+      "ok": true,
+      "ids": {
+        "deposit": "pi_3Uae4DPMlfUBG5091QQujsZZ",
+        "balance": "pi_3Uae4JPMlfUBG5091LeIea2e",
+        "fee_ids": [
+          "fee_1Uae4GPMlfUBG509sk9lchtc",
+          "fee_1Uae4LPMlfUBG5091CWqYvdb"
+        ]
+      }
+    },
+    {
+      "step": "change_order",
+      "ok": true,
+      "ids": {
+        "checkout_session_on_seller": "cs_test_b0CIJbYGEncrMsfbA6frUYlioBglHLYOuUdkuSs3Rr2Bpom1PFjsbMdhob",
+        "checkout_status": "open",
+        "paid_pi": "pi_3Uae4RPMlfUBG5090y2xcdS8"
+      },
+      "note": "client-present Checkout Session created on the supplier's account; paid by API PaymentIntent (hosted page can't be paid headlessly)"
+    },
+    {
+      "step": "booking_cancellation_by_provider",
+      "ok": true,
+      "ids": {
+        "refund": "re_3Uae4DPMlfUBG5091YNzUNjW",
+        "amount": 30750,
+        "fee_refund": "fr_1Uae4YPMlfUBG50989YI7i5d",
+        "fee_refund_minor": 3150
+      },
+      "note": "provider cancelled: everything back incl. admin fee"
+    },
+    {
+      "step": "consumer_cancellation",
+      "ok": true,
+      "ids": {
+        "refund": "re_3Uae4JPMlfUBG5091DAXTHD7",
+        "amount": 35000,
+        "fee_refund": "fr_1Uae4aPMlfUBG5095IsTaLy9",
+        "fee_refund_minor": 2800
+      },
+      "note": "customer cancelled under a 50 % policy: seller fee 2,800 of 5,600 back, admin fee £17.50 kept"
+    },
+    {
+      "step": "default_rule_refund_of_disputed_amount",
+      "ok": true,
+      "ids": {
+        "refund": "re_3Uae4RPMlfUBG5090KB6PByd",
+        "fee_refund_minor": 320
+      },
+      "note": "hold-limit default rule: disputed £40 refunded to the customer, seller fee pro rata back, admin fee kept; the rest is released below"
+    },
+    {
+      "step": "chargeback_evidence",
+      "ok": true,
+      "ids": {
+        "pi": "pi_3Uae4ePMlfUBG5090f6yT1KG",
+        "dispute": "du_1Uae4fPMlfUBG509jVQ3aurB",
+        "amount": 5125,
+        "status_after_evidence": "under_review",
+        "submissions": 1
+      },
+      "note": "dispute object lives on the SUPPLIER's account (direct charge); seller evidence intake UI is not built yet (gap)"
+    },
+    {
+      "step": "releases_due_after_event_plus_review",
+      "ok": true,
+      "ids": {
+        "sweep": {
+          "due": 8,
+          "blocked": 1,
+          "created": 9,
+          "cancelled": 0,
+          "default_rule": 0
+        },
+        "due": [
+          {
+            "ref": "p1-dec107-mwcbaafj-balance_B1",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-deposit_D1",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-change_order_CO1",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-ticket_T1",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-resale_purchase_R1",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-resale_original_R0",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-ticket_T2",
+            "trigger": "event_completed_review"
+          },
+          {
+            "ref": "p1-dec107-mwcbaafj-ticket_T3",
+            "trigger": "event_completed_review"
+          }
+        ],
+        "blocked": [
+          {
+            "source_ref": "p1-dec107-mwcbaafj-chargeback_X1",
+            "blocked_reason": "card_dispute_open"
+          }
+        ]
+      },
+      "note": "8 recorded sales due 24 h after the event; the chargeback's release is blocked while the card dispute is open"
+    },
+    {
+      "step": "covered_liability_supplier",
+      "ok": true,
+      "ids": {
+        "account": "acct_1Uae2iPMlfUBG509",
+        "available": 30595,
+        "due": 33948,
+        "shortfall": 7125
+      },
+      "note": "chargeback £51.25 + Stripe dispute fee taken from the supplier's balance; its other releases pay the rest"
+    },
+    {
+      "step": "payout_on_trigger_supplier",
+      "ok": true,
+      "ids": {
+        "payout": "po_1Uae4qPMlfUBG509yxkKiE1w",
+        "amount": 26823,
+        "releases": 3,
+        "reserve": {
+          "kind": "standard",
+          "bps": 1000,
+          "days": 30
+        },
+        "reserve_held_minor": 3772
+      },
+      "note": "one payout from the seller's own balance for every recorded sale of the event; objective reserve stays in the seller's balance"
+    },
+    {
+      "step": "payout_on_trigger_organiser",
+      "ok": true,
+      "ids": {
+        "payout": "po_1Uae4sAa8GuEVEY9YgFswLie",
+        "amount": 15391,
+        "releases": 5,
+        "reserve": {
+          "kind": "standard",
+          "bps": 1000,
+          "days": 30
+        },
+        "reserve_held_minor": 1709
+      },
+      "note": "one payout from the seller's own balance for every recorded sale of the event; objective reserve stays in the seller's balance"
+    },
+    {
+      "step": "reserve_release",
+      "ok": true,
+      "ids": {
+        "payouts": [
+          "po_1Uae4tAa8GuEVEY91AhjB1Q6",
+          "po_1Uae4uPMlfUBG509eJ6PgzYw"
+        ],
+        "amount": 5481,
+        "releases": 5
+      }
+    },
+    {
+      "step": "platform_subscription_and_credit_pack",
+      "ok": true,
+      "ids": {
+        "customer": "cus_VbroFUdZxvgo9X",
+        "subscription": "sub_1Uae4wAe36uXyrUnjE01ZFUt",
+        "subscription_status": "active",
+        "invoice": "in_1Uae4wAe36uXyrUnxugUEtjk",
+        "credit_pack_pi": "pi_3Uae4yAe36uXyrUn0qdjqWMF",
+        "plan": {
+          "stripe_price_test": "price_1UW3ODAe36uXyrUnJatMrIeH",
+          "plan": "business",
+          "billing_interval": "month"
+        }
+      },
+      "note": "Gala Dock is the merchant: charged on the platform account; subscription cancelled after the proof"
+    },
+    {
+      "step": "invariants_and_books",
+      "ok": true,
+      "ids": {
+        "invariants": [],
+        "books": {
+          "acct_1Uae2iAa8GuEVEY9": {
+            "charges_net": 17100,
+            "payouts": 17100,
+            "books": 0,
+            "stripe_balance": 0,
+            "equal": true
+          },
+          "acct_1Uae2iPMlfUBG509": {
+            "charges_net": 35195,
+            "payouts": 30595,
+            "books": 4600,
+            "stripe_balance": 4600,
+            "equal": true
+          }
+        }
+      }
+    }
+  ],
+  "invariants": [],
+  "books": {
+    "acct_1Uae2iAa8GuEVEY9": {
+      "charges_net": 17100,
+      "payouts": 17100,
+      "books": 0,
+      "stripe_balance": 0,
+      "equal": true
+    },
+    "acct_1Uae2iPMlfUBG509": {
+      "charges_net": 35195,
+      "payouts": 30595,
+      "books": 4600,
+      "stripe_balance": 4600,
+      "equal": true
+    }
+  }
+}

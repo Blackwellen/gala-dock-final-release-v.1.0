@@ -76,28 +76,48 @@ Caddy fetches HTTPS certificates automatically as soon as DNS resolves.
 
 ## 5. Malware scanner (shared Blackwellen AV gateway)
 
-Deployed and checked from `blackwellen-operations` (runbook `ops/runbooks/av-scan-gateway.md`). The operator issues Gala Dock's brand
-token there (`BW_AVSCAN_TOKEN_GALA_DOCK`) and gives you the gateway's HTTPS URL. Contract: `POST /scan` with
-`Authorization: Bearer <token>` and the raw bytes → `{"clean":true}` or `{"clean":false,"signature":"…"}`; `GET /healthz` →
-`{"ok":true,"clamd":"PONG",…}`. After connecting, run `node scripts/testing/pwa-scanner-certification.mjs` (clean sample, harmless
-EICAR detection, unauthenticated denial).
+Deployed and checked from `blackwellen-operations` (runbook `ops/runbooks/av-scan-gateway.md`, Gala Dock guide `docs/gala-dock-ops-integration.md`).
+Two gateways, each with its own ClamAV engine and signature updates, both serving Gala Dock's brand token (`BW_AVSCAN_TOKEN_GALA_DOCK`):
+main `https://scan.blackwellen-operations.cloud` (RECOVERY-B) and standby `https://scan2.blackwellen-operations.cloud` (OPS-A).
+Contract: `POST /scan` with `Authorization: Bearer <token>` and the raw bytes → `{"clean":true}` or `{"clean":false,"signature":"…"}`;
+503 when the engine is down or its signatures are stale. The public addresses pass only `/scan` (and the signed `/v1` API): `/healthz`
+answers 404 there, so readiness scans a tiny benign probe instead. After connecting, run `node scripts/testing/pwa-scanner-certification.mjs`
+(clean sample, harmless EICAR detection, unauthenticated denial, on both gateways).
 
 ## 6. Connect Gala Dock (Vercel → Project → Settings → Environment Variables, Production)
 
 | Variable | Value |
 |---|---|
-| `CLAMAV_SCAN_URL` | the shared AV gateway URL from the operator |
-| `CLAMAV_SCAN_TOKEN` | Gala Dock's brand token (`BW_AVSCAN_TOKEN_GALA_DOCK` on the gateway) |
+| `CLAMAV_SCAN_URL` | main AV gateway URL from the operator |
+| `CLAMAV_SCAN_URL_SECONDARY` | standby AV gateway URL (optional; used only when the main one is unreachable, times out or answers 5xx) |
+| `CLAMAV_SCAN_TOKEN` | Gala Dock's brand token (`BW_AVSCAN_TOKEN_GALA_DOCK` on both gateways; `CLAMAV_SCAN_TOKEN_SECONDARY` only if the standby ever gets its own) |
+| `WATCHTOWER_PROBE_KEY_ID` | `watchtower-gala_dock`: Watchtower's signed readiness probe of `/api/health/ready` |
+| `WATCHTOWER_PROBE_SECRET_HEX` | the probe key's hex secret (ops secret store `hmac/watchtower-gala_dock.key`) |
+| `BLACKWELLEN_EVENTS_URL` | `https://events.blackwellen-operations.cloud/v1/events` (Blackwellen event bus) |
+| `BLACKWELLEN_EVENTS_KEY_ID` | `gala_dock-events` in Production (`gala_dock-events-staging` anywhere else; the bus scopes each key to one environment) |
+| `BLACKWELLEN_EVENTS_SECRET_HEX` | the matching hex secret (ops secret store `hmac/evt-gala_dock-production.key` / `evt-gala_dock-staging.key`) |
 | `SENTRY_DSN` | from GlitchTip (step 8) |
 
-Add the same values to your local `.env`, then run `node scripts/vercel-env-push.mjs --only CLAMAV_SCAN_URL,CLAMAV_SCAN_TOKEN,SENTRY_DSN` and redeploy.
+All values come from the operator's wiring file `~/.blackwellen/secrets/wiring/gala_dock.env` (written by `bw-wiring-bundle` in
+`blackwellen-operations`, fingerprint-checked against the servers). Server-only: never `NEXT_PUBLIC_*`. Add the same values to your
+local `.env` (events with the staging key), then redeploy.
+
+**Event feed schedule** (once, in the Supabase SQL editor, after the deploy that contains `/api/health/events`):
+`select cron.schedule('ops-events', '*/5 * * * *', $select public.dispatch_worker('/api/health/events')$);`
+Each run sends one signed `service.heartbeat` (overall state + each component's state; no personal data) that Watchtower turns into
+`hb:OPS-A:events-gala-dock` (P1 when Gala Dock reports down or goes silent for 15 min, P2 when degraded).
 
 **Behaviour once connected:**
 - Upload routes scan every file before storing it. Infected files are refused (422).
-- If the scanner is unreachable, uploads are refused with "try again" (503), so the check fails closed.
+- If the main scanner is unreachable the standby answers; if both are unreachable, uploads are refused with "try again" (503), so the check fails closed. A refusal (wrong token) never moves to the standby.
+- Private documents uploaded before the scanner was connected stay quarantined (423) until rescanned: `node scripts/files/rescan-quarantined.mjs`.
 - The `scan-uploads` job (every 5 minutes, in Supabase cron) scans files uploaded directly from browsers. It deletes infected ones, audits them and notifies the uploader.
 
 ## 7. Uptime monitoring (Uptime Kuma)
+
+> **Superseded for production (2026-11-11):** Gala Dock is monitored by the shared Blackwellen Uptime Kuma and Watchtower
+> (`blackwellen-operations` `docs/uptime-kuma.md`); public page `https://status.blackwellen-operations.cloud/status/galadock`. Alerts come
+> only from Watchtower. The self-hosted steps below are kept for reference.
 
 1. Open `https://status.ops.galadock.com` and create the admin account. Do this immediately, because the first visitor becomes admin.
 2. Add these monitors (**Add New Monitor**):
@@ -128,7 +148,7 @@ Add the same values to your local `.env`, then run `node scripts/vercel-env-push
 
 ## 9. Maintenance
 
-- **Scanner:** signatures, uptime and alerting are owned by the shared gateway (Watchtower watches `/healthz`); Gala Dock's `/api/health` still reports it.
+- **Scanner:** signatures, uptime and alerting are owned by the shared gateways (Watchtower heartbeats `hb:RECOVERY-B:av-gateway` / `hb:OPS-A:av-gateway`); Gala Dock's `/api/health` (ops view) reports both, and `/api/health/ready` reports the scan backlog.
 - **OS:**
 
   ```bash

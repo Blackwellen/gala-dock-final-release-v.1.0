@@ -1,22 +1,7 @@
-import Link from "next/link";
-import { GalaLogo } from "@/components/brand/gala-logo";
-import { Search } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { SiteHeader } from "@/components/site/site-header";
 
-/** Header for public pages: same look as the customer top bar; signed-in visitors get their avatar, others sign in.
- *  Signed-out Discover/search go to the public /events directory instead of a sign-in wall (W01). */
+/** Public pages (events, venues, services, organisers, help, legal, 404, token-chrome pages) share the one global public header
+ *  defined by the public website blueprint (§1.4). Kept under this name so existing layouts need no change. */
 export async function PublicHeader() {
-  const supabase = await createClient();
-  // A transient auth/profile failure (e.g. a Supabase 520) must never take the public header — or the page — down with it:
-  // render the signed-out header instead (regression run 3: the 404 page lost its header during an upstream 520).
-  const user = await supabase.auth.getUser().then(r => r.data.user, () => null);
-  const { data: p } = user ? await supabase.from("profiles").select("full_name,avatar_url").eq("id", user.id).maybeSingle().then(r => r, () => ({ data: null })) : { data: null };
-  const name = p?.full_name || user?.email?.split("@")[0] || "";
-  return <header className="c-top pub-top">
-    <Link href={user ? "/home" : "/"} className="c-logo" aria-label="Gala Dock"><GalaLogo /></Link>
-    <form className="c-search" action={user ? "/discover" : "/events"} role="search"><Search size={18} aria-hidden /><input name="q" placeholder="Search events, venues, artists, or experiences..." aria-label="Search" /></form>
-    <nav className="c-nav" aria-label="Main"><Link href={user ? "/discover" : "/events"}>Discover</Link><Link href="/plan">Plan an Event</Link>{user && <><Link href="/account/events">My Events</Link><Link href="/account/tickets">My Tickets</Link><Link href="/account/saved">Saved</Link></>}</nav>
-    <div className="c-icons pub-right">{user ? <Link href="/home" className="c-avatar" aria-label="Your account">{p?.avatar_url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.avatar_url} alt="" /> : <span className="c-initials">{name.slice(0, 1).toUpperCase()}</span>}</Link>
-      : <><Link className="k-btn ghost" href="/login">Sign in</Link><Link className="k-btn primary" href="/register">Get started</Link></>}</div>
-  </header>;
+  return <SiteHeader />;
 }

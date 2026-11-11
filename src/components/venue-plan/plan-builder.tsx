@@ -1,7 +1,7 @@
 "use client";
 import "@/styles/venue-plan.css";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type MutableRefObject, type PointerEvent as RPE } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties, type MutableRefObject, type PointerEvent as RPE } from "react";
 import { MousePointer2, Hand, Square, Pentagon, Minus as WallIcon, Type, Ruler, Undo2, Redo2, Trash2, Copy, Eye, EyeOff, Lock, Unlock, ImagePlus, Map as MapIcon, Maximize2, Minimize2,
   ZoomIn, ZoomOut, Scan, Grid3x3, Magnet, Layers, Crosshair, ArrowUpToLine, ArrowDownToLine, Save, Upload, Shapes, Search, Keyboard, RotateCw, RotateCcw, AlignStartVertical, AlignCenterVertical,
   AlignEndVertical, AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignHorizontalSpaceAround, AlignVerticalSpaceAround, ListOrdered, X, Satellite, ShieldAlert, Armchair, BookOpen, FlipHorizontal2, FlipVertical2,
@@ -120,6 +120,18 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const [calib, setCalib] = useState<{ a: number[]; b: number[]; m: string } | null>(null);
   const [confirmPub, setConfirmPub] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  /** Toolbar popovers are fixed to the viewport at their anchor: on narrow screens the toolbar scrolls sideways (overflow clips
+   *  absolute children) and the app's bottom tab bar sits on top, so absolute menus were cut off or occluded (checklist 2026-11-11). */
+  const [popAt, setPopAt] = useState<{ top: number; left: number; right: number } | null>(null);
+  const popAnchor = useRef<HTMLElement | null>(null);
+  const placePop = (el: HTMLElement) => { const r = el.getBoundingClientRect(); setPopAt({ top: Math.round(r.bottom + 4), left: Math.round(r.left), right: Math.round(window.innerWidth - r.right) }); };
+  const anchorPop = (el: HTMLElement) => { popAnchor.current = el; placePop(el); };
+  const popStyle = (w: number, align: "left" | "right"): CSSProperties | undefined => !popAt ? undefined : {
+    position: "fixed", top: popAt.top, zIndex: 80, maxHeight: `calc(100dvh - ${popAt.top}px - var(--pwa-bottom, 0px) - 8px)`, overflowY: "auto",
+    ...(align === "left" ? { left: Math.max(8, Math.min(popAt.left, window.innerWidth - w - 8)) } : { right: Math.max(8, Math.min(popAt.right, window.innerWidth - w - 8)) }) };
+  // While open, the popover follows its anchor (page or toolbar scroll, rotation) instead of closing.
+  useEffect(() => { if (!exportOpen && !confirmPub) return; const follow = (e?: Event) => { if (e?.target instanceof Element && e.target.closest(".mb-menu,.mb-pop")) return; if (popAnchor.current) placePop(popAnchor.current); };
+    window.addEventListener("resize", follow); window.addEventListener("scroll", follow, true); return () => { window.removeEventListener("resize", follow); window.removeEventListener("scroll", follow, true); }; }, [exportOpen, confirmPub]);
   const [geoQ, setGeoQ] = useState("");
   const [geoHits, setGeoHits] = useState<{ label: string; lat: number; lng: number }[]>([]);
   const [geoBusy, setGeoBusy] = useState(false);
@@ -155,9 +167,11 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const removeSel = useCallback(() => {
     const prot = sel.filter(i => els[i]?.protected);
     if (prot.length) toast("Fire exits and protected routes can’t be removed — move them instead.");
-    const drop = new Set(sel.filter(i => !els[i]?.protected)); if (!drop.size) return;
+    else if (sel.some(i => els[i] && !editable(els[i]))) toast("Locked items stay on the plan — unlock them to delete.");
+    // Locked items (element lock, locked group or locked custom layer) are protected from Delete like they are from move/rotate.
+    const drop = new Set(sel.filter(i => !els[i]?.protected && editable(els[i]))); if (!drop.size) return;
     commit(l => l.filter((_, j) => !drop.has(j))); setSel([]);
-  }, [sel, els, commit, toast]);
+  }, [sel, els, commit, toast, lockedGroups, lockedLayers]); // eslint-disable-line react-hooks/exhaustive-deps
   const finishDraft = useCallback(() => {
     if (tool === "poly" && draft.length >= 3) { commit(l => [...l, tag({ type: "room", id: newId("room"), label: "New room", points: draft })]); setSel([els.length]); setPanel("inspect"); }
     if (tool === "wall" && draft.length >= 2) commit(l => [...l, tag({ type: "wall", label: "Wall", points: draft, size: 4 })]);
@@ -219,11 +233,46 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     const el: MapEl = d.kind === "table" ? { ...a, table: { ...a.table!, number: n }, label: `Table ${n}` } : d.kind === "seating" ? { ...a, seating: { ...a.seating!, prefix: alphaNext(els) }, label: `Block ${alphaNext(els)}` } : a;
     commit(l => [...l, tag({ ...el, x: sn(x - w / 2), y: sn(y - h / 2) })]); setSel([els.length]); setPanel("inspect");
   };
-  const onWheel = (e: React.WheelEvent) => {
-    const [x, y] = world(e), f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
-    setView(v => { const w = Math.min(12000, Math.max(40, v.w * f)), h = (w / v.w) * v.h; return { x: x - ((x - v.x) * w) / v.w, y: y - ((y - v.y) * h) / v.h, w, h }; });
+  // Native, non-passive wheel listener: React's onWheel is passive, so the page used to scroll while the plan zoomed.
+  // Zooms about the pointer (the world point under the cursor stays put); only reads the SVG ref and uses functional setView.
+  useEffect(() => {
+    const el = svg.current; if (!el) return;
+    const h = (e: WheelEvent) => {
+      e.preventDefault(); const c = el.getScreenCTM(); if (!c) return;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(c.inverse()), x = p.x, y = p.y, f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+      setView(v => { const w = Math.min(12000, Math.max(40, v.w * f)), hh = (w / v.w) * v.h; return { x: x - ((x - v.x) * w) / v.w, y: y - ((y - v.y) * hh) / v.h, w, h: hh }; });
+    };
+    el.addEventListener("wheel", h, { passive: false }); return () => el.removeEventListener("wheel", h);
+  }, []);
+  // Two-finger pinch zoom + pan on touch screens. Tracked in the capture phase so a finger landing on an element still counts;
+  // the second finger cancels any one-finger drag that had started.
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ d: number; mx: number; my: number } | null>(null);
+  const pinchState = () => { const [a, b] = [...touches.current.values()]; return { d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; };
+  const onTouchDown = (e: RPE<SVGSVGElement>) => {
+    if (e.pointerType !== "touch") return;
+    // The first finger of a new gesture starts clean: a lost pointerup/cancel must not leave a stale finger (or pinch) behind.
+    if (e.isPrimary) { touches.current.clear(); pinch.current = null; }
+    touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touches.current.size === 2) {
+      e.stopPropagation(); drag.current = null; before.current = null; setDraft([]); setMarquee(null);
+      svg.current?.setPointerCapture(e.pointerId); pinch.current = pinchState();
+    }
   };
+  const onTouchMove = (e: RPE<SVGSVGElement>) => {
+    if (e.pointerType !== "touch" || !touches.current.has(e.pointerId)) return false;
+    touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const p = pinch.current; if (!p || touches.current.size < 2) return false;
+    const n = pinchState(), r = svg.current!.getBoundingClientRect();
+    setView(v => { const k = v.w / r.width, w = Math.min(12000, Math.max(40, v.w * (p.d / n.d))), h = (w / v.w) * v.h;
+      // The world point under the previous finger midpoint stays under the new midpoint (zoom + two-finger pan in one step).
+      const wx = v.x + (p.mx - r.left) * k, wy = v.y + (p.my - r.top) * k, k2 = w / r.width, nx = wx - (n.mx - r.left) * k2, ny = wy - (n.my - r.top) * k2;
+      return { x: nx, y: ny, w, h }; });
+    pinch.current = n; return true;
+  };
+  const onTouchUp = (e: RPE<SVGSVGElement>) => { if (e.pointerType !== "touch") return; touches.current.delete(e.pointerId); if (touches.current.size < 2) pinch.current = null; };
   const onCanvasDown = (e: RPE<SVGSVGElement>) => {
+    if (pinch.current) return;
     setMenu(null); setExportOpen(false); setConfirmPub(false); wrap.current?.focus();
     if (e.button === 2) return;
     if (e.button === 1 || tool === "hand" || space.current) { drag.current = { kind: "pan", sx: e.clientX, sy: e.clientY, view }; svg.current?.setPointerCapture(e.pointerId); return; }
@@ -267,6 +316,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     before.current = els; svg.current?.setPointerCapture(e.pointerId);
   };
   const onMove = (e: RPE<SVGSVGElement>) => {
+    if (onTouchMove(e)) return;
     const [x, y] = world(e); setCursor([x, y]);
     const d = drag.current; if (!d) return;
     if (d.kind === "pan") { const r = svg.current!.getBoundingClientRect(), k = d.view.w / r.width; setView({ ...d.view, x: d.view.x - (e.clientX - d.sx) * k, y: d.view.y - (e.clientY - d.sy) * k }); return; }
@@ -452,7 +502,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     try {
       const j = JSON.parse(await f.text()) as { format?: string; elements?: unknown };
       const list = Array.isArray(j) ? j : j.elements;
-      if (!Array.isArray(list) || list.length > 2000 || !list.every(x => x && typeof x === "object" && typeof (x as MapEl).type === "string" && typeof (x as MapEl).label === "string")) throw new Error("bad");
+      if (!Array.isArray(list) || list.length > (mode === "event" ? 5000 : 2000) || !list.every(x => x && typeof x === "object" && typeof (x as MapEl).type === "string" && typeof (x as MapEl).label === "string")) throw new Error("bad");
       commit((list as MapEl[]).map(x => ({ ...x, label: String(x.label).slice(0, 60) }))); setSel([]); toast(`Imported ${list.length} items. Undo reverts the import.`);
     } catch { toast("That file isn’t a Gala Dock plan export (.json)."); }
   };
@@ -507,8 +557,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
       <button type="button" aria-label="Legend" title="Legend / key (L)" className={legend ? "on" : ""} aria-pressed={legend} onClick={() => setLegend(v => !v)}><BookOpen aria-hidden="true" /></button>
       <button type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" onClick={() => setHelp(h => !h)}><Keyboard aria-hidden="true" /></button>
       <span className="mb-sep" />
-      <span className="mb-pop-wrap"><button type="button" aria-label="Export or import" title="Export / import" aria-expanded={exportOpen} className={exportOpen ? "on" : ""} onClick={() => setExportOpen(o => !o)}><Download aria-hidden="true" /></button>
-        {exportOpen && <div className="mb-menu mb-export" role="menu" onPointerDown={e => e.stopPropagation()}>
+      <span className="mb-pop-wrap"><button type="button" aria-label="Export or import" title="Export / import" aria-expanded={exportOpen} className={exportOpen ? "on" : ""} onClick={e => { anchorPop(e.currentTarget); setExportOpen(o => !o); }}><Download aria-hidden="true" /></button>
+        {exportOpen && <div className="mb-menu mb-export" role="menu" style={popStyle(200, "left")} onPointerDown={e => e.stopPropagation()}>
           <button type="button" role="menuitem" onClick={() => void doExport("png")}><Download aria-hidden="true" />Export PNG image</button>
           <button type="button" role="menuitem" onClick={() => void doExport("svg")}><Download aria-hidden="true" />Export SVG (vector)</button>
           <button type="button" role="menuitem" onClick={() => void doExport("print")}><Printer aria-hidden="true" />Print / save as PDF</button>
@@ -518,8 +568,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
       <span className="ws-spacer" />
       <span className="mb-status" aria-live="polite">{dirty ? "Unsaved changes" : draftVersion ? `Draft v${draftVersion} saved${version ? ` · v${version} live` : ""}` : version ? `Version ${version} live` : "Not published"}</span>
       <button type="button" className="mb-txt" disabled={pending || !dirty} onClick={() => save(false)}>{pending ? <Loader2 aria-hidden="true" className="k-spin" /> : <Save aria-hidden="true" />}Save draft</button>
-      {!hidePublish && <span className="mb-pop-wrap"><button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0 && !draftVersion)} aria-expanded={confirmPub} onClick={() => setConfirmPub(v => !v)}><Upload aria-hidden="true" />Publish</button>
-        {confirmPub && <div className="mb-pop right" role="dialog" aria-label="Publish layout"><b>{mode === "event" ? "Publish this event layout?" : "Publish this venue plan?"}</b>
+      {!hidePublish && <span className="mb-pop-wrap"><button type="button" className="mb-txt primary" disabled={pending || (!dirty && version > 0 && !draftVersion)} aria-expanded={confirmPub} onClick={e => { anchorPop(e.currentTarget); setConfirmPub(v => !v); }}><Upload aria-hidden="true" />Publish</button>
+        {confirmPub && <div className="mb-pop right" role="dialog" aria-label="Publish layout" style={popStyle(270, "right")}><b>{mode === "event" ? "Publish this event layout?" : "Publish this venue plan?"}</b>
           <p>{mode === "event" ? "Seat and area inventory for ticketing updates to match. Sold or held seats must stay on the plan." : "Organisers planning events here will see the new version."}</p>
           <div className="mb-pop-acts"><button type="button" className="ws-btn ghost sm" onClick={() => setConfirmPub(false)}>Cancel</button><button type="button" className="ws-btn primary sm" disabled={pending} onClick={() => save(true)}>Publish</button></div></div>}</span>}
       <input ref={importRef} type="file" accept="application/json,.json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void importJson(f); e.target.value = ""; }} />
@@ -530,8 +580,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
           const k = dragKey.current; if (k && ASSET[k]?.kind !== "line") { const [x, y] = world(e); setGhost(g => g && g.key === k && Math.abs(g.x - x) < 0.5 && Math.abs(g.y - y) < 0.5 ? g : { key: k, x, y }); } }}
         onDragLeave={e => { if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) setGhost(null); }}
         onDrop={e => { const k = e.dataTransfer.getData("text/x-plan-asset"); setGhost(null); dragKey.current = null; if (!k) return; e.preventDefault(); const [x, y] = world(e); placeAt(k, x, y); }}>
-        <svg ref={svg} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} className="vm mb-svg" onPointerDown={onCanvasDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onPointerLeave={() => setCursor(null)}
-          onWheel={onWheel} onDoubleClick={() => finishDraft()} role="application" aria-label="Plan editor">
+        <svg ref={svg} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} className="vm mb-svg" onPointerDownCapture={onTouchDown} onPointerDown={onCanvasDown} onPointerMove={onMove} onPointerUp={e => { onTouchUp(e); onUp(); }} onPointerCancel={e => { onTouchUp(e); onUp(); }} onPointerLeave={() => setCursor(null)}
+          onDoubleClick={() => finishDraft()} role="application" aria-label="Plan editor">
           <MapDefs />
           <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#f6f9fc" />
           {grid && <><rect className="mb-gridbg" x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid)" /><rect className="mb-gridbg" x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#vm-grid-m)" /></>}

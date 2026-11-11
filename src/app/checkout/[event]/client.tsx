@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomerTermsTick } from "@/components/payments/payment-terms-tick";
 import Link from "next/link";
 import { GalaLogo } from "@/components/brand/gala-logo";
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
@@ -64,12 +65,17 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
     if (!r.ok) { if ("login" in r && r.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}?resale=1`)}`); return; } setErr(r.error); return; }
     setSummary(r.summary); setStep(2); setNow(null);
   });
+  const [terms, setTerms] = useState<string | null>(null);
+  const [ticked, setTicked] = useState(false);
   const pay = async () => {
     setErr(null); setPaying(true);
-    const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: event.id }) });
-    const j = await res.json().catch(() => ({})) as { url?: string; error?: string; login?: boolean; expired?: boolean; queue?: boolean };
+    if (terms && !ticked) { setPaying(false); setErr("Tick the box to accept the payment terms."); return; }
+    const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: event.id, ...(terms && ticked ? { acceptTerms: true, termsVersion: terms } : {}) }) });
+    const j = await res.json().catch(() => ({})) as { url?: string; error?: string; login?: boolean; expired?: boolean; queue?: boolean; termsRequired?: boolean; termsVersion?: string };
     if (j.url) { window.location.assign(j.url); return; }
     setPaying(false);
+    // DEC-107 express term at the first payment (version, user, time); shown once, then recorded server-side.
+    if (j.termsRequired && j.termsVersion) { setTerms(j.termsVersion); setTicked(false); setErr(null); return; }
     if (j.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}`)}`); return; }
     if (j.expired || j.queue) { setStep(1); setSummary(null); }
     setErr(j.error ?? "Something went wrong. Please try again.");
@@ -154,7 +160,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
           <p id="co-code-msg" role="status" className={codeMsg ? (codeMsg.ok ? "ok" : "bad") : ""}>{codeMsg?.text ?? ""}</p></div>}
         <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div>{discount > 0 && <div className="disc"><dt>Code savings <small style={{ fontWeight: 400, opacity: .75 }}>(included)</small></dt><dd>−{gbp(discount)}</dd></div>}<div><dt>Booking fee <small style={{ fontWeight: 400, opacity: .75 }}>(incl. VAT)</small></dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
         {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0 || inQueue || !buyable} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
-          : <button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button>}
+          : <>{terms && <CustomerTermsTick version={terms} checked={ticked} onChange={setTicked} />}<button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button></>}
         <p className="co-trust"><ShieldCheck aria-hidden="true" />Payments by Stripe. Gala Dock never sees your card details.</p></section></aside>
     </div>
   </div>;

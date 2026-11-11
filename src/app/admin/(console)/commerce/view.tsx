@@ -53,7 +53,8 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
       <Link className="adb-btn primary" href={`/admin/commerce/export?period=${period}&kind=summary`}><Plus aria-hidden="true" />Generate report</Link>
     </>} />;
   const tabs = <TabBar active={tab} tabs={[{ key: "marketplace", label: "Marketplace", href: base("marketplace") }, { key: "ticketing", label: "Ticketing", href: base("ticketing") }, { key: "payouts", label: "Payouts", href: base("payouts") },
-    { key: "subscriptions", label: "Subscriptions", href: base("subscriptions") }, { key: "exceptions", label: "Exceptions", href: base("exceptions") }]} />;
+    { key: "subscriptions", label: "Subscriptions", href: base("subscriptions") }, { key: "exceptions", label: "Exceptions", href: base("exceptions") },
+    { key: "pauses", label: "Payout pauses", href: "/admin/commerce/payout-pauses" }]} />;
 
   // ── Exceptions & queues ──
   const failed = (l: Tx[]) => l.filter(t => t.status === "failed" && t.kind !== "payout" && t.source !== "subscription");
