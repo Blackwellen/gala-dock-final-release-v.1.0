@@ -288,6 +288,22 @@
       }
     },
     {
+      "file": "202610294085_events_close_base_table.sql",
+      "sha256": "b8f6f6544a32408a85fcb02558b4402a448ff8136fb6b603e7a0df0b0b91aeaf",
+      "lane": "D",
+      "reviewer": "coordinator",
+      "reviewedAt": "2026-11-11T01:47:55.994Z",
+      "exercise": "scripts/db/exercises/202610294085_events_close_base_table.sql",
+      "waivers": [],
+      "rollback": "grant select on public.events to anon; recreate events_read with the public branch",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
       "file": "202610294086_fixture_purge_fk_sweep.sql",
       "sha256": "e4df61105a5b909e1b8e952ca0baac22353d3c5701cc2f7bba74e1c4d45ec7ac",
       "lane": "D",
