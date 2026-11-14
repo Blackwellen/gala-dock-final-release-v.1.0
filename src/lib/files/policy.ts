@@ -40,6 +40,17 @@ export function sniff(bytes: Uint8Array): Sniffed | null {
   return null;
 }
 
+/** Brand-font signature (WOFF2, WOFF, OTF, TTF). Fonts are accepted only by /api/media/font into the private bucket, so this stays
+ *  out of `sniff` (general uploads must not accept fonts); the stored-object sweep uses it so a valid font is not removed. */
+export function sniffFont(b: Uint8Array): { ext: "woff2" | "woff" | "otf" | "ttf"; type: string } | null {
+  const tag = String.fromCharCode(b[0] ?? 0, b[1] ?? 0, b[2] ?? 0, b[3] ?? 0);
+  if (tag === "wOF2") return { ext: "woff2", type: "font/woff2" };
+  if (tag === "wOFF") return { ext: "woff", type: "font/woff" };
+  if (tag === "OTTO") return { ext: "otf", type: "font/otf" };
+  if ((b[0] === 0 && b[1] === 1 && b[2] === 0 && b[3] === 0) || tag === "true") return { ext: "ttf", type: "font/ttf" };
+  return null;
+}
+
 /** Markup / script markers that must never appear in a binary image's bytes (polyglot defence: e.g. a PNG with an HTML body). */
 const MARKUP = /<\s*(script|html|body|iframe|object|embed|svg|meta)\b|javascript:|<\?php/i;
 export function looksPolyglot(bytes: Uint8Array) {

@@ -6,6 +6,7 @@ import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { checkUpload, verdictMessage } from "@/lib/upload-safety";
 import { untyped } from "@/lib/workspace/db";
+import { sniffFont } from "@/lib/files/policy";   // real font type from the file signature; the browser's type and name are ignored
 
 // Custom brand fonts (media spec §35). Owners/managers upload with a licence acknowledgement; every workspace member can use them.
 // Files stay in the private bucket and are streamed back only to members of the font's workspace.
@@ -13,15 +14,6 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_BYTES = 5 * 1024 * 1024;
 
-/** Real font type from the file signature; the browser's type and the file name are ignored. */
-function sniffFont(b: Uint8Array) {
-  const tag = String.fromCharCode(b[0] ?? 0, b[1] ?? 0, b[2] ?? 0, b[3] ?? 0);
-  if (tag === "wOF2") return { ext: "woff2", type: "font/woff2" };
-  if (tag === "wOFF") return { ext: "woff", type: "font/woff" };
-  if (tag === "OTTO") return { ext: "otf", type: "font/otf" };
-  if ((b[0] === 0 && b[1] === 1 && b[2] === 0 && b[3] === 0) || tag === "true") return { ext: "ttf", type: "font/ttf" };
-  return null;
-}
 
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json({ error: "Invalid request origin." }, 403);

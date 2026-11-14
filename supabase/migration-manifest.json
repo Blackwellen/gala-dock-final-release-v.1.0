@@ -597,6 +597,34 @@
           "revoke"
         ]
       }
+    },
+    {
+      "file": "202611136001_ops_events_schedule.sql",
+      "sha256": "75e7dfea87b83ab27184e267b116d53c7810b7400fc88923abbb6ac60904affd",
+      "lane": "ops-wiring",
+      "reviewer": "claude-ops-lane",
+      "reviewedAt": "2026-11-13T20:35:47.108Z",
+      "exercise": "scripts/db/exercises/202611136001_ops_events_schedule.sql",
+      "waivers": [],
+      "rollback": "select cron.unschedule('ops-events')",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146001_cron_status_single_pass.sql",
+      "sha256": "9f32a512f4a6770152ad65acfafad97da700deaf080e1d67c6bb9a9cec1690bc",
+      "lane": "ops-wiring",
+      "reviewer": "claude-ops-lane",
+      "reviewedAt": "2026-11-14T17:56:24.339Z",
+      "exercise": "scripts/db/exercises/202611146001_cron_status_single_pass.sql",
+      "waivers": [],
+      "rollback": "restore cron_job_status from 202611116020_cron_status_nulls_last.sql",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
     }
   ],
   "recordedOnly": [

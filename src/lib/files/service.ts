@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { sanitize, scan, scannerConfigured } from "@/lib/upload-safety";
-import { looksPolyglot, PUBLIC_BUCKETS, sniff, PUBLIC_IMAGE_TYPES, type FileClass } from "./policy";
+import { looksPolyglot, PRIVATE_BUCKET, PUBLIC_BUCKETS, sniff, sniffFont, PUBLIC_IMAGE_TYPES, type FileClass } from "./policy";
 
 /**
  * Files service (Q04). Every server upload path ends in `registerFile` (canonical metadata on storage_attribution) and every private
@@ -61,10 +61,14 @@ export async function scanStoredObject(admin: Admin, o: { bucket: string; name: 
   const file = await admin.storage.from(o.bucket).download(o.name);
   if (file.error || !file.data) { await db(admin).from("storage_attribution").update({ scan_status: "error", scan_detail: "download_failed", scanned_at: new Date().toISOString() }).eq("bucket", o.bucket).eq("name", o.name); return { result: "error" as const }; }
   const original = new Uint8Array(await file.data.arrayBuffer());
-  const kind = sniff(original);
   const isPublic = (PUBLIC_BUCKETS as readonly string[]).includes(o.bucket);
+  // Brand fonts (/api/media/font) live in the private bucket; without this the sweep found no image/PDF signature and deleted them.
+  const kind: { type: string } | null = sniff(original) ?? (o.bucket === PRIVATE_BUCKET ? sniffFont(original) : null);
   let blocked: { reason: string; detail: string } | null = null;
-  if (!kind || kind.type !== o.mimetype.toLowerCase().replace("image/jpg", "image/jpeg")) blocked = { reason: "mime_mismatch", detail: `stored as ${o.mimetype}, bytes are ${kind?.type ?? "unknown"}` };
+  // application/octet-stream (legacy uploads, generic clients) means "type not declared": judge the sniffed bytes alone, as the upload policy does.
+  // Comparing it literally deleted 32 valid legacy files on 2026-11-13.
+  const declared = o.mimetype.toLowerCase().replace("image/jpg", "image/jpeg");
+  if (!kind || (declared !== "application/octet-stream" && kind.type !== declared)) blocked = { reason: "mime_mismatch", detail: `stored as ${o.mimetype}, bytes are ${kind?.type ?? "unknown"}` };
   else if (isPublic && !PUBLIC_IMAGE_TYPES.includes(kind.type)) blocked = { reason: "type_not_allowed", detail: kind.type };
   else if (kind.type !== "image/svg+xml" && kind.type !== "application/pdf" && looksPolyglot(original)) blocked = { reason: "polyglot", detail: "markup inside a binary image" };
   const s = blocked ? null : sanitize(original, kind!.type);
