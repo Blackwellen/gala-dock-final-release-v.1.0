@@ -516,7 +516,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
 
         {key === "trust" && <>
           <section className="setup-panel" id="trust-documents"><h3>1. Verification and credentials</h3><p className="muted">Add relevant documents to build trust with organisers. Requirements depend on your category and location.</p>
-            <div className="three-columns credentials">{requirements.filter(r => r.kind === "document").slice(0, 3).map((r, i) => <div key={r.key} className="credential" title={r.detail}>
+            <div className="three-columns credentials">{/* Q59: every document requirement is shown — slice(0, 3) hid required ones (e.g. food hygiene, SIA) while the checklist still demanded them */}{requirements.filter(r => r.kind === "document").map((r, i) => <div key={r.key} className="credential" title={r.detail}>
               <div className="credential-head"><IconTile icon={[ShieldCheck, Building2, FileText][i % 3]} /><span><b>{r.label}</b><span className={`badge ${r.required ? "required" : "muted"}`}>{r.required ? "Required" : "Recommended"}</span></span></div>
               <UploadBox label="Upload document" purpose="document" preview={preview} compact current={names[r.key] ?? (documents[r.key] ? "Submitted for review" : undefined)} onUploaded={f => { set("documents", { ...documents, [r.key]: f.path }); setNames(n => ({ ...n, [r.key]: f.name })); }} />
             </div>)}</div></section>

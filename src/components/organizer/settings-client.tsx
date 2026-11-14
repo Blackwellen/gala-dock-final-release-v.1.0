@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Pencil, Loader2, UserMinus } from "lucide-react";
+import Link from "next/link";
+import { Pencil, Loader2, UserMinus, Lock } from "lucide-react";
 import { Dialog, Toggle, useAction } from "@/components/kit/client";
 import { saveWorkspaceSettings, changeMemberRole, removeMember } from "@/lib/actions/workspace-settings";
 import { confirmDialog } from "@/lib/ui/dialogs";
+import { MANDATORY_NOTIFICATIONS, ORG_NOTIFICATION_SWITCHES } from "@/lib/settings/rules";
 
 type F = { key: string; label: string; value: string; options?: string[] };
 /** "Edit" button that opens a form for a set of workspace settings; dotted keys (agent.x) are nested. */
@@ -20,10 +22,22 @@ export function EditCard({ can, title, fields }: { can: boolean; title: string; 
       <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending}>{pending && <Loader2 size={14} className="k-spin" />}Save</button></div></form></Dialog></>;
 }
 
+/**
+ * Q67: organiser workspace notification switches, honoured by delivery in the database (trg_notification_workspace_prefs /
+ * trg_notification_email). The old SMS and "Marketing updates" switches claimed channels that do not exist for workspaces: SMS is
+ * shown as not available, and product news is each person's own opt-in (PECR), so it links to their account instead.
+ */
 export function NotifToggles({ can, prefs }: { can: boolean; prefs: Record<string, boolean> }) {
   const [v, setV] = useState(prefs); const { run } = useAction();
   const flip = (k: string, x: boolean) => { const n = { ...v, [k]: x }; setV(n); void run(() => saveWorkspaceSettings({ notifications: n }), { refresh: false }).then(r => { if (!r.ok) setV(p => ({ ...p, [k]: !x })); }); };
-  return <ul className="st-notif">{([["in_app", "In-app notifications"], ["email", "Email notifications"], ["sms", "SMS notifications"], ["agent", "Agent summaries"], ["marketing", "Marketing updates"]] as const).map(([k, l]) => <li key={k}><span>{l}</span><Toggle checked={!!v[k]} disabled={!can} onChange={x => flip(k, x)} label={l} /></li>)}</ul>;
+  return <div className="st-notif-wrap">
+    <ul className="st-notif">{ORG_NOTIFICATION_SWITCHES.map(({ key, label, detail }) => <li key={key}><span><b>{label}</b><small className="k-small k-muted" style={{ display: "block" }}>{detail}</small></span><Toggle checked={v[key] !== false} disabled={!can} onChange={x => flip(key, x)} label={label} /></li>)}
+      <li><span><b>SMS alerts</b><small className="k-small k-muted" style={{ display: "block" }}>Not available yet — nothing is sent by text message.</small></span><Toggle checked={false} disabled onChange={() => undefined} label="SMS alerts (not available)" /></li>
+      <li><span><b>Product news</b><small className="k-small k-muted" style={{ display: "block" }}>A personal choice for each person. <Link href="/account?tab=notifications">Manage in your account</Link>.</small></span></li></ul>
+    <div className="st-locked" role="note" aria-label="Notifications that can't be turned off"><b><Lock size={13} aria-hidden /> Always sent</b>
+      <small className="k-small k-muted" style={{ display: "block" }}>These go to the people they concern by in-app alert and email, whatever the switches above say, because they affect money, security or your legal position.</small>
+      <ul>{MANDATORY_NOTIFICATIONS.map(m => <li key={m}><Lock size={12} aria-hidden />{m}</li>)}</ul></div>
+  </div>;
 }
 
 export function RoleSelect({ userId, role }: { userId: string; role: string }) {

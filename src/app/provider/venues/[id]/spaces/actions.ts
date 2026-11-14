@@ -68,3 +68,18 @@ export async function saveSpaceSection(venueId: string, spaceId: string, section
   if (!r.ok) return r;
   return { ok: true, message: "Saved", ...(next ? { redirect: next } : {}) };
 }
+
+/** Q49: space photos (cover = image, the rest = details.gallery). The space page's "Add photos" links used to open the venue's
+ *  Identity step, which can't edit space photos at all. URLs must be ones this workspace uploaded or already on the space. */
+export async function saveSpacePhotos(venueId: string, spaceId: string, photos: string[]): Promise<ActionResult> {
+  if (!isUuid(venueId) || !isUuid(spaceId) || !Array.isArray(photos)) return { ok: false, error: "Space not found." };
+  const { db, workspace } = await getProvider();
+  const { data: s } = await db.from("spaces").select("image,details").eq("id", spaceId).eq("venue_id", venueId).eq("workspace_id", workspace.id).maybeSingle();
+  if (!s) return { ok: false, error: "Space not found." };
+  const known = new Set([s.image, ...(((s.details ?? {}) as { gallery?: string[] }).gallery ?? [])]);
+  const clean = [...new Set(photos.map(String))].filter(u => known.has(u) || u.includes(`/listing-media/${workspace.id}/`)).slice(0, 40);
+  const r = await saveSpaceFields(venueId, spaceId, { image: clean[0] ?? "", details: { gallery: clean.slice(1) } });
+  if (!r.ok) return r;
+  revalidatePath(`/provider/venues/${venueId}/spaces/${spaceId}`);
+  return { ok: true, message: "Photos saved" };
+}

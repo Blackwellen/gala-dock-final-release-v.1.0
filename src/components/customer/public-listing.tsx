@@ -28,7 +28,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
   const [{ data: spaces }, { data: pkgs }, { data: revs }, { data: { user } }, { data: similar }] = await Promise.all([
     kind === "venue" ? supabase.from("spaces").select("id,name,indoor,capacity_seated,capacity_standing,image,details,area_sqm,layouts,amenities").eq("venue_id", l.id).eq("status", "published").order("capacity_seated", { ascending: false }) : Promise.resolve({ data: [] }),
     supabase.from("packages").select("id,name,description,base_price,price_basis,min_guests,max_guests,image,inclusions,details,booking_mode").eq("listing_id", l.id).eq("status", "published").order("base_price"),
-    supabase.from("reviews").select("id,rating,ratings,body,created_at").eq("listing_id", l.id).eq("status", "published").order("created_at", { ascending: false }).limit(6),
+    supabase.from("reviews").select("id,rating,ratings,body,created_at,build_item_id").eq("listing_id", l.id).eq("status", "published").order("created_at", { ascending: false }).limit(6),
     supabase.auth.getUser(),
     supabase.from("listings").select("id,name,slug,kind,image,rating,review_count,price_from,price_unit,location").eq("kind", kind).eq("published", true).eq("category", l.category).neq("id", l.id).order("rating", { ascending: false }).limit(4),
   ]);
@@ -76,7 +76,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
   const showPrice = kind === "venue" || svc.pricing?.show_price !== false;
   const vf = venueFacts(d as never);
   // Called directly (plain server render functions) so the tab bar knows whether the section exists.
-  const details = kind === "venue" ? VenueGoodToKnow({ d: d as never }) : ServiceDetailsSection({ s: svc });
+  const details = kind === "venue" ? VenueGoodToKnow({ d: d as never }) : ServiceDetailsSection({ s: svc, insuranceVerified: (trust as { insurance_verified?: boolean } | null)?.insurance_verified === true });
   const photos = [l.image, ...(l.gallery ?? [])].filter(Boolean) as string[];
   const amenities = ((d.amenities as string[] | undefined) ?? (vf.features.length ? vf.features : l.tags) ?? []);
   const policies = (d.policies ?? {}) as Record<string, string>;
@@ -166,7 +166,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
       <div className="pe3-photos-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt={`${l.name} photo ${i + 1}`} loading="lazy" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6}<small>More photos</small></b>}</span>)}</div></section>
     <ListingGalleries galleries={galleries} />
     <section id="reviews" className="pl3-row"><div className="k-between"><h2>Reviews <span className="pl-rate"><Star size={16} fill="#f59e0b" color="#f59e0b" /><b>{Number(l.rating).toFixed(1)}</b><small>· {l.review_count} reviews</small></span></h2></div>
-      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p><small>Verified booking · {new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small></li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
+      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p><small>{/* Q57: only reviews tied to a booking on Gala Dock are "Verified booking" (8 live reviews have none) */}{r.build_item_id ? "Verified booking · " : ""}{new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small></li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
     <div id="location" className="pl3-two">
       <section className="ce-card pl-loc"><div className="k-between"><h2>{kind === "venue" ? "Location & getting here" : "Service areas"}</h2><a className="k-link" href={maps} target="_blank" rel="noopener noreferrer">View on Google Maps <ChevronRight size={13} /></a></div>
         {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={220} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>

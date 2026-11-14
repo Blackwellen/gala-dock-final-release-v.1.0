@@ -4,7 +4,7 @@
 import { PermanentJobError, type JobHandler } from "./index";
 import { reconcileDirectCharges } from "@/lib/payments/reconcile-job";
 import { processMerchCardRefunds } from "@/lib/payments/merch";
-import { invoiceAccruedOverage } from "@/lib/billing/service";
+import { invoiceAccruedOverage, syncCustomerContact } from "@/lib/billing/service";
 import { deleteObject, deriveThumbnail, scanStoredObject } from "@/lib/files/service";
 import { scannerConfigured } from "@/lib/upload-safety";
 import { untyped } from "@/lib/workspace/db";
@@ -22,6 +22,12 @@ export const APP_JOB_HANDLERS: Record<string, JobHandler> = {
   "merch.card_refunds": async (_job, { db }) => processMerchCardRefunds(untyped(db as never)),
   /** Q28 · accrued AI overage of closed months → Stripe invoice items (in the platform key's mode). Idempotent per overage charge. */
   "billing.invoice_overage": async (_job, { db }) => invoiceAccruedOverage(db as never),
+  /** Q67 · the Stripe billing customer follows the owner's sign-in email (email change, ownership transfer). Idempotent per customer + email. */
+  "billing.sync_customer_contact": async (job, { db }) => {
+    const p = job.payload as { workspace_id?: string; user_id?: string };
+    if (!p.workspace_id && !p.user_id) throw new PermanentJobError("billing.sync_customer_contact: workspace_id or user_id required");
+    return syncCustomerContact(p, db as never);
+  },
   /** Q04 · scan one stored object (quarantine release). Gateway not configured → deferred (re-enqueue with scripts/files/rescan-quarantined.mjs once it is). */
   "files.scan": async (job, { db }) => {
     const { bucket, name } = job.payload as { bucket: string; name: string };

@@ -47,7 +47,7 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   // Q23 ad serving/integrity and Q28 billing/profitability workers (owner-approved 2026-10-28)
   "serve_ad_slots", "record_ad_view", "record_ad_click", "ad_candidates", "ad_viewer_key", "ad_settle_boosts", "ad_impression_goal",
   "billing_apply_subscription", "billing_record_invoice", "billing_credit_pack_paid", "billing_link_customer", "billing_overage_due",
-  "billing_mark_overage_invoiced", "workspace_has_paid_subscription", "job_billing_sweep", "job_ai_profitability_alert", "ai_credit_balance", "billing_credit_pack_refunded",   // Q60 (202611146501)
+  "billing_mark_overage_invoiced", "workspace_has_paid_subscription", "job_billing_sweep", "job_ai_profitability_alert", "ai_credit_balance", "billing_credit_pack_refunded", "partner_refund_invoice", "billing_record_payment_fingerprint",   // Q60 (202611146501/6502)
   // Q04 files / Q05 communications / Q06 search workers (lane A, 2026-10-28)
   "file_access_decision", "file_register", "file_record_verdict", "file_quarantine", "file_mark_deleted", "job_files_retention_sweep", "job_files_meter_snapshot",
   "notify", "email_record_event", "marketing_subscribe", "marketing_confirm", "marketing_unsubscribe", "contact_submit",

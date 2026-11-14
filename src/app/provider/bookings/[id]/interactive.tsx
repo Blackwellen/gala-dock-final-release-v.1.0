@@ -25,7 +25,7 @@ function FormDialog({ kind, jobId, onClose }: { kind: "change" | "issue"; jobId:
   const { pending, error, run } = useRun();
   return <Dialog title={kind === "change" ? "Request a change" : "Raise an issue"} onClose={onClose}>
     <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); run(() => kind === "change" ? requestChange(jobId, f) : raiseIssue(jobId, f), onClose); }}>
-      {kind === "change" ? <label className="ws-field"><span>What needs to change? *</span><textarea name="change" rows={4} required minLength={5} placeholder="e.g. Client wants to add 20 guests to the evening reception" /><small>Accepted commercial terms stay locked until the client agrees a revision.</small></label>
+      {kind === "change" ? <label className="ws-field"><span>What needs to change? *</span><textarea name="change" rows={4} required minLength={5} placeholder="e.g. Client wants to add 20 guests to the evening reception" /><small>This is logged for your team only — the client isn’t notified. Message them to agree it; accepted terms stay locked until they do.</small></label>
         : <><label className="ws-field"><span>Issue *</span><input name="title" required minLength={3} placeholder="e.g. Fire door alarm fault" /></label><label className="ws-field"><span>Details</span><textarea name="detail" rows={3} /></label></>}
       {error && <p className="ws-form-error" role="alert">{error}</p>}
       <div className="ws-dialog-actions"><button type="button" className="ws-btn outline" onClick={onClose}>Cancel</button><button className="ws-btn primary" disabled={pending}>{kind === "change" ? "Record request" : "Log issue"}</button></div>
@@ -58,7 +58,7 @@ export function QuickActions({ jobId, canCancel }: { jobId: string; canCancel: b
   return <section className="ws-panel pk-quick"><h2><Zap aria-hidden="true" />Quick actions</h2><ul>
     <li><Link href={`/provider/bookings/${jobId}?tab=delivery`}><CircleCheck aria-hidden="true" className="green" /><span><b>Update delivery status</b><small>Mark arrival, start or complete</small></span></Link></li>
     <li><Link href={`/provider/bookings/${jobId}?tab=team`}><Users aria-hidden="true" className="purple" /><span><b>Assign or update team</b><small>Manage staff and resources</small></span></Link></li>
-    <li><button type="button" onClick={() => setDialog("change")}><FilePenLine aria-hidden="true" className="orange" /><span><b>Request a change</b><small>Ask client for additional information</small></span></button></li>
+    <li><button type="button" onClick={() => setDialog("change")}><FilePenLine aria-hidden="true" className="orange" /><span><b>Request a change</b><small>Log a change to agree with the client</small></span></button></li>
     <li><Link href={`/provider/bookings/${jobId}?tab=files`}><Upload aria-hidden="true" className="blue" /><span><b>Upload files or evidence</b><small>Contracts, run sheets, photos and more</small></span></Link></li>
     <li><button type="button" onClick={() => setDialog("issue")}><CircleAlert aria-hidden="true" className="red" /><span><b>Raise an issue</b><small>Report a problem or get support</small></span></button></li>
   </ul>{!canCancel && <small className="ws-muted">This booking is closed; changes are read-only.</small>}

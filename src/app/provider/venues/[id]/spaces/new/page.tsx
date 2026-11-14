@@ -12,6 +12,8 @@ import { setSpaceStatus } from "../../../../listings/actions";
 import { SpaceBasicsForm } from "../../../_components/space-basics";
 import { SpaceRulesForm } from "../../../_components/space-rules";
 import { LAYOUT_LABEL } from "../../../_components/layout-glyph";
+import { ManagerOnly } from "../../../../_manager-only";
+import { getProvider } from "@/lib/provider/context";
 
 export const metadata: Metadata = { title: "Add space" };
 const STEPS = ["Space & Layouts", "Features & Amenities", "Access & Operations", "Pricing & Availability", "Review & Publish"];
@@ -24,6 +26,8 @@ export default async function AddSpace(props: PageProps<"/provider/venues/[id]/s
   const { id } = await props.params;
   const sp = await props.searchParams;
   const spaceId = typeof sp.space === "string" ? sp.space : null;
+  // Q49: same owner/manager gate as the other create wizards (staff used to fill the form and then hit a permission error).
+  if (!(await getProvider()).can.manage) return <ManagerOnly title="Add Space" back={{ href: `/provider/venues/${id}?tab=spaces`, label: "Back to Spaces" }} />;
   const c = await loadSpaceContext(id, spaceId);
   if (!c) notFound();
   const s = c.space;
@@ -41,7 +45,7 @@ export default async function AddSpace(props: PageProps<"/provider/venues/[id]/s
       initial={s ? { id: s.id, name: s.name, indoor: s.indoor, area_sqm: s.area_sqm, capacity_standing: s.capacity_standing, layouts: s.layouts, details: d }
         : { id: null, name: "", indoor: true, area_sqm: null, capacity_standing: null, layouts: { standing: 0 }, details: { use_cases: [], layout_features: [] } }} />}
 
-    {step === 2 && s && <ActionForm action={saveSpaceSection.bind(null, id, s.id, "features", url(3))} className="ps-form">
+    {step === 2 && s && <ActionForm action={saveSpaceSection.bind(null, id, s.id, "features", url(3))} className="spw-form">
       <section className="ws-panel"><h2>Amenities</h2><p>What’s included with this space.</p>
         <div className="ps-checks">{[...new Set([...AMENITIES, ...s.amenities])].map(a => <label key={a}><input type="checkbox" name="amenities" value={a} defaultChecked={s.amenities.includes(a)} />{a}</label>)}</div>
         <label className="ps-custom">Other amenities <small>Comma separated</small><input name="amenities_custom" placeholder="e.g. Piano, Rooftop access" /></label></section>
@@ -54,8 +58,8 @@ export default async function AddSpace(props: PageProps<"/provider/venues/[id]/s
         <button type="submit" className="ws-btn primary">Next: Access &amp; Operations<ArrowRight aria-hidden="true" /></button></div>
     </ActionForm>}
 
-    {step === 3 && s && <ActionForm action={saveSpaceSection.bind(null, id, s.id, "access", url(4))} className="ps-form">
-      <section className="ws-panel ps-grid"><h2>Access &amp; operations</h2><p>Shown to organisers on the space profile and in booking confirmations.</p>
+    {step === 3 && s && <ActionForm action={saveSpaceSection.bind(null, id, s.id, "access", url(4))} className="spw-form">
+      <section className="ws-panel spw-grid"><h2>Access &amp; operations</h2><p>Shown to organisers on the space profile and in booking confirmations.</p>
         <label>Access<input name="access" defaultValue={d.access ?? ""} maxLength={200} placeholder="e.g. Ground floor, direct loading access" /></label>
         <label>Toilets<input name="toilets" defaultValue={d.toilets ?? ""} maxLength={200} placeholder="e.g. Yes (adjacent)" /></label>
         <label>Bar<input name="bar" defaultValue={d.bar ?? ""} maxLength={200} placeholder="e.g. Attached bar (optional)" /></label>

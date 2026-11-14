@@ -1,3 +1,4 @@
+/* Q49: the Add Space wizard's .ps-form/.ps-grid are now .spw-form/.spw-grid — they shared names with Settings (.ps-form 2-column !important, .ps-grid 12-column incl. provider-pwa.css), so either page broke the other depending on load order. */
 /* PROV-010 Space profile ("Main Hall Venue Dashboard"), Add Space W02 ("Gala·Dock Add Space Dashboard", "Gala Dock Space Availability Dashboard"). 1536×1024 references. */
 
 /* ── Space profile ─────────────────────────────────────────────── */
@@ -244,20 +245,20 @@
 .sr-meta svg{width:12px!important;height:12px!important}
 
 /* ── Wizard steps 2,3,5 ─────────────────────────────────────────── */
-.ps-form{display:grid;gap:12px}
-.ps-form .ws-panel{padding:14px 16px}
-.ps-form h2{font-size:15px;font-weight:720;color:#02032e}
-.ps-form h2+p{font-size:10.5px;color:#5157a4;margin:2px 0 12px}
+.spw-form{display:grid;gap:12px}
+.spw-form .ws-panel{padding:14px 16px}
+.spw-form h2{font-size:15px;font-weight:720;color:#02032e}
+.spw-form h2+p{font-size:10.5px;color:#5157a4;margin:2px 0 12px}
 .ps-checks{display:flex;flex-wrap:wrap;gap:8px}
 .ps-checks label{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border:1px solid var(--ws-border);border-radius:15px;font-size:11px;color:#0d0d63;cursor:pointer}
 .ps-checks label:has(input:checked){background:#eef2fe;border-color:#9fb2f7;color:var(--ws-blue-2)}
 .ps-checks input{accent-color:#1a1af2}
 .ps-custom{display:grid;gap:5px;font-size:10.5px;margin-top:12px;max-width:520px}
 .ps-custom small{color:#7a80c0}
-.ps-custom input,.ps-grid input{height:34px;border:1px solid #e2e8fb;border-radius:6px;padding:0 10px;font-size:11px;width:100%}
-.ps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
-.ps-grid h2,.ps-grid h2+p{grid-column:1/-1}
-.ps-grid label{display:grid;gap:5px;font-size:10.5px}
+.ps-custom input,.spw-grid input{height:34px;border:1px solid #e2e8fb;border-radius:6px;padding:0 10px;font-size:11px;width:100%}
+.spw-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
+.spw-grid h2,.spw-grid h2+p{grid-column:1/-1}
+.spw-grid label{display:grid;gap:5px;font-size:10.5px}
 .ps-review{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:start}
 .ps-review .ws-panel{padding:14px 16px}
 .ps-review h2{font-size:15px;font-weight:720;margin-bottom:10px}
@@ -280,7 +281,7 @@
 @media (max-width:860px){
   .sb,.sr{grid-template-columns:1fr;grid-template-areas:none}.sb>*,.sr>*{grid-area:auto!important}
   .sb-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.sb-quick{grid-template-columns:repeat(2,minmax(0,1fr))}.sr-week{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .sr-radios,.sr-row2,.sr-rules-grid,.sb-sel,.ps-grid,.ps-review{grid-template-columns:1fr}.sr-rules-grid .wide{grid-column:auto}
+  .sr-radios,.sr-row2,.sr-rules-grid,.sb-sel,.spw-grid,.ps-review{grid-template-columns:1fr}.sr-rules-grid .wide{grid-column:auto}
   .psp-top,.psp-grid{grid-template-columns:1fr;grid-template-areas:none}.psp-grid>*{grid-area:auto!important}.psp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .psp-layouts ul,.psp-recs ul{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }

@@ -17,6 +17,7 @@ import { PhotoManager } from "../_components/photo-manager";
 import type { MapEl } from "../_components/venue-map";
 import { StepIdentity, StepCommercial, StepOperations } from "./steps";
 import { ManagerOnly } from "../../_manager-only";
+import { enquiryOnlyCountry } from "@/lib/provider/seller-country";
 
 export const metadata: Metadata = { title: "Add venue" };
 const STEPS = ["Identity & Location", "Spaces & Map", "Commercial & Booking Rules", "Operations", "Media & Details", "Review & Publish"];
@@ -54,7 +55,8 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
     ["Pricing and booking rules configured", !!(venue.price_from || (d.commercial as { pricing?: string } | undefined)?.pricing === "quote") && !!com?.cancellation?.length],
     ["Access and operational information added", !!d.operations],
     ["Required licences and compliance documents", ((d.compliance as unknown[]) ?? []).length >= 2],
-    ["Payout account connected", !readinessRaw.missing.includes("payouts")],
+    // Q49: enquiry-only sellers (unsupported business country) need no payout account — say so rather than "connected".
+    [enquiryOnlyCountry(ctx.workspace.settings) ? "Payouts not needed (enquiry-only)" : "Payout account connected", !readinessRaw.missing.includes("payouts")],
     ["Photos added (minimum 3)", [venue.image, ...(venue.gallery ?? [])].filter(Boolean).length >= 3],
   ] : [];
   const geo = (d.geo as { lat: number; lng: number } | null | undefined) ?? (venue?.lat != null && venue?.lng != null ? { lat: Number(venue.lat), lng: Number(venue.lng) } : null);
@@ -72,7 +74,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
         area_sqm: s.area_sqm, layouts: s.layouts ?? {}, amenities: s.amenities ?? [], turnaround_minutes: s.turnaround_minutes, min_hours: Number(s.min_hours), description: String(s.details?.description ?? "") }))}
       footer={<div className="vw-foot se-foot"><Link href={url(1)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 2 of 6</span>
         <Link href={url(3)} className="ws-btn primary">Next: Commercial &amp; Booking Rules<ArrowRight aria-hidden="true" /></Link></div>} />}
-    {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} />}
+    {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 4 && venue && <StepOperations venue={venue} back={url(3)} next={url(5)} photosHref={url(5)} readiness={readiness} photos={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)}
       spaces={spaces.length} standing={spaces.reduce((n, x) => n + (x.capacity_standing ?? 0), 0)} />}
     {step === 5 && venue && <div className="vw vw-s5"><PhotoManager venueId={venue.id} initial={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)} />

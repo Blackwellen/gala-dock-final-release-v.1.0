@@ -91,7 +91,7 @@ export default async function OpportunitiesPage(props: PageProps<"/provider/oppo
     <header className="ws-page-head po-head">
       <div><h1>Opportunities</h1><p>Manage requests, quotes and commercial opportunities in one place.</p></div>
       <div className="ws-page-actions">
-        <Link href="/provider/settings?tab=booking-rules" className={`po-auto ${autoResponse ? "on" : ""}`}><i />Auto-response: {autoResponse ? "On" : "Off"}</Link>
+        <Link href="/provider/settings?tab=booking" className={`po-auto ${autoResponse ? "on" : ""}`}><i />Auto-response: {autoResponse ? "On" : "Off"}</Link>
         <Link href="/provider/calendar?action=block" className="ws-btn outline po-manage"><CalendarDays aria-hidden="true" />Manage availability<ChevronDown aria-hidden="true" /></Link>
       </div>
     </header>

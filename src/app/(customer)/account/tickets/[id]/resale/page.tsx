@@ -7,13 +7,14 @@ import { requestTime } from "@/lib/workspace/format";
 import { eventTypeLabel } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ResaleReview } from "./review";
+import { HOLD_MESSAGE } from "@/lib/tickets/hold";
 import "@/styles/cu-resale.css";
 
 export const metadata = { title: "Official resale" };
 
 type Ev = { id: string; name: string; starts_at: string | null; ends_at: string | null; status: string; currency: string | null; settings: Record<string, unknown>; cover_image: string | null; location: string | null; event_type: string | null };
 type Policy = { jurisdiction: string; version: number; price_cap_pct: number; listing_cutoff_hours: number; max_active_listings_per_user: number | null; legal_review_status: string };
-type Restr = { transfer_allowed?: boolean; min_age?: number; name_on_ticket?: boolean; terms_url?: string };
+type Restr = { transfer_allowed?: boolean; min_age?: number; name_on_ticket?: boolean; terms_url?: string; entry_from?: string | null; entry_to?: string | null };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const when = (s: string | null, e: string | null) => {
@@ -34,7 +35,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const ctx = await getCustomer(`/account/tickets/${id}/resale?step=${step}`);
   if (!UUID.test(id)) notFound();
   const db = untyped(ctx.supabase);
-  const { data: t, error } = await db.from("tickets").select("id,event_id,status,order_ref,price_paid,checked_in_at,seat,tier:ticket_tiers(name,price),event:events!inner(id,name,starts_at,ends_at,status,currency,settings,cover_image,location,event_type)").eq("id", id).eq("holder_id", ctx.user.id).maybeSingle();
+  const { data: t, error } = await db.from("tickets").select("id,code,event_id,status,dispute_hold_at,order_ref,price_paid,face_value,checked_in_at,seat,tier:ticket_tiers(name,price),event:events!inner(id,name,starts_at,ends_at,status,currency,settings,cover_image,location,event_type)").eq("id", id).eq("holder_id", ctx.user.id).maybeSingle();
   if (error) throw new Error("Could not load your ticket. Try again.");
   if (!t) notFound();
   const e = t.event as unknown as Ev;
@@ -50,14 +51,17 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const policy = (Array.isArray(pol) ? pol[0] : pol) as Policy | null;
   const restr = (rx ?? {}) as Restr;
   const capPct = Number(policy?.price_cap_pct ?? cfg?.value?.resale_cap_pct ?? 100);
-  const face = Number(tier?.price ?? 0), cap = (face * capPct) / 100, paid = Number(t.price_paid);
+  // Q57 (CRA s.90): face value is the ticket's price when bought (tickets.face_value), not today's tier price.
+  const face = Number(t.face_value ?? tier?.price ?? 0), cap = (face * capPct) / 100, paid = Number(t.price_paid);
   const purchase = await db.from("checkout_orders").select("buyer_id,status,refund_status,stripe_session,currency").eq("order_ref", t.order_ref).maybeSingle();
   if (purchase.error) throw new Error("Could not check your original payment. Try again.");
   const originalPayer = purchase.data?.buyer_id === ctx.user.id && purchase.data?.status === "issued" && purchase.data?.refund_status === "none" && !!purchase.data?.stripe_session && purchase.data?.currency?.toUpperCase() === "GBP";
   const now = requestTime();
   const cutoffAt = e.starts_at ? Date.parse(e.starts_at) - Number(policy?.listing_cutoff_hours ?? 0) * 36e5 : null;
   const windowOpen = !!e.starts_at && cutoffAt != null && cutoffAt > now && ["published", "on_sale"].includes(e.status);
-  const reason = t.status !== "valid" || t.checked_in_at ? "Only valid, unused tickets can be listed."
+  // Q57: a ticket held for a card-payment dispute is refused by the DB (gd_0_dispute_hold_guard): say so instead of "eligible".
+  const reason = t.dispute_hold_at ? HOLD_MESSAGE
+    : t.status !== "valid" || t.checked_in_at ? "Only valid, unused tickets can be listed."
     : paid <= 0 ? "Free tickets cannot be listed for paid resale."
     : e.settings.resale === false || cfg?.value?.resale_enabled === false ? "Official resale is turned off for this event."
     : !windowOpen ? "The resale window is closed."
@@ -65,7 +69,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     : !originalPayer ? "Only the buyer who paid for this ticket can resell it. Transferred tickets and purchases with a refund in progress cannot be listed."
     : null;
   const money = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: purchase.data?.currency || e.currency || "GBP" }).format(n);
-  const restrictions = [restr.min_age ? `${restr.min_age}+ only` : null, "Only your own tickets", "No speculative pricing", "Must be sold on Gala Dock", restr.transfer_allowed === false ? "Not transferable after purchase" : null].filter(Boolean) as string[];
+  const restrictions = [restr.min_age ? `${restr.min_age}+ only` : null, "Only your own tickets", "No speculative pricing", "Must be sold on Gala Dock", restr.transfer_allowed === false ? "Not transferable after purchase" : null,
+    restr.entry_from || restr.entry_to ? `Entry ${[restr.entry_from && `from ${when(restr.entry_from, null)}`, restr.entry_to && `until ${when(restr.entry_to, null)}`].filter(Boolean).join(" ")}` : null].filter(Boolean) as string[];
   const steps = ["Eligibility & Price", "Review & List", "Complete"];
 
   return <div className="rs">
@@ -88,7 +93,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             <img src={e.cover_image || "/assets/gd/hero-discover.webp"} alt="" />
             <div><b>{e.name}</b><small><CalendarDays size={13} aria-hidden />{when(e.starts_at, e.ends_at)}</small>{e.location && <small><MapPin size={13} aria-hidden />{e.location}</small>}</div>
             <div><span>Ticket type</span><b>{tier?.name ?? "Ticket"}</b><small>{t.seat ? "Seated" : "Standing"}</small></div>
-            <div><span>Seat or area</span><b>{t.seat || "General admission"}</b></div>
+            <div><span>Seat or area</span><b>{t.seat || "General admission"}</b><small>Ticket number {t.code}</small></div>
             <div><span>Original purchase price</span><strong>{money(paid)}</strong><small>Face value {money(face)}</small></div>
           </div></section>
 

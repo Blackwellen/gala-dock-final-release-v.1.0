@@ -25,7 +25,7 @@ export default async function EmergencySupplyPage({ searchParams }: PageProps<"/
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? undefined;
   return <div className="k-col" style={{ gap: 16 }}>
     <PageHead crumbs={[{ label: "Organizer", href: "/organizer" }, { label: "Marketplace", href: "/organizer/marketplace" }, { label: "Emergency Supply" }]}
-      title="Emergency Supply" sub="Something fell through? Reach available, vetted providers nearby in minutes." />
+      title="Emergency Supply" sub="Something fell through? Reach nearby providers who offer short-notice availability." />
     <div className="mk-page"><div className="mk-grid">
       <section className="mk-card" aria-labelledby="em-new"><h2 id="em-new">New emergency request</h2>
         <EmergencyRequestForm events={(events ?? []).map((e: { id: string; name: string; starts_at: string | null }) => ({ id: e.id, name: e.name, when: e.starts_at ? dateShort(e.starts_at) : "Date TBC" }))}

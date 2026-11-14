@@ -25200,6 +25200,9 @@ export type Database = {
       }
       tickets: {
         Row: {
+          dispute_hold_at: string | null
+          dispute_hold_ref: string | null
+          void_reason: string | null
           allocation_id: string | null
           attendee_email: string
           attendee_name: string
@@ -25221,6 +25224,9 @@ export type Database = {
           tier_id: string
         }
         Insert: {
+          dispute_hold_at?: string | null
+          dispute_hold_ref?: string | null
+          void_reason?: string | null
           allocation_id?: string | null
           attendee_email?: string
           attendee_name?: string
@@ -25242,6 +25248,9 @@ export type Database = {
           tier_id: string
         }
         Update: {
+          dispute_hold_at?: string | null
+          dispute_hold_ref?: string | null
+          void_reason?: string | null
           allocation_id?: string | null
           attendee_email?: string
           attendee_name?: string

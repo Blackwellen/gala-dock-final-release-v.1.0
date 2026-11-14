@@ -111,3 +111,16 @@ export async function complianceCommand(eventId: string, op: ComplianceOp, ref: 
   }
   return { ok: false, error: "Unknown action." };
 }
+
+/** Q59: attaches a licence document uploaded through /api/uploads (type-sniffed, registered, malware-scanned). licence_save refuses any
+ *  path that isn't the caller's verified upload, classes it sensitive and queues the scan; has_document then reflects it. */
+export async function attachLicenceDocument(eventId: string, licenceId: string, path: string): Promise<ActionResult> {
+  const ctx = await getOrganizer();
+  if (!Id.safeParse(eventId).success || !Id.safeParse(licenceId).success) return { ok: false, error: "Record not found." };
+  if (!MANAGE.includes(String(ctx.role))) return { ok: false, error: "Only the event's owners and managers can change compliance records." };
+  if (!/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(png|jpe?g|webp|pdf)$/i.test(path)) return { ok: false, error: "Upload the document again." };
+  const r = await untyped(ctx.supabase).rpc("licence_save", { p_event: eventId, p: { document_path: path }, p_id: licenceId });
+  if (r.error) return { ok: false, error: /upload_not_verified/.test(r.error.message) ? "Upload the document again — it could not be verified." : opsError(r.error) };
+  revalidatePath(`/organizer/events/${eventId}`);
+  return { ok: true, message: "Document attached. It opens once the malware scan has cleared it." };
+}

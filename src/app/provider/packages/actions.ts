@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
+import { sellerBookingMode } from "@/lib/provider/seller-country";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const n = (fd: FormData, k: string) => { const v = String(fd.get(k) ?? "").trim(); const x = Number(v); return v !== "" && Number.isFinite(x) ? x : null; };
@@ -55,7 +56,8 @@ export async function savePackagePricing(id: string, next: string | null, fd: Fo
   const model = t(fd, "model", 10) || "fixed", price = n(fd, "price") ?? 0, deposit = n(fd, "deposit") ?? 30;
   if (model !== "quote" && price <= 0) return { ok: false, error: "Set the package price, or choose Quote only." };
   if (deposit < 0 || deposit > 100) return { ok: false, error: "Deposit must be between 0 and 100%." };
-  const mode = t(fd, "booking_mode", 10) || "request";
+  const { workspace } = await getProvider();
+  const { mode, note } = sellerBookingMode(workspace.settings, t(fd, "booking_mode", 10) || "request");
   if (mode === "instant" && model === "quote") return { ok: false, error: "Instant booking needs a price — choose Fixed or From price." };
   const cancellation = [0, 1, 2, 3].map(i => ({ window: t(fd, `c_window_${i}`, 30), refund: Math.min(100, Math.max(0, n(fd, `c_refund_${i}`) ?? 0)) })).filter(c => c.window);
   const r = await save(id, { base_price: model === "quote" ? 0 : price, price_basis: t(fd, "basis", 12) || "fixed", deposit_pct: deposit, booking_mode: mode,
@@ -64,7 +66,7 @@ export async function savePackagePricing(id: string, next: string | null, fd: Fo
       age: on(fd, "x_age") ? t(fd, "age", 20) : null, event_types: on(fd, "x_types") ? t(fd, "types", 200) : null },
       cancellation: cancellation.length ? cancellation : null, holds: { enabled: on(fd, "holds"), hours: n(fd, "hold_hours") ?? 24 }, standby: { enabled: on(fd, "standby") }, emergency: { enabled: on(fd, "emergency") } } });
   if (!r.ok) return r;
-  return { ok: true, message: "Pricing & rules saved", ...(next ? { redirect: next } : {}) };
+  return { ok: true, message: note ?? "Pricing & rules saved", ...(next ? { redirect: next } : {}) };
 }
 
 /** Step 3 — availability source and blocked dates (date-specific). */

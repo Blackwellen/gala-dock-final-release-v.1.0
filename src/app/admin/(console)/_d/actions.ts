@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdmin } from "@/lib/admin/context";
 import { friendly as baseFriendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
+import { wallToIso } from "@/lib/events/wall-time";
 
 /* Q31 remainder server actions: support operations, Trust review queues (Q08 evidence, Q33 risk, Q22 ticket flags), privacy
    (legal holds, retention preview, fixture purge DRY RUN only) and the job console. Every call is a security-definer RPC that
@@ -26,6 +27,13 @@ const extra: [RegExp, string][] = [
   [/nothing_to_replay/, "Every consumer has processed this event; there is nothing to replay."],
   [/file_not_cleared/, "The file hasn’t passed the malware scan, so it can’t be verified yet."],
   [/already_expired/, "That expiry date is in the past."],
+  [/expiry_required/, "Enter the expiry date shown on the document before verifying it."],
+  [/cover_required/, "Enter the cover amount shown on the insurance certificate before verifying it."],
+  [/invalid_cover/, "Enter the cover amount in pounds, e.g. 5000000."],
+  [/illegal verification transition/, "That decision isn’t allowed from the check’s current status."],
+  [/action_subject_mismatch/, "That restriction doesn’t apply to this kind of subject."],
+  [/invalid_reason_code/, "Choose a reason code that applies to this subject."],
+  [/invalid_end/, "The end date must be in the future."],
   [/stripe_managed/, "Stripe decides this check; it updates from Stripe automatically."],
   [/already_decided/, "This has already been decided."],
   [/legal_review_required/, "Enabling this rule needs legal sign-off first."],
@@ -92,17 +100,20 @@ export async function setSlaPolicy(priority: string, data: FormData): Promise<Ac
 // ── Trust: Q08 evidence, verification checks, enforcement appeals ──
 export async function reviewDocument(id: string, data: FormData): Promise<ActionResult> {
   if (!isUuid(id)) return bad();
-  const status = str(data, "status"), expires = str(data, "expires_on"), cover = str(data, "cover");
+  const status = str(data, "status"), expires = str(data, "expires_on"), cover = str(data, "cover").replace(/[£,\s]/g, "");
   if (!["in_review", "verified", "rejected"].includes(status)) return bad("Choose a decision.");
+  // Q59: "5,000,000" used to parse as NaN and silently drop the cover; anything non-numeric is now refused instead.
+  if (cover && !(Number.isFinite(Number(cover)) && Number(cover) > 0)) return bad("Enter the cover amount in pounds, e.g. 5000000.");
   return rpc("trust_review_document", { p_document: id, p_status: status, p_reason_code: str(data, "reason_code") || null, p_reason: str(data, "reason") || null,
-    p_expires_on: /^\d{4}-\d{2}-\d{2}$/.test(expires) ? expires : null, p_cover_amount_minor: cover && Number.isFinite(Number(cover)) ? Math.round(Number(cover) * 100) : null },
+    p_expires_on: /^\d{4}-\d{2}-\d{2}$/.test(expires) ? expires : null, p_cover_amount_minor: cover ? Math.round(Number(cover) * 100) : null },
     status === "verified" ? "Document verified" : status === "rejected" ? "Document rejected — the provider has been told why" : "Marked in review", "/admin/trust/verification");
 }
 export async function reviewCheck(id: string, data: FormData): Promise<ActionResult> {
   if (!isUuid(id)) return bad();
   const to = str(data, "to"), exp = str(data, "expires_at");
   return rpc("trust_review_verification", { p_check: id, p_to: to, p_reason_code: str(data, "reason_code") || null, p_reason: str(data, "reason"),
-    p_expires_at: /^\d{4}-\d{2}-\d{2}$/.test(exp) ? `${exp}T23:59:59Z` : null }, `Check moved to ${to.replaceAll("_", " ")}`, "/admin/trust/verification");
+    // Q59: the end of that day in London (was 23:59 UTC, i.e. 00:59 the next day during BST).
+    p_expires_at: /^\d{4}-\d{2}-\d{2}$/.test(exp) ? wallToIso(`${exp}T23:59`) : null }, `Check moved to ${to.replaceAll("_", " ")}`, "/admin/trust/verification");
 }
 export async function decideEnforcementAppeal(caseId: string, outcome: string, reason: string): Promise<ActionResult> {
   if (!isUuid(caseId) || !["upheld", "overturned"].includes(outcome)) return bad();
@@ -111,6 +122,16 @@ export async function decideEnforcementAppeal(caseId: string, outcome: string, r
 export async function liftEnforcement(id: string, reason: string): Promise<ActionResult> {
   if (!isUuid(id)) return bad();
   return rpc("trust_lift_enforcement", { p_action: id, p_reason: reason, p_outcome: "lifted" }, "Restriction lifted", "/admin/trust/verification");
+}
+
+/** Q59: applies a real Trust & Safety restriction (trust_enforce: MFA, reason code, audit, holds, provider notice + 14-day appeal). */
+export async function applyRestriction(data: FormData): Promise<ActionResult> {
+  const subjectType = str(data, "subject_type"), subjectId = str(data, "subject_id"), action = str(data, "action"), ends = str(data, "ends_on"), caseId = str(data, "case_id");
+  if (!["workspace", "listing"].includes(subjectType) || !isUuid(subjectId)) return bad("Enter the workspace or listing ID.");
+  if (!["warning", "listing_hidden", "workspace_suspended", "booking_block"].includes(action)) return bad("Choose a restriction.");
+  return rpc("trust_enforce", { p_subject_type: subjectType, p_subject_id: subjectId, p_action: action, p_reason_code: str(data, "reason_code"), p_note: str(data, "note"),
+    p_evidence: [], p_ends_at: /^\d{4}-\d{2}-\d{2}$/.test(ends) ? wallToIso(`${ends}T23:59`) : null, p_case: isUuid(caseId) ? caseId : null },
+    "Restriction applied — the provider has been told and can appeal", "/admin/trust/verification");
 }
 
 // ── Trust: Q33 risk signals, holds, appeals; Q22 ticket flags ──

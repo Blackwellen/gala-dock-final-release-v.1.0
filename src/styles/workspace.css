@@ -415,3 +415,5 @@ html[data-ws-h=tiny] .ws-app.admin .ws-nav-item>a{min-height:30px;font-size:12.5
 /* App branding: G mark + purple wordmark (D01) in the far-left slot. */
 .ws-topbar .ws-logo-mark { width:auto;height:44px;margin:0 12px;display:flex;align-items:center;overflow:visible; }
 .ws-topbar .ws-logo-mark .gd-lockup { --gd-h:44px; }
+/* Q49: a submitting ActionForm shows its submit buttons as busy and ignores further clicks (the form also refuses re-submits). */
+form[data-pending] :is(button[type="submit"],button:not([type])) { opacity:.6; cursor:progress; pointer-events:none; }

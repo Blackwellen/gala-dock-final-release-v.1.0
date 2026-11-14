@@ -25,7 +25,7 @@ export function PwaLifecycle() {
     const signout = (event: Event) => {
       const form = event.target;
       if (!(form instanceof HTMLFormElement) || new URL(form.action, location.href).pathname !== "/auth/signout") return;
-      try { for (const key of Object.keys(localStorage)) if (key.startsWith("gd_design_")) localStorage.removeItem(key); } catch { /* storage unavailable */ }
+      try { for (const key of Object.keys(localStorage)) if (key.startsWith("gd_design_") || key.startsWith("gd_gs_recent:")) localStorage.removeItem(key); } catch { /* storage unavailable */ }
       void clearOffline(); // Q37: offline passes / run sheets never outlive the session on this device
     };
     // Returning to an installed app re-runs server checks so revoked access takes effect.

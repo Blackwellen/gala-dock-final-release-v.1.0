@@ -7,6 +7,7 @@ import { dateShort, num } from "@/lib/format";
 import { complianceCommand } from "@/lib/actions/compliance";
 import type { SectionProps } from "./types";
 import { FormDialog, ActionButton, type Field, type FieldOption } from "./ops-forms-client";
+import { LicenceDocument } from "./licence-document";
 import { canManage, VIEW_ONLY, ViewOnly, ChecksCard, Stat, StatusChip, label, opsItems } from "./ops-shared";
 
 type Facts = { country: string; region: string | null; event_type: string; attendance: number; in_person: boolean; public: boolean; alcohol: boolean; hot_food: boolean; live_music: boolean; recorded_music: boolean; late_night: boolean; children_performing: boolean; outdoor: boolean; answered: boolean };
@@ -87,6 +88,7 @@ export async function ComplianceSection({ e, role }: SectionProps) {
                 : ["not_required", "refused", "revoked", "withdrawn"].includes(to)
                   ? <FormDialog key={to} label={to === "not_required" ? "Not required" : label(to)} icon="ban" variant="ghost" title={`${label(to)} — ${l.label}`} submitLabel={label(to)} disabledReason={dr} action={cmd.bind(null, "licence_to", l.id, { to })} fields={[{ name: "note", label: to === "not_required" ? "Why it isn't needed (min 10 characters)" : "Note", type: "textarea", required: to === "not_required" }]} />
                   : <ActionButton key={to} label={to === "submitted" ? "Mark submitted" : to === "draft" ? "Reopen" : label(to)} icon={to === "submitted" ? "send" : "undo"} variant="ghost" disabledReason={dr} action={cmd.bind(null, "licence_to", l.id, { to }, {})} />)}
+                <LicenceDocument eventId={ev} licenceId={l.id} hasDocument={l.has_document} disabledReason={dr} />
                 <FormDialog label={`Edit ${l.label}`} icon="edit" variant="ghost" iconOnly title={`Edit — ${l.label}`} disabledReason={dr} action={cmd.bind(null, "licence", l.id, {})} fields={licenceFields(l)} />
                 {l.valid_to && <FormDialog label={`Clear expiry of ${l.label}`} icon="x" variant="ghost" iconOnly title={`Clear the valid-to date — ${l.label}`} sub="The licence will show no expiry date and expiry reminders stop. Add the date again from Edit when you have it." submitLabel="Clear expiry"
                   disabledReason={dr ?? (l.status === "granted" && t?.expires ? "This licence type expires, so a granted licence must keep its valid-to date — edit it to the renewed date instead." : null)}

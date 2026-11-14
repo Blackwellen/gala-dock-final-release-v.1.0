@@ -10,7 +10,7 @@ import { delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, Gauge, buckets, cumulative, Img } from "../_b/kit";
 import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
 import { stamp, ago } from "../_b/format";
-import { assignTrust, requestEvidence, decideTrust, createTrustCase, addNote } from "../_b/actions";
+import { assignTrust, requestEvidence, decideTrust, createTrustCase, addNote, restrictCase } from "../_b/actions";
 
 type Evidence = { kind: string; label: string; level?: string; icon?: string; at?: string; by?: string };
 type Case = {
@@ -180,8 +180,8 @@ async function CasePanel({ c, now, tab, href }: { c: Case; now: number; tab: str
           </div></details>
       </div>
       <div className="ads-act2">
-        <ActionButton action={decideTrust} args={[c.id, "actioned"]} reason variant="danger" disabled={final} reasonOptions={["Confirmed fraud / bot activity", "Policy violation confirmed", "Repeated reliability breaches", "Identity could not be verified"]}
-          confirm={{ title: "Restrict / suspend", body: `Records an enforcement decision on ${c.subject_name}. The decision is appealable and written to the audit log.`, cta: "Restrict" }}><CircleX aria-hidden="true" />Restrict / Suspend</ActionButton>
+        <ActionButton action={restrictCase} args={[c.id]} reason variant="danger" disabled={final || !c.subject_id || !["workspace", "listing"].includes(c.subject_type)} reasonOptions={["Confirmed fraud / bot activity", "Policy violation confirmed", "Repeated reliability breaches", "Identity could not be verified"]}
+          confirm={{ title: "Restrict / suspend", body: `${c.subject_type === "listing" ? "Hides this listing" : "Suspends this workspace and hides its listings"} now, tells ${c.subject_name} why and opens a 14-day appeal. Written to the audit log.`, cta: "Restrict" }}><CircleX aria-hidden="true" />Restrict / Suspend</ActionButton>
         <ActionButton action={decideTrust} args={[c.id, "dismissed"]} reason variant="outline" className="ads-ok" disabled={final} confirm={{ title: "Mark as resolved", body: "Closes the case without restriction.", cta: "Resolve" }}><CircleCheck aria-hidden="true" />Mark as resolved</ActionButton>
       </div>
       {final && <p className="adb-none">Decided {c.decided_at ? ago(c.decided_at, now) : ""}: {c.decision}</p>}

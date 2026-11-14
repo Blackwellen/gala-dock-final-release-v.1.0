@@ -128,7 +128,7 @@ export default async function ServiceProfile(props: PageProps<"/provider/service
             <section className="ws-panel svp-types"><h2><PartyPopper aria-hidden="true" />Event types</h2><ul>{(svc.event_types ?? []).slice(0, 6).map(t => <li key={t}>{/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/assets/gd/${TYPE_IMG[t] ?? "hero-discover"}.webp`} alt="" /><span>{t}</span></li>)}</ul></section>
             <section className="ws-panel svp-creds"><div className="ws-panel-head"><h2><ShieldCheck aria-hidden="true" />Credentials &amp; verification</h2><Link className="ws-link" href={`/provider/services/new?service=${s.id}&step=1`}>View all <ArrowRight aria-hidden="true" /></Link></div>
-              <ul><li><ShieldCheck aria-hidden="true" /><span><b>Identity verified</b><small>{s.verified ? "Gala Dock" : "Pending"}</small></span></li>
+              <ul><li><ShieldCheck aria-hidden="true" /><span><b>Verified (identity + documents)</b><small>{s.verified ? "Gala Dock" : "Pending"}</small></span></li>
                 {creds.filter(c => c.reference || c.expires).slice(0, 3).map(c => <li key={c.name}><ShieldCheck aria-hidden="true" /><span><b>{c.name.replace(" (equipment)", "")}</b><small>{c.expires ? `Valid until ${new Date(c.expires).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : c.reference}</small></span></li>)}</ul></section>
           </div>
         </div>

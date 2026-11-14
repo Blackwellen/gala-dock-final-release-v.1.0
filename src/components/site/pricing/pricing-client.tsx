@@ -29,17 +29,18 @@ const ROWS: [string, (p: PricingPlan) => string | boolean, Kind | "both"][] = [
   ["API, webhooks and MCP", p => p.caps.api, "both"],
 ];
 
-function Price({ p, yearly }: { p: PricingPlan; yearly: boolean }) {
-  const price = yearly && p.year !== null ? p.year : p.month;
+function Price({ p, yearly, vat = true }: { p: PricingPlan; yearly: boolean; vat?: boolean }) {
+  const price = yearly && p.year !== null ? p.year : p.month; const plus = vat ? " + VAT" : "";
   return <p className="lp-plan-price">
-    {p.contact ? <><b>{p.month ? `From ${gbp(p.month)}` : "Custom"}</b>{p.month ? <small>a month + VAT</small> : null}</>
+    {p.contact ? <><b>{p.month ? `From ${gbp(p.month)}` : "Custom"}</b>{p.month ? <small>a month{plus}</small> : null}</>
       : p.month === 0 ? <><b>Free</b><small>to start</small></>
-      : <><b>{gbp(price ?? 0)}</b><small>{yearly && p.year !== null ? "a year" : "a month"} + VAT</small></>}
+      : <><b>{gbp(price ?? 0)}</b><small>{yearly && p.year !== null ? "a year" : "a month"}{plus}</small></>}
   </p>;
 }
 
 /** 8.1 controls + 8.2 plan rail and comparison drawer. Audience and billing are toggle buttons (aria-pressed). */
-export function PlanExplorer({ plans }: { plans: PricingPlan[] }) {
+/** Q67: `vatAdded` follows BILLING_AUTOMATIC_TAX (plan checkout adds VAT only when Stripe Tax is on), so the copy is true either way. */
+export function PlanExplorer({ plans, vatAdded = true }: { plans: PricingPlan[]; vatAdded?: boolean }) {
   const [kind, setKind] = useState<Kind>("organizer");
   const [yearly, setYearly] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
@@ -61,7 +62,7 @@ export function PlanExplorer({ plans }: { plans: PricingPlan[] }) {
           const head = `plan-${p.kind}-${p.plan}`;
           return <motion.li layout key={`${p.kind}-${p.plan}`} className={cx("lp-plan", sel === p.plan && "is-sel", p.contact && "is-ent")} aria-labelledby={head} transition={{ type: "spring", stiffness: 360, damping: 36 }}>
             <header><h3 id={head}>{p.name}</h3>{p.contact && <span className="gpr-ent-tag">Talk to sales</span>}</header>
-            <Price p={p} yearly={yearly} />
+            <Price p={p} yearly={yearly} vat={vatAdded} />
             {yearly && saving > 0 && !p.contact && <p className="lp-plan-save">Save {saving}% with annual billing</p>}
             <p className="gpr-best">{BEST[kind][p.plan]}</p>
             <ul className="gpr-keys">{p.features.slice(0, kind === "organizer" ? 3 : 4).concat(p.caps.credits ? [`${p.caps.credits.toLocaleString("en-GB")} Agent credits / month`] : []).map(f => <li key={f}><Check size={15} aria-hidden="true" />{f}</li>)}</ul>
@@ -82,7 +83,7 @@ export function PlanExplorer({ plans }: { plans: PricingPlan[] }) {
           </table>
         </div>
       </motion.div>}</AnimatePresence>
-      <p className="gpr-vat">Prices exclude VAT. Annual prices are billed once a year. Upgrades take effect straight away (prorated); downgrades take effect at the end of the billing period.</p>
+      <p className="gpr-vat">{vatAdded ? "Prices exclude VAT, which is added at checkout." : "Plan prices are what you pay; VAT isn’t added to plan invoices at the moment."} Annual prices are billed once a year. Upgrades take effect straight away (prorated); downgrades take effect at the end of the billing period.</p>
     </div></section>
   </>;
 }

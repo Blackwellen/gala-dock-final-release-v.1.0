@@ -29,7 +29,8 @@ export default async function PublicProposal({ params }: { params: Promise<{ tok
   const pres: ProposalPresentation = { ...DEFAULT_PRES, ...(c.presentation ?? {}) };
   const packages = (c.packages ?? []).filter(x => x && x.key && x.name);
   const taxRate = Number(c.tax_rate ?? 20);
-  const expired = p.status === "expired" || (!!p.valid_until && p.valid_until < new Date().toISOString().slice(0, 10));
+  // Q57: "valid until" is a UK calendar day — compare with today in London, not the UTC date (expired an hour late in BST).
+  const expired = p.status === "expired" || (!!p.valid_until && p.valid_until < new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" }));
   const date = c.date ? dateShort(c.date.length > 10 ? c.date : `${c.date}T12:00:00Z`) : "";
   return <div className="k-root" style={{ padding: "32px 16px", minHeight: "100dvh" }}><main style={{ maxWidth: 860, margin: "0 auto" }} className="k-col">{p.status === "sent" && <ViewedBeacon token={token} />}
     <div className="k-between"><span className="k-small k-muted">Prepared for {p.client_name}</span><span className="k-small k-muted">{p.number} · v{p.version}</span></div>

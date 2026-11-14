@@ -51,7 +51,8 @@ export function changeDirection(from: Pick<PlanPrice, "plan" | "price_minor" | "
  */
 export const automaticTaxEnabled = (env: Record<string, string | undefined> = process.env) => /^(1|on|true)$/i.test(env.BILLING_AUTOMATIC_TAX ?? "");
 export function taxParams(enabled: boolean): Record<string, string> {
-  return enabled ? { "automatic_tax[enabled]": "true", billing_address_collection: "required", "customer_update[address]": "auto", "customer_update[name]": "auto" } : {};
+  // Q67: business customers can enter their own VAT number at checkout (shown on the invoice; Stripe Tax applies reverse charge where due).
+  return enabled ? { "automatic_tax[enabled]": "true", billing_address_collection: "required", "customer_update[address]": "auto", "customer_update[name]": "auto", "tax_id_collection[enabled]": "true" } : {};
 }
 
 /**
@@ -95,8 +96,9 @@ export function packCheckoutParams(o: { customer: string; price: string; workspa
  * Downgrades swap the price without proration (the lower price applies from the next invoice) and record the previous plan
  * plus the period end, so billing_apply_subscription keeps the higher entitlements until then.
  */
-export function planChangeParams(o: { itemId: string; price: string; direction: "upgrade" | "downgrade" | "revert"; currentPlan: string; currentPrice?: string; periodEnd: number; accountTaxIds?: readonly string[] }) {
-  const base: Record<string, string> = { "items[0][id]": o.itemId, "items[0][price]": o.price, cancel_at_period_end: "false", ...accountTaxIdParams("invoice_settings", o.accountTaxIds) };
+export function planChangeParams(o: { itemId: string; price: string; direction: "upgrade" | "downgrade" | "revert"; currentPlan: string; currentPrice?: string; periodEnd: number; accountTaxIds?: readonly string[]; automaticTax?: boolean }) {
+  // Q67: with BILLING_AUTOMATIC_TAX on, a plan change also turns Stripe Tax on for subscriptions created before the switch.
+  const base: Record<string, string> = { "items[0][id]": o.itemId, "items[0][price]": o.price, cancel_at_period_end: "false", ...accountTaxIdParams("invoice_settings", o.accountTaxIds), ...(o.automaticTax ? { "automatic_tax[enabled]": "true" } : {}) };
   const clear = { "metadata[gd_previous_plan]": "", "metadata[gd_downgrade_at]": "", "metadata[gd_previous_price]": "" };
   // Q60 "revert": undo a scheduled downgrade — the previous (already paid) price comes back with NO proration. Upgrading back with
   // always_invoice would charge the difference a second time for a period the customer already paid at the higher price.
@@ -135,3 +137,47 @@ export function overageItemParams(o: { customer: string; amountMinor: number; cu
     "metadata[purpose]": "ai_overage", "metadata[overage_charge]": o.chargeId, "metadata[period]": o.period,
   } as Record<string, string>;
 }
+
+/**
+ * Q67: Checkout cannot set account_tax_ids on the subscription it creates (subscription_data has no invoice_settings.account_tax_ids),
+ * so the first invoice relies on the Stripe account's default tax id (invoice settings, set by the owner — CLOSE_OUT_RUNBOOK) and
+ * the webhook then writes Gala Dock's VAT number onto the subscription for every later invoice. Empty when there is no valid id.
+ */
+export function subscriptionTaxIdParams(ids: readonly string[] | undefined): Record<string, string> {
+  return accountTaxIdParams("invoice_settings", ids);
+}
+
+/** Truthful VAT line for the plan picker, whichever way BILLING_AUTOMATIC_TAX is set. */
+export function planVatCopy(automaticTax: boolean): string {
+  return automaticTax
+    ? "Prices exclude VAT. UK VAT (or your country's tax where it applies) is calculated by Stripe from your billing address and added at checkout; invoices show Gala Dock's VAT number GB508480488."
+    : "Prices shown are what you pay: VAT is not added to Gala Dock plan invoices at the moment.";
+}
+
+/**
+ * Q67 customer portal configuration for Gala Dock plans: update cards, see/download invoices, update billing details (incl. a
+ * VAT number), cancel at the end of the period. Plan changes stay in Settings (our proration/downgrade rules), so subscription
+ * updates are off. metadata[gd_purpose]=plans marks the configuration Gala Dock created and reuses.
+ */
+export const PORTAL_PURPOSE = "plans";
+export function portalConfigurationParams(o: { returnUrl: string; privacyUrl: string; termsUrl: string }): Record<string, string> {
+  return {
+    "business_profile[headline]": "Gala Dock — manage your plan billing",
+    "business_profile[privacy_policy_url]": o.privacyUrl, "business_profile[terms_of_service_url]": o.termsUrl,
+    default_return_url: o.returnUrl,
+    "features[payment_method_update][enabled]": "true",
+    "features[invoice_history][enabled]": "true",
+    "features[customer_update][enabled]": "true",
+    "features[customer_update][allowed_updates][0]": "email", "features[customer_update][allowed_updates][1]": "address",
+    "features[customer_update][allowed_updates][2]": "name", "features[customer_update][allowed_updates][3]": "tax_id",
+    "features[subscription_cancel][enabled]": "true", "features[subscription_cancel][mode]": "at_period_end",
+    "features[subscription_cancel][proration_behavior]": "none",
+    "features[subscription_update][enabled]": "false",
+    "metadata[gd_purpose]": PORTAL_PURPOSE,
+  };
+}
+export function portalSessionParams(o: { customer: string; returnUrl: string; configuration: string }): Record<string, string> {
+  return { customer: o.customer, return_url: o.returnUrl, configuration: o.configuration };
+}
+/** Who may open the plan billing portal: the owner and finance (they see invoices and cards; only the owner changes the plan here). */
+export const PORTAL_ROLES = ["owner", "finance"] as const;

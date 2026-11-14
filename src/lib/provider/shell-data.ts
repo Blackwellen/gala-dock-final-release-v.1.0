@@ -13,7 +13,7 @@ export async function providerShellData(ctx: ProviderContext) {
     count(db.from("build_items").select("id", { count: "exact", head: true }).in("listing_id", ids.length ? ids : none).in("status", ["sent", "awaiting", "clarification"])),
     count(db.from("provider_jobs").select("id", { count: "exact", head: true }).eq("workspace_id", workspace.id).in("status", ["held", "confirmed"]).gte("starts_at", new Date().toISOString())),
     recentConversations(db as never, workspace.id, "/provider/inbox"),
-    rows<{ id: string; title: string; body: string; link: string; read_at: string | null }>(db.from("notifications").select("id,title,body,link,read_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(6)),
+    rows<{ id: string; title: string; body: string; link: string; read_at: string | null }>(db.from("notifications").select("id,title,body,link,read_at").eq("user_id", userId).filter("muted", "eq", false).order("created_at", { ascending: false }).limit(6)),
     count(db.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)),
   ]);
   return {

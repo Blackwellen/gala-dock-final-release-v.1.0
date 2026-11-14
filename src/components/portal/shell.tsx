@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { ChevronDown, MessageSquareText, Bell, CircleHelp, LogOut, Plus, type LucideIcon } from "lucide-react";
 import "@/styles/portal-shell.css";
 import { PortalSearch, NavToggle } from "./client";
+import { accentVars } from "@/lib/brand/accent";
 
 /* Shared shell for the external portals (client share link, promoter, partner). Deliberately separate from the
    provider/admin workspace shells: no workspace switcher, no create menu, only what an outside party may see. */
@@ -17,7 +18,7 @@ export function PortalAvatar({ src, name, size = 40 }: { src?: string | null; na
     : <span className="pt-avatar initials" style={{ width: size, height: size, "--pt-av": `${size}px` } as CSSProperties} aria-hidden="true">{letters}</span>;
 }
 
-export function PortalShell({ portal, context, nav, user, links, searchPlaceholder, sideFooter, create, children }: {
+export function PortalShell({ portal, context, nav, user, links, searchPlaceholder, sideFooter, create, accent, children }: {
   portal: { title: string; subtitle: string; thumb: string };
   context: { label: string; thumb: string; menu?: { href: string; label: string; active?: boolean }[] };
   nav: PortalNavItem[];
@@ -27,9 +28,12 @@ export function PortalShell({ portal, context, nav, user, links, searchPlacehold
   sideFooter?: ReactNode;
   /** Quick actions under the topbar "Create" menu (portal-specific, e.g. message the organiser). */
   create?: { href: string; label: string; external?: boolean }[];
+  /** Q67: the organiser's brand colour (hex); clamped to WCAG AA and used only on portal content accents, never the shell chrome. */
+  accent?: string | null;
   children: ReactNode;
 }) {
-  return <div className="pt-app">
+  const vars = accentVars(accent);
+  return <div className={`pt-app${vars["--org-accent"] ? " pt-branded" : ""}`} style={vars as CSSProperties}>
     <header className="pt-top">
       <NavToggle />
       <div className="pt-brand">

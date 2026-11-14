@@ -25,7 +25,8 @@ const n = (v: string) => (v.trim() === "" ? undefined : Math.max(0, Number(v)));
  */
 export function SpaceBasicsForm({ venueId, initial, next, submitLabel = "Save space" }: { venueId: string; initial: Basics; next?: string; submitLabel?: string }) {
   const router = useRouter(), toast = useToast();
-  const [pending, start] = useTransition();
+  const [saving, start] = useTransition();
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   const [f, setF] = useState(initial);
   const d = f.details, dim = d.dimensions ?? {};
   const [sel, setSel] = useState<string>(d.default_layout && f.layouts[d.default_layout] !== undefined ? d.default_layout : Object.keys(f.layouts)[0] ?? "standing");
@@ -52,7 +53,10 @@ export function SpaceBasicsForm({ venueId, initial, next, submitLabel = "Save sp
       capacity_seated: seated || null, layouts: f.layouts, details: { ...d, default_layout: d.default_layout ?? sel } });
     toast(r.ok ? (r.message ?? "Saved") : r.error);
     if (!r.ok) return;
-    if (go && next && r.id) router.push(next.replace("{space}", r.id));
+    // Q49: remember the new id at once — a second Save (or Next while the redirect loads) used to create another copy of the space.
+    if (!f.id && r.id) { const id = r.id; setF(x => ({ ...x, id })); }
+    const to = go && next && r.id ? next.replace("{space}", r.id) : null;
+    if (to) startNav(() => router.push(to));
     else { if (!f.id && r.id) router.replace(`/provider/venues/${venueId}/spaces/new?step=1&space=${r.id}`); router.refresh(); }
   });
 

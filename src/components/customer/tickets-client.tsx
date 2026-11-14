@@ -55,7 +55,7 @@ export function TransferDialog({ open, onClose, ticketId, name }: { open: boolea
 }
 export function ResaleDialog({ open, onClose, ticketId, name }: { open: boolean; onClose: () => void; ticketId: string; name: string }) {
   return <Dialog open={open} onClose={onClose} title={`Sell on official resale`} sub={`List your ${name} ticket at face value. Your QR code is paused while it's listed.`}>
-    <ul className="tk-rules">{["Sold at the price you paid — no mark-ups", "Proceeds are recorded as a pending payout after a completed sale", "Withdraw while no buyer has an active reservation; a fresh QR code is issued", "Your QR code is paused while the ticket is listed"].map(t => <li key={t}><CheckCircle2 size={16} />{t}</li>)}</ul>
+    <ul className="tk-rules">{["Sold at the price you paid — no mark-ups", "After a completed sale, the ticket price is refunded to your original payment method", "Withdraw while no buyer has an active reservation; a fresh QR code is issued", "Your QR code is paused while the ticket is listed"].map(t => <li key={t}><CheckCircle2 size={16} />{t}</li>)}</ul>
     <div className="k-row" style={{ justifyContent: "flex-end", marginTop: 14 }}><button className="k-btn ghost" onClick={onClose}>Not now</button><Link className="k-btn primary" href={`/account/tickets/${ticketId}/resale?step=1`} onClick={onClose}>Review eligibility and price</Link></div>
   </Dialog>;
 }
@@ -66,7 +66,7 @@ export function TicketPanel({ tickets, when, slug, transfers, online = null }: {
   const [i, setI] = useState(0); const t = tickets[Math.min(i, tickets.length - 1)]!; const toast = useKitToast();
   const [transfer, setTransfer] = useState(false); const [resale, setResale] = useState(false); const [wallet, setWallet] = useState(false); const { run, pending } = useAction();
   const valid = t.status === "valid"; const listed = t.status === "resale_listed";
-  const label: Record<string, [string, string]> = { valid: ["Valid for entry", "green"], used: ["Used — admitted", "gray"], resale_listed: ["Listed for resale", "amber"], transferred: ["Transferred", "blue"], resold: ["Resold", "gray"], refunded: ["Refunded", "gray"], cancelled: ["Cancelled", "red"] };
+  const label: Record<string, [string, string]> = { valid: ["Valid for entry", "green"], used: ["Used — admitted", "gray"], resale_listed: ["Listed for resale", "amber"], on_hold: ["On hold — see box office", "amber"], transferred: ["Transferred", "blue"], resold: ["Resold", "gray"], refunded: ["Refunded", "gray"], cancelled: ["Cancelled", "red"] };
   const [sl, tone] = label[t.status] ?? [t.status, "gray"];
   return <div className="tk-pbody">
     {tickets.length > 1 && <div className="tk-seg" role="tablist">{tickets.map((x, k) => <button key={x.id} role="tab" aria-selected={k === i} onClick={() => setI(k)}>Ticket {k + 1} of {tickets.length}</button>)}</div>}

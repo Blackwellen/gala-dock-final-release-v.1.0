@@ -9,7 +9,7 @@ import { ledgerForTicketPayment } from "@/lib/commerce/ticket-ledger";
 import { contextIsConsistent, routeEvent, verifyStripeSignature, webhookDedupeKey, type StripeEvent } from "@/lib/payments/webhook-core";
 import { isStaleAccountError, webhookModeDecision, webhookSecrets } from "@/lib/payments/stripe-mode";
 import { withObservability } from "@/lib/observability/http";
-import { cancelSupersededSubscription } from "@/lib/billing/service";
+import { applySubscriptionTaxIds, cancelSupersededSubscription, invoiceForPayment, recordPaymentFingerprint } from "@/lib/billing/service";
 import { supersededSubscription } from "@/lib/billing/core";
 
 type Obj = StripeEvent["data"]["object"];
@@ -80,6 +80,9 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
           await must(db.rpc("billing_credit_pack_paid", { p_session: object, p_livemode: !!event.livemode }), "credit_pack");
         if (!account && object.metadata?.purpose === "subscription" && object.metadata?.workspace_id && str(object.customer))
           await must(db.rpc("billing_link_customer", { p_workspace: object.metadata.workspace_id, p_customer: str(object.customer), p_livemode: !!event.livemode }), "billing_customer");
+        // Q67: Gala Dock's VAT number on every later invoice of a Checkout-created plan subscription (Checkout can't set it). Audited, never retried.
+        if (!account && object.metadata?.purpose === "subscription" && object.metadata?.workspace_id && str(object.subscription))
+          await applySubscriptionTaxIds(str(object.subscription)).catch(async (e: unknown) => { await db.from("audit_events").insert({ actor_type: "webhook", workspace_id: object.metadata!.workspace_id, event: "billing.subscription_tax_id_failed", metadata: { subscription: str(object.subscription), error: e instanceof Error ? e.message.slice(0, 200) : "error" } }); });
         if (invoice && account && object.payment_status === "paid")
           await must(db.rpc("invoice_card_payment_succeeded", { p_session: object.id, p_pi: str(object.payment_intent), p_amount_minor: Number(object.amount_total ?? 0), p_account: account, p_livemode: !!event.livemode }), "invoice");
         break;
@@ -102,6 +105,10 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         // Q40 → Q07: merchandise direct charge on the organiser's account. Ledger once (stripe:pi), then merch_mark_paid; a late or
         // duplicate charge queues a full card refund (merch_card_refunds), executed by the 'merch.card_refunds' job.
         else if (merch && account) await must(db.rpc("merch_order_direct_paid", { p_ref: merch, ...args, p_account: account, p_application_fee: str(object.application_fee) || null, p_livemode: !!event.livemode }), "merch_order");
+        // Q60 partner add-on: Gala Dock's own sale (plan invoice / credit pack) — record the card fingerprint for the self-referral check.
+        // Never fails the event: affiliate accounting must not block payment processing.
+        else if (!account && str(object.customer) && str(object.payment_method))
+          await recordPaymentFingerprint(str(object.customer), str(object.payment_method)).catch((e: unknown) => console.error("payment_fingerprint_failed", e instanceof Error ? e.message : e));
         break;
       }
       case "payment_failed":
@@ -122,6 +129,9 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
           const { data: pack, error: packError } = await db.rpc("billing_credit_pack_refunded", { p_charge: object, p_livemode: !!event.livemode });
           if (packError) throw new Error(`credit_pack_refund: ${packError.message}`);
           if (!(pack as { credit_pack?: boolean } | null)?.credit_pack) await legacyRefund(db, object);
+          // Q60 partner add-on: a refunded Gala Dock invoice (plan or credit pack) reverses / claws back the partner commission on it.
+          const inv = await invoiceForPayment({ chargeInvoice: str(object.invoice), paymentIntent: pi, charge: object.id });
+          if (inv) await must(db.rpc("partner_refund_invoice", { p_invoice: inv, p_refunded_minor: Number(object.amount_refunded ?? 0), p_reason: "refund" }), "partner_refund");
         }
         // Both take the cumulative total (greatest(...)), so a retry is a no-op; errors throw so Stripe retries (Q58).
         if (pi) await must(db.rpc("payment_order_refunded", { p_pi: pi, p_refunded_minor: Number(object.amount_refunded ?? 0) }), "payment_order_refunded");
@@ -140,6 +150,14 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
       case "dispute":
         {
           const status = await syncStripeDispute(object as unknown as StripeDispute, event.type, account);
+          // Q60: a lost chargeback on a Gala Dock own-sale (no connected account) takes back the credits of a credit pack and the
+          // partner commission on the invoice, exactly like a full refund of the disputed amount (both idempotent).
+          if (!account && status === "lost" && str(object.payment_intent)) {
+            const lost = { id: str(object.charge), payment_intent: str(object.payment_intent), amount: Number(object.amount ?? 0), amount_refunded: Number(object.amount ?? 0) };
+            await must(db.rpc("billing_credit_pack_refunded", { p_charge: lost, p_livemode: !!event.livemode }), "credit_pack_dispute");
+            const inv = await invoiceForPayment({ paymentIntent: lost.payment_intent, charge: lost.id });
+            if (inv) await must(db.rpc("partner_refund_invoice", { p_invoice: inv, p_refunded_minor: lost.amount, p_reason: "chargeback_lost" }), "partner_dispute");
+          }
           if (object.payment_intent) await must(db.rpc("payment_order_disputed", { p_pi: str(object.payment_intent), p_open: !["won", "lost", "warning_closed"].includes(status) }), "payment_order_dispute");
         }
         break;

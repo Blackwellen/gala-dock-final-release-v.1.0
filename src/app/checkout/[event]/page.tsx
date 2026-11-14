@@ -36,15 +36,24 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
   ]);
   const seatedTiers = new Set((seats ?? []).map((s: { tier_id: string | null }) => s.tier_id).filter(Boolean));
   const now = requestTime();
-  const tierList = (tiers ?? []).map((t: { id: string; name: string; description: string; kind: string; price: number; quantity: number; sold: number; held: number; order_limit: number; status: string; sale_start: string | null; sale_end: string | null; color: string | null; badge: string | null }, i: number) => ({
+  // Q57: access-code tiers are no longer publicly readable; the ones this checkout's applied codes unlock come from
+  // checkout_unlocked_tiers (keyed by the httpOnly checkout token), merged in the organiser's order.
+  const codeToken = (await cookies()).get(CHECKOUT_COOKIE(ev.id))?.value;
+  const { data: unlocked } = codeToken ? await sb.rpc("checkout_unlocked_tiers", { p_event: ev.id, p_token: codeToken }) : { data: [] };
+  const mergedTiers = [...new Map([...((tiers ?? []) as { id: string; sort: number }[]), ...((unlocked ?? []) as { id: string; sort: number; status: string }[]).filter(t => t.status !== "hidden")].map(t => [t.id, t])).values()]
+    .sort((a, b) => Number(a.sort ?? 0) - Number(b.sort ?? 0)) as typeof tiers & object[];
+  const tierList = (mergedTiers ?? []).map((t: { id: string; name: string; description: string; kind: string; price: number; quantity: number; sold: number; held: number; order_limit: number; status: string; sale_start: string | null; sale_end: string | null; color: string | null; badge: string | null }, i: number) => ({
     id: t.id, name: t.name, description: t.description, price: Number(t.price), remaining: Math.max(0, t.quantity - t.sold - t.held), limit: t.order_limit, seated: seatedTiers.has(t.id), badge: t.badge,
     color: t.color && t.color !== "#5b5bff" ? t.color : PALETTE[i % PALETTE.length],
     onSale: t.status === "on_sale" && (!t.sale_start || new Date(t.sale_start).getTime() <= now) && (!t.sale_end || new Date(t.sale_end).getTime() > now),
-    note: t.status === "sold_out" ? "Sold out" : t.sale_start && new Date(t.sale_start).getTime() > now ? `On sale ${new Date(t.sale_start).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : t.status !== "on_sale" ? "Not on sale" : null,
+    note: t.status === "sold_out" ? "Sold out" : t.sale_start && new Date(t.sale_start).getTime() > now ? `On sale ${new Date(t.sale_start).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Europe/London" })}` : t.sale_end && new Date(t.sale_end).getTime() <= now ? "Sales ended" : t.status !== "on_sale" ? "Not on sale" : null,
   }));
   const sellerBlocked = readiness !== "ready" && tierList.some((t: { price: number }) => t.price > 0);
   // Consumer law: buyers are told before paying when the organiser declared it sells as a private individual (not a trader).
   const { data: nonTrader } = await sb.rpc("event_seller_non_trader", { p_event: ev.id });
+  // Q57 (CRA s.90 / CCR): resale checkout names the merchant — the organiser, who takes the resale payment — and its trader status.
+  const { data: orgRows } = await sb.rpc("public_organizer", { p_event: ev.id });
+  const merchant = { name: ((orgRows ?? []) as { name?: string }[])[0]?.name ?? null, trader: nonTrader !== true };
   const token = (await cookies()).get(CHECKOUT_COOKIE(ev.id))?.value;
   const existing = token ? await summarise(ev.id, token, sb) : null;
   const p = (plan ?? { overlay: [], base: [] }) as { overlay: MapEl[]; base: MapEl[] };
@@ -56,7 +65,7 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
     tiers={tierList} seats={(seats ?? []).map((s: { seat_key: string; tier_id: string | null; accessible: boolean; status: string }) => ({ key: s.seat_key, tier_id: s.tier_id, accessible: s.accessible, status: s.status as "available" }))}
     overlay={Array.isArray(p.overlay) ? p.overlay : []} base={Array.isArray(p.base) ? p.base : []} fee={(fee ?? { fixed: 0, pct_bps: 0 }) as { fixed: number; pct_bps: number }}
     user={user ? { email: user.email ?? "" } : null} preset={presetTier ? { tier: presetTier, qty: presetQty } : null}
-    resale={((resale ?? []) as { id: string; tier: string; tier_id: string; seat: string | null; price: number; face_value?: number }[]).map(r => ({ ...r, price: Number(r.price), face_value: r.face_value == null ? undefined : Number(r.face_value) }))} startResale={sp.resale === "1"}
+    resale={readiness !== "ready" ? [] /* a resale is a new direct charge to the organiser (DEC-107): it needs a ready seller */ : ((resale ?? []) as { id: string; tier: string; tier_id: string; seat: string | null; price: number; face_value?: number }[]).map(r => ({ ...r, price: Number(r.price), face_value: r.face_value == null ? undefined : Number(r.face_value) }))} startResale={sp.resale === "1"} merchant={merchant}
     existing={existing && existing.lines.length && existing.expiresAt && new Date(existing.expiresAt).getTime() > now ? existing : null} cancelled={!!sp.cancelled}
     launch={sellerBlocked && ["presale", "on_sale", "final_release", "low_availability"].includes(typeof launch === "string" ? launch : "on_sale") ? "seller_not_ready" : typeof launch === "string" ? launch : "on_sale"} mapSlot={mapSlot} offerId={typeof sp.waitlist_offer === "string" && /^[0-9a-f-]{36}$/i.test(sp.waitlist_offer) ? sp.waitlist_offer : null} /><LegalFooter /></>;
 }

@@ -15,9 +15,10 @@ import { SponsorsSection } from "@/components/public/event-sections";
 import { loadEventExtras } from "@/lib/public/event-extras";
 import { loadGettingThere } from "@/lib/public/getting-there";
 import { EventGettingThere } from "@/components/public/event-getting-there";
+import { customerTicketStatus, HOLD_MESSAGE } from "@/lib/tickets/hold";
 
 export const metadata = { title: "Ticket" };
-const COLS = "id,code,status,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(id,name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings,venue_listing_id)";
+const COLS = "id,code,status,dispute_hold_at,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(id,name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings,venue_listing_id)";
 const stamp = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Europe/London" }).replace(" am", " AM").replace(" pm", " PM");
 
 export default async function TicketPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
@@ -26,7 +27,9 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
   const ctx = await getCustomer();
   const { data } = await ctx.supabase.from("tickets").select(COLS).eq("id", id).eq("holder_id", ctx.user.id).maybeSingle();
   if (!data) notFound();
-  const t = data as unknown as TicketRow & { event: TicketRow["event"] & { venue_listing_id: string | null } };
+  const raw = data as unknown as TicketRow & { dispute_hold_at?: string | null; event: TicketRow["event"] & { venue_listing_id: string | null } };
+  // Q57: a ticket held for a card-payment dispute is shown as "On hold" (no QR, transfer, resale or print), matching the door.
+  const t = { ...raw, status: customerTicketStatus(raw.status, raw.dispute_hold_at) };
   const e = t.event; const s = (e.settings ?? {}) as Record<string, unknown>;
   // Online session (virtual / hybrid events): null when the event has none.
   const { data: virtualRaw } = await ctx.supabase.rpc("event_virtual_public" as never, { p_event: e.id } as never);
@@ -34,15 +37,15 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
   // Q29 sessions (main / breakouts / workshops) with per-session join and replay state; the legacy single link is the fallback.
   const sessions = ["valid", "used"].includes(t.status) ? await myOnlineSessions(ctx.supabase as unknown as SupabaseClient, e.id) : [];
   const [{ data: siblings }, { data: scans }, { data: venue }, qr] = await Promise.all([
-    ctx.supabase.from("tickets").select("id,status,tier:ticket_tiers(name)").eq("holder_id", ctx.user.id).eq("event_id", e.id).eq("order_ref", t.order_ref).order("created_at"),
+    ctx.supabase.from("tickets").select("id,status,dispute_hold_at,tier:ticket_tiers(name)").eq("holder_id", ctx.user.id).eq("event_id", e.id).eq("order_ref", t.order_ref).order("created_at"),
     ctx.supabase.from("check_ins").select("result,created_at").eq("ticket_id", t.id).order("created_at"),
     e.venue_listing_id ? ctx.supabase.from("listings").select("name,image,location,lat,lng,slug,kind,id").eq("id", e.venue_listing_id).maybeSingle() : Promise.resolve({ data: null }),
     ticketQr(t),
   ]);
-  const sib = (siblings ?? []) as unknown as { id: string; status: string; tier: { name: string } | null }[];
+  const sib = ((siblings ?? []) as unknown as { id: string; status: string; dispute_hold_at: string | null; tier: { name: string } | null }[]).map(x => ({ ...x, status: customerTicketStatus(x.status, x.dispute_hold_at) }));
   const idx = Math.max(0, sib.findIndex(x => x.id === t.id));
   const d = e.starts_at ? new Date(e.starts_at) : null;
-  const STATUS: Record<string, [string, string]> = { valid: ["Active", "green"], used: ["Used", "gray"], resale_listed: ["Listed for resale", "amber"], transferred: ["Transferred", "blue"], resold: ["Resold", "gray"], refunded: ["Refunded", "gray"], cancelled: ["Cancelled", "red"] };
+  const STATUS: Record<string, [string, string]> = { valid: ["Active", "green"], used: ["Used", "gray"], resale_listed: ["Listed for resale", "amber"], on_hold: ["On hold — see box office", "amber"], transferred: ["Transferred", "blue"], resold: ["Resold", "gray"], refunded: ["Refunded", "gray"], cancelled: ["Cancelled", "red"] };
   const [sl, tone] = STATUS[t.status] ?? [t.status, "gray"];
   const proceeds=t.status==='resold'?await untyped(ctx.supabase).from('resale_payouts').select('status,amount').eq('ticket_id',t.id).eq('seller_id',ctx.user.id).maybeSingle():null;
   if(proceeds?.error)throw new Error('Could not load your resale refund status. Try again.');
@@ -82,6 +85,7 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
           {t.status === "valid" ? <div className="td-cred"><TicketCredential defaultMode={(["qr", "visual", "barcode"].includes(String(s.ticket_display)) ? s.ticket_display : "qr") as "qr" | "visual" | "barcode"} allowSwitch={s.ticket_display_switch !== false} compact
               ticket={{ id: t.id, code: t.code, status: t.status, event: e.name, date: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC", time: whenLine(e).split("•").pop()?.trim() ?? "", venue: [e.venue_name, e.city].filter(Boolean).join(", ") || e.location, holder: t.attendee_name || ctx.name, tier: t.tier?.name ?? "General Admission", seat: t.seat, orderRef: t.order_ref ?? "", artwork: e.cover_image, rules: [gate && `Entry via ${gate}.`, doors && `Doors ${doors}.`].filter(Boolean).join(" "), transfer: s.transfers !== false ? "Transferable in Gala Dock" : "Non-transferable" }} /></div>
             : <div className="tk-qr td-qr dim">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-void">{t.status === "resale_listed" ? "Paused while listed" : sl}</span></div>}
+          {t.status === "on_hold" && <div className="k-notice amber td-join-note" role="status">{HOLD_MESSAGE}</div>}
           {sp.join && <div className="k-notice amber td-join-note" role="status">{sp.join.slice(0, 200)}</div>}
           {t.status === "valid" && online && !sessions.length && <div className="td-join"><Link className="k-btn primary" href={`/tickets/${t.id}/join`}><Video size={15} />Join event</Link><small>{online.opens_minutes_before ? `Opens ${online.opens_minutes_before} min before start` : "Online session"}{online.replay_available ? " · replay available" : ""}</small></div>}
           {t.status === "valid" && s.print_tickets !== false && <div className="td-print"><Link className="k-btn outline sm" href={`/account/tickets/${t.id}/print`} target="_blank"><Printer size={14} />Print ticket</Link><a className="k-btn outline sm" href={`/api/tickets/${t.id}/pdf`}><Download size={14} />Download PDF</a></div>}

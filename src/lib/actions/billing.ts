@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/security";
-import { buyCreditPack, choosePlan, setCancelAtPeriodEnd, undoScheduledChange } from "@/lib/billing/service";
+import { buyCreditPack, choosePlan, openBillingPortal, setCancelAtPeriodEnd, undoScheduledChange } from "@/lib/billing/service";
 
 type Result = { ok: true; message?: string; redirect?: string } | { ok: false; error: string };
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -56,5 +56,14 @@ export async function buyCreditPackAction(workspaceId: string, kind: string, pac
   if (!UUID.test(workspaceId) || !UUID.test(packId)) return { ok: false, error: "Choose a credit pack." };
   if (!(await rateLimit(`billing:${user.id}`, 10, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
   const r = await buyCreditPack({ workspaceId, userId: user.id, email: user.email ?? null, packId, origin: await origin(), returnPath: kind === "provider" ? "/provider/settings?tab=agent" : "/organizer/settings?tab=agent" });
+  return r.ok ? { ok: true, message: r.message, ...(r.url ? { redirect: r.url } : {}) } : r;
+}
+
+/** Q67: Stripe customer portal for the Gala Dock plan (cards, invoices, cancel). Owner/finance only (re-checked in the service). */
+export async function openBillingPortalAction(workspaceId: string, kind: string): Promise<Result> {
+  const user = await caller(); if (!user) return { ok: false, error: "Please sign in again." };
+  if (!UUID.test(workspaceId)) return { ok: false, error: "Workspace not found." };
+  if (!(await rateLimit(`billing-portal:${user.id}`, 20, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
+  const r = await openBillingPortal({ workspaceId, userId: user.id, origin: await origin(), returnPath: back(kind) });
   return r.ok ? { ok: true, message: r.message, ...(r.url ? { redirect: r.url } : {}) } : r;
 }

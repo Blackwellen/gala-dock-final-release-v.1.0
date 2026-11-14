@@ -1,6 +1,7 @@
 import "server-only";
 import { untyped } from "@/lib/workspace/db";
 import type { ActionResult } from "@/lib/actions/shell";
+import { planLimitError } from "@/lib/settings/rules";
 
 /** A precondition the event does not meet yet for the requested state (computed server-side by event_lifecycle_blockers). */
 export type EventBlocker = { key: string; label: string; fix?: string };
@@ -29,6 +30,7 @@ export async function transitionEvent(client: Parameters<typeof untyped>[0], eve
   if (error) {
     const m = error.message;
     const lc = lifecycleError(error, to); if (lc) return { ok: false, error: lc.message, data: { blockers: lc.blockers } };
+    const limit = planLimitError(error); if (limit) return { ok: false, error: limit };   // Q67: active-event cap on publish
     if (/illegal event transition/.test(m)) { const [, from] = /transition (\S+) ->/.exec(m) ?? []; return { ok: false, error: `An event can't move from ${label(from ?? expected ?? "its current state")} to ${label(to)}.` }; }
     if (/event_restricted/.test(m)) return { ok: false, error: "Gala Dock has restricted this event. Contact support to appeal." };
     if (/owners and managers/.test(m)) return { ok: false, error: "Only owners and managers can cancel, postpone, suspend or archive an event." };

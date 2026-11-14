@@ -19,7 +19,8 @@ export const metadata: Metadata = { title: "Users" };
 type Dir = { id: string; email: string; full_name: string | null; avatar_url: string | null; status: string; identity_verified: boolean; created_at: string; last_active_at: string | null;
   account_type: string; workspaces: number; workspace_name: string | null; events: number; upcoming_events: number; tickets: number; used_tickets: number; trust_flag: string | null; open_cases: number; total_count: number };
 type Stats = { total: number; total_prev: number; verified: number; restricted: number; with_events: number; with_tickets: number };
-type Identity = { email: string; email_confirmed: boolean; phone: string | null; created_at: string; last_sign_in_at: string | null; mfa_factors: number; active_sessions: number };
+// Q59: identity_verified / phone_confirmed come from verification_checks and auth.users (admin_user_identity), never profiles.identity_verified.
+type Identity = { email: string; email_confirmed: boolean; phone: string | null; phone_confirmed?: boolean; identity_verified?: boolean; created_at: string; last_sign_in_at: string | null; mfa_factors: number; active_sessions: number };
 
 const typeTone: Record<string, string> = { consumer: "", organizer: "purple", provider: "", admin: "grey" };
 const name = (u: { full_name: string | null; email: string }) => u.full_name || u.email.split("@")[0]!;
@@ -158,7 +159,7 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
         <SectionHead title="Identity" />
         <KVRows rows={[
           ["Email", identity?.email ?? "—", identity?.email_confirmed ? <Status value="verified" label="Verified" /> : <Status value="unverified" label="Unverified" />],
-          ["Phone", profile?.phone || identity?.phone || "—", profile?.phone ? (profile.identity_verified ? <Status value="verified" label="Verified" /> : <Status value="unverified" label="Unverified" />) : ""],
+          ["Phone", profile?.phone || identity?.phone || "—", (profile?.phone || identity?.phone) ? (identity?.phone_confirmed ? <Status value="verified" label="Verified" /> : <Status value="unverified" label="Unverified" />) : ""],
           ["Joined", joined ? `${day(joined, { day: "numeric", month: "short", year: "numeric" })}, ${time(joined)}` : "—"],
           ["Last active", relative(profile?.last_active_at ?? identity?.last_sign_in_at, now)],
           ["Location", profile?.home_area ? <span className="aa-loc"><Flag country={profile.country} />{profile.home_area}</span> : "—"],
@@ -184,7 +185,7 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
         {trust.length || row?.trust_flag ? <p className="aa-flagline bad"><ShieldAlert aria-hidden="true" />{trust.length ? trust.map(t => `${t.category} (risk ${t.risk_score})`).join(", ") : row?.trust_flag}</p>
           : <p className="aa-flagline"><CircleCheck aria-hidden="true" />No active flags</p>}
         <KVRows className="aa-checks" rows={[
-          ["Identity verified", profile?.identity_verified ? <Status value="verified" label="Yes" /> : <Status value="unverified" label="No" />],
+          ["Identity verified", identity?.identity_verified ? <Status value="verified" label="Yes" /> : <Status value="unverified" label="No" />],
           ["Multi-factor", identity?.mfa_factors ? <Status value="verified" label="Yes" /> : <Status value="unverified" label="No" />],
           ["Account in good standing", restricted ? <Status value="restricted" label="No" /> : <Status value="verified" label="Yes" />],
         ]} />

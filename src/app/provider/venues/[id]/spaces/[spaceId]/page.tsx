@@ -9,7 +9,8 @@ import { Chip, Tabs, Thumb } from "@/components/workspace/kit";
 import { ActionButton } from "@/components/workspace/actions";
 import { money, day, time, requestTime, titleCase } from "@/lib/workspace/format";
 import { loadSpaceContext, buildRulesInput } from "../data";
-import { duplicateSpace } from "../actions";
+import { duplicateSpace, saveSpacePhotos } from "../actions";
+import { PhotoManager } from "../../../_components/photo-manager";
 import { MenuButton } from "../../../../_components/menu-button";
 import { VenueMap } from "../../../_components/venue-map";
 import { LayoutGlyph, LAYOUT_LABEL } from "../../../_components/layout-glyph";
@@ -17,7 +18,7 @@ import { SpaceBasicsForm } from "../../../_components/space-basics";
 import { SpaceRulesForm } from "../../../_components/space-rules";
 
 export const metadata: Metadata = { title: "Space" };
-const TABS = ["overview", "layouts", "availability"] as const;
+const TABS = ["overview", "layouts", "availability", "photos"] as const;
 
 export default async function SpaceProfile(props: PageProps<"/provider/venues/[id]/spaces/[spaceId]">) {
   const { id, spaceId } = await props.params;
@@ -39,7 +40,7 @@ export default async function SpaceProfile(props: PageProps<"/provider/venues/[i
   const recs = [
     area && s.layouts.cabaret === undefined ? { icon: Armchair, title: "Add a cabaret layout", text: `At ${area} sqm this space fits roughly ${Math.round(area / 1.75 / 10) * 10} cabaret guests.`, cta: "Add layout", href: `?tab=layouts` } : null,
     !d.accessibility ? { icon: Accessibility, title: "Describe accessibility", text: "Organisers filter by step-free access. Add accessibility details to appear in those searches.", cta: "Add details", href: `/provider/venues/${id}/spaces/new?step=2&space=${s.id}` } : null,
-    photos.length < 8 ? { icon: ImagePlus, title: "Improve media coverage", text: `${photos.length} photo${photos.length === 1 ? "" : "s"} so far. Add setups for each layout so clients can picture their event.`, cta: "Add photos", href: `/provider/venues/new?venue=${id}&step=1` } : null,
+    photos.length < 8 ? { icon: ImagePlus, title: "Improve media coverage", text: `${photos.length} photo${photos.length === 1 ? "" : "s"} so far. Add setups for each layout so clients can picture their event.`, cta: "Add photos", href: `?tab=photos` } : null,
     { icon: BarChart3, title: "Review pricing", text: s.rate_hourly ? `${money(s.rate_hourly)}/hr with a ${s.min_hours}h minimum. Compare against your recent quotes.` : "No rate set — requests will need a quote.", cta: "Adjust pricing", href: `?tab=availability` },
   ].filter(Boolean).slice(0, 3) as { icon: typeof Armchair; title: string; text: string; cta: string; href: string }[];
   const keyRows: [string, string][] = [
@@ -66,10 +67,11 @@ export default async function SpaceProfile(props: PageProps<"/provider/venues/[i
           { kind: "link", label: "Access & operations", href: `/provider/venues/${id}/spaces/new?step=3&space=${s.id}` }, { kind: "link", label: "Availability & rules", href: `/provider/venues/${id}/spaces/${s.id}?tab=availability` }]} />
       </div>
     </header>
-    <Tabs base={`/provider/venues/${id}/spaces/${s.id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "layouts", label: "Layouts" }, { key: "availability", label: "Availability & Rules" }]} />
+    <Tabs base={`/provider/venues/${id}/spaces/${s.id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "layouts", label: "Layouts" }, { key: "availability", label: "Availability & Rules" }, { key: "photos", label: "Photos" }]} />
 
     {tab === "layouts" && <SpaceBasicsForm venueId={id} initial={{ id: s.id, name: s.name, indoor: s.indoor, area_sqm: s.area_sqm, capacity_standing: s.capacity_standing, layouts: s.layouts, details: d }} submitLabel="Save layouts" />}
     {tab === "availability" && <SpaceRulesForm venueId={id} input={buildRulesInput(c, s)} />}
+    {tab === "photos" && <div className="vw vw-s5"><PhotoManager venueId={s.id} initial={photos} save={saveSpacePhotos.bind(null, id, s.id)} /></div>}
 
     {tab === "overview" && <>
       <div className="psp-top">
@@ -77,7 +79,7 @@ export default async function SpaceProfile(props: PageProps<"/provider/venues/[i
           {photos[0] ? <img src={photos[0]} alt={`${s.name}`} /> : <span className="qb-noimg" />}<span className="psp-count">1 / {photos.length || 0}</span></div>
         <ul className="psp-thumbs">{photos.slice(1, 7).map((p, i, arr) => <li key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={p} alt="" />{i === arr.length - 1 && photos.length > 7 && <span>+{photos.length - 7}</span>}</li>)}
-          {photos.length < 2 && <li className="psp-addph"><Link href={`/provider/venues/new?venue=${id}&step=1`}><Plus aria-hidden="true" />Add photos</Link></li>}</ul>
+          {photos.length < 2 && <li className="psp-addph"><Link href={`/provider/venues/${id}/spaces/${s.id}?tab=photos`}><Plus aria-hidden="true" />Add photos</Link></li>}</ul>
         <section className="ws-panel psp-loc"><div className="ws-panel-head"><h2>Location in venue</h2><Link className="ws-link" href={`/provider/venues/${id}?tab=spaces`}>Open full map <ArrowRight aria-hidden="true" /></Link></div>
           <div className="psp-map">{structure?.elements.length ? <VenueMap elements={structure.elements} spaces={spaces.map(x => ({ id: x.id, name: x.name, capacity: Math.max(x.capacity_standing ?? 0, x.capacity_seated ?? 0), indoor: x.indoor }))}
             selected={s.id} dim={sid => sid !== s.id} labelSize={22} /> : <p className="pv-none">No venue map yet.</p>}</div></section>

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
+import { HOLD_MESSAGE } from "@/lib/tickets/hold";
 
 const Id = z.string().uuid();
 const bump = (id?: string) => { revalidatePath("/account/tickets"); if (id) revalidatePath(`/account/tickets/${id}`); };
@@ -15,7 +16,7 @@ export async function transferTicket(ticketId: string, name: string, email: stri
   const ctx = await getCustomer();
   if (p.data.email.toLowerCase() === (ctx.user.email ?? "").toLowerCase()) return { ok: false, error: "You already hold this ticket." };
   const { error } = await ctx.supabase.rpc("transfer_ticket", { p_ticket: id.data, p_email: p.data.email, p_name: p.data.name });
-  if (error) return { ok: false, error: error.message.includes("transfers_disabled") ? "The organiser has turned off transfers for this event." : error.message.includes("not_transferable") ? "This ticket can't be transferred in its current state." : "Could not transfer the ticket." };
+  if (error) return { ok: false, error: error.message.includes("ticket_on_hold") ? HOLD_MESSAGE : error.message.includes("transfers_disabled") ? "The organiser has turned off transfers for this event." : error.message.includes("not_transferable") ? "This ticket can't be transferred in its current state." : "Could not transfer the ticket." };
   bump(id.data); return { ok: true, message: `Ticket sent to ${p.data.name}. Your QR code is no longer valid.`, redirect: "/account/tickets?tab=resale" };
 }
 
@@ -25,7 +26,7 @@ export async function resaleTicket(ticketId: string, cancel: boolean): Promise<A
   const ctx = await getCustomer();
   const { error } = await ctx.supabase.rpc("list_ticket_for_resale", { p_ticket: id.data, p_cancel: cancel });
   if(error?.message.includes("original_payment_required"))return {ok:false,error:"Only the original paying buyer can resell this ticket, with proceeds refunded to their original payment method. Refunded purchases cannot be listed."};
-  if (error) return { ok: false, error: error.message.includes("price_cap_exceeded") ? "The original price exceeds the current resale cap. Contact ticket support." : error.message.includes("resale_disabled") ? "Official resale is turned off for this event." : error.message.includes("resale_window_closed") ? "The resale window is closed." : error.message.includes("resale_reserved") ? "A buyer has reserved this ticket. Try again after their reservation expires." : error.message.includes("not_resellable") ? "Only valid, unused paid tickets can be resold." : error.message.includes("not_listed") ? "This ticket isn't listed for resale." : "Could not update resale." };
+  if (error) return { ok: false, error: error.message.includes("ticket_on_hold") ? HOLD_MESSAGE : error.message.includes("resale_limit") ? "You already have the maximum number of active resale listings for this event." : error.message.includes("price_cap_exceeded") ? "The original price exceeds the current resale cap. Contact ticket support." : error.message.includes("resale_disabled") ? "Official resale is turned off for this event." : error.message.includes("resale_window_closed") ? "The resale window is closed." : error.message.includes("resale_reserved") ? "A buyer has reserved this ticket. Try again after their reservation expires." : error.message.includes("not_resellable") ? "Only valid, unused paid tickets can be resold." : error.message.includes("not_listed") ? "This ticket isn't listed for resale." : "Could not update resale." };
   bump(id.data); return { ok: true, message: cancel ? "Resale cancelled — a fresh QR code has been issued." : "Listed at face value. After sale, the ticket price is refunded to your original payment method." };
 }
 

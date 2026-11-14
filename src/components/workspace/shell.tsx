@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { promoFor } from "./promo-copy";
 import { MobileNav, type NavEntry } from "@/components/pwa/mobile-nav";
 import { GlobalSearch } from "@/components/search/global-search";
+import { ADMIN_SEAT } from "@/lib/search/global";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Bell, MessageSquareText, Plus,
@@ -185,10 +186,13 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     { href: "/provider/packages/new?step=1", label: "Package" },
     { href: "/provider/calendar?action=block", label: "Availability block" },
   ].filter(Boolean) as { href: string; label: string }[];
-  const mobileMenu: NavEntry[] = nav.filter(n => n.label !== "Money" || canFinance).map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
+  // Q49: one role rule for both headers — desktop showed Money to staff and the full Create menu to every role (mobile filtered both).
+  const sideNav = nav.filter(n => n.label !== "Money" || canFinance);
+  const createMenu = [...(canManage ? create : []), ...(canDesign ? [{ href: "/provider/media?create=1", label: "New design", icon: Palette }] : [])];
+  const mobileMenu: NavEntry[] = sideNav.map(n => ({ href: n.href, label: n.label, icon: n.icon, badge: n.badge || null }));
   return <div className={`ws-app provider ${mobileOpen ? "nav-open" : ""}`}>
     <MobileNav menu={[...mobileMenu, { href: "/provider/inbox", label: "Messages", icon: MessageSquareText }, ...listingChildren, { href: "/help?from=provider", label: "Help", icon: CircleHelp }]} tabs={nav.filter(n => ["Home", "Bookings", "Calendar", "Listings"].includes(n.label)).map(n => n.href === "/provider/listings" ? { ...n, match: /^\/provider\/(listings|venues|services|packages)(\/|$)/ } : n)}
-      title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} create={[...(canManage ? create : []), ...(canDesign ? [{ href: "/provider/media?create=1", label: "New design", icon: Palette }] : [])]}
+      title={workspace.name} home="/provider" search={{ seat: activeId, placeholder: "Search events, bookings, venues, services…" }} create={createMenu}
       messagesHref="/provider/inbox" unreadMessages={messages.some(t => t.unread)} notifications={notifications.map(n => ({ ...n, link: n.href }))} unread={counts.notifications} onReadNotifications={() => { if (counts.notifications) void markNotificationsRead(); }}
       workspaceSwitcher={<div role="menu" aria-label="Switch workspace">{workspaces.map(w => <WorkspaceOption key={w.id} {...w} active={w.id === activeId} onSwitch={switchWorkspace} />)}</div>} />
     <ShellTools />
@@ -205,11 +209,11 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
         <Link href="/provider/settings?tab=capabilities" role="menuitem">Manage capabilities</Link>
         <Link href="/onboarding" role="menuitem">Create a workspace</Link>
       </Popover></div>
-      <div className="ws-gs"><GlobalSearch seat={activeId} placeholder="Search events, bookings, venues, services, or contacts..." /></div>
+      <div className="ws-gs"><GlobalSearch seat={activeId} placeholder="Search bookings, events, venues, services, or media..." /></div>
       <div className="ws-actions">
-        <Popover label="Create" className="ws-create" trigger={<span className="ws-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></span>}>
-          {create.map(c => <Link key={c.href} href={c.href} role="menuitem">{c.label}</Link>)}
-        </Popover>
+        {createMenu.length > 0 && <Popover label="Create" className="ws-create" trigger={<span className="ws-btn primary"><Plus aria-hidden="true" />Create<ChevronDown aria-hidden="true" /></span>}>
+          {createMenu.map(c => <Link key={c.href} href={c.href} role="menuitem">{c.label}</Link>)}
+        </Popover>}
         <Popover label={`Messages, ${counts.messages} unread`} className="ws-icon-pop" trigger={<><MessageSquareText aria-hidden="true" />{counts.messages > 0 && <b className="ws-count">{counts.messages}</b>}</>}>
           <div className="ws-pop-head"><b>Messages</b><small>{counts.messages} unread</small></div>
           <RecentMessages items={messages} inbox="/provider/inbox" empty="No conversations yet." />
@@ -223,7 +227,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
       </div>
     </header>
     <nav className="ws-sidebar pwa-hide-desktop-nav" aria-label="Provider workspace">
-      <NavList items={nav} pathname={pathname} />
+      <NavList items={sideNav} pathname={pathname} />
       <Suspense fallback={<PromoCard title={<>Let Gala Agent<br />handle the admin</>} text="Get AI-powered confirmations, reminders, team assignments and more." href="/provider/agent" />}><ProviderPromo pathname={pathname} /></Suspense>
     </nav>
     <div className="ws-scrim" onClick={() => setMobileOpen(false)} aria-hidden="true" />
@@ -271,12 +275,12 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
   const mobileMenu: NavEntry[] = nav.filter(n => !n.locked).map(n => ({ href: n.href, label: n.label, icon: n.icon }));
   const mobilePrimary: NavEntry[] = [...mobileMenu, { href: "/account", label: "Account", icon: Users }, { href: "/help", label: "Help", icon: CircleHelp }].slice(0, 4).map(n => ({ ...n, exact: n.href === "/admin" || n.href === "/account" }));
   return <div className={`ws-app admin ${mobileOpen ? "nav-open" : ""}`}>
-    <MobileNav menu={mobileMenu} tabs={mobilePrimary} title="Platform Admin" home="/admin" search={{ seat: null, placeholder: "Search users, events, orders, tickets…" }} notifications={alerts.map(n => ({ ...n, link: n.href }))} unread={counts.alerts} />
+    <MobileNav menu={mobileMenu} tabs={mobilePrimary} title="Platform Admin" home="/admin" search={{ seat: ADMIN_SEAT, placeholder: "Search users, workspaces, events, tickets…" }} notifications={alerts.map(n => ({ ...n, link: n.href }))} unread={counts.alerts} />
     <ShellTools />
     <header className="ws-topbar pwa-hide-desktop-nav">
       <div className="ws-top-l"><MobileToggle open={mobileOpen} setOpen={setMobileOpen} />
       <div className="ws-brand"><BrandLogo href="/admin" /></div></div>
-      <div className="ws-gs"><GlobalSearch seat={null} placeholder="Search users, events, orders, tickets, venues, services, reports..." /></div>
+      <div className="ws-gs"><GlobalSearch seat={ADMIN_SEAT} placeholder="Search users, workspaces, events, tickets, venues, services, cases..." /></div>
       <div className="ws-actions">
         <Popover label={`Platform alerts, ${counts.alerts}`} className="ws-icon-pop" trigger={<><Bell aria-hidden="true" />{counts.alerts > 0 && <b className="ws-count">{counts.alerts}</b>}</>}>
           <div className="ws-pop-head"><b>Platform alerts</b></div>

@@ -1,4 +1,5 @@
 import "server-only";
+import { parseFeeConfig, priceWithFees } from "@/lib/public/fees";
 import type { CustomerCtx } from "./context";
 import { dateWindow } from "@/lib/events/date-window";
 
@@ -19,11 +20,13 @@ export async function publicEvents(ctx: CustomerCtx, opts: { q?: string; cat?: s
   if (opts.cat) { const c = opts.cat.toLowerCase(); rows = rows.filter(e => e.event_type.toLowerCase().includes(c) || e.tags.some(t => t.toLowerCase().includes(c))); }
   if (!rows.length) return [];
   const { data: tiers } = await ctx.supabase.from("ticket_tiers").select("event_id,price,quantity,sold,held,status,kind").in("event_id", rows.map(r => r.id));
+  // Q57 / DMCC: minPrice is what a buyer pays for the cheapest ticket, booking fee included (same config as checkout).
+  const fee = parseFeeConfig((await ctx.supabase.rpc("ticket_fee_config")).data);
   return rows.map(e => {
     const t = (tiers ?? []).filter(x => x.event_id === e.id && x.kind !== "comp" && ["on_sale", "scheduled"].includes(x.status));
     const ll = CITY[(e.city || "london").toLowerCase()] ?? CITY.london!;
     const jitter = (e.id.charCodeAt(0) % 9) / 140, jit2 = (e.id.charCodeAt(1) % 9) / 90;
-    return { ...e, minPrice: t.length ? Math.min(...t.map(x => Number(x.price))) : null, remaining: t.reduce((s, x) => s + x.quantity - x.sold - x.held, 0), capacity: t.reduce((s, x) => s + x.quantity, 0), lat: ll[0] - .03 + jitter, lng: ll[1] - .06 + jit2 };
+    return { ...e, minPrice: t.length ? priceWithFees(Math.min(...t.map(x => Number(x.price))), fee) : null, remaining: t.reduce((s, x) => s + x.quantity - x.sold - x.held, 0), capacity: t.reduce((s, x) => s + x.quantity, 0), lat: ll[0] - .03 + jitter, lng: ll[1] - .06 + jit2 };
   });
 }
 export async function savedKeys(ctx: CustomerCtx) {

@@ -7,6 +7,7 @@ import { Toggle, useAction, useKitToast } from "@/components/kit/client";
 import { uploadPublicMedia } from "@/lib/files/upload-public";
 import { saveMediaAsset } from "@/lib/actions/builders";
 import { suggestPosterCopy } from "@/lib/actions/poster-copy";
+import { parseHex, readableOn, toHex } from "@/lib/brand/accent";
 
 type Ev = { id: string; name: string; slug: string | null; status: string; when: string; date: string; time: string; venue: string; cover: string; tags: string[]; performers: string[]; price: number | null; gallery: string[] };
 type Asset = { id: string; url: string; title: string; format: string; version: number; at: string; event?: string };
@@ -111,7 +112,7 @@ async function render(cv: HTMLCanvasElement, f: Fmt, c: Content, wsName: string)
   }
   const bw = (land ? 22 : 30) * u, bh = 6.4 * u, bxc = land ? W * .48 : W * .76, byy = top + 2.6 * u;
   g.fillStyle = c.accent; g.shadowColor = c.accent; g.shadowBlur = 2 * u; g.beginPath(); g.roundRect(bxc - bw / 2, byy, bw, bh, bh / 2); g.fill(); g.shadowBlur = 0;
-  g.fillStyle = c.accent === "#ffffff" ? "#0b0620" : "#fff"; g.font = `400 ${3 * u}px ${FONTS.impact}`; ls(.1 * u); g.fillText("BUY TICKETS  →", bxc, byy + bh * .7); ls(0);
+  g.fillStyle = readableOn(c.accent) === "#ffffff" ? "#fff" : "#0b0620";   // Q67: label contrast follows the accent (brand colours can be light) g.font = `400 ${3 * u}px ${FONTS.impact}`; ls(.1 * u); g.fillText("BUY TICKETS  →", bxc, byy + bh * .7); ls(0);
   g.fillStyle = "#fff"; g.font = `700 ${1.35 * u}px ${sans}`; ls(.1 * u); g.fillText(c.url.replace(/^https?:\/\//, "").replace(/\/$/, "").toUpperCase().slice(0, 42), bxc, byy + bh + 2.6 * u); ls(0);
   if (!land && (c.brandGd || c.brandWs || c.brandVenue)) {
     const ry = top + row + 3.6 * u, bsz = 2.6 * u; g.font = `700 ${1.8 * u}px ${sans}`; g.textAlign = "left";
@@ -127,10 +128,13 @@ async function render(cv: HTMLCanvasElement, f: Fmt, c: Content, wsName: string)
   }
 }
 
-export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName, library, previous, saved = null }: { site: string; tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[]; saved?: Record<string, unknown> | null }) {
+export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName, library, previous, saved = null, brandColor = null }: { site: string; tab: "create" | "library" | "previous"; event: Ev; workspaceId: string; workspaceName: string; library: Asset[]; previous: Asset[]; saved?: Record<string, unknown> | null; brandColor?: string | null }) {
+  // Q67: a new poster starts in the workspace brand colour (a saved poster keeps its own); it is also the first swatch.
+  const brand = parseHex(brandColor) ? toHex(parseHex(brandColor)!) : null;
+  const accents = brand && !ACCENTS.includes(brand) ? [brand, ...ACCENTS] : ACCENTS;
   const toast = useKitToast(); const { run } = useAction(); const cv = useRef<HTMLCanvasElement>(null);
   const [fmt, setFmt] = useState<Fmt>(FORMATS[0]!); const [zoom, setZoom] = useState(100); const [pane, setPane] = useState<"details" | "style" | "media" | "branding">("details");
-  const [c, setC] = useState<Content>(() => restore({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `${site.replace(/\/$/, "")}/events/${e.slug}` : site, showQr: true, presenter: `${workspaceName} presents`, accent: ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true }, saved));
+  const [c, setC] = useState<Content>(() => restore({ name: e.name, when: e.when, time: e.time, venue: e.venue, tagline: e.tags.slice(0, 4).join(" • "), strap: "", performers: e.performers.join(", "), tickets: e.price ? `Tickets from £${e.price}` : "Free entry", url: e.slug ? `${site.replace(/\/$/, "")}/events/${e.slug}` : site, showQr: true, presenter: `${workspaceName} presents`, accent: brand ?? ACCENTS[0]!, bg: e.cover, font: "impact", shade: 70, brandGd: true, brandWs: true, brandVenue: true }, saved));
   const [hist, setHist] = useState<Content[]>([]); const [fut, setFut] = useState<Content[]>([]);
   const [opts, setOpts] = useState({ gallery: true, promo: true, library: true }); const [busy, setBusy] = useState<string | null>(null); const [menu, setMenu] = useState(false);
   const [thumbs, setThumbs] = useState<Record<string, string>>({}); const [extra, setExtra] = useState<string[]>(() => c.bg && ![e.cover, ...e.gallery, ...STOCK].includes(c.bg) ? [c.bg] : []);
@@ -211,7 +215,7 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
           <label className="pb-f"><span>Ticket URL</span><span className="pb-ic r"><input className="pb-in" type="url" maxLength={200} value={c.url} onChange={x => set({ url: x.target.value })} /><Link2 size={14} /></span></label>
           <div className="pb-qr"><Toggle checked={c.showQr} onChange={v => set({ showQr: v })} label="Show QR code" /><span>Show QR code</span><button className="pb-ai" disabled={busy === "ai"} onClick={() => void regenerate()}>{busy === "ai" ? <Loader2 size={14} className="k-spin" /> : <Sparkles size={14} />}Regenerate with Gala Agent</button></div></div>}
         {pane === "style" && <div className="pb-fields">
-          <div className="pb-f"><span>Accent colour</span><span className="pb-acc">{ACCENTS.map(a => <button key={a} aria-pressed={c.accent === a} style={{ background: a }} onClick={() => set({ accent: a })} aria-label={`Accent ${a}`} />)}<label className="pb-cpick" aria-label="Custom colour"><input type="color" value={c.accent} onChange={x => set({ accent: x.target.value })} /></label></span></div>
+          <div className="pb-f"><span>Accent colour</span><span className="pb-acc">{accents.map(a => <button key={a} aria-pressed={c.accent === a} style={{ background: a }} onClick={() => set({ accent: a })} aria-label={a === brand ? `Brand colour ${a}` : `Accent ${a}`} title={a === brand ? "Workspace brand colour" : undefined} />)}<label className="pb-cpick" aria-label="Custom colour"><input type="color" value={c.accent} onChange={x => set({ accent: x.target.value })} /></label></span></div>
           <div className="pb-f"><span>Headline font</span><span className="pb-seg">{(["impact", "black", "sans"] as const).map(f => <button key={f} aria-pressed={c.font === f} style={{ fontFamily: FONTS[f], fontWeight: f === "sans" ? 900 : 400 }} onClick={() => set({ font: f })}>{{ impact: "Condensed", black: "Heavy", sans: "Modern" }[f]}</button>)}</span></div>
           <label className="pb-f"><span>Background darkness <small>{c.shade}%</small></span><input type="range" min={0} max={100} value={c.shade} onChange={x => set({ shade: Number(x.target.value) })} /></label>
           <label className="pb-f"><span>Area strapline {count(c.strap, 60)}</span><input className="pb-in" maxLength={60} placeholder="Main Stage • Warehouse • Food & Drink" value={c.strap} onChange={x => set({ strap: x.target.value })} /></label></div>}

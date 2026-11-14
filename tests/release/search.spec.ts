@@ -110,8 +110,9 @@ test.describe("Q06 public search against the index", () => {
 
   test("permission-aware in-app search and service-only internals", async () => {
     const o = await signedIn(owner.email) as unknown as SupabaseClient, x = await signedIn(outsider.email) as unknown as SupabaseClient;
-    const ids = async (c: SupabaseClient) => (((await c.rpc("global_search", { p_q: tok, p_workspace: null, p_limit: 50 })).data ?? []) as { id: string }[]).map(r => r.id);
-    expect(await ids(o)).toEqual(expect.arrayContaining([priv, draft]));                    // the owner finds their own private/draft records
+    const ids = async (c: SupabaseClient, ws: string | null = null) => (((await c.rpc("global_search", { p_q: tok, p_workspace: ws, p_limit: 50 })).data ?? []) as { id: string }[]).map(r => r.id);
+    // Q63: workspace records are searched in that workspace's seat (the personal seat holds personal events + the public marketplace).
+    expect(await ids(o, orgWs)).toEqual(expect.arrayContaining([priv, draft]));             // the owner finds their own private/draft records
     const seen = await ids(x);
     for (const id of [priv, draft, hidden]) expect(seen).not.toContain(id);                // an outsider never does
     for (const fn of ["public_search", "public_autocomplete", "search_rebuild", "search_index_document", "cache_bump"])

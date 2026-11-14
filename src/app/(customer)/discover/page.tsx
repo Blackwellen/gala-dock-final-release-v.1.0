@@ -34,7 +34,7 @@ export default async function Discover({ searchParams }: { searchParams: Promise
   const ukDay = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : "";
   const events = (await publicEvents(ctx, { q: tab === "events" ? s(sp.q) : undefined, cat: !isDate ? chip : undefined, date: isDate ? chip : s(sp.date) || undefined, city: s(sp.city) || undefined }))
     .filter(e => !on || (ukDay(e.starts_at) <= on && (ukDay(e.ends_at) || ukDay(e.starts_at)) >= on));
-  const listQ = (kind: "venue" | "service", limit: number) => { let q = ctx.supabase.from("listings").select(LISTING_COLS).eq("published", true).eq("kind", kind); if (results && tab !== "events" && s(sp.q)) { const t = s(sp.q).replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,category.ilike.%${t}%,description.ilike.%${t}%`); } if (results && s(sp.city)) q = q.ilike("location", `%${s(sp.city)}%`); return q.order("review_count", { ascending: false }).limit(limit); };
+  const listQ = (kind: "venue" | "service", limit: number) => { let q = ctx.supabase.from("listings").select(LISTING_COLS).eq("published", true).eq("kind", kind); if (results && tab !== "events" && s(sp.q)) { const t = s(sp.q).replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,category.ilike.%${t}%,description.ilike.%${t}%`); } const city = s(sp.city).replace(/[%_,()\\]/g, " ").trim().slice(0, 60); if (results && city) q = q.or(`city.ilike.%${city}%,location.ilike.%${city}%`); /* Q57: city column too, not only the address line */ return q.order("review_count", { ascending: false }).limit(limit); };
   const [{ data: venuesRaw }, { data: servicesRaw }] = await Promise.all([listQ("venue", results ? 60 : 12), listQ("service", results ? 60 : 12)]);
   const venues = (venuesRaw ?? []) as unknown as Listing[], services = (servicesRaw ?? []) as unknown as Listing[];
   // Sponsored layer (Q23): served server-side from owned inventory, labelled, and kept apart from the organic list — organic
@@ -101,7 +101,9 @@ export default async function Discover({ searchParams }: { searchParams: Promise
 }
 
 function EventCard({ e, saved, href, sponsored = false }: { e: PublicEvent; saved: boolean; href: string; sponsored?: boolean }) {
-  const b = dateBadge(e.starts_at); const badge = sponsored ? "Sponsored" : String(e.settings.badge ?? (e.remaining < 100 ? "Last tickets" : ""));
+  // Q57: "Sponsored" comes only from a served ad slot; an event's own settings.badge can't claim a paid/featured placement.
+  const own = String(e.settings.badge ?? ""); const ownOk = own && !/sponsor|promot|advert|featured|\bad\b/i.test(own);
+  const b = dateBadge(e.starts_at); const badge = sponsored ? "Sponsored" : ownOk ? own : e.remaining < 100 ? "Last tickets" : "";
   const rating = Number(e.settings.rating ?? 0), reviews = Number(e.settings.reviews ?? 0);
   return <article className="ds-ev">
     <Link href={href} className="ds-ev-img" aria-label={`Open ${e.name}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || FALLBACK_COVER} alt="" />{badge && <span className={`ds-badge ${BADGE_TONE[badge] ?? "blue"}`}>{badge}</span>}</Link>
@@ -109,7 +111,7 @@ function EventCard({ e, saved, href, sponsored = false }: { e: PublicEvent; save
     <div className="ds-ev-body">
       <div className="k-row" style={{ gap: 12, alignItems: "flex-start" }}><span className="ds-ev-date"><small>{b.mon}</small><b>{b.day}</b></span><span className="k-grow" style={{ minWidth: 0 }}><Link href={href}><b className="ds-ev-name">{e.name}</b></Link><span className="ds-ev-loc"><MapPin size={12} />{e.location}</span>{rating > 0 && <span className="ds-ev-rate"><Star size={13} fill="#f59e0b" color="#f59e0b" /><b>{rating.toFixed(1)}</b> ({reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k` : reviews})</span>}</span></div>
       <div className="k-row" style={{ gap: 6, margin: "8px 0 0" }}>{e.tags.slice(0, 2).map((t, i) => <span key={t} className={`ds-tag ${["purple", "pink", "green", "amber"][(e.event_type.length + i) % 4]}`}>{t}</span>)}</div>
-      <div className="k-between ds-ev-foot"><span>From <b>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b></span><Link href={`${href}#tickets`} className="k-btn primary">Buy Tickets <ArrowRight size={14} /></Link></div>
+      <div className="k-between ds-ev-foot"><span>From <b>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b>{e.minPrice ? <small className="k-xs k-muted"> incl. fees</small> : null}</span><Link href={`${href}#tickets`} className="k-btn primary">Buy Tickets <ArrowRight size={14} /></Link></div>
     </div>
   </article>;
 }

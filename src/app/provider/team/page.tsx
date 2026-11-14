@@ -57,7 +57,10 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
   return <div className="pt">
     <header className="ws-page-head pt-head">
       <div><h1>Team</h1><p>Manage your staff and resource availability for seamless event delivery.</p></div>
+      {/* Q49: /provider/team/my-shifts (staff check-in, accept/decline, leave) had no link anywhere — staff logins couldn't reach it. */}
+      {!manage && <div className="ws-page-actions"><Link href={`${base}/my-shifts`} className="ws-btn primary"><CalendarCheck aria-hidden="true" />My shifts</Link></div>}
       {manage && <div className="ws-page-actions">
+        <Link href={`${base}/my-shifts`} className="ws-btn outline"><CalendarCheck aria-hidden="true" />My shifts</Link>
         {/* A login invite is a real workspace_invites row (Settings → Team & access, owner only); the crew dialog below never grants access. */}
         {owner && <Link href="/provider/settings?tab=team" className="ws-btn outline"><UserPlus aria-hidden="true" />Invite member</Link>}
         <Link href={`${base}?action=request`} className="ws-btn outline"><CalendarClock aria-hidden="true" />Request availability</Link>

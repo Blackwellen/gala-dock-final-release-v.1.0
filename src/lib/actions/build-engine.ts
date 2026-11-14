@@ -16,7 +16,7 @@ const ERR: [RegExp, string][] = [
   [/not_authorized/, "You can't change this event."], [/event_closed/, "This event can no longer be changed."],
   [/date_required/, "Add your event date first — providers need it to check availability."],
   [/venue_required/, "Choose and hold a venue first — suppliers depend on the venue and date."],
-  [/package_guest_range:(\d+)-(\d+)/, "This package doesn't fit your guest count."], [/package_unavailable|listing_unavailable/, "That option isn't available any more."],
+  [/package_guest_range:(\d+)-(\d+)/, "This package doesn't fit your guest count."], [/package_unavailable|listing_unavailable/, "That option isn't available any more."], [/provider_unavailable/, "This provider can't take bookings right now. Choose another option."],
   [/already_in_build/, "That provider is already in your build."], [/backup_same_provider/, "Choose a different provider as the backup."],
   [/not_holdable|invalid_hold_window/, "Holds are available once the provider has quoted or confirmed availability."],
   [/not_payable/, "One of the selected lines has no price to pay yet."], [/items_required/, "Choose what you'd like to book."],

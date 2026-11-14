@@ -51,15 +51,15 @@ function Finder({ eventId, initialCat, replaceId, onDone }: { eventId: string; i
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, eventId]);
   const set = (p: Partial<ProviderFilters>) => { setF(x => ({ ...x, ...p })); setPage(0); };
-  const toggle = (k: "availableOnly" | "fitsGuests" | "nearEvent" | "verified" | "instantBook") => set({ [k]: !f[k] });
+  const toggle = (k: "availableOnly" | "fitsGuests" | "nearEvent" | "coversEvent" | "verified" | "instantBook") => set({ [k]: !f[k] });
   const ev = res?.event;
   const date = ev?.date ? new Date(ev.date).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : null;
-  const active = ["availableOnly", "fitsGuests", "nearEvent", "verified", "instantBook"].filter(k => f[k as keyof ProviderFilters]).length + (f.maxPrice ? 1 : 0) + (f.minRating ? 1 : 0);
+  const active = ["availableOnly", "fitsGuests", "nearEvent", "coversEvent", "verified", "instantBook"].filter(k => f[k as keyof ProviderFilters]).length + (f.maxPrice ? 1 : 0) + (f.minRating ? 1 : 0);
   const add = async (h: ProviderHit) => {
     const r = await run(() => (replaceId ? replaceWith(eventId, replaceId, h.id, cat) : addToBuild(eventId, h.id, cat)));
     if (r.ok) { if (replaceId) onDone(); else setAdded(s => new Set(s).add(h.id)); }
   };
-  const chip = (k: "availableOnly" | "fitsGuests" | "nearEvent" | "verified" | "instantBook", icon: React.ReactNode, text: string, show = true) => show &&
+  const chip = (k: "availableOnly" | "fitsGuests" | "nearEvent" | "coversEvent" | "verified" | "instantBook", icon: React.ReactNode, text: string, show = true) => show &&
     <button type="button" className={`pf-chip ${f[k] ? "on" : ""}`} aria-pressed={!!f[k]} onClick={() => toggle(k)}>{icon}{text}</button>;
   return <div className="pf">
     <div className="pf-bar">
@@ -72,6 +72,7 @@ function Finder({ eventId, initialCat, replaceId, onDone }: { eventId: string; i
       {chip("availableOnly", <CalendarCheck2 size={14} />, date ? `Free on ${date}` : "Free on my date", !!ev?.date)}
       {chip("fitsGuests", <Users size={14} />, `Fits ${ev?.guests ?? ""} guests`, cat === "venue" && !!ev?.guests)}
       {chip("nearEvent", <MapPin size={14} />, `Near ${ev?.city || "my event"}`, !!ev?.city)}
+      {/* Q57: suppliers whose stated travel radius (or national cover) reaches the event city */}{chip("coversEvent", <MapPin size={14} />, `Covers ${ev?.city || "my event"}`, cat !== "venue" && !!ev?.city)}
       {chip("verified", <BadgeCheck size={14} />, "Verified")}
       {chip("instantBook", <Zap size={14} />, "Instant book")}
     </div>

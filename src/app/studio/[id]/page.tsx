@@ -24,7 +24,7 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
   if (!d || !access) notFound();
   const [{ data: versions }, { data: ws }, evData, bizData, { data: ev }] = await Promise.all([
     db.from("design_versions").select("version,label,created_at").eq("design_id", id).order("version", { ascending: false }).limit(40),
-    d.workspace_id ? supabase.from("workspaces").select("kind").eq("id", d.workspace_id).maybeSingle() : Promise.resolve({ data: null }),
+    d.workspace_id ? supabase.from("workspaces").select("kind,settings").eq("id", d.workspace_id).maybeSingle() : Promise.resolve({ data: null }),
     eventDataFor(d.event_id),
     businessDataFor(d.workspace_id as string | null),
     d.event_id ? db.from("events").select("cover_image,gallery,settings").eq("id", d.event_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -38,8 +38,13 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
   const eventData = { ...bizData, ...evData };
   const gallery = ev ? [...new Set([((ev.settings ?? {}) as { hero_image?: string }).hero_image, ev.cover_image, ...((ev.gallery as string[]) ?? [])].filter((s): s is string => !!s && /^(https:|\/)/.test(s)))].slice(0, 24) : [];
   const back = ws?.kind === "provider" ? "/provider/media" : "/organizer/media";
+  // Q67: the workspace brand colour (Settings → Brand) is always offered first in the Brand tab, even before a brand kit exists.
+  const wsSet = (ws?.settings ?? {}) as { brand_color?: string; brand?: { brand_color?: string } };
+  const wsBrand = [wsSet.brand_color, wsSet.brand?.brand_color].find(c => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c));
+  const kitColors = (kit?.colors ?? []) as BrandKit["colors"];
+  const colors = wsBrand && !kitColors.some(c => c.hex.toLowerCase() === wsBrand.toLowerCase()) ? [{ hex: wsBrand.toUpperCase(), name: "Workspace brand colour" }, ...kitColors] : kitColors;
   const brand = d.workspace_id ? { workspaceId: d.workspace_id as string, canManage: ["owner", "manager"].includes(member?.role ?? ""),
-    kit: { colors: kit?.colors ?? [], fonts: kit?.fonts ?? [], logos: kit?.logos ?? [] } as BrandKit, fonts: (fonts ?? []) as CustomFont[] } : null;
+    kit: { colors, fonts: kit?.fonts ?? [], logos: kit?.logos ?? [] } as BrandKit, fonts: (fonts ?? []) as CustomFont[] } : null;
   return <Studio back={back} brand={brand} openComments={openComments} workspaceId={(d.workspace_id as string | null) ?? null} eventData={eventData} assets={gallery.map((src, i) => ({ src, title: `Event image ${i + 1}` }))}
     versions={(versions ?? []) as { version: number; label: string; created_at: string }[]}
     design={{ id: d.id, title: d.title, version: d.version, document: d.document as DesignDoc, canEdit: access === "owner" || access === "edit", eventId: d.event_id }} />;

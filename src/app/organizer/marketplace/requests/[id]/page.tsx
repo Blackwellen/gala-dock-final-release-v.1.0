@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { RequestEdit, RequestInvite } from "@/components/organizer/request-edit";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { RequestMore } from "@/components/organizer/request-more";
 import { notFound } from "next/navigation";
-import { CalendarDays, MapPin, Wallet, Users, PenLine, UserPlus, Share2, Star, Check, Minus, AlertTriangle, CheckCircle2, ArrowRight, Plus, Clock } from "lucide-react";
+import { CalendarDays, MapPin, Wallet, Users, Star, Check, Minus, AlertTriangle, CheckCircle2, ArrowRight, Plus, Clock } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, Card, Chip, Avatar, Beta } from "@/components/kit";
 import { QuoteSelect, MessageAll, DownloadComparison } from "@/components/organizer/request-client";
@@ -9,7 +11,7 @@ import { ItemActions } from "@/components/organizer/event/controls";
 import { money, dateShort, time, relative } from "@/lib/format";
 
 export const metadata = { title: "Request" };
-type Q = { rating?: number; reviews?: number; cancellation?: string; reliability?: number; response_time?: string; hold?: string; setup?: string; recommended?: boolean; responded?: string; availability?: string; inclusions?: string[]; exclusions?: string };
+type Q = { tax?: number; rating?: number; reviews?: number; cancellation?: string; reliability?: number; response_time?: string; hold?: string; setup?: string; recommended?: boolean; responded?: string; availability?: string; inclusions?: string[]; exclusions?: string };
 const STATUS: Record<string, [string, "green" | "blue" | "amber" | "red" | "gray" | "purple"]> = { quoted: ["Responded", "green"], available: ["Responded", "green"], held: ["On hold", "purple"], confirmed: ["Confirmed", "green"], sent: ["Awaiting response", "amber"], awaiting: ["Awaiting response", "amber"], declined: ["Declined", "red"], expired: ["No response", "gray"], unavailable: ["Unavailable", "red"], cancelled: ["Removed", "gray"] };
 
 /** Whole days until a deadline (server-side, request time). */
@@ -27,6 +29,17 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
   let items = itemsRaw ?? [];
   const rank = (st: string) => (["quoted", "available", "held", "confirmed"].includes(st) ? 0 : ["sent", "awaiting"].includes(st) ? 1 : 2);
   items = [...items].sort((a, b) => rank(a.status) - rank(b.status) || (sortBy === "total_desc" ? Number(b.amount ?? 0) - Number(a.amount ?? 0) : sortBy === "rating" ? Number((b.quote as Q).rating ?? 0) - Number((a.quote as Q).rating ?? 0) : Number(a.amount ?? 1e9) - Number(b.amount ?? 1e9)));
+  // Q57: the request's creator (the "Owner" field showed whoever was viewing) and providers that can still be invited.
+  const invited = new Set(items.map(i => i.listing_id).filter(Boolean));
+  const [{ data: creator }, { data: candRows }] = await Promise.all([
+    // profiles are own-read only: the creator's name/avatar is read server-side for this workspace's own request (checked above).
+    r.created_by ? createAdminClient().from("profiles").select("full_name,avatar_url").eq("id", r.created_by).maybeSingle() : Promise.resolve({ data: null }),
+    sb.from("listings").select("id,name,category,city,rating").eq("published", true).is("paused_at", null).eq("kind", r.category === "venue" ? "venue" : "service").order("rating", { ascending: false }).limit(60),
+  ]);
+  const ownerName = (creator as { full_name?: string | null } | null)?.full_name || (r.created_by === ctx.user.id ? ctx.name : "Team member");
+  const ownerAvatar = (creator as { avatar_url?: string | null } | null)?.avatar_url ?? null;
+  const candidates = ((candRows ?? []) as { id: string; name: string; category: string; city: string | null; rating: number | null }[]).filter(c => !invited.has(c.id)).map(c => ({ id: c.id, name: c.name, category: c.category, city: c.city ?? "", rating: Number(c.rating ?? 0) }));
+  const editable = ["sent", "awaiting", "clarification", "quote_received", "declined", "expired_no_response", "closed"].includes(r.status);
   const responded = items.filter(i => ["quoted", "available", "held", "confirmed", "declined", "unavailable"].includes(i.status)).length;
   const req = (r.requirements ?? {}) as Record<string, string>;
   const attachments = ((req as unknown as {attachments?:{path:string;name:string}[]}).attachments ?? []);
@@ -35,9 +48,9 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
   const avg = quotable.length ? quotable.reduce((s, i) => s + Number(i.amount), 0) / quotable.length : 0;
   const best = [...quotable].sort((a, b) => ((Number((b.quote as Q).rating ?? 4) * 2000) - Number(b.amount)) - ((Number((a.quote as Q).rating ?? 4) * 2000) - Number(a.amount)))[0];
   const incl = (i: typeof items[number]) => (i.quote as Q).inclusions ?? i.package.split(",").map(s => s.trim()).filter(Boolean);
-  const steps = [["Created", `${dateShort(r.created_at)} by ${ctx.name}`, true], ["Invitations sent", `${items.length} providers`, true], ["Responses due", due ? `${dateShort(due)}, ${time(due)}` : "—", responded > 0], ["Select provider", "", items.some(i => i.role === "primary" && ["quoted", "held", "confirmed"].includes(i.status))], ["Complete", "", items.some(i => i.status === "confirmed")]] as const;
+  const steps = [["Created", `${dateShort(r.created_at)} by ${ownerName}`, true], ["Invitations sent", `${items.length} providers`, true], ["Responses due", due ? `${dateShort(due)}, ${time(due)}` : "—", responded > 0], ["Select provider", "", items.some(i => i.role === "primary" && ["quoted", "held", "confirmed"].includes(i.status))], ["Complete", "", items.some(i => i.status === "confirmed")]] as const;
   const qs = (patch: Record<string, string | null>) => { const p = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [k, v] of Object.entries(patch)) v == null ? p.delete(k) : p.set(k, v); return `/organizer/marketplace/requests/${r.id}?${p}`; };
-  const rowsCsv = items.map(i => ({ provider: i.title, status: STATUS[i.status]?.[0] ?? i.status, total_ex_vat: String(i.amount ?? ""), inclusions: incl(i).join("; "), cancellation: (i.quote as Q).cancellation ?? "", reliability: String((i.quote as Q).reliability ?? ""), response_time: (i.quote as Q).response_time ?? "", hold: (i.quote as Q).hold ?? "" }));
+  const rowsCsv = items.map(i => ({ provider: i.title, status: STATUS[i.status]?.[0] ?? i.status, total: String(i.amount ?? ""), vat: String((i.quote as Q).tax ?? ""), inclusions: incl(i).join("; "), cancellation: (i.quote as Q).cancellation ?? "", reliability: String((i.quote as Q).reliability ?? ""), response_time: (i.quote as Q).response_time ?? "", hold: (i.quote as Q).hold ?? "" }));
   const same = (k: keyof Q) => diffOnly && new Set(items.map(i => String((i.quote as Q)[k] ?? ""))).size <= 1;
   const rows: [keyof Q | "setup", string][] = [["setup", "Setup / takedown"], ["cancellation", "Cancellation terms"], ["availability", "Availability"], ["reliability", "Reliability"], ["response_time", "Response time"], ["hold", "Hold option"]];
   return <>
@@ -48,8 +61,8 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
         <div className="k-row k-xs k-muted" style={{ gap: 12 }}><span className="k-row" style={{ gap: 4 }}><CalendarDays size={12} />Event: <Link className="k-link" href={`/organizer/events/${ev.id}`}>{ev.name}</Link></span><span className="k-row" style={{ gap: 4 }}><CalendarDays size={12} />{dateShort(ev.starts_at)}</span><span className="k-row" style={{ gap: 4 }}><MapPin size={12} />{ev.venue_name || ev.location}</span></div>
         <div className="k-row k-wrap" style={{ gap: 6, marginTop: 10 }}>{[r.category, ...String(req.tags ?? "").split(",").map(tag=>tag.trim()).filter(Boolean)].slice(0, 4).map((t, i) => <Chip key={t + i} tone={(["purple", "gray", "gray", "blue"] as const)[i]}>{t[0]!.toUpperCase() + t.slice(1)}</Chip>)}</div></div>
       <div className="k-col" style={{ gap: 12, alignItems: "flex-end" }}>
-        <div className="rq-meta"><div><small>Response deadline</small><span className="k-row" style={{ gap: 8 }}><CalendarDays size={18} className="k-blue" /><span><b>{due ? dateShort(due) : "—"}</b><div className="k-xs k-muted">{daysLeft != null ? (daysLeft ? `in ${daysLeft} days` : "today") : ""}</div></span></span></div><div><small>Budget range</small><span className="k-row" style={{ gap: 8 }}><Wallet size={18} className="k-blue" /><span><b>{r.budget_min ? `${money(r.budget_min)} – ${money(r.budget_max)}` : "Open"}</b><div className="k-xs k-muted">ex. VAT</div></span></span></div><div><small>Invited providers</small><span className="k-row" style={{ gap: 8 }}><Users size={18} className="k-blue" /><span><b>{items.length}</b><div className="k-xs k-muted">{responded} responded</div></span></span></div><div><small>Owner</small><span className="k-row" style={{ gap: 8 }}><Avatar src="/assets/gd/av-alex-organizer.webp" name={ctx.name} /><span><b className="k-small">{ctx.name}</b><div className="k-xs k-muted">Event Manager</div></span></span></div></div>
-        <div className="k-row" style={{ gap: 8 }}><Link className="k-btn primary lg" href={`/organizer/marketplace/requests/new?step=1&event=${ev.id}&category=${r.category}`}><PenLine size={15} />Edit request</Link><Link className="k-btn ghost lg" href={`/organizer/marketplace/requests/new?step=2&event=${ev.id}&category=${r.category}`}><UserPlus size={15} />Invite providers</Link><button className="k-btn ghost lg" disabled title="Share link coming with provider portal"><Share2 size={15} />Share</button><RequestMore id={r.id} status={r.status} /></div>
+        <div className="rq-meta"><div><small>Response deadline</small><span className="k-row" style={{ gap: 8 }}><CalendarDays size={18} className="k-blue" /><span><b>{due ? dateShort(due) : "—"}</b><div className="k-xs k-muted">{daysLeft != null ? (daysLeft ? `in ${daysLeft} days` : "today") : ""}</div></span></span></div><div><small>Budget range</small><span className="k-row" style={{ gap: 8 }}><Wallet size={18} className="k-blue" /><span><b>{r.budget_min ? `${money(r.budget_min)} – ${money(r.budget_max)}` : "Open"}</b><div className="k-xs k-muted">ex. VAT</div></span></span></div><div><small>Invited providers</small><span className="k-row" style={{ gap: 8 }}><Users size={18} className="k-blue" /><span><b>{items.length}</b><div className="k-xs k-muted">{responded} responded</div></span></span></div><div><small>Owner</small><span className="k-row" style={{ gap: 8 }}><Avatar src={ownerAvatar} name={ownerName} /><span><b className="k-small">{ownerName}</b><div className="k-xs k-muted">Created the request</div></span></span></div></div>
+        <div className="k-row" style={{ gap: 8 }}><RequestEdit r={{ id: r.id, title: r.title, scope: r.scope ?? "", budget_min: r.budget_min == null ? null : Number(r.budget_min), budget_max: r.budget_max == null ? null : Number(r.budget_max), response_deadline: r.response_deadline }} disabled={!editable} /><RequestInvite requestId={r.id} candidates={candidates} disabled={!editable || r.status === "closed"} /><RequestMore id={r.id} status={r.status} /></div>
       </div>
     </div>
     <nav className="k-tabs">{(["requirement", "responses", "activity"] as const).map(t => <Link key={t} className="k-tab" href={qs({ tab: t === "requirement" ? null : t })} aria-current={tab === t ? "page" : undefined}>{t === "responses" ? `Responses (${items.length})` : t[0]!.toUpperCase() + t.slice(1)}</Link>)}</nav>
@@ -73,7 +86,7 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
                 <div className="k-between" style={{ alignItems: "flex-start" }}><span><b className="k-small k-strong">{i.title}</b><span className="k-row k-xs" style={{ gap: 3 }}><Star size={11} fill="#f59e0b" color="#f59e0b" />{(q.rating ?? 0).toFixed(1)} <span className="k-muted">({q.reviews ?? 0})</span></span></span><span style={{ textAlign: "right" }}><Chip tone={st}>{sl}</Chip><div className="k-xs k-muted">{["sent", "awaiting"].includes(i.status) && i.response_deadline ? `Due ${relative(i.response_deadline)}` : q.responded ?? relative(i.updated_at)}</div></span></div>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={i.image || "/assets/gd/s-sound-lighting.webp"} alt="" />
-                <div className="k-between"><span><b style={{ fontSize: 15 }}>{i.amount != null && !["sent", "awaiting"].includes(i.status) ? money(i.amount) : "—"}</b><div className="k-xs k-muted">ex. VAT</div></span><Link className={`k-btn ${dead ? "outline" : "primary"} sm`} href={`/organizer/events/${ev.id}?tab=plan&section=suppliers`}>View quote</Link></div></div>
+                <div className="k-between"><span><b style={{ fontSize: 15 }}>{i.amount != null && !["sent", "awaiting"].includes(i.status) ? money(i.amount) : "—"}</b>{/* Q57: build_items.amount is the quote TOTAL (provider_send_quote: subtotal + VAT), not ex. VAT */}<div className="k-xs k-muted">{i.amount != null && !["sent", "awaiting"].includes(i.status) ? (Number(q.tax ?? 0) > 0 ? "incl. VAT" : "total") : ""}</div></span><Link className={`k-btn ${dead ? "outline" : "primary"} sm`} href={`/organizer/events/${ev.id}?tab=plan&section=suppliers`}>View quote</Link></div></div>
                 <div className="qc-cell"><b className="k-small">{i.amount != null && !["sent", "awaiting"].includes(i.status) ? money(i.amount) : "Pending"}</b></div>
                 <div className="qc-cell qc-incl">{incl(i).slice(0, 5).map(x => <span key={x} className="k-row k-xs" style={{ gap: 5, color: "var(--k-ink-2)" }}><Check size={11} className="k-green" />{x}</span>)}</div>
                 <div className="qc-cell k-xs" style={{ color: "var(--k-ink-2)" }}>{q.exclusions ? <><Minus size={11} className="k-red" /> {q.exclusions}</> : "—"}</div>

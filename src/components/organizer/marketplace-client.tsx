@@ -7,7 +7,7 @@ import { Dialog, MapView, Menu } from "@/components/kit/client";
 import type { MapBounds } from "@/components/kit/map-view";
 import { useQueryNav } from "./events-client";
 
-export function MarketFilters({ tab, categories }: { tab: "venues" | "services"; categories: string[] }) {
+export function MarketFilters({ tab, categories, coverage }: { tab: "venues" | "services"; categories: string[]; /** Q57 service coverage filters */ coverage?: { hasPoint: boolean; label: string | null } }) {
   const { set, params, pending } = useQueryNav(); const [q, setQ] = useState(params.get("q") ?? ""); const [more, setMore] = useState(false);
   const sel = (key: string, label: string, opts: { v: string; l: string }[]) => <select className="k-select mk-filter" value={params.get(key) ?? "all"} onChange={e => set({ [key]: e.target.value })} aria-label={label}><option value="all">{label}</option>{opts.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}</select>;
   const chk = (key: string, label: string) => <label className="mk-check"><input type="checkbox" checked={params.get(key) === "1"} onChange={e => set({ [key]: e.target.checked ? "1" : null })} />{label}</label>;
@@ -19,6 +19,8 @@ export function MarketFilters({ tab, categories }: { tab: "venues" | "services";
     {tab === "venues" && sel("cat", "Venue type", categories.map(c => ({ v: c, l: c })))}
     {sel("resp", "Response time", [{ v: "2", l: "Within 2h" }, { v: "4", l: "Within 4h" }, { v: "12", l: "Within 12h" }, { v: "24", l: "Within 24h" }])}
     {chk("verified", "Verified only")}{chk("instant", "Instant book")}{tab === "services" && chk("emergency", "Emergency supply")}
+    {tab === "services" && <>{sel("within", "Distance", [{ v: "10", l: "Based within 10 miles" }, { v: "25", l: "Within 25 miles" }, { v: "50", l: "Within 50 miles" }, { v: "100", l: "Within 100 miles" }])}
+      <label className="mk-check" title={coverage?.hasPoint ? undefined : "Choose an event or a location first"}><input type="checkbox" disabled={!coverage?.hasPoint} checked={params.get("covers") === "1"} onChange={e => set({ covers: e.target.checked ? "1" : null })} />Covers {coverage?.label ? coverage.label : "my event"}</label></>}
     <button className="k-btn outline mk-more" onClick={() => setMore(true)}><SlidersHorizontal size={15} />More filters</button>
     <Dialog open={more} onClose={() => setMore(false)} title="More filters">
       <div className="k-col" style={{ gap: 12 }}>

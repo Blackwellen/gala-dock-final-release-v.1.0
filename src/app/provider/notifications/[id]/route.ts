@@ -44,7 +44,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const owners = await targetWorkspaces(kind.toLowerCase(), target.toLowerCase());
   if (owners === null) return NextResponse.redirect(new URL(`${SECTION[kind.toLowerCase()] ?? "/provider"}?gone=1`, req.url)); // target deleted
   const access = (await listWorkspaceAccess(supabase)).filter(w => w.kind === "provider" && w.member_status === "active" && w.workspace_status === "active" && w.onboarding_complete);
-  const current = req.cookies.get(PROVIDER_WS_COOKIE)?.value;
+  // Q49: getProvider() selects profiles.last_workspace_id before the cookie, so "current" must follow the same order — a matching
+  // cookie with a different last-used workspace used to skip the switch and land on a 404 in the wrong workspace.
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: prof } = user ? await supabase.from("profiles").select("last_workspace_id").eq("id", user.id).maybeSingle() : { data: null };
+  const cookieWs = req.cookies.get(PROVIDER_WS_COOKIE)?.value;
+  const current = access.find(w => w.id === prof?.last_workspace_id)?.id ?? access.find(w => w.id === cookieWs)?.id ?? null;
   const res = NextResponse.redirect(new URL(link, req.url));
   const to = owners.includes(current ?? "") ? null : access.find(w => owners.includes(w.id));
   if (to) {

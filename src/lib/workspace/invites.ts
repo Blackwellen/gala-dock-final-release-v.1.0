@@ -13,6 +13,8 @@ const reasons: [RegExp, string, number][] = [
   [/already_member/, "This person is already a member of the workspace.", 409],
   [/self_invite/, "You can’t invite yourself.", 400],
   [/rate_limited/, "Too many invitations. Please wait and try again later.", 429],
+  // Q67: seats = owner + active members + pending invitations (plan_limit_reached:seats from the database).
+  [/plan_limit_reached:seats/, "Your plan's team seats are all in use (owner, members and pending invitations). Revoke an invitation, remove a member, or upgrade in Settings → Payments & Billing.", 402],
   [/invalid_role|invalid_email/, "Enter a valid email and role.", 400],
 ];
 

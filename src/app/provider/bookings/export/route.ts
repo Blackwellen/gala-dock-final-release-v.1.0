@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
-
-const csv = (v: unknown) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; };
+import { csvCell as csv } from "@/lib/provider/csv"; // Q49: was unescaped — customer-entered names could carry spreadsheet formulas
 
 /** CSV of the workspace's bookings for the current tab/search. RLS-scoped; no payment instruments are included. */
 export async function GET(request: NextRequest) {

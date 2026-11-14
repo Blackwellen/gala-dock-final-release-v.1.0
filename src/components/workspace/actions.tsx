@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState, useTransition, type ReactNode } from "react";
+import { useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { useToast } from "@/components/ui";
 
@@ -26,19 +26,29 @@ export function ActionButton({ action, args = [], children, variant = "outline",
 }) {
   const router = useRouter();
   const toast = useToast();
-  const [pending, start] = useTransition();
+  const [running, start] = useTransition();
+  // Q49: the redirect runs in its own transition so the button stays disabled until the destination renders (a router.push after
+  // the await is not part of the first transition, so the button used to re-enable while the next page loaded and a second click
+  // re-ran the action). `busy` closes the gap between the click and React's first pending render.
+  const [navigating, startNav] = useTransition(); const pending = running || navigating; const busy = useRef(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const id = useId();
 
   function run(extra: unknown[] = []) {
+    if (busy.current || pending) return;
+    busy.current = true;
     setError("");
     start(async () => {
-      const result = await (action as (...a: unknown[]) => Promise<ActionResult>)(...args, ...extra);
-      if (!result.ok) { setError(result.error); if (!open) toast(result.error); return; }
-      setOpen(false);
-      if (result.message) toast(result.message);
-      if (result.redirect) router.push(result.redirect); else router.refresh();
+      try {
+        const result = await (action as (...a: unknown[]) => Promise<ActionResult>)(...args, ...extra);
+        if (!result) return; // a server-side redirect() (e.g. expired session) is already navigating
+        if (!result.ok) { setError(result.error); if (!open) toast(result.error); return; }
+        setOpen(false);
+        if (result.message) toast(result.message);
+        const to = result.redirect;
+        if (to) startNav(() => router.push(to)); else router.refresh();
+      } catch { const msg = "Network error — your change was not saved."; setError(msg); if (!open) toast(msg); } finally { busy.current = false; }
     });
   }
 
@@ -79,21 +89,31 @@ export function ActionForm({ action, children, className = "", resetOnSuccess = 
 }) {
   const router = useRouter();
   const toast = useToast();
-  const [pending, start] = useTransition();
+  const [running, start] = useTransition();
+  // Q49: submit buttons were never disabled and a second Enter/click while the action ran (or while its redirect loaded) re-ran
+  // it — duplicate venues, services, packages, bookings and quotes from the provider wizards. One submit at a time, pending until
+  // the destination renders (see ActionButton).
+  const [navigating, startNav] = useTransition(); const pending = running || navigating; const busy = useRef(false);
   const [error, setError] = useState("");
-  return <form className={className} aria-busy={pending} onSubmit={e => {
+  return <form className={className} aria-busy={pending} data-pending={pending ? "" : undefined} onSubmit={e => {
     e.preventDefault();
+    if (busy.current || pending) return;
+    busy.current = true;
     const form = e.currentTarget;
     const data = new FormData(form);
     const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
     if (submitter?.name) data.set(submitter.name, submitter.value);
     setError("");
     start(async () => {
-      const result = await action(data);
-      if (!result.ok) { setError(result.error); return; }
-      if (resetOnSuccess) form.reset();
-      if (result.message) toast(result.message);
-      if (result.redirect) router.push(result.redirect); else router.refresh();
+      try {
+        const result = await action(data);
+        if (!result) return; // a server-side redirect() is already navigating
+        if (!result.ok) { setError(result.error); return; }
+        if (resetOnSuccess) form.reset();
+        if (result.message) toast(result.message);
+        const to = result.redirect;
+        if (to) startNav(() => router.push(to)); else router.refresh();
+      } catch { setError("Network error — your change was not saved."); } finally { busy.current = false; }
     });
   }}>
     {children}

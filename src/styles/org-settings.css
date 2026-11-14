@@ -29,3 +29,14 @@
 .o-root .ac-cals li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; } .o-root .ac-cals li:not(:last-child) { border-bottom: 1px solid var(--k-line-2); }
 .o-root .ac-cals b { display: block; font-size: 12.5px; font-weight: 500; color: var(--k-ink); } .o-root .ac-cals small { display: block; font-size: 11px; color: var(--k-muted); }
 .o-root .ac-connect { height: 30px !important; padding: 0 12px !important; font-size: 12px !important; color: var(--k-blue) !important; }
+/* Q67 notification switches: detail line, locked mandatory kinds */
+.st-notif li > span { min-width: 0; padding-right: 12px; }
+.st-locked { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--k-line); border-radius: 10px; background: var(--k-soft); font-size: 12.5px; color: var(--k-ink-2); }
+.st-locked b { display: inline-flex; align-items: center; gap: 6px; }
+.st-locked ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.st-locked li { display: flex; align-items: center; gap: 6px; }
+.st-xfer { display: grid; gap: 10px; }
+.st-limits-panel { display: grid; gap: 10px; }
+.st-limits-panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.st-limits-panel li { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; font-size: 13px; }
+.st-limits-panel .st-bar { grid-column: 1 / -1; }

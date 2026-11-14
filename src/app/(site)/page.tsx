@@ -73,7 +73,7 @@ export default function LandingPage() {
           <ul className="gp-feats">
             <Feature icon={Link2} title="One event, everything connected" text="Every booking, cost and timing stays on the plan." />
             <Feature icon={Workflow} title="Availability and dependencies" text="See what to book next and what depends on it." />
-            <Feature icon={ShieldCheck} title="Real venues and suppliers" text="Verified providers who respond to your event." />
+            <Feature icon={ShieldCheck} title="Real venues and suppliers" text="Browse real venues and suppliers, check who is verified, and send requests in one place." />
           </ul>
           <div className="gp-cta-row"><TLink href="/build-an-event" surface={S} variant="whole_build" className="gp-btn gp-btn--primary">Plan an event<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></TLink></div>
         </div>

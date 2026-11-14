@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import type { MapEl } from "../_components/venue-map";
+import { sellerBookingMode } from "@/lib/provider/seller-country";
 
 const list = (v: FormDataEntryValue | null) => String(v ?? "").split(/[,\n]/).map(s => s.trim()).filter(Boolean).slice(0, 30);
 const text = (v: FormDataEntryValue | null, max = 200) => String(v ?? "").trim().slice(0, max);
@@ -49,12 +50,17 @@ export async function saveCommercial(venueId: string, fd: FormData): Promise<Act
   const refunds = [0, 1, 2].map(i => ({ window: text(fd.get(`c_window_${i}`), 30), refund: Math.min(100, Math.max(0, intOrNull(fd.get(`c_refund_${i}`)) ?? 0)) })).filter(r => r.window);
   if (!refunds.length) return { ok: false, error: "Add at least one cancellation window." };
   const prev = ((l.details ?? {}) as Record<string, unknown>).commercial as Record<string, unknown> | undefined;
-  return saveListing(venueId, {
-    booking_mode: text(fd.get("booking_mode"), 10), price_from: rateFrom, price_unit: "per hour",
-    details: { commercial: { ...(prev ?? {}), pricing: "hourly", rate_from: rateFrom, rate_to: rateTo, minimum_spend: intOrNull(fd.get("minimum_spend")) ?? 0, deposit_pct: deposit,
+  // Q49: keep the pricing model chosen in the wizard (daily / package / quote). This tab used to rewrite every venue to hourly
+  // pricing ("per hour") and leave a fixed-amount deposit_mode contradicting the percentage saved here.
+  const pricing = ["hourly", "daily", "package", "quote"].includes(String(prev?.pricing)) ? String(prev!.pricing) : "hourly";
+  const { mode, note } = sellerBookingMode(workspace.settings, text(fd.get("booking_mode"), 10) || "request");
+  const saved = await saveListing(venueId, {
+    booking_mode: mode, price_from: pricing === "quote" && rateFrom === null ? null : rateFrom, price_unit: pricing === "daily" ? "per day" : pricing === "package" ? "per package" : "per hour",
+    details: { commercial: { ...(prev ?? {}), pricing, rate_from: rateFrom, rate_to: rateTo, minimum_spend: intOrNull(fd.get("minimum_spend")) ?? 0, deposit_mode: "percent", deposit_pct: deposit, deposit_fixed: null,
       balance_days: intOrNull(fd.get("balance_days")) ?? 14, security_deposit: intOrNull(fd.get("security_deposit")) ?? 0, lead_days: intOrNull(fd.get("lead_days")) ?? 0,
       cancellation: refunds, holds: { enabled: fd.get("holds") === "on", hours: intOrNull(fd.get("hold_hours")) ?? 48 } } },
   }, "Commercial terms saved — accepted bookings keep the terms they were agreed on");
+  return saved.ok && note ? { ok: true, message: note } : saved;
 }
 
 export type SpaceInput = { name: string; indoor: boolean; capacity_standing: number | null; capacity_seated: number | null; area_sqm: number | null; rate_hourly: number | null;

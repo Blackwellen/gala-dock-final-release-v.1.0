@@ -1,7 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
+import { wallToIso } from "@/lib/events/wall-time";
 
 const KINDS = ["blocked", "open", "emergency_window", "maintenance"] as const;
 const label: Record<(typeof KINDS)[number], string> = { blocked: "Time blocked", open: "Availability opened", emergency_window: "Emergency window published", maintenance: "Maintenance scheduled" };
@@ -13,8 +15,8 @@ export async function setAvailability(data: FormData): Promise<ActionResult> {
   const target = String(data.get("target") ?? "");
   const [type, id] = target.split(":");
   const start = String(data.get("start") ?? ""), end = String(data.get("end") ?? "");
-  const toIso = (local: string) => { const d = new Date(local); return Number.isNaN(d.getTime()) ? null : d.toISOString(); };
-  const s = toIso(start), e = toIso(end);
+  // Q49: a naive "YYYY-MM-DDTHH:mm" is a London wall time (wall-time.ts); new Date() on the server read it as UTC (+1h in BST).
+  const s = wallToIso(start), e = wallToIso(end);
   if (!s || !e) return { ok: false, error: "Choose a start and end time." };
   if (new Date(e) <= new Date(s)) return { ok: false, error: "End time must be after the start time." };
   const { db, workspace } = await getProvider();
@@ -23,5 +25,7 @@ export async function setAvailability(data: FormData): Promise<ActionResult> {
     p_listing: type === "listing" ? id : null, p_space: type === "space" ? id : null, p_crew: type === "crew" ? id : null,
     p_note: String(data.get("note") ?? "").slice(0, 500),
   });
-  return error ? { ok: false, error: friendly(error) } : { ok: true, message: label[kind] };
+  if (error) return { ok: false, error: friendly(error) };
+  revalidatePath("/provider/calendar");
+  return { ok: true, message: label[kind] };
 }

@@ -38,7 +38,9 @@ export function QuoteReview(props: {
   const template = `Hi ${props.clientFirst || "there"},\n\nThanks for your enquiry. Please find our detailed quote for ${props.eventName}. We’d love to host you and are confident we can deliver an amazing event.\n\nLet me know if you have any questions or would like to make changes.\n\n${props.workspace}`;
   const [message, setMessage] = useState(props.message || template);
   const [error, setError] = useState("");
-  const [pending, start] = useTransition();
+  const [saving, start] = useTransition();
+  // Q49: "Send quote" stayed clickable while the quote page loaded; a second click re-saved and re-sent (a new version to the client).
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   const payload = (): QuotePayload => ({ items: props.lines, depositPct: props.depositPct, validDays, message,
     terms: { ...props.terms, inclusions: inclusions.filter(x => x.trim()), exclusions: exclusions.filter(x => x.trim()), cancellation: tiers, hold_offer: hold, hold_hours: hold ? holdHours : null, valid_days: validDays } });
   const run = (send: boolean) => start(async () => {
@@ -47,7 +49,7 @@ export function QuoteReview(props: {
     const r = send ? await sendQuote(props.itemId, props.quoteId, payload()) : await saveQuoteDraft(props.itemId, props.quoteId, payload());
     if (!r.ok) { setError(r.error); return; }
     toast(r.message ?? "Draft saved");
-    if (r.redirect && send) router.push(r.redirect); else router.refresh();
+    const to = r.redirect; if (to && send) startNav(() => router.push(to)); else router.refresh();
   });
 
   return <><div className="qw"><div className="qw-main">{props.top}<div className="qr">

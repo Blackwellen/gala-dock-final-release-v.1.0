@@ -16,6 +16,7 @@ import { loadPackageContext } from "../data";
 import { PkgStep1, PkgStep2, PkgStep3 } from "./steps";
 import { ManagerOnly } from "../../_manager-only";
 import { getProvider } from "@/lib/provider/context";
+import { enquiryOnlyCountry } from "@/lib/provider/seller-country";
 
 export const metadata: Metadata = { title: "Create package" };
 const STEPS = ["Offer Details", "Pricing, Rules & Publish", "Availability & Rules", "Media & Details", "Review & Publish"];
@@ -23,7 +24,8 @@ const SUB = ["Bundle your venue and services into a reusable offer.", "Set prici
 
 export default async function CreatePackage(props: PageProps<"/provider/packages/new">) {
   const sp = await props.searchParams;
-  if (!(await getProvider()).can.manage) return <ManagerOnly title="Create Package" back={{ href: "/provider/listings/packages", label: "Back to Packages" }} />;
+  const ctx = await getProvider();
+  if (!ctx.can.manage) return <ManagerOnly title="Create Package" back={{ href: "/provider/listings/packages", label: "Back to Packages" }} />;
   const id = typeof sp.package === "string" ? sp.package : null;
   const preset = typeof sp.listing === "string" && isUuid(sp.listing) ? sp.listing : null;
   const c = await loadPackageContext(id);
@@ -41,7 +43,7 @@ export default async function CreatePackage(props: PageProps<"/provider/packages
     <ol className="wz-steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
       {p && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
     {step === 1 && <PkgStep1 p={p} parent={parent} listings={listings} options={options} presetListing={preset} next={p ? url(2) : "/provider/packages/new?package={package}&step=2"} />}
-    {step === 2 && p && <PkgStep2 p={p} parent={parent} days={days} back={url(1)} next={url(3)} />}
+    {step === 2 && p && <PkgStep2 p={p} parent={parent} days={days} back={url(1)} next={url(3)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 3 && p && <PkgStep3 p={p} days={days} back={url(2)} next={url(4)} />}
     {step === 4 && p && <div className="vw vw-s5"><PhotoManager venueId={p.id} initial={photos} save={savePackagePhotos.bind(null, p.id)} />
       <div className="vw-foot"><Link href={url(3)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 4 of 5</span>

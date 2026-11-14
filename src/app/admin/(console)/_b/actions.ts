@@ -14,6 +14,7 @@ const extra: [RegExp, string][] = [
   [/invalid_amount/, "Enter an amount above £0."],
   [/no_draft/, "There are no unpublished changes in this section."],
   [/invalid_subject/, "Enter a subject (at least 3 characters)."],
+  [/invalid_reason_code/, "That reason doesn’t apply to this subject — use Evidence review → Restrictions & appeals to pick one."],
   [/body_required/, "Write a message first."],
   [/invalid_value/, "Those settings couldn’t be read — check the values and try again."],
   // Q65 partner payouts
@@ -85,6 +86,21 @@ export async function decideTrust(id: string, decision: string, reason: string):
   if (!isUuid(id)) return bad();
   const msg = decision === "actioned" ? "Restriction recorded" : decision === "dismissed" ? "Case resolved — no action" : "Moved to review";
   return rpc("admin_decide_trust", { p_case: id, p_decision: decision, p_reason: reason }, msg);
+}
+/** Q59: "Restrict / Suspend" used to only close the case as actioned — nothing was restricted, the provider wasn't told and couldn't
+ *  appeal. A case about a workspace or listing now applies a real restriction through trust_enforce (which also closes the case). */
+const RESTRICT_CODE: Record<string, string> = { "Confirmed fraud / bot activity": "fraud_suspected", "Identity could not be verified": "identity_mismatch" };
+export async function restrictCase(id: string, reason: string): Promise<ActionResult> {
+  if (!isUuid(id)) return bad();
+  const { db } = await getAdmin();
+  const { data: c } = await db.from("trust_cases").select("subject_type,subject_id").eq("id", id).maybeSingle();
+  const subject = c as { subject_type: string; subject_id: string | null } | null;
+  if (!subject) return bad();
+  if (!subject.subject_id || !["workspace", "listing"].includes(subject.subject_type))
+    return bad("This case isn’t linked to a workspace or listing, so nothing can be restricted from here. Apply the restriction in Evidence review → Restrictions & appeals.");
+  const code = subject.subject_type === "listing" && RESTRICT_CODE[reason] === "identity_mismatch" ? "other_policy" : RESTRICT_CODE[reason] ?? "other_policy";
+  return rpc("trust_enforce", { p_subject_type: subject.subject_type, p_subject_id: subject.subject_id, p_action: subject.subject_type === "listing" ? "listing_hidden" : "workspace_suspended",
+    p_reason_code: code, p_note: reason, p_evidence: [], p_ends_at: null, p_case: id }, "Restriction applied — the provider has been told and can appeal");
 }
 export async function assignTrust(id: string): Promise<ActionResult> {
   if (!isUuid(id)) return bad();

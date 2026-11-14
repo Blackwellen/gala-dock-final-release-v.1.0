@@ -11,6 +11,7 @@ export function CredentialUpload({ workspaceId, credentialKey, label, expires, i
   const [message, setMessage] = useState("");
   async function onSubmit(form: FormData) {
     const file = form.get("file");
+    if (busy) return;   // Q59: a second click while uploading must not submit a duplicate document
     if (!(file instanceof File) || !file.size) return setMessage("Choose a PDF, PNG or JPG.");
     setBusy(true); setMessage("");
     try {
@@ -28,7 +29,7 @@ export function CredentialUpload({ workspaceId, credentialKey, label, expires, i
     <label>Issuer<input name="issuer" maxLength={120} placeholder="e.g. insurer or licensing authority" /></label>
     <label>Reference<input name="reference" maxLength={80} placeholder="Policy or licence number" /></label>
     {expires && <label>Expires<input name="expires" type="date" required /></label>}
-    {insurance && <label>Cover amount (£){minCover ? <small>Minimum £{(minCover / 100).toLocaleString("en-GB")}</small> : null}<input name="cover" type="number" inputMode="numeric" min={1} step={1} required placeholder="e.g. 5000000" /></label>}
+    {insurance && <label>Cover amount (£){minCover ? <small>Minimum £{(minCover / 100).toLocaleString("en-GB")}</small> : null}<input name="cover" type="number" inputMode="numeric" min={minCover ? Math.ceil(minCover / 100) : 1} step={1} required placeholder="e.g. 5000000" /></label>}
     <div className="pc-upload-actions"><button type="button" className="ws-btn outline sm" onClick={() => setOpen(false)}>Cancel</button>
       <button className="ws-btn primary sm" disabled={busy}>{busy ? <><Loader2 size={14} className="spin" aria-hidden="true" />Submitting…</> : "Submit for review"}</button></div>
     {message && <small role="alert" className="pc-error">{message}</small>}

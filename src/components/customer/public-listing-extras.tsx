@@ -148,7 +148,7 @@ export function coverageLine(c: ServiceDetails["coverage"]) {
   if (c.mode === "international") return "UK and international";
   return [c.radius_miles && c.base ? `Within ${c.radius_miles} miles of ${c.base}` : c.base ?? null, txt(c.areas)].filter(Boolean).join(" · ") || null;
 }
-export function ServiceDetailsSection({ s }: { s: ServiceDetails }) {
+export function ServiceDetailsSection({ s, insuranceVerified = false }: { s: ServiceDetails; /** listing_trust().insurance_verified — reviewed by Gala Dock, in date */ insuranceVerified?: boolean }) {
   const showPrice = s.pricing?.show_price !== false;
   const inc = list(s.included), exc = list(s.excluded), addons = (s.addons ?? []).filter(a => a?.name);
   const st = s.setup ?? {};
@@ -160,9 +160,11 @@ export function ServiceDetailsSection({ s }: { s: ServiceDetails }) {
   ] as [typeof Users, string, string | null][]).filter((x): x is [typeof Users, string, string] => !!x[2]);
   const canc = (s.cancellation ?? []).filter(x => x && x.window);
   const types = list(s.event_types);
-  const insured = (s.credentials ?? []).some(c => c.name?.startsWith("Public liability") && (c.reference || c.expires));
+  // Q57 / trust lane: the badge is a public claim, so it follows Gala Dock's review (listing_trust().insurance_verified), never the
+  // provider's self-typed credentials list.
+  const insured = insuranceVerified;
   if (!facts.length && !inc.length && !exc.length && !addons.length && !needs.length && !txt(st.space) && !canc.length && !types.length && !insured) return null;
-  return <section id="details" className="pl3-row"><div className="k-between"><h2>Service details</h2>{insured && <span className="plx-badge"><ShieldCheck size={14} aria-hidden />Public liability insurance on file</span>}</div>
+  return <section id="details" className="pl3-row"><div className="k-between"><h2>Service details</h2>{insured && <span className="plx-badge"><ShieldCheck size={14} aria-hidden />Public liability insurance verified</span>}</div>
     <div className="plx-cards">
       {(facts.length > 0 || types.length > 0) && <section className="ce-card plx-card"><h3>At a glance</h3><dl>{facts.map(([I, k, v]) => <div key={k}><dt><I size={13} aria-hidden /> {k}</dt><dd>{v}</dd></div>)}</dl>
         {types.length > 0 && <div className="plx-chips">{types.map(t => <span key={t}>{t}</span>)}</div>}</section>}

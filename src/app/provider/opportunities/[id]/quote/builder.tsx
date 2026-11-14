@@ -30,7 +30,9 @@ export function QuoteBuilder(props: {
   const [depositPct, setDepositPct] = useState(props.depositPct);
   const [standby, setStandby] = useState(Boolean(props.terms.standby ?? false));
   const [error, setError] = useState("");
-  const [pending, start] = useTransition();
+  const [saving, start] = useTransition();
+  // Q49: keep the buttons disabled until the next step renders (router.push after an await isn't part of the first transition).
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
 
   const allLines = useMemo(() => [...lines,
     ...(travel > 0 ? [{ label: "Travel / delivery", detail: "", qty: 1, unit: "fixed", unit_price: travel, kind: "travel" }] : []),
@@ -52,7 +54,7 @@ export function QuoteBuilder(props: {
     const r = await saveQuoteDraft(props.itemId, props.quoteId, payload(), next ?? "step1");
     if (!r.ok) { setError(r.error); return; }
     if (!next) toast("Draft saved");
-    if (r.redirect) router.push(r.redirect);
+    const to = r.redirect; if (to) startNav(() => router.push(to));
   });
   const pickerItems = props.catalog.filter(c => picker === "all" || (picker === "package" ? c.kind === "package" : picker === "space" ? c.kind === "space" : picker === "service" ? c.kind === "service" : false));
 

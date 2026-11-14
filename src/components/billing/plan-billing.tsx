@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ActionButton } from "@/components/workspace/actions";
-import { cancelPlanAction, choosePlanAction, undoPlanChangeAction } from "@/lib/actions/billing";
+import { cancelPlanAction, choosePlanAction, openBillingPortalAction, undoPlanChangeAction } from "@/lib/actions/billing";
+import { automaticTaxEnabled, planVatCopy } from "@/lib/billing/core";
 import type { Db } from "@/lib/workspace/db";
 import { untyped } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
@@ -18,7 +19,9 @@ const STATUS: Record<string, string> = { active: "Active", trialing: "Trial", pa
  * Plan & billing panel (Q28). Reads the catalogue and the workspace's Stripe mirror through RLS; every change goes through a
  * server action that re-checks ownership, and the plan itself only changes when Stripe's signed webhook confirms it.
  */
-export async function PlanBilling({ db, workspaceId, kind, plan, isOwner }: { db: Db; workspaceId: string; kind: "organizer" | "provider"; plan: string; isOwner: boolean }) {
+export async function PlanBilling({ db, workspaceId, kind, plan, isOwner, role }: { db: Db; workspaceId: string; kind: "organizer" | "provider"; plan: string; isOwner: boolean; role?: string }) {
+  // Q67: the Stripe customer portal (cards, invoices, cancel) is for the owner and finance.
+  const canPortal = isOwner || role === "finance";
   const u = untyped(db as never);
   const [{ data: prices }, { data: sub }, { data: invoices }] = await Promise.all([
     u.from("plan_prices").select("plan,billing_interval,price_minor,currency,self_serve,stripe_price_test,stripe_price_live").eq("kind", kind).eq("active", true).order("price_minor"),
@@ -39,9 +42,9 @@ export async function PlanBilling({ db, workspaceId, kind, plan, isOwner }: { db
     {S?.pending_plan && <p className="k-small">Changes to <b>{label(S.pending_plan)}</b> on {day(S.pending_effective_at)}. You keep your current features until then.</p>}
     {S?.cancel_at_period_end && <p className="k-small">Your plan ends on {day(S.current_period_end)} and the workspace moves to Starter.</p>}
     {S?.status === "past_due" && <p className="ws-form-error" role="alert">Your last payment failed. Stripe will retry; your plan stays active for 14 days from {day(S.dunning_since)}.
-      {/* Q60: the only way to fix a failed payment without a customer portal is to pay the open invoice with another card. */}
+      {/* Q60: pay the open invoice with another card (Q67: or update the card in the billing portal below). */}
       {dueInvoice?.hosted_invoice_url && <> <a href={dueInvoice.hosted_invoice_url} target="_blank" rel="noreferrer">Pay the open invoice or use another card</a>.</>}</p>}
-    <p className="k-small k-muted">Prices exclude VAT.{liveMode ? " Payments are taken securely by Stripe." : " Billing runs in Stripe test mode — no real card is charged."}</p>
+    <p className="k-small k-muted">{planVatCopy(automaticTaxEnabled())}{liveMode ? " Payments are taken securely by Stripe." : " Billing runs in Stripe test mode — no real card is charged."}</p>
     <div className="k-row" style={{ gap: 12, flexWrap: "wrap", alignItems: "stretch" }}>
       {plans.map(pl => {
         const month = P.find(p => p.plan === pl && p.billing_interval === "month"), year = P.find(p => p.plan === pl && p.billing_interval === "year");
@@ -66,7 +69,10 @@ export async function PlanBilling({ db, workspaceId, kind, plan, isOwner }: { db
         ? <ActionButton action={cancelPlanAction} args={[workspaceId, kind, false]}>Keep my plan</ActionButton>
         : <ActionButton action={cancelPlanAction} args={[workspaceId, kind, true]} variant="danger" confirm={{ title: "Cancel plan?", body: "Your plan stays active until the end of this billing period, then the workspace moves to Starter.", cta: "Cancel at period end" }}>Cancel plan</ActionButton>}
     </div>}
-    {!isOwner && <p className="k-small k-muted">Only the workspace owner can change the plan.</p>}
+    {canPortal && S && <div className="k-row" style={{ gap: 8, marginTop: 12, flexWrap: "wrap", alignItems: "center" }}>
+      <ActionButton action={openBillingPortalAction} args={[workspaceId, kind]}>Manage cards, invoices &amp; cancellation</ActionButton>
+      <span className="k-small k-muted">Opens Stripe&apos;s secure billing page; you come back here afterwards.</span></div>}
+    {!isOwner && <p className="k-small k-muted">Only the workspace owner can change the plan{canPortal ? "; finance can manage cards and invoices." : "."}</p>}
     {I.length > 0 && <table className="k-table" style={{ marginTop: 12 }}><thead><tr><th>Invoice</th><th>Status</th><th>Period end</th><th style={{ textAlign: "right" }}>Amount</th></tr></thead>
       <tbody>{I.map(i => <tr key={i.stripe_invoice_id}><td>{i.hosted_invoice_url ? <a href={i.hosted_invoice_url} target="_blank" rel="noreferrer">{i.stripe_invoice_id.slice(-8)}</a> : i.stripe_invoice_id.slice(-8)}</td>
         <td>{INVOICE[i.status] ?? i.status}</td><td>{day(i.period_end)}</td><td style={{ textAlign: "right" }}>{gbp(i.status === "paid" ? i.amount_paid : i.amount_due, i.currency)}</td></tr>)}</tbody></table>}

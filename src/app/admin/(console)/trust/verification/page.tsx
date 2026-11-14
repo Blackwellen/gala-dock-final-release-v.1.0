@@ -8,7 +8,7 @@ import { rows } from "@/lib/workspace/db";
 import { requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill } from "../../_b/kit";
 import { stamp, ago } from "../../_b/format";
-import { reviewDocument, reviewCheck, decideEnforcementAppeal, liftEnforcement } from "../../_d/actions";
+import { reviewDocument, reviewCheck, decideEnforcementAppeal, liftEnforcement, applyRestriction } from "../../_d/actions";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-trust.css";
 import "@/styles/admin-d.css";
@@ -54,6 +54,7 @@ export default async function VerificationReviewPage(props: PageProps<"/admin/tr
     .sort((a, b) => b.at.localeCompare(a.at)).slice(0, 60);
   const days = (iso: string | null) => iso ? Math.ceil((new Date(iso).getTime() - now) / 864e5) : null;
   const docCodes = codes.filter(c => !c.applies_to?.length || c.applies_to.some(a => /document|workspace|evidence/.test(a)));
+  const enfCodes = codes.filter(c => !c.applies_to?.length || c.applies_to.some(a => a === "workspace" || a === "listing" || a === "verification"));
 
   return <div className="adb ads add">
     <Head back={{ href: "/admin/trust", label: "Trust & Safety" }} title="Verification review" subtitle="Provider evidence, identity and business checks, and appeals against restrictions. Nothing here self-verifies: every decision is yours, recorded with a reason." />
@@ -90,7 +91,7 @@ export default async function VerificationReviewPage(props: PageProps<"/admin/tr
             <label className="wide">Reason (sent to the provider when rejecting)<input name="reason" maxLength={500} placeholder="e.g. Policy number doesn’t match the certificate" /></label>
             <button className="adb-btn primary" type="submit">Record decision</button>
           </ActionForm>
-        </li>; })}</ul> : <p className="adb-none">No evidence is waiting for review. New uploads appear here once they pass the malware scan.</p>}
+        </li>; })}</ul> : <p className="adb-none">No evidence is waiting for review. New uploads appear here straight away; a file can only be verified once it has passed the malware scan.</p>}
     </section>}
 
     {tab === "checks" && <section className="adb-panel">
@@ -103,7 +104,7 @@ export default async function VerificationReviewPage(props: PageProps<"/admin/tr
           <td>{c.submitted_at ? stamp(c.submitted_at) : "—"}</td>
           <td><Pill status={c.status === "verified" ? "approved" : CHECK_PENDING.includes(c.status) ? "pending" : c.status === "rejected" ? "refunded" : "in_review"} label={c.status.replace("_", " ")} /></td>
           <td>{c.kind !== "stripe_connect" && CHECK_PENDING.includes(c.status) ? <ActionForm action={reviewCheck.bind(null, c.id)} className="add-inline">
-            <select className="adb-select" name="to" aria-label="Decision" defaultValue="verified"><option value="verified">Verify</option><option value="action_required">Needs action</option><option value="rejected">Reject</option></select>
+            <select className="adb-select" name="to" aria-label="Decision" defaultValue="verified"><option value="verified">Verify</option><option value="pending_review">Mark in review</option><option value="action_required">Needs action</option><option value="rejected">Reject</option></select>
             <input type="date" name="expires_at" aria-label="Expires" /><input name="reason" required minLength={5} aria-label="Reason" placeholder="Reason (audited)" />
             <button className="adb-btn" type="submit">Save</button></ActionForm> : <small>{c.kind === "stripe_connect" ? "Stripe-managed" : "Decided"}</small>}</td></tr>)
           : <tr><td colSpan={6} className="adb-none">No identity or business checks have been submitted yet.</td></tr>}</tbody></table>
@@ -118,6 +119,17 @@ export default async function VerificationReviewPage(props: PageProps<"/admin/tr
               <ActionButton action={decideEnforcementAppeal} args={[a.id, "overturned"]} reason variant="primary" confirm={{ title: "Overturn the restriction", body: "Reverses the restriction’s effect and tells the provider. Your reason is recorded.", cta: "Overturn" }}>Overturn</ActionButton>
               <ActionButton action={decideEnforcementAppeal} args={[a.id, "upheld"]} reason confirm={{ title: "Keep the restriction", body: "The restriction stays in place and the provider is told the outcome.", cta: "Keep restriction" }}>Keep</ActionButton>
             </span></li>; })}</ul> : <p className="adb-none">No appeals are waiting.</p>}
+      </section>
+      <section className="adb-panel"><div className="adb-sec-h"><h2>Apply a restriction</h2><small>Hides listings or pauses bookings now, tells the provider why and opens a 14-day appeal. Recorded with your reason.</small></div>
+        <ActionForm action={applyRestriction} className="add-decide" resetOnSuccess>
+          <label>Subject<select className="adb-select" name="subject_type" defaultValue="workspace"><option value="workspace">Workspace</option><option value="listing">Listing</option></select></label>
+          <label>Subject ID<input name="subject_id" required pattern="[0-9a-fA-F-]{36}" placeholder="Workspace or listing ID" /></label>
+          <label>Restriction<select className="adb-select" name="action" defaultValue="listing_hidden"><option value="listing_hidden">Hide listing (listing)</option><option value="workspace_suspended">Suspend workspace (workspace)</option><option value="booking_block">Pause new bookings (workspace)</option><option value="warning">Warning only</option></select></label>
+          <label>Reason code<select className="adb-select" name="reason_code" required defaultValue="">{[<option key="" value="" disabled>Choose…</option>, ...enfCodes.map(c => <option key={c.code} value={c.code}>{c.label}</option>)]}</select></label>
+          <label>Ends (optional)<input type="date" name="ends_on" /></label>
+          <label className="wide">Reason (sent to the provider)<input name="note" required minLength={5} maxLength={2000} placeholder="e.g. Insurance certificate appears altered" /></label>
+          <button className="adb-btn primary" type="submit">Apply restriction</button>
+        </ActionForm>
       </section>
       <section className="adb-panel"><div className="adb-sec-h"><h2>Active restrictions</h2></div>
         <table className="adb-table" tabIndex={0} data-pwa-scroll-region="true"><thead><tr><th>Ref</th><th>Subject</th><th>Action</th><th>Reason</th><th>Ends</th><th>Appeal by</th><th /></tr></thead>

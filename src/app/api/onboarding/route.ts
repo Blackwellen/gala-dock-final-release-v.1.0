@@ -112,7 +112,9 @@ export async function POST(request: Request) {
     if (docs.length) {
       const { data: existing } = await supabase.from("provider_documents" as never).select("file_path").eq("workspace_id", workspaceId);
       const known = new Set(((existing ?? []) as { file_path: string }[]).map(d => d.file_path));
-      const rows = docs.filter(([, path]) => !known.has(path)).map(([k, path]) => ({ workspace_id: workspaceId, credential_key: credentialKey[k], file_path: path, uploaded_by: user.id }));
+      const rows = docs.filter(([, path]) => !known.has(path)).map(([k, path]) => ({ workspace_id: workspaceId, credential_key: credentialKey[k], file_path: path, uploaded_by: user.id,
+        // Q59: the review queue showed a blank file link for onboarding uploads (file_name defaulted to '').
+        file_name: `${k.replaceAll("_", "-")}.${path.split(".").pop() ?? "pdf"}` }));
       if (rows.length) {
         const { error } = await supabase.from("provider_documents" as never).insert(rows as never);
         if (error) return json({ error: "Your workspace is active, but your documents could not be submitted for review. Upload them again from Settings." }, 500);

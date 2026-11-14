@@ -699,6 +699,20 @@
       }
     },
     {
+      "file": "202611146204_promoter_partial_reversal.sql",
+      "sha256": "0e334403dabb66ec99a617612dc4c017683ac869a2336a9772a6230e63eb1ea4",
+      "lane": "bughunt-money",
+      "reviewer": "bughunt-money-opus",
+      "reviewedAt": "2026-11-14T18:47:52.705Z",
+      "exercise": "scripts/db/exercises/202611146204_promoter_partial_reversal.sql",
+      "waivers": [],
+      "rollback": "drop trigger stripe_refund_totals_promoter; re-apply 202611146401 promoter_create_payout/promoter_payout_transition/trg_promoter_payout_conserved, previous promoter_reverse_order/promoter_statement, 202611146202 stripe_refund_failed; columns stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
       "file": "202611146401_partner_bughunt_fixes.sql",
       "sha256": "369b891400b24a2f83af83e19c6031a44012b25a96b5154510f0c710b66617f1",
       "lane": "bughunt-partner",
@@ -724,6 +738,160 @@
       "lint": {
         "errors": [],
         "warnings": []
+      }
+    },
+    {
+      "file": "202611146502_partner_billing_addon.sql",
+      "sha256": "421473d59964d853b2d6382aa14f33dfd671f14fd796a3c8afdec9967d459003",
+      "lane": "bughunt-billing",
+      "reviewer": "claude-q60",
+      "reviewedAt": "2026-11-14T18:45:51.009Z",
+      "exercise": "scripts/db/exercises/202611146502_partner_billing_addon.sql",
+      "waivers": [],
+      "rollback": "drop trigger gd_partner_referral_churn; drop functions partner_refund_invoice, billing_record_payment_fingerprint, trg_partner_referral_churn; restore billing_record_invoice (202610291013) and partner_qualify_invoice (live def pre-6502); new columns may stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146631_global_search_bughunt.sql",
+      "sha256": "6e98bb2b1d9ae17f92e01e5fa274c20865626747abff38c882642b948d7fa6f3",
+      "lane": "bughunt-search",
+      "reviewer": "claude-q63",
+      "reviewedAt": "2026-11-14T18:46:05.956Z",
+      "exercise": "scripts/db/exercises/202611146631_global_search_bughunt.sql",
+      "waivers": [],
+      "rollback": "restore global_search body from 202610250004_search_reviews.sql (same signature); drop functions admin_global_search, search_rank, search_like_escape; indexes tickets_code_trgm/tickets_order_ref_trgm may stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146632_search_rank_inline.sql",
+      "sha256": "08b8d8c73f18f02a65ca0e45789e64f8a735fea6051c3bcaee4cf61f6a2c06d5",
+      "lane": "bughunt-search",
+      "reviewer": "claude-q63",
+      "reviewedAt": "2026-11-14T18:56:26.940Z",
+      "exercise": "scripts/db/exercises/202611146631_global_search_bughunt.sql",
+      "waivers": [],
+      "rollback": "re-run the search_rank definition from 202611146631_global_search_bughunt.sql (same signature)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146701_marketplace_bughunt.sql",
+      "sha256": "a024cd92b4562e3d55721877ae8323bd419a6d41cdff57f26316bd37d92c6c98",
+      "lane": "bughunt-marketplace",
+      "reviewer": "claude-q57",
+      "reviewedAt": "2026-11-14T18:55:04.924Z",
+      "exercise": "scripts/db/exercises/202611146701_marketplace_bughunt.sql",
+      "waivers": [],
+      "rollback": "re-run offer_ticket_transfer without the dispute_hold_at check (same signature); drop trigger workspaces_country_booking_mode + function; grant select on public.reviews to anon",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611146702_marketplace_followups.sql",
+      "sha256": "89ee737a157b50bb35cdfc8e57f7699df458ec014540406e27363c73c47b1c79",
+      "lane": "bughunt-marketplace",
+      "reviewer": "claude-q57",
+      "reviewedAt": "2026-11-14T19:13:07.897Z",
+      "exercise": "scripts/db/exercises/202611146702_marketplace_followups.sql",
+      "waivers": [],
+      "rollback": "drop gd_face_value_default/gd_face_value_carry + functions, event_public_status_page, checkout_unlocked_tiers, tiers_holder_read; restore resale fns from 202610294017/202610280025, accept_proposal with current_date, and original tiers_public_read/media_public_read/venue_structures_public_read",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146703_marketplace_trust_booking_block.sql",
+      "sha256": "551a45e8ec8c19114dac7749aaa37ae67cdbeafe3573f63024587b83c549484e",
+      "lane": "bughunt-marketplace",
+      "reviewer": "claude-q57",
+      "reviewedAt": "2026-11-14T19:18:21.932Z",
+      "exercise": "scripts/db/exercises/202611146703_marketplace_trust_booking_block.sql",
+      "waivers": [],
+      "rollback": "re-run previous build_add_package / booking_conflict_recover / create_job_for_confirmed_item; restore booking_conflicts_kind_check without provider_unavailable",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146801_trust_bughunt_fixes.sql",
+      "sha256": "6fb92edc12826998f43f9563845ef03d0f8e92d1000c79eafe8ed731d8c9e423",
+      "lane": "bughunt-trust",
+      "reviewer": "claude-q59",
+      "reviewedAt": "2026-11-14T19:05:34.431Z",
+      "exercise": "scripts/db/exercises/202611146801_trust_bughunt_fixes.sql",
+      "waivers": [],
+      "rollback": "re-create the 7 functions from their 2026-11-14 live definitions (job_trust_expiry_daily, trust_review_document, trust_credential_eval, provider_documents_guard, trust_review_verification, trust_listing_badge_calc, listing_trust); drop trigger listings_trust_hold_guard + functions listings_trust_hold_guard, trust_listing_held",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146802_trust_owner_decisions.sql",
+      "sha256": "4ba6f304ee180b71b86d5d3148a89234de58b20556964c1ffd6ad85e451ad826",
+      "lane": "bughunt-trust",
+      "reviewer": "claude-q59",
+      "reviewedAt": "2026-11-14T19:24:53.278Z",
+      "exercise": "scripts/db/exercises/202611146802_trust_owner_decisions.sql",
+      "waivers": [
+        "drop_constraint"
+      ],
+      "rollback": "re-create dec107_payouts_paused, payout_eligible, trust_apply_effect, admin_user_identity, admin_user_directory, licence_save from their 2026-11-14 definitions; drop user_identity_verified, licence_document_access, storage_object_locked; alter policy workspace_files_delete back to owner-folder only; delete the 3 draft retention rows; FKs: re-add plain FKs if needed (SET NULL versions are strictly more permissive)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "drop_constraint",
+          "drop_constraint",
+          "drop_constraint"
+        ]
+      }
+    },
+    {
+      "file": "202611146901_settings_billing_build.sql",
+      "sha256": "897a71f0e2958cfa4b047cfcabb8b7af976f549696b2003f3f0910c81d2d49a0",
+      "lane": "settings-build",
+      "reviewer": "lane-settings-build-opus",
+      "reviewedAt": "2026-11-14T19:14:31.203Z",
+      "exercise": "scripts/db/exercises/202611146901_settings_billing_build.sql",
+      "waivers": [],
+      "rollback": "drop triggers gd_notification_workspace_prefs, gd_plan_limit_events/listings/invites/members, gd_account_email_changed; re-create email_category/trg_notification_email/notify_workspace from 202611146031-era defs; table workspace_ownership_transfers can stay (unused)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611146951_partner_decisions.sql",
+      "sha256": "15df9ee039f4dd3f95827009747cef88d09818f1e238227bc7882bd3c3ffd470",
+      "lane": "partner-build",
+      "reviewer": "claude-partner-build",
+      "reviewedAt": "2026-11-14T19:27:59.787Z",
+      "exercise": "scripts/db/exercises/202611146951_partner_decisions.sql",
+      "waivers": [],
+      "rollback": "create-or-replace prior bodies from 202611146401/6502/6204 + live defs; new tables/columns unused by older builds",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "revoke",
+          "revoke"
+        ]
       }
     }
   ],

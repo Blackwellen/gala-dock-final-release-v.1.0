@@ -4,18 +4,20 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { printCredential } from "@/lib/tickets/credentials";
 import type { CustomerCtx } from "./context";
+import { customerTicketStatus } from "@/lib/tickets/hold";
 
 export type TicketRow = { id: string; code: string; status: string; seat: string; order_ref: string; attendee_name: string; attendee_email: string; price_paid: number; checked_in_at: string | null; created_at: string; qr_nonce: string | null; replaced_by: string | null;
   tier: { name: string; kind: string; description: string } | null;
   event: { id: string; name: string; slug: string | null; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; city: string; cover_image: string; event_type: string; tags: string[]; settings: Record<string, unknown> } };
 export type TicketGroup = { key: string; event: TicketRow["event"]; order: string; tickets: TicketRow[]; when: "upcoming" | "past" | "resale"; state: { label: string; tone: string } };
 
-const COLS = "id,code,status,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings)";
+const COLS = "id,code,status,dispute_hold_at,seat,order_ref,attendee_name,attendee_email,price_paid,checked_in_at,created_at,qr_nonce,replaced_by,tier:ticket_tiers(name,kind,description),event:events!inner(id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings)";
 
 /** The signed-in customer's tickets grouped by event + order. RLS limits rows to tickets they hold. */
 export async function myTickets(ctx: CustomerCtx) {
   const { data } = await ctx.supabase.from("tickets").select(COLS).eq("holder_id", ctx.user.id).order("created_at", { ascending: true });
-  const rows = (data ?? []) as unknown as TicketRow[];
+  // Q57: a ticket held for a card-payment dispute is shown (and acted on) as "on_hold", never as transferable/resellable.
+  const rows = ((data ?? []) as unknown as (TicketRow & { dispute_hold_at?: string | null })[]).map(t => ({ ...t, status: customerTicketStatus(t.status, t.dispute_hold_at) }));
   const now = Date.now(); const map = new Map<string, TicketGroup>();
   for (const t of rows) {
     const ended = t.event.ends_at ? new Date(t.event.ends_at).getTime() < now : t.event.starts_at ? new Date(t.event.starts_at).getTime() + 864e5 < now : false;
@@ -33,6 +35,7 @@ export async function myTickets(ctx: CustomerCtx) {
 }
 function stateOf(g: TicketGroup, now: number) {
   const st = g.tickets.map(t => t.status);
+  if (st.includes("on_hold")) return { label: "On hold", tone: "amber" };
   if (st.includes("resale_listed")) return { label: "Resale in progress", tone: "gray" };
   if (st.includes("resold")) return { label: "Resold", tone: "green" };
   if (st.every(s => s === "transferred")) return { label: "Transferred", tone: "blue" };

@@ -17,13 +17,17 @@ import { SponsoredRow } from "@/components/ads/sponsored";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { shareCard, related as relatedEvents } from "@/lib/public/directory";
 import { blockOrder, blockVisible, type Block } from "@/lib/page-blocks";
-import { heroTicketCta, isSellable, safeMerchUrl } from "@/lib/public/ticket-cta";
+import { heroTicketCta, isSellable, safeMerchUrl, tierOffer } from "@/lib/public/ticket-cta";
+import { requestTime } from "@/lib/workspace/format";
+import { parseFeeConfig, priceWithFees } from "@/lib/public/fees";
 import { parseVideo, watchUrl } from "@/lib/public/video";
 import { VideoEmbed } from "@/components/public/video-embed";
 import { loadEventExtras } from "@/lib/public/event-extras";
 import { BannerStrip, SponsorsSection, OnlineSection, DatesSection, MerchSection, AccessFacts } from "@/components/public/event-sections";
 import { EventGettingThere } from "@/components/public/event-getting-there";
 import { loadGettingThere } from "@/lib/public/getting-there";
+import { untyped } from "@/lib/workspace/db";
+import { accentVars } from "@/lib/brand/accent";
 
 // The plan renders on the server (no map code in the browser); dynamic() splits its small pan/zoom client frame and preloads its CSS.
 const PublicPlan = dynamic(() => import("@/components/venue-plan/public-plan").then(m => m.PublicPlan));
@@ -40,7 +44,11 @@ async function load(slug: string, preview = false) {
     if (user) { const { data: e } = await supabase.from("events").select(COLS).eq(key, slug).not("workspace_id", "is", null).maybeSingle(); if (e) return { supabase, e, preview: true }; }
   }
   const { data: e } = await supabase.from("events_public").select(COLS).eq(key, slug).eq("visibility", "public").in("status", ["published", "on_sale", "live"]).maybeSingle();
-  return { supabase, e, preview: false };
+  if (e) return { supabase, e, preview: false };
+  // Q57: a postponed or cancelled PUBLIC event keeps a read-only page (status banner, no Buy) so holders' links still work.
+  // Drafts and private events stay 404; events_public (Discover, directory, checkout) is unchanged.
+  const { data: closed } = await supabase.rpc("event_public_status_page" as never, { p_key: slug } as never);
+  return { supabase, e: (closed ?? null) as (NonNullable<typeof e> & { organizer_name?: string | null }) | null, preview: false };
 }
 export async function generateMetadata({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | undefined>> }): Promise<Metadata> {
   const { slug } = await params; const sp = await searchParams; const { supabase, e, preview } = await load(slug, sp.preview === "1");
@@ -74,7 +82,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const on = (b: Block) => blockVisible(s, b);
   const gettingThere = loadGettingThere(supabase, e.id);   // lane D: public parking / transport (202610294081)
   const [{ data: tiers }, { data: lineup }, { data: venue }, { data: org }, { data: related }, { data: { user } }, x, { data: seated }] = await Promise.all([
-    supabase.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,status,sale_end,badge,sort,color").eq("event_id", e.id).not("status", "in", "(draft,hidden)").order("sort"),
+    supabase.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,status,sale_start,sale_end,badge,sort,color").eq("event_id", e.id).not("status", "in", "(draft,hidden)").order("sort"),
     supabase.from("programme_items").select("id,title,detail,area,starts_at,duration_minutes,image").eq("event_id", e.id).eq("kind", "programme").order("starts_at"),
     e.venue_listing_id ? supabase.from("listings").select("id,name,slug,kind,image,location,description,rating,review_count,capacity_max,tags,lat,lng,details").eq("id", e.venue_listing_id).maybeSingle() : Promise.resolve({ data: null }),
     supabase.rpc("public_organizer", { p_event: e.id }),
@@ -89,11 +97,24 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const relatedAds = preview ? [] : await serveSponsored("event_related", { city: e.city }, [e.id, ...(related ?? []).map(r => r.id)]);
   const { data: savedRow } = user ? await supabase.from("saved_items").select("item_key").eq("user_id", user.id).eq("item_key", `event:${e.id}`).maybeSingle() : { data: null };
   const o = (org ?? [])[0] as { name: string; cover_image: string; verified: boolean; events_count: number; followers: number } | undefined;
+  // Q67: the organiser's brand colour as an accent (clamped to WCAG AA in accentVars); a workspace member previewing a draft reads it directly.
+  const { data: brandHex } = await untyped(supabase as never).rpc(preview ? "workspace_brand_color" : "public_event_brand", preview ? { p_ws: e.workspace_id } : { p_event: e.id });
+  const brandVars = accentVars(brandHex);
   const d = e.starts_at ? new Date(e.starts_at) : null;
   const dayStr = d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "Date TBC";
   const t = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }) : "";
-  const tk = (tiers ?? []).map(x => ({ id: x.id, name: x.name, sub: x.description || (x.kind === "vip" ? "Fast entry • VIP area" : x.kind === "group" ? "Per person" : "General admission"), price: Number(x.price), left: Math.max(0, x.quantity - x.sold - x.held), qty: x.quantity, status: x.status, badge: x.badge }));
-  const onSale = tk.some(x => x.status === "on_sale" && x.left > 0);
+  const nowMs = requestTime();
+  // Q57: each tier's offer follows its status AND sale window (the same rule hold_tickets enforces), so the card never offers Buy for a
+  // tier checkout will refuse, and a paused tier no longer reads "Sold out".
+  const tk = (tiers ?? []).map(x => { const left = Math.max(0, x.quantity - x.sold - x.held); const o = tierOffer({ status: x.status, left, sale_start: x.sale_start, sale_end: x.sale_end }, nowMs);
+    return { id: x.id, name: x.name, sub: x.description || (x.kind === "vip" ? "Fast entry • VIP area" : x.kind === "group" ? "Per person" : "General admission"), price: Number(x.price), left, qty: x.quantity, status: x.status, badge: x.badge, buyable: o.buyable, offerLabel: o.label, soldOut: o.soldOut }; });
+  const onSale = tk.some(x => x.buyable);
+  // Q57: fan resale listings for this event (face value or less; anon-readable RPC). Shown when new tickets can't be bought.
+  const { data: resaleRaw } = preview ? { data: [] } : await supabase.rpc("resale_listings", { p_event: e.id });
+  const resaleCount = Array.isArray(resaleRaw) ? resaleRaw.length : 0;
+  // Q57 / DMCC: prices shown to buy include the mandatory booking fee (same config checkout charges).
+  const { data: feeRaw } = await supabase.rpc("ticket_fee_config");
+  const fee = parseFeeConfig(feeRaw);
   const settingsGallery = ((s.gallery as string[] | undefined) ?? []).filter(Boolean);
   // Photos: cover, the organiser's page gallery, then Q23 public galleries (alt text and credit kept).
   const photoList = [...new Map([e.cover_image, ...settingsGallery].filter(Boolean).map(u => [u as string, { url: u as string, alt: "", credit: null as string | null }])).values()];
@@ -106,7 +127,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.venue_name, e.location].filter(Boolean).join(", "))}`;
   const gt = await gettingThere;
   const mode = x.virtual?.format === "hybrid" ? "MixedEventAttendanceMode" : x.virtual?.sessions.length ? "OnlineEventAttendanceMode" : "OfflineEventAttendanceMode";
-  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, ...schemaEventStatus(e.status, e.settings as Record<string, unknown> | null), eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: x.price, priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
+  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, ...schemaEventStatus(e.status, e.settings as Record<string, unknown> | null), eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: priceWithFees(x.price, fee), priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
 
   // §50 launch state (server-computed): drives the badge and whether checkout is offered.
   const { data: launchRaw } = e ? await supabase.rpc("event_launch_state" as never, { p_event: e.id } as never) : { data: null };
@@ -130,7 +151,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const overlay = ["light", "none"].includes(String(s.hero_overlay)) ? String(s.hero_overlay) : "dark";
   const video = parseVideo(s.hero_video);
   const showLineup = on("performers") && artists.length > 0, showSchedule = on("programme") && (lineup ?? []).length > 0;
-  const primary = on("tickets") ? heroTicketCta({ label: cta.primary?.trim() || "Buy tickets", launch, sellerReady, buyable: tk.filter(x => x.status === "on_sale" && x.left > 0).length, waitlist, anySoldOut: tk.some(x => x.status === "sold_out" || (x.status === "on_sale" && x.left === 0)) }) : null;
+  const primary = on("tickets") ? heroTicketCta({ label: cta.primary?.trim() || "Buy tickets", launch, sellerReady, buyable: tk.filter(x => x.buyable).length, waitlist, anySoldOut: tk.some(x => x.soldOut), resale: resaleCount, resaleHref: `/checkout/${slugOrId}?resale=1` }) : null;
   const secondaryHref = showLineup ? "#lineup" : showSchedule ? "#schedule" : null;
   const seatsCta = (seated ?? []).length > 0 && isSellable(launch) && sellerReady && onSale ? <Link className="k-btn primary" href={`/checkout/${slugOrId}`}><Armchair size={16} />Choose seats</Link> : null;
 
@@ -183,7 +204,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
           {features.length > 0 && <ul className="pe3-minis">{features.slice(0, 4).map((f, i) => { const I = FEAT[f] ?? Sparkles; return <li key={f}><span><I size={20} aria-hidden /></span><p><b>{f}</b>{highlights[i] ? <small>{highlights[i]}</small> : null}</p></li>; })}</ul>}
           {photos[1] && on("gallery") && <a className="pe3-banner" href="#photos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[1]} alt="" /><span><b>Event highlights</b><small>{photos.length} photos from the organiser</small></span></a>}</section>}
         {showTickets && <aside id="tickets" className="ce-card pe3-tickets"><div className="k-between"><h2>Get your tickets</h2><span className={`pe-sale ${sale[1]}`}><CheckCircle2 size={13} />{sale[0]}</span></div>
-          <TicketPicker slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} /></aside>}
+          <TicketPicker slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} resale={resaleCount} fee={fee} /></aside>}
       </div>);
       const dates = <DatesSection key="dates" extras={x.extras} series={x.series} parent={x.parent} />; rows.push(dates);
       if (x.series || x.parent || x.extras.passes.length || x.extras.sub_events.length || x.extras.days.length > 1) tabs.push(["dates", "Dates"]);
@@ -218,9 +239,12 @@ export default async function PublicEventPage({ params, searchParams }: { params
   }
 
   // Layout after the public event reference (PUB-239): full-bleed hero, section tabs, then the organiser's block order.
-  return <div className="pe pe3">
+  return <div className={`pe pe3${brandVars["--org-accent"] ? " pe-branded" : ""}`} style={brandVars as React.CSSProperties}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
     <RecordView itemKey={`event:${e.id}`} signedIn={!!user} />
+    {!preview && (e.status === "postponed" || e.status === "cancelled") && <div className={`k-notice ${e.status === "cancelled" ? "red" : "amber"} pe-previewbar`} role="status">{e.status === "cancelled"
+      ? <><b>This event has been cancelled.</b> Tickets are no longer on sale. If you bought tickets, your refund goes back to your original payment method; check your email and <Link href="/account/tickets">your tickets</Link>.</>
+      : <><b>This event has been postponed.</b> Tickets are not on sale until a new date is confirmed. If you hold tickets, keep an eye on your email and <Link href="/account/tickets">your tickets</Link> for the organiser&apos;s update.</>}</div>}
     {preview && !["published", "on_sale", "live"].includes(e.status) && <div className="k-notice amber pe-previewbar">Preview — this page isn&apos;t public yet. Publish it from the page editor.</div>}
     <section className={`pe3-hero ov-${overlay}`} aria-labelledby="pe-title">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="pe3-hero-bg" src={(s.hero_image as string) || e.cover_image || "/assets/gd/hero-neon.webp"} alt="" />
       <EventActions eventId={e.id} name={e.name} saved={!!savedRow} signedIn={!!user} />

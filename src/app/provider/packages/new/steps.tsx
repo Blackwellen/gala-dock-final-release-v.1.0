@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { Sparkles, CircleCheck, Info, ArrowLeft, ArrowRight, Save, Building2, Wrench, Clock3, Users, Tag, MapPin, Zap, Mail, HelpCircle, Plus, Star } from "lucide-react";
 import { VenuePreview } from "../../venues/new/preview";
 import { ActionForm } from "@/components/workspace/actions";
@@ -74,7 +75,7 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
   </div>;
 }
 
-export function PkgStep2({ p, parent, days, back, next, label }: { p: PackageRow; parent: Listing | null; days: Record<string, DayState>; back?: string; next: string; label?: string }) {
+export function PkgStep2({ p, parent, days, back, next, label, enquiryOnly = null }: { p: PackageRow; parent: Listing | null; days: Record<string, DayState>; back?: string; next: string; label?: string; enquiryOnly?: string | null }) {
   const d = p.details, r = d.restrictions ?? {}, model = d.pricing?.model ?? "fixed", canc = d.cancellation ?? [{ window: "More than 30 days", refund: 100 }, { window: "15 – 30 days", refund: 50 }, { window: "7 – 14 days", refund: 25 }, { window: "Less than 7 days", refund: 0 }];
   return <ActionForm action={savePackagePricing.bind(null, p.id, next)} className="vw pkw-s2">
     <div className="pkw-col pkw-col-a">
@@ -87,8 +88,9 @@ export function PkgStep2({ p, parent, days, back, next, label }: { p: PackageRow
         <span className="pkw-depamt">{Number(p.base_price) > 0 ? money((Number(p.base_price) * p.deposit_pct) / 100) : "—"}</span></div>
       <p className="vw-info"><Info aria-hidden="true" />Customers pay a {p.deposit_pct}% deposit{Number(p.base_price) > 0 ? ` (${money((Number(p.base_price) * p.deposit_pct) / 100)})` : ""} to confirm. The balance is due 14 days before the event by default.</p></section>
     <section className="ws-panel pkw-mode"><h2>Booking mode</h2><p>Choose how customers can book this package.</p>
+      {enquiryOnly && <EnquiryOnlyNote country={enquiryOnly} />}
       <div className="svw-bmodes">{([["instant", Zap, "Instant book", "Customers can book and pay immediately."], ["request", Mail, "Request to book", "Customers send a request, you approve."], ["enquiry", HelpCircle, "Enquiry only", "Customers can enquire, no booking or payment."]] as const).map(([k, I, l, sub]) =>
-        <label key={k}><input type="radio" name="booking_mode" value={k} defaultChecked={p.booking_mode === k} /><span><b><I aria-hidden="true" /> {l}</b><small>{sub}</small></span></label>)}</div></section>
+        <label key={k}><input type="radio" name="booking_mode" value={k} defaultChecked={enquiryOnly ? k === "enquiry" : p.booking_mode === k} disabled={!!enquiryOnly && k !== "enquiry"} /><span><b><I aria-hidden="true" /> {l}</b><small>{sub}</small></span></label>)}</div></section>
     <section className="ws-panel pkw-rules"><h2>Booking restrictions</h2><p>Set any rules or restrictions for this package.</p>
       <ul className="pkw-rlist">
         <li><Toggle name="x_min_notice" label="Minimum notice period" on={r.min_notice_days != null} /><span className="vw-money"><input name="min_notice" type="number" min={0} defaultValue={r.min_notice_days ?? 7} aria-label="Minimum notice" /><em className="r">days</em></span></li>

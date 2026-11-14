@@ -1,0 +1,201 @@
+{
+  "ranAt": "2026-11-14T18:56:43.291Z",
+  "fixtures": {
+    "w1": true,
+    "lead": true,
+    "admin": true,
+    "guest": true,
+    "client": true,
+    "ticket": true,
+    "invoice": true,
+    "admin_fn": true,
+    "customer": true,
+    "outsider": true,
+    "proposal": true,
+    "provider": true,
+    "plain_member": true,
+    "public_event": true,
+    "private_event": true,
+    "paused_listing": true,
+    "unpublished_listing": true
+  },
+  "passed": 36,
+  "failed": 0,
+  "checks": [
+    {
+      "pass": true,
+      "check": "outsider: other workspace private event (personal seat)",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace guest by name",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace guest by email",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace lead",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace proposal",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace invoice",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: other workspace client",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "outsider: scoping to a foreign workspace is refused"
+    },
+    {
+      "pass": true,
+      "check": "customer: private/unpublished event never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "customer: guest PII never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "customer: another holder's ticket code never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "customer: unpublished listing hidden",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "customer: paused listing hidden",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "customer: provider with only paused listings hidden",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "rows": 0,
+      "check": "customer: LIKE wildcards are literal (q=%%)"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "customer: public on-sale event is findable (links to the public page)"
+    },
+    {
+      "pass": true,
+      "check": "customer: admin search refused"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: own private event found, organiser link"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: own guest found"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: proposal links to /organizer/sales/proposals/<id>"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: client (contacts) found, links to client page"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: invoice found"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: 3-letter prefix finds the event"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: one-letter typo still finds the event"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "organiser owner: exact title ranks in the top 3"
+    },
+    {
+      "pass": true,
+      "check": "organiser plain member: invoices (finance.read) hidden",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "provider: organiser private event never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "provider: organiser guest never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "check": "provider: organiser lead never returned",
+      "leaked": 0
+    },
+    {
+      "pass": true,
+      "rows": 0,
+      "check": "provider: no /organizer links in the provider seat"
+    },
+    {
+      "pass": true,
+      "check": "admin at aal1: admin search refused (MFA required)"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "admin at aal2: any event found, admin link"
+    },
+    {
+      "pass": true,
+      "rows": 1,
+      "check": "admin at aal2: ticket by code found"
+    },
+    {
+      "pass": true,
+      "rows": 0,
+      "check": "admin at aal2: every link stays in the admin console"
+    },
+    {
+      "pass": true,
+      "check": "anon: global_search not executable"
+    },
+    {
+      "pass": true,
+      "check": "anon: admin_global_search not executable"
+    }
+  ]
+}

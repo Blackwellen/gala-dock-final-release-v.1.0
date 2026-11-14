@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
+import { sellerBookingMode } from "@/lib/provider/seller-country";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const n = (fd: FormData, k: string) => { const v = String(fd.get(k) ?? "").trim(); const x = Number(v); return v !== "" && Number.isFinite(x) ? x : null; };
@@ -76,14 +77,16 @@ export async function saveServiceAvailability(id: string, next: string | null, f
   for (const d of DAYS) { if (!on(fd, `on_${d}`)) { week[d] = null; continue; } const a = t(fd, `from_${d}`, 5), b = t(fd, `to_${d}`, 5); if (!TIME.test(a) || !TIME.test(b)) return { ok: false, error: `Set opening hours for ${d.toUpperCase()}.` }; week[d] = [a, b]; }
   const perDay = n(fd, "per_day") ?? 1, perWeek = n(fd, "per_week");
   if (perDay < 1 || (perWeek !== null && perWeek < perDay)) return { ok: false, error: "Weekly capacity must be at least the daily limit." };
-  const mode = t(fd, "booking_mode", 10) || "request", response = n(fd, "response_hours") ?? 4;
+  const { workspace } = await getProvider();
+  const { mode, note } = sellerBookingMode(workspace.settings, t(fd, "booking_mode", 10) || "request");
+  const response = n(fd, "response_hours") ?? 4;
   if (mode === "instant" && !prev.price_from) return { ok: false, error: "Instant booking needs a published price — set one in Pricing." };
   const old = svc(prev.details);
   const r = await save(id, { booking_mode: mode, response_hours: response, emergency_supply: on(fd, "emergency"),
     details: { service: { ...old, availability: { week }, capacity: { per_day: perDay, per_week: perWeek, multi_same_day: on(fd, "multi"), travel_buffer_minutes: on(fd, "buffer") ? (n(fd, "buffer_h") ?? 1) * 60 : 0 },
       holds: { enabled: on(fd, "holds"), hours: n(fd, "hold_hours") ?? 24 }, standby: { enabled: on(fd, "standby") }, emergency: { enabled: on(fd, "emergency") } } } });
   if (!r.ok) return r;
-  return { ok: true, message: "Availability saved", ...(next ? { redirect: next } : {}) };
+  return { ok: true, message: note ?? "Availability saved", ...(next ? { redirect: next } : {}) };
 }
 
 /** Rate card (a real package linked to this service). */

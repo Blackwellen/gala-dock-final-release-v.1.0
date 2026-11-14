@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { Sparkles, Lightbulb, CircleCheck, CircleAlert, Info, ArrowLeft, ArrowRight, Save, MapPin, CalendarDays, Mail, HelpCircle, Truck, UtensilsCrossed, FileText, Users2,
   Accessibility, ClipboardList, Wand2, MoreVertical, Building2, UsersRound, LayoutGrid, FileCheck2, Tags, Landmark, Search, PoundSterling, Clock3, Percent, Ban, PauseCircle, Siren, Repeat } from "lucide-react";
 import type { ReactNode } from "react";
@@ -78,7 +79,7 @@ export function StepIdentity({ venue, next }: { venue: Listing | null; next: str
   </div>;
 }
 
-export function StepCommercial({ venue, back, next }: { venue: Listing; back: string; next: string }) {
+export function StepCommercial({ venue, back, next, enquiryOnly = null }: { venue: Listing; back: string; next: string; enquiryOnly?: string | null }) {
   const c = ((venue.details as D).commercial ?? {}) as NonNullable<D["commercial"]>;
   const pricing = c.pricing ?? "hourly", canc = c.cancellation ?? [{ window: "7+ days", refund: 100 }, { window: "3–7 days", refund: 50 }, { window: "<3 days", refund: 0 }];
   const depMode = c.deposit_mode ?? "percent";
@@ -117,9 +118,10 @@ export function StepCommercial({ venue, back, next }: { venue: Listing; back: st
         <ul>{summary.map(([I, l, v]) => <li key={l}><I aria-hidden="true" /><b>{l}</b><span>{v}</span></li>)}</ul></section>
     </aside>
     <section className="ws-panel vw-mode"><h2>Booking mode</h2><p>Choose how customers can book this venue.</p>
+      {enquiryOnly && <EnquiryOnlyNote country={enquiryOnly} />}
       <div className="vw-radios">{([["instant", CalendarDays, "Instant booking", "Customers can book instantly if the date is available."], ["request", Mail, "Request to book", "Customers send a booking request that you must approve."],
         ["enquiry", HelpCircle, "Enquiry only", "Customers can only send an enquiry."]] as const).map(([k, I, l, sub]) =>
-        <label key={k}><I aria-hidden="true" /><span><b>{l}</b><small>{sub}</small></span><input type="radio" name="booking_mode" value={k} defaultChecked={venue.booking_mode === k} /></label>)}</div>
+        <label key={k}><I aria-hidden="true" /><span><b>{l}</b><small>{sub}</small></span><input type="radio" name="booking_mode" value={k} defaultChecked={enquiryOnly ? k === "enquiry" : venue.booking_mode === k} disabled={!!enquiryOnly && k !== "enquiry"} /></label>)}</div>
       <small className="vw-hint">Instant booking needs a published rate.</small></section>
     <section className="ws-panel vw-response"><h2>Response &amp; lead time</h2><p>Set how quickly you respond and minimum lead time.</p>
       <div className="vw-pair"><label>Response commitment <i>*</i><select name="response_hours" className="ws-select" defaultValue={venue.response_hours}>{[2, 4, 8, 12, 24].map(h => <option key={h} value={h}>Within {h} hours</option>)}</select></label>
@@ -183,10 +185,10 @@ export function StepOperations({ venue, back, next, photosHref, readiness, photo
           : <ActionButton variant="primary" className="vw-publish" action={publishListing} args={[venue.id]}>Publish venue<ArrowRight aria-hidden="true" /></ActionButton>}
         <button type="submit" name="_draft" value="1" className="ws-btn outline vw-draft"><Save aria-hidden="true" />Save as draft</button></section>
     </aside>
-    <section className="ws-panel vw-docs"><div className="vw-sec-h"><span className="vw-ic"><FileText aria-hidden="true" /></span><div><h2>Licences &amp; compliance</h2><p>Add required licences, safety certificates and compliance details.</p></div></div>
-      <ul>{COMPLIANCE_DOCS.map((n, i) => { const x = comp.find(c => c.name === n), st = x?.file ? "up" : x?.reference || x?.expires ? "added" : "";
+    <section className="ws-panel vw-docs"><div className="vw-sec-h"><span className="vw-ic"><FileText aria-hidden="true" /></span><div><h2>Licences &amp; compliance</h2><p>Details you declare for this venue — not checked by Gala Dock. <Link href="/provider/settings#credentials">Upload documents for review in Settings → Trust &amp; credentials</Link>; required ones must be verified before the venue can go live.</p></div></div>
+      <ul>{COMPLIANCE_DOCS.map((n, i) => { const x = comp.find(c => c.name === n), st = x?.reference || x?.expires || x?.file ? "added" : "";
         return <li key={n}><details><summary><span className={`vw-doc-ic ${st}`}><FileCheck2 aria-hidden="true" /></span><b>{n}</b>
-          <span className={`vw-doc ${st}`}>{x?.file ? "Uploaded" : st ? "Added" : "Missing"}</span>
+          <span className={`vw-doc ${st}`}>{st ? "Declared" : "Not declared"}</span>
           <span className="vw-doc-exp">{x?.expires ? `Expires ${fmtDate(x.expires)}` : x?.reference || "Not recorded"}</span>
           <span className="vw-doc-more" aria-label={`Edit ${n}`}><MoreVertical aria-hidden="true" /></span></summary>
           <div className="vw-doc-edit"><input name={`doc_ref_${i}`} placeholder={n === "Food hygiene rating" ? "Rating, e.g. 5 (Very Good)" : "Reference"} defaultValue={x?.reference ?? ""} aria-label={`${n} reference`} maxLength={60} />

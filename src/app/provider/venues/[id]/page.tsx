@@ -15,6 +15,8 @@ import { MenuButton } from "../../_components/menu-button";
 import { duplicateListing } from "../../listings/actions";
 import { setPackageStatus } from "../../listings/actions";
 import { saveVenueInfo, saveCommercial } from "./actions";
+import { enquiryOnlyCountry } from "@/lib/provider/seller-country";
+import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { ShareVenue, LiveToggle, OverviewMap } from "./interactive";
 import { SpacesEditor } from "../_components/spaces-editor";
 import type { StructureMeta } from "./actions";
@@ -24,7 +26,7 @@ import { PublicAvailabilityToggle } from "@/components/provider/public-availabil
 
 export const metadata: Metadata = { title: "Venue" };
 type Info = { event_types?: string[]; accessibility?: string; parking?: string; licences?: string[]; curfew?: string; staffing?: string };
-type Commercial = { rate_from?: number; rate_to?: number; minimum_spend?: number; deposit_pct?: number; balance_days?: number; security_deposit?: number; lead_days?: number;
+type Commercial = { pricing?: string; rate_from?: number; rate_to?: number; minimum_spend?: number; deposit_pct?: number; balance_days?: number; security_deposit?: number; lead_days?: number;
   cancellation?: { window: string; refund: number }[]; holds?: { enabled: boolean; hours: number } };
 const TABS = ["overview", "spaces", "packages", "operations", "commercial"] as const;
 const enquiryChip: Record<string, { label: string; tone: "blue" | "purple" | "green" | "amber" | "grey" | "red" }> = {
@@ -52,6 +54,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
   ]);
   const d = v.details as { type?: string; contact?: { phone?: string; email?: string; website?: string }; features?: string[]; info?: Info; commercial?: Commercial };
   const info = d.info ?? {}, contact = d.contact ?? {}, commercial = d.commercial ?? {};
+  const enquiryOnly = enquiryOnlyCountry(ctx.workspace.settings), rateUnit = commercial.pricing === "daily" ? "day" : commercial.pricing === "package" ? "package" : "hr";
   const live = v.published && !v.paused_at;
   const capOf = (s: typeof spaces[number]) => Math.max(s.capacity_seated ?? 0, s.capacity_standing ?? 0);
   const mapSpaces = spaces.map(s => ({ id: s.id, name: s.name, capacity: capOf(s), indoor: s.indoor, image: s.image }));
@@ -91,7 +94,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
   const insights = [
     weekendShare !== null && weekendShare >= 50 ? { icon: BarChart3, tone: "purple", title: "Review weekend rates", text: `${weekendShare}% of your enquiries are for Fri–Sun dates. Consider a weekend rate.`, cta: "Review pricing", href: `/provider/venues/${v.id}?tab=commercial` } : null,
     !packages.some(p => /wedding/i.test(p.name)) && (info.event_types ?? []).some(t => /wedding/i.test(t)) ? { icon: PackageIcon, tone: "purple", title: "Create a wedding package", text: "You list weddings as a typical event but have no wedding package yet.", cta: "Create package", href: "/provider/packages/new?step=1" } : null,
-    photos.length < 12 ? { icon: ImagePlus, tone: "blue", title: "Improve photo coverage", text: `You have ${photos.length} photos. Listings with 12+ photos, including setups, are easier to choose.`, cta: "Add photos", href: `/provider/venues/new?venue=${v.id}&step=1` } : null,
+    photos.length < 12 ? { icon: ImagePlus, tone: "blue", title: "Improve photo coverage", text: `You have ${photos.length} photos. Listings with 12+ photos, including setups, are easier to choose.`, cta: "Add photos", href: `/provider/venues/new?venue=${v.id}&step=5` } : null,
     { icon: CalendarRange, tone: "amber", title: "Optimise availability", text: `${blockedSoon} booking${blockedSoon === 1 ? "" : "s"} in the next 60 days. Keep your calendar current so requests aren’t missed.`, cta: "Review calendar", href: "/provider/calendar" },
   ].filter(Boolean).slice(0, 4) as { icon: typeof BarChart3; tone: string; title: string; text: string; cta: string; href: string }[];
 
@@ -108,7 +111,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
         {v.slug && <Link href={`/venues/${v.slug}?preview=1`} className="ws-btn outline" target="_blank"><Eye aria-hidden="true" />Preview</Link>}
         <RowMenu label="More venue actions" entries={[{ kind: "action", label: "Duplicate venue", run: duplicateListing.bind(null, v.id) }, { kind: "link", label: "Open calendar", href: "/provider/calendar" }, { kind: "link", label: "Venue bookings", href: `/provider/bookings?q=${encodeURIComponent(v.name)}` }]} />
         <MenuButton label="Edit venue" className="ws-btn primary pv-edit" trigger={<><Pencil aria-hidden="true" />Edit venue<ChevronDown aria-hidden="true" /></>} entries={[
-          { kind: "link", label: "Identity & photos", href: `/provider/venues/new?venue=${v.id}&step=1` }, { kind: "link", label: "Spaces & map", href: `/provider/venues/${v.id}?tab=spaces` },
+          { kind: "link", label: "Identity & location", href: `/provider/venues/new?venue=${v.id}&step=1` }, { kind: "link", label: "Photos", href: `/provider/venues/new?venue=${v.id}&step=5` }, { kind: "link", label: "Spaces & map", href: `/provider/venues/${v.id}?tab=spaces` },
           { kind: "link", label: "Key information", href: `/provider/venues/${v.id}?tab=operations` }, { kind: "link", label: "Commercial terms", href: `/provider/venues/${v.id}?tab=commercial` }]} />
       </div>
     </header>
@@ -124,7 +127,7 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
           <section className="pv-hero">
             <div className="pv-cover">{/* eslint-disable-next-line @next/next/no-img-element */}
               {v.image ? <img src={v.image} alt={`${v.name} main photo`} /> : <span className="qb-noimg" />}
-              <Link href={`/provider/venues/new?venue=${v.id}&step=1`} className="pv-addphotos"><Plus aria-hidden="true" />Add photos</Link></div>
+              <Link href={`/provider/venues/new?venue=${v.id}&step=5`} className="pv-addphotos"><Plus aria-hidden="true" />Add photos</Link></div>
             <div className="pv-about">
               <ul className="pv-gallery">{(v.gallery ?? []).slice(0, 5).map((g, i, arr) => <li key={g + i}>{/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={g} alt="" />{i === arr.length - 1 && photos.length > 6 && <span>+{photos.length - 6}</span>}</li>)}</ul>
@@ -198,9 +201,10 @@ export default async function VenueProfile(props: PageProps<"/provider/venues/[i
 
         {tab === "commercial" && <section className="ws-panel pv-form"><div className="ws-panel-head"><h2>Commercial terms</h2><small>Changes apply to new quotes and bookings only — accepted bookings keep their snapshot.</small></div>
           <ActionForm action={saveCommercial.bind(null, v.id)} className="pv-grid">
-            <label>Booking mode<select name="booking_mode" defaultValue={v.booking_mode} className="ws-select"><option value="request">Request to Book</option><option value="instant">Instant Book</option><option value="enquiry">Enquiry only</option></select></label>
-            <label>Rate from (£/hr)<input name="rate_from" type="number" min={0} defaultValue={commercial.rate_from ?? v.price_from ?? ""} /></label>
-            <label>Rate to (£/hr)<input name="rate_to" type="number" min={0} defaultValue={commercial.rate_to ?? ""} /></label>
+            <label>Booking mode<select name="booking_mode" defaultValue={enquiryOnly ? "enquiry" : v.booking_mode} className="ws-select"><option value="request" disabled={!!enquiryOnly}>Request to Book</option><option value="instant" disabled={!!enquiryOnly}>Instant Book</option><option value="enquiry">Enquiry only</option></select></label>
+            {enquiryOnly && <div className="wide"><EnquiryOnlyNote country={enquiryOnly} /></div>}
+            <label>Rate from (£/{rateUnit})<input name="rate_from" type="number" min={0} defaultValue={commercial.rate_from ?? v.price_from ?? ""} /></label>
+            <label>Rate to (£/{rateUnit})<input name="rate_to" type="number" min={0} defaultValue={commercial.rate_to ?? ""} /></label>
             <label>Minimum spend (£)<input name="minimum_spend" type="number" min={0} defaultValue={commercial.minimum_spend ?? 0} /></label>
             <label>Deposit (%)<input name="deposit_pct" type="number" min={0} max={100} defaultValue={commercial.deposit_pct ?? 30} /></label>
             <label>Balance due (days before)<input name="balance_days" type="number" min={0} defaultValue={commercial.balance_days ?? 14} /></label>

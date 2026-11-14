@@ -180,3 +180,5 @@
 
 .pc-timeline .pt-panel-head{margin-bottom:6px}
 /* The divider trick (negative right margin) must not spill past the panel at the shared zoom. */ .pc-tl{overflow:hidden}
+/* Q67 organiser brand accent (clamped to WCAG AA): KPI icons only; the portal shell, navigation and status colours keep the tokens. */
+.pt-branded .pc-kpi-ic{background:var(--org-accent-soft);color:var(--org-accent)}

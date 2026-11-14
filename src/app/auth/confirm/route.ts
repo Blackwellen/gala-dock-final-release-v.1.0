@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type });
     if (!error) {
       if (type === "recovery") return NextResponse.redirect(new URL("/reset-password", request.url));
+      // Q67: an email-change link (secure change = one link per address) returns to the sign-in email card, which shows whether
+      // the other link is still needed (user.new_email) or the change is complete.
+      if (type === "email_change") return NextResponse.redirect(new URL("/account?tab=security&email=link#email", request.url));
       await supabase.rpc("log_auth_event", { p_event: "auth.email_verified" });
       // Q27: a consented partner link credits this new account (once; fraud-checked in the database).
       await attributePartnerSignup(supabase as never, request.cookies.get(PARTNER_COOKIE)?.value, request);

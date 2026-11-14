@@ -38,5 +38,5 @@ export async function requestChange(jobId: string, data: FormData): Promise<Acti
   const { db, workspace, userName } = await getProvider();
   const { error } = await db.from("tasks").insert({ workspace_id: workspace.id, title: `Change request: ${body.slice(0, 120)}`, detail: JSON.stringify({ kind: "change_request", job_id: jobId, body: body.slice(0, 2000) }),
     category: "change_request", priority: "medium", assignee_name: userName, status: "todo" });
-  return error ? { ok: false, error: friendly(error) } : { ok: true, message: "Change request recorded — commercial terms stay locked until the client agrees" };
+  return error ? { ok: false, error: friendly(error) } : { ok: true, message: "Change request logged for your team — message the client to agree it. Accepted terms stay locked until they do." };
 }

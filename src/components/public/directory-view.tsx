@@ -15,7 +15,7 @@ const ICON: Record<string, typeof Music2> = { music: Music2, nightlife: Moon, fo
   wellness: HeartPulse, festival: PartyPopper, conference: Mic2, comedy: Mic2, party: Gift, webinar: Video, charity: HeartPulse, gala: Sparkles, community: Users };
 export const dayBadge = (iso: string) => { const d = new Date(iso); return { m: d.toLocaleDateString("en-GB", { month: "short", timeZone: TZ }).toUpperCase(), d: d.toLocaleDateString("en-GB", { day: "2-digit", timeZone: TZ }) }; };
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: TZ });
-const price = (p: number | null | undefined) => p == null ? null : p === 0 ? "Free" : `From £${Number.isInteger(p) ? p : p.toFixed(2)}`;
+const price = (p: number | null | undefined) => p == null ? null : p === 0 ? "Free" : `From £${Number.isInteger(p) ? p : p.toFixed(2)} incl. fees`; // Q57 / DMCC: from_price includes the booking fee
 
 export function EventCard({ e, tag }: { e: DirEvent; tag?: { text: string; tone: "featured" | "sponsored" } }) {
   const b = dayBadge(e.starts_at); const p = price(e.from_price);

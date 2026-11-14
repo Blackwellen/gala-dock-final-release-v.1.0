@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
+import { sellerBookingMode } from "@/lib/provider/seller-country";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const num = (fd: FormData, k: string) => { const v = String(fd.get(k) ?? "").trim(); const n = Number(v); return v !== "" && Number.isFinite(n) ? n : null; };
@@ -68,7 +69,8 @@ export async function saveCommercialStep(venueId: string, next: string | null, f
   if (![2, 4, 8, 12, 24].includes(response)) return { ok: false, error: "Choose a response commitment." };
   const cancellation = [0, 1, 2].map(i => ({ window: t(fd, `c_window_${i}`, 30), refund: Math.min(100, Math.max(0, num(fd, `c_refund_${i}`) ?? 0)) })).filter(c => c.window);
   if (!cancellation.length) return { ok: false, error: "Add at least one cancellation window." };
-  const mode = t(fd, "booking_mode", 10) || "request";
+  const { workspace } = await getProvider();
+  const { mode, note } = sellerBookingMode(workspace.settings, t(fd, "booking_mode", 10) || "request");
   const r = await save(venueId, {
     booking_mode: mode, response_hours: response, price_from: pricing === "quote" ? null : from, price_unit: pricing === "daily" ? "per day" : pricing === "package" ? "per package" : "per hour",
     emergency_supply: on(fd, "emergency"),
@@ -79,7 +81,7 @@ export async function saveCommercialStep(venueId: string, next: string | null, f
       emergency: { enabled: on(fd, "emergency"), multiplier: num(fd, "emergency_multiplier") ?? 1.5 } } },
   });
   if (!r.ok) return r;
-  return { ok: true, message: "Commercial terms saved — accepted bookings keep their agreed terms", ...(next ? { redirect: next } : {}) };
+  return { ok: true, message: note ?? "Commercial terms saved — accepted bookings keep their agreed terms", ...(next ? { redirect: next } : {}) };
 }
 
 /** Step 4 — access, F&B, suppliers, accessibility, licences and notes. */

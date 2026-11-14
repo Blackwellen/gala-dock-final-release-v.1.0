@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PlanBilling } from "@/components/billing/plan-billing";
 import { CreditPacks } from "@/components/billing/credit-packs";
+import { PlanLimits, PlanLimitNotice } from "@/components/billing/plan-limits";
+import { EmailChangeCard } from "@/components/security/email-change-card";
+import { OwnershipTransfer } from "@/components/settings/ownership-transfer";
 import { Building2, BadgeCheck, UserCog, Users, ChevronRight, ArrowRight, ArrowLeft, Landmark, Wallet, Mail, Plug, Sparkles, Bell, Wrench, Package2, CircleCheck, CalendarCheck, Crown, X } from "lucide-react";
 import "@/styles/provider-venue-setup.css";
 import "@/styles/provider-team.css";
@@ -22,6 +25,7 @@ import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { loadMoney, inRange } from "../money/data";
+import { loadPricing, PLAN_NAME } from "@/lib/public/pricing";
 import { setCapability, saveProfile, saveBooking, saveComms, saveNotifications, saveAgent, saveTax, inviteMember, revokeInvite, changeMemberRole, removeMember } from "./actions";
 
 export const metadata: Metadata = { title: "Settings" };
@@ -34,7 +38,7 @@ const Toggle = ({ name, label, on }: { name: string; label: string; on?: boolean
 export default async function Settings(props: PageProps<"/provider/settings">) {
   const sp = await props.searchParams;
   const tab = TABS.some(([k]) => k === sp.tab) ? String(sp.tab) : "workspace";
-  const [ctx, listings, { txs, plans }] = await Promise.all([getProvider(), workspaceListings(), loadMoney()]);
+  const [ctx, listings, { txs, plans }, pricing] = await Promise.all([getProvider(), workspaceListings(), loadMoney(), loadPricing()]);
   const ws = ctx.workspace, s = (ws.settings ?? {}) as S, owner = ctx.role === "owner";
   const [members, invites, crewAv] = await Promise.all([
     rows<{ user_id: string; role: string; status: string }>(ctx.db.from("workspace_members").select("user_id,role,status").eq("workspace_id", ws.id)),
@@ -50,6 +54,10 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
   const chan = (k: string) => { const x = n[k] ?? { email: true, in_app: true }; return [x.email && "Email", x.in_app && "In-app", x.sms && "SMS"].filter(Boolean).join(" + ") || "Off"; };
   const pending = invites.filter(i => !i.accepted_at && !i.revoked_at && new Date(i.expires_at).getTime() > now);
   const base = "/provider/settings";
+  // Q49: the plan box lists the live catalogue's inclusions for this plan (plan_entitlements via loadPricing — the same rows the
+  // pricing page and entitlement checks read), not static copy that said "Gala Agent (standard)" on every plan.
+  const planKey = String(ws.plan ?? "starter"), planRow = pricing.plans.find(x => x.kind === "provider" && x.plan === planKey);
+  const planIncludes = (planRow?.features ?? []).filter(f => !/platform fee/.test(f)).slice(0, 4);
   const cancelLabel = String(b.cancellation ?? "Standard (7 days)");
 
   return <div className="ps">
@@ -60,7 +68,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
     {tab === "workspace" && <div className="ps-grid">
       <section className="ws-panel ps-profile"><h2><span className="ps-ic"><Building2 aria-hidden="true" /></span>Workspace profile</h2>
         <div className="ps-id">{/* eslint-disable-next-line @next/next/no-img-element */}
-          <span className="ps-cover">{ws.cover_image ? <img src={ws.cover_image} alt="" /> : null}{owner && venue && <Link href={`/provider/venues/new?venue=${venue.id}&step=1`}>Change photo</Link>}</span>
+          <span className="ps-cover">{ws.cover_image ? <img src={ws.cover_image} alt="" /> : null}{owner && venue && <Link href={`/provider/venues/new?venue=${venue.id}&step=5`}>Change photo</Link>}</span>
           <div><p className="ps-name"><b>{ws.name}</b>{ws.verification_status === "verified" && <Chip tone="green" dot><BadgeCheck aria-hidden="true" />Verified</Chip>}</p><small>{ws.capabilities.map(x => x === "venue" ? "Venue" : "Services").join(" + ")}</small><p className="ps-tag">{p.tagline || venue?.description?.slice(0, 110) || ""}</p></div>
           {owner && <Link href={`${base}?tab=workspace&edit=1`} className="ws-btn outline sm">Edit</Link>}</div>
         {sp.edit && owner ? <ActionForm action={saveProfile} className="pt-form ps-form">
@@ -80,8 +88,8 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
             <Link href={href} className="ws-btn outline block sm">Configure {k} settings <ArrowRight aria-hidden="true" /></Link>
             <ul>{feats.map(f => <li key={f} className={onCap ? "" : "off"}><CircleCheck aria-hidden="true" />{f}</li>)}</ul></div>; })}</div></section>
       <section className="ws-panel ps-plan"><div className="ws-panel-head"><h2><span className="ps-ic"><Package2 aria-hidden="true" /></span>Your plan</h2><Link href={`${base}?tab=billing`} className="ws-btn outline sm">Manage plan</Link></div>
-        <div className="ps-planbox"><p><Crown aria-hidden="true" /><b>{titleCase(ws.plan)} Plan</b><Chip tone="blue" dot>Current</Chip></p><strong>{(bps / 100).toFixed(0)}%<small>Platform commission</small></strong>
-          <ul>{[`Team members included`, ws.plan === "starter" ? "Standard analytics" : "Advanced analytics", "Gala Agent (standard)", "Marketplace placement"].map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul>
+        <div className="ps-planbox"><p><Crown aria-hidden="true" /><b>{PLAN_NAME[planKey] ?? titleCase(planKey)} Plan</b><Chip tone="blue" dot>Current</Chip></p><strong>{(bps / 100).toFixed(0)}%<small>Platform commission</small></strong>
+          {planIncludes.length ? <ul>{planIncludes.map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul> : <p className="ps-sub">Plan details are unavailable right now. See Payments &amp; billing.</p>}
           <Link href={`${base}?tab=billing`} className="ws-btn outline block sm">View plan details <ArrowRight aria-hidden="true" /></Link></div>
         <div className="ps-save"><b><Sparkles aria-hidden="true" />Estimated savings</b>{better && better.save > 0 ? <><p>Based on your last 30 days, upgrading to {titleCase(better.k)} could save you:</p><strong>{money(better.save)}<small> / month</small></strong></> : <p>You’re on the most cost-effective plan for your current volume.</p>}
           <Link href={`${base}?tab=billing`} className="ws-btn outline block sm">Compare plans</Link></div></section>
@@ -112,7 +120,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         <ul className="ps-rows"><Row l="New enquiries" v={chan("enquiries")} href={`${base}?tab=notifications`} /><Row l="Booking updates" v={chan("bookings")} href={`${base}?tab=notifications`} /><Row l="Agent notifications" v={chan("agent")} href={`${base}?tab=notifications`} /><Row l="Team mentions" v={chan("mentions")} href={`${base}?tab=notifications`} /></ul>
         <Link href={`${base}?tab=notifications`} className="ws-btn outline sm ps-end">Manage notifications</Link></section>
       {/* Not in PROV-017 (added for Q08 trust & documents): kept last so the designed card grid above stays intact. */}
-      <CredentialsCard workspaceId={ws.id} canManage={owner} />
+      <CredentialsCard workspaceId={ws.id} canManage={owner} canUpload={ctx.can.manage} />
     </div>}
 
     {tab !== "workspace" && <section className="ws-panel ps-detail">
@@ -126,7 +134,8 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
             : <b>{m.role === "member" ? "Staff" : titleCase(m.role)}</b>}<Chip tone={m.status === "active" ? "green" : "grey"}>{titleCase(m.status)}</Chip>
           {owner && m.role !== "owner" && m.status === "active" && m.user_id !== ctx.userId && <ActionButton action={removeMember} args={[m.user_id]} variant="ghost" confirm={{ title: "Remove this member?", body: "They lose access to this workspace straight away. Their past activity stays in the audit log.", cta: "Remove member" }}><X aria-hidden="true" />Remove</ActionButton>}
           {owner && m.role !== "owner" && m.status !== "active" && m.user_id !== ctx.userId && <ActionButton action={removeMember} args={[m.user_id, true]} variant="ghost">Restore access</ActionButton>}</li>)}</ul>
-        {owner && <><h3>Invite someone</h3><ActionForm action={inviteMember} className="ps-invite" resetOnSuccess><input name="email" type="email" placeholder="name@company.com" required aria-label="Email" />
+        <OwnershipTransfer workspaceId={ws.id} workspaceName={ws.name} className="k-card" managers={members.filter(m => m.role === "manager" && m.status === "active" && m.user_id !== ctx.userId).map(m => ({ id: m.user_id, name: crewAv.find(x => x.user_id === m.user_id)?.name ?? "Workspace manager" }))} />
+        {owner && <><h3>Invite someone</h3><PlanLimitNotice db={ctx.db} workspaceId={ws.id} kind="provider" limit="seats" /><ActionForm action={inviteMember} className="ps-invite" resetOnSuccess><input name="email" type="email" placeholder="name@company.com" required aria-label="Email" />
           <select name="role" className="ws-select" aria-label="Role"><option value="manager">Manager</option><option value="member">Staff</option><option value="finance">Finance</option></select><button className="ws-btn primary">Create invite</button></ActionForm>
           <ul className="ps-rows">{pending.map(i => <li key={i.id} className="ps-li"><span>{i.email}</span><b>{titleCase(i.role)} · sent {relative(i.created_at, now)}</b><ActionButton action={revokeInvite} args={[i.id]} variant="ghost"><X aria-hidden="true" />Revoke</ActionButton></li>)}</ul></>}</>}
       {tab === "booking" && <><h2>Marketplace &amp; booking rules</h2><p className="ps-sub">Defaults for new listings. Each venue, space, service and package can override them. Accepted bookings keep the terms they were agreed on.</p>
@@ -139,11 +148,13 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
           <li className="ps-li"><span>Plan</span><b>{titleCase(ws.plan)} · {(bps / 100).toFixed(0)}% commission</b></li><li className="ps-li"><span>Statements</span><b><Link href="/provider/money?tab=statements">Monthly statements</Link></b></li></ul>
         <StorageUsage db={ctx.db} workspaceId={ws.id} />
         {/* Q28 provider self-serve plans (W10 finding): live catalogue (plan_prices) replaces the static list; Stripe Checkout in TEST MODE only; the plan changes only on the signed webhook. */}
-        <PlanBilling db={ctx.db} workspaceId={ws.id} kind="provider" plan={ws.plan ?? "starter"} isOwner={owner} />
+        <PlanBilling db={ctx.db} workspaceId={ws.id} kind="provider" plan={ws.plan ?? "starter"} isOwner={owner} role={String(ctx.role)} />
+        <PlanLimits db={ctx.db} workspaceId={ws.id} kind="provider" className="k-card" />
         <h3>Tax</h3><ActionForm action={saveTax} className="pt-form ps-form"><Toggle name="vat_registered" label="VAT registered (UK)" on={tax.vat_registered} /><label>VAT number<input name="vat_number" defaultValue={tax.number ?? ""} placeholder="GB 123 4567 89" /></label>
           {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save tax settings</button></div>}</ActionForm></>}
       {tab === "security" && <><h2>Security</h2><p className="ps-sub">Two-step verification for your own login, and the policy for who in this workspace must use it.</p>
         <MfaCard required={mfaRequired(policyOf(ws.settings), ctx.role) ? ws.name : null} />
+        <EmailChangeCard className="k-card" status={typeof sp.email === "string" ? sp.email : undefined} />
         <WorkspaceMfaPolicy workspaceId={ws.id} policy={policyOf(ws.settings)} owner={owner} /></>}
       {tab === "developers" && <><h2>Developers</h2><p className="ps-sub">API keys, webhooks and integrations for this workspace.</p><DevelopersPanel db={ctx.db} workspaceId={ws.id} canManage={ctx.can.manage} /></>}
       {tab === "demo" && <><h2>Demo workspace</h2><p className="ps-sub">Create a separate practice workspace with sample data to try features safely. It never affects this workspace.</p><DemoCard /></>}

@@ -1,0 +1,206 @@
+{
+  "measuredAt": "2026-11-14T18:56:46.882Z",
+  "note": "live DB, avg of 5 calls per query, server-side (clock_timestamp inside one transaction); value = ms/rows returned. before = 202610250004 global_search; after = 202611146631 + 202611146632. Admin search did not exist before. The first query per seat includes plan warm-up.",
+  "rows": [
+    {
+      "query": "admin:%%",
+      "before": null,
+      "after": "8.1ms/0"
+    },
+    {
+      "query": "admin:birthday party",
+      "before": null,
+      "after": "14.9ms/8"
+    },
+    {
+      "query": "admin:festvial",
+      "before": null,
+      "after": "12.5ms/0"
+    },
+    {
+      "query": "admin:ga",
+      "before": null,
+      "after": "17.2ms/20"
+    },
+    {
+      "query": "admin:gala",
+      "before": null,
+      "after": "20.8ms/15"
+    },
+    {
+      "query": "admin:jazz night",
+      "before": null,
+      "after": "13.7ms/3"
+    },
+    {
+      "query": "admin:lond",
+      "before": null,
+      "after": "12.0ms/4"
+    },
+    {
+      "query": "admin:summer gala",
+      "before": null,
+      "after": "14.0ms/6"
+    },
+    {
+      "query": "admin:wedding",
+      "before": null,
+      "after": "12.4ms/8"
+    },
+    {
+      "query": "admin:zzzqqq",
+      "before": null,
+      "after": "12.2ms/0"
+    },
+    {
+      "query": "customer:%%",
+      "before": "149.8ms/37",
+      "after": "11.2ms/0"
+    },
+    {
+      "query": "customer:birthday party",
+      "before": "2.6ms/1",
+      "after": "15.8ms/2"
+    },
+    {
+      "query": "customer:festvial",
+      "before": "3.8ms/0",
+      "after": "13.8ms/0"
+    },
+    {
+      "query": "customer:ga",
+      "before": "16.8ms/9",
+      "after": "12.3ms/9"
+    },
+    {
+      "query": "customer:gala",
+      "before": "12.6ms/2",
+      "after": "14.0ms/2"
+    },
+    {
+      "query": "customer:jazz night",
+      "before": "13.9ms/1",
+      "after": "15.5ms/2"
+    },
+    {
+      "query": "customer:lond",
+      "before": "2.0ms/11",
+      "after": "17.7ms/11"
+    },
+    {
+      "query": "customer:summer gala",
+      "before": "6.8ms/1",
+      "after": "15.8ms/1"
+    },
+    {
+      "query": "customer:wedding",
+      "before": "3.7ms/9",
+      "after": "14.0ms/9"
+    },
+    {
+      "query": "customer:zzzqqq",
+      "before": "1.5ms/0",
+      "after": "13.6ms/0"
+    },
+    {
+      "query": "organiser:%%",
+      "before": "23.4ms/40",
+      "after": "13.7ms/0"
+    },
+    {
+      "query": "organiser:birthday party",
+      "before": "4.3ms/0",
+      "after": "16.6ms/0"
+    },
+    {
+      "query": "organiser:festvial",
+      "before": "3.8ms/0",
+      "after": "14.3ms/0"
+    },
+    {
+      "query": "organiser:ga",
+      "before": "20.2ms/9",
+      "after": "18.6ms/9"
+    },
+    {
+      "query": "organiser:gala",
+      "before": "5.6ms/3",
+      "after": "17.0ms/3"
+    },
+    {
+      "query": "organiser:jazz night",
+      "before": "4.1ms/0",
+      "after": "16.8ms/4"
+    },
+    {
+      "query": "organiser:lond",
+      "before": "4.0ms/9",
+      "after": "18.6ms/9"
+    },
+    {
+      "query": "organiser:summer gala",
+      "before": "4.0ms/0",
+      "after": "17.0ms/5"
+    },
+    {
+      "query": "organiser:wedding",
+      "before": "4.7ms/3",
+      "after": "14.4ms/3"
+    },
+    {
+      "query": "organiser:zzzqqq",
+      "before": "3.6ms/0",
+      "after": "14.3ms/0"
+    },
+    {
+      "query": "provider:%%",
+      "before": "138.0ms/23",
+      "after": "10.0ms/0"
+    },
+    {
+      "query": "provider:birthday party",
+      "before": "4.3ms/0",
+      "after": "12.3ms/0"
+    },
+    {
+      "query": "provider:festvial",
+      "before": "5.5ms/0",
+      "after": "10.4ms/0"
+    },
+    {
+      "query": "provider:ga",
+      "before": "13.8ms/10",
+      "after": "11.0ms/10"
+    },
+    {
+      "query": "provider:gala",
+      "before": "11.0ms/1",
+      "after": "10.6ms/1"
+    },
+    {
+      "query": "provider:jazz night",
+      "before": "15.6ms/0",
+      "after": "12.4ms/1"
+    },
+    {
+      "query": "provider:lond",
+      "before": "3.5ms/9",
+      "after": "14.6ms/9"
+    },
+    {
+      "query": "provider:summer gala",
+      "before": "8.6ms/0",
+      "after": "12.1ms/0"
+    },
+    {
+      "query": "provider:wedding",
+      "before": "4.7ms/8",
+      "after": "10.5ms/8"
+    },
+    {
+      "query": "provider:zzzqqq",
+      "before": "3.3ms/0",
+      "after": "10.3ms/0"
+    }
+  ]
+}

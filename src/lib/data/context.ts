@@ -12,7 +12,7 @@ export const getCustomer = cache(async (next = "/discover") => {
   const [{ data: profile }, { count: unread }, { data: notes }] = await Promise.all([
     supabase.from("profiles").select("full_name,home_area,currency,interests,notifications,avatar_url,onboarding_complete").eq("id", user.id).maybeSingle(),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
-    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).order("created_at", { ascending: false }).limit(8),
+    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).filter("muted", "eq", false).order("created_at", { ascending: false }).limit(8),   // Q67: muted = workspace in-app alerts switched off
   ]);
   const name = profile?.full_name || (user.user_metadata?.full_name as string | undefined) || user.email?.split("@")[0] || "Guest";
   return { supabase, user, profile, name, unread: unread ?? 0, notifications: notes ?? [] };
@@ -36,7 +36,7 @@ export const getOrganizer = cache(async (next = "/organizer") => {
   const [{ data: workspace }, { count: unread }, { data: notes }] = await Promise.all([
     supabase.from("workspaces").select("id,name,settings,verification_status,payout_status,stripe_account_id,cover_image").eq("id", ws.id).single(),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
-    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).order("created_at", { ascending: false }).limit(8),
+    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).filter("muted", "eq", false).order("created_at", { ascending: false }).limit(8),   // Q67: muted = workspace in-app alerts switched off
   ]);
   enforceWorkspaceMfa({ settings: workspace?.settings, role: ws.role, aal, workspaceName: ws.name, next });
   const name = profile?.full_name || user.email?.split("@")[0] || "Organizer";

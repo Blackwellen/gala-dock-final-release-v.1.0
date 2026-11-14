@@ -9,7 +9,7 @@ import { rateLimit } from "@/lib/security";
 // Ticket transfer (§49) and waiting lists (§46). The DB enforces ownership, validity and single-validity of entitlements.
 type R<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const MSG: [RegExp, string][] = [[/not_authorized|42501/, "That ticket isn’t yours to transfer."], [/not_transferable|no_longer_transferable/, "This ticket can no longer be transferred."],
+const MSG: [RegExp, string][] = [[/ticket_on_hold/, "This ticket is on hold while a card payment dispute is reviewed, so it can’t be transferred right now."], [/not_authorized|42501/, "That ticket isn’t yours to transfer."], [/not_transferable|no_longer_transferable/, "This ticket can no longer be transferred."],
   [/transfers_disabled/, "The organiser has turned off transfers for this event."], [/self_transfer/, "You already hold this ticket."], [/wrong_recipient/, "This transfer was sent to a different email address. Sign in with that account to accept."],
   [/expired/, "This transfer link has expired. Ask the sender to send it again."], [/not_found|P0002/, "This transfer is no longer available."], [/waitlist_disabled/, "This event doesn’t have a waiting list."]];
 const fail = (m: string): R<never> => ({ ok: false, error: MSG.find(([re]) => re.test(m))?.[1] ?? "Something went wrong. Please try again." });

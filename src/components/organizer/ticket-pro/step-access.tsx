@@ -26,9 +26,12 @@ export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref =
         <div className="tp-opt"><span className="tp-oi"><Repeat size={15} /></span><span><b>Allow ticket transfers</b><small>Let buyers transfer tickets to friends.</small></span><Toggle checked={a.transfers} onChange={v => set({ transfers: v })} label="Allow ticket transfers" /></div>
         <div className="tp-opt"><span className="tp-oi"><ShieldCheck size={15} /></span><span><b>Official resale marketplace</b><small>Enable resale through Gala Dock (recommended).</small></span><Toggle checked={a.resale} onChange={v => set({ resale: v })} label="Official resale marketplace" /></div>
         <div className="tp-g3f">
-          <label className="tp-f"><span>Resale price limit</span><span className="tp-in sel"><select disabled={!a.resale} value={a.resale_cap} onChange={x => set({ resale_cap: Number(x.target.value) as A["resale_cap"] })}>{[100, 110, 120, 150].map(v => <option key={v} value={v}>{v === 100 ? "Face value only" : `Up to ${v}% of face value`}</option>)}</select><ChevronDown size={13} /></span></label>
-          <label className="tp-f"><span>Resale fee (buyer)</span><span className="tp-in sel"><select disabled={!a.resale} value={a.fee_buyer} onChange={x => set({ fee_buyer: Number(x.target.value) })}>{[0, 2.5, 5, 7.5, 10].map(v => <option key={v} value={v}>{v}% (platform)</option>)}</select><ChevronDown size={13} /></span></label>
-          <label className="tp-f"><span>Resale fee (seller)</span><span className="tp-in sel"><select disabled={!a.resale} value={a.fee_seller} onChange={x => set({ fee_seller: Number(x.target.value) })}>{[0, 2.5, 5, 7.5, 10].map(v => <option key={v} value={v}>{v}% (platform)</option>)}</select><ChevronDown size={13} /></span></label>
+          {/* Q57: these were selects (110–150% caps, 0–10% buyer/seller fees) that nothing applied: official resale lists at the price the
+              buyer paid, capped by the published GB resale policy (face value), the buyer pays the standard booking fee and the seller
+              pays no resale fee. Shown as the facts they are. */}
+          <div className="tp-f"><span>Resale price limit</span><span className="tp-in" aria-disabled={!a.resale}>Face value (price paid)</span></div>
+          <div className="tp-f"><span>Resale fee (buyer)</span><span className="tp-in" aria-disabled={!a.resale}>Standard booking fee</span></div>
+          <div className="tp-f"><span>Resale fee (seller)</span><span className="tp-in" aria-disabled={!a.resale}>None</span></div>
         </div>
         <p className="tp-note"><Info size={13} />Resale is only allowed through the official Gala Dock marketplace to prevent fraud and ensure a safe experience.</p>
       </Card>

@@ -7,6 +7,7 @@ import type { ActionResult } from "./shell";
 import { untyped } from "@/lib/workspace/db";
 import { isCurrency, isTerm, isTimezone } from "@/lib/master-data";
 import type { Json, TablesInsert } from "@/types/database";
+import { planLimitError } from "@/lib/settings/rules";
 
 const Id = z.string().uuid();
 // Event type and currency validate against canonical master data (Q02) rather than local lists.
@@ -94,7 +95,7 @@ export async function finishCreate(id: string, input: unknown): Promise<ActionRe
   const { data: fresh } = await o.ctx.supabase.from("events").select("settings").eq("id", id).single();
   const s2 = { ...((fresh?.settings ?? s) as Record<string, unknown>) };
   const { error: upErr } = await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
-  if (upErr) return { ok: false, error: "Could not finish setting up the event. Please try again." };
+  if (upErr) return { ok: false, error: planLimitError(upErr) ?? "Could not finish setting up the event. Please try again." };   // Q67: active-event cap
   if (p.data.agent_goal.trim().length >= 8) { const { startRun } = await import("./agent"); await startRun({ goal: p.data.agent_goal, scope: ["event"], event_id: id }); }
   revalidatePath("/organizer/events"); revalidatePath("/organizer");
   return { ok: true, message: fromTemplate ? `${e.name} created from the template with ${fromTemplate} tasks.` : `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };

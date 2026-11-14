@@ -186,6 +186,16 @@ export function platformBillingStripe(client: StripeClient) {
       if (!/^sub_[A-Za-z0-9_]+$/.test(id)) throw new PaymentRouteError("invalid_subscription");
       return client.request<StripeSubscription>({ method: "POST", path: `subscriptions/${id}`, params: guard(params), idempotencyKey });
     },
+    /** Q60 (partner add-on): the card fingerprint of a platform payment method (self-referral check). Read-only. */
+    retrievePaymentMethod(id: string) {
+      if (!/^(pm|card|src)_[A-Za-z0-9_]+$/.test(id)) throw new PaymentRouteError("invalid_payment_method");
+      return client.request<{ id: string; card?: { fingerprint?: string | null } | null }>({ method: "GET", path: `payment_methods/${id}` });
+    },
+    /** Q60 (partner add-on): the invoice a payment intent paid (Stripe API 2025+, where Charge.invoice no longer exists). Read-only. */
+    invoicePaymentsFor(paymentIntent: string) {
+      if (!/^pi_[A-Za-z0-9_]+$/.test(paymentIntent)) throw new PaymentRouteError("invalid_payment_intent");
+      return client.request<{ data: { invoice?: string | { id: string } | null }[] }>({ method: "GET", path: `invoice_payments?payment[type]=payment_intent&payment[payment_intent]=${paymentIntent}&limit=1` });
+    },
     /** Q60: cancel a duplicate plan subscription now; unused time is credited to the customer (proration), never refunded to a card. */
     cancelSubscription(id: string, idempotencyKey: string) {
       if (!/^sub_[A-Za-z0-9_]+$/.test(id)) throw new PaymentRouteError("invalid_subscription");
@@ -199,5 +209,22 @@ export function platformBillingStripe(client: StripeClient) {
       if (!/^cus_[A-Za-z0-9]+$/.test(params.customer ?? "")) throw new PaymentRouteError("customer_required");
       return client.request<StripeInvoiceItem>({ method: "POST", path: "invoiceitems", params: guard(params), idempotencyKey });
     },
+    /** Q67: keep the billing customer's contact (email) in step with the workspace owner. Platform customers only. */
+    updateCustomer(id: string, params: Record<string, string>, idempotencyKey: string) {
+      if (!/^cus_[A-Za-z0-9]+$/.test(id)) throw new PaymentRouteError("customer_required");
+      return client.request<StripeCustomer>({ method: "POST", path: `customers/${id}`, params: guard(params), idempotencyKey });
+    },
+    /** Q67: customer portal (cards, invoices, cancel) for Gala Dock plans. */
+    listPortalConfigurations() {
+      return client.request<{ data: StripePortalConfiguration[] }>({ method: "GET", path: "billing_portal/configurations?active=true&limit=100" });
+    },
+    createPortalConfiguration(params: Record<string, string>, idempotencyKey: string) {
+      return client.request<StripePortalConfiguration>({ method: "POST", path: "billing_portal/configurations", params: guard(params), idempotencyKey });
+    },
+    createPortalSession(params: Record<string, string>) {
+      if (!/^cus_[A-Za-z0-9]+$/.test(params.customer ?? "")) throw new PaymentRouteError("customer_required");
+      return client.request<{ id: string; url: string }>({ method: "POST", path: "billing_portal/sessions", params: guard(params) });
+    },
   };
 }
+export type StripePortalConfiguration = { id: string; active: boolean; is_default?: boolean; livemode?: boolean; metadata?: Record<string, string> };

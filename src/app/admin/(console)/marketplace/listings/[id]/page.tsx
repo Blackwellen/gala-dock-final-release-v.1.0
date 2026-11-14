@@ -67,7 +67,7 @@ export default async function ListingReviewPage(props: PageProps<"/admin/marketp
   const status = l.review_status === "suspended" ? { k: "suspended", t: "Suspended" } : l.review_status === "restricted" ? { k: "restricted", t: "Restricted" } : !l.published ? { k: "draft", t: "Unpublished" } : l.paused_at ? { k: "paused", t: "Paused" } : { k: "active", t: "Active" };
   const decide = (decision: "approve" | "request_changes" | "restrict" | "suspend", title: string, body: string, cta: string) => ({ action: reviewListing, args: [id, decision], reason: true, confirm: { title, body, cta } });
   const checks = [
-    { ok: docs.length > 0 && docs.every(x => x.ok), text: docs.length ? (docs.every(x => x.ok) ? "All compliance documents are in date." : `${docs.filter(x => !x.ok).length} compliance document(s) expired.`) : "No compliance documents on file." },
+    { ok: docs.length > 0 && docs.every(x => x.ok), text: docs.length ? (docs.every(x => x.ok) ? "Provider-declared compliance details are in date (not reviewed — see Evidence review)." : `${docs.filter(x => !x.ok).length} provider-declared compliance item(s) past their date.`) : "No compliance details declared on the listing." },
     { ok: respVsPeers === null || respVsPeers >= 0, text: respVsPeers === null ? "Not enough response data to compare." : `Response time is ${Math.abs(respVsPeers)}% ${respVsPeers >= 0 ? "better" : "worse"} than the ${l.kind} average.` },
     { ok: cancelRate(m90) <= 3, warn: true, text: `Cancellation rate is ${cancelRate(m90).toFixed(1)}% over 90 days.` },
     { ok: closedDays === null || closedDays === 0, warn: true, text: closedDays ? `Closed ${closedDays} day(s) a week — consider adding availability.` : "Open seven days a week." },
@@ -129,7 +129,8 @@ export default async function ListingReviewPage(props: PageProps<"/admin/marketp
   const compliancePanel = <section className="aa-panel al-comp">
     <SectionHead title="Trust &amp; compliance" href={permissions.has("trust") ? `/admin/trust?q=${encodeURIComponent(l.name)}` : undefined} label="View details" />
     <KVRows rows={[["Listing verification", l.verified ? <Status key="v" value="verified" label="Verified" /> : <Status key="v" value="pending" label="Pending" />],
-      ...docs.slice(0, tab === "verification" ? 20 : 3).map(x => [x.name, x.ok ? <Status key={x.name} value="verified" label="Verified" /> : <Status key={x.name} value="cancelled" label="Expired" />] as [string, ReactNode])]} />
+      // Q59: the provider's own typed entries on the listing, not reviewed evidence — never labelled "Verified".
+      ...docs.slice(0, tab === "verification" ? 20 : 3).map(x => [x.name, x.ok ? <Status key={x.name} value="pending" label="Declared" /> : <Status key={x.name} value="cancelled" label="Declared · expired" />] as [string, ReactNode])]} />
     <p className={`al-flagline ${trust.length ? "bad" : ""}`}><ShieldCheck aria-hidden="true" />{trust.length ? `${trust.length} active policy flag${trust.length > 1 ? "s" : ""}: ${trust.map(t => t.category).join(", ")}` : "No active policy flags"}</p>
   </section>;
   const activityPanel = <section className="aa-panel">

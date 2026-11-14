@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { Sparkles, Lightbulb, CircleCheck, CircleAlert, Info, ArrowLeft, ArrowRight, Save, House, Monitor, Users, CalendarClock, ShieldCheck, FileText, ShieldAlert, CalendarDays, Clock3,
   Percent, Ban, Boxes, Wrench, Calendar, MessageSquare, Plus, MoreVertical, FileCheck2, Star, MapPin } from "lucide-react";
 import { ActionForm } from "@/components/workspace/actions";
@@ -77,10 +78,10 @@ export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: 
             <CoverageMap base={base} radiusMiles={cov.radius_miles ?? 50} width={206} height={204} /></div></div></section>
       <section className="ws-panel svw-types"><h2>Event types</h2><p>Select the types of events this service is suitable for.</p>
         <div className="svw-checks">{typeOpts.map(t => <label key={t}><input type="checkbox" name="event_types" value={t} defaultChecked={types.some(x => sameType(t, x))} />{t}</label>)}</div></section>
-      <section className="ws-panel vw-docs svw-creds"><h2>Credentials &amp; trust</h2><p>Add relevant qualifications, insurance and certifications.</p>
+      <section className="ws-panel vw-docs svw-creds"><h2>Credentials &amp; trust</h2><p>Optional details you declare for this service. They aren’t checked by Gala Dock — <Link href="/provider/settings#credentials">upload documents for review in Settings → Trust &amp; credentials</Link> to meet requirements and earn the Verified badge.</p>
         <ul>{creds.map((c, i) => { const x = (svc.credentials ?? []).find(y => y.name === c), st = x?.reference || x?.expires ? "added" : "";
           return <li key={c}><details><summary><span className={`vw-doc-ic ${st || (i === 2 ? "" : "")}`}>{i === 3 ? <FileText aria-hidden="true" /> : i === 2 ? <ShieldCheck aria-hidden="true" /> : <FileCheck2 aria-hidden="true" />}</span><b>{c}</b>
-            <span className={`vw-doc ${st}`}>{st ? "Added" : i === 2 ? "Not required" : "Missing"}</span>
+            <span className={`vw-doc ${st}`}>{st ? "Declared" : "Not declared"}</span>
             <span className="vw-doc-exp">{x?.expires ? `Expires ${fmtDay(x.expires)}` : x?.reference || ""}</span>
             <span className="vw-doc-more" aria-label={`Edit ${c}`}><MoreVertical aria-hidden="true" /></span></summary>
             <div className="vw-doc-edit"><input name={`cred_ref_${i}`} defaultValue={x?.reference ?? ""} placeholder={i === 0 ? "Cover amount or policy number" : "Reference"} aria-label={`${c} reference`} maxLength={60} />
@@ -159,7 +160,7 @@ export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc:
   </div>;
 }
 
-export function SvcStep3({ s, svc, back, next, verify, label }: { s: Listing; svc: Svc; back?: string; next: string; verify: [string, string, boolean][]; label?: string }) {
+export function SvcStep3({ s, svc, back, next, verify, label, enquiryOnly = null }: { s: Listing; svc: Svc; back?: string; next: string; verify: [string, string, boolean][]; label?: string; enquiryOnly?: string | null }) {
   const week = svc.availability?.week ?? { mon: ["09:00", "23:00"], tue: ["09:00", "23:00"], wed: ["09:00", "23:00"], thu: ["09:00", "23:00"], fri: ["09:00", "02:00"], sat: ["09:00", "02:00"], sun: null };
   const cap = svc.capacity ?? {}, photos = [s.image, ...(s.gallery ?? [])].filter(Boolean);
   const checks: [string, boolean][] = [["Availability schedule configured", !!svc.availability], ["Response commitment meets marketplace requirements", s.response_hours <= 8], ["Pricing and packages configured", !!s.price_from || svc.pricing?.model === "quote"],
@@ -174,8 +175,9 @@ export function SvcStep3({ s, svc, back, next, verify, label }: { s: Listing; sv
       <Toggle name="multi" label="Allow multiple bookings on the same day" on={cap.multi_same_day} />
       <div className="svw-buffer"><Toggle name="buffer" label="Block travel time between bookings" on={!!cap.travel_buffer_minutes} /><select name="buffer_h" className="ws-select" defaultValue={(cap.travel_buffer_minutes ?? 60) / 60} aria-label="Travel buffer"><option value={0.5}>30 minutes</option><option value={1}>1 hour</option><option value={2}>2 hours</option></select></div></section>
     <section className="ws-panel svw-resp"><div className="vw-sec-h"><span className="vw-ic"><MessageSquare aria-hidden="true" /></span><div><h2>Response &amp; booking mode</h2><p>Choose how customers can book and how quickly you respond.</p></div></div>
+      {enquiryOnly && <EnquiryOnlyNote country={enquiryOnly} />}
       <div className="svw-bmodes">{([["instant", "Instant book", "Customers can book and pay immediately."], ["request", "Request to book", "Customers send a request, you approve."], ["enquiry", "Enquiry only", "Customers send an enquiry, no booking."]] as const).map(([k, l, sub]) =>
-        <label key={k}><input type="radio" name="booking_mode" value={k} defaultChecked={s.booking_mode === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
+        <label key={k}><input type="radio" name="booking_mode" value={k} defaultChecked={enquiryOnly ? k === "enquiry" : s.booking_mode === k} disabled={!!enquiryOnly && k !== "enquiry"} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
       <label>Response commitment<select name="response_hours" className="ws-select" defaultValue={s.response_hours}>{[2, 4, 8, 12, 24].map(h => <option key={h} value={h}>Respond within {h} hours</option>)}</select></label>
       <small className="vw-hint"><Info aria-hidden="true" />You must respond within this time or the request expires (shown as “Expired / No response”).</small></section>
     <section className="ws-panel svw-holds"><div className="vw-sec-h"><span className="vw-ic"><ShieldAlert aria-hidden="true" /></span><div><h2>Holds, standby &amp; emergency</h2><p>Manage holds, standby options and emergency bookings.</p></div></div>

@@ -12,6 +12,7 @@ import { money, num, dateShort, timeRange, eventTypeLabel, EVENT_TYPE_LABEL, tim
 import { requestTime } from "@/lib/workspace/format";
 import { untyped } from "@/lib/workspace/db";
 import { TemplateActions } from "@/components/organizer/template-actions";
+import { PlanLimitNotice } from "@/components/billing/plan-limits";
 
 export const metadata = { title: "Events" };
 const EVENTS_VIEW_COOKIE = "gd_org_events_view";
@@ -64,6 +65,8 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
         <CreateEventSplit />
       </div>
     </div>
+    {/* Q67: active-event cap reached → explain before they try to publish (the database refuses it either way). */}
+    <PlanLimitNotice db={sb} workspaceId={ctx.workspace.id} kind="organizer" limit="events" />
     <div className="k-between ev-tabs-row">
       <nav className="k-tabs" aria-label="Event lists" style={{ borderBottom: 0 }}>{([["all", "All", counts.all], ["upcoming", "Upcoming", counts.upcoming], ["live", "Live", counts.live], ["completed", "Completed", counts.completed], ["templates", "Templates", templates?.length ?? 0]] as const).map(([k, l, c]) => <Link key={k} href={qs({ tab: k === "all" ? null : k, page: null })} className="k-tab" aria-current={tab === k ? "page" : undefined}>{l}<span className="ev-count">{c}</span></Link>)}</nav>
       <EventsViewSeg view={view} hrefs={{ list: qs({ view: "list" }), cards: qs({ view: "cards" }), calendar: qs({ view: "calendar" }) }} cookie={EVENTS_VIEW_COOKIE} />

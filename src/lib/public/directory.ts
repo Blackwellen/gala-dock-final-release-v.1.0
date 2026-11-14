@@ -1,5 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { parseFeeConfig, priceWithFees } from "@/lib/public/fees";
 
 /**
  * Public directory reads (Q23 lane A: directory_events, directory_facets, calendar_window/calendar_events, series_page,
@@ -26,7 +27,9 @@ async function withPrices(sb: SupabaseClient, list: DirEvent[]) {
     const p = Number(t.price ?? NaN); if (!Number.isFinite(p)) continue;
     min.set(t.event_id, Math.min(min.get(t.event_id) ?? Infinity, p));
   }
-  return list.map(e => ({ ...e, from_price: min.has(e.id) ? min.get(e.id)! : null }));
+  // Q57 / DMCC: "From £X" includes the mandatory booking fee (same config checkout charges).
+  const fee = parseFeeConfig((await sb.rpc("ticket_fee_config")).data);
+  return list.map(e => ({ ...e, from_price: min.has(e.id) ? priceWithFees(min.get(e.id)!, fee) : null }));
 }
 
 export async function directory(sb: SupabaseClient, scope: "all" | "city" | "category" | "venue" | "organizer" | "series", key: string | null,

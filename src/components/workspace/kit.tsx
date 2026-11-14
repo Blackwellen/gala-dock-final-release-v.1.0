@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRight, ArrowUp, ArrowDown, Lock, Inbox, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Lock, Inbox, type LucideIcon } from "lucide-react";
 
 /* Server-safe presentational primitives for Provider and Admin. Interactive pieces live in ./actions.tsx. */
 
@@ -12,7 +12,8 @@ const toneHex: Record<Tone, string> = {
 export function PageHeader({ title, subtitle, actions, back }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode; back?: { href: string; label: string } }) {
   return <header className="ws-page-head">
     <div>
-      {back && <Link className="ws-back" href={back.href}>← {back.label}</Link>}
+      {/* Q49: same back link as every other provider sub-page (icon + "Back to …"), not a text arrow. */}
+      {back && <Link className="ws-back" href={back.href}><ArrowLeft aria-hidden="true" />{back.label.toLowerCase().startsWith("back ") ? back.label : `Back to ${back.label}`}</Link>}
       <h1>{title}</h1>{subtitle && <p>{subtitle}</p>}
     </div>
     {actions && <div className="ws-page-actions">{actions}</div>}

@@ -7,6 +7,7 @@ import { SaveHeart } from "@/components/kit/client";
 import { MarketFilters, TypeChips, SortMenu, EventPicker, MarketMap } from "@/components/organizer/marketplace-client";
 import { money, dateShort, time, num } from "@/lib/format";
 import { serveSponsored } from "@/lib/ads/serve";
+import { coversPoint, withinMiles, cityPoint, type Point } from "@/lib/marketplace/coverage";
 import { SponsoredRow } from "@/components/ads/sponsored";
 
 export const metadata = { title: "Marketplace" };
@@ -18,12 +19,14 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase;
   const tab = str(sp.tab) === "services" ? "services" : "venues"; const view = (["cards", "list", "map"].includes(str(sp.view)) ? str(sp.view) : "cards") as "cards" | "list" | "map";
   const section = str(sp.section);
-  const { data: evs } = await sb.from("events").select("id,name,starts_at,ends_at,city,location,capacity,guest_count,budget_total,cover_image,event_type").eq("workspace_id", ctx.workspace.id).gte("starts_at", new Date().toISOString()).order("starts_at");
+  const { data: evs } = await sb.from("events").select("id,name,starts_at,ends_at,city,location,capacity,guest_count,budget_total,cover_image,event_type").eq("workspace_id", ctx.workspace.id).gte("starts_at", new Date().toISOString()).not("status", "in", "(cancelled,completed,closed,archived)").order("starts_at"); // Q57: only events you can still book for
   const events = (evs ?? []) as EventCtx[];
   const evId = str(sp.event) || events[0]?.id || null; const ev = events.find(e => e.id === evId) ?? null;
   let q = sb.from("listings").select(LISTING_COLS).eq("published", true).eq("kind", tab === "venues" ? "venue" : "service");
   if (str(sp.q)) q = q.or(`name.ilike.%${str(sp.q).replace(/[%,()]/g, "")}%,category.ilike.%${str(sp.q).replace(/[%,()]/g, "")}%,description.ilike.%${str(sp.q).replace(/[%,()]/g, "")}%`);
-  if (str(sp.city)) q = q.ilike("location", `%${str(sp.city)}%`);
+  // Q57: match the listing's city as well as its address line ("The Loft London" is in city London, location "Riverside, SE1 2AB").
+  const city = str(sp.city).replace(/[%_,()\\]/g, " ").trim().slice(0, 60);
+  if (city) q = q.or(`city.ilike.%${city}%,location.ilike.%${city}%`);
   if (str(sp.cat) && str(sp.cat) !== "all") q = q.eq("category", str(sp.cat));
   if (Number(str(sp.cap))) q = q.gte("capacity_max", Number(str(sp.cap)));
   if (Number(str(sp.price))) q = q.lte("price_from", Number(str(sp.price)));
@@ -45,6 +48,16 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const worked = new Set((myItems ?? []).filter(i => ["confirmed", "fulfilled"].includes(i.status)).map(i => i.listing_id));
   if (str(sp.history) === "1") list = list.filter(l => worked.has(l.id));
   if (section === "saved") list = list.filter(l => savedKeys.has(`listing:${l.id}`));
+  // Q57: service coverage. "Covers my event" keeps suppliers whose stated travel radius (or national cover) reaches the event;
+  // "Based within" keeps suppliers based within N miles. The point is the event's venue, else its city, else the Location filter.
+  const coverOn = str(sp.covers) === "1", within = Number(str(sp.within)) || 0;
+  let coverPoint: Point | null = null;
+  if (coverOn || within) {
+    const { data: vrow } = ev ? await sb.from("events").select("venue_listing_id").eq("id", ev.id).maybeSingle() : { data: null };
+    const { data: vl } = vrow?.venue_listing_id ? await sb.from("listings").select("lat,lng").eq("id", vrow.venue_listing_id).maybeSingle() : { data: null };
+    coverPoint = vl?.lat != null && vl?.lng != null ? { lat: Number(vl.lat), lng: Number(vl.lng) } : cityPoint(ev?.city) ?? cityPoint(str(sp.city));
+    if (coverPoint) { const pt = coverPoint; list = list.filter(l => (!coverOn || coversPoint(l, pt)) && (!within || withinMiles(l, pt, within))); }
+  }
   const fit = new Map(list.map(l => [l.id, fitFor(l, ev)]));
   const sort = str(sp.sort) || "recommended";
   // Sponsored listings (Q23 'marketplace_top'): a separate labelled row above results; never mixed into the organic sort.
@@ -79,7 +92,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     : section === "requests" ? <Card flush><div style={{ padding: "14px 16px" }}><h2 className="ov-h" style={{ fontSize: 15 }}>Requests</h2><p className="k-small">RFQs sent to providers across your events.</p></div>
       <table className="k-table"><thead><tr><th>Reference</th><th>Request</th><th>Event</th><th>Category</th><th>Responses due</th><th>Status</th></tr></thead><tbody>{(reqs ?? []).map(r => <tr key={r.id}><td><Link className="k-link" href={`/organizer/marketplace/requests/${r.id}`}>{r.reference}</Link></td><td style={{ color: "var(--k-ink)" }}>{r.title}</td><td>{(r.events as unknown as { name: string }).name}</td><td style={{ textTransform: "capitalize" }}>{r.category}</td><td>{r.response_deadline ? `${dateShort(r.response_deadline)} ${time(r.response_deadline)}` : "—"}</td><td><Chip tone={r.status === "sent" ? "blue" : "gray"}>{r.status === "sent" ? "Open" : r.status}</Chip></td></tr>)}</tbody></table>
       {!reqs?.length && <Empty icon={Inbox} title="No requests yet" />}</Card> : <>
-      <MarketFilters tab={tab} categories={cats} />
+      <MarketFilters tab={tab} categories={cats} coverage={{ hasPoint: !!(coverPoint ?? cityPoint(ev?.city) ?? cityPoint(str(sp.city))), label: ev?.name ?? (str(sp.city) || null) }} />
       {tab === "venues" && <TypeChips types={cats.slice(0, 10)} />}
       <div className={`mk-body ${view === "map" ? "full-map" : ""}`}>
         <div className="k-col" style={{ gap: 12, minWidth: 0 }}>
@@ -90,7 +103,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
               <tbody>{list.map(l => { const a = avail.get(l.id)!; const f = fit.get(l.id)!; return <tr key={l.id}><td><Link href={href(l)} className="k-row" style={{ gap: 10 }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || "/assets/gd/covers/summer-sessions.webp"} alt="" className="k-thumb sm" /><b className="k-strong">{l.name}</b>{l.verified && <BadgeCheck size={14} className="k-blue" />}</Link></td><td>{l.city}</td><td>{tab === "venues" ? num(l.capacity_max) : l.category}</td><td><span className="k-row" style={{ gap: 4 }}><Star size={12} fill="#f59e0b" color="#f59e0b" />{l.rating.toFixed(1)} ({l.review_count})</span></td><td>{l.response_hours}h</td><td><Chip tone={AV[a.state]}>{a.label}</Chip></td><td title={f.reasons.join(" · ")}><b>{f.score}%</b></td><td className="num">{money(l.price_from)}</td><td><Link className="k-btn primary sm" href={reqHref(l)}>Request</Link></td></tr>; })}</tbody></table></Card>
             : view === "map" ? null
             : <div className="mk-cards">{list.map(l => { const a = avail.get(l.id)!; const f = fit.get(l.id)!; return <article key={l.id} className="mk-card">
-                <Link href={href(l)} className="mk-card-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || "/assets/gd/covers/summer-sessions.webp"} alt="" />{(l.badge || l.sponsored) && <span className="mk-badge">{l.sponsored ? "Sponsored" : l.badge}</span>}<span className="mk-count"><Images size={12} />1 / {Math.max(1, (l.gallery?.length ?? 0) + 12)}</span><span className="mk-dots"><i className="on" /><i /><i /><i /></span></Link>
+                <Link href={href(l)} className="mk-card-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || "/assets/gd/covers/summer-sessions.webp"} alt="" />{(l.badge || l.sponsored) && <span className="mk-badge">{l.sponsored ? "Sponsored" : l.badge}</span>}{/* Q57: the real photo count (cover + gallery); it used to add 12 phantom photos and always draw four dots. */}{(l.gallery?.length ?? 0) > 0 && <span className="mk-count"><Images size={12} />{(l.gallery?.length ?? 0) + (l.image ? 1 : 0)} photos</span>}</Link>
                 <SaveHeart itemKey={`listing:${l.id}`} saved={savedKeys.has(`listing:${l.id}`)} className="mk-heart" label={l.name} />
                 <div className="mk-card-body">
                   <div className="k-between" style={{ alignItems: "flex-start" }}><Link href={href(l)}><b className="mk-name">{l.name}</b></Link><span className="mk-price"><b>{money(l.price_from)}</b> /{l.price_unit.replace("per ", "")}<small>From</small></span></div>

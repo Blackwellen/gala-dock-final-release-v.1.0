@@ -18,7 +18,8 @@ import { setUserStatus, revokeSessions, addRecordNote } from "../../_a/actions";
 
 export const metadata: Metadata = { title: "User profile" };
 
-type Identity = { email: string; email_confirmed: boolean; phone: string | null; created_at: string; last_sign_in_at: string | null; mfa_factors: number; active_sessions: number };
+// Q59: identity_verified / phone_confirmed come from verification_checks and auth.users (admin_user_identity), never profiles.identity_verified.
+type Identity = { email: string; email_confirmed: boolean; phone: string | null; phone_confirmed?: boolean; identity_verified?: boolean; created_at: string; last_sign_in_at: string | null; mfa_factors: number; active_sessions: number };
 type Profile = { full_name: string; avatar_url: string; phone: string; home_area: string; country: string; language: string; date_of_birth: string | null; marketing_opt_in: boolean;
   status: string; identity_verified: boolean; last_active_at: string | null; created_at: string };
 type Tk = { id: string; status: string; price_paid: number; order_ref: string; created_at: string; tier: { name: string } | null; event: { name: string; starts_at: string | null } | null };
@@ -87,7 +88,7 @@ export default async function UserProfilePage(props: PageProps<"/admin/users/[id
     <KVRows rows={[
       ["Full name", nm],
       ["Email", identity.email, identity.email_confirmed ? <span className="ap-ok">✓ Verified</span> : <span className="ap-warn">Unverified</span>],
-      ["Phone", profile?.phone || identity.phone || "—", profile?.phone ? (profile.identity_verified ? <span className="ap-ok">✓ Verified</span> : <span className="ap-warn">Unverified</span>) : ""],
+      ["Phone", profile?.phone || identity.phone || "—", (profile?.phone || identity.phone) ? (identity.phone_confirmed ? <span className="ap-ok">✓ Verified</span> : <span className="ap-warn">Unverified</span>) : ""],
       ["Date of birth", profile?.date_of_birth ? `${day(profile.date_of_birth, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })} (${age(profile.date_of_birth, now)})` : "—"],
       ["Location", profile?.home_area ? <span className="aa-loc"><Flag country={profile.country} />{profile.home_area}</span> : "—"],
       ["Language", langName(profile?.language)],
@@ -106,7 +107,7 @@ export default async function UserProfilePage(props: PageProps<"/admin/users/[id
     <SectionHead title="Security &amp; access" href={`${base}?tab=access`} />
     <dl className="ap-sec">
       <div><dt>Account status</dt><dd>{restricted ? <Status value="restricted" label="Restricted" /> : <Status value="active" label="Active" />}</dd></div>
-      <div><dt>Identity verification</dt><dd>{profile?.identity_verified ? <Status value="verified" label="Verified" /> : <Status value="unverified" label="Unverified" />}</dd>
+      <div><dt>Identity verification</dt><dd>{identity.identity_verified ? <Status value="verified" label="Verified" /> : <Status value="unverified" label="Unverified" />}</dd>
         <dd>{canTrust && <Link className="ws-btn outline sm" href={`/admin/trust?q=${encodeURIComponent(nm)}`}>View details</Link>}</dd></div>
       <div><dt>MFA</dt><dd>{identity.mfa_factors ? <Status value="verified" label="Enabled" /> : <Status value="unverified" label="Not enabled" />}</dd></div>
       <div><dt>Active sessions</dt><dd>{identity.active_sessions}</dd>
@@ -146,7 +147,7 @@ export default async function UserProfilePage(props: PageProps<"/admin/users/[id
     <header className="aa-hero ap-hero">
       <Avatar src={profile?.avatar_url} name={nm} size={86} />
       <div className="ap-hero-text">
-        <h1>{nm} {profile?.identity_verified ? <span className="aa-chip green ap-vchip"><BadgeCheck aria-hidden="true" />Verified</span> : <span className="aa-chip amber">Unverified</span>}
+        <h1>{nm} {identity.identity_verified ? <span className="aa-chip green ap-vchip"><BadgeCheck aria-hidden="true" />Verified</span> : <span className="aa-chip amber">Unverified</span>}
           {restricted && <Status value="restricted" label="Restricted" />}</h1>
         <p className="aa-hero-meta">{shortRef("USR", id)}<span className="sep">•</span>{identity.email}{(profile?.phone || identity.phone) && <><span className="sep">•</span>{profile?.phone || identity.phone}</>}</p>
         <p className="aa-hero-meta">{profile?.home_area && <span className="aa-loc"><Flag country={profile.country} />{profile.home_area}</span>}<span className="sep">•</span>

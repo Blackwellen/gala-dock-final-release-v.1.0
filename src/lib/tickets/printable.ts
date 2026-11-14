@@ -1,4 +1,5 @@
 import "server-only";
+import { HOLD_MESSAGE } from "@/lib/tickets/hold";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -18,10 +19,12 @@ export async function loadPrintable(ticketId: string): Promise<{ ok: true; t: Pr
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { ok: false, status: 401, error: "Sign in required" };
   const { data: t } = await sb.from("tickets")
-    .select("id,code,status,seat,order_ref,attendee_name,price_paid,holder_id,tier:ticket_tiers(name),event:events!inner(name,starts_at,ends_at,venue_name,location,city,settings,timezone)")
+    .select("id,code,status,dispute_hold_at,seat,order_ref,attendee_name,price_paid,holder_id,tier:ticket_tiers(name),event:events!inner(name,starts_at,ends_at,venue_name,location,city,settings,timezone)")
     .eq("id", ticketId).eq("holder_id", user.id).maybeSingle();
   if (!t) return { ok: false, status: 404, error: "Not found" };
   if (t.status !== "valid") return { ok: false, status: 409, error: "This ticket can’t be printed because it is no longer valid." };
+  // Q57: a ticket on a card-dispute hold is refused at the door; no printable copy either (PDF + print page share this loader).
+  if ((t as { dispute_hold_at?: string | null }).dispute_hold_at) return { ok: false, status: 409, error: HOLD_MESSAGE };
   const ev = t.event as unknown as { name: string; starts_at: string | null; ends_at: string | null; venue_name: string | null; location: string | null; city: string | null; settings: Record<string, unknown> | null; timezone: string | null };
   if (ev.settings?.print_tickets === false) return { ok: false, status: 403, error: "The organiser has turned off printed tickets for this event. Show the ticket in your wallet instead." };
   const { data: n } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce,print_epoch").eq("id", ticketId).maybeSingle();

@@ -2,6 +2,7 @@ import { ActionButton } from "@/components/workspace/actions";
 import { buyCreditPackAction } from "@/lib/actions/billing";
 import { untyped, type Db } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
+import { automaticTaxEnabled } from "@/lib/billing/core";
 
 type Pack = { id: string; name: string; price_minor: number; currency: string; credits: number | string; expiry_days: number | null; workspace_kinds: string[]; stripe_price_test: string | null; stripe_price_live: string | null };
 const money = (m: number, c = "GBP") => new Intl.NumberFormat("en-GB", { style: "currency", currency: c }).format(m / 100);
@@ -19,7 +20,7 @@ export async function CreditPacks({ db, workspaceId, kind, isOwner, justPaid }: 
   return <section className="k-card st-c" style={{ display: "grid", gap: 10 }} aria-labelledby="packs-h">
     <h2 id="packs-h">Top up Gala Agent credits</h2>
     {justPaid && <p className="k-small" role="status">Payment received — your credits appear here within a minute, once Stripe confirms it.</p>}
-    <p className="k-small k-muted">Purchased credits are used after the monthly allowance{packs.some(p => p.expiry_days) ? `, and expire ${packs[0]!.expiry_days} days after purchase` : ""}. Prices exclude VAT.{live ? "" : " Billing runs in Stripe test mode — no real card is charged."}</p>
+    <p className="k-small k-muted">Purchased credits are used after the monthly allowance{packs.some(p => p.expiry_days) ? `, and expire ${packs[0]!.expiry_days} days after purchase` : ""}. {automaticTaxEnabled() ? "Prices exclude VAT, which is added at checkout." : "Prices shown are what you pay; VAT isn’t added at the moment."}{live ? "" : " Billing runs in Stripe test mode — no real card is charged."}</p>
     <div className="k-row" style={{ gap: 12, flexWrap: "wrap" }}>
       {packs.map(p => <div key={p.id} className="k-card" style={{ padding: 14, minWidth: 180, flex: "1 1 180px", display: "grid", gap: 6 }}>
         <b>{p.name}</b>

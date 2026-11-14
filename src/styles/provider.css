@@ -12,3 +12,19 @@
 /* Owner standard: one provider page-title size — the 34px `.ws-page-head h1` the provider references were matched at (inbox 18px,
    Media Studio 20px and statement 24px were outliers). Organiser/customer use --k-title-page (28px), admin lists --k-title-admin. */
 .ws-app.provider .ms-list-head h1, .ws-app.provider .ml-head h1, .ws-app.provider .pm-st h1 { font-size: 34px; line-height: 1.12; letter-spacing: -.035em; }
+
+/* Q49 header consistency: ONE page-title scale for every provider page head (list pages used 34px, detail pages 30–33px,
+   wizards 30px in a different navy, messages 21.5px), and one back-link style (five variants: 12–12.5px, 15–17px icons). */
+.ws-app.provider :is(.ws-page-head, .ph-head, .pv-title, .pk-title, .pq-title, .qp-head, .qw-head, .wz-head, .pmsg-head, .ms-list-head, .ml-head) h1 {
+  font-size: 32px; line-height: 1.15; font-weight: 800; letter-spacing: -.035em; color: #02032e;
+}
+.ws-app.provider :is(.ws-page-head, .ph-head, .qp-head, .qw-head, .wz-head, .pmsg-head) > div > p,
+.ws-app.provider :is(.wz-head, .qw-head) > p { font-size: 14px; color: var(--ws-ink-2, #3f4596); }
+.ws-app.provider .ws-back { gap: 8px; font-size: 12.5px; color: #100e78; }
+.ws-app.provider .ws-back svg { width: 16px !important; height: 16px !important; }
+@media (max-width: 640px) {
+  .ws-app.provider :is(.ws-page-head, .ph-head, .pv-title, .pk-title, .pq-title, .qp-head, .qw-head, .wz-head, .pmsg-head, .ms-list-head, .ml-head) h1 { font-size: 26px; }
+}
+/* Money for non-finance roles (FinanceOnly). */
+.ws-app.provider .pm-locked { display: flex; gap: 12px; align-items: flex-start; padding: 20px; max-width: 640px; }
+.ws-app.provider .pm-locked svg { width: 20px; height: 20px; color: #4b55a8; flex: none; }

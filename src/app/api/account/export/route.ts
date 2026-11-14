@@ -40,6 +40,10 @@ export async function GET() {
     q("form_responses", db.from("form_responses").select("form_id,event_id,answers,status,created_at").eq("user_id", user.id)),
     q("waivers_signed", db.from("waiver_signatures").select("event_id,signer_name,signer_email,is_minor,guardian_name,signed_at,status").eq("user_id", user.id)),
     q("private_uploads", db.from("verified_private_uploads").select("path,mime,size_bytes,verified_at").eq("owner_id", user.id)),
+    // Q59: trust & verification records about or submitted by you (metadata; the files themselves stay in private storage).
+    q("trust_documents_submitted", db.from("provider_documents").select("workspace_id,credential_key,file_name,issuing_organisation,reference,effective_from,expires_on,cover_amount_minor,cover_currency,status,rejection_reason,created_at,reviewed_at").eq("uploaded_by", user.id)),
+    q("verification_checks", db.from("verification_checks").select("workspace_id,kind,status,legal_name,trading_name,company_number,source,reason,submitted_at,decided_at,expires_at").or(`submitted_by.eq.${user.id},user_id.eq.${user.id}`)),
+    q("trust_actions_about_you", db.from("enforcement_actions").select("reference,action,reason_code,note,status,starts_at,ends_at,appeal_deadline,created_at").eq("subject_type", "user").eq("subject_id", user.id)),
     q("sign_ins", db.rpc("my_sessions")),
     // Q32: records organisers hold about you (guest lists, care needs, registrations, passes, admissions, transfers), resale,
     // waiting rooms, account holds and security events: tables your own RLS-scoped client can't read.

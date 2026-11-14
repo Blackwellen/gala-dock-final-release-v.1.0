@@ -3,19 +3,20 @@ import { z } from "zod";
 import { getCustomer } from "@/lib/data/context";
 import { buildCategoryOf } from "@/lib/build-categories";
 import { listingHref } from "@/lib/links";
+import { cityPoint, coversPoint } from "@/lib/marketplace/coverage";
 
 // Provider search for "Add to your event": the marketplace filtered by category and by what this event needs —
 // availability on the event date, capacity for the guest count, price, rating, location and booking options.
 export type ProviderFilters = { q?: string; sort?: "recommended" | "rating" | "price_low" | "price_high" | "reviews" | "response"; maxPrice?: number | null; minRating?: number | null;
-  verified?: boolean; instantBook?: boolean; fitsGuests?: boolean; availableOnly?: boolean; nearEvent?: boolean; page?: number };
+  verified?: boolean; instantBook?: boolean; fitsGuests?: boolean; availableOnly?: boolean; nearEvent?: boolean; /** Q57 */ coversEvent?: boolean; page?: number };
 export type ProviderHit = { id: string; name: string; kind: string; category: string; image: string; city: string; location: string; rating: number; review_count: number;
   price_from: number | null; price_unit: string; capacity_min: number | null; capacity_max: number | null; response_hours: number | null; verified: boolean; instant_book: boolean;
   badge: string | null; tags: string[]; href: string; availability: "available" | "limited" | "unavailable" | "unknown"; added: boolean; estimate: number | null; tooSmall: boolean };
 export type ProviderSearch = { hits: ProviderHit[]; total: number; event: { date: string | null; guests: number; city: string }; more: boolean };
 
 const PAGE = 12;
-const COLS = "id,name,kind,category,city,location,image,price_from,price_unit,capacity_min,capacity_max,rating,review_count,response_hours,verified,instant_book,badge,tags,slug,sponsored,paused_at";
-type Row = Omit<ProviderHit, "href" | "availability" | "added" | "estimate" | "tooSmall"> & { slug: string | null; sponsored: boolean; paused_at: string | null };
+const COLS = "id,name,kind,category,city,location,image,price_from,price_unit,capacity_min,capacity_max,rating,review_count,response_hours,verified,instant_book,badge,tags,slug,sponsored,paused_at,lat,lng,details";
+type Row = Omit<ProviderHit, "href" | "availability" | "added" | "estimate" | "tooSmall"> & { slug: string | null; sponsored: boolean; paused_at: string | null; lat: number | null; lng: number | null; details: Record<string, unknown> | null };
 
 export async function searchProviders(eventId: string, category: string, f: ProviderFilters = {}): Promise<{ ok: true; data: ProviderSearch } | { ok: false; error: string }> {
   const id = z.string().uuid().safeParse(eventId); if (!id.success) return { ok: false, error: "Event not found." };
@@ -36,6 +37,9 @@ export async function searchProviders(eventId: string, category: string, f: Prov
   const guests = Math.max(0, Number(e.guest_count ?? 0));
   let rows = ((data ?? []) as unknown as Row[]).filter(l => category === "venue" || buildCategoryOf(l.kind, l.category) === category);
   if (f.fitsGuests && guests && category === "venue") rows = rows.filter(l => !l.capacity_max || l.capacity_max >= guests);
+  // Q57: coverage radius — keep suppliers whose stated travel radius (or national cover) reaches the event city.
+  const pt = f.coversEvent ? cityPoint(e.city) : null;
+  if (pt) rows = rows.filter(l => coversPoint(l, pt));
   const { data: inBuild } = await ctx.supabase.from("build_items").select("listing_id").eq("event_id", e.id).not("status", "in", "(cancelled,cancelled_by_customer,cancelled_by_provider,refunded,partially_refunded,declined,unavailable,expired,expired_no_response,fulfilled,completion_pending,completed,disputed)"); // same closed set as addToBuild: finished lines don't block adding again
   const added = new Set((inBuild ?? []).map(b => b.listing_id));
   const per = (l: Row) => /guest|person/.test(l.price_unit ?? "");

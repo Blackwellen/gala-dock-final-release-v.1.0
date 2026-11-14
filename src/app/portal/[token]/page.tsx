@@ -47,6 +47,7 @@ export default async function ClientPortal(props: PageProps<"/portal/[token]">) 
   if (error?.message.includes("rate_limited")) throw new Error("This link is receiving too many requests. Please try again shortly.");
   if (error || !data) notFound();
   const v = data as View, e = v.event, now = requestTime();
+  const { data: accent } = await sb.rpc("portal_brand", { p_token_hash: hashToken(token) });   // Q67: organiser brand accent
   const base = `/portal/${token}`, href = (k: ViewKey) => (k === "overview" ? base : `${base}?view=${k}`);
   const first = v.link.client_name.split(/\s+/)[0];
   const pending = v.approvals.filter(a => a.status === "pending");
@@ -127,6 +128,7 @@ export default async function ClientPortal(props: PageProps<"/portal/[token]">) 
   ];
 
   return <PortalShell
+    accent={typeof accent === "string" ? accent : null}
     portal={{ title: "Client Portal", subtitle: e.name, thumb }}
     context={{ label: e.name, thumb }}
     nav={[

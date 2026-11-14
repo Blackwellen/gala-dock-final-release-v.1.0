@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { X } from "lucide-react";
 import { useToast } from "@/components/ui";
 import { setAvailability } from "./actions";
+import { wallToIso } from "@/lib/events/wall-time";
 
 type Target = { value: string; label: string };
 const KIND_LABEL: Record<string, string> = { blocked: "Block time (unavailable)", open: "Open availability (bookable)", emergency_window: "Publish emergency window", maintenance: "Maintenance" };
@@ -24,8 +25,9 @@ export function AvailabilityDialog({ targets }: { targets: Target[] }) {
   const close = () => { const n = new URLSearchParams(sp.toString()); for (const k of ["action", "target", "date"]) n.delete(k); router.replace(`${pathname}${n.toString() ? `?${n}` : ""}`, { scroll: false }); };
   return <div className="ws-dialog-backdrop" onClick={close}><form className="ws-dialog" role="dialog" aria-modal="true" aria-label="Update availability" onClick={e => e.stopPropagation()}
     onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); setError("");
-      // datetime-local values are wall-clock times in the user's zone; send exact instants so the server never guesses.
-      for (const k of ["start", "end"]) { const d = new Date(String(f.get(k))); if (!Number.isNaN(d.getTime())) f.set(k, d.toISOString()); } start(async () => { const r = await setAvailability(f); if (!r.ok) { setError(r.error); return; } toast(r.message ?? "Saved"); close(); router.refresh(); }); }}>
+      // Q49: datetime-local values are London wall-clock times (the calendar shows Europe/London), not the browser's zone — a
+      // provider whose laptop was on another timezone blocked the wrong hours. Send exact instants so the server never guesses.
+      for (const k of ["start", "end"]) { const iso = wallToIso(String(f.get(k) ?? "")); if (iso) f.set(k, iso); } start(async () => { const r = await setAvailability(f); if (!r.ok) { setError(r.error); return; } toast(r.message ?? "Saved"); close(); router.refresh(); }); }}>
     <div className="ws-dialog-head"><h2>Update availability</h2><button type="button" aria-label="Close" onClick={close}><X aria-hidden="true" /></button></div>
     <label className="ws-field"><span>What do you want to do?</span><select name="kind" defaultValue={kind}>{Object.entries(KIND_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
     <label className="ws-field"><span>Applies to</span><select name="target" defaultValue={sp.get("target") ?? targets[0]?.value} required>{targets.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select></label>

@@ -21,9 +21,12 @@ const layoutName = (k: string) => LAYOUT_LABEL[k] ?? `${k[0]?.toUpperCase() ?? "
 
 function useStep() {
   const router = useRouter(), toast = useToast();
-  const [pending, start] = useTransition();
+  const [saving, start] = useTransition();
+  // Q49: stay pending until the next step / the new booking renders — "Confirm booking" re-enabled while the redirect loaded and a
+  // second click created the booking again (each request still carried the draft cookie).
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   const [error, setError] = useState("");
-  const run = (fn: () => Promise<ActionResult>) => start(async () => { setError(""); const r = await fn(); if (!r.ok) { setError(r.error); return; } if (r.message) toast(r.message); if (r.redirect) router.push(r.redirect); else router.refresh(); });
+  const run = (fn: () => Promise<ActionResult>) => { if (pending) return; start(async () => { setError(""); const r = await fn(); if (!r.ok) { setError(r.error); return; } if (r.message) toast(r.message); const to = r.redirect; if (to) startNav(() => router.push(to)); else router.refresh(); }); };
   return { pending, error, run };
 }
 function Footer({ back, onSave, onNext, nextLabel, pending, error, onCancel, disabled }: { back?: string; onSave: () => void; onNext: () => void; nextLabel: string; pending: boolean; error: string; onCancel?: () => void; disabled?: boolean }) {

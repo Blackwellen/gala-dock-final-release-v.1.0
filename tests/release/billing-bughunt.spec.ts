@@ -99,3 +99,28 @@ test("migration 202611146501: FIFO credit balance, refund reversal, per-kind not
   expect(m).toMatch(/'\/provider\/settings\?tab=agent'/);
   expect(m).toMatch(/revoke all on function public\.ai_credit_balance\(uuid, timestamptz\), public\.billing_credit_pack_refunded\(jsonb, boolean\) from public, anon, authenticated/);
 });
+
+test("partner add-on: invoice refunds / lost chargebacks claw back commission; card fingerprint recorded; adapter read-only lookups", async () => {
+  const w = src("src/app/api/stripe/webhook/route.ts");
+  const refund = w.slice(w.indexOf('case "charge_refunded"'), w.indexOf('case "account_updated"'));
+  expect(refund).toMatch(/invoiceForPayment\(\{ chargeInvoice: str\(object\.invoice\), paymentIntent: pi, charge: object\.id \}\)/);
+  expect(refund).toMatch(/rpc\("partner_refund_invoice", \{ p_invoice: inv, p_refunded_minor: Number\(object\.amount_refunded \?\? 0\), p_reason: "refund" \}\)/);
+  const dispute = w.slice(w.indexOf('case "dispute"'), w.indexOf('case "external_account"'));
+  expect(dispute).toMatch(/!account && status === "lost"/);
+  expect(dispute).toMatch(/billing_credit_pack_refunded/);
+  expect(dispute).toMatch(/p_reason: "chargeback_lost"/);
+  const paid = w.slice(w.indexOf('case "payment_succeeded"'), w.indexOf('case "payment_failed"'));
+  expect(paid).toMatch(/recordPaymentFingerprint\(str\(object\.customer\), str\(object\.payment_method\)\)\.catch/);
+  const seen: StripeRequest[] = [];
+  const fake: StripeClient = { request: async <T,>(r: StripeRequest) => { seen.push(r); return { data: [] } as T; } };
+  const b = platformBillingStripe(fake);
+  await b.retrievePaymentMethod("pm_1"); await b.invoicePaymentsFor("pi_1");
+  expect(seen.map(r => [r.method, r.path])).toEqual([["GET", "payment_methods/pm_1"], ["GET", "invoice_payments?payment[type]=payment_intent&payment[payment_intent]=pi_1&limit=1"]]);
+  expect(seen.every(r => !r.stripeAccount)).toBe(true);
+  expect(() => b.invoicePaymentsFor("x&y")).toThrow(PaymentRouteError);
+  expect(() => b.retrievePaymentMethod("../x")).toThrow(PaymentRouteError);
+  const m = src("supabase/migrations/202611146502_partner_billing_addon.sql");
+  expect(m).toMatch(/create trigger gd_partner_referral_churn after insert or update of status on public\.workspace_subscriptions/);
+  expect(m).toMatch(/commerce_setting\('partner_commission_net_of_vat'\)/);
+  expect(m).toMatch(/'clawback:' \|\| p_invoice \|\| ':' \|\| target/);
+});

@@ -10,7 +10,9 @@ function fixture(options:{status?:string;stored?:boolean;lost?:boolean;aged?:boo
  const writes:Record<string,unknown>[]=[],calls:Array<{path:string;params?:Record<string,string>;key?:string;account?:string}>=[];
  const job={id:'payout-fixture',seller_id:'seller-fixture',original_order_ref:'GD-ORIGINAL',amount:20,stripe_refund_id:options.stored?'re_fixture':null,requested_at:options.lost||options.aged?new Date(Date.now()-(options.aged?48:1)*3600e3).toISOString():null};
  const refund={id:'re_fixture',status:options.status??'succeeded',amount:2000,currency:'gbp',payment_intent:'pi_fixture',metadata:{resale_payout_id:job.id}};
- const db={rpc:async(name:string)=>{if(name==='claim_resale_refunds')return{data:[job],error:null};if(name==='resale_refund_ready')return{data:true,error:null};if(options.settlementError)return{error:{message:'settlement fixture failure'}};writes.push({status:'paid',settled:true});return{data:true,error:null};},from:()=>({select:()=>({eq:()=>({single:async()=>({data:{buyer_id:options.wrongBuyer?'another-buyer':job.seller_id,status:'issued',stripe_session:'cs_test_fixture',currency:'GBP',amount:40,fee:5,strategy:options.direct?'direct':'platform',connected_account_id:options.direct?'acct_fixtureOrganiser':null}})})}),update:(value:Record<string,unknown>)=>{writes.push(value);return{eq:async()=>({error:null})};}})};
+ const db={rpc:async(name:string)=>{if(name==='claim_resale_refunds')return{data:[job],error:null};if(name==='resale_refund_ready')return{data:true,error:null};if(options.settlementError)return{error:{message:'settlement fixture failure'}};writes.push({status:'paid',settled:true});return{data:true,error:null};},from:()=>({select:()=>({eq:()=>({single:async()=>({data:{buyer_id:options.wrongBuyer?'another-buyer':job.seller_id,status:'issued',stripe_session:'cs_test_fixture',currency:'GBP',amount:40,fee:5,strategy:options.direct?'direct':'platform',connected_account_id:options.direct?'acct_fixtureOrganiser':null}}),maybeSingle:async()=>({data:{application_fee_minor:null},error:null})})}),update:(value:Record<string,unknown>)=>{writes.push(value);return{eq:async()=>({error:null})};},
+  // Q58 (money lane): direct-charge refunds also upsert the payment_refunds audit row keyed by the Stripe idempotency key.
+  upsert:async(value:Record<string,unknown>)=>{writes.push({refund_row:value});return{error:null};}})};
  const stripe=async(path:string,params?:Record<string,string>,opts?:{idempotencyKey?:string;stripeAccount?:string})=>{
   calls.push({path,params,key:opts?.idempotencyKey,account:opts?.stripeAccount});
   if(path.startsWith('checkout/'))return{payment_intent:'pi_fixture',payment_status:'paid',amount_total:4500,currency:'gbp',metadata:{order_ref:job.original_order_ref}};
@@ -20,6 +22,10 @@ function fixture(options:{status?:string;stored?:boolean;lost?:boolean;aged?:boo
  };
  // Fake Stripe client behind the real refundMerchantCharge (Q07 connected-account refund helper).
  const client={request:async<T,>(r:StripeRequest):Promise<T>=>{calls.push({path:r.path,params:r.params,key:r.idempotencyKey,account:r.stripeAccount});
+  // DEC-107 split (money lane): the charge is read first in the seller's context, then the application fee on the platform.
+  if(r.path.startsWith('payment_intents/'))return {id:'pi_fixture',latest_charge:{id:'ch_fixture',amount:4500,amount_refunded:0,currency:'gbp',application_fee:'fee_fixture'}} as T;
+  if(r.path.startsWith('application_fees/fee_fixture/refunds'))return {id:'fr_fixture',amount:Number(r.params?.amount??0)} as T;
+  if(r.path.startsWith('application_fees'))return {id:'fee_fixture',amount:500,amount_refunded:0} as T;
   return {...refund,metadata:{resale_payout_id:r.params?.['metadata[resale_payout_id]']??''}} as T;}};
  const loaded={exports:{} as {processResaleRefunds:(limit:number)=>Promise<{refunded:number;pending:number;failed:number}>}};
  const require=(name:string)=>name==='server-only'?{}:name==='@/lib/supabase/admin'?{createAdminClient:()=>db}:name==='@/lib/workspace/db'?{untyped:(v:unknown)=>v}:name==='@/lib/stripe'?{stripe}:name==='@/lib/payments/server'?{paymentDeps:()=>({stripe:client,data:{}})}:name==='@/lib/payments/service'?paymentService:(()=>{throw new Error(name);})();
@@ -59,12 +65,14 @@ test.describe('resale refunds to original payment',()=>{
  test('direct-charge original is refunded on the organiser connected account, fee retained',async()=>{
   const f=fixture({direct:true});const result=await f.run();
   expect(result.refunded).toBe(1);
-  expect(f.calls.filter(v=>v.path!=='refunds').every(v=>v.account==='acct_fixtureOrganiser')).toBe(true);
+  expect(f.calls.filter(v=>v.path!=='refunds'&&!v.path.startsWith('application_fees')).every(v=>v.account==='acct_fixtureOrganiser')).toBe(true);
+  expect(f.calls.filter(v=>v.path.startsWith('application_fees')).every(v=>!v.account)).toBe(true); // the platform's own fee object
   const create=f.calls.find(v=>v.path==='refunds');
   expect(create?.account).toBe('acct_fixtureOrganiser');
   expect(create?.key).toBe('resale-refund:payout-fixture');
   expect(create?.params).toMatchObject({payment_intent:'pi_fixture',amount:'2000',refund_application_fee:'false','metadata[resale_payout_id]':'payout-fixture','metadata[order_ref]':'GD-ORIGINAL'});
   expect(f.writes.some(v=>v.status==='paid')).toBe(true);
+  expect(f.writes.find(v=>v.refund_row)?.refund_row).toMatchObject({stripe_refund_id:'re_fixture',source_type:'resale',idempotency_key:'resale-refund:payout-fixture'});
  });
  test('legacy platform original never sends a Stripe-Account header',async()=>{
   const f=fixture();await f.run();expect(f.calls.every(v=>!v.account)).toBe(true);

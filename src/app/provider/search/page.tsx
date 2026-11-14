@@ -22,11 +22,11 @@ export default async function ProviderSearch(props: PageProps<"/provider/search"
     { title: "Spaces", rows: spaces.filter(s => has(s.name)).map(s => ({ href: `/provider/venues/${s.venue_id}/spaces/${s.id}`, img: s.image, title: s.name, sub: `${Math.max(s.capacity_seated ?? 0, s.capacity_standing ?? 0)} capacity`, chip: titleCase(s.status) })) },
     { title: "Team", rows: crew.filter(c => has(c.name, c.role, ...c.skills)).map(c => ({ href: `/provider/team/${c.id}`, img: c.avatar, title: c.name, sub: c.role, chip: titleCase(c.status) })) },
   ].filter(g => g.rows.length);
-  return <div className="ps">
+  return <div className="psrch">
     <PageHeader title="Search" subtitle={q ? `Results for “${q}”` : "Search opportunities, bookings, listings and team."} />
-    <form className="ps-form" role="search" action="/provider/search"><Search aria-hidden="true" /><label className="sr-only" htmlFor="ps-q">Search</label>
+    <form className="psrch-form" role="search" action="/provider/search"><Search aria-hidden="true" /><label className="sr-only" htmlFor="ps-q">Search</label>
       <input id="ps-q" name="q" defaultValue={q} placeholder="Search events, bookings, venues, services, or contacts..." /><button className="ws-btn primary">Search</button></form>
-    {!q ? null : groups.length ? groups.map(g => <section key={g.title} className="ws-panel ps-group"><h2>{g.title} <span>{g.rows.length}</span></h2>
+    {!q ? null : groups.length ? groups.map(g => <section key={g.title} className="ws-panel psrch-group"><h2>{g.title} <span>{g.rows.length}</span></h2>
       <ul>{g.rows.slice(0, 12).map(r => <li key={r.href}><Link href={r.href}><Thumb src={r.img} w={40} h={40} /><span><b>{r.title}</b><small>{r.sub}</small></span><Chip tone="grey">{r.chip}</Chip></Link></li>)}</ul></section>)
       : <Empty icon={Search} title="No matches" text="Try a client name, event, booking reference or space." />}
   </div>;

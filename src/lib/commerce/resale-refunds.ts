@@ -3,10 +3,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { stripe } from "@/lib/stripe";
 import { paymentDeps } from "@/lib/payments/server";
-import { refundMerchantCharge } from "@/lib/payments/service";
+import { refundKey, refundMerchantCharge } from "@/lib/payments/service";
 
 type Refund = { id:string; status:string; amount:number; currency:string; payment_intent:string; metadata?:Record<string,string> };
-type Job = {id:string;seller_id:string;original_order_ref:string;amount:number;stripe_refund_id:string|null;requested_at:string|null};
+type Job = {id:string;seller_id:string;original_order_ref:string;amount:number;stripe_refund_id:string|null;requested_at:string|null;refund_attempt?:number|null};
 
 /**
  * Original-payer refunds only (organiser buy-back resale settlement). Durable leases and provider IDs survive retries and
@@ -23,6 +23,8 @@ export async function processResaleRefunds(limit=10) {
  if(claimed.error)throw new Error("Could not claim resale refunds.");
  let refunded=0,pending=0,failed=0;
  for(const job of (claimed.data??[]) as Job[])try {
+  // Q58: attempt 0 keeps the historic key; after a FAILED refund (stripe_refund_failed bumps refund_attempt) the retry is a new refund.
+  const attempt=Number(job.refund_attempt??0),key=refundKey(`resale-refund:${job.id}`,attempt);
   const ready=await db.rpc('resale_refund_ready',{p_job:job.id});if(ready.error||ready.data!==true)throw new Error('resale_allocation_missing');
   const purchase=await db.from("checkout_orders").select("buyer_id,stripe_session,status,currency,amount,fee,strategy,connected_account_id").eq("order_ref",job.original_order_ref).single();
   const o=purchase.data;
@@ -44,7 +46,8 @@ export async function processResaleRefunds(limit=10) {
     while(more&&pages++<100){
      const query=new URLSearchParams({payment_intent:session.payment_intent,limit:"100",...(cursor?{starting_after:cursor}:{})});
      const list=await stripe<{data:Refund[];has_more:boolean}>(`refunds?${query}`,undefined,ctx);
-     refund=list.data.find(r=>r.metadata?.resale_payout_id===job.id);if(refund)break;
+     // Q58: only this attempt's refund, never a failed one (a failed refund is retried as a new attempt).
+     refund=list.data.find(r=>r.metadata?.resale_payout_id===job.id&&(r.metadata?.resale_attempt??"0")===String(attempt)&&r.status!=="failed"&&r.status!=="canceled");if(refund)break;
      more=list.has_more;cursor=list.data.at(-1)?.id??"";if(more&&!cursor)throw new Error("refund_reconciliation_required");
     }
     if(!refund&&(more||Date.now()-Date.parse(job.requested_at)>23*3600e3))throw new Error("refund_reconciliation_required");
@@ -62,14 +65,14 @@ export async function processResaleRefunds(limit=10) {
      const price=Math.round(Number(o.amount)*100),bookingFee=Math.round(Number(o.fee)*100);
      const appFee=Number((fees.data as {application_fee_minor:number|null}|null)?.application_fee_minor??bookingFee);
      refund=(await refundMerchantCharge(deps,{account:o.connected_account_id as string,paymentIntent:session.payment_intent,amountMinor:amount,reason:"customer_cancelled",
-      idempotencyKey:`resale-refund:${job.id}`,metadata:{order_ref:job.original_order_ref,resale_payout_id:job.id,resale:"ticket_resold"},
+      idempotencyKey:key,metadata:{order_ref:job.original_order_ref,resale_payout_id:job.id,resale:"ticket_resold",...(attempt?{resale_attempt:String(attempt)}:{})},
       split:{sellerAmountMinor:price,sellerFeeMinor:Math.max(0,appFee-bookingFee),customerFeeRefundMinor:0}})).refund;
      // Q58: audit row for refunds_exceed_charge / reconciliation (same key as the Stripe request).
      const rr=await db.from("payment_refunds").upsert({stripe_refund_id:refund.id,stripe_account_id:o.connected_account_id,payment_intent_id:session.payment_intent,source_type:"resale",source_ref:job.id,
-      amount_minor:refund.amount,refund_application_fee:true,fee_policy:"dec107",reason_code:"ticket_resold",idempotency_key:`resale-refund:${job.id}`,
+      amount_minor:refund.amount,refund_application_fee:true,fee_policy:"dec107",reason_code:"ticket_resold",idempotency_key:key,
       status:["succeeded","failed","canceled"].includes(refund.status)?refund.status:"pending"},{onConflict:"idempotency_key"});
      if(rr.error)throw new Error(`refund_row: ${rr.error.message}`);
-    } else refund=await stripe<Refund>("refunds",{payment_intent:session.payment_intent,amount:String(amount),reason:"requested_by_customer","metadata[order_ref]":job.original_order_ref,"metadata[resale_payout_id]":job.id,"metadata[reason]":"ticket_resold"},{idempotencyKey:`resale-refund:${job.id}`});
+    } else refund=await stripe<Refund>("refunds",{payment_intent:session.payment_intent,amount:String(amount),reason:"requested_by_customer","metadata[order_ref]":job.original_order_ref,"metadata[resale_payout_id]":job.id,"metadata[reason]":"ticket_resold",...(attempt?{"metadata[resale_attempt]":String(attempt)}:{})},{idempotencyKey:key});
    }
   }
   if(refund.amount!==amount||refund.currency.toUpperCase()!==o.currency.toUpperCase()||refund.payment_intent!==session.payment_intent||refund.metadata?.resale_payout_id!==job.id)throw new Error("refund_verification_failed");

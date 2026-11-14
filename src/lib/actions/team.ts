@@ -5,6 +5,7 @@ import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
 import { untyped } from "@/lib/workspace/db";
 import { writeAudit } from "@/lib/audit";
+import { planLimitError } from "@/lib/settings/rules";
 
 const Id = z.string().uuid();
 const MANAGE = ["owner", "admin", "manager"];
@@ -129,7 +130,7 @@ export async function inviteCrewLogin(crew: string, role: "member" | "manager" |
   const { createInviteToken } = await import("@/lib/security");
   const { token, hash } = createInviteToken();
   const { error } = await untyped(ctx.supabase).rpc("crew_invite_login", { p_crew: crew, p_token_hash: hash, p_role: role });
-  if (error) return { ok: false, error: error.code === "23505" ? "This person already has a pending invitation." : pgErr(error.message) ?? "Could not create the invitation." };
+  if (error) return { ok: false, error: error.code === "23505" ? "This person already has a pending invitation." : planLimitError(error) ?? pgErr(error.message) ?? "Could not create the invitation." };
   const { siteUrl } = await import("@/lib/site-url");
   return { ok: true, message: "Invitation link created — share it with them (email delivery isn't configured here).", data: { inviteUrl: `${siteUrl()}/invite/${token}` } };
 }

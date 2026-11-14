@@ -13,6 +13,8 @@ import { MenuButton } from "../_components/menu-button";
 import { ParamSelect } from "../_components/param-select";
 import { SearchParam } from "../_components/search-param";
 import { loadMoney, periodRange, inRange, net, PERIODS, type Tx } from "./data";
+import { londonMonthKey, londonMonthLabel, londonMonthRange } from "@/lib/provider/london-month";
+import { FinanceOnly } from "./_components/finance-only";
 
 export const metadata: Metadata = { title: "Money" };
 const CAT_TONE = ["blue", "green", "purple", "orange", "red", "grey"] as const;
@@ -40,7 +42,10 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
   const sp = await props.searchParams;
   const str = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
   const tab = ["overview", "earnings", "payouts", "fees", "statements"].includes(str("tab")) ? str("tab") : "overview";
-  const { ctx, txs, plans, schedule } = await loadMoney();
+  const { ctx, txs, plans } = await loadMoney();
+  // Q49: staff (member role) saw an empty Money page ("No earnings") because RLS hides the ledger; desktop nav now matches mobile
+  // (Money only for owner/manager/finance) and a direct URL explains instead of looking broken.
+  if (!ctx.can.finance) return <FinanceOnly />;
   const now = requestTime(), r = periodRange(str("period"), now);
   const income = (a: number, b: number) => txs.filter(t => ["income", "refund"].includes(t.kind) && inRange(t, a, b));
   const cur = income(r.from, r.to), prev = income(r.prevFrom, r.prevTo);
@@ -58,7 +63,7 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
   const upcoming = payouts.filter(t => t.status !== "completed"), recent = payouts.filter(t => t.status === "completed").slice(0, 4);
   const q = str("q").toLowerCase(), type = str("type"), status = str("status");
   const list = txs.filter(t => (!q || `${t.description} ${t.counterparty} ${t.stripe_ref ?? ""}`.toLowerCase().includes(q)) && (!type || t.kind === type) && (!status || t.status === status) && (tab !== "overview" || inRange(t, r.from, r.to)));
-  const months = [...new Set(txs.map(t => t.occurred_at.slice(0, 7)))].sort().reverse();
+  const months = [...new Set(txs.map(t => londonMonthKey(t.occurred_at)))].sort().reverse(); // Q49: London months
   const base = "/provider/money", qp = (extra = "") => `${base}?period=${r.key}${extra}`;
   const typeLabel = (t: Tx) => t.kind === "income" ? (t.category === "Services" ? "Service payment" : t.category === "Standby fee" ? "Standby fee" : "Booking payment") : t.kind === "refund" ? "Refund" : t.kind === "payout" ? "Payout" : "Fee";
 
@@ -69,7 +74,7 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
         <span className="pm-period"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="period" label="Period" value={r.key} options={Object.entries(PERIODS).map(([k, l]) => ({ value: k, label: l }))} /></Suspense></span>
         <MenuButton label="Export" className="ws-btn primary pm-export" trigger={<><Download aria-hidden="true" />Export<ChevronDown aria-hidden="true" /></>} entries={[
           { kind: "link", label: "Transactions (CSV)", href: `${base}/export?period=${r.key}` }, { kind: "link", label: "Payouts (CSV)", href: `${base}/export?period=${r.key}&type=payout` },
-          { kind: "link", label: "Monthly statement", href: `${base}/statement?month=${new Date(r.from + 864e5).toISOString().slice(0, 7)}` }]} />
+          { kind: "link", label: "Monthly statement", href: `${base}/statement?month=${londonMonthKey(new Date(r.from + 864e5).toISOString())}` }]} />
       </div>
     </header>
     <Tabs base={qp()} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "earnings", label: "Earnings" }, { key: "payouts", label: "Payouts" }, { key: "fees", label: "Fees" }, { key: "statements", label: "Statements" }]} />
@@ -88,7 +93,7 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
           {g ? <EarningsChart days={chart} /> : <Empty icon={PoundSterling} title="No earnings in this period" text="Pick another period to see your earnings." />}</section>
         <section className="ws-panel pm-plan"><div className="pm-plan-h"><h2>Current plan</h2><span>{titleCase(planKey)} Plan</span></div><b>{(bps / 100).toFixed(0)}%</b><small>Platform commission</small>
           <Link href="/provider/settings?tab=billing" className="ws-btn outline block">Change plan</Link>
-          <ul>{["Marketplace listing & requests", "Secure payments & payouts", planKey !== "starter" ? "Advanced analytics" : "Standard analytics", `Payouts ${schedule}`].map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul></section>
+          <ul>{["Marketplace listing & requests", "Secure payments & payouts", planKey !== "starter" ? "Advanced analytics" : "Standard analytics", "Payouts released after each booking"].map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul></section>
         <section className="ws-panel pm-upgrade">{better && better.save > 0 ? <><h2><Sparkles aria-hidden="true" />Upgrade and save</h2><p>Based on your last 30 days, upgrading to {titleCase(better.k)} could save you:</p>
           <b>{money(better.save)}<small> / month</small></b><p>Estimated from {money(g30)} in bookings at {(better.p.commission_bps / 100).toFixed(0)}% commission, after the £{better.p.monthly}/month plan price.</p>
           <Link href="/provider/settings?tab=billing" className="ws-btn outline block">View plans</Link></>
@@ -101,16 +106,16 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
         <section className="ws-panel pm-pay"><div className="ws-panel-head"><h2>Upcoming payouts</h2><Link className="ws-link" href={qp("&tab=payouts")}>View all <ArrowRight aria-hidden="true" /></Link></div>
           <ConnectStatus workspaceId={ctx.workspace.id} canManage={ctx.role === "owner"} />
           {upcoming.length ? <ul>{upcoming.slice(0, 3).map(t => <li key={t.id}><span className="ic"><CalendarClock aria-hidden="true" /></span><span><b>{money(-t.amount)}</b><Chip tone={t.status === "pending" ? "blue" : "amber"}>{t.status === "pending" ? "Scheduled" : "Processing"}</Chip><small>Arrives {day(t.occurred_at, { day: "numeric", month: "short", year: "numeric" })}</small></span>
-            <small>{t.description}</small><ChevronRight aria-hidden="true" /></li>)}</ul> : <p className="pv-none">No payouts scheduled — payouts run {schedule} once funds clear.</p>}</section>
+            <small>{t.description}</small><ChevronRight aria-hidden="true" /></li>)}</ul> : <p className="pv-none">No payouts scheduled — each booking’s funds are paid out to your bank once it is complete.</p>}</section>
         <section className="ws-panel pm-pay pm-recent"><div className="ws-panel-head"><h2>Recent payouts</h2><Link className="ws-link" href={qp("&tab=payouts")}>View all <ArrowRight aria-hidden="true" /></Link></div>
           <ul>{recent.map(t => <li key={t.id}><b>{money(-t.amount)}</b><Chip tone="green" dot>Paid</Chip><small>{day(t.occurred_at, { day: "numeric", month: "short", year: "numeric" })}</small><small>{t.stripe_ref ?? "—"}</small>
-            <Link href={`${base}/statement?month=${t.occurred_at.slice(0, 7)}`} aria-label="Statement"><FileDown aria-hidden="true" /></Link></li>)}</ul></section>
+            <Link href={`${base}/statement?month=${londonMonthKey(t.occurred_at)}`} aria-label="Statement"><FileDown aria-hidden="true" /></Link></li>)}</ul></section>
       </div>
     </>}
 
     {tab === "statements" ? <section className="ws-panel pm-tx"><h2>Monthly statements</h2><table className="ws-table pm-table"><thead><tr><th>Month</th><th>Gross</th><th>Fees</th><th>Net</th><th>Payouts</th><th aria-label="Open" /></tr></thead>
-      <tbody>{months.map(m => { const a = new Date(`${m}-01T00:00:00Z`).getTime(), b = new Date(new Date(a).setUTCMonth(new Date(a).getUTCMonth() + 1)).getTime(), l = income(a, b);
-        return <tr key={m}><td><b>{new Date(a).toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" })}</b></td><td>{money(gross(l))}</td><td>{money(-fees(l))}</td><td>{money(nets(l))}</td>
+      <tbody>{months.map(m => { const [a, b] = londonMonthRange(m), l = income(a, b);
+        return <tr key={m}><td><b>{londonMonthLabel(m)}</b></td><td>{money(gross(l))}</td><td>{money(-fees(l))}</td><td>{money(nets(l))}</td>
           <td>{money(-payouts.filter(t => inRange(t, a, b)).reduce((x, t) => x + t.amount, 0))}</td><td><Link className="ws-link" href={`${base}/statement?month=${m}`}>Open statement</Link></td></tr>; })}</tbody></table></section>
     : tab === "fees" ? <section className="ws-panel pm-tx"><h2>Fee breakdown</h2><p className="pm-sub">Commission is taken from each booking payment at your plan rate ({(bps / 100).toFixed(0)}%). Refunds return the matching commission.</p>
       <table className="ws-table pm-table"><thead><tr><th>Category</th><th>Gross</th><th>Commission</th><th>Effective rate</th></tr></thead><tbody>{Object.entries(cur.reduce<Record<string, Tx[]>>((a, t) => { (a[t.category] ??= []).push(t); return a; }, {})).map(([c, l]) =>
@@ -127,8 +132,8 @@ export default async function MoneyPage(props: PageProps<"/provider/money">) {
       {!list.length && <p className="pv-none">No transactions match.</p>}</section>}
 
     {tab === "overview" && <aside className="ws-panel pm-quick"><h2>Quick actions</h2><ul>
-      <li><Link href={qp("&tab=payouts")}><Landmark aria-hidden="true" /><span><b>Payouts</b><small>Automatic {schedule} payouts to your bank</small></span></Link></li>
-      <li><Link href={`${base}/statement?month=${new Date(r.from + 864e5).toISOString().slice(0, 7)}`}><FileDown aria-hidden="true" /><span><b>Export statement</b><small>Download a detailed statement</small></span></Link></li>
+      <li><Link href={qp("&tab=payouts")}><Landmark aria-hidden="true" /><span><b>Payouts</b><small>Paid to your bank once each booking is complete</small></span></Link></li>
+      <li><Link href={`${base}/statement?month=${londonMonthKey(new Date(r.from + 864e5).toISOString())}`}><FileDown aria-hidden="true" /><span><b>Export statement</b><small>Download a detailed statement</small></span></Link></li>
       <li><Link href={qp("&tab=fees")}><PieChart aria-hidden="true" /><span><b>View fee breakdown</b><small>See how fees are calculated</small></span></Link></li>
       <li><Link href="/provider/help?q=payments"><LifeBuoy aria-hidden="true" /><span><b>Resolve an issue</b><small>Get support with a transaction</small></span></Link></li>
       <li><Link href="/provider/settings?tab=billing"><Settings2 aria-hidden="true" /><span><b>Manage subscription</b><small>Change plan or payment method</small></span></Link></li></ul></aside>}
