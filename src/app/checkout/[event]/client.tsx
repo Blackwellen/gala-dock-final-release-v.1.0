@@ -11,6 +11,7 @@ import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import type { Summary } from "@/lib/checkout";
 import { reserve, reserveResale, releaseHold, claimOffer, applyCode, removeCode } from "./actions";
 import { WaitingRoom } from "./waiting-room";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { isSellable, resaleBuyable } from "@/lib/public/ticket-cta";
 import { bookingFee, priceWithFees } from "@/lib/public/fees";
 /** Q57: entry restrictions on a resale ticket (tier valid_from / valid_to), in UK time. */
@@ -126,7 +127,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
 
   return <div className="co">
     <header className="co-top"><Link href="/" className="co-logo" aria-label="Gala Dock home"><GalaLogo /></Link>
-      <ol className="co-steps"><li className={step === 1 ? "on" : "done"}><span>{step > 1 ? <Check aria-hidden="true" /> : 1}</span>Tickets</li><li className={step === 2 ? "on" : ""}><span>2</span>Review</li><li><span>3</span>Payment</li></ol>
+      <ol className="co-steps" aria-label="Checkout steps"><li className={step === 1 ? "on" : "done"} aria-current={step === 1 ? "step" : undefined}><span>{step > 1 ? <Check aria-hidden="true" /> : 1}</span>Tickets</li><li className={step === 2 ? "on" : ""} aria-current={step === 2 ? "step" : undefined}><span>2</span>Review</li><li><span>3</span>Payment</li></ol><StepFocus step={step} />
       <span className="co-secure"><Lock aria-hidden="true" />Secure checkout</span></header>
     <div className="co-body">
       <main className="co-main">

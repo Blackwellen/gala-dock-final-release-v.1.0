@@ -131,18 +131,8 @@ export async function setPartnerTerms(data: FormData): Promise<ActionResult> {
   if (!Number.isFinite(pct) || pct < 0 || pct > 50) return { ok: false, error: "Commission must be between 0% and 50%." };
   return rpc("admin_set_partner_terms", { p_partner: id, p_commission_bps: Math.round(pct * 100), p_reason: str(data, "reason") }, "Commission terms updated");
 }
-export async function requestPartnerPayout(id: string, amount: number, reason: string): Promise<ActionResult> {
-  if (!isUuid(id)) return bad();
-  return rpc("admin_request_money", { p_kind: "partner_payout", p_transaction: null, p_partner: id, p_case: null, p_amount: amount, p_reason: reason },
-    "Partner payout requested. It stays pending until Stripe Connect processes it — no money has moved.");
-}
-
-export async function markPartnerStatementPaid(data: FormData): Promise<ActionResult> {
-  const id = str(data, "statement_id"), reference = str(data, "reference"), reason = str(data, "reason");
-  if (!isUuid(id)) return bad();
-  if (reference.length < 3) return { ok: false, error: "Enter the payment reference (at least 3 characters)." };
-  return rpc("admin_partner_statement_paid", { p_statement: id, p_reference: reference, p_reason: reason }, "Statement marked paid — recorded in the ledger and audit log.");
-}
+// Q68: requestPartnerPayout (money request) and markPartnerStatementPaid (manual reference) are retired — partner statements are
+// paid with "Pay via Stripe" (partners/actions.ts); the database refuses both old paths.
 
 // ── Agent & Integrations ──
 export async function decideAgentApproval(id: string, approve: boolean): Promise<ActionResult> {

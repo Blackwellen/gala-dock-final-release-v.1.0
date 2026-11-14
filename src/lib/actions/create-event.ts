@@ -94,9 +94,11 @@ export async function finishCreate(id: string, input: unknown): Promise<ActionRe
   const slug = m.promotion && e.visibility === "public" ? `${e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(2).toString("hex")}` : null;
   const { data: fresh } = await o.ctx.supabase.from("events").select("settings").eq("id", id).single();
   const s2 = { ...((fresh?.settings ?? s) as Record<string, unknown>) };
-  const { error: upErr } = await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
+  // Q70: only a draft moves to planning. Re-opening ?step=4 on a published / on-sale event and pressing "Save setup" set it back to
+  // "planning", which took a live event off sale.
+  const { error: upErr } = await o.ctx.supabase.from("events").update({ ...(o.e.status === "draft" ? { status: "planning" } : {}), ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
   if (upErr) return { ok: false, error: planLimitError(upErr) ?? "Could not finish setting up the event. Please try again." };   // Q67: active-event cap
   if (p.data.agent_goal.trim().length >= 8) { const { startRun } = await import("./agent"); await startRun({ goal: p.data.agent_goal, scope: ["event"], event_id: id }); }
   revalidatePath("/organizer/events"); revalidatePath("/organizer");
-  return { ok: true, message: fromTemplate ? `${e.name} created from the template with ${fromTemplate} tasks.` : `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };
+  return { ok: true, message: o.e.status !== "draft" ? `${e.name} setup saved.` : fromTemplate ? `${e.name} created from the template with ${fromTemplate} tasks.` : `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };
 }

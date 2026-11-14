@@ -54,6 +54,10 @@ export async function confirmBooking(patch: BookingDraft): Promise<ActionResult>
   if (!saved.ok) return saved;
   const d = await readDraft();
   if (!d.eventName || !d.clientName || !d.date || !d.start || !d.end || !d.spaceId) return { ok: false, error: "Some details are missing — go back and complete steps 1 and 2." };
+  // Q70: a malformed date or time threw a RangeError from toISOString() (an unhandled server error), and the payment schedule was
+  // only checked in the browser.
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(d.start) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(d.end)) return { ok: false, error: "Check the event date and times on step 1." };
+  if ((d.depositPct ?? 25) + (d.secondPct ?? 50) + (d.finalPct ?? 25) !== 100) return { ok: false, error: "The payment schedule must add up to 100%." };
   const startsAt = londonIso(d.date, d.start), endsAt = londonIso(d.date, d.end, d.end <= d.start ? 1 : 0);
   const hours = (new Date(endsAt).getTime() - new Date(startsAt).getTime()) / 36e5;
   const hire = d.hireBasis === "hourly" ? (d.hire ?? 0) * hours : d.hire ?? 0;

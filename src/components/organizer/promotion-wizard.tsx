@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ArrowLeft, ArrowRight, Users, Megaphone, CalendarDays, Star, Target, Gem, Mail, LayoutPanelTop, MapPin, CheckCircle2, Sparkles, Loader2, Save, Bell, Rocket, Trash2, Plus, Heart } from "lucide-react";
 import { Toggle, useAction, useKitToast } from "@/components/kit/client";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { savePromotionPlan } from "@/lib/actions/promotion";
 
 type Ev = { id: string; name: string; slug: string | null; starts_at: string; ends_at: string | null; venue: string; location: string; cover: string; capacity: number; sold: number; description: string; poster: string; gallery: string[]; tags: string[] };
@@ -26,14 +27,20 @@ export function PromotionWizard({ step, event: e, events, boost }: { step: 1 | 2
   const final = items.map((it, i) => ({ ...it, ...overrides[i] })).filter((_, i) => !removed.includes(i));
   const spend = final.reduce((a, i) => a + i.cost, 0); const paid = spend > 0;
   const reach = final.reduce((a, i) => { const [lo, hi] = i.est_reach.split("–").map(x => Number(x.replace(/\D/g, "")) || 0); return [a[0]! + lo!, a[1]! + (hi ?? lo!)]; }, [0, 0]);
-  const save = async (launch: boolean) => { await run(() => savePromotionPlan({ event_id: e.id, goal, target, surfaces: surf, reminders: rem, notes, copy, items: final, consents: consent, launch })); };
+  // Q70: the three steps share in-memory state only, so a refresh (or a phone dropping the tab) on step 2/3 silently reset every
+  // choice to the defaults. Keep a per-tab draft; consents are never restored (they must be ticked fresh before launch).
+  const draftKey = `gd-promo-draft:${e.id}`; const loaded = useRef(false);
+  useEffect(() => { queueMicrotask(() => { try { const d = JSON.parse(sessionStorage.getItem(draftKey) ?? "null") as { goal?: string; target?: number; surf?: string[]; rem?: string[]; notes?: string; copy?: string; overrides?: Record<number, Partial<Item>>; removed?: number[] } | null;
+    if (d) { if (d.goal) setGoal(d.goal); if (typeof d.target === "number") setTarget(d.target); if (Array.isArray(d.surf)) setSurf(d.surf); if (Array.isArray(d.rem)) setRem(d.rem); if (typeof d.notes === "string") setNotes(d.notes); if (typeof d.copy === "string") setCopy(d.copy); if (d.overrides) setOverrides(d.overrides); if (Array.isArray(d.removed)) setRemoved(d.removed); } } catch { /* storage unavailable */ } loaded.current = true; }); }, [draftKey]);
+  useEffect(() => { if (loaded.current) try { sessionStorage.setItem(draftKey, JSON.stringify({ goal, target, surf, rem, notes, copy, overrides, removed })); } catch { /* storage unavailable */ } }, [draftKey, goal, target, surf, rem, notes, copy, overrides, removed]);
+  const save = async (launch: boolean) => { const r = await run(() => savePromotionPlan({ event_id: e.id, goal, target, surfaces: surf, reminders: rem, notes, copy, items: final, consents: consent, launch })); if (r.ok) try { sessionStorage.removeItem(draftKey); } catch { /* storage unavailable */ } };
   const steps = [["Goal & Inventory", "Set goals and plan"], ["Assets & Schedule", "Add media and plan timing"], ["Review & Launch", "Confirm and publish"]];
   const pct = e.capacity ? Math.round((e.sold / e.capacity) * 100) : 0;
 
   return <>
     <div className="pw2-head"><h1>{step === 1 ? "Owned Promotion – Goal & Inventory" : "Event Promotion"}</h1><p>{["Set your promotion goals and choose where to promote your event.", "Add your assets, create content and schedule your promotion activities.", "Review your promotion plan, estimated reach and costs, then approve and launch."][step - 1]}</p>
       {events.length > 1 && <select className="ce2-in pw2-ev" value={e.id} onChange={x => router.push(`/organizer/promotions/new?event=${x.target.value}&step=${step}`)} aria-label="Event">{events.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}</div>
-    <ol className="iw-steps">{steps.map(([t, s], i) => <li key={t} data-state={i + 1 < step ? "done" : i + 1 === step ? "on" : "todo"}><span className="n">{i + 1 < step ? <Check size={16} strokeWidth={3} /> : i + 1}</span><span><b>{t}</b><small>{s}</small></span></li>)}</ol>
+    <ol className="iw-steps" aria-label="Steps">{steps.map(([t, s], i) => <li key={t} data-state={i + 1 < step ? "done" : i + 1 === step ? "on" : "todo"} aria-current={i + 1 === step ? "step" : undefined}><span className="n">{i + 1 < step ? <Check size={16} strokeWidth={3} /> : i + 1}</span><span><b>{t}</b><small>{s}</small></span></li>)}</ol><StepFocus step={step} />
     <div className="pw2-grid">
       <div className="pw2-main">
         {step === 1 && <>

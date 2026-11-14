@@ -8,6 +8,8 @@ import "@/styles/provider-venue-setup.css";
 import "@/styles/provider-service.css";
 import { ActionButton } from "@/components/workspace/actions";
 import { getProvider } from "@/lib/provider/context";
+import { parseStep } from "@/lib/ui/wizard";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { rows, isUuid } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { publishListing } from "../../listings/actions";
@@ -28,7 +30,7 @@ export default async function AddService(props: PageProps<"/provider/services/ne
   if (!ctx.can.manage) return <ManagerOnly title="Add Service" back={{ href: "/provider/listings/services", label: "Back to Services" }} />;
   const s = id ? listings.find(l => l.id === id && l.kind === "service") ?? null : null;
   if (id && !s) notFound();
-  const step = s ? Math.min(5, Math.max(1, Number(sp.step) || 1)) : 1;
+  const step = s ? parseStep(typeof sp.step === "string" ? sp.step : undefined, 5) : 1;
   const url = (n: number) => `/provider/services/new?service=${s?.id ?? ""}&step=${n}`;
   const svc = ((s?.details as { service?: Svc } | undefined)?.service ?? {}) as Svc;
   const pkgs = s ? await rows<Pkg>(ctx.db.from("packages").select("id,name,description,base_price,image,duration_hours,status").eq("listing_id", s.id).order("base_price")) : [];
@@ -42,8 +44,8 @@ export default async function AddService(props: PageProps<"/provider/services/ne
   return <div className="wz vwz">
     <Link href={step === 1 ? (s ? `/provider/services/${s.id}` : "/provider/listings/services") : url(step - 1)} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? (s ? `Back to ${s.name}` : "Back to Services") : "Back to Add Service"}</Link>
     <header className="wz-head"><h1>{editing ? `Edit ${s!.name}` : "Add Service"}</h1><p>{SUB[step - 1]}</p></header>
-    <ol className="wz-steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
-      {s && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
+    <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
+      {s && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
     {step === 1 && <SvcStep1 s={s} svc={svc} next={s ? url(2) : "/provider/services/new?service={service}&step=2"} />}
     {step === 2 && s && <SvcStep2 s={s} svc={svc} pkgs={pkgs} back={url(1)} next={url(3)} />}
     {step === 3 && s && <SvcStep3 s={s} svc={svc} back={url(2)} next={url(4)} verify={verify} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}

@@ -16,6 +16,8 @@ import { loadPackageContext } from "../data";
 import { PkgStep1, PkgStep2, PkgStep3 } from "./steps";
 import { ManagerOnly } from "../../_manager-only";
 import { getProvider } from "@/lib/provider/context";
+import { parseStep } from "@/lib/ui/wizard";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { enquiryOnlyCountry } from "@/lib/provider/seller-country";
 
 export const metadata: Metadata = { title: "Create package" };
@@ -31,7 +33,7 @@ export default async function CreatePackage(props: PageProps<"/provider/packages
   const c = await loadPackageContext(id);
   if (!c) notFound();
   const { pkg: p, parent, listings, options, days } = c;
-  const step = p ? Math.min(5, Math.max(1, Number(sp.step) || 1)) : 1;
+  const step = p ? parseStep(typeof sp.step === "string" ? sp.step : undefined, 5) : 1;
   const url = (n: number) => `/provider/packages/new?package=${p?.id ?? ""}&step=${n}`;
   const photos = p ? [p.image, ...(p.details.gallery ?? [])].filter(Boolean) : [];
   const checks: [string, boolean, number][] = p ? [["Name, description and parent", p.description.length >= 20, 1], ["At least one inclusion", (p.details.items ?? []).length > 0, 1], ["Price set (or quote only)", Number(p.base_price) > 0 || p.details.pricing?.model === "quote", 2],
@@ -40,8 +42,8 @@ export default async function CreatePackage(props: PageProps<"/provider/packages
   return <div className="wz vwz">
     <Link href={step === 1 ? (p ? `/provider/packages/${p.id}` : "/provider/listings/packages") : url(step - 1)} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? (p ? `Back to ${p.name}` : "Back to Packages") : "Back to Create Package"}</Link>
     <header className="wz-head"><h1>{p?.status === "published" ? `Edit ${p.name}` : "Create Package"}</h1><p>{SUB[step - 1]}</p></header>
-    <ol className="wz-steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
-      {p && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
+    <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
+      {p && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
     {step === 1 && <PkgStep1 p={p} parent={parent} listings={listings} options={options} presetListing={preset} next={p ? url(2) : "/provider/packages/new?package={package}&step=2"} />}
     {step === 2 && p && <PkgStep2 p={p} parent={parent} days={days} back={url(1)} next={url(3)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 3 && p && <PkgStep3 p={p} days={days} back={url(2)} next={url(4)} />}

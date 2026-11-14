@@ -23,7 +23,7 @@ export const TOURS: Tour[] = [
     { target: nav("Provider workspace", "/provider/bookings"), title: "Bookings", body: "Confirmed work, event orders and day-of check-in. Customers pay you through your Stripe account.", placement: "right" },
     { target: nav("Provider workspace", "/provider/calendar"), title: "Calendar", body: "Availability, holds and blocks across all your spaces and team — conflicts are flagged automatically.", placement: "right" },
     { target: nav("Provider workspace", "/provider/listings"), title: "Listings", body: "Your venues, spaces, services and packages — what customers see in the marketplace.", placement: "right" },
-    { target: nav("Provider workspace", "/provider/money"), title: "Money", body: "Payouts, commission and invoices. Finish Stripe payout setup to receive transfers.", placement: "right" },
+    { target: nav("Provider workspace", "/provider/money"), title: "Money", body: "Payouts, commission and monthly statements. Finish Stripe payout setup to receive transfers.", placement: "right" },
     { target: nav("Provider workspace", "/provider/agent"), title: "Gala Agent", body: "Let the Agent draft quotes, check availability and summarise opportunities — you approve anything binding.", placement: "right" },
   ] },
   { key: "customer-discover", title: "Welcome to Gala Dock", match: /^\/discover\/?$/, steps: [

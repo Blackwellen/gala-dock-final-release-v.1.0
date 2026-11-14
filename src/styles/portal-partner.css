@@ -155,3 +155,33 @@
   .pr-box b.ic+em.plain{padding-left:0}
   .pr-share{flex-wrap:wrap}
 }
+
+/* Q68: application, payouts, invitations, self-billed statements */
+.pr-apply-facts{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:#132087;font-size:12.5px;line-height:1.5}
+.pr-form select{font:inherit;font-size:12.5px;padding:9px 11px;border:1px solid #dfe8fa;border-radius:8px;color:#04055a;background:#fff}
+.pr-form small{font-weight:400;color:#5157a4}
+.pr-form .pr-warn{color:#b26b00}
+.pr-form label.pr-check{flex-direction:row;align-items:flex-start;gap:8px;font-weight:450}
+.pr-form label.pr-check input{margin-top:2px;width:16px;height:16px;flex:none}
+.pr-payouts .pt-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pr-pay-setup{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin:6px 0 4px}
+.pr-join,.pr-doc{--pt-blue:#0a6cff;--pt-green-soft:#e3f8ee;--pt-red-soft:#ffe9ec;--pt-amber-soft:#fff3e0}
+.pr-join{min-height:100dvh;display:grid;place-items:center;padding:24px 16px;background:#fcfdfe;color:#04055a}
+.pr-join .pt-panel{max-width:480px;width:100%;padding:28px;background:#fff;border:1px solid #eaf1fb;border-radius:12px;display:flex;flex-direction:column;gap:10px}
+.pr-join small{color:#5157a4;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.pr-join h1{margin:0;font-size:22px}
+.pr-join p{margin:0;color:#132087;line-height:1.5}
+.pr-join-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.pr-doc{max-width:760px;margin:0 auto;padding:32px 16px;color:#04055a;background:#fff;font-size:13px;line-height:1.5}
+.pr-doc header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid #eaf1fb;padding-bottom:16px}
+.pr-doc header small{color:#5157a4;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.pr-doc h1{margin:2px 0;font-size:22px}
+.pr-doc-parties{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin:20px 0}
+.pr-doc-parties h2{font-size:12px;color:#5157a4;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.pr-doc-parties p{margin:0}
+.pr-doc-table{width:100%;border-collapse:collapse}
+.pr-doc-table th,.pr-doc-table td{padding:9px 0;border-bottom:1px solid #f0f4fb;text-align:left;vertical-align:top}
+.pr-doc-table td{text-align:right}
+.pr-doc-table tr.total th,.pr-doc-table tr.total td{font-weight:700;font-size:14px;border-bottom:2px solid #04055a}
+.pr-doc-note{margin-top:18px;color:#3f4596;font-size:12px}
+@media print{.pr-doc-print{display:none}.pr-doc{padding:0}}

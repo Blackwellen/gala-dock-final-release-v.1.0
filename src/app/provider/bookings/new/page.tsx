@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import "@/styles/provider-wizard.css";
 import { getProvider } from "@/lib/provider/context";
+import { parseStep } from "@/lib/ui/wizard";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { rows } from "@/lib/workspace/db";
 import { workspaceJobs, workspaceListings, workspaceSpaces, startOfDay } from "@/lib/provider/queries";
 import { workspaceBlocks } from "@/lib/provider/commercial";
@@ -26,7 +28,7 @@ function londonMs(date: string, time: string, addDays = 0) {
 export default async function NewBooking(props: PageProps<"/provider/bookings/new">) {
   const sp = await props.searchParams;
   const draft = await readDraft();
-  const requested = Number(sp.step) || 1;
+  const requested = parseStep(typeof sp.step === "string" ? sp.step : undefined, 3);
   // Steps can't be skipped: later steps need the earlier ones saved.
   const step = requested >= 3 && draft.spaceId ? 3 : requested >= 2 && draft.eventName && draft.date ? 2 : 1;
   const [ctx, listings, spaces, jobs, blocks] = await Promise.all([getProvider(), workspaceListings(), workspaceSpaces(), workspaceJobs(), workspaceBlocks()]);
@@ -66,8 +68,8 @@ export default async function NewBooking(props: PageProps<"/provider/bookings/ne
   return <div className="wz">
     <Link href={step === 1 ? "/provider/bookings" : `/provider/bookings/new?step=${step - 1}`} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? "Back to Bookings" : "Back to Create Booking"}</Link>
     <header className="wz-head"><h1>Create Venue Booking</h1><p>{SUB[step - 1]}</p></header>
-    <ol className="wz-steps">{STEPS.map((s, i) => <li key={s} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
-      {i + 1 < step ? <Link href={`/provider/bookings/new?step=${i + 1}`}><span><Check aria-hidden="true" /></span>{s}</Link> : <><span>{i + 1}</span>{s}</>}</li>)}</ol>
+    <ol className="wz-steps" aria-label="Steps">{STEPS.map((s, i) => <li key={s} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
+      {i + 1 < step ? <Link href={`/provider/bookings/new?step=${i + 1}`}><span><Check aria-hidden="true" /></span>{s}</Link> : <><span>{i + 1}</span>{s}</>}</li>)}</ol><StepFocus step={step} />
     {step === 1 && <StepEvent draft={draft} venues={venues.map(v => ({ id: v.id, name: v.name, location: v.location, image: v.image, gallery: v.gallery ?? [], capacity: v.capacity_max, tags: v.tags ?? [], spaces: spaces.filter(s => s.venue_id === v.id).length }))} />}
     {step === 2 && venue && <StepSpace draft={draft} venue={{ id: venue.id, name: venue.name, location: venue.location, image: venue.image, capacity: venue.capacity_max, spaces: venueSpaces.length }}
       spaces={venueSpaces.map(s => ({ id: s.id, name: s.name, image: s.image, capacity: Math.max(s.capacity_seated ?? 0, s.capacity_standing ?? 0), seated: s.capacity_seated, indoor: s.indoor, rate: s.rate_hourly }))}

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getOrganizer } from "@/lib/data/context";
+import { parseStep } from "@/lib/ui/wizard";
 import { LISTING_COLS, fitFor, availabilityFor, type Listing, type EventCtx } from "@/lib/data/marketplace";
 import { WizardFrame } from "@/components/organizer/wizard";
 import { RfqRequirement, RfqSpecs, RfqSuppliers, RfqReview, type Candidate } from "@/components/organizer/rfq-wizard";
@@ -14,7 +15,7 @@ const s = (v: unknown) => (typeof v === "string" ? v : "");
 
 export default async function NewRequest({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase;
-  const step = Math.min(4, Math.max(1, Number(s(sp.step)) || 1));
+  const step = parseStep(s(sp.step), 4);   // Q70: integer steps only
   const { data: evs } = await sb.from("events").select("id,name,starts_at,ends_at,city,location,capacity,guest_count,budget_total,cover_image,event_type").eq("workspace_id", ctx.workspace.id).not("status", "in", "(completed,closed,cancelled,archived)").order("starts_at");
   const events = (evs ?? []) as EventCtx[];
   const eventId = s(sp.event) || events[0]?.id || ""; const ev = events.find(e => e.id === eventId) ?? null;

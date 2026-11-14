@@ -6,7 +6,7 @@ import { untyped, isUuid } from "@/lib/workspace/db";
 
 /** Records the promoter's preferred payout method (ownership is enforced by promoter_set_payout_method + RLS). */
 export async function setPayoutMethod(promoterId: string, method: string | null) {
-  if (!isUuid(promoterId) || (method !== null && !["bank_transfer", "paypal", "stripe"].includes(method))) return { ok: false, error: "Invalid request." };
+  if (!isUuid(promoterId) || (method !== null && !["bank_transfer", "paypal"].includes(method))) return { ok: false, error: "Invalid request." };
   const sb = untyped(await createClient());
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { ok: false, error: "Please sign in again." };

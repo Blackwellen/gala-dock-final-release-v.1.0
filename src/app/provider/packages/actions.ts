@@ -59,6 +59,9 @@ export async function savePackagePricing(id: string, next: string | null, fd: Fo
   const { workspace } = await getProvider();
   const { mode, note } = sellerBookingMode(workspace.settings, t(fd, "booking_mode", 10) || "request");
   if (mode === "instant" && model === "quote") return { ok: false, error: "Instant booking needs a price — choose Fixed or From price." };
+  // Q70: step 2 re-asks the guest range (step 1 checks min ≤ max; this step did not, so 300–50 saved).
+  const gMin = on(fd, "x_min_guests") ? n(fd, "min_guests") : null, gMax = on(fd, "x_max_guests") ? n(fd, "max_guests") : null;
+  if (gMin !== null && gMax !== null && gMax < gMin) return { ok: false, error: "Maximum guests must be at least the minimum." };
   const cancellation = [0, 1, 2, 3].map(i => ({ window: t(fd, `c_window_${i}`, 30), refund: Math.min(100, Math.max(0, n(fd, `c_refund_${i}`) ?? 0)) })).filter(c => c.window);
   const r = await save(id, { base_price: model === "quote" ? 0 : price, price_basis: t(fd, "basis", 12) || "fixed", deposit_pct: deposit, booking_mode: mode,
     min_guests: on(fd, "x_min_guests") ? n(fd, "min_guests") : null, max_guests: on(fd, "x_max_guests") ? n(fd, "max_guests") : null,

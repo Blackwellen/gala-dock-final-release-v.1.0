@@ -9,6 +9,7 @@ import { startOfDay } from "@/lib/provider/queries";
 import { quoteContext } from "./data";
 import { QuoteBuilder } from "./builder";
 import { QuoteReview } from "./review";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { labelOf } from "@/lib/master-data";
 
 export const metadata: Metadata = { title: "Respond with quote" };
@@ -51,7 +52,7 @@ export default async function QuoteWizard(props: PageProps<"/provider/opportunit
   const header = <>
     <Link href={`/provider/opportunities/${id}`} className="ws-back qw-back"><ArrowLeft aria-hidden="true" />Back to Opportunity</Link>
     <header className="qw-head"><h1>Respond with Quote</h1><p>{step === 1 ? "Build your response with scope, dates and pricing." : "Review your quote and send to the customer."}</p></header>
-    <ol className="qw-steps">{steps.map((s, i) => <li key={s} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{s}</li>)}</ol>
+    <ol className="qw-steps" aria-label="Steps">{steps.map((s, i) => <li key={s} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{s}</li>)}</ol><StepFocus step={step} />
   </>;
 
   if (step === 1) {

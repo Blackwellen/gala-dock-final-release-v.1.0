@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, ChevronRight, Check, CheckCircle2, Users, LayoutGrid, Gift, Sparkles, Plus, Minus, MoreHorizontal, GripVertical, Info, Save, ExternalLink, Calculator, FileText, CalendarDays, Clock, Repeat, Tag, Ban, Percent, Pencil, Infinity as InfinityIcon, Lightbulb, Zap, Loader2, MapPin, RefreshCw, Trash2, Copy, ShieldCheck, X } from "lucide-react";
 import { VSteps } from "@/components/kit";
 import { Toggle, Menu, useAction, useKitToast } from "@/components/kit/client";
+import { DecimalInput, StepFocus } from "@/components/kit/wizard-client";
 import { saveTicketModel, saveSalesRules, publishTickets } from "@/lib/actions/ticket-setup";
 import type { SetupData } from "@/lib/data/ticket-setup";
 import { eventTypeLabel } from "@/lib/format";
@@ -30,7 +31,9 @@ const SUGGEST: Record<string, Omit<Tier, "sold" | "status" | "sale_start" | "sal
 };
 
 export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "customer" | "organizer"; step: 1 | 2 | 3; data: SetupData; base: string; back: string; crumbs: [string, string][] }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction();
+  // Q70: stay disabled until the next step renders (the buttons re-enabled while router.push was in flight).
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   // Owner decision: no AI in the customer workspace. These helpers are rule-based in both modes; only Organizer brands them Gala Agent.
   const cu = mode === "customer"; const HelpIcon = cu ? Lightbulb : Sparkles;
   const helpHead = (size: number) => <div className="k-row" style={{ gap: 8 }}><HelpIcon size={size} className="bk-spark" /><b>{cu ? "Ticket help" : "Gala Agent"}</b>{!cu && <span className="k-beta">BETA</span>}</div>;
@@ -49,7 +52,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
   const saleDays = e.starts_at ? Math.round((Date.parse(e.starts_at) - Date.parse(rules.sale_start)) / 864e5) : null;
   const go = async (n: 1 | 2, to: number | "exit") => {
     const r = await run(() => n === 1 ? saveTicketModel(e.id, { model, capacity, tiers: tiers.map(({ sold: _s, status: _st, sale_start: _a, sale_end: _b, ...t }) => ({ ...t, kind: t.kind as "general" })) }) : saveSalesRules(e.id, { ...rules, promos }), { refresh: false });
-    if (r.ok) router.push(to === "exit" ? back : `${base}?step=${to}`);
+    if (r.ok) startNav(() => router.push(to === "exit" ? back : `${base}?step=${to}`));
   };
   const checks = useMemo(() => [
     ["Sale dates are in the future", !rules.sale_start || Date.parse(rules.sale_start) > now - 864e5],
@@ -70,7 +73,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
       <div className="ts-title"><h1>Ticket Setup</h1><p>{["Create simple ticket tiers for your event. You can add free or paid tickets and set a total capacity.", "Set when tickets go on sale and choose the basic rules for your event. These settings can be updated later.", "Review your ticket configuration before you go live. Once published, tickets will be available for guests to purchase on your event page."][step - 1]}</p></div>
       <div className="ts-tools">{step < 3 && <button className="k-btn outline" onClick={() => void (step === 1 ? go(1, "exit") : go(2, "exit"))} disabled={pending}><Save size={16} />Save and exit</button>}{preview ? <Link className="k-btn outline" href={preview} target="_blank"><ExternalLink size={16} />Preview event page</Link> : <span className="k-btn outline ts-dis" title="Publish to create your event page"><ExternalLink size={16} />Preview event page</span>}</div></div>
     <div className="ts-grid">
-      <aside className="bk-rail ts-rail"><VSteps steps={steps} current={step} hrefFor={n => n < step ? `${base}?step=${n}` : ""} />
+      <aside className="bk-rail ts-rail"><VSteps steps={steps} current={step} hrefFor={n => n < step ? `${base}?step=${n}` : ""} /><StepFocus step={step} />
         <section className="bk-agent-card">{helpHead(20)}
           <p>{cu ? (step === 1 ? "Start from suggested ticket names, prices and capacity sized to your venue." : step === 2 ? "Check your settings for conflicts and apply the recommended sales setup." : "Check that everything is in place before you publish.")
             : step === 1 ? "I can suggest ticket names, pricing and capacity based on similar events and your venue size." : step === 2 ? "I can check your settings for any conflicts and suggest the best setup for strong ticket sales." : "I'll check your setup and make sure everything looks good before you publish."}</p>
@@ -101,7 +104,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
             <ol className="ts-tiers">{tiers.map((t, i) => <li key={t.id ?? `n${i}`} className="ts-tier">
               <span className="ts-grip" aria-hidden><GripVertical size={15} /></span><Menu label={`Colour for ${t.name}`} width={170} trigger={({ toggle, open, id }) => <button className="ts-dot" style={{ background: t.color }} onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Change colour for ${t.name}`} />}>{close => <div className="ts-colors">{COLORS.map(c => <button key={c} style={{ background: c }} aria-label={c} onClick={() => { setTier(i, { color: c }); close(); }} />)}</div>}</Menu>
               <span className="ts-tname"><span className="k-row" style={{ gap: 8 }}><input className="ts-in-name" value={t.name} maxLength={60} onChange={x => setTier(i, { name: x.target.value })} aria-label="Tier name" />{t.badge && <i className={`ts-badge ${/popular/i.test(t.badge) ? "amber" : "red"}`}>{t.badge}</i>}</span><input className="ts-in-desc" value={t.description} maxLength={200} placeholder="Add a short description" onChange={x => setTier(i, { description: x.target.value })} aria-label={`${t.name} description`} /></span>
-              <label className="ts-field"><small>Price</small><span className="ts-step"><span className="ts-pre">£</span><input inputMode="decimal" disabled={model === "free"} value={model === "free" ? "0.00" : t.price.toFixed(2)} onChange={x => setTier(i, { price: Math.max(0, Number(x.target.value.replace(/[^0-9.]/g, "")) || 0) })} aria-label={`${t.name} price`} /><button disabled={model === "free"} onClick={() => setTier(i, { price: Math.max(0, t.price - 5) })} aria-label="Lower price"><Minus size={13} /></button><button disabled={model === "free"} onClick={() => setTier(i, { price: t.price + 5 })} aria-label="Raise price"><Plus size={13} /></button></span></label>
+              <label className="ts-field"><small>Price</small><span className="ts-step"><span className="ts-pre">£</span><DecimalInput fixed disabled={model === "free"} value={model === "free" ? 0 : t.price} onValue={n => setTier(i, { price: Math.max(0, n) })} aria-label={`${t.name} price`} /><button disabled={model === "free"} onClick={() => setTier(i, { price: Math.max(0, t.price - 5) })} aria-label="Lower price"><Minus size={13} /></button><button disabled={model === "free"} onClick={() => setTier(i, { price: t.price + 5 })} aria-label="Raise price"><Plus size={13} /></button></span></label>
               <label className="ts-field"><small>Quantity</small><span className="ts-step"><input inputMode="numeric" value={t.quantity} onChange={x => setTier(i, { quantity: Math.max(t.sold, Number(x.target.value.replace(/\D/g, "")) || 0) })} aria-label={`${t.name} quantity`} /><button onClick={() => setTier(i, { quantity: Math.max(t.sold, t.quantity - 5) })} aria-label="Fewer"><Minus size={13} /></button><button onClick={() => setTier(i, { quantity: t.quantity + 5 })} aria-label="More"><Plus size={13} /></button></span></label>
               <span className="ts-val"><b>{gbp(model === "free" ? 0 : t.price * t.quantity)}</b><small>{t.sold ? `${t.sold} sold` : "Total value"}</small></span>
               <Menu label={`Options for ${t.name}`} width={210} trigger={({ toggle, open, id }) => <button className="k-icon-btn ts-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Options for ${t.name}`}><MoreHorizontal size={16} /></button>}>{close => <>
@@ -132,7 +135,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
             <div className="ts-promos">{promos.length > 0 && <div className="ts-ph"><span>Code</span><span>Discount type</span><span>Valid from</span><span>Valid until</span><span>Max uses (optional)</span><span /></div>}
               {promos.map((p, i) => <div key={p.id ?? `p${i}`} className="ts-prow">
                 <span className="bk-in bk-in-ic"><Tag size={16} /><input value={p.code} maxLength={24} placeholder="e.g. VIPGUEST" onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, code: x.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "") } : q))} aria-label="Promo code" /></span>
-                <span className="ts-disc"><select value={p.kind} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, kind: x.target.value as Promo["kind"] } : q))} aria-label="Discount type"><option value="percent">Percentage</option><option value="amount">Amount (£)</option></select><input inputMode="decimal" value={p.amount} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, amount: Number(x.target.value.replace(/[^0-9.]/g, "")) || 0 } : q))} aria-label="Discount amount" /><i>{p.kind === "percent" ? "%" : "£"}</i></span>
+                <span className="ts-disc"><select value={p.kind} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, kind: x.target.value as Promo["kind"] } : q))} aria-label="Discount type"><option value="percent">Percentage</option><option value="amount">Amount (£)</option></select><DecimalInput value={p.amount} onValue={n => setPromos(ps => ps.map((q, k) => k === i ? { ...q, amount: n } : q))} aria-label="Discount amount" /><i>{p.kind === "percent" ? "%" : "£"}</i></span>
                 <span className="bk-in"><input type="date" value={p.valid_from?.slice(0, 10) ?? ""} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, valid_from: x.target.value ? new Date(`${x.target.value}T00:00:00`).toISOString() : null } : q))} aria-label="Valid from" /></span>
                 <span className="bk-in"><input type="date" value={p.valid_until?.slice(0, 10) ?? ""} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, valid_until: x.target.value ? new Date(`${x.target.value}T23:59:00`).toISOString() : null } : q))} aria-label="Valid until" /></span>
                 <span className="bk-in bk-in-ic"><InfinityIcon size={16} /><input inputMode="numeric" value={p.max_uses ?? ""} placeholder="No limit" onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, max_uses: Number(x.target.value.replace(/\D/g, "")) || null } : q))} aria-label="Max uses" /></span>

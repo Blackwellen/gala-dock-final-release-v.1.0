@@ -273,3 +273,35 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
 
 /* globals.css colours bare <em> blue and <p>/<small> muted; public-site numbers and labels set their own colour, these inherit. */
 :is(.gp-root, .gp-header, .gp-footer, .gp-sheet) :where(em) { color: inherit; }
+
+/* ── Q69 account menu (signed-in visitors): same tokens and scale as the header; phones (≤640px) use the mobile menu panel ── */
+.gp-acct { position: relative; }
+.gp-acct-btn { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 2px 8px 2px 2px; border-radius: 999px; border: 1px solid var(--gp-line); background: #fff; color: var(--gp-ink-2); transition: border-color .2s, color .2s, box-shadow .2s; }
+.gp-acct-btn:hover, .gp-acct-btn[aria-expanded="true"] { border-color: var(--gp-blue-line); color: var(--gp-blue); }
+.gp-acct-btn[aria-expanded="true"] .gp-acct-chev { transform: rotate(180deg); }
+.gp-acct-chev { transition: transform .2s var(--gp-ease); }
+.gp-acct-btn .gp-avatar, .gp-acct-who .gp-avatar, .gp-acct-btn .gp-avatar img, .gp-acct-who .gp-avatar img { width: 36px !important; height: 36px !important; }
+.gp-acct-badge { position: absolute; top: 3px; left: 30px; width: 10px; height: 10px; border-radius: 50%; background: var(--gp-red); box-shadow: 0 0 0 2px #fff; }
+.gp-acct-pop { position: absolute; top: calc(100% + 10px); right: 0; z-index: 70; width: 300px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid var(--gp-line); border-radius: var(--gp-radius-sm); background: #fff; box-shadow: var(--gp-shadow-lg); }
+.gp-acct-who { display: flex; align-items: center; gap: 12px; padding: 10px 10px 12px; min-width: 0; }
+.gp-acct-who > span:last-child { display: grid; min-width: 0; line-height: 1.35; }
+.gp-acct-who b { font-size: 15px; font-weight: 650; color: var(--gp-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gp-acct-who small { font-size: 13.5px; color: var(--gp-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gp-acct-pop [role="menu"] { border-top: 1px solid var(--gp-line); padding-top: 6px; }
+.gp-acct-pop li.is-sep { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--gp-line-2); }
+.gp-acct-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 10px; border-radius: 10px; font-size: 15px; font-weight: 560; color: var(--gp-ink-2); text-align: left; transition: background-color .15s, color .15s; }
+.gp-acct-item svg { flex: none; color: var(--gp-faint); transition: color .15s; }
+.gp-acct-item:hover, .gp-acct-item:focus-visible { background: var(--gp-blue-mist); color: var(--gp-blue); }
+.gp-acct-item:hover svg, .gp-acct-item:focus-visible svg { color: var(--gp-blue); }
+.gp-acct-pop .gp-acct-item:focus-visible { outline-offset: -2px; }
+.gp-acct-label { flex: 1 1 auto; min-width: 0; }
+.gp-acct-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gp-red); flex: none; }
+.gp-acct-count { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; display: inline-grid; place-items: center; background: var(--gp-blue-soft); color: var(--gp-blue); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.gp-acct-panel { display: none; margin-bottom: 22px; border: 1px solid var(--gp-line); border-radius: var(--gp-radius-sm); padding: 6px; }
+.gp-acct-panel .gp-acct-who { padding: 10px; border-bottom: 1px solid var(--gp-line); margin-bottom: 4px; }
+.gp-acct-list .gp-acct-item { min-height: 48px; font-size: 16px; }
+@media (max-width: 640px) {
+  .gp-acct { display: none; }
+  .gp-acct-panel { display: block; }
+  .gp-acct-open { display: none; }
+}

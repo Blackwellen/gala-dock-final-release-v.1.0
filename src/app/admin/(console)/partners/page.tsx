@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { CalendarDays, UsersRound, Layers, WalletCards, Clock3, Upload, Plus, ChevronDown, Filter, CircleCheck, CirclePause, CircleDot, ArrowUpRight, PenLine, ArrowRight, Info, Settings2, Pause, Play, FileText, Banknote, Mail } from "lucide-react";
+import { CalendarDays, UsersRound, Layers, WalletCards, Clock3, Upload, Plus, Filter, CircleCheck, CirclePause, CircleDot, ArrowUpRight, PenLine, ArrowRight, Info, Settings2, Pause, Play, FileText, Banknote, Mail, KeyRound } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-partners.css";
 import { Restricted, Empty } from "@/components/workspace/kit";
@@ -12,19 +12,28 @@ import { money, delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, Delta } from "../_b/kit";
 import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
 import { stamp } from "../_b/format";
-import { setPartnerStatus, setPartnerTerms, requestPartnerPayout, markPartnerStatementPaid } from "../_b/actions";
+import { setPartnerStatus, setPartnerTerms } from "../_b/actions";
+import { payStatementViaStripe, sendStatementToBank, recoverStatementClawback, invitePartnerLogin } from "./actions";
+import { CreatePartnerForm, ApplicationDecision } from "./forms";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
+import { COUNTRIES } from "@/lib/master-data";
+import { isConnectCountrySupported } from "@/lib/payments/connect-countries";
 
 export const metadata: Metadata = { title: "Partners" };
 
 type Partner = {
-  id: string; name: string; kind: string; status: string; referral_code: string | null; commission_bps: number; commission_basis: string; referrals: number; eligible_revenue: number; earned: number; paid: number;
+  id: string; user_id: string | null; payout_status: string; payout_country: string | null; vat_registered: boolean; name: string; kind: string; status: string; referral_code: string | null; commission_bps: number; commission_basis: string; referrals: number; eligible_revenue: number; earned: number; paid: number;
   quality_score: number | null; logo: string; created_at: string;
   details: { type?: string; domain?: string; email?: string; country?: string; country_code?: string; payout_status?: string; conversion?: number; revenue_30d?: number; revenue_prev_30d?: number; mark?: string; color?: string;
     account_manager?: string; account_manager_avatar?: string; agreement?: string; tagline?: string; cover?: string; last_paid?: string; next_due?: string; pending?: number; pending_prev?: number; held?: number;
     paid_30d?: number; paid_prev_30d?: number; rev_series?: number[]; pause_reason?: string; perf?: { clicks: number; signups: number; bookings: number; revenue: number; deltas: number[] } };
 };
 type Earning = { partner_id: string; occurred_at: string; eligible_revenue: number; commission: number; status: string };
-type Statement = { id: string; partner_id: string; period_start: string; commission: number; status: string; payout_due: string | null; paid_at: string | null; reference: string | null };
+type Statement = { id: string; partner_id: string; period_start: string; commission: number; status: string; payout_due: string | null; paid_at: string | null; reference: string | null;
+  opening_balance: number; carried_amount: number | null; amount_paid: number | null; vat_amount: number | null; self_bill_number: string | null; transfer_id: string | null; stripe_payout_id: string | null; stripe_payout_status: string | null; reversed_amount: number };
+type Application = { id: string; contact_name: string; business_name: string; business_type: string; email: string; country: string; website: string | null; audience: string; vat_registered: boolean; vat_number: string | null; terms_version: string; created_at: string };
+const due = (st: Statement) => Number(st.commission) + Number(st.opening_balance ?? 0);
 /** Q65: money figures come from the commission ledger (partner_earnings / partner_statements), not from seeded rollups in details. */
 type Ledger = { rev30: number; revPrev: number; com30: number; hold: number; owed: number; paid30: number; paidPrev: number; lastPaid: string | null; nextDue: string | null; statements: Statement[] };
 const TYPE_TONE: Record<string, string> = { affiliate: "amber", strategic: "purple", promoter: "red" };
@@ -43,10 +52,11 @@ function ledgerOf(earnings: Earning[], statements: Statement[], now: number) {
   }
   for (const st of statements) {
     const l = get(st.partner_id); l.statements.push(st);
-    if (st.status === "open" || st.status === "pending") { l.owed += Number(st.commission); if (st.payout_due && (!l.nextDue || st.payout_due < l.nextDue)) l.nextDue = st.payout_due; }
+    if (st.status === "open" || st.status === "pending" || st.status === "processing") { l.owed += due(st); if (st.payout_due && (!l.nextDue || st.payout_due < l.nextDue)) l.nextDue = st.payout_due; }
     if (st.status === "paid" && st.paid_at) {
       const t = Date.parse(st.paid_at);
-      if (t >= now - 30 * DAY) l.paid30 += Number(st.commission); else if (t >= now - 60 * DAY) l.paidPrev += Number(st.commission);
+      const net = Number(st.amount_paid ?? due(st)) - Number(st.vat_amount ?? 0);
+      if (t >= now - 30 * DAY) l.paid30 += net; else if (t >= now - 60 * DAY) l.paidPrev += net;
       if (!l.lastPaid || st.paid_at > l.lastPaid) l.lastPaid = st.paid_at;
     }
   }
@@ -61,16 +71,18 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
   if (!allowed) return <Restricted area="Partners" />;
   const s = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
   const now = requestTime();
-  const all = (await rows<Partner>(db.from("partners").select("id,name,kind,status,referral_code,commission_bps,commission_basis,referrals,eligible_revenue,earned,paid,quality_score,logo,created_at,details").order("created_at", { ascending: false })))
+  const all = (await rows<Partner>(db.from("partners").select("id,user_id,payout_status,payout_country,vat_registered,name,kind,status,referral_code,commission_bps,commission_basis,referrals,eligible_revenue,earned,paid,quality_score,logo,created_at,details").order("created_at", { ascending: false })))
     .map(p => ({ ...p, details: p.details ?? {} }));
   const since = new Date(now - 60 * 864e5).toISOString();
-  const [earnings, statements] = await Promise.all([
+  const [earnings, statements, applications, minimum] = await Promise.all([
     rows<Earning>(db.from("partner_earnings").select("partner_id,occurred_at,eligible_revenue,commission,status").gte("occurred_at", since).limit(20000)),
-    rows<Statement>(db.from("partner_statements").select("id,partner_id,period_start,commission,status,payout_due,paid_at,reference").order("period_start", { ascending: false }).limit(5000)),
+    rows<Statement>(db.from("partner_statements").select("id,partner_id,period_start,commission,status,payout_due,paid_at,reference,opening_balance,carried_amount,amount_paid,vat_amount,self_bill_number,transfer_id,stripe_payout_id,stripe_payout_status,reversed_amount").order("period_start", { ascending: false }).limit(5000)),
+    rows<Application>(db.from("partner_applications").select("id,contact_name,business_name,business_type,email,country,website,audience,vat_registered,vat_number,terms_version,created_at").eq("status", "pending").order("created_at").limit(200)),
+    untyped(createAdminClient() as never).rpc("partner_minimum_payout").then(r => Number(r.data ?? 50) || 50),
   ]);
   const led = ledgerOf(earnings, statements, now);
   const rev = (p: Partner) => led(p.id).rev30;
-  const tab = ["strategic", "policy"].includes(s("tab")) ? s("tab") : "affiliates";
+  const tab = ["strategic", "policy", "applications", "new"].includes(s("tab")) ? s("tab") : "affiliates";
   const type = s("type"), status = s("status"), country = s("country"), q = s("q").toLowerCase();
   const list = all.filter(p => (tab !== "strategic" || p.kind === "strategic") && (!type || typeOf(p) === type) && (!status || p.status === status) && (!country || (p.details.country_code ?? "") === country)
     && (!q || `${p.name} ${p.details.domain ?? ""} ${p.details.email ?? ""} ${p.referral_code ?? ""}`.toLowerCase().includes(q)));
@@ -92,9 +104,9 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
       actions={<>
         <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="range" label="Period" value={s("range") || "30d"} options={[{ value: "30d", label: "Last 30 days" }]} /></Suspense></span>
         <Link className="adb-btn" href="/admin/partners/export"><Upload aria-hidden="true" />Export</Link>
-        <Link className="adb-btn primary" href="/admin/partners?tab=policy#add"><Plus aria-hidden="true" />Add partner<ChevronDown aria-hidden="true" /></Link>
+        <Link className="adb-btn primary" href="/admin/partners?tab=new"><Plus aria-hidden="true" />Create partner</Link>
       </>} />
-    <TabBar active={tab} tabs={[{ key: "affiliates", label: "Affiliates", href: "/admin/partners" }, { key: "strategic", label: "Strategic Partners", href: "/admin/partners?tab=strategic" }, { key: "policy", label: "Promoter Program Policy", href: "/admin/partners?tab=policy" }]} />
+    <TabBar active={tab} tabs={[{ key: "affiliates", label: "Affiliates", href: "/admin/partners" }, { key: "strategic", label: "Strategic Partners", href: "/admin/partners?tab=strategic" }, { key: "applications", label: "Applications", href: "/admin/partners?tab=applications", count: applications.length }, { key: "policy", label: "Promoter Program Policy", href: "/admin/partners?tab=policy" }]} />
     <div className="adp-grid">
       <div className="adp-main">
         <section className="adb-kpis adp-kpis">
@@ -105,7 +117,17 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
         {tab === "policy" ? <section className="adb-panel adp-policy"><h2>Promoter program policy</h2>
           {policy?.value?.promoter_policy ? <dl className="adb-kv">{Object.entries(policy.value.promoter_policy).map(([k, v]) => <div key={k}><dt>{k.replaceAll("_", " ")}</dt><dd>{String(v)}</dd></div>)}</dl>
             : <Empty title="No promoter policy published" text="Organizer-promoter commission rules live in Platform settings → Commerce. Publish a promoter_policy there to make it effective." action={<Link className="adb-btn primary" href="/admin/settings?tab=commerce">Open Commerce settings</Link>} />}
-          <p className="adb-none" id="add">New partners join through the partner application form; approve them here once their agreement is signed. Strategic partners are added by the partnerships team with a signed agreement.</p>
+          <p className="adb-none" id="add">Affiliates apply at /partner/apply and are approved under Applications. The partnerships team can also create a partner directly (Create partner) and invite their login.</p>
+        </section> : tab === "new" ? <section className="adb-panel adp-policy"><h2>Create partner</h2>
+          <p className="adb-none">For partners the team signs up directly (strategic partners, agencies). Affiliates normally apply at /partner/apply. Standard terms are graded (6% rising to 10%); a custom rate is fixed.</p>
+          <CreatePartnerForm countries={COUNTRIES.map(c => ({ code: c.code, name: c.name }))} />
+        </section> : tab === "applications" ? <section className="adb-panel adp-policy"><h2>Partner applications ({applications.length})</h2>
+          {applications.length ? <ul className="adp-apps">{applications.map(a => <li key={a.id}>
+            <div><b>{a.business_name}</b><small>{a.contact_name} · {a.email} · {COUNTRIES.find(c => c.code === a.country)?.name ?? a.country} · {a.business_type.replace("_", " ")} · applied {stamp(a.created_at).split(",")[0]}</small>
+              <small>{a.website ? <a href={a.website} target="_blank" rel="noopener noreferrer nofollow">{a.website}</a> : "No website"} · {a.vat_registered ? `VAT ${a.vat_number}` : "Not VAT-registered"} · terms {a.terms_version}{isConnectCountrySupported(a.country) ? "" : " · Stripe payouts not available in this country"}</small>
+              {a.audience && <p>{a.audience}</p>}</div>
+            <ApplicationDecision id={a.id} name={a.business_name} /></li>)}</ul>
+            : <p className="adb-none">No applications waiting. New ones appear here when someone applies at /partner/apply.</p>}
         </section> : <>
           <div className="adp-filters">
             <Suspense><SearchParam placeholder="Search partners, emails, campaigns, domains..." /></Suspense>
@@ -140,7 +162,7 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
           <Kpi icon={Clock3} tone="orange" label="Pending payouts" value={money(P)} delta={Pd} invert series={revSeries.map(v => v * (P / (R || 1)))} badge={<Pill status="active" label={<><CircleCheck aria-hidden="true" />Active</>} />} />
           <Menu label="Partner programme actions" className="adb-btn adp-dots" entries={[{ kind: "link", label: "Export partners (CSV)", href: "/admin/partners/export" }, { kind: "link", label: "Payout requests", href: "/admin/commerce/payouts" }]} />
         </div>
-        {sel ? <PartnerRail p={sel} l={led(sel.id)} month={new Date(now).toISOString().slice(0, 7)} tab={s("ptab") || "overview"} qp={qp} /> : <section className="adb-panel"><p className="adb-none">No partners yet.</p></section>}
+        {sel ? <PartnerRail p={sel} l={led(sel.id)} month={new Date(now).toISOString().slice(0, 7)} tab={s("ptab") || "overview"} qp={qp} minimum={minimum} /> : <section className="adb-panel"><p className="adb-none">No partners yet.</p></section>}
       </aside>
     </div>
   </div>;
@@ -150,7 +172,8 @@ function Flag() {
   return <svg className="adp-flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="adp-uk"><path d="M0,0 v30 h60 v-30 z" /></clipPath><g clipPath="url(#adp-uk)"><path d="M0,0 v30 h60 v-30 z" fill="#012169" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" /><path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" /><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" /></g></svg>;
 }
 
-function PartnerRail({ p, l, month, tab, qp }: { p: Partner; l: Ledger; month: string; tab: string; qp: (e: Record<string, string>) => string }) {
+const PAYOUT_SETUP: Record<string, string> = { not_connected: "Not set up", incomplete: "Details needed", pending: "Being verified", active: "Ready (Stripe)", restricted: "Restricted" };
+function PartnerRail({ p, l, month, tab, qp, minimum }: { p: Partner; l: Ledger; month: string; tab: string; qp: (e: Record<string, string>) => string; minimum: number }) {
   const d = p.details, t = typeOf(p), r = l.rev30, earned30 = pence(l.com30), perf = d.perf;
   const pending = pence(l.owed);   // cleared onto open statements, not yet paid
   return <>
@@ -176,9 +199,9 @@ function PartnerRail({ p, l, month, tab, qp }: { p: Partner; l: Ledger; month: s
       <dl className="adb-kv adp-kv">
         {tab === "attribution" && <><div><dt>Referral code</dt><dd>{p.referral_code ?? "—"}</dd></div><div><dt>Referrals</dt><dd>{p.referrals.toLocaleString("en-GB")}</dd></div><div><dt>Quality score</dt><dd>{p.quality_score ?? "—"}</dd></div><div><dt>Basis</dt><dd>{p.commission_basis.replaceAll("_", " ")}</dd></div></>}
         {tab === "commissions" && <><div><dt>Eligible revenue</dt><dd>{money(p.eligible_revenue)}</dd></div><div><dt>Earned (all time)</dt><dd>{money(p.earned)}</dd></div><div><dt>Rate</dt><dd>{(p.commission_bps / 100).toFixed(0)}%</dd></div></>}
-        {tab === "payouts" && <><div><dt>Paid (all time)</dt><dd>{money(p.paid, "GBP", { cents: true })}</dd></div><div><dt>Cleared, unpaid</dt><dd>{money(pending, "GBP", { cents: true })}</dd></div><div><dt>In 14-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div></>}
+        {tab === "payouts" && <><div><dt>Stripe payouts</dt><dd>{PAYOUT_SETUP[p.payout_status] ?? p.payout_status}{p.payout_country ? ` · ${p.payout_country}` : ""}</dd></div><div><dt>VAT</dt><dd>{p.vat_registered ? "VAT-registered (self-billing)" : "Not VAT-registered"}</dd></div><div><dt>Minimum payout</dt><dd>{money(minimum, "GBP", { cents: true })}</dd></div><div><dt>Paid (all time)</dt><dd>{money(p.paid, "GBP", { cents: true })}</dd></div><div><dt>Cleared, unpaid</dt><dd>{money(pending, "GBP", { cents: true })}</dd></div><div><dt>In 14-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div></>}
       </dl>
-      {tab === "payouts" && <StatementList p={p} statements={l.statements} thisMonth={month} />}</section>}
+      {tab === "payouts" && <StatementList p={p} statements={l.statements} thisMonth={month} minimum={minimum} />}</section>}
     <section className="adb-panel adp-perf">
       <div className="adb-sec-h"><h2>Performance <small>(Last 30 days)</small></h2><Link className="adb-link" href="/admin/analytics?tab=promotion">View analytics <ArrowRight aria-hidden="true" /></Link></div>
       {perf ? <div className="adp-perf-g">{([["Clicks", perf.clicks.toLocaleString("en-GB")], ["Sign ups", perf.signups.toLocaleString("en-GB")], ["Bookings", perf.bookings.toLocaleString("en-GB")], ["Revenue", money(perf.revenue)]] as const).map(([l, v], i) =>
@@ -192,7 +215,8 @@ function PartnerRail({ p, l, month, tab, qp }: { p: Partner; l: Ledger; month: s
         <div><dt>Total earned (30d)</dt><dd>{money(earned30, "GBP", { cents: true })}</dd></div>
         <div className="gap"><dt>Paid (30d)</dt><dd>{money(pence(l.paid30), "GBP", { cents: true })}<em>{l.lastPaid ? `Last paid ${stamp(l.lastPaid).split(",")[0]}` : ""}</em></dd></div>
         <div><dt>Cleared, unpaid</dt><dd>{money(pending, "GBP", { cents: true })}<em>{l.nextDue ? `Due ${stamp(l.nextDue).split(",")[0]}` : ""}</em></dd></div>
-        <div><dt>In 14-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div>
+        <div><dt>In 60-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div>
+        <div><dt>Payouts</dt><dd>{PAYOUT_SETUP[p.payout_status] ?? p.payout_status}</dd></div>
       </dl>
     </section>
     <section className="adb-panel adp-qa"><h2>Quick actions</h2>
@@ -203,27 +227,43 @@ function PartnerRail({ p, l, month, tab, qp }: { p: Partner; l: Ledger; month: s
           : <ActionButton action={setPartnerStatus} args={[p.id, "paused"]} reason variant="outline" disabled={p.status === "terminated"} confirm={{ title: `Pause ${p.name}`, body: "New referrals stop accruing commission while paused. Existing earnings are kept.", cta: "Pause partner" }}><Pause aria-hidden="true" />Pause partner</ActionButton>}
         <Link className="adb-btn" href={qp({ partner: p.id, ptab: "agreement" })}><FileText aria-hidden="true" />View agreement</Link>
       </div>
-      <ActionButton action={requestPartnerPayout} args={[p.id, pending]} reason variant="primary" className="adp-payout" disabled={pending <= 0 || p.status !== "active"}
-        confirm={{ title: "Process partner payout", body: `Records a payout request of ${money(pending, "GBP", { cents: true })} (cleared, unpaid statements) to ${p.name}. This console doesn’t move money: pay the partner, then mark each statement paid with the payment reference under Payouts.`, cta: "Record payout request" }}>
-        <Banknote aria-hidden="true" />Process payout</ActionButton>
+      {/* Q68: partner money requests are retired — statements are paid one by one with "Pay via Stripe" under Payouts. */}
+      <Link className="adb-btn primary adp-payout" href={qp({ partner: p.id, ptab: "payouts" })}><Banknote aria-hidden="true" />Statements &amp; payouts</Link>
+      {!p.user_id && p.status !== "terminated" && <details className="adb-pop"><summary className="adb-btn"><KeyRound aria-hidden="true" />Invite login</summary><div className="adb-pop-body">
+        <ActionForm action={invitePartnerLogin} className="adb-form"><h3>Invite {p.name} to the partner portal</h3>
+          <input type="hidden" name="partner_id" value={p.id} />
+          <label>Email<input name="email" type="email" required defaultValue={p.details.email ?? ""} maxLength={254} /></label>
+          <label>Reason (recorded in audit log)<textarea name="reason" required minLength={5} rows={2} /></label>
+          <p className="adb-none">The link works for 14 days and only for this email address. A new invitation replaces any earlier one.</p>
+          <button className="adb-btn primary" type="submit">Send invitation</button>
+        </ActionForm></div></details>}
     </section>
   </>;
 }
 
-/** Q65: monthly statements and their settlement (admin_partner_statement_paid: reason + reference, ledger memo, audit). */
-function StatementList({ p, statements, thisMonth }: { p: Partner; statements: Statement[]; thisMonth: string }) {
-  if (!statements.length) return <p className="adb-none">No statements yet. Earnings clear onto the month’s statement 14 days after the revenue.</p>;
+/** Q65/Q68: monthly statements. Settlement is "Pay via Stripe" (Connect transfer + bank payout, numbered self-billed statement);
+ *  below-minimum and negative statements roll forward automatically; a negative one can be recovered by transfer reversal. */
+const ST_LABEL: Record<string, string> = { open: "Open", pending: "Payable", processing: "Paying", paid: "Paid", on_hold: "On hold", rolled_over: "Rolled over" };
+function StatementList({ p, statements, thisMonth, minimum }: { p: Partner; statements: Statement[]; thisMonth: string; minimum: number }) {
+  if (!statements.length) return <p className="adb-none">No statements yet. Earnings clear onto the month’s statement 60 days after the payment.</p>;
+  const gbp = (n: number) => money(n, "GBP", { cents: true });
   return <ul className="adp-stmts">{statements.slice(0, 12).map(st => {
     const period = new Date(`${st.period_start}T12:00:00Z`).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "Europe/London" });
-    const closed = st.period_start.slice(0, 7) < thisMonth;
-    return <li key={st.id}><span><b>{period}</b><small>{money(Number(st.commission), "GBP", { cents: true })} · {st.status === "paid" ? `Paid${st.paid_at ? ` ${stamp(st.paid_at).split(",")[0]}` : ""}${st.reference ? ` · ${st.reference}` : ""}` : st.status === "on_hold" ? "On hold" : closed ? `Due ${st.payout_due ? stamp(st.payout_due).split(",")[0] : "now"}` : "Open — month in progress"}</small></span>
-      {(st.status === "open" || st.status === "pending") && closed && Number(st.commission) > 0 && <details className="adb-pop"><summary className="adb-btn">Mark paid</summary><div className="adb-pop-body">
-        <ActionForm action={markPartnerStatementPaid} className="adb-form"><h3>Mark {period} paid — {p.name}</h3>
-          <input type="hidden" name="statement_id" value={st.id} />
-          <label>Payment reference<input name="reference" required minLength={3} maxLength={120} /></label>
-          <label>Reason (recorded in audit log)<textarea name="reason" required minLength={5} rows={2} /></label>
-          <button className="adb-btn primary" type="submit">Mark paid</button>
-        </ActionForm></div></details>}</li>;
+    const closed = st.period_start.slice(0, 7) < thisMonth, bal = due(st), unpaid = st.status === "open" || st.status === "pending" || st.status === "processing";
+    const note = st.status === "paid" ? `Paid${st.paid_at ? ` ${stamp(st.paid_at).split(",")[0]}` : ""} · ${gbp(Number(st.amount_paid ?? bal))}${Number(st.vat_amount) > 0 ? " incl. VAT" : ""}${st.transfer_id ? ` · ${st.transfer_id}` : st.reference ? ` · ${st.reference}` : ""}${st.stripe_payout_status ? ` · bank payout ${st.stripe_payout_status.replace("_", " ")}` : ""}${Number(st.reversed_amount) > 0 ? ` · ${gbp(Number(st.reversed_amount))} reversed` : ""}`
+      : st.status === "rolled_over" ? `Rolled over ${gbp(Number(st.carried_amount ?? 0))} (${Number(st.carried_amount ?? 0) < 0 ? "negative" : `below ${gbp(minimum)}`})`
+      : st.status === "on_hold" ? "On hold" : st.status === "processing" ? "Stripe transfer in progress — retry is safe"
+      : !closed ? "Open — month in progress" : bal < 0 ? "Negative — carries forward" : bal < minimum ? `Below ${gbp(minimum)} — rolls over` : `Due ${st.payout_due ? stamp(st.payout_due).split(",")[0] : "now"}`;
+    const payable = unpaid && closed && bal >= minimum && p.payout_status === "active";
+    return <li key={st.id}><span><b>{period} · {ST_LABEL[st.status] ?? st.status}</b><small>{gbp(Number(st.commission))}{Number(st.opening_balance) ? ` + ${gbp(Number(st.opening_balance))} carried in` : ""} · {note}</small>
+        {st.self_bill_number && <small><Link className="adb-link" href={`/partner/statements/${st.id}`} target="_blank">Self-billed statement {st.self_bill_number}</Link></small>}</span>
+      {payable && <ActionButton action={payStatementViaStripe} args={[st.id]} reason variant="primary"
+        confirm={{ title: `Pay ${period} via Stripe — ${p.name}`, body: `Transfers ${gbp(bal)}${p.vat_registered && p.payout_country === "GB" ? " plus VAT (self-billing)" : ""} from Gala Dock’s Stripe balance to ${p.name}’s payout account, then pays it out to their bank. The transfer is idempotent: a retry never pays twice.`, cta: "Pay via Stripe" }}>Pay via Stripe</ActionButton>}
+      {unpaid && closed && bal >= minimum && p.payout_status !== "active" && <small className="adb-none">Waiting for the partner to set up Stripe payouts</small>}
+      {st.status === "paid" && st.transfer_id && (!st.stripe_payout_status || st.stripe_payout_status === "not_sent" || st.stripe_payout_status === "failed" || st.stripe_payout_status === "canceled") &&
+        <ActionButton action={sendStatementToBank} args={[st.id]} reason variant="outline" confirm={{ title: "Send to bank", body: "Creates the payout from the partner’s Stripe balance to their bank account.", cta: "Send to bank" }}>Send to bank</ActionButton>}
+      {(st.status === "open" || st.status === "pending") && bal < 0 &&
+        <ActionButton action={recoverStatementClawback} args={[st.id]} reason variant="outline" confirm={{ title: "Recover via transfer reversal", body: `Reverses up to ${gbp(-bal)} of ${p.name}’s last Stripe transfer (possible only while those funds are still in their Stripe balance). Otherwise the negative balance carries forward against future commission.`, cta: "Reverse transfer" }}>Recover via transfer reversal</ActionButton>}</li>;
   })}</ul>;
 }
 

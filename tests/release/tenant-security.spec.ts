@@ -20,6 +20,9 @@ const ids = (r: { data: unknown }) => ((r.data ?? []) as { id: string }[]).map(x
 const ANON_DEFINER_ALLOWLIST = new Set([
   // Reviewed 2026-10-30: public pages (202610294060 / 4080-4082 / 4081+4083) return public-safe fields only; event_is_public (4084) is a boolean
   // policy helper; stripe_livemode / stripe_platform_livemode (202610295001) return the platform mode boolean and back a column default.
+  // Q68 (202611146951): partner_terms_version returns the published partner-terms version string; portal_invite_preview returns the
+  // invited name + state for a 64-hex token hash only (the raw token is never stored).
+  "partner_terms_version", "portal_invite_preview",
   "public_event_extras", "public_listing_availability", "public_event_getting_there", "event_is_public", "stripe_livemode", "stripe_platform_livemode",
   "accept_proposal", "active_boosts", "can_see_agent_run", "checkout_holds", "event_launch_state", "event_virtual_public", "feature_enabled",
   "hold_seats", "hold_tickets", "invite_preview", "is_workspace_member", "maintenance_level", "maintenance_state",
@@ -30,6 +33,11 @@ const ANON_DEFINER_ALLOWLIST = new Set([
   "event_payment_readiness",
   // Q46 (202611146101): boolean "is this ISO country a supported Stripe Connect seller country" — public list (help/pricing), no data exposure.
   "connect_country_supported",
+  // Reviewed 2026-11-14 (coordinator): checkout_unlocked_tiers (6702) returns only tiers unlocked by codes applied to the caller's own
+  // checkout cookie; event_public_status_page (6702) returns the public-safe banner fields of a public postponed/cancelled event only;
+  // public_event_brand / portal_brand (6901) return a clamped accent colour for public pages / token portals; trust_listing_held (6801)
+  // is a boolean used by the publish guard — held listings are never public, so it discloses nothing beyond public state.
+  "checkout_unlocked_tiers", "event_public_status_page", "public_event_brand", "portal_brand", "trust_listing_held",
   // Q27: partner referral click counter for signed-out visitors (mirrors promoter_track_click; rate-limited, visitor hash only); approved 2026-10-29 under owner delegation.
   "partner_track_click",
   // Playbook lane 2026-11-11 (reviewed): consumer-law non-trader flag for an event/listing (boolean only, migration 202611116008) and the
@@ -97,6 +105,7 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   "trg_promoter_payout_conserved", "trg_partner_workspace_referral", "trg_partner_earning_snapshot", "trg_partner_earning_ledger", "trg_partner_invoice",
   "promoter_post_memo", "promoter_reverse_order", "partner_link_referral", "partner_post_memo", "partner_statement_recompute", "partner_qualify_invoice",
   "partner_reverse_earning", "partner_build_statements", "partner_clear_due_earnings", "job_partner_clear_earnings",
+  "partner_minimum_payout", "partner_earning_hold_days", "partner_accrue_revenue", "partner_refund_source", "partner_roll_forward_statements", "partner_payout_account_sync", "portal_invite_state",   // Q68 (202611146951)
   // Q24–Q26 sponsors/talent/riders, logistics, licensing/safety/weather internals, triggers and workers (lane C, 2026-10-29)
   "ops_event_require", "ops_touch", "exhibitor_booths_guard", "talent_riders_immutable", "map_element_exists", "event_space_ok", "event_ops_checks",
   "event_ops_checks_partners", "event_ops_checks_logistics", "event_ops_checks_compliance", "event_compliance_facts", "compliance_rule_applies",

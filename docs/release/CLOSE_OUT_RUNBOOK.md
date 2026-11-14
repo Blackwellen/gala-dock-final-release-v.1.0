@@ -399,3 +399,82 @@ Vercel `STRIPE_CONNECT_SECRET_KEY`: **production = live key** (`acct_1UW16CArv3W
 
 ### SUPERSEDED 2026-10-30 — no live Stripe; provider switch before launch
 Owner decision: stay on **Stripe test mode** until just before launch, then move payments to **Ryft or Mangopay** (they act as the regulated party, so no Gala Dock FCA authorisation/payments counsel for the flow of funds). Production `STRIPE_CONNECT_SECRET_KEY` has been set back to the sandbox key. The "Go-live switch set" and "Stripe go-live" steps above are **not to be run**. Plan and integration surface: `docs/release/payments-provider-decision.md`. Not set up yet.
+
+### Q67 settings & billing build — owner / coordinator steps (lane settings-build, 2026-11-14)
+Code + migration `202611146901_settings_billing_build` are live (shipped in 8d09d8e). The agent changed **no** Vercel env and **no** Stripe dashboard setting. These steps are for the owner/coordinator.
+
+**1. VAT on Gala Dock plans and credit packs — `BILLING_AUTOMATIC_TAX`** (owner decision (6): Stripe Tax on, Gala Dock VAT number on invoices)
+- Env var: `BILLING_AUTOMATIC_TAX`. Accepted "on" values are `on`, `true` or `1`. Anything else, or unset, means off.
+- Values per Vercel environment:
+  - **Development** = `on`.
+  - **Preview** = `on`.
+  - **Production** = `on` (production still runs on the sandbox key until the owner says live).
+  - Set the same value in local `.env.local` if you test checkout locally.
+  - Takes effect on the next deploy.
+- What turns on in code when the flag is on:
+  - Plan and credit-pack Checkout:
+    - `automatic_tax[enabled]`;
+    - billing address required;
+    - customer name and address saved back;
+    - customers can enter their own VAT number (`tax_id_collection`).
+  - Plan changes also turn Stripe Tax on for older subscriptions. If an older customer has no address, the change goes through without tax and writes the `billing.automatic_tax_skipped` audit row.
+  - Copy on the plan picker, credit packs and `/pricing` switches from "VAT isn't added at the moment" to "Prices exclude VAT, added at checkout". The copy is true either way.
+- Prerequisites (already done on both accounts per the 2026-10-29 note above; re-check before go-live with `node --env-file=.env --env-file=.env.local scripts/billing/stripe-tax-status.mjs`):
+  - Stripe Tax head office set;
+  - UK registration active;
+  - catalogue prices `tax_behavior=exclusive`.
+- **Stripe dashboard (owner; Stripe refuses this by API), sandbox now and live at go-live:** Settings → Billing → Invoices → **Default tax IDs** → select `GB VAT GB508480488`. This is needed because Checkout cannot attach `account_tax_ids` to the subscription it creates, so the **first** plan invoice relies on this default.
+  - From the second invoice on, the webhook (`checkout.session.completed`, purpose=subscription) writes the gb_vat id onto the subscription (`invoice_settings[account_tax_ids]`).
+  - Credit packs carry the id through `invoice_creation`.
+  - A failure writes the `billing.subscription_tax_id_failed` audit row.
+- Verify (sandbox):
+  1. Choose Pro on a test organiser workspace with card 4242 and a UK address.
+  2. Expect VAT at 20% on the Checkout page.
+  3. Expect the invoice PDF to show "GB508480488".
+  4. Expect `stripe subscriptions retrieve` → `invoice_settings.account_tax_ids` to hold the txi id.
+- Rollback: set `BILLING_AUTOMATIC_TAX` to off (or remove it) and redeploy.
+
+**2. Stripe customer portal (decision (7))**
+- Sandbox: already created by the agent with the sandbox key only. Command: `node --env-file=.env --env-file=.env.local scripts/billing/stripe-portal-config.mjs --apply`. It created `bpc_1UbmfbAe36uXyrUn4IDRvwkG` (metadata `gd_purpose=plans`) with:
+  - card update;
+  - invoice history;
+  - customer details (email, address, name, VAT id);
+  - cancel at period end;
+  - plan switching **off**, because plan changes stay in Settings with our proration rules.
+- The script refuses non-test keys. In test mode the app also creates the configuration itself if it is missing.
+- **Live (owner, at go-live only):** the app never creates a live configuration. Do one of these:
+  - (a) Stripe dashboard → Settings → Billing → Customer portal: same features, with metadata `gd_purpose=plans`. Or set Vercel production `STRIPE_BILLING_PORTAL_CONFIGURATION=bpc_…` to its id.
+  - (b) Run the same script adapted to the live key, with owner approval.
+  - Until then the live button says "The billing portal isn't switched on yet."
+- Access: the workspace **owner** and **finance** role only. Return URL: `/organizer|provider/settings?tab=billing`. Audited as `billing.portal_opened`.
+
+**3. Sign-in email change.** Supabase Auth "secure email change" is ON in this project, so links go to both the old and the new address.
+- Check the Supabase Auth **Change email address** template links to either `{{ .ConfirmationURL }}` or `/auth/confirm?token_hash={{ .TokenHash }}&type=email_change`. Both now land on Account → Privacy & Security.
+- Keep the "Email changed" notification enabled.
+- Optional: lower `mailer_otp_exp` (3600 s) if you want shorter links. The UI says the links expire after an hour.
+
+**4. Decisions recorded by the lane (delegated "all other decisions you decide")**
+- **Ownership transfer blockers:**
+  - an open booking dispute (either side);
+  - an open Stripe chargeback on the workspace's account;
+  - an active payout pause;
+  - a plan subscription that is past due or unpaid;
+  - a new owner with a pending account deletion;
+  - a new owner without two-step verification when the workspace MFA policy requires it for owners.
+- **Ownership transfer mechanics:**
+  - The request expires after 7 days. There can be one pending request per workspace, and at most 5 requests a day.
+  - Pending invitations move to the new owner.
+  - The Stripe Connect representative and KYC are **not** moved. A new owner who needs payouts in their own name re-runs payout setup with support.
+- **Notification switches** apply to workspace alerts only:
+  - alerts sent with `notify_workspace`;
+  - alerts linking into `/organizer` for someone in exactly one organiser workspace.
+- **Mandatory notifications** cannot be switched off: security, payments, payouts, refunds, invoices, billing, disputes, chargebacks, and legal/terms/policy. Kind `billing` now also gets an email; it previously had none.
+- **SMS and product news:** SMS is shown as not available. Product news is each person's own opt-in.
+- **Plan limits** are enforced by DB triggers on new creation/publish only:
+  - active events exclude draft/archived/completed/cancelled;
+  - seats = owner + active members + pending invitations (accepting an already-counted invitation never fails);
+  - listings = published and not paused;
+  - Enterprise / null caps are unlimited;
+  - demo and QA-fixture workspaces are exempt;
+  - writes with no signed-in user (system jobs, service role) are not limited.
+- **Advanced reporting** = the Money → Reports tab: budget-vs-actual P&L and profitability for every event. The overview summary and CSV export stay on every plan.

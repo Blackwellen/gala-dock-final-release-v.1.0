@@ -10,12 +10,13 @@ export function DistToggle({ eventId, k, on, disabled, label }: { eventId: strin
 }
 
 export function PromoterButton({ eventId }: { eventId: string }) {
-  const [open, setOpen] = useState(false); const [v, setV] = useState({ name: "", pct: "10" }); const [code, setCode] = useState(""); const { run, pending } = useAction(); const toast = useKitToast();
+  const [open, setOpen] = useState(false); const [v, setV] = useState({ name: "", pct: "10", email: "" }); const [code, setCode] = useState(""); const { run, pending } = useAction(); const toast = useKitToast();
   return <><button className="k-btn primary sm" onClick={() => { setOpen(true); setCode(""); }}><Link2 size={14} />Create promoter link</button>
-    <Dialog open={open} onClose={() => setOpen(false)} title="Create promoter link" sub="Promoters get a tracked link; their ticket sales and commission are recorded automatically.">
+    <Dialog open={open} onClose={() => setOpen(false)} title="Create promoter link" sub="Promoters get a tracked link; their ticket sales and commission are recorded automatically. You pay their commission yourself, outside Gala Dock.">
       {code ? <div className="k-col" style={{ gap: 10 }}><div className="ac-feed"><code>{`${location.origin}/r/${code}`}</code><button className="k-icon-btn" aria-label="Copy link" onClick={async () => { try { await navigator.clipboard.writeText(`${location.origin}/r/${code}`); toast("Link copied"); } catch { toast("Couldn't copy", "error"); } }}><Copy size={14} /></button></div><button className="k-btn primary" onClick={() => setOpen(false)}>Done</button></div>
-        : <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => createPromoter({ event_id: eventId, name: v.name, commission_pct: Number(v.pct) })); if (r.ok && r.data) setCode((r.data as { code: string }).code); }}>
+        : <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => createPromoter({ event_id: eventId, name: v.name, commission_pct: Number(v.pct), email: v.email })); if (r.ok && r.data) setCode((r.data as { code: string }).code); }}>
           <label className="k-field"><span>Promoter name</span><input className="k-input" required minLength={2} value={v.name} onChange={e => setV(p => ({ ...p, name: e.target.value }))} /></label>
+          <label className="k-field"><span>Promoter’s email (optional — sends a portal login invitation)</span><input className="k-input" type="email" maxLength={254} value={v.email} onChange={e => setV(p => ({ ...p, email: e.target.value }))} /></label>
           <label className="k-field"><span>Commission %</span><input className="k-input" inputMode="decimal" value={v.pct} onChange={e => setV(p => ({ ...p, pct: e.target.value.replace(/[^0-9.]/g, "") }))} /></label>
           <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="k-btn primary" disabled={pending}>{pending && <Loader2 size={14} className="k-spin" />}Create link</button></div></form>}
     </Dialog></>;

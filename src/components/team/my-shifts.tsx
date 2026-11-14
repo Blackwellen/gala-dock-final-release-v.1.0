@@ -18,7 +18,7 @@ export async function MyShifts({ client, userId }: { client: SupabaseClient | ob
   const crew = await rows<{ workspace_id: string; workspaces: { name: string } | null }>(db.from("crew_members").select("workspace_id,workspaces(name)").eq("user_id", userId).neq("status", "deactivated"));
   const crewTeams = [...new Map(crew.map(c => [c.workspace_id, { id: c.workspace_id, name: c.workspaces?.name ?? "Team" }])).values()];
   return <div className="k-col" style={{ gap: 14 }}>
-    <div className="k-page-head"><div><h1 style={{ fontSize: 28 }}>My shifts</h1><p className="sub">Confirm shifts, check in on the day and request leave.</p></div><LeaveRequestButton workspaces={crewTeams} /></div>
+    <div className="k-page-head"><div><h1>My shifts</h1><p className="sub">Confirm shifts, check in on the day and request leave.</p></div><LeaveRequestButton workspaces={crewTeams} /></div>
     <Card flush>{shifts.length ? <div className="k-table-wrap"><table className="k-table"><thead><tr><th>When</th><th>Shift</th><th>Event</th><th>Team</th><th>Status</th><th>Attendance</th><th /></tr></thead>
       <tbody>{shifts.map(s => <tr key={s.id}><td>{dateShort(s.starts_at)} · {time(s.starts_at)}–{time(s.ends_at)}</td><td><b>{s.role}</b>{s.location ? <div className="k-xs k-muted">{s.location}</div> : null}</td><td>{s.event_name ?? s.title ?? "—"}</td><td className="k-small">{s.workspace_name}</td>
         <td><Chip tone={s.status === "confirmed" ? "green" : s.status === "pending" ? "amber" : "gray"}>{s.status}</Chip></td><td><Chip tone={ATT[s.attendance]?.[0] ?? "gray"}>{ATT[s.attendance]?.[1] ?? s.attendance}</Chip></td><td><ShiftButtons id={s.id} status={s.status} attendance={s.attendance} /></td></tr>)}</tbody></table></div>

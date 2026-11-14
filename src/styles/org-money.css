@@ -41,3 +41,8 @@
 @media print { .o-side, .o-top, .iv-acts, .iv-side, .k-tabs, .k-crumbs { display: none !important; } .iv-grid { display: block; } }
 .iv-sacts { grid-template-columns: 1fr 1fr; } .iv-sacts .iv-cancel { grid-column: 1 / -1; }
 .iw-ih > .k-row { flex-wrap: wrap; justify-content: flex-end; }
+/* Q68 promoter sales approval */
+.pr-approve { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.pr-approve-list { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow: auto; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.pr-approve-list label { display: flex; gap: 8px; align-items: center; }
+.pr-offplatform { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; margin: 8px 0 12px; }

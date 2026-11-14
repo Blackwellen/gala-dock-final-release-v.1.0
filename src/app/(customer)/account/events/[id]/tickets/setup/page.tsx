@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { untyped } from "@/lib/workspace/db";
 import { getCustomer } from "@/lib/data/context";
+import { parseStep } from "@/lib/ui/wizard";
 import { loadTicketSetup } from "@/lib/data/ticket-setup";
 import { TicketSetup } from "@/components/shared/ticket-setup";
 
@@ -14,6 +15,6 @@ export default async function CustomerTicketSetup({ params, searchParams }: { pa
   const { data: pol } = await untyped(ctx.supabase).rpc("event_ticketing_policy", { p_event: id });
   const pp = pol as { allowed?: boolean; mode?: string; opted_in?: boolean; grandfathered?: boolean } | null;
   if (pp && (pp.allowed === false || ((pp.mode === "optional_off" || pp.mode === "private_only") && !pp.opted_in && !pp.grandfathered))) redirect(`/account/events/${id}/guests-tickets?tab=tickets`);
-  const step = Math.min(3, Math.max(1, Number(sp.step) || 1)) as 1 | 2 | 3;
+  const step = parseStep(sp.step, 3) as 1 | 2 | 3;   // Q70: integer steps only
   return <TicketSetup mode="customer" step={step} data={data} base={`/account/events/${id}/tickets/setup`} back={`/account/events/${id}/guests-tickets`} crumbs={[["My Events", "/account/events"], [data.event.name, `/account/events/${id}`], ["Ticket Setup", ""]]} />;
 }

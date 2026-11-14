@@ -8,6 +8,8 @@ import "@/styles/provider-space.css";
 import "@/styles/provider-venue-setup.css";
 import { ActionButton } from "@/components/workspace/actions";
 import { getProvider } from "@/lib/provider/context";
+import { parseStep } from "@/lib/ui/wizard";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { rows, one, isUuid } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { publishListing } from "../../listings/actions";
@@ -34,7 +36,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
   if (!ctx.can.manage) return <ManagerOnly title="Add Venue" back={{ href: "/provider/listings/venues", label: "Back to Venues" }} />;
   const venue = venueId ? listings.find(l => l.id === venueId && l.kind === "venue") ?? null : null;
   if (venueId && !venue) notFound();
-  const step = venue ? Math.min(6, Math.max(1, Number(sp.step) || 1)) : 1;
+  const step = venue ? parseStep(typeof sp.step === "string" ? sp.step : undefined, 6) : 1;
   const url = (n: number) => `/provider/venues/new?venue=${venue?.id ?? ""}&step=${n}`;
   const editing = !!venue?.published;
   const fixHref = (l: string) => l.startsWith("Payout") ? "/provider/money" : url(l.startsWith("Venue") ? 1 : l.includes("space") ? 2 : l.startsWith("Pricing") ? 3 : l.startsWith("Photos") ? 5 : 4);
@@ -64,8 +66,8 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
   return <div className="wz vwz">
     <Link href={step === 1 ? (venue ? `/provider/venues/${venue.id}` : "/provider/listings/venues") : url(step - 1)} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? (venue ? `Back to ${venue.name}` : "Back to Venues") : "Back to Add Venue"}</Link>
     <header className="wz-head"><h1>{editing ? `Edit ${venue!.name}` : "Add Venue"}</h1><p>{SUB[step - 1]}</p></header>
-    <ol className="wz-steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
-      {venue && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
+    <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
+      {venue && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
 
     {step === 1 && <StepIdentity venue={venue} next={venue ? url(2) : "/provider/venues/new?venue={venue}&step=2"} />}
     {step === 2 && venue && <SpacesEditor venueId={venue.id} version={structure?.version ?? 0} elements={latestStructure?.elements ?? structure?.elements ?? []} geo={geo}

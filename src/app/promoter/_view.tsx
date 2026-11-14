@@ -17,7 +17,7 @@ const VIEWS = ["campaign", "assets", "sales", "commission"] as const;
 type ViewKey = typeof VIEWS[number];
 // Q65: held (locked in a payout) and payable (payout approved) are real sale states since Q27; a missing key crashed the sales table.
 const SALE_TONE: Record<Sale["status"], [ChipTone, string]> = { pending: ["amber", "Pending"], approved: ["green", "Approved"], held: ["purple", "In payout"], payable: ["green", "Payable"], paid: ["blue", "Paid"], reversed: ["red", "Reversed"] };
-const METHOD: Record<string, string> = { bank_transfer: "Bank transfer", paypal: "PayPal", stripe: "Stripe" };
+const METHOD: Record<string, string> = { bank_transfer: "Bank transfer", paypal: "PayPal", stripe: "Stripe (no longer offered — choose another)" };
 const SHARE: Network[] = ["whatsapp", "facebook", "x", "instagram", "tiktok", "email"];
 
 function Kpi({ icon: Icon, tone, label, value, delta, suffix, series, spark }: { icon: LucideIcon; tone: string; label: string; value: string; delta: number | null; suffix?: string; series: number[]; spark: "blue" | "green" | "purple" | "pink" }) {
@@ -103,7 +103,7 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
       <li><i className="g" />Approved (payable)<b>{money(approved, "GBP", { cents: true })}</b></li><li className="tot">Total earned<b>{money(earned, "GBP", { cents: true })}</b></li></ul>
     {p.payout_method ? <p className="pp-method">Payout method: <b>{METHOD[p.payout_method] ?? p.payout_method}</b></p>
       : <Link href={`${href("commission")}#payout`} className="pt-btn primary pp-setup">Set up payout method <ChevronRight aria-hidden="true" /></Link>}
-    <div className="pp-payout"><div className="pp-payout-h"><h3>Payout status</h3>{nextPayout ? <PortalChip tone={nextPayout.status === "scheduled" ? "blue" : "amber"}>✦ {nextPayout.status === "scheduled" ? "Scheduled" : nextPayout.status === "processing" ? "Processing" : "Pending"}</PortalChip> : <PortalChip tone="grey">None due</PortalChip>}</div>
+    <div className="pp-payout"><div className="pp-payout-h"><h3>Payout status</h3>{nextPayout ? <PortalChip tone={nextPayout.status === "scheduled" ? "blue" : "amber"}>✦ {nextPayout.status === "scheduled" ? "Scheduled" : nextPayout.status === "processing" ? "Processing" : nextPayout.status === "payable" ? "Approved" : nextPayout.status === "held" ? "Being prepared" : "Pending"}</PortalChip> : <PortalChip tone="grey">None due</PortalChip>}</div>
       <ul><li><i />Next payout date<span>{nextPayout ? fmt(nextPayout.scheduled_for) : "—"}</span></li><li><i />Payout method<span>{p.payout_method ? METHOD[p.payout_method] : "Not set up"}</span></li></ul>
       <Link href={`${href("commission")}#payout`} className="pp-manage"><Settings aria-hidden="true" />Manage payout settings</Link></div>
   </PortalPanel>;
@@ -188,10 +188,10 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
           {view === "commission" && <>
             <PortalPanel title="Payouts" className="pp-recent"><div className="pt-scroll"><table className="pt-table"><thead><tr><th>Scheduled</th><th>Amount</th><th>Status</th><th>Paid</th><th>Reference</th></tr></thead>
               <tbody>{payouts.map(x => <tr key={x.id}><td>{fmt(x.scheduled_for)}</td><td>{money(x.amount, "GBP", { cents: true })}</td>
-                <td><PortalChip tone={x.status === "paid" ? "green" : x.status === "failed" ? "red" : "amber"} dot>{x.status === "on_hold" ? "On hold — payout method needed" : x.status[0]!.toUpperCase() + x.status.slice(1)}</PortalChip></td>
+                <td><PortalChip tone={x.status === "paid" ? "green" : x.status === "failed" ? "red" : "amber"} dot>{x.status === "on_hold" ? "On hold — payout method needed" : x.status === "held" ? "Being prepared by the organiser" : x.status === "payable" ? "Approved — the organiser is paying you" : x.status === "paid" ? "Paid by the organiser" : x.status[0]!.toUpperCase() + x.status.slice(1)}</PortalChip></td>
                 <td>{x.paid_at ? fmt(x.paid_at) : "—"}</td><td>{x.reference ?? "—"}</td></tr>)}</tbody></table>{!payouts.length && <p className="pt-empty">No payouts yet.</p>}</div></PortalPanel>
             <section className="pt-panel pp-method-form" id="payout"><h2>Payout method</h2>
-              <p className="pp-sub">Commission is {Number(p.commission_pct)}% of ticket revenue through your link. Sales become payable after the refund window; the organiser’s payment provider collects your bank details securely — Gala Dock never asks for them here.</p>
+              <p className="pp-sub">Commission is {Number(p.commission_pct)}% of ticket revenue through your link. The organiser approves your sales and pays your commission to you directly (bank transfer or PayPal), outside Gala Dock. Gala Dock records sales and payouts so you both see the same figures; it doesn’t hold or pay promoter commission. Refunded sales are deducted.</p>
               <PayoutMethodForm promoterId={p.id} current={p.payout_method} /></section>
           </>}
         </div>

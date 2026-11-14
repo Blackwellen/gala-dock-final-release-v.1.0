@@ -38,7 +38,9 @@ test.describe("Q65 · partner portal figures follow the ledger", () => {
   const page = src("src/app/partner/page.tsx");
   test("next payout and pending payout include cleared 'open' statements", () => {
     expect(page).toMatch(/statements\.filter\(s => \(s\.status === "open" \|\| s\.status === "pending"\) && s\.payout_due\)/);
-    expect(page).toMatch(/const pendingCom = holdCom \+ statements\.filter\(s => s\.status === "open" \|\| s\.status === "pending"\)/);
+    // Q68: unpaid statements (incl. processing) count their balance incl. carried-in amounts.
+    expect(page).toMatch(/const unpaid = statements\.filter\(s => s\.status === "open" \|\| s\.status === "pending" \|\| s\.status === "processing"\)/);
+    expect(page).toMatch(/const pendingCom = holdCom \+ unpaid\.reduce\(\(a, s\) => a \+ balance\(s\), 0\)/);
   });
 });
 
@@ -63,10 +65,10 @@ test.describe("Q65 · admin partner payouts", () => {
     expect(page).not.toMatch(/details\.pending \?\? Math\.max\(0, p\.earned - p\.paid\)/);
     expect(page).not.toMatch(/Math\.round\(\(r \* p\.commission_bps\) \/ 10000\)/);
   });
-  test("statements of closed months can be marked paid with a reference and reason", () => {
-    expect(page).toMatch(/<ActionForm action=\{markPartnerStatementPaid\}/);
-    expect(page).toMatch(/\(st\.status === "open" \|\| st\.status === "pending"\) && closed/);
-    expect(src("src/app/admin/(console)/_b/actions.ts")).toMatch(/rpc\("admin_partner_statement_paid", \{ p_statement: id, p_reference: reference, p_reason: reason \}/);
+  // Q68 (owner update 2026-11-14) superseded manual "Mark paid": closed, payable statements are paid with "Pay via Stripe".
+  test("statements of closed months are paid via Stripe with a reason", () => {
+    expect(page).toMatch(/<ActionButton action=\{payStatementViaStripe\} args=\{\[st\.id\]\} reason/);
+    expect(page).toMatch(/const payable = unpaid && closed && bal >= minimum && p\.payout_status === "active"/);
   });
 });
 

@@ -10,7 +10,8 @@ import { BrandGlyph } from "@/components/portal/brand";
 import { partnerHero } from "@/components/portal/media";
 import { fmt, pctDelta } from "@/components/portal/format";
 import { money, num, requestTime } from "@/lib/workspace/format";
-import { loadPartner, RESOURCES, GRADES, type Earning, type Referral, type Statement } from "./_data";
+import { loadPartner, RESOURCES, GRADES, type Earning, type Partner, type Referral, type Statement } from "./_data";
+import { PayoutSetupButton, TaxDetailsForm } from "./payouts-client";
 import { SupportForm } from "./support-form";
 
 export const metadata: Metadata = { title: "Partner portal · Gala Dock", robots: { index: false, follow: false } };
@@ -20,7 +21,10 @@ type ViewKey = typeof VIEWS[number];
 const PERIODS: Record<string, string> = { "7": "Last 7 days", "30": "Last 30 days", "90": "Last 90 days" };
 const KIND: Record<Referral["kind"], string> = { organiser: "Event Organiser", venue: "Venue", supplier: "Supplier" };
 const REF_TONE: Record<Referral["status"], [string, string]> = { active: ["green", "Active"], trial: ["blue", "Trial"], pending: ["amber", "Pending"], churned: ["grey", "Churned"] };
-const STMT: Record<Statement["status"], [ChipTone, string]> = { open: ["amber", "Pending"], pending: ["blue", "Payable"], paid: ["green", "Paid"], on_hold: ["red", "On hold"] };
+const STMT: Record<Statement["status"], [ChipTone, string]> = { open: ["amber", "Pending"], pending: ["blue", "Payable"], processing: ["blue", "Paying"], paid: ["green", "Paid"], on_hold: ["red", "On hold"], rolled_over: ["grey", "Rolled over"] };
+const PAYOUT_STATE: Record<Partner["payout_status"], [ChipTone, string]> = { not_connected: ["grey", "Not set up"], incomplete: ["amber", "Details needed"], pending: ["blue", "Being verified"], active: ["green", "Ready"], restricted: ["red", "Restricted"] };
+const RETURN: Record<string, string> = { active: "Payouts are set up. We’ll pay your next statement to your bank.", pending: "Thanks — Stripe is verifying your details. This usually takes a few minutes, sometimes a day or two.", incomplete: "Stripe still needs a few details. Use “Continue setup” to finish.", restricted: "Stripe couldn’t verify your account. Contact partner support.", not_connected: "Payout setup didn’t start. Try again.", error: "We couldn’t confirm your payout setup with Stripe. Refresh in a moment." };
+const balance = (s: Statement) => Number(s.commission) + Number(s.opening_balance ?? 0);
 const DAY = 864e5;
 
 function Kpi({ icon: Icon, tone, label, value, delta, series, spark }: { icon: LucideIcon; tone: string; label: string; value: string; delta: number | null; series: number[]; spark: "blue" | "green" | "purple" | "pink"; }) {
@@ -67,10 +71,11 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
     portal: { title: "Partner Portal", subtitle: "Gala Dock Partner", thumb: "/assets/gd/oe-neon.webp" }, context: { label: "Partner Portal", thumb: "/assets/gd/oe-neon.webp" },
     searchPlaceholder: "Search referrals, content or resources…" };
   if (!data.partner) return <PortalShell {...shell} links={{ messages: "/partner", notifications: "/partner", help: "/help" }}>
-    <div className="pt-panel pr-none"><h1>You’re not a Gala Dock partner yet</h1><p>Partner accounts are set up by the Gala Dock partnerships team. If you’ve been invited, sign in with the email address the invitation was sent to.</p></div>
+    <div className="pt-panel pr-none"><h1>You’re not a Gala Dock partner yet</h1><p>Apply to the partner programme and the partnerships team will review your application. If you’ve been invited, open the link in your invitation email while signed in with that address.</p><Link className="pt-btn primary" href="/partner/apply">Apply to become a partner</Link></div>
   </PortalShell>;
 
-  const { partner: p, referrals, earnings, statements, content } = data;
+  const { partner: p, referrals, earnings, statements, content, minimum } = data;
+  const returned = typeof sp.payouts === "string" ? RETURN[sp.payouts] : undefined;
   const now = requestTime();
   const inRange = (iso: string, a: number, b: number) => { const t = Date.parse(iso); return t >= now - a * DAY && t < now - b * DAY; };
   const cur = (l: Earning[]) => l.filter(e => e.status !== "reversed" && inRange(e.occurred_at, n, 0)), prev = (l: Earning[]) => l.filter(e => e.status !== "reversed" && inRange(e.occurred_at, 2 * n, n));
@@ -87,9 +92,11 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
   const cumulative = (xs: number[]) => xs.reduce<number[]>((a, x) => [...a, (a.at(-1) ?? 0) + x], []);
   const signupSeries = cumulative(Array.from({ length: n }, (_, i) => referrals.filter(r => { const t = Date.parse(r.signed_up_at); return t >= dayStart(i) - DAY && t < dayStart(i); }).length));
   const activeSeries = Array.from({ length: n }, (_, i) => referrals.filter(r => r.status === "active" && r.activated_at && Date.parse(r.activated_at) < dayStart(i)).length);
-  // Q65: "pending payout" is everything earned and not yet paid — inside the 14-day hold (pending) or cleared onto a statement.
+  // Q65/Q68: "pending payout" is everything earned and not yet paid — inside the 60-day hold (pending) or on an unpaid statement
+  // (its own commission plus any balance carried in from earlier months; rolled-over statements are counted where they landed).
   const holdCom = earnings.filter(e => e.status === "pending").reduce((a, e) => a + Number(e.commission), 0);
-  const pendingCom = holdCom + statements.filter(s => s.status === "open" || s.status === "pending").reduce((a, s) => a + Number(s.commission), 0);
+  const unpaid = statements.filter(s => s.status === "open" || s.status === "pending" || s.status === "processing");
+  const pendingCom = holdCom + unpaid.reduce((a, s) => a + balance(s), 0);
   // Statements are built 'open' and settled from there (admin_partner_statement_paid accepts open or pending).
   const nextStmt = statements.filter(s => (s.status === "open" || s.status === "pending") && s.payout_due).sort((a, b) => a.payout_due!.localeCompare(b.payout_due!))[0];
   const inDays = nextStmt ? Math.max(0, Math.ceil((Date.parse(`${nextStmt.payout_due}T12:00:00Z`) - now) / DAY)) : null;
@@ -98,14 +105,18 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const rate = (c: { clicks: number; signups: number }) => (c.clicks ? (100 * c.signups) / c.clicks : 0);
   const topContent = [...content].sort((a, b) => rate(b) - rate(a));
-  const refTable = (list: Referral[]) => <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Date</th><th>Name</th><th>Type</th><th>Status</th><th aria-label="Open" /></tr></thead>
-    <tbody>{list.map(r => { const [tone, label] = REF_TONE[r.status]; return <tr key={r.id} data-q={`${r.name} ${KIND[r.kind]}`}><td>{fmt(r.signed_up_at)}</td><td>{r.name}</td><td className="m">{KIND[r.kind]}</td>
-      <td><span className={`pr-st ${tone}`}>{label}</span></td><td><Link href={href("referrals", `#r-${r.id}`)} aria-label={`Open ${r.name}`}><ChevronRight aria-hidden="true" /></Link></td></tr>; })}</tbody></table>
+  const refTable = (list: Referral[]) => <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Date</th><th>Referral</th><th>Type</th><th>Status</th><th aria-label="Open" /></tr></thead>
+    <tbody>{list.map(r => { const [tone, label] = REF_TONE[r.status]; return <tr key={r.ref_no} data-q={`Referral ${r.ref_no} ${KIND[r.kind]}`}><td>{fmt(r.signed_up_at)}</td><td>Referral #{r.ref_no}</td><td className="m">{KIND[r.kind]}</td>
+      <td><span className={`pr-st ${tone}`}>{label}</span></td><td><Link href={href("referrals", `#r-${r.ref_no}`)} aria-label={`Open referral ${r.ref_no}`}><ChevronRight aria-hidden="true" /></Link></td></tr>; })}</tbody></table>
     {!list.length && <p className="pt-empty">No referrals yet — share your link to get started.</p>}</div>;
-  const stmtTable = (list: Statement[]) => <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Period</th><th>Eligible revenue</th><th>Commission</th><th>Status</th>{view === "earnings" && <><th>Payout</th><th>Reference</th></>}</tr></thead>
+  const payoutNote = (s: Statement) => s.status === "paid" ? `Paid ${s.paid_at ? fmt(s.paid_at) : ""}${s.stripe_payout_status === "paid" ? " · in your bank" : s.stripe_payout_status === "in_transit" || s.stripe_payout_status === "pending" ? " · on its way to your bank" : ""}`
+    : s.status === "rolled_over" ? (Number(s.carried_amount ?? 0) < 0 ? "Negative balance carried to next month" : `Below the ${money(minimum)} minimum · carried to next month`)
+    : s.status === "processing" ? "Payment in progress" : s.status === "on_hold" ? "On hold — contact partner support"
+    : balance(s) < 0 ? "Negative balance — carries forward" : balance(s) < minimum ? `Below the ${money(minimum)} minimum — rolls over` : s.payout_due ? `Due ${fmt(s.payout_due)}` : "After month end";
+  const stmtTable = (list: Statement[]) => <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Period</th><th>Eligible revenue</th><th>Commission</th>{view === "earnings" && <th>Balance</th>}<th>Status</th>{view === "earnings" && <><th>Payout</th><th>Statement</th></>}</tr></thead>
     <tbody>{list.map(s => { const [tone, label] = STMT[s.status]; return <tr key={s.id} data-q={fmt(s.period_start, { month: "short", year: "numeric" })}><td>{fmt(s.period_start, { month: "short", year: "numeric" })}</td><td>{money(s.eligible_revenue)}</td>
-      <td>{money(s.commission)}</td><td><PortalChip tone={tone} dot>{label}</PortalChip></td>
-      {view === "earnings" && <><td>{s.paid_at ? `Paid ${fmt(s.paid_at)}` : s.payout_due ? `Due ${fmt(s.payout_due)}` : "After month end"}</td><td>{s.reference ?? "—"}</td></>}</tr>; })}</tbody></table></div>;
+      <td>{money(s.commission)}</td>{view === "earnings" && <td title={Number(s.opening_balance) ? `Includes ${money(Number(s.opening_balance))} carried in` : undefined}>{money(s.status === "paid" && s.amount_paid != null ? Number(s.amount_paid) : balance(s))}{s.status === "paid" && Number(s.vat_amount) > 0 ? " incl. VAT" : ""}</td>}<td><PortalChip tone={tone} dot>{label}</PortalChip></td>
+      {view === "earnings" && <><td>{payoutNote(s)}</td><td>{s.self_bill_number ? <Link className="pt-link" href={`/partner/statements/${s.id}`}>{s.self_bill_number}</Link> : "—"}</td></>}</tr>; })}</tbody></table></div>;
   const resourceList = <ul className="pr-res">{RESOURCES.map(r => <li key={r.slug} data-q={`${r.title} ${r.text}`}><span className={`pr-res-ic ${r.tone}`}><FileText aria-hidden="true" /></span>
     <span><b>{r.title}</b><small>{r.text}</small></span><a href={`/partner/resources/${r.slug}`} aria-label={`Download ${r.title}`} download><Download aria-hidden="true" /></a></li>)}</ul>;
 
@@ -130,7 +141,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
           {view === "overview" && <>
             <section className="pr-banner" style={{ backgroundImage: `url(${partnerHero})` }} aria-label="Partner programme">
               <div><small>Gala Dock Partner Program</small><h2>Earn with unforgettable events</h2>
-                <p>Refer event organisers, venues and suppliers to Gala Dock and earn commission on {p.commission_basis === "subscription_revenue" ? "subscription revenue" : "net platform revenue"}.</p>
+                <p>Refer event organisers, venues and suppliers to Gala Dock and earn commission on their plans and credit packs (excluding VAT).</p>
                 <a className="pr-guide" href="/partner/resources/partner-guide" download>View partner guide <ArrowRight aria-hidden="true" /></a></div>
               <ul>{["Real-time tracking", "Competitive commissions", "Marketing resources", "Dedicated partner support"].map(x => <li key={x}><CircleCheck aria-hidden="true" />{x}</li>)}</ul>
             </section>
@@ -149,15 +160,22 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
               <PortalPanel title="Commission history" action={{ href: href("earnings"), label: "View all" }} className="pr-hist">{stmtTable(statements.slice(0, 5))}</PortalPanel>
             </div>
           </>}
-          {view === "referrals" && <PortalPanel title={`Referrals (${referrals.length})`} className="pr-refs pr-full"><p className="pr-sub">{active} active · {referrals.filter(r => r.status === "trial").length} on trial · {referrals.filter(r => r.status === "churned").length} churned. Commission accrues on active, paying accounts only.</p>
-            <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Signed up</th><th>Name</th><th>Type</th><th>Status</th><th>Activated</th></tr></thead>
-              <tbody>{referrals.map(r => { const [tone, label] = REF_TONE[r.status]; return <tr key={r.id} id={`r-${r.id}`} data-q={`${r.name} ${KIND[r.kind]}`}><td>{fmt(r.signed_up_at)}</td><td>{r.name}</td><td className="m">{KIND[r.kind]}</td><td><span className={`pr-st ${tone}`}>{label}</span></td><td>{r.activated_at ? fmt(r.activated_at) : "—"}</td></tr>; })}</tbody></table></div></PortalPanel>}
+          {view === "referrals" && <PortalPanel title={`Referrals (${referrals.length})`} className="pr-refs pr-full"><p className="pr-sub">{active} active · {referrals.filter(r => r.status === "pending").length} pending · {referrals.filter(r => r.status === "trial").length} on trial · {referrals.filter(r => r.status === "churned").length} churned. Commission accrues on active, paying accounts only. For confidentiality (Partner Terms §6) referred businesses are shown by number, not by name.</p>
+            <div className="pt-scroll"><table className="pt-table pr-table"><thead><tr><th>Signed up</th><th>Referral</th><th>Type</th><th>Status</th><th>Activated</th></tr></thead>
+              <tbody>{referrals.map(r => { const [tone, label] = REF_TONE[r.status]; return <tr key={r.ref_no} id={`r-${r.ref_no}`} data-q={`Referral ${r.ref_no} ${KIND[r.kind]}`}><td>{fmt(r.signed_up_at)}</td><td>Referral #{r.ref_no}</td><td className="m">{KIND[r.kind]}</td><td><span className={`pr-st ${tone}`}>{label}</span></td><td>{r.activated_at ? fmt(r.activated_at) : "—"}</td></tr>; })}</tbody></table></div></PortalPanel>}
           {view === "earnings" && <>
             <section className="pt-panel pr-rev" data-q-group=""><div className="pr-rev-chart"><div className="pt-panel-head"><h2>Revenue &amp; commission · {PERIODS[periodKey].toLowerCase()}</h2></div>
               <ul className="pr-legend"><li className="b">Eligible revenue</li><li className="p">Your commission</li></ul><RevenueChart days={days} /></div>
               <div className="pr-rev-side"><div className="pr-box"><div><span>Commission rate</span><b>{(p.commission_bps / 100).toFixed(p.commission_bps % 100 ? 1 : 0)}%</b><em className="plain">of {p.commission_basis.replaceAll("_", " ")} · {p.rate_locked ? "custom terms" : `grade ${p.grade} of 5`}</em></div>
                 {!p.rate_locked && <div><span>Next grade</span><b>{next ? `${next.pct}%` : "Top grade"}</b><em className="plain">{next ? `${Math.max(0, next.from - active)} more active referrals` : "10% on all eligible revenue"}</em></div>}
-                <div><span>In 14-day hold</span><b>{money(holdCom)}</b><em className="pend">Clears 14 days after the revenue</em></div></div></div></section>
+                <div><span>In 60-day hold</span><b>{money(holdCom)}</b><em className="pend">Clears 60 days after the payment</em></div></div></div></section>
+            <section className="pt-panel pr-full pr-payouts" id="payouts"><div className="pt-panel-head"><h2>Payouts</h2><PortalChip tone={PAYOUT_STATE[p.payout_status][0]} dot>{PAYOUT_STATE[p.payout_status][1]}</PortalChip></div>
+              {returned && <p className={`pt-notice ${sp.payouts === "active" ? "green" : "amber"}`} role="status">{returned}</p>}
+              <p className="pr-sub">We pay your commission with Stripe: each monthly statement is transferred to your Stripe payout account and paid out to your bank. Stripe verifies your identity and bank details — Gala Dock never sees them. Statements are paid once your balance reaches {money(minimum)}; smaller balances roll over to the next month, and a negative balance (after refunds or chargebacks) carries forward. Your commission keeps accruing even before you set up payouts.</p>
+              {p.payout_status !== "active" && <PayoutSetupButton label={p.payout_status === "not_connected" ? "Set up payouts" : "Continue setup"} />}
+              <h3 className="pr-h3">Tax details</h3>
+              <p className="pr-sub">We issue self-billed statements for your commission. If you’re VAT-registered in the UK we add VAT on top; VAT-registered partners outside the UK are reverse charge.</p>
+              <TaxDetailsForm registered={p.vat_registered} number={p.vat_number} /></section>
             <PortalPanel title="Monthly statements" className="pr-hist pr-full">{stmtTable(statements)}</PortalPanel></>}
           {view === "resources" && <PortalPanel title="Partner resources" className="pr-full"><p className="pr-sub">Everything you need to promote Gala Dock. Files that include links are personalised with your referral code.</p>{resourceList}
             <h3 className="pr-h3">Tracked content</h3><ul className="pr-content">{topContent.map(c => <li key={c.id} data-q={c.title}>

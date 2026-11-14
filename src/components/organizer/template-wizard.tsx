@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ArrowLeft, ArrowRight, Sparkles, CheckCircle2, XCircle, ClipboardList, CalendarDays, Package, Ticket, Megaphone, Users, ShieldCheck, Plus, X, Loader2, MapPin, Clock, UserX, CreditCard, MessageSquareOff, Lock } from "lucide-react";
 import { Toggle, useAction } from "@/components/kit/client";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { saveTemplate } from "@/lib/actions/templates";
 import { labelOf, resolveTerm, terms } from "@/lib/master-data";
 
@@ -33,7 +34,7 @@ export function TemplateWizard({ step, event: e, counts, tiers, cats, roles, fam
 
   return <>
     <div className="tw-head"><h1>Save Event as Template</h1><p>{step === 1 ? "Choose what to include in your reusable template. We'll exclude personal, financial and event-specific data by default." : "Give your template a name, review the included content and confirm it's ready to save."}</p></div>
-    <ol className="iw-steps tw-steps">{steps.map(([t, s], i) => <li key={t} data-state={i + 1 < step ? "done" : i + 1 === step ? "on" : "todo"}><span className="n">{i + 1 < step ? <Check size={16} strokeWidth={3} /> : i + 1}</span><span><b>{t}</b><small>{s}</small></span></li>)}</ol>
+    <ol className="iw-steps tw-steps" aria-label="Steps">{steps.map(([t, s], i) => <li key={t} data-state={i + 1 < step ? "done" : i + 1 === step ? "on" : "todo"} aria-current={i + 1 === step ? "step" : undefined}><span className="n">{i + 1 < step ? <Check size={16} strokeWidth={3} /> : i + 1}</span><span><b>{t}</b><small>{s}</small></span></li>)}</ol><StepFocus step={step} />
     <div className="tw-grid">
       <div className="tw-main">
         {step === 1 ? <section className="k-card tw-sec"><div className="k-between"><div><h2>1. Choose what to include</h2><p className="tw-sub">Select the reusable structure and content you want to save in your template. Sensitive or event-specific data is excluded by default.</p></div><button className="k-btn outline sm" onClick={recommend}><Sparkles size={14} />Select recommended</button></div>

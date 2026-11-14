@@ -132,7 +132,8 @@ export default async function ListingsPage(props: PageProps<"/provider/listings/
         </div>
         <section className="ws-kpis pl-kpis" aria-label="Listing figures">
           <Kpi icon={LayoutGrid} tone="blue" label="Total Listings" value={counts.all} series={dailySeries(scoped, c => c.created || null, () => 1, 30, now)} />
-          <Kpi icon={CircleCheck} tone="green" label="Published" value={counts.published} series={dailySeries(jobs, j => j.created_at, () => 1, 30, now)} />
+          {/* Q62/Q49: the sparkline plotted bookings; it now plots the published listings themselves (by creation date — listings carry no published_at). */}
+          <Kpi icon={CircleCheck} tone="green" label="Published" value={counts.published} series={dailySeries(scoped.filter(c => c.status === "published"), c => c.created || null, () => 1, 30, now)} />
           <Kpi icon={FileText} tone="orange" label="Draft" value={counts.draft} />
           <Kpi icon={CirclePause} tone="red" label="Paused" value={counts.paused} />
           <div className="ws-kpi pl-quality"><Ring value={avgQuality} size={58} /><div className="ws-kpi-text"><span>Listing Quality</span><strong className="pl-q">{avgQuality >= 80 ? "Good" : avgQuality >= 60 ? "Fair" : "Needs work"}</strong><small>Avg. of {scoped.length} listing{scoped.length === 1 ? "" : "s"}</small></div></div>

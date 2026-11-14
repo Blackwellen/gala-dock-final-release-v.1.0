@@ -118,8 +118,12 @@ export async function createFromPlan(eventId: string, venueId: string | null): P
   if (wasDraft) {
     const due = (days: number) => e.starts_at ? new Date(new Date(e.starts_at).getTime() - days * 864e5).toISOString() : null;
     const tasks = [["Shortlist and request venue quotes", "venue", 120, "high"], ...cats.filter(c => c !== "venue").map(c => [`Get quotes for ${labelOf(c).toLowerCase()}`, c, 90, "medium"]), ["Send invitations", "guests", 60, "medium"], ["Confirm final guest numbers", "guests", 14, "high"], ["Finalise day-of timeline", "timeline", 7, "medium"]] as [string, string, number, string][];
-    await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, days, priority]) => ({ event_id: e.id, owner_id: o.ctx.user.id, title, category, due_at: due(days), priority, status: "todo" })));
-    await o.ctx.supabase.from("events").update({ status: "planning", settings: { ...s, planned_with_wizard: true, allocation: alloc }, updated_at: new Date().toISOString() }).eq("id", e.id);
+    // Q70: a retry after a failed status change (or a second tab) must not add the starter checklist twice, and a failed write is
+    // reported instead of announcing "Your event is created" while the plan is still a draft.
+    const { count } = await o.ctx.supabase.from("tasks").select("id", { count: "exact", head: true }).eq("event_id", e.id);
+    if (!count) { const { error: taskErr } = await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, days, priority]) => ({ event_id: e.id, owner_id: o.ctx.user.id, title, category, due_at: due(days), priority, status: "todo" }))); if (taskErr) return { ok: false, error: "Could not create your checklist. Please try again." }; }
+    const { data: moved, error: upErr } = await o.ctx.supabase.from("events").update({ status: "planning", settings: { ...s, planned_with_wizard: true, allocation: alloc }, updated_at: new Date().toISOString() }).eq("id", e.id).eq("status", "draft").select("id");
+    if (upErr || !moved?.length) return { ok: false, error: "Could not create your event. Please try again." };
   }
   for (const p of ["", "/build", "/plan", "/money"]) revalidatePath(`/account/events/${e.id}${p}`); revalidatePath("/account/events");
   return { ok: true, message: wasDraft ? `Your event is created with ${rows.length} suggestions to review.` : rows.length ? `${rows.length} suggestions added to your build.` : "Your build already covers these categories.", redirect: `/account/events/${e.id}/build` };

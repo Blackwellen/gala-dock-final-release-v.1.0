@@ -9,6 +9,7 @@ import { Button, Logo, IconTile, Photo, CheckList, Modal } from "./ui";
 import { TextField, TextArea, SelectField, ChoiceGroup, Toggle } from "./form";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
 import { CONNECT_COPY, isConnectCountrySupported } from "@/lib/payments/connect-countries";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { amenities, listingEventTypes, bookingModes, cancellationPolicies, capacityBands, countries, countryByName, currencies, customerInterests, flowSteps, holdDurations, leadTimes, memberRoles, organizerBusinessTypes, organizerEventTypes, responseTimes, ruleIssues, serviceCategories, trustRequirements, validateStep, venueTypes, type Values } from "@/lib/onboarding-schema";
 
 export type Flow = "experience" | "customer" | "organizer" | "provider";
@@ -277,7 +278,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
       const { errors: found } = validateStep(apiFlow, key === "experience" ? "preferences" : key, values, { capabilities: context.capabilities, ownerEmail: user.email });
       if (Object.keys(found).length) { setErrors(found); if (action === "exit") { setExitBlocked(true); setError("Fix the highlighted fields to save this step, or leave without saving."); } else setError("Please fix the highlighted fields."); return; }
     }
-    setBusy(true);
+    setBusy(true); let leaving = false;
     try {
       const response = await fetch("/api/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ flow: apiFlow, step: key === "experience" ? "preferences" : key, values, action, next }) });
       const data = await response.json();
@@ -285,11 +286,12 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
       if (!response.ok) { setError(data.error ?? "Your setup could not be saved."); if (data.next) router.push(data.next); return; }
       try { sessionStorage.removeItem(draftKey); } catch { /* ignore */ }
       if (data.complete && (data.invites?.length || data.publish)) { setDone({ invites: data.invites ?? [], publish: data.publish, next: data.next }); return; }
-      router.push(data.next ?? "/continue");
+      // Q70: stay busy while the next step loads — clearing it in `finally` re-enabled Continue / Finish during navigation.
+      leaving = true; router.push(data.next ?? "/continue");
       router.refresh();
     } catch {
       setError("You appear to be offline. Your progress on this step is kept in this tab — try again when you’re connected.");
-    } finally { setBusy(false); }
+    } finally { if (!leaving) setBusy(false); }
   }
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -683,7 +685,7 @@ function OnboardingShell({ flow, pageClass, storyAsset, s, steps, step, user, pr
           {flow === "experience" ? <p className="eyebrow">EVENTS. PEOPLE. PLACES. ALL TOGETHER.</p> : <>
             <p className="eyebrow">{s.eyebrow ?? (flow === "provider" ? "PROVIDER SETUP" : "ORGANIZER SETUP")}</p>
             {flow === "customer" && <div className="story-progress" aria-hidden="true"><i /></div>}
-            {steps && <ol className="setup-steps">{steps.map((item, i) => <li key={item.key} aria-current={i + 1 === step ? "step" : undefined}><span className={i < step ? "active" : ""}>{i + 1 < step ? <Check size={15} aria-label="Completed" /> : i + 1}</span><small>{item.label}</small></li>)}</ol>}</>}
+            {steps && <ol className="setup-steps">{steps.map((item, i) => <li key={item.key} aria-current={i + 1 === step ? "step" : undefined}><span className={i < step ? "active" : ""}>{i + 1 < step ? <Check size={15} aria-label="Completed" /> : i + 1}</span><small>{item.label}</small></li>)}</ol>}<StepFocus step={step} /></>}
           <h1>{s.title}</h1>
           <p className="setup-story-description">{s.description}</p>
           <div className={`setup-features ${flow === "experience" ? "two-columns" : ""}`}>{s.features.map(([title, text], i) => { const Icon = storyIcons[i % storyIcons.length]; return <div key={title}><IconTile icon={Icon} /><span><b>{title}</b>{text && <small>{text}</small>}</span></div>; })}</div>

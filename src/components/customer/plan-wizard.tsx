@@ -6,6 +6,7 @@ import { confirmDialog } from "@/lib/ui/dialogs";
 import { useRouter } from "next/navigation";
 import { Check, CheckCircle2, ArrowRight, ArrowLeft, Save, Lock, Globe, Info, Sparkles, MoreHorizontal, CalendarDays, Clock, MapPin, X, LocateFixed, Users, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Pencil, SlidersHorizontal, RefreshCw, Music2, Trees, Wallet, Gem, Loader2, Bookmark, Star, Palette, Trash2, Compass } from "lucide-react";
 import { VSteps } from "@/components/kit";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { Toggle, NumberStepper, SaveHeart, MapView, useAction, useKitToast, Menu, type MapPin as Pin } from "@/components/kit/client";
 import { savePlanStep, createFromPlan, discardPlan, type PlanStep1, type PlanStep2, type PlanStep3, type PlanStep4, type PlanStep5, type PlanSaveStep } from "@/lib/actions/plan-wizard";
 import { OCCASIONS, MORE_OCCASIONS, MUST_HAVES, OPTIONALS, STYLES, ACCESS, occasionPitch, labelOf, occasionLabel } from "@/lib/plan-model";
@@ -81,7 +82,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
 
   return <div className="pw-grid">
     <aside className="pw-rail">
-      <VSteps steps={steps} current={step} hrefFor={n => ev && n <= reach && n !== step ? `/plan?event=${ev.id}&step=${n}` : ""} />
+      <VSteps steps={steps} current={step} hrefFor={n => ev && n <= reach && n !== step ? `/plan?event=${ev.id}&step=${n}` : ""} /><StepFocus step={step} />
       <section className="pw-agent"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="pw-spark" /><b>Planning help</b></div><p>{railAgent.text}</p>
         <button className="pw-agent-btn" onClick={railAgent.act}><railAgent.icon size={16} />{railAgent.btn}</button></section>
       {ev?.status === "draft" && <button className="pw-discard" disabled={busy} onClick={async () => { if (await confirmDialog({ title: "Discard this draft?", message: "Your saved answers for this plan will be removed from My Events.", confirmLabel: "Discard draft", danger: true })) void run(() => discardPlan(ev.id)); }}><Trash2 size={13} />Discard draft</button>}

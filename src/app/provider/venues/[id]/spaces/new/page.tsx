@@ -6,6 +6,8 @@ import "@/styles/provider-wizard.css";
 import "@/styles/provider-space.css";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money } from "@/lib/workspace/format";
+import { parseStep } from "@/lib/ui/wizard";
+import { StepFocus } from "@/components/kit/wizard-client";
 import { loadSpaceContext, buildRulesInput } from "../data";
 import { saveSpaceSection } from "../actions";
 import { setSpaceStatus } from "../../../../listings/actions";
@@ -31,15 +33,15 @@ export default async function AddSpace(props: PageProps<"/provider/venues/[id]/s
   const c = await loadSpaceContext(id, spaceId);
   if (!c) notFound();
   const s = c.space;
-  const step = s ? Math.min(5, Math.max(1, Number(sp.step) || 1)) : 1;
+  const step = s ? parseStep(typeof sp.step === "string" ? sp.step : undefined, 5) : 1;
   const url = (n: number) => `/provider/venues/${id}/spaces/new?step=${n}${s ? `&space=${s.id}` : ""}`;
   const d = s?.details ?? {};
 
   return <div className="wz ps-wz">
     <Link href={step === 1 ? `/provider/venues/${id}?tab=spaces` : url(step - 1)} className="ws-back wz-back"><ArrowLeft aria-hidden="true" />{step === 1 ? "Back to Spaces" : "Back"}</Link>
     <header className="wz-head"><h1>{s && step > 1 ? `Add Space · ${s.name}` : "Add Space"}</h1><p>{SUB[step - 1]}</p></header>
-    <ol className="wz-steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""}>
-      {i + 1 < step ? <Link href={url(i + 1)}><span><Check aria-hidden="true" /></span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol>
+    <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
+      {i + 1 < step ? <Link href={url(i + 1)}><span><Check aria-hidden="true" /></span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
 
     {step === 1 && <SpaceBasicsForm venueId={id} next={`/provider/venues/${id}/spaces/new?step=2&space={space}`} submitLabel="Next: Features & Amenities"
       initial={s ? { id: s.id, name: s.name, indoor: s.indoor, area_sqm: s.area_sqm, capacity_standing: s.capacity_standing, layouts: s.layouts, details: d }

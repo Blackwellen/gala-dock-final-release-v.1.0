@@ -5,6 +5,7 @@ import { Check, ArrowLeft, ArrowRight, Loader2, Plus, Minus, RotateCcw, Accessib
 import { Toggle } from "@/components/kit/client";
 import type { ProSection } from "@/lib/ticket-pro-model";
 import { isoToWall, wallToIso } from "@/lib/events/wall-time";
+import { StepFocus } from "@/components/kit/wizard-client";
 
 export const gbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
 export const gbp2 = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -29,7 +30,7 @@ export function ProShell({ step, base, event, crumbs, header, children }: { step
   return <div className="tp">
     {header ?? <nav className="tp-crumbs" aria-label="Breadcrumb">{crumbs ?? <><Link href="/organizer">Organizer</Link><i>/</i><Link href="/organizer/events">Events</Link><i>/</i><Link href={`/organizer/events/${event.id}`}>{event.name}</Link><i>/</i><Link href="/organizer/tickets">Tickets</Link><i>/</i><b aria-current="page">Setup</b></>}</nav>}
     <h1 className="tp-h1">Ticket Setup</h1><p className="tp-intro">{INTRO[step - 1]}</p>
-    <ol className="tp-steps">{STEPS.map((s, i) => { const n = i + 1, st = n < step ? "done" : n === step ? "on" : "todo"; return <li key={s.title} data-st={st}><Link href={`${base}?step=${n}`} aria-current={n === step ? "step" : undefined}><span className="tp-sn">{st === "done" ? <Check size={15} strokeWidth={3} /> : n}</span><span><b>{s.title}</b><small>{s.sub}</small></span></Link></li>; })}</ol>
+    <ol className="tp-steps" aria-label="Steps">{STEPS.map((s, i) => { const n = i + 1, st = n < step ? "done" : n === step ? "on" : "todo"; return <li key={s.title} data-st={st}><Link href={`${base}?step=${n}`} aria-current={n === step ? "step" : undefined}><span className="tp-sn">{st === "done" ? <Check size={15} strokeWidth={3} /> : n}</span><span><b>{s.title}</b><small>{s.sub}</small></span></Link></li>; })}</ol><StepFocus step={step} />
     {children}
   </div>;
 }

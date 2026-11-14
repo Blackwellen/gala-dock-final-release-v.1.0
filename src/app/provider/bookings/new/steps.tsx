@@ -7,6 +7,7 @@ import { ChevronDown, CalendarDays, Users, MapPin, Mail, Phone, Sparkles, Circle
 import { useToast } from "@/components/ui";
 import type { ActionResult } from "@/components/workspace/actions";
 import { saveBookingStep, confirmBooking, discardBookingDraft } from "./actions";
+import { confirmDialog } from "@/lib/ui/dialogs";
 import type { BookingDraft } from "./draft";
 import { labelsFor } from "@/lib/master-data";
 import { LAYOUT_LABEL } from "../../venues/_components/layout-glyph";
@@ -35,7 +36,7 @@ function Footer({ back, onSave, onNext, nextLabel, pending, error, onCancel, dis
       {back ? <Link className="ws-btn outline" href={back}><ArrowLeft aria-hidden="true" />Back</Link> : <button type="button" className="ws-btn outline" disabled={pending} onClick={onSave}><Save aria-hidden="true" />Save as draft</button>}
       <span className="ws-spacer" />
       {back && <button type="button" className="ws-btn outline" disabled={pending} onClick={onSave}><Save aria-hidden="true" />Save as draft</button>}
-      {onCancel && <button type="button" className="ws-btn ghost" onClick={onCancel}>Cancel</button>}
+      {onCancel && <button type="button" className="ws-btn ghost" disabled={pending} onClick={onCancel}>Cancel</button>}
       <button type="button" className="ws-btn primary wz-next" disabled={pending || disabled} onClick={onNext}>{pending ? "Saving…" : nextLabel}<ArrowRight aria-hidden="true" /></button>
     </footer></>;
 }
@@ -101,7 +102,7 @@ export function StepEvent({ draft, venues }: { draft: BookingDraft; venues: Venu
         <h3>Venue information</h3><ul className="wz-info"><li><Users aria-hidden="true" /><span>Max capacity<b>{venue.capacity ?? "—"}</b></span></li><li><Layers aria-hidden="true" /><span>Spaces<b>{venue.spaces}</b></span></li>
           <li><Building2 aria-hidden="true" /><span>Indoor / Outdoor<b>Both</b></span></li><li><CircleParking aria-hidden="true" /><span>Parking<b>On-site</b></span></li><li><UtensilsCrossed aria-hidden="true" /><span>Catering<b>In-house</b></span></li></ul></section>}
     </aside>
-    <div className="wz-span"><Footer onSave={() => save(null)} onNext={() => save(2)} nextLabel="Continue to Space & Services" pending={pending} error={error} disabled={!valid} onCancel={() => run(() => discardBookingDraft())} /></div>
+    <div className="wz-span"><Footer onSave={() => save(null)} onNext={() => save(2)} nextLabel="Continue to Space & Services" pending={pending} error={error} disabled={!valid} onCancel={async () => { if (await confirmDialog({ title: "Discard this booking draft?", message: "The details you've entered for this booking will be cleared.", confirmLabel: "Discard draft", danger: true })) run(() => discardBookingDraft()); }} /></div>
   </div>;
 }
 

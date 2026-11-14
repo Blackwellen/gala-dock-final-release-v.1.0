@@ -40,7 +40,7 @@ export function AssignDialog({ open, onClose, events, people, crew }: { open: bo
     </form></Dialog>;
 }
 
-export function TeamHeaderActions({ events, people, compact }: { events: Ev[]; people: P[]; compact?: boolean }) {
+export function TeamHeaderActions({ events, people, compact, canExport = false }: { events: Ev[]; people: P[]; compact?: boolean; canExport?: boolean }) {
   const [invite, setInvite] = useState(false); const [assign, setAssign] = useState(false);
   // Q48: the header Create menu links to /organizer/team?invite=1, which used to land on the page with nothing open.
   const params = useSearchParams(); const want = !compact && params.get("invite") === "1"; const [wanted, setWanted] = useState(false);
@@ -50,7 +50,8 @@ export function TeamHeaderActions({ events, people, compact }: { events: Ev[]; p
     <Link className="k-btn outline" href="/organizer/calendar"><CalendarDays size={16} />View calendar</Link>
     <Menu label="More actions" width={220} trigger={({ toggle, open, id }) => <button className="k-btn outline" onClick={toggle} aria-expanded={open} aria-controls={id}>More actions <ChevronDown size={15} /></button>}>{close => <>
       <button role="menuitem" className="k-menu-item" onClick={() => { close(); setAssign(true); }}><CalendarPlus size={14} />Assign to event</button>
-      <a role="menuitem" className="k-menu-item" href="/api/export/team" download onClick={close}><Download size={14} />Export team (CSV)</a></>}</Menu>
+      {/* Q62/Q49: /api/export/team is owners and managers only (staff PII) — don't offer a link that 403s for everyone else. */}
+      {canExport && <a role="menuitem" className="k-menu-item" href="/api/export/team" download onClick={close}><Download size={14} />Export team (CSV)</a>}</>}</Menu>
     <span className="tm-split"><button className="k-btn primary" onClick={() => setInvite(true)}><Plus size={16} />Invite people</button><Menu label="Add options" width={210} trigger={({ toggle, open, id }) => <button className="k-btn primary tm-caret" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="More add options"><ChevronDown size={15} /></button>}>{close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); setInvite(true); }}><UserPlus size={14} />Invite person</button><button role="menuitem" className="k-menu-item" onClick={() => { close(); setAssign(true); }}><CalendarPlus size={14} />Assign shift</button></>}</Menu></span>
     <InviteDialog open={invite} onClose={() => setInvite(false)} />
     <AssignDialog open={assign} onClose={() => setAssign(false)} events={events} people={people} />

@@ -62,6 +62,13 @@ const REVIEWED: Record<string, string> = {
   partner_attribute_signup_at: "refusal as data (invalid_click / existing_account); otherwise delegates to partner_attribute_signup for the caller's own account (Q65, 202611146401)",
   respond_to_invite: "refusal as data (unavailable)", virtual_issue_join_token: "refusal as data",
   virtual_join: "refusal as data (not_your_ticket)", virtual_redeem_join_token: "refusal as data (invalid_token)", virtual_replay_access: "refusal as data (not_available)",
+  // Reviewed 2026-11-14 (coordinator): platform-wide public policy values, no tenant data.
+  dec107_funding_lead_days: "public policy setting (days)", dec107_public_rules: "public DEC-107 reserve/hold rules shown in Payment Terms",
+  demo_public_visible: "public platform flag", partner_terms_version: "public terms version string", payment_terms_customer_required: "public terms version + required flag",
+  portal_invite_accept: "refusal as data (unavailable) without the caller's own matching invite token (Q68)",
+  // Public-by-design seller facts already shown on public event/listing pages and checkout (trader notice, country gate, sale window).
+  seller_trader_status: "trader/non-trader status disclosed at checkout by law (CCRs/DMCC)", ticket_sales_open_from: "public sale-open date shown on event pages",
+  workspace_business_country: "seller country shown on public pages; ISO code only", workspace_payments_country_ok: "boolean derived from the public seller country (Q46)",
 };
 
 // Tables an outsider / anon may read rows of (RLS restricts them to the public subset). Reviewed Q45 2026-10-29.
@@ -71,6 +78,8 @@ const PUBLIC_TABLES: Record<string, [string, string?]> = {
   agent_skills: ["skill catalogue"],
   agent_tools: ["tool catalogue"],
   bar_jurisdiction_rules: ["licensing reference"],
+  connect_supported_countries: ["Stripe Connect supported seller countries (Q46, public help/pricing)"],
+  uk_bank_holidays: ["public UK bank holiday calendar (ticket release dates)"],
   boost_products: ["boost price list"],
   build_category_profiles: ["builder catalogue"],
   compliance_rule_packs: ["rule catalogue"],
@@ -109,12 +118,12 @@ const PUBLIC_TABLES: Record<string, [string, string?]> = {
   events: ["public events", "visibility::text <> 'public'"],
   listings: ["published listings", "not published"],
   spaces: ["spaces of published venues", "venue_id not in (select id from public.listings where published)"],
-  ticket_tiers: ["tiers of public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
-  event_seats: ["seat maps of public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
-  programme_items: ["programme of public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
-  event_distribution: ["distribution of public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
-  merch_items: ["merch of public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
-  directory_featured: ["featured public events", "event_id not in (select id from public.events where visibility::text = 'public')"],
+  ticket_tiers: ["tiers of public events", "not public.event_is_public(event_id)"],
+  event_seats: ["seat maps of public events", "not public.event_is_public(event_id)"],
+  programme_items: ["programme of public events", "not public.event_is_public(event_id)"],
+  event_distribution: ["distribution of public events", "not public.event_is_public(event_id)"],
+  merch_items: ["merch of public events", "not public.event_is_public(event_id)"],
+  directory_featured: ["featured public events", "not public.event_is_public(event_id)"],
   event_series: ["public series", "visibility::text <> 'public'"],
   menus: ["menus of published listings", "listing_id not in (select id from public.listings where published)"],
   bar_packages: ["bar packages of published listings", "listing_id not in (select id from public.listings where published)"],

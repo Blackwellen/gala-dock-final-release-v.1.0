@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Sparkles, FileText } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
+import { parseStep } from "@/lib/ui/wizard";
 import { Card, Chip, Beta } from "@/components/kit";
 import { GalaLogo } from "@/components/brand/gala-logo";
 import { AgentAsk } from "@/components/kit/client";
@@ -26,7 +27,7 @@ export default async function NewProposal({ searchParams }: PageProps<"/organize
   // Furthest reachable step from what is saved (proposals from the earlier three-step builder have no marker and count as complete).
   const saved = c.wizard_step ?? 4;
   const reach = !p ? 1 : !(c.line_items?.length || c.packages?.length) ? 2 : Math.min(5, Math.max(3, saved + 1));
-  const want = Math.min(5, Math.max(1, Number(sp.step) || (p ? reach : 1)));
+  const want = parseStep(typeof sp.step === "string" ? sp.step : undefined, 5, p ? reach : 1);   // Q70: ?step=2.5 rendered no step
   if (want > reach) redirect(p ? `/organizer/proposals/new?step=${reach}&id=${p.id}` : "/organizer/proposals/new?step=1");
   const step = want;
   const { data: leads } = await sb.from("leads").select("id,name,client_name,contact_name,contact_email,event_type,expected_date,location,guests,budget,stage").eq("workspace_id", ctx.workspace.id).not("stage", "in", "(won,lost)").order("created_at", { ascending: false });
