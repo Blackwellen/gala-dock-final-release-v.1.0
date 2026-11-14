@@ -1,7 +1,9 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
-import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError } from "./llm";
+import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError, AgentSafetyError } from "./llm";
+import { classifyStepError, isRefKey, REF } from "./resilience";
 import { PRESETS, posterFromEvent } from "@/lib/media/document";
 import { watchHolds } from "./watch";
 import { TOOL, catalogFor, decide, inQuietHours, DEFAULT_POLICY, type Policy, type Tool } from "./registry";
@@ -17,7 +19,12 @@ import { routineNextRun } from "./schedule-db";
  */
 type Db = ReturnType<typeof untyped>;
 type Run = { id: string; workspace_id: string; user_id: string; goal: string; status: string; surface: string; mode: string; quality?: string | null; interpretation: Record<string, unknown>; tokens: number; retries: number; created_at: string; routine_id: string | null; mission?: string | null };
-type Step = { id: string; seq: number; tool_id: string; input: Record<string, unknown>; reason: string; status: string; idempotency_key: string; attempt: number };
+type Step = { id: string; seq: number; tool_id: string; input: Record<string, unknown>; reason: string; status: string; idempotency_key: string; attempt: number; started_at?: string | null };
+/** A step left "running" longer than this was interrupted (worker crash / deploy): it is picked up again; the per-step idempotency
+ *  key replays a call that already succeeded instead of repeating it. */
+const STALE_STEP_MS = 3 * 60_000;
+/** Planning attempts before a run that keeps hitting transient model errors is failed with a plain message. */
+const MAX_PLAN_RETRIES = 3;
 const svc = () => untyped(createAdminClient() as never);
 
 export async function loadPolicy(db: Db, workspaceId: string): Promise<Policy> {
@@ -86,8 +93,12 @@ async function governedCall(run: Run, step: Step, tool: Tool, input: Record<stri
   const db = svc();
   const { data: done } = await db.from("agent_tool_calls").select("idempotency_key").eq("step_id", step.id).eq("status", "succeeded").maybeSingle();
   const key = done?.idempotency_key ?? `${step.idempotency_key}:a${step.attempt + 1}`;
-  const { data, error } = await db.rpc("agent_execute_tool" as never, { p_run: run.id, p_step: step.id, p_actor: actor, p_tool: tool.id, p_args: args, p_idempotency: key,
+  const exec = () => db.rpc("agent_execute_tool" as never, { p_run: run.id, p_step: step.id, p_actor: actor, p_tool: tool.id, p_args: args, p_idempotency: key,
     p_approval: opts.approvalId ?? null, p_policy_auto: Boolean(opts.policyAuto) } as never);
+  let { data, error } = await exec();
+  // Q53: two executors raced on the same key (approval card + worker durability pass). The loser waits for the winner's commit and
+  // replays its recorded result instead of reporting a failure for an action that did happen.
+  if (error && /duplicate key|agent_tool_calls_idempotency|call_in_progress/i.test(error.message)) { await new Promise(r => setTimeout(r, 1000)); ({ data, error } = await exec()); }
   if (error) throw new Error(error.message);
   const r = data as { ok: boolean; refused?: boolean; error?: string | null; output?: unknown };
   if (!r.ok) throw new Error(r.refused ? `refused: ${r.error}` : String(r.error ?? "tool_failed"));
@@ -140,7 +151,8 @@ Mission template for "${usable.title}" (follow this order, skip steps that don't
   const exposure = steps.reduce((a, s) => a + (TOOL.get(s.tool)?.amountMinor?.(s.input ?? {}) ?? 0), 0);
   const needsConfirm = steps.some(s => (TOOL.get(s.tool)?.risk ?? 0) >= 3);
   await setStatus(db, run, !rows.length ? "completed" : needsConfirm ? "awaiting_plan_confirmation" : "running", {
-    interpretation: { ...(plan.interpretation ?? {}), confidence: plan.confidence ?? null }, plan: steps, financial_exposure_minor: exposure, tokens: (run.tokens ?? 0) + r.tokens,
+    // needs_confirmation (Q53): pause + resume can't skip the confirmation (resume returns an unconfirmed plan to it).
+    interpretation: { ...(plan.interpretation ?? {}), confidence: plan.confidence ?? null, needs_confirmation: needsConfirm }, plan: steps, financial_exposure_minor: exposure, tokens: (run.tokens ?? 0) + r.tokens,
     progress: 10, lease_until: null, // cost_cents is maintained from metered usage (ai_usage_roll_run_cost trigger)
     ...(rows.length ? {} : { summary: (reply ?? plan.interpretation?.summary) || "I couldn’t find anything to do for that. Try describing the task, for example “Find three caterers for 120 guests on 14 March”.",
       finished_at: new Date().toISOString(), result: reply ?? plan.interpretation?.summary ?? "" }),
@@ -149,22 +161,37 @@ Mission template for "${usable.title}" (follow this order, skip steps that don't
 }
 
 // ───────────────────────── execution ─────────────────────────
-const resolveRefs = (input: Record<string, unknown>, outputs: Map<number, unknown>) => JSON.parse(JSON.stringify(input), (_k, v) => {
-  if (typeof v !== "string") return v;
-  const m = /^\$step(\d+)\.([a-z_]+)$/.exec(v); if (!m) return v;
+/** "$stepN.field" → the earlier step's value. Q53: top-level id arguments only (isRefKey); nested and free-text values are kept
+ *  literally, so a previous tool's output can never become a message body, a quote line or a memory value. */
+export const resolveRefs = (input: Record<string, unknown>, outputs: Map<number, unknown>) => Object.fromEntries(Object.entries(input).map(([k, v]) => {
+  if (typeof v !== "string" || !isRefKey(k)) return [k, v];
+  const m = REF.exec(v); if (!m) return [k, v];
   const o = outputs.get(Number(m[1])); const first = Array.isArray(o) ? o[0] : o;
-  return first && typeof first === "object" ? (first as Record<string, unknown>)[m[2]!] ?? v : v;
-});
+  return [k, first && typeof first === "object" ? (first as Record<string, unknown>)[m[2]!] ?? v : v];
+}));
 
 export async function executeRun(db: Db, run: Run) {
+  // Q53: the platform / workspace switch stops execution before any step (the worker pauses the run with the reason), instead of
+  // every remaining step being refused and marked failed one by one.
+  await assertAgentEnabled(run.workspace_id);
+  const interp = (run.interpretation ?? {}) as { confidence?: number; needs_confirmation?: boolean; confirmed_at?: string | null };
+  if (interp.needs_confirmation && !interp.confirmed_at) {
+    // Defence in depth: a plan that needs confirmation never executes unconfirmed (resume sends it back to confirmation).
+    await setStatus(db, run, "paused", { waiting_reason: "Confirm the plan to continue: resume the run, then confirm it.", lease_until: null });
+    return;
+  }
   const policy = await loadPolicy(db, run.workspace_id);
   const { data: steps } = await db.from("agent_run_steps").select("*").eq("run_id", run.id).order("seq");
   const S = (steps ?? []) as (Step & { output: unknown })[];
   const outputs = new Map(S.filter(s => s.status === "succeeded").map(s => [s.seq, s.output]));
-  const confidence = Number((run.interpretation as { confidence?: number }).confidence ?? 1);
+  const confidence = Number(interp.confidence ?? 1);
   if (run.status !== "running") await setStatus(db, run, "running");
   for (const step of S) {
-    if (!["pending", "deferred"].includes(step.status)) continue;
+    const stale = step.status === "running" && (!step.started_at || Date.now() - Date.parse(step.started_at) > STALE_STEP_MS);
+    if (!["pending", "deferred"].includes(step.status) && !stale) continue;
+    // Q53: cancel / pause from the run page (or the workspace switch) takes effect before the next step, not after the whole plan.
+    const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).maybeSingle();
+    if (cur && cur.status !== "running") { run.status = cur.status; return; }
     const tool = TOOL.get(step.tool_id);
     if (!tool) { await db.from("agent_run_steps").update({ status: "failed", error: "unknown tool", finished_at: new Date().toISOString() }).eq("id", step.id); continue; }
     const input = resolveRefs(step.input, outputs);
@@ -205,12 +232,20 @@ export async function executeRun(db: Db, run: Run) {
       await db.from("agent_waits").insert({ run_id: run.id, kind: "quiet_hours", until_at: wake.toISOString() });
       return;
     }
-    await runStep(db, run, step, tool, input, run.user_id, outputs, { policyAuto: tool.risk >= 3 });
+    const r = await runStep(db, run, step, tool, input, run.user_id, outputs, { policyAuto: tool.risk >= 3 });
+    // A retry is scheduled (later steps may depend on this one) or the run was stopped: don't run ahead, don't finish.
+    if (r.outcome === "retry") return;
+    if (r.outcome === "suspend") {
+      if (/kill_switch/.test(r.error)) throw new Error(r.error);   // workerTick pauses the run with the reason
+      if (/^maintenance:/.test(r.error)) await setStatus(db, run, "scheduled_wait", { next_wake_at: new Date(Date.now() + 10 * 60_000).toISOString(), waiting_reason: "Paused for maintenance — resumes automatically", lease_until: null });
+      return;
+    }
   }
   await finish(db, run);
 }
 
-async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<string, unknown>, actor: string, outputs: Map<number, unknown>, opts: { approvalId?: string | null; policyAuto?: boolean } = {}) {
+type StepResult = { outcome: "ok" | "retry" | "suspend" | "fail"; error: string };
+async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<string, unknown>, actor: string, outputs: Map<number, unknown>, opts: { approvalId?: string | null; policyAuto?: boolean } = {}): Promise<StepResult> {
   await db.from("agent_run_steps").update({ status: "running", started_at: new Date().toISOString(), attempt: step.attempt + 1 }).eq("id", step.id);
   try {
     const out = await governedCall(run, step, tool, input, actor, opts);
@@ -222,12 +257,27 @@ async function runStep(db: Db, run: Run, step: Step, tool: Tool, input: Record<s
         title: tool.id === "draft.note" ? String((input as { title?: string }).title) : tool.title, ref_type: tool.id, data: { input, output: out }, link });
       await audit(db, run, `agent.tool.${tool.id}`, { step: step.seq, risk: tool.risk, actor });
     }
+    return { outcome: "ok", error: "" };
   } catch (e) {
     const msg = (e as Error).message;
-    const retryable = !msg.startsWith("refused:") && /timeout|fetch|ECONN|50\d|rate/i.test(msg) && step.attempt + 1 < tool.retries + 1;
-    await db.from("agent_run_steps").update({ status: retryable ? "pending" : "failed", error: msg.slice(0, 500), finished_at: new Date().toISOString() }).eq("id", step.id);
-    await db.from("agent_runs").update({ errors: [{ step: step.seq, tool: tool.id, error: msg.slice(0, 300), at: new Date().toISOString() }], retries: run.retries + (retryable ? 1 : 0) }).eq("id", run.id);
-    if (retryable) await setStatus(db, run, "retrying", { next_wake_at: new Date(Date.now() + 2 ** (step.attempt + 1) * 30_000).toISOString(), lease_until: null });
+    // Q53: one classification (resilience.ts). The old test retried anything containing "rate" (e.g. "generate", "separate") and
+    // failed rate_limited refusals and pause / cancel / kill-switch refusals for good.
+    const kind = classifyStepError(msg);
+    if (kind === "suspend") {
+      // Nothing is wrong with the step: it waits (pending) for resume; a cancelled run's step is skipped.
+      await db.from("agent_run_steps").update({ status: /run_cancelled/.test(msg) ? "skipped" : "pending", error: msg.slice(0, 500), attempt: step.attempt })
+        .eq("id", step.id).neq("status", "succeeded");
+      return { outcome: "suspend", error: msg };
+    }
+    const retryable = kind === "retry" && step.attempt + 1 < tool.retries + 1;
+    // Never downgrade a step a concurrent executor already completed.
+    await db.from("agent_run_steps").update({ status: retryable ? "pending" : "failed", error: msg.slice(0, 500), finished_at: new Date().toISOString() }).eq("id", step.id).neq("status", "succeeded");
+    // Errors are appended (last 20), not overwritten, so the run log keeps the history of a flaky step.
+    const { data: cur } = await db.from("agent_runs").select("errors,retries").eq("id", run.id).maybeSingle();
+    const errors = [...(Array.isArray(cur?.errors) ? cur.errors : []), { step: step.seq, tool: tool.id, error: msg.slice(0, 300), at: new Date().toISOString() }].slice(-20);
+    await db.from("agent_runs").update({ errors, retries: Number(cur?.retries ?? run.retries ?? 0) + (retryable ? 1 : 0) }).eq("id", run.id);
+    if (retryable) { await setStatus(db, run, "retrying", { next_wake_at: new Date(Date.now() + 2 ** (step.attempt + 1) * 30_000).toISOString(), lease_until: null }); return { outcome: "retry", error: msg }; }
+    return { outcome: "fail", error: msg };
   }
 }
 
@@ -253,7 +303,7 @@ async function finish(db: Db, run: Run) {
 async function notifyApprovers(db: Db, run: Run, title: string) {
   const { data: m } = await db.from("workspace_members").select("user_id").eq("workspace_id", run.workspace_id).eq("status", "active").in("role", ["owner", "manager"]);
   const base = run.surface === "provider" ? "/provider/agent" : "/organizer/agent";
-  if (m?.length) await db.from("notifications").insert(m.map((x: { user_id: string }) => ({ user_id: x.user_id, kind: "agent_approval", title: `Gala Agent needs approval: ${title}`, body: run.goal.slice(0, 160), link: `${base}?view=approvals` })));
+  if (m?.length) await db.from("notifications").insert(m.map((x: { user_id: string }) => ({ user_id: x.user_id, kind: "agent_approval", title: `Gala Agent needs approval: ${title}`, body: run.goal.slice(0, 160), link: `${base}?tab=approvals` })));   // both agent pages read ?tab= (was ?view=, which landed on Work)
 }
 function nextAfterQuiet(p: Policy) {
   const d = new Date(); for (let i = 0; i < 48 && inQuietHours(p, d); i++) d.setTime(d.getTime() + 30 * 60_000);
@@ -288,18 +338,27 @@ export async function ask(userId: string, workspaceId: string, surface: "organiz
   try { await assertAgentEnabled(workspaceId); return await askInner(userId, workspaceId, surface, question); }
   catch (e) {
     if (e instanceof AgentBudgetError) return { ok: false as const, error: e.message };
+    if (e instanceof AgentSafetyError) return { ok: false as const, error: e.message };
     if ((e as Error).message.startsWith("refused:")) return { ok: false as const, error: (e as Error).message.replace(/^refused: [a-z_]+ — /, "") };
-    throw e;
+    // Q53: a model outage (after llm.ts retries) is a plain message, not an unhandled server-action exception.
+    console.error("agent_ask_failed", (e as Error).message.slice(0, 200));
+    return { ok: false as const, error: "Gala Agent couldn’t answer just now. Please try again in a moment." };
   }
 }
 async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
-  const catalog = catalogFor(surface, DEFAULT_POLICY).filter(c => c.risk === "R0");
+  // Q53: the workspace's Agent policy allow-list applies to Ask too (it used the default policy, so a blocked tool still answered).
+  const policy = await loadPolicy(svc(), workspaceId);
+  const catalog = catalogFor(surface, policy).filter(c => c.risk === "R0" && c.id !== "mission.wait_for");
   const pick = await chat([{ role: "system", content: `${SAFETY}\nChoose up to 3 read-only tools to answer the question. Return JSON {"calls":[{"tool":string,"input":object}]}. Tools: ${JSON.stringify(catalog)}` },
     { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick" } });
   let calls: { tool: string; input: Record<string, unknown> }[] = [];
   try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
   const results = [];
-  for (const c of calls) { try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, c.input ?? {}, { agent: true }) }); } catch (e) { results.push({ tool: c.tool, error: (e as Error).message.slice(0, 200) }); } }
+  for (const c of calls) {
+    const input = c.input && typeof c.input === "object" && !Array.isArray(c.input) ? c.input : {};
+    try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, input, { agent: true }) }); await auditAsk(userId, workspaceId, surface, c.tool, input, null); }
+    catch (e) { const m = (e as Error).message.slice(0, 200); results.push({ tool: c.tool, error: m }); await auditAsk(userId, workspaceId, surface, c.tool, input, m); }
+  }
   // Conversation layer (playbook §7, Gigvora root cause 3): the last few exchanges with this person in this workspace.
   const { data: prior } = await svc().from("agent_runs").select("goal,result,summary").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "completed")
     .order("created_at", { ascending: false }).limit(6);
@@ -308,6 +367,17 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
   const answer = await chat([{ role: "system", content: `${SAFETY}\nYou are Gala Agent, a helpful assistant inside Gala Dock. Reply conversationally and briefly to greetings and how-to questions. If the person wants something done, say you can propose a run they confirm. Answer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
     ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
   return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
+}
+
+/**
+ * Q53 audit for tool calls outside a run (Ask and watches go straight to agent_invoke, so agent_tool_calls never saw them).
+ * Who, which tool, which argument names and a hash of the values — never the values themselves (PII stays out of the log).
+ */
+async function auditAsk(userId: string, workspaceId: string, surface: string, toolId: string, input: Record<string, unknown>, error: string | null, via = "ask") {
+  const { error: e } = await svc().from("audit_events").insert({ actor_id: userId, actor_type: "agent", workspace_id: workspaceId, event: error ? "agent.tool_failed" : "agent.tool_called",
+    metadata: { tool: toolId, risk: TOOL.get(toolId)?.risk ?? null, via, surface, arg_keys: Object.keys(input).sort(), args_hash: createHash("md5").update(JSON.stringify(input)).digest("hex"),
+      ...(error ? { error: error.replace(/[^\w :.,'’-]/g, "").slice(0, 120) } : {}) } });
+  if (e) console.error("agent_audit_failed", e.message);
 }
 
 // ───────────────────────── routines (§13): natural language → compiled, validated structure ─────────────────────────
@@ -319,11 +389,18 @@ export async function compileRoutine(surface: "organizer" | "provider", text: st
   if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
   const catalog = catalogFor(surface, DEFAULT_POLICY);
   const r = await chat([{ role: "system", content: `${SAFETY}\nCompile the routine into JSON {"title":string,"trigger":{"type":"cron","cron":"m h dom mon dow","tz":"Europe/London"},"goal":string,"actions":[{"tool":string,"input":object,"why":string}],"limits":{"max_steps":number}}.
-Use 5-field cron for schedules. If the routine should run when something happens instead, use {"type":"event","event":<one of ${JSON.stringify(ROUTINE_EVENTS)}>}. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900, meter: meter ? { ...meter, purpose: "compile" } : undefined }).catch(e => { if (e instanceof AgentBudgetError) return { text: "", tokens: 0, budget: e.message }; throw e; });
+Use 5-field cron for schedules. If the routine should run when something happens instead, use {"type":"event","event":<one of ${JSON.stringify(ROUTINE_EVENTS)}>}. Actions may only use these tools: ${JSON.stringify(catalog)}. Never include R5. Actions run with the same approval rules as any run.` }, { role: "user", content: text.slice(0, 1500) }], { json: true, maxTokens: 900, meter: meter ? { ...meter, purpose: "compile" } : undefined }).catch(e => {
+    if (e instanceof AgentBudgetError || e instanceof AgentSafetyError) return { text: "", tokens: 0, budget: e.message };
+    console.error("agent_compile_failed", (e as Error).message.slice(0, 200));
+    return { text: "", tokens: 0, budget: "Gala Agent couldn’t compile that routine just now. Please try again in a moment." };
+  });
   if ("budget" in r) return { ok: false as const, error: String(r.budget) };
   let c: { title?: string; trigger?: { type: string; cron?: string; tz?: string; event?: string }; goal?: string; actions?: { tool: string; input: Record<string, unknown>; why?: string }[]; limits?: Record<string, unknown> };
   try { c = JSON.parse(r.text); } catch { return { ok: false as const, error: "Couldn’t understand that routine — try rephrasing." }; }
-  const actions = (c.actions ?? []).filter(a => catalog.some(x => x.id === a.tool)).slice(0, 8);
+  // Q53: compiled actions are validated like plan steps (schema-valid inputs; mission.wait_for is run-engine only), so a routine
+  // can't be saved with actions that would fail invalid_input on every run.
+  const actions = (Array.isArray(c.actions) ? c.actions : []).filter(a => a && catalog.some(x => x.id === a.tool) && a.tool !== "mission.wait_for"
+    && TOOL.get(a.tool)!.input.safeParse(a.input && typeof a.input === "object" ? a.input : {}).success).slice(0, 8);
   const base = { title: (c.title ?? text).slice(0, 120), goal: (c.goal ?? text).slice(0, 2000), actions, limits: c.limits ?? {} };
   if (c.trigger?.type === "event") {
     if (!c.trigger.event || !(ROUTINE_EVENTS as readonly string[]).includes(c.trigger.event)) return { ok: false as const, error: "Couldn’t work out which event should trigger this." };
@@ -393,32 +470,62 @@ export async function workerTick() {
   }
   // Watches (§12 E): poll read-only tools as the human; fire on condition; exponential backoff; expire. No model calls.
   out.watches = await tickWatches(db);
+  // Q53: a worker that died mid-planning (deploy, crash, timeout) left the run in 'planning', which is never claimed: re-queue
+  // recent ones whose lease has lapsed (older strays are left for a human; re-planning a stale goal would spend credits unasked).
+  const nowIso = new Date().toISOString();
+  await db.from("agent_runs").update({ status: "queued", lease_until: null, waiting_reason: "Resuming after an interrupted planning step" }).eq("status", "planning")
+    .lt("updated_at", new Date(Date.now() - 10 * 60_000).toISOString()).gt("updated_at", new Date(Date.now() - 864e5).toISOString())
+    .or(`lease_until.is.null,lease_until.lt.${nowIso}`);
   // Claim and advance runs.
   const { data: runs } = await db.rpc("claim_agent_runs", { p_limit: 5, p_lease_seconds: 120 });
   for (const run of (runs ?? []) as Run[]) {
+    const r = await advanceRun(db, run);
+    if (r === "planned") out.planned++; else if (r === "executed") out.executed++; else if (r.startsWith("error:")) out.errors.push(`${run.id}: ${r.slice(6)}`);
+  }
+  return out;
+}
+
+/** One claimed run: plan or execute it, and recover from whatever went wrong (exported for the stubbed-model turn-loop specs). */
+export async function advanceRun(db: Db, run: Run): Promise<string> {
     try {
-      if (!run.user_id) { await setStatus(db, run, "failed", { summary: "Run has no requesting user." }); continue; }
+      if (!run.user_id) { await setStatus(db, run, "failed", { summary: "Run has no requesting user." }); return "none"; }
       const { count } = await db.from("agent_run_steps").select("id", { count: "exact", head: true }).eq("run_id", run.id);
-      if (!count && run.status === "queued") { if (!agentConfigured()) { await setStatus(db, run, "waiting_external", { waiting_reason: "Agent model not configured" }); continue; } await planRun(db, run); out.planned++; }
-      else if (!count) { await db.from("agent_runs").update({ lease_until: null }).eq("id", run.id); }   // legacy run without steps: leave untouched
-      else if (["queued", "running", "retrying", "scheduled_wait"].includes(run.status)) { await executeRun(db, run); out.executed++; }
+      if (!count && run.status === "queued") { if (!agentConfigured()) { await setStatus(db, run, "waiting_external", { waiting_reason: "Agent model not configured" }); return "none"; } await planRun(db, run); return "planned"; }
+      else if (!count) { await db.from("agent_runs").update({ lease_until: null }).eq("id", run.id); return "none"; }   // legacy run without steps: leave untouched
+      else if (["queued", "running", "retrying", "scheduled_wait"].includes(run.status)) { await executeRun(db, run); return "executed"; }
+      return "none";
     } catch (e) {
       // Budget stops pause the run (never fail or retry-burn it); the owner sees why and can resume after topping up.
       if ((e as Error).message.startsWith("refused:") && /kill_switch/.test((e as Error).message)) {
         const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).single();
         await setStatus(db, { ...run, status: cur?.status ?? run.status }, "paused", { waiting_reason: (e as Error).message.replace(/^refused: [a-z_]+ — /, "").slice(0, 300), lease_until: null });
-        continue;
+        return "paused";
       }
       if (e instanceof AgentBudgetError) {
         const { data: cur } = await db.from("agent_runs").select("status").eq("id", run.id).single();
         await setStatus(db, { ...run, status: cur?.status ?? run.status }, "paused", { waiting_reason: e.message.slice(0, 300) });
         await db.from("agent_runs").update({ lease_until: null }).eq("id", run.id);
         await db.from("notifications").insert({ user_id: run.user_id, kind: "agent", title: "Gala Agent task paused", body: e.message.slice(0, 300), link: `/${run.surface === "provider" ? "provider" : "organizer"}/agent` });
-        continue;
+        return "paused";
       }
-      out.errors.push(`${run.id}: ${(e as Error).message}`); await db.from("agent_runs").update({ lease_until: null, errors: [{ error: (e as Error).message.slice(0, 300), at: new Date().toISOString() }] }).eq("id", run.id); }
-  }
-  return out;
+      // Q53: a run that failed while planning used to stay "planning" for ever ('planning' is never claimed again). Content filtering
+      // fails it with a plain refusal; a transient error re-queues it with backoff, and after MAX_PLAN_RETRIES it fails clearly.
+      const { data: cur } = await db.from("agent_runs").select("status,retries").eq("id", run.id).maybeSingle();
+      const at = new Date().toISOString(), msg = (e as Error).message;
+      if (cur?.status === "planning") {
+        const tries = Number(cur.retries ?? 0) + 1;
+        const live = { ...run, status: "planning" };
+        if (e instanceof AgentSafetyError || tries >= MAX_PLAN_RETRIES) {
+          const summary = e instanceof AgentSafetyError ? e.message : "Gala Agent couldn’t plan this task because the AI service didn’t respond. Nothing was changed — please try again.";
+          await setStatus(db, live, "failed", { summary, result: summary, finished_at: at, lease_until: null, retries: tries, errors: [{ error: msg.slice(0, 300), at }] });
+        } else {
+          await setStatus(db, live, "queued", { lease_until: null, retries: tries, next_wake_at: new Date(Date.now() + 2 ** tries * 30_000).toISOString(), waiting_reason: "Retrying shortly — the AI service didn’t respond", errors: [{ error: msg.slice(0, 300), at }] });
+        }
+        return "recovered";
+      }
+      await db.from("agent_runs").update({ lease_until: null, errors: [{ error: msg.slice(0, 300), at }] }).eq("id", run.id);
+      return `error:${msg}`;
+    }
 }
 
 // ───────────────────────── watches ─────────────────────────
@@ -429,6 +536,10 @@ const at = (o: unknown, path: string) => path.split(".").filter(Boolean).reduce<
 async function dbClock(db: Db) {
   const { data } = await db.rpc("db_now" as never);
   return data ? new Date(data as unknown as string) : new Date();
+}
+async function surfaceOf(db: Db, workspaceId: string) {
+  const { data } = await db.from("workspaces").select("kind").eq("id", workspaceId).maybeSingle();
+  return data?.kind === "provider" ? "provider" : "organizer";
 }
 async function tickWatches(db: Db) {
   const now = await dbClock(db);
@@ -446,7 +557,7 @@ async function tickWatches(db: Db) {
       const delay = Math.min(w.check_every_minutes * Math.pow(Number(w.backoff_factor), Math.min(checks, 12) - 1), 1440);
       if (fired) {
         await db.from("agent_watches").update({ status: "triggered", triggered_at: now.toISOString(), last_value: value ?? null, last_checked_at: now.toISOString(), checks }).eq("id", w.id);
-        await db.from("notifications").insert({ user_id: w.user_id, kind: "agent", title: `Watch triggered: ${w.title}`.slice(0, 160), body: `Condition met (${w.condition.path} ${w.condition.op}${w.condition.value !== undefined ? ` ${JSON.stringify(w.condition.value)}` : ""}). Current value: ${String(JSON.stringify(value) ?? "").slice(0, 200)}`, link: "/organizer/agent" });
+        await db.from("notifications").insert({ user_id: w.user_id, kind: "agent", title: `Watch triggered: ${w.title}`.slice(0, 160), body: `Condition met (${w.condition.path} ${w.condition.op}${w.condition.value !== undefined ? ` ${JSON.stringify(w.condition.value)}` : ""}). Current value: ${String(JSON.stringify(value) ?? "").slice(0, 200)}`, link: `/${await surfaceOf(db, w.workspace_id)}/agent` });   // Q53: provider watches linked to the organiser page
         await db.from("audit_events").insert({ actor_id: w.user_id, actor_type: "agent", workspace_id: w.workspace_id, event: "agent.watch_triggered", metadata: { watch_id: w.id } });
       } else {
         await db.from("agent_watches").update({ checks, last_value: value ?? null, last_checked_at: now.toISOString(), last_error: null,

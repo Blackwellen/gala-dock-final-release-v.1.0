@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getOrganizer } from "@/lib/data/context";
 import { getProvider } from "@/lib/provider/context";
 import { untyped } from "@/lib/workspace/db";
-import { RunControls } from "./run-controls";
+import { RunControls, RunLiveRefresh } from "./run-controls";
 import { agentRefusalCode, agentRefusalText } from "@/lib/agent/refusals";
 import "@/styles/agent-run.css";
 
@@ -36,6 +36,7 @@ export async function AgentRunDetail({ id, surface }: { id:string; surface:'orga
     <header><p>Run detail</p><h1>{run.goal}</h1><span className="ar-status">{run.status.replaceAll('_',' ')}</span></header>
     <dl className="ar-stats"><div><dt>Progress</dt><dd>{run.progress}%</dd></div><div><dt>Next wake</dt><dd>{stamp(run.next_wake_at)}</dd></div><div><dt>Commitment exposure</dt><dd>{new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(run.financial_exposure_minor)/100)}</dd></div><div><dt>Updated</dt><dd>{stamp(run.updated_at)}</dd></div></dl>
     {run.waiting_reason && <p className="ar-note" role="status">Waiting: {run.waiting_reason}</p>}
+    <RunLiveRefresh status={run.status} />
     <RunControls id={id} status={run.status} canControl={run.user_id===userId||['owner','manager'].includes(ctx.role)} />
     <section><h2>Plan and progress</h2><ol className="ar-steps">{(steps.data as Step[]??[]).map(s=><li key={s.id}><div><b>{s.tool_id?.replaceAll('.',' · ')??`Step ${s.seq}`}</b><span>{s.status.replaceAll('_',' ')} · Attempt {s.attempt}</span></div><small>Started {stamp(s.started_at)} · Finished {stamp(s.finished_at)}</small>{s.error && <p role="alert">{agentRefusalText(s.error)}{agentRefusalCode(s.error) && <small> (code: {agentRefusalCode(s.error)})</small>}</p>}</li>)}</ol>{!steps.data?.length&&<p>This run has no persisted steps yet.</p>}</section>
     {refused.length>0&&<section><h2>Stopped by your safeguards</h2><ul className="ar-outputs">{refused.map(c=><li key={c.id}><b>{c.tool_id.replaceAll('.',' · ')}</b><span>{agentRefusalText(c.refusal)} · {stamp(c.finished_at)}</span></li>)}</ul></section>}

@@ -79,7 +79,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
     {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 4 && venue && <StepOperations venue={venue} back={url(3)} next={url(5)} photosHref={url(5)} readiness={readiness} photos={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)}
       spaces={spaces.length} standing={spaces.reduce((n, x) => n + (x.capacity_standing ?? 0), 0)} />}
-    {step === 5 && venue && <div className="vw vw-s5"><PhotoManager venueId={venue.id} initial={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)} />
+    {step === 5 && venue && <div className="vw vw-s5"><PhotoManager venueId={venue.id} initial={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)} initialAlts={(d.photo_alt ?? undefined) as Record<string, string> | undefined} />
       <div className="vw-foot"><Link href={url(4)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 5 of 6</span>
         <Link href={url(6)} className="ws-btn primary">Next: Review &amp; Publish<ArrowRight aria-hidden="true" /></Link></div></div>}
     {step === 6 && venue && <div className="vw vw-s6">

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import type { MapEl } from "../_components/venue-map";
+import { pruneSeatMaps } from "@/components/venue-plan/inventory";
 import { sellerBookingMode } from "@/lib/provider/seller-country";
 
 const list = (v: FormDataEntryValue | null) => String(v ?? "").split(/[,\n]/).map(s => s.trim()).filter(Boolean).slice(0, 30);
@@ -95,8 +96,11 @@ export async function saveStructure(venueId: string, elements: MapEl[], publish:
   // Refuse rather than silently dropping elements past the limit (the editor would show a plan that was never saved).
   if (!Array.isArray(elements) || elements.length > 2000) return { ok: false, error: "That plan has more than 2,000 elements, which is more than a single venue plan supports. Remove some, then save again." };
   const { db, workspace } = await getProvider();
-  const clean = elements.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  // Q55: seat flags/tiers left on seats that no longer exist are dropped (they skewed the server's seat count).
+  const clean = pruneSeatMaps(elements).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   if (baseVersion === undefined) {
+    // Legacy unchecked entry point: it used to slice to 200 elements and still report success.
+    if (clean.length > 200) return { ok: false, error: "This save path supports up to 200 elements. Reload the map editor and save again." };
     const { data, error } = await db.rpc("provider_save_structure", { p_ws: workspace.id, p_venue: venueId, p_elements: clean.slice(0, 200), p_publish: publish });
     if (error) return { ok: false, error: friendly(error) };
     revalidatePath(`/provider/venues/${venueId}`);

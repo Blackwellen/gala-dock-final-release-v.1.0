@@ -117,3 +117,10 @@ export const ORG_NOTIFICATION_SWITCHES = [
   { key: "agent", label: "Gala Agent updates", detail: "Watch alerts and paused-task notices. Approval requests always arrive." },
 ] as const;
 export const MANDATORY_NOTIFICATIONS = ["Security and sign-in", "Payments, payouts, refunds and invoices", "Disputes and chargebacks", "Legal and policy changes"] as const;
+
+/** Q55 · Customer profile: which field failed validation (an invalid bio, country or language used to show only "Check your details"). */
+export function profileFieldError(field: string): string {
+  return ({ full_name: "Enter your full name (2–120 characters).", phone: "Enter a valid phone number (up to 20 characters).", country: "Choose your country from the list.",
+    language: "Choose a language from the list.", bio: "Keep your bio to 250 characters or fewer.", date_of_birth: "Enter your date of birth as a full date." } as Record<string, string>)[field]
+    ?? "Check your details and try again.";
+}

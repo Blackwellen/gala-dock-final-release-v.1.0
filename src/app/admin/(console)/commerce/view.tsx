@@ -54,7 +54,7 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
     </>} />;
   const tabs = <TabBar active={tab} tabs={[{ key: "marketplace", label: "Marketplace", href: base("marketplace") }, { key: "ticketing", label: "Ticketing", href: base("ticketing") }, { key: "payouts", label: "Payouts", href: base("payouts") },
     { key: "subscriptions", label: "Subscriptions", href: base("subscriptions") }, { key: "exceptions", label: "Exceptions", href: base("exceptions") },
-    { key: "pauses", label: "Payout pauses", href: "/admin/commerce/payout-pauses" }]} />;
+    { key: "pauses", label: "Payout pauses", href: "/admin/commerce/payout-pauses" }, { key: "advertising", label: "Advertising", href: "/admin/commerce/advertising" }]} />;
 
   // ── Exceptions & queues ──
   const failed = (l: Tx[]) => l.filter(t => t.status === "failed" && t.kind !== "payout" && t.source !== "subscription");
@@ -113,7 +113,8 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
   const st = s("st");
   const list = cur.filter(t => matches(t, f) && (!st || statusOf(t).key === st) && (tab !== "exceptions" || failed([t]).length || t.details.held || t.details.disputed || subIssues([t]).length || payoutFails([t]).length || t.kind === "refund") && excFilter(t)
     && (!q || `${t.description} ${t.counterparty} ${t.stripe_ref ?? ""} ${t.details.reference ?? ""}`.toLowerCase().includes(q)));
-  const lp = (extra: Record<string, string | number>) => { const u = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [k, v] of Object.entries(extra)) { if (v === "" || v === "all") u.delete(k); else u.set(k, String(v)); } return `/admin/commerce?${u}`; };
+  const lp = (extra: Record<string, string | number>) => { const u = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [k, v] of Object.entries(extra)) { if (v === "" || (v === "all" && k !== "f")) u.delete(k); else u.set(k, String(v)); } return `/admin/commerce?${u}`; };
+  // Q51: "All" deleted ?f, so on the Ticketing / Subscriptions tabs (whose default filter isn't "all") the All chip did nothing.
 
   return <div className="adb adc">
     {head}{tabs}{kpis}

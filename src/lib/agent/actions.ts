@@ -68,14 +68,28 @@ async function ownRun(runId: string) {
 export async function confirmPlan(runId: string): Promise<R> {
   const o = await ownRun(runId); if (!o) return { ok: false, error: "Run not found." };
   if (o.run.status !== "awaiting_plan_confirmation") return { ok: false, error: "This plan isn’t waiting for confirmation." };
-  await untyped(createAdminClient() as never).from("agent_runs").update({ status: "running", next_wake_at: null, updated_at: new Date().toISOString() }).eq("id", runId);
+  const db = untyped(createAdminClient() as never);
+  // Q53: who confirmed and when is part of the run (the runtime refuses to execute a plan that needs confirmation without it) and
+  // of the audit trail.
+  const { data: cur } = await db.from("agent_runs").select("interpretation").eq("id", runId).maybeSingle();
+  const at = new Date().toISOString();
+  const { error } = await db.from("agent_runs").update({ status: "running", next_wake_at: null, updated_at: at,
+    interpretation: { ...((cur?.interpretation as object | null) ?? {}), confirmed_at: at, confirmed_by: o.userId } }).eq("id", runId).eq("status", "awaiting_plan_confirmation");
+  if (error) return { ok: false, error: "This plan isn’t waiting for confirmation." };
+  await db.from("audit_events").insert({ actor_id: o.userId, actor_type: "user", workspace_id: o.run.workspace_id, agent_run_id: runId, event: "agent.plan_confirmed", metadata: {} });
   bump(); kick(); return { ok: true };
 }
 export async function controlRun(runId: string, action: "cancel" | "pause" | "resume"): Promise<R> {
   if (!["cancel", "pause", "resume"].includes(action)) return { ok: false, error: "Unknown run action." };
   const o = await ownRun(runId); if (!o) return { ok: false, error: "Run not found." };
-  const to = action === "cancel" ? "cancelled" : action === "pause" ? "paused" : "queued";
   const db = untyped(createAdminClient() as never);
+  // Q53: resuming a paused plan that was never confirmed returns it to confirmation (agent_control_run does the same).
+  let to = action === "cancel" ? "cancelled" : action === "pause" ? "paused" : "queued";
+  if (action === "resume") {
+    const { data: cur } = await db.from("agent_runs").select("interpretation").eq("id", runId).maybeSingle();
+    const i = (cur?.interpretation ?? {}) as { needs_confirmation?: boolean; confirmed_at?: string | null };
+    if (i.needs_confirmation && !i.confirmed_at) to = "awaiting_plan_confirmation";
+  }
   const { error } = await db.from("agent_runs").update({ status: to, lease_until: null, updated_at: new Date().toISOString(), ...(action === "cancel" ? { finished_at: new Date().toISOString() } : {}) }).eq("id", runId);
   if (error) return { ok: false, error: "That isn’t possible from the run’s current state." };
   if (action === "cancel") await db.from("agent_approvals").update({ status: "cancelled" }).eq("run_id", runId).eq("status", "pending");
@@ -182,6 +196,6 @@ export async function startBatch(workspaceId: string, title: string, tool: strin
   const { error: se } = await db.from("agent_run_steps").insert(inputs.map((input, i) => ({ run_id: run.id, seq: i + 1, tool_id: tool, input, reason: `Record ${i + 1} of ${inputs.length}`, idempotency_key: `${run.id}:${i + 1}` })));
   if (se) return { ok: false, error: "Couldn’t create the batch steps." };
   await db.from("agent_runs").update({ status: "planning" }).eq("id", run.id);
-  await db.from("agent_runs").update({ status: "awaiting_plan_confirmation", interpretation: { summary: `${t.title} for ${inputs.length} records`, scope: [tool] } }).eq("id", run.id);
+  await db.from("agent_runs").update({ status: "awaiting_plan_confirmation", interpretation: { summary: `${t.title} for ${inputs.length} records`, scope: [tool], needs_confirmation: true } }).eq("id", run.id);
   bump(); kick(); return { ok: true, data: run.id };
 }

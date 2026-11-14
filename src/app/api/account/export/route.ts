@@ -22,7 +22,7 @@ export async function GET() {
     q("tickets", db.from("tickets").select("code,status,order_ref,attendee_name,attendee_email,price_paid,created_at,events(name,starts_at)").eq("holder_id", user.id)),
     q("ticket_waitlists", db.from("ticket_waitlist").select("event_id,tier_id,status,created_at").eq("user_id", user.id)),
     q("orders", db.from("checkout_orders").select("order_ref,kind,status,amount,fee,currency,lines,created_at").eq("buyer_id", user.id)),
-    q("reviews", db.from("reviews").select("rating,ratings,body,provider_response,created_at").eq("user_id", user.id)),
+    q("reviews", db.rpc("my_reviews").select("rating,ratings,body,provider_response,created_at")),   // Q51: self-scoped (no user_id column grant)
     q("saved", db.from("saved_items").select("item_key,created_at").eq("user_id", user.id)),
     q("recently_viewed", db.from("recently_viewed").select("item_key,viewed_at").eq("user_id", user.id)),
     q("messages_sent", db.from("conversation_messages").select("conversation_id,body,created_at").eq("sender_id", user.id).order("created_at").limit(5000)),

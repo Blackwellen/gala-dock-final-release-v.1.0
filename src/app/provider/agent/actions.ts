@@ -8,11 +8,21 @@ import { isUuid } from "@/lib/workspace/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { routineNextRun } from "@/lib/agent/schedule-db";
 import { FAR_FUTURE_ISO } from "@/lib/agent/schedule";
+import { decideApproval as decideRunApproval } from "@/lib/agent/actions";
 
 /** Approve a proposal, then perform it with the approver's own permissions (RLS + role checks in each RPC). Reject leaves everything unchanged. */
 export async function decideApproval(id: string, approve: boolean): Promise<ActionResult> {
   if (!isUuid(id)) return { ok: false, error: "Approval not found." };
   const { db, workspace } = await getProvider();
+  // Q53: approvals raised by a governed run step (quote.send, opportunity.respond, venue.hold …) are executed by the runtime as
+  // the approver, and the run continues. This page only knows the chat proposal actions, so it used to record those approvals as
+  // "Couldn’t complete: tool_not_permitted" with executed_at set — the step stayed waiting for approval and the run never resumed.
+  const { data: pre } = await db.from("agent_approvals").select("step_id,workspace_id").eq("id", id).maybeSingle();
+  if (pre?.step_id && pre.workspace_id === workspace.id) {
+    const r = await decideRunApproval(id, approve);
+    revalidatePath("/provider/agent");
+    return r.ok ? { ok: true, message: approve ? "Approved — Gala Agent carried it out as you and the run continues" : "Declined — nothing was changed; the run continues without it" } : { ok: false, error: r.error };
+  }
   const { data: a, error } = await db.rpc("decide_agent_approval", { p_approval: id, p_approve: approve });
   if (error) return { ok: false, error: friendly(error) };
   revalidatePath("/provider/agent");

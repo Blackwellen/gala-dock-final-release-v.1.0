@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
-import { chat, SAFETY, agentConfigured, dataBlock, AgentBudgetError } from "@/lib/agent/llm";
+import { chat, SAFETY, agentConfigured, dataBlock, AgentBudgetError, AgentSafetyError } from "@/lib/agent/llm";
 import { listWorkspaceAccess } from "@/lib/auth";
 import { buildContext } from "@/lib/agent/context";
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   if (eventId) { const { data: ev } = await supabase.from("events").select("workspace_id").eq("id", eventId).maybeSingle(); workspaceId = (ev?.workspace_id as string | null) ?? null; }
   if (!workspaceId) { const { data: prof } = await supabase.from("profiles").select("last_workspace_id").eq("id", user.id).maybeSingle(); workspaceId = access.find(w => w.id === prof?.last_workspace_id)?.id ?? access[0]?.id ?? null; }
   if (!workspaceId || !access.some(w => w.id === workspaceId)) return NextResponse.json({ error: "Gala Agent needs an Organizer workspace." }, { status: 403 });
-  const context = await buildContext(supabase, user.id, scope, eventId);
+  const context = await buildContext(supabase, user.id, scope, eventId, workspaceId);   // Q53: only the workspace that pays
   if (eventId && !context) return NextResponse.json({ error: "That event isn't available to you." }, { status: 404 });
   try {
     const { text } = await chat([
@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ answer: text || "I couldn't find enough information to answer that." });
   } catch (e) {
     if (e instanceof AgentBudgetError) return NextResponse.json({ error: e.message, code: "credits" }, { status: 402 });
+    if (e instanceof AgentSafetyError) return NextResponse.json({ error: e.message, code: "refused" }, { status: 422 });
     return NextResponse.json({ error: "Gala Agent couldn't respond right now. Please try again." }, { status: 502 });
   }
 }

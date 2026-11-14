@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import { untyped } from "@/lib/workspace/db";
-import { planSeats } from "@/components/venue-plan/inventory";
+import { planSeats, pruneSeatMaps } from "@/components/venue-plan/inventory";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 
 const MSG: Record<string, string> = {
@@ -37,7 +37,8 @@ export async function saveEventMap(eventId: string, overlay: MapEl[], publish: b
   const ctx = await getOrganizer();
   let seats;
   try { seats = planSeats(overlay); } catch (e) { return { ok: false, error: (e as Error).message }; }
-  const clean = overlay.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  // Q55: flags/tiers on seats that no longer exist are dropped, so the server's seat count (map_el_seats) matches the inventory.
+  const clean = pruneSeatMaps(overlay).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   const { data, error } = await (untyped(ctx.supabase) as unknown as Rpc).rpc("event_map_save", { p_event: eventId, p_overlay: clean, p_seats: seats, p_publish: publish, p_base_version: Math.max(0, Math.round(baseVersion)) });
   if (error) {
     const stale = /stale_version:(\d+)/.exec(error.message);
@@ -104,7 +105,8 @@ export async function saveEventPlan(eventId: string, overlay: MapEl[], publish: 
   const ctx = await getOrganizer();
   let seats;
   try { seats = planSeats(overlay); } catch (e) { return { ok: false, error: (e as Error).message }; }
-  const clean = overlay.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  // Q55: flags/tiers on seats that no longer exist are dropped, so the server's seat count (map_el_seats) matches the inventory.
+  const clean = pruneSeatMaps(overlay).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   const { data, error } = await (untyped(ctx.supabase) as unknown as Rpc).rpc("organizer_save_event_plan", { p_event: eventId, p_structure: { format: "plan-v2" }, p_overlay: clean, p_seats: seats, p_publish: publish });
   if (error) return { ok: false, error: explain(error) };
   revalidatePath(`/organizer/events/${eventId}`);

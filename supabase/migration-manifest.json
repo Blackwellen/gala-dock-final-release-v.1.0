@@ -893,6 +893,109 @@
           "revoke"
         ]
       }
+    },
+    {
+      "file": "202611147621_profile_bughunt.sql",
+      "sha256": "51479671cbcf646bbcc61598c204a12efa30a4abcf7f3e8b7f02fde7455543ef",
+      "lane": "bughunt-profiles",
+      "reviewer": "claude-bughunt-profiles",
+      "reviewedAt": "2026-11-14T20:39:03.200Z",
+      "exercise": "scripts/db/exercises/202611147621_profile_bughunt.sql",
+      "waivers": [],
+      "rollback": "create-or-replace respond_to_review from 202610250004; drop trigger trg_review_notify_provider; new columns/functions unused by older builds; revoke execute on listing_trust from anon",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611148531_agent_bughunt_scope.sql",
+      "sha256": "c45cdd5d32a18cdc6ebbb8e1aa7ff29b29ff60c419ef19a45c854597c5e1eac9",
+      "lane": "bughunt-agent",
+      "reviewer": "claude-q53",
+      "reviewedAt": "2026-11-14T20:43:51.634Z",
+      "exercise": "scripts/db/exercises/202611148531_agent_bughunt_scope.sql",
+      "waivers": [],
+      "rollback": "Re-create agent_invoke and agent_control_run from 202610294034 lineage (bodies without the scope/confirmation lines); delete the three agent_run state_transitions rows; drop function agent_scope_check.",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611148761_ads_bughunt.sql",
+      "sha256": "b94951c6ede4a8dd66424ba1eb45b5bb1a2ccc089ca6cd863eee017f261f1fd2",
+      "lane": "bughunt-ads",
+      "reviewer": "claude-bughunt-ads",
+      "reviewedAt": "2026-11-14T20:48:52.804Z",
+      "exercise": "scripts/db/exercises/202611148761_ads_bughunt.sql",
+      "waivers": [],
+      "rollback": "create-or-replace ad_candidates/serve_ad_slots/record_ad_view/record_ad_click/create_promotion_boost/create_boost_payment_order/trg_boost_payment_state/boost_report from 202610291014 + 202610270023; new columns/functions unused by older builds; boost_products copy reversible",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "bulk_update"
+        ]
+      }
+    },
+    {
+      "file": "202611148762_ads_vat_partial_refunds.sql",
+      "sha256": "65e7ab828064226060caf75135e23fa18bbe4a33cde45e8c465fbd5d669b5ee5",
+      "lane": "bughunt-ads",
+      "reviewer": "claude-bughunt-ads",
+      "reviewedAt": "2026-11-14T21:01:02.284Z",
+      "exercise": "scripts/db/exercises/202611148762_ads_vat_partial_refunds.sql",
+      "waivers": [],
+      "rollback": "create-or-replace admin_vat_summary from 202610295002",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611149511_admin_bughunt.sql",
+      "sha256": "25b3ed16af593773025f8ae50012620faaff06e013feb1d79459b40f4e8e63d7",
+      "lane": "bughunt-admin",
+      "reviewer": "claude-q51",
+      "reviewedAt": "2026-11-14T20:55:02.738Z",
+      "exercise": "scripts/db/exercises/202611149511_admin_bughunt.sql",
+      "waivers": [],
+      "rollback": "create-or-replace contact_profile/moderate_review_response/admin_rollback_setting/admin_unlink_case_record/admin_user_stats from their previous bodies (202610280021 lineage, 202611147621, Q31 S2, Q31 support links, Q59); recreate enforcement_actions_read with the inline reviews subquery (202610293002); drop functions my_reviews, review_is_mine (unused by older builds)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611149512_reviews_column_grants.sql",
+      "sha256": "3425fe9e7626645c4fca541db21ab0b3c4bc671fb5c4018012d7589ab8dfd0ea",
+      "lane": "bughunt-admin",
+      "reviewer": "claude-q51",
+      "reviewedAt": "2026-11-14T20:55:15.080Z",
+      "exercise": "scripts/db/exercises/202611149512_reviews_column_grants.sql",
+      "waivers": [],
+      "rollback": "grant select on public.reviews to authenticated; (column grants become redundant). APPLY ONLY AFTER the build reading own reviews via my_reviews() is deployed.",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611149551_q55_builders_seat_capacity.sql",
+      "sha256": "f4c38222d65659f3a560373ca65b56e62bf7a7aea9d1539a001180960cfbd9c3",
+      "lane": "bughunt-builders",
+      "reviewer": "claude-q55",
+      "reviewedAt": "2026-11-14T20:52:29.463Z",
+      "exercise": "scripts/db/exercises/202611149551_q55_builders_seat_capacity.sql",
+      "waivers": [],
+      "rollback": "create-or-replace map_el_seats with the 202610291037 body (table branch without the blocked-flag subtraction); no data to revert",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
     }
   ],
   "recordedOnly": [

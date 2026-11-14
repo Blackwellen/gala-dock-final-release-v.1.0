@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { untyped } from "@/lib/workspace/db";
 import { PenLine, ShieldCheck, Info, CheckCircle2, MapPin, CalendarDays, ArrowRight, MessageSquareText, CircleCheck, Lightbulb, ImageIcon, Star, FileText } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
 import { ReviewForm, ReviewRowMenu, SubmittedMenu } from "@/components/customer/reviews-client";
 import { requestTime } from "@/lib/workspace/format";
+import { publicReply } from "@/lib/profiles/rules";
 
 export const metadata = { title: "Reviews" };
 const CAT: Record<string, [string, string]> = { venue: ["Venue", "purple"], food: ["Catering", "red"], drinks: ["Drinks & Bar", "amber"], entertainment: ["Entertainment", "green"], media: ["Photography", "blue"], styling: ["Flowers & Styling", "red"], transport: ["Transport", "blue"], staff: ["Staff", "gray"], production: ["Production", "green"], hire: ["Hire", "amber"], extras: ["Extras", "gray"] };
@@ -17,7 +19,8 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
   const now = new Date().toISOString();
   const [{ data: items }, { data: mine }] = await Promise.all([
     ctx.supabase.from("build_items").select("id,title,category,image,status,listing_id,event:events!inner(id,name,starts_at,ends_at,location,city,owner_id)").eq("event.owner_id", ctx.user.id).in("status", REVIEWABLE).lt("event.starts_at", now),
-    ctx.supabase.from("reviews").select("id,rating,ratings,body,created_at,photos,build_item_id,listing_id,build_items(title,category,image)").eq("user_id", ctx.user.id).order("created_at", { ascending: false }),
+    // Q51: reviews.user_id is not column-granted to signed-in users; own reviews come from the self-scoped my_reviews().
+    untyped(ctx.supabase).rpc("my_reviews").select("id,rating,ratings,body,created_at,photos,build_item_id,listing_id,provider_response,build_items(title,category,image)").order("created_at", { ascending: false }),
   ]);
   const reviewed = new Set((mine ?? []).map(r => r.build_item_id));
   const all = ((items ?? []) as unknown as Item[]).filter(i => (i.event.ends_at ?? i.event.starts_at ?? now) < now);
@@ -28,7 +31,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
   const editing = sp.edit ? (mine ?? []).find(r => r.id === sp.edit) : null;
   const editItem = editing ? all.find(i => i.id === editing.build_item_id) : null;
   const target = editItem ?? sel;
-  const subs = (mine ?? []) as unknown as { id: string; rating: number; ratings: Record<string, number>; body: string; created_at: string; photos: string[]; build_item_id: string; build_items: { title: string; category: string; image: string } | null }[];
+  const subs = (mine ?? []) as unknown as { id: string; rating: number; ratings: Record<string, number>; body: string; created_at: string; photos: string[]; build_item_id: string; provider_response: string | null; build_items: { title: string; category: string; image: string } | null }[];
   const stars = (n: number) => <span className="rv-stars" role="img" aria-label={`${n} out of 5`}>{[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className={i <= n ? "on" : ""} />)}</span>;
 
   return <div className="rv">
@@ -45,7 +48,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
           </li>; })}</ol>
           {!pending.length && <div className="ce-card rv-empty"><CircleCheck size={28} /><b>You&apos;re all caught up</b><p>When a booking is completed you can review it here.</p></div>}
           {target && <ReviewForm key={target.id + (editing?.id ?? "")} item={{ id: target.id, title: target.title, image: target.image, location: (target.listing_id && loc.get(target.listing_id)) || target.event.location || target.event.city, date: day(target.event.starts_at), category: (CAT[target.category] ?? [target.category])[0] }} initial={editing ? { ratings: { overall: editing.rating, ...(editing.ratings as Record<string, number>) }, body: editing.body, photos: ((editing.photos ?? []) as string[]).filter(x => typeof x === "string") } : null} draft={sp.draft === "1"} />}
-        </> : <ol className="rv-subs">{subs.map(r => { const [cl, ct] = CAT[r.build_items?.category ?? ""] ?? ["Booking", "gray"]; return <li key={r.id} className="ce-card rv-sub-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={r.build_items?.image || "/assets/gd/oe-neon.webp"} alt="" /><div className="k-grow"><div className="k-row" style={{ gap: 10 }}><b>{r.build_items?.title ?? "Booking"}</b><span className={`rv-cat ${ct}`}>{cl}</span></div><div className="k-row" style={{ gap: 10, margin: "6px 0" }}>{stars(r.rating)}<small>{day(r.created_at)}</small></div><p>{r.body}</p></div><SubmittedMenu id={r.id} editable={new Date(r.created_at).getTime() > requestTime() - 30 * 864e5} /></li>; })}{!subs.length && <li className="ce-card rv-empty"><b>No reviews yet</b><p>Your published reviews will appear here.</p></li>}</ol>}
+        </> : <ol className="rv-subs">{subs.map(r => { const [cl, ct] = CAT[r.build_items?.category ?? ""] ?? ["Booking", "gray"]; return <li key={r.id} className="ce-card rv-sub-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={r.build_items?.image || "/assets/gd/oe-neon.webp"} alt="" /><div className="k-grow"><div className="k-row" style={{ gap: 10 }}><b>{r.build_items?.title ?? "Booking"}</b><span className={`rv-cat ${ct}`}>{cl}</span></div><div className="k-row" style={{ gap: 10, margin: "6px 0" }}>{stars(r.rating)}<small>{day(r.created_at)}</small></div><p>{r.body}</p>{publicReply(r) && <blockquote style={{ margin: "8px 0 0", padding: "8px 10px", borderLeft: "3px solid #c7d2fe", background: "#f8fafc", borderRadius: 6 }}><b style={{ fontSize: 12 }}>Provider reply</b><p style={{ margin: "4px 0 0", whiteSpace: "pre-line" }}>{publicReply(r)}</p></blockquote>}</div><SubmittedMenu id={r.id} editable={new Date(r.created_at).getTime() > requestTime() - 30 * 864e5} /></li>; })}{!subs.length && <li className="ce-card rv-empty"><b>No reviews yet</b><p>Your published reviews will appear here.</p></li>}</ol>}
       </div>
       <aside className="rv-side">
         <section className="ce-card rv-agent"><div className="k-row" style={{ gap: 10 }}><FileText size={24} className="pw-spark" /><b>Need a starting point?</b></div><p>Start from a short template with your booking details filled in, then make it your own.</p><Link className="k-btn outline rv-help" href={`/account/reviews?${target ? `item=${target.id}&` : ""}draft=1#write`}>Start from a template <ArrowRight size={15} /></Link></section>

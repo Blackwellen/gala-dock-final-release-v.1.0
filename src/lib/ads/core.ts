@@ -11,12 +11,17 @@ export type FeedItem<T, S> = { kind: "organic"; item: T; rank: number } | { kind
 
 /**
  * Interleave sponsored slots after organic positions (1-based), e.g. [4, 8] → after the 4th and 8th organic result.
- * Organic order and ranks are preserved exactly; a sponsored subject that also appears organically is dropped from the
- * sponsored layer (never duplicated, never promoted inside the organic list).
+ * Organic order and ranks are preserved exactly (never promoted inside the organic list). A sponsored subject whose organic copy is
+ * already within the slot window (the first max(positions) organic results) is dropped, so an ad never repeats what is on screen.
+ * Q56: it used to drop a sponsored subject that appeared ANYWHERE organically — and an unfiltered Discover list contains every public
+ * event, so the paid in-feed slot almost never rendered. A copy further down the list (labelled once as Sponsored above it) is fine.
  */
+export const slotWindow = (positions: number[]) => Math.max(0, ...positions.filter(p => Number.isInteger(p) && p > 0));
+/** Organic ids within the slot window: pass them to serve_ad_slots as p_exclude so no token is issued for an ad that can't render. */
+export const windowIds = <T extends { id: string }>(organic: T[], positions: number[]) => organic.slice(0, slotWindow(positions)).map(o => o.id);
 export function interleave<T extends { id: string }, S extends { subjectId: string }>(organic: T[], sponsored: S[], positions: number[]): FeedItem<T, S>[] {
-  const organicIds = new Set(organic.map(o => o.id));
-  const queue = sponsored.filter(s => !organicIds.has(s.subjectId));
+  const shown = new Set(windowIds(organic, positions));
+  const queue = sponsored.filter(s => !shown.has(s.subjectId));
   const at = new Set(positions.filter(p => Number.isInteger(p) && p > 0));
   const out: FeedItem<T, S>[] = [];
   organic.forEach((item, i) => {

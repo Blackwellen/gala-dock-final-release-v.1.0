@@ -30,7 +30,7 @@ export default async function MacrosPage(props: PageProps<"/admin/support/macros
   const edit = typeof sp.edit === "string" ? macros.find(m => m.id === sp.edit) ?? null : null;
   const canSla = permissions.has("settings");
   return <div className="adb add">
-    <Head back={{ href: "/admin/support", label: "Support" }} title="Macros and SLAs" subtitle="Reusable replies for common cases, and the response and resolution targets each priority is measured against. The resolution clock pauses while a case waits on the customer." />
+    <Head back={{ href: "/admin/support", label: "Back to Support" }} title="Macros and SLAs" subtitle="Reusable replies for common cases, and the response and resolution targets each priority is measured against. The resolution clock pauses while a case waits on the customer." />
     <div className="add-split">
       <section className="adb-panel"><div className="adb-sec-h"><h2>Macros</h2><small>{macros.length} active</small></div>
         <table className="adb-table" tabIndex={0} data-pwa-scroll-region="true"><thead><tr><th>Macro</th><th>Type</th><th>Then</th><th className="r">Used</th><th /></tr></thead>

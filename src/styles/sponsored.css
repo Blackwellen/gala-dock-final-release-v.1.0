@@ -12,3 +12,12 @@
 .gd-sp-body small { font-size: 12px; color: #6b7280; display: inline-flex; gap: 4px; align-items: center; }
 .gd-sp-feed { grid-column: 1 / -1; }
 @media (max-width: 560px) { .gd-sp-grid { grid-template-columns: 1fr; } }
+/* Q56 "Why am I seeing this?" disclosure (outside the ad link). */
+.gd-sp-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; }
+.gd-sp-row-top .gd-sp-row-h { margin: 0; }
+.gd-sp-why { font-size: 12px; color: #4b5563; }
+.gd-sp-why summary { cursor: pointer; text-decoration: underline; text-underline-offset: 2px; list-style: none; }
+.gd-sp-why summary::-webkit-details-marker { display: none; }
+.gd-sp-why summary:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; border-radius: 4px; }
+.gd-sp-why p { margin: 6px 0 0; max-width: 60ch; line-height: 1.45; }
+.gd-sp-card > .gd-sp-why { padding: 0 8px 8px; }

@@ -9,6 +9,7 @@ import { requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager } from "../../_b/kit";
 import { ParamSelect } from "../../_b/ui";
 import { stamp, ago } from "../../_b/format";
+import { must } from "../../_a/lib";
 import { retryJob, cancelJob, replayOutbox } from "../../_d/actions";
 import "@/styles/admin-b.css";
 import "@/styles/admin-d.css";
@@ -35,19 +36,21 @@ export default async function JobsPage(props: PageProps<"/admin/health/jobs">) {
   const tab = s("tab") === "outbox" ? "outbox" : "jobs";
   const status = s("status") || (tab === "jobs" ? "dead" : ""), kind = s("kind"), page = Math.max(1, Number(s("page")) || 1), per = 25;
   const db = untyped(admin.db as never), now = requestTime();
-  const [{ data: ov }, list] = await Promise.all([
+  const [ovRes, list] = await Promise.all([
     db.rpc("admin_ops_overview"),
     tab === "jobs" ? db.rpc("admin_job_list", { p_status: status === "all" ? null : status, p_kind: kind || null, p_limit: per, p_offset: (page - 1) * per })
       : db.rpc("admin_outbox_list", { p_unpublished: status === "unpublished", p_type: kind || null, p_limit: per, p_offset: (page - 1) * per }),
   ]);
-  const o = (ov ?? { jobs: {}, by_kind: [] }) as Overview;
-  const jobs = tab === "jobs" ? (list.data ?? []) as Job[] : [], evs = tab === "outbox" ? (list.data ?? []) as Ev[] : [];
+  // Q51: RPC errors used to render as "No dead-lettered jobs — every job either succeeded…".
+  const o = (must<Overview | null>(ovRes) ?? { jobs: {}, by_kind: [] }) as Overview;
+  const listData = must<unknown[] | null>(list) ?? [];
+  const jobs = tab === "jobs" ? listData as Job[] : [], evs = tab === "outbox" ? listData as Ev[] : [];
   const total = Number((tab === "jobs" ? jobs[0]?.total : evs[0]?.total) ?? 0);
   const href = (p: number) => `/admin/health/jobs?${new URLSearchParams({ ...(tab === "outbox" ? { tab } : {}), ...(status ? { status } : {}), ...(kind ? { kind } : {}), page: String(p) })}`;
   const lag = o.outbox_oldest_unpublished ? Math.round((now - new Date(o.outbox_oldest_unpublished).getTime()) / 1000) : 0;
 
   return <div className="adb add">
-    <Head back={{ href: "/admin/health", label: "System health" }} title="Jobs and dead letters" subtitle="Background work: the job queue, dead-lettered jobs and the domain event outbox. Retrying or replaying never re-runs a consumer that already processed an event." />
+    <Head back={{ href: "/admin/health", label: "Back to System health" }} title="Jobs and dead letters" subtitle="Background work: the job queue, dead-lettered jobs and the domain event outbox. Retrying or replaying never re-runs a consumer that already processed an event." />
     <section className="add-kpis">
       <Kpi icon={Skull} tone="red" label="Dead-lettered" value={o.dead} note={o.dead ? "Needs a decision" : "None"} />
       <Kpi icon={Hourglass} tone="amber" label="Waiting to retry" value={o.jobs.failed ?? 0} note={`${o.stuck_running} stuck · ${o.overdue_queued} overdue`} />

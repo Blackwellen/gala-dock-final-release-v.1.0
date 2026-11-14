@@ -51,7 +51,7 @@ export default async function RiskReviewPage(props: PageProps<"/admin/trust/risk
   const domains = [...new Set(signals.map(x => x.domain))].sort();
 
   return <div className="adb ads add">
-    <Head back={{ href: "/admin/trust", label: "Trust & Safety" }} title="Risk review" subtitle="Fraud and abuse signals, reversible holds and appeals. Detectors never ban, delete or move money — you decide, with a reason that is audited." />
+    <Head back={{ href: "/admin/trust", label: "Back to Trust & Safety" }} title="Risk review" subtitle="Fraud and abuse signals, reversible holds and appeals. Detectors never ban, delete or move money — you decide, with a reason that is audited." />
     <section className="add-kpis">
       <Kpi icon={Radar} tone="red" label="Open signals" value={open.length} note={`${open.filter(x => x.severity === "hold" || x.severity === "critical").length} high severity`} />
       <Kpi icon={Hand} tone="amber" label="Active holds" value={active.length} note={`${active.filter(h => h.kind === "payout").length} payout · ${active.filter(h => h.kind === "step_up").length} step-up`} />

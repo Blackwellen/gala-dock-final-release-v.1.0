@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isContentFilter, isRetryableStatus, retryDelayMs } from "./resilience";
 
 /**
  * Azure OpenAI chat completion with quality routing and metering (release spec §15–20). Server-only; keys never reach the browser.
@@ -52,32 +53,69 @@ export async function chat(messages: ChatMessage[], opts: { model?: "mini" | "na
   // Provider rate budgets (playbook §7): every attempt is counted in the database before the call; a spent deployment is skipped in
   // favour of the next one, and when all are spent the caller gets a plain "busy" message (AgentBudgetError: the worker pauses the
   // run, it never queues a retry). Admins are alerted at 80 % (ai_provider_attempt).
+  // Q53: transient failures (timeouts, 408/409/429/5xx, network) are retried with bounded backoff — Retry-After when Azure sends
+  // one — and then fail over to the next deployment, all inside one overall deadline so a worker tick (maxDuration 60 s) or an
+  // ask request never hangs. Content filtering is a refusal (AgentSafetyError), not an outage: it is never retried.
   const order: Tier[] = [tier, ...(["standard", "fast", "deep"] as Tier[]).filter(t => t !== tier && t !== "deep")];
-  let use: Tier | null = null;
-  for (const t of order) {
-    if (!deployment(t) || (use && deployment(use) === deployment(t))) continue;
-    const { data: okBudget, error: budgetError } = await admin.rpc("ai_provider_attempt" as never, { p_provider: `azure:${String(deployment(t)).toLowerCase().replace(/[^a-z0-9._-]/g, "-")}` } as never);
-    if (budgetError || okBudget === true) { use = t; break; }   // a budget-store error never blocks the answer (fail open, logged)
-  }
-  if (!use) throw new AgentBudgetError("Gala Agent is very busy right now and has reached today’s limit with our AI provider. Please try again later — nothing was charged.");
   const base = process.env.AZURE_OPENAI_ENDPOINT!.replace(/\/+$/, "").split("/openai")[0];
-  const res = await fetch(`${base}/openai/deployments/${deployment(use)}/chat/completions?api-version=${process.env.AZURE_OPENAI_API_VERSION ?? "2024-10-21"}`, {
-    method: "POST",
-    headers: { "api-key": process.env.AZURE_OPENAI_API_KEY!, "content-type": "application/json" },
-    body: JSON.stringify({ messages, max_completion_tokens: maxTokens, ...(opts.json ? { response_format: { type: "json_object" } } : {}) }),
-    signal: AbortSignal.timeout(45_000),
-  });
-  if (!res.ok) throw new Error(`agent_http_${res.status}`);
-  const j = await res.json() as { choices?: { message?: { content?: string } }[]; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number; prompt_tokens_details?: { cached_tokens?: number } } };
-  const u = j.usage ?? {};
-  if (opts.meter) {
-    // Metering failures are logged but never lose the answer; the usage row is the cost source of truth.
-    const { error } = await admin.rpc("record_ai_usage" as never, { p_workspace: opts.meter.workspaceId, p_user: opts.meter.userId, p_run: opts.meter.runId ?? null, p_purpose: opts.meter.purpose,
-      p_model: priceKey(use), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0 } as never);
-    if (error) console.error("ai_usage_record_failed", error.message);
+  const deadline = Date.now() + 50_000;
+  const tried = new Set<string>();
+  let budgeted = false, attempts = 0, lastError = "agent_http_unavailable";
+  for (const t of order) {
+    const dep = deployment(t);
+    if (!dep || tried.has(dep)) continue;
+    tried.add(dep);
+    for (let attempt = 0; attempt < 2 && attempts < MAX_ATTEMPTS; attempt++) {
+      const left = deadline - Date.now();
+      if (left < 5_000) break;
+      const { data: okBudget, error: budgetError } = await admin.rpc("ai_provider_attempt" as never, { p_provider: `azure:${String(dep).toLowerCase().replace(/[^a-z0-9._-]/g, "-")}` } as never);
+      if (!budgetError && okBudget !== true) break;   // this deployment's budget is spent → next one (a budget-store error fails open)
+      budgeted = true; attempts++;
+      let res: Response;
+      try {
+        res = await fetchImpl(`${base}/openai/deployments/${dep}/chat/completions?api-version=${process.env.AZURE_OPENAI_API_VERSION ?? "2024-10-21"}`, {
+          method: "POST",
+          headers: { "api-key": process.env.AZURE_OPENAI_API_KEY!, "content-type": "application/json" },
+          body: JSON.stringify({ messages, max_completion_tokens: maxTokens, ...(opts.json ? { response_format: { type: "json_object" } } : {}) }),
+          signal: AbortSignal.timeout(Math.min(45_000, left)),
+        });
+      } catch (e) {
+        lastError = /abort|timeout/i.test(String((e as Error)?.name) + String((e as Error)?.message)) ? "agent_timeout" : "agent_fetch_failed";
+        await sleep(retryDelayMs(attempt, null));
+        continue;
+      }
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        if (isContentFilter(res.status, body)) throw new AgentSafetyError(SAFETY_REFUSAL);
+        lastError = `agent_http_${res.status}`;
+        if (!isRetryableStatus(res.status)) throw new Error(lastError);
+        await sleep(retryDelayMs(attempt, res.headers.get("retry-after")));
+        continue;
+      }
+      const j = await res.json() as { choices?: { message?: { content?: string }; finish_reason?: string }[]; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number; prompt_tokens_details?: { cached_tokens?: number } } };
+      const u = j.usage ?? {};
+      if (opts.meter) {
+        // Metering failures are logged but never lose the answer; the usage row is the cost source of truth.
+        const { error } = await admin.rpc("record_ai_usage" as never, { p_workspace: opts.meter.workspaceId, p_user: opts.meter.userId, p_run: opts.meter.runId ?? null, p_purpose: opts.meter.purpose,
+          p_model: priceKey(t), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0 } as never);
+        if (error) console.error("ai_usage_record_failed", error.message);
+      }
+      if (j.choices?.[0]?.finish_reason === "content_filter") throw new AgentSafetyError(SAFETY_REFUSAL);
+      return { text: j.choices?.[0]?.message?.content?.trim() ?? "", tokens: u.total_tokens ?? 0 };
+    }
   }
-  return { text: j.choices?.[0]?.message?.content?.trim() ?? "", tokens: u.total_tokens ?? 0 };
+  if (!budgeted) throw new AgentBudgetError("Gala Agent is very busy right now and has reached today’s limit with our AI provider. Please try again later — nothing was charged.");
+  throw new Error(lastError);
 }
+
+const MAX_ATTEMPTS = 3;
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+/** Test seam: the stubbed-model specs replace fetch; production always uses the global fetch. */
+let fetchImpl: typeof fetch = (...a) => fetch(...a);
+export function __setAgentFetchForTests(f: typeof fetch | null) { fetchImpl = f ?? ((...a) => fetch(...a)); }
+/** Azure content filtering refused the prompt or the answer: shown as a plain refusal, never retried. */
+export class AgentSafetyError extends Error {}
+export const SAFETY_REFUSAL = "Gala Agent can’t help with that request. Rephrase it, or do this step yourself in Gala Dock.";
 
 export { dataBlock } from "./prompt";
 

@@ -10,7 +10,9 @@ import { SKILL } from "@/lib/agent/skills";
 import { TOOL } from "@/lib/agent/registry";
 
 export const metadata = { title: "Gala Agent" };
-const ST: Record<string, [string, string]> = { completed: ["Completed", "green"], running: ["In progress", "blue"], planning: ["In progress", "blue"], waiting_approval: ["Waiting", "amber"], waiting_external: ["Waiting", "amber"], scheduled: ["Scheduled", "blue"], queued: ["Queued", "gray"], paused: ["Paused", "gray"], failed: ["Failed", "red"], cancelled: ["Cancelled", "gray"] };
+const ST: Record<string, [string, string]> = { completed: ["Completed", "green"], running: ["In progress", "blue"], planning: ["In progress", "blue"], waiting_approval: ["Waiting", "amber"], waiting_external: ["Waiting", "amber"], scheduled: ["Scheduled", "blue"], queued: ["Queued", "gray"], paused: ["Paused", "gray"], failed: ["Failed", "red"], cancelled: ["Cancelled", "gray"],
+  // Q53: every agent_run state has a label (these showed as raw codes such as "awaiting_plan_confirmation").
+  awaiting_plan_confirmation: ["Confirm plan", "amber"], retrying: ["Retrying", "amber"], scheduled_wait: ["Scheduled", "blue"], partially_completed: ["Partly done", "amber"] };
 const RI = [BarChart3, Mail, ClipboardCheck, BarChart3, CalendarDays];
 
 export default async function AgentPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
@@ -24,8 +26,9 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
     sb.from("events").select("id,name,cover_image,starts_at").eq("workspace_id", ws).neq("status", "archived").order("starts_at"),
   ]);
   const R = runs ?? []; const ev = (id: string | null) => (events ?? []).find(e => e.id === id);
-  const active = R.filter(r => !["completed", "failed", "cancelled"].includes(r.status) || (r.status === "completed" && Date.parse(r.updated_at) > now - 2 * 864e5)).filter(r => !status || r.status === status);
-  const history = R.filter(r => ["completed", "failed", "cancelled"].includes(r.status));
+  const DONE = ["completed", "partially_completed", "failed", "cancelled"];
+  const active = R.filter(r => !DONE.includes(r.status) || (["completed", "partially_completed"].includes(r.status) && Date.parse(r.updated_at) > now - 2 * 864e5)).filter(r => !status || r.status === status);
+  const history = R.filter(r => DONE.includes(r.status));
   const pending = (approvals ?? []).filter(a => a.status === "pending");
   const { data: creditData } = await sb.rpc("ai_credit_status" as never, { p_workspace: ws } as never);
   // Skill picker (Q42): organiser skills this workspace can use now (plan-gated in the database), with their mission steps.

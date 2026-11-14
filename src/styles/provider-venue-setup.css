@@ -180,6 +180,9 @@
 .vw-tile-acts button{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:6px;background:#fff;color:#0d0d63;cursor:pointer}
 .vw-tile-acts .danger{margin-left:auto;color:#b42318}
 .vw-tile-acts svg{width:14px!important;height:14px!important}
+/* Q55: per-photo alt text field under each photo (full Photos grid). */
+.vw-grid li:has(.vw-alt){height:auto;background:#fff}.vw-grid li:has(.vw-alt) img{height:130px}.vw-grid li:has(.vw-alt) .vw-tile-acts{bottom:42px}
+.vw-alt{display:block;width:100%;box-sizing:border-box;height:34px;border:0;border-top:1px solid #e3e8f4;padding:0 8px;font:inherit;font-size:12px;color:#0d0d63;background:#fff}.vw-alt:focus-visible{outline:2px solid var(--ws-blue);outline-offset:-2px}
 .vw-drop{width:100%;height:180px;display:grid;place-content:center;justify-items:center;gap:6px;border:1.5px dashed #c5d2fb;border-radius:10px;background:#fbfcff;cursor:pointer;color:#1d2068}
 .vw-drop svg{width:26px!important;height:26px!important;color:var(--ws-blue-2)}
 .vw-drop small{font-size:10px;color:#5157a4}

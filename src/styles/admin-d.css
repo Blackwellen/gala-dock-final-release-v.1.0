@@ -43,3 +43,14 @@
 .add-mini-page b{font-size:16px;color:#090a52}.add-mini-page p{margin:0;font-size:12px;color:#4a50a6}
 @media (max-width:1100px){.add-kpis,.add-kpis.six{grid-template-columns:repeat(2,minmax(0,1fr))}.add-split{grid-template-columns:1fr}.add-decide,.add-grid-form{grid-template-columns:repeat(2,minmax(0,1fr))}.add-decide .wide,.add-grid-form .wide{grid-column:1/-1}}
 @media (max-width:560px){.add-kpis,.add-kpis.six{grid-template-columns:1fr}.add-decide,.add-grid-form{grid-template-columns:1fr}}
+
+/* Q51 maintenance page: the inline font sizes moved here (one type scale, no per-element sizes). */
+.adm-page{gap:16px}
+.adb .adm-h2{margin:0}
+.adm-levels{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6}
+.adm-field{display:grid;gap:4px;font-size:12px;font-weight:600}
+.adm-field.wide{grid-column:1/-1}
+.adm-legend{font-size:12px;font-weight:600}
+.adm-check{display:flex;gap:6px;align-items:center;font-size:12.5px}
+.adm-err{color:#c4142b;font-size:12.5px}
+.adm-ok{color:#0f8a4e;font-size:12.5px}

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdmin } from "@/lib/admin/context";
 import { MODULES } from "@/lib/maintenance-modules";
+import { wallToIso } from "@/lib/events/wall-time";
 
 type R = { ok: true } | { ok: false; error: string; stepUp?: boolean };
 
@@ -12,7 +13,8 @@ export async function startMaintenance(f: FormData): Promise<R> {
   if (!admin.permissions.has("settings" as never)) return { ok: false, error: "You don’t have permission to change maintenance." };
   const level = Number(f.get("level"));
   const modules = f.getAll("modules").map(String).filter(m => (MODULES as readonly string[]).includes(m));
-  const iso = (k: string) => { const v = String(f.get(k) ?? ""); if (!v) return null; const d = new Date(v); return Number.isNaN(d.getTime()) ? null : d.toISOString(); };
+  // Q51: datetime-local values are London wall time; new Date() read them in the server's zone (UTC), an hour out during BST.
+  const iso = (k: string) => wallToIso(String(f.get(k) ?? ""));
   const title = String(f.get("title") ?? "").trim();
   const reason = String(f.get("reason") ?? "").trim();
   if (!(level >= 1 && level <= 5) || title.length < 3) return { ok: false, error: "Choose a level and give the notice a title." };

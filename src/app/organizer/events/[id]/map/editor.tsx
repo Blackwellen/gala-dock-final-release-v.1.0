@@ -9,6 +9,7 @@ import { PlanPreview } from "@/components/venue-plan/plan-preview";
 import { PlanZoom } from "@/components/venue-plan/plan-zoom";
 import "@/styles/public-plan.css";
 import { ASSET } from "@/components/venue-plan/assets";
+import { elementSeats } from "@/components/venue-plan/inventory";
 import { mergeElements } from "@/lib/maps/merge";
 import type { MapEl, MapSpace } from "@/app/provider/venues/_components/venue-map";
 import { compareEventMap, loadEventMapVersion, restoreEventMap, saveEventMap, validateEventMap, type Finding, type Validation } from "./actions";
@@ -106,8 +107,10 @@ export function EventMapEditor(p: {
   const kpi = useMemo(() => {
     let seated = 0, ga = 0, vip = 0, tables = 0, booths = 0;
     for (const e of overlayNow) { const d = ASSET[e.asset ?? ""]; if (!d || e.hidden) continue;
-      if (d.kind === "seating" && e.seating) seated += e.seating.rows * e.seating.cols;
-      if (d.kind === "table" && e.table) { seated += e.table.seats; tables += 1; if (e.asset === "vip_booth") { booths += 1; vip += e.table.seats; } }
+      // Q55: sellable seats, as the server counts them (map_el_seats): blocked (killed) seats don't add capacity.
+      const sellable = elementSeats(e).filter(q => e.seatFlags?.[q.key] !== "blocked").length;
+      if (d.kind === "seating" && e.seating) seated += sellable;
+      if (d.kind === "table" && e.table) { seated += sellable; tables += 1; if (e.asset === "vip_booth") { booths += 1; vip += sellable; } }
       if (d.capacity && e.capacity) { if (e.asset === "vip_area" || e.asset === "lounge") vip += e.capacity; else ga += e.capacity; }
       if (["market_stall", "sponsor", "merch", "food_stall"].includes(e.asset ?? "")) booths += 1; }
     const allocated = p.tiers.reduce((a, t) => a + (t.quantity ?? 0), 0);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { untyped } from "@/lib/workspace/db";
 import { MfaCard } from "@/components/security/mfa-card";
 import { SessionsCard } from "@/components/security/sessions-card";
 import { PasskeysCard } from "@/components/security/passkeys-card";
@@ -24,7 +25,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     ctx.supabase.from("events").select("id", { count: "exact", head: true }).eq("owner_id", ctx.user.id).gte("starts_at", now).neq("status", "cancelled"),
     ctx.supabase.from("events").select("id", { count: "exact", head: true }).eq("owner_id", ctx.user.id).lt("starts_at", now),
     ctx.supabase.from("saved_items").select("item_key", { count: "exact", head: true }).eq("user_id", ctx.user.id).not("item_key", "like", "notify:%"),
-    ctx.supabase.from("reviews").select("id", { count: "exact", head: true }).eq("user_id", ctx.user.id),
+    untyped(ctx.supabase).rpc("my_reviews", {}, { count: "exact", head: true }),   // Q51: own reviews via my_reviews() (no user_id column grant)
     ctx.supabase.from("tickets").select("id", { count: "exact", head: true }).eq("holder_id", ctx.user.id).eq("status", "valid"),
     savedCards(ctx),
   ]);
@@ -32,6 +33,8 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const prefs = { event_updates: n.event_updates ?? true, tickets: n.tickets ?? true, messages: n.messages ?? true, marketing: n.marketing ?? !!p?.marketing_opt_in, reminders: n.reminders ?? true, quotes: n.quotes ?? true };
   const identities = (ctx.user.identities ?? []).map(i => ({ id: i.identity_id ?? i.id, provider: i.provider, email: String((i.identity_data as { email?: string } | undefined)?.email ?? ctx.user.email ?? "") }));
   const verified = !!ctx.user.email_confirmed_at;
+  // Q62: the profile card said "Verified" for any confirmed email; that badge is reserved for a real identity check.
+  const idVerified = !!p?.identity_verified;
   const profile = { full_name: p?.full_name || ctx.name, phone: p?.phone ?? "", country: p?.country ?? "GB", language: p?.language ?? "en", bio: p?.bio ?? "", date_of_birth: p?.date_of_birth ?? "" };
   const tabs = [["profile", User, "Profile"], ["payments", CreditCard, "Payments"], ["notifications", Bell, "Notifications"], ["security", ShieldCheck, "Privacy & Security"]] as const;
   const notifRows = [["event_updates", CalendarCheck, "Event updates", "Changes to your events and bookings"], ["tickets", Ticket, "Ticket notifications", "Upcoming events, ticket sales and entry information"], ["messages", MessageSquare, "Messages", "New messages from venues and suppliers"], ["marketing", Megaphone, "Marketing updates", "News, offers and personalised recommendations"]] as const;
@@ -40,7 +43,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const profileCard = <section className="ce-card ac-card ac-me">
     <div className="ac-cover">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/assets/gd/hero-wedding-compact.webp" alt="" /></div>
     <AvatarButton url={p?.avatar_url ?? null} name={profile.full_name} />
-    <div className="ac-me-name"><span className="k-grow"><b>{profile.full_name}</b><small>{ctx.user.email}</small></span>{verified && <span className="ac-verified"><CheckCircle2 size={15} />Verified</span>}<Link href="/account?tab=security" aria-label="Account security"><ChevronRight size={18} /></Link></div>
+    <div className="ac-me-name"><span className="k-grow"><b>{profile.full_name}</b><small>{ctx.user.email}</small></span>{idVerified && <span className="ac-verified" title="Identity verified by Gala Dock"><CheckCircle2 size={15} />ID verified</span>}<Link href="/account?tab=security" aria-label="Account security"><ChevronRight size={18} /></Link></div>
     <dl className="ac-stats">{([[CalendarDays, "Member since", new Date(p?.created_at ?? ctx.user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }), "/account/events"], [CalendarDays, "Upcoming events", upcoming ?? 0, "/account/events"], [CalendarDays, "Past events", past ?? 0, "/account/events?tab=past"], [Ticket, "Active tickets", tickets ?? 0, "/account/tickets"], [Bookmark, "Saved items", saved ?? 0, "/account/saved"], [Sparkles, "Reviews written", reviews ?? 0, "/account/reviews?tab=submitted"]] as const).map(([I, l, v, h]) => <div key={l}><dt><I size={17} /><Link href={h}>{l}</Link></dt><dd>{v}</dd></div>)}</dl>
     <div className="ac-more"><Crown size={22} className="ac-crown" /><div><b>Get more from Gala Dock</b><p>Create and organise your own events, sell tickets and access exclusive member benefits.</p></div><Link className="k-btn outline ac-plan" href="/plan">Plan an Event <ArrowRight size={16} /></Link></div>
   </section>;

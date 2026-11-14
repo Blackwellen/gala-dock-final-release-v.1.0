@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Undo2, Redo2, ZoomIn, ZoomOut, Maximize, Type, Square, Circle, QrCode, Barcode, Layers, Pencil, Sparkles, Download, Eye, EyeOff, Lock, Unlock,
   Trash2, Copy, ChevronUp, ChevronDown, History, Share2, Plus, Upload, Loader2, LayoutTemplate, Ruler, Palette, MessageSquare, Smile, Shapes, LayoutDashboard, FileImage,
   Spline, Eraser, Crop, Brush as BrushIcon, Highlighter, SprayCan, PenTool, MousePointer2, Check, X, Hand } from "lucide-react";
@@ -80,6 +81,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const [catalogue, setCatalogue] = useState<Map<string, { w: number[]; i: boolean }> | null>(null);
   const [openCount, setOpenCount] = useState<number | null>(null);
   const [notice, setNotice] = useState("");
+  const [versionBusy, setVersionBusy] = useState(false);
   const inflight = useRef<Promise<void>>(Promise.resolve()), version = useRef(design.version), past = useRef<string[]>([]), future = useRef<string[]>([]);
   const stage = useRef<HTMLDivElement>(null), pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const page = doc.pages[pageIdx]!;
@@ -111,8 +113,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const set = (patch: Partial<Layer>, record = true) => one && updateLayers([one.id], l => ({ ...l, ...patch }) as Layer, record);
   const setFx = (patch: Partial<Effects>) => updateLayers(sel, l => ({ ...l, effects: { ...(l.effects ?? {}), ...patch } }));
   const typing = (key: string, patch: Partial<Layer>) => { const rec = burst.current !== key; set(patch, rec); burst.current = key; };
-  const undo = () => { const p = past.current.pop(); if (!p) return; burst.current = ""; future.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(p)); setSave("dirty"); };
-  const redo = () => { const f = future.current.pop(); if (!f) return; burst.current = ""; past.current.push(JSON.stringify(doc)); syncHist(); setDoc(JSON.parse(f)); setSave("dirty"); };
+  // Q55: undoing "+ Page" (or redoing a page delete) left pageIdx past the last page and crashed the editor; the index is clamped.
+  const restoreSnap = (raw: string) => { const next = JSON.parse(raw) as DesignDoc; setDoc(next); setPageIdx(i => Math.max(0, Math.min(i, next.pages.length - 1))); setSel([]); setSave("dirty"); };
+  const undo = () => { const p = past.current.pop(); if (!p) return; burst.current = ""; future.current.push(JSON.stringify(doc)); syncHist(); restoreSnap(p); };
+  const redo = () => { const f = future.current.pop(); if (!f) return; burst.current = ""; past.current.push(JSON.stringify(doc)); syncHist(); restoreSnap(f); };
   const add = (l: Layer) => { updatePage(p => ({ ...p, layers: [...p.layers, l] })); setSel([l.id]); setTool("select"); };
   const center = (w: number, h: number) => ({ x: (page.width - w) / 2, y: (page.height - h) / 2, w, h, rotation: 0 });
   const unit = Math.min(page.width, page.height);
@@ -122,7 +126,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     if (!design.canEdit) return;
     try { const raw = localStorage.getItem(`gd_design_${design.id}`); if (!raw) return;
       const draft = JSON.parse(raw);
-      if (draft.version === design.version && Array.isArray(draft.doc?.pages) && draft.doc.pages.length && draft.doc.pages.every((p: Page) => Number.isFinite(p.width) && Number.isFinite(p.height) && Array.isArray(p.layers))) {
+      // Q55: a draft from an older version (a save that hit "changed in another tab", then Reload) is offered too, flagged as older —
+      // it used to be discarded silently, losing the edits the conflict notice told the user to reload away.
+      if (Number.isInteger(draft.version) && draft.version <= design.version && Array.isArray(draft.doc?.pages) && draft.doc.pages.length && draft.doc.pages.every((p: Page) => Number.isFinite(p.width) && Number.isFinite(p.height) && Array.isArray(p.layers))) {
         queueMicrotask(() => setLocalDraft(draft));
       }
     } catch { /* An unavailable or corrupt local draft never replaces the server document. */ }
@@ -156,6 +162,20 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     return run;
   };
 
+  // Q55: warn before closing the tab with unsaved or failed saves (the debounced autosave hadn't run yet).
+  useEffect(() => {
+    if (!design.canEdit || save === "saved") return;
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    addEventListener("beforeunload", h); return () => removeEventListener("beforeunload", h);
+  }, [save, design.canEdit]);
+  const router = useRouter();
+  /** Back to the library: pending edits are saved first (unmounting cancelled the debounced autosave). */
+  const leave = async (e: React.MouseEvent) => {
+    if (!design.canEdit || save === "saved" || save === "conflict" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    try { await saveNow(); router.push(back); }
+    catch (err) { setNotice(err instanceof Error ? `${err.message} Your changes are kept on this device.` : "Couldn’t save — your changes are kept on this device."); }
+  };
   const fit = useCallback(() => { const el = stage.current; if (!el) return; setZoom(Math.max(0.05, Math.min((el.clientWidth - 64) / page.width, (el.clientHeight - 64) / page.height, 2))); }, [page.width, page.height]);
   useEffect(() => { const t = setTimeout(fit, 0); return () => clearTimeout(t); }, [fit, pageIdx]);
   // Ctrl/⌘ + wheel (and trackpad pinch) zooms the canvas. React's onWheel is passive, so preventDefault there can't stop the
@@ -407,7 +427,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     {fontHrefs.map(h => <link key={h} rel="stylesheet" href={h} />)}
     {faces && <style>{faces}</style>}
     <header className="st-top">
-      <Link href={back} className="st-icon" aria-label="Back"><ArrowLeft size={18} /></Link>
+      <Link href={back} className="st-icon" aria-label="Back" onClick={e => void leave(e)}><ArrowLeft size={18} /></Link>
       <input className="st-title" value={title} onChange={e => { setTitle(e.target.value); setSave("dirty"); }} aria-label="Design name" maxLength={140} disabled={!design.canEdit} />
       <span className={`st-save ${save}`} role="status">{save === "saving" && <Loader2 size={13} className="mk-spin" />}{status}</span>
       <div className="st-grow" />
@@ -429,7 +449,7 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       <button className="st-btn primary" onClick={() => setPanel(panel === "export" ? "" : "export")}><Download size={15} />Export</button>
       <DesignMenu id={design.id} title={title} library={back} inEditor canEdit={design.canEdit} flush={design.canEdit ? async () => { await saveNow(); } : undefined} />
     </header>
-    {localDraft && <div className="st-notice" role="status">Unsaved changes from this device are available.<button type="button" className="st-link" onClick={() => { setDoc(localDraft.doc); setPageIdx(0); if (localDraft.title) setTitle(localDraft.title); setLocalDraft(null); setSave("dirty"); }}>Restore local draft</button><button type="button" className="st-link" onClick={() => { setLocalDraft(null); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }}>Discard local draft</button></div>}
+    {localDraft && <div className="st-notice" role="status">{localDraft.version < design.version ? "Unsaved changes from this device were made before a newer version was saved elsewhere. Restoring them replaces that version (it stays in Versions)." : "Unsaved changes from this device are available."}<button type="button" className="st-link" onClick={() => { setDoc(localDraft.doc); setPageIdx(0); if (localDraft.title) setTitle(localDraft.title); setLocalDraft(null); setSave("dirty"); }}>Restore local draft</button><button type="button" className="st-link" onClick={() => { setLocalDraft(null); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }}>Discard local draft</button></div>}
     {notice && <p className="st-notice" role="alert">{notice}{save === "conflict" && <button className="st-link" onClick={() => location.reload()}>Reload</button>}<button className="st-link" onClick={() => setNotice("")} aria-label="Dismiss"><X size={13} /></button></p>}
 
     <div className="st-body">
@@ -614,9 +634,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     </div>
 
     {panel === "versions" && <Popover onClose={() => setPanel("")} title="Version history">
-      {design.canEdit && <form className="st-row" onSubmit={async e => { e.preventDefault(); const label = String(new FormData(e.currentTarget).get("label") || "Named version");
-        try { const v = (await saveNow(label))!; setVersions(vs => [{ version: v, label, created_at: new Date().toISOString() }, ...vs]); } catch (err) { setNotice(err instanceof Error ? err.message : "Couldn’t save — try again."); } }}>
-        <input name="label" placeholder="e.g. Final poster" maxLength={80} className="st-input" /><button className="st-btn primary">Save version</button></form>}
+      {design.canEdit && <form className="st-row" onSubmit={async e => { e.preventDefault(); if (versionBusy) return; const form = e.currentTarget, label = String(new FormData(form).get("label") || "Named version");
+        setVersionBusy(true);
+        try { const v = (await saveNow(label))!; setVersions(vs => [{ version: v, label, created_at: new Date().toISOString() }, ...vs]); form.reset(); } catch (err) { setNotice(err instanceof Error ? err.message : "Couldn’t save — try again."); } finally { setVersionBusy(false); } }}>
+        <input name="label" placeholder="e.g. Final poster" maxLength={80} className="st-input" /><button className="st-btn primary" disabled={versionBusy}>{versionBusy && <Loader2 size={14} className="mk-spin" />}Save version</button></form>}
       <ul className="st-versions">{versions.map(v => <li key={v.version}><span><b>{v.label}</b><small>v{v.version} · {new Date(v.created_at).toLocaleString("en-GB")}</small></span>
         {design.canEdit && <button className="st-btn" onClick={async () => { try { await saveNow(); } catch (err) { setNotice(err instanceof Error ? err.message : "Couldn’t save — try again."); return; } const r = await restoreVersion(design.id, v.version); if (r.ok) location.reload(); else setNotice(r.error); }}>Restore</button>}</li>)}</ul>
       <p className="st-hint">Restoring saves your current state first, so nothing is lost.</p>
@@ -624,8 +645,9 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     {panel === "comments" && <Popover onClose={() => setPanel("")} title="Comments">
       <CommentsPanel designId={design.id} canEdit={design.canEdit} pageId={page.id} layer={one ? { id: one.id, name: one.name } : null} onJump={jumpTo} onCount={setOpenCount} />
     </Popover>}
-    {panel === "export" && <ExportPanel pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
-    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (!navigator.onLine) throw new Error("Reconnect before publishing a template."); await saveNow(); }} />}
+    {panel === "export" && <ExportPanel faces={faces} pages={doc.pages} pageIdx={pageIdx} els={() => pageRefs.current.filter(Boolean) as HTMLDivElement[]} title={title} onClose={() => setPanel("")} />}
+    {panel === "publish" && <PublishPanel designId={design.id} title={title} portal={back.startsWith("/provider") ? "provider" : "organiser"} onClose={() => setPanel("")} flush={async () => { if (!navigator.onLine) throw new Error("Reconnect before publishing a template."); await saveNow(); }}
+      onSaved={v => { version.current = v; }} />}
   </div>;
 }
 
@@ -779,7 +801,7 @@ function ResizePanel({ designId }: { designId: string }) {
 
     {["Print", "Social", "Event"].map(g => <div key={g}><h3>{g}</h3><div className="st-chips">{PRESETS.filter(p => p.group === g).map(p => <label key={p.id} className="st-check"><input type="checkbox" checked={picked.includes(p.id)} onChange={e => setPicked(x => (e.target.checked ? [...x, p.id] : x.filter(y => y !== p.id)))} />{p.label}</label>)}</div></div>)}
     <button className="st-btn primary" disabled={!picked.length || busy} onClick={async () => { setBusy(true); const r = await deriveDesign(designId, "variant", picked); setBusy(false); setMsg(r.ok ? `Created ${r.data!.length} variant${r.data!.length === 1 ? "" : "s"} in your library.` : r.error); }}>{busy && <Loader2 size={14} className="mk-spin" />}Create variants</button>
-    <button className="st-btn" onClick={async () => { const r = await deriveDesign(designId, "duplicate"); setMsg(r.ok ? "Duplicate created in your library." : r.error); }}>Duplicate design</button>
+    <button className="st-btn" disabled={busy} onClick={async () => { setBusy(true); const r = await deriveDesign(designId, "duplicate"); setBusy(false); setMsg(r.ok ? "Duplicate created in your library." : r.error); }}>Duplicate design</button>
     {msg && <p className="st-hint" role="status">{msg}</p>}
   </>;
 }
@@ -789,7 +811,7 @@ function Popover({ title, onClose, children }: { title: string; onClose: () => v
   return <div className="st-pop" role="dialog" aria-label={title}><div className="st-pop-head"><b>{title}</b><button className="st-icon" onClick={onClose} aria-label="Close">×</button></div>{children}</div>;
 }
 
-function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; pageIdx: number; els: () => HTMLDivElement[]; title: string; onClose: () => void }) {
+function ExportPanel({ pages, pageIdx, els, title, onClose, faces }: { pages: Page[]; pageIdx: number; els: () => HTMLDivElement[]; title: string; onClose: () => void; faces: string }) {
   const [format, setFormat] = useState<"png" | "jpeg" | "webp" | "pdf">("png"); const [scale, setScale] = useState(1); const [q, setQ] = useState(0.92); const [transparent, setTransparent] = useState(false);
   const [busy, setBusy] = useState(false); const [err, setErr] = useState("");
   const go = async () => {
@@ -799,7 +821,7 @@ function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; p
       const prev = nodes.map(n => [n.style.display, n.style.transform] as const);
       nodes.forEach(n => { n.style.display = "block"; });
       let blob: Blob;
-      try { blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent }); }
+      try { blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent, faces }); }
       finally { nodes.forEach((n, i) => { n.style.display = prev[i]![0]; n.style.transform = prev[i]![1]; }); }
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[^\w\- ]+/g, "").trim() || "design"}.${format === "jpeg" ? "jpg" : format}`; a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -816,11 +838,13 @@ function ExportPanel({ pages, pageIdx, els, title, onClose }: { pages: Page[]; p
   </Popover>;
 }
 
-function PublishPanel({ designId, title, onClose, flush, portal }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void>; portal: "organiser" | "provider" }) {
+function PublishPanel({ designId, title, onClose, flush, portal, onSaved }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void>; portal: "organiser" | "provider";
+  /** Q55: publishing with private uploads saves the design server-side (safe public copies); the editor must adopt that version or its next autosave conflicts. */ onSaved?: (version: number) => void }) {
   const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   return <Popover title="Share as a template" onClose={onClose}>
     <form className="st-form" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); setMsg(""); try { await flush();
       const r = await publishTemplate(designId, { title: String(f.get("title")), description: String(f.get("description") ?? ""), category: String(f.get("category")), tags: String(f.get("tags") ?? "").split(",").map(s => s.trim()).filter(Boolean), visibility: f.get("visibility") as "private", ...facetsFrom(f) });
+      if (r.ok && r.version) onSaved?.(r.version);
       setMsg(r.ok ? "Template saved." : r.error); } catch(error) { setMsg(error instanceof Error ? error.message : "Could not publish the template. Try again online."); } finally { setBusy(false); } }}>
       <label className="st-field"><span>Title</span><input name="title" defaultValue={title} required minLength={2} maxLength={120} /></label>
       <label className="st-field"><span>Description</span><textarea name="description" rows={2} maxLength={1000} /></label>

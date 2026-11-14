@@ -24,13 +24,14 @@ export type SponsoredListing = { id: string; name: string; slug: string | null; 
 export type Sponsored = ServedSlot & { event?: SponsoredEvent; listing?: SponsoredListing };
 
 /** Serves up to the placement's capacity. Never throws: a failing ad layer must not break the page (organic content renders). */
-export async function serveSponsored(placement: PlacementKey, ctx: { city?: string | null; category?: string | null } = {}, exclude: string[] = []): Promise<Sponsored[]> {
+/** `ctx.q` (search_results): the visitor's query, used by the database only to match the ad to the search; it is never stored. */
+export async function serveSponsored(placement: PlacementKey, ctx: { city?: string | null; category?: string | null; q?: string | null } = {}, exclude: string[] = []): Promise<Sponsored[]> {
   try {
     const v = await currentViewer();
     if (v.bot) return [];
     const db = createAdminClient() as unknown as { rpc(fn: string, a: Record<string, unknown>): PromiseLike<{ data: unknown; error: unknown }>; from(t: string): any };   // eslint-disable-line @typescript-eslint/no-explicit-any
     const { data, error } = await db.rpc("serve_ad_slots", { p_placement: placement, p_user: v.userId, p_anon: v.anon,
-      p_ctx: { city: ctx.city || null, category: ctx.category || null }, p_exclude: exclude.filter(x => /^[0-9a-f-]{36}$/i.test(x)) });
+      p_ctx: { city: ctx.city || null, category: ctx.category || null, q: ctx.q ? String(ctx.q).slice(0, 80) : null }, p_exclude: exclude.filter(x => /^[0-9a-f-]{36}$/i.test(x)) });
     if (error || !Array.isArray(data) || !data.length) return [];
     const slots = data as ServedSlot[];
     const eIds = slots.flatMap(s => s.event_id ? [s.event_id] : []), lIds = slots.flatMap(s => s.listing_id ? [s.listing_id] : []);

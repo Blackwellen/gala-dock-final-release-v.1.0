@@ -128,7 +128,7 @@ export default async function TicketsPage(props: PageProps<"/admin/tickets">) {
                     <td className="ck"><input type="checkbox" name="id" value={e.id} aria-label={`Select ${e.name}`} /></td>
                     <td><Link className="aa-who" href={qs(base, sp, { sel: e.id })} scroll={false}><Thumb src={e.cover_image || null} w={42} h={36} /><div><b>{e.name}</b><small>{shortRef("EVT", e.id, e.settings?.reference)}</small></div></Link></td>
                     <td>{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })}<small>{hmRange(e.starts_at, e.ends_at)}</small></td>
-                    <td>{e.venue_name || "—"}<small>{e.city ? `${e.city}, UK` : ""}</small></td>
+                    <td>{e.venue_name || "—"}<small>{e.city}</small></td>
                     <td><span className="ae-sold">{(m?.sold ?? 0).toLocaleString("en-GB")} / {(m?.capacity ?? 0).toLocaleString("en-GB")}</span><span className="at-meter"><span className="ae-bar"><i style={{ width: `${Math.min(100, pctSold)}%` }} /></span><small>{pctSold}%</small></span></td>
                     <td>{money(m?.gross ?? 0)}</td>
                     <td className="c"><span className={`at-ts ${ts}`}>{ts === "cancelled" ? "Cancelled" : ts === "suspended" ? "Restricted" : ts === "ended" ? "Ended" : tierLabel[ts] ?? titleCase(ts)}</span></td>
@@ -202,7 +202,7 @@ async function TicketDrawer({ e, m, sp, days, org, canEvents, canSupport, canMar
       <SectionHead title="Event summary" href={canEvents ? `/admin/events?sel=${e.id}` : undefined} label="Open event" />
       <ul className="ae-facts">
         <li><CalendarDays aria-hidden="true" />{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })} · {hmRange(e.starts_at, e.ends_at)}</li>
-        <li><MapPin aria-hidden="true" />{[e.venue_name, e.city].filter(Boolean).join(", ")}{e.city ? ", UK" : ""}{e.venue_listing_id && canMarket && <Link className="aa-link" href={`/admin/marketplace/listings/${e.venue_listing_id}`}>View venue <ArrowRight aria-hidden="true" /></Link>}</li>
+        <li><MapPin aria-hidden="true" />{[e.venue_name, e.city].filter(Boolean).join(", ")}{e.venue_listing_id && canMarket && <Link className="aa-link" href={`/admin/marketplace/listings/${e.venue_listing_id}`}>View venue <ArrowRight aria-hidden="true" /></Link>}</li>
         <li><Briefcase aria-hidden="true" />{typeLabel(e.event_type)}</li>
         <li><Building2 aria-hidden="true" />{org ? `${org.name}${org.settings?.reference ? ` (${org.settings.reference})` : ""}` : "Customer event"}{org && <Link className="aa-link" href={`/admin/workspaces/${org.id}`}>View organizer <ArrowRight aria-hidden="true" /></Link>}</li>
       </ul>

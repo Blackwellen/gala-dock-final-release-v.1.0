@@ -6,6 +6,7 @@ import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { createWorkspaceInvite, revokeWorkspaceInvite } from "@/lib/workspace/invites";
 import { siteUrl } from "@/lib/site-url";
 import { memberRoleError, removeMemberError } from "@/lib/settings/rules";
+import { workspaceCoverUrlOk } from "@/lib/profiles/rules";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const on = (fd: FormData, k: string) => fd.get(k) === "on";
@@ -23,6 +24,16 @@ async function save(p: Record<string, unknown>, message: string): Promise<Action
 export async function saveProfile(fd: FormData): Promise<ActionResult> {
   return save({ name: t(fd, "trading_name", 80), section: "profile", value: { legal_name: t(fd, "legal_name", 120), address: t(fd, "address", 200), phone: t(fd, "phone", 40), email: t(fd, "email", 120),
     website: t(fd, "website", 120).replace(/^https?:\/\//, ""), language: t(fd, "language", 20) || "English (UK)", timezone: "Europe/London", tagline: t(fd, "tagline", 160) } }, "Workspace profile saved");
+}
+
+/**
+ * Q62 / Q49: Settings "Change photo" edits the WORKSPACE cover (it linked to the venue wizard's photo step). Only an image this
+ * workspace uploaded through the files pipeline is accepted (provider_save_settings itself stored any string).
+ */
+export async function saveCoverImage(url: string): Promise<ActionResult> {
+  const { workspace } = await getProvider();
+  if (!workspaceCoverUrlOk(url, workspace.id)) return { ok: false, error: "Upload the image here — links to other sites can't be used." };
+  return save({ cover_image: url }, "Cover image updated");
 }
 
 export async function setCapability(kind: "venue" | "service", enabled: boolean): Promise<ActionResult> {

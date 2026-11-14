@@ -15,7 +15,7 @@ const Save = z.object({ event_id: z.string().uuid(), name: z.string().trim().min
  * provider categories, role counts and promotion channels. Guests, money, bookings, messages, dates and PII are never copied.
  */
 export async function saveTemplate(input: unknown): Promise<ActionResult> {
-  const p = Save.safeParse(input); if (!p.success) return { ok: false, error: String(p.error.issues[0]?.path[0]) === "event_types" ? "Choose at least one event type." : "Give the template a name (3+ characters)." };
+  const p = Save.safeParse(input); if (!p.success) return { ok: false, error: String(p.error.issues[0]?.path[0]) === "event_types" ? "Choose 1–10 event types, each up to 30 characters." : String(p.error.issues[0]?.path[0]) === "description" ? "Keep the description to 500 characters." : "Give the template a name (3+ characters)." };
   const ctx = await getOrganizer();
   const { data: e } = await ctx.supabase.from("events").select("id").eq("id", p.data.event_id).eq("workspace_id", ctx.workspace.id).maybeSingle();
   if (!e) return { ok: false, error: "Event not found." };

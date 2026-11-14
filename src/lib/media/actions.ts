@@ -14,7 +14,10 @@ import { PRESETS, blankDoc, posterFromEvent, reflow, type DesignDoc, type EventD
 // Media Studio actions (media spec §5–17, §49–51). Permissions + optimistic concurrency live in the DB functions.
 type R<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const fail = (m: string): R<never> => ({ ok: false, error: /version_conflict/.test(m) ? "This design was changed in another tab. Reload to get the latest version." : /not_authorized|42501/.test(m) ? "You don’t have access to this design." : /publishing_restricted/.test(m) ? "Public template publishing is restricted for your account." : /template_not_found/.test(m) ? "That template isn’t available." : "Couldn’t save — try again." });
+const fail = (m: string): R<never> => ({ ok: false, error: /version_conflict/.test(m) ? "This design was changed in another tab. Reload to get the latest version." : /not_authorized|42501/.test(m) ? "You don’t have access to this design." : /publishing_restricted/.test(m) ? "Public template publishing is restricted for your account." : /template_not_found/.test(m) ? "That template isn’t available."
+  // Q55: the database refuses text that looks like web code (design_active_content / template_active_content); "try again" could never succeed.
+  : /design_active_content|template_active_content/.test(m) ? "Some text in this design looks like web code (for example “onclick=”, “<script” or “javascript:”). Edit that text, then save again."
+  : "Couldn’t save — try again." });
 const bump = () => { revalidatePath("/organizer/media", "page"); revalidatePath("/provider/media", "page"); revalidatePath("/studio/[id]", "page"); };
 
 export async function createDesign(i: { workspaceId: string | null; eventId?: string | null; title?: string; preset?: string; width?: number; height?: number; transparent?: boolean; templateId?: string; fromEvent?: boolean }): Promise<R<string>> {
@@ -84,12 +87,13 @@ export async function archiveDesign(id: string): Promise<R> {
  * template never exposes the private original; event-bound text reverts to {{placeholders}} in the database function.
  */
 export async function publishTemplate(id: string, meta: { title: string; description: string; category: string; tags: string[]; visibility: "private" | "workspace" | "link" | "public";
-  audience?: string; eventType?: string; business?: string; style?: string; palette?: string }): Promise<R<string>> {
+  audience?: string; eventType?: string; business?: string; style?: string; palette?: string }): Promise<R<string> & { version?: number }> {
   if (!UUID.test(id)) return { ok: false, error: "Not found." };
   const sb = await createClient();
   const db = untyped(sb as never), admin = createAdminClient();
   const { data: d } = await db.from("designs").select("document,version").eq("id", id).maybeSingle();
   if (!d) return { ok: false, error: "Not found." };
+  let savedVersion: number | undefined;
   if (meta.visibility === "public" || meta.visibility === "link") {
     const doc = d.document as DesignDoc; let changed = false;
     for (const pg of doc.pages) for (const l of pg.layers) {
@@ -108,7 +112,7 @@ export async function publishTemplate(id: string, meta: { title: string; descrip
       if (up.error) continue;
       (l as ImageLayer).asset = { ...l.asset, src: admin.storage.from("event-media").getPublicUrl(dest).data.publicUrl, path: undefined, public: true }; changed = true;
     }
-    if (changed) { const r = await saveDesign(id, doc, d.version as number, undefined, "Before publishing template"); if (!r.ok) return r as R<never>; }
+    if (changed) { const r = await saveDesign(id, doc, d.version as number, undefined, "Before publishing template"); if (!r.ok) return r as R<never>; savedVersion = r.data; }
   }
   const token = meta.visibility === "link" ? randomUUID().replace(/-/g, "") : null;
   const { data, error } = await sb.rpc("publish_template" as never, { p_design: id, p_title: meta.title, p_description: meta.description, p_category: meta.category, p_tags: meta.tags.slice(0, 10),
@@ -117,7 +121,8 @@ export async function publishTemplate(id: string, meta: { title: string; descrip
   const clean = (v?: string) => (v && /^[a-z_]{1,40}$/.test(v) ? v : "");
   await sb.rpc("set_template_facets" as never, { p_template: data, p_audience: clean(meta.audience) || "both", p_event_type: clean(meta.eventType), p_business: clean(meta.business),
     p_style: clean(meta.style), p_palette: clean(meta.palette) } as never);
-  bump(); return { ok: true, data: data as unknown as string };
+  // `version`: set when the design itself was saved (public copies of private uploads), so an open editor can adopt it.
+  bump(); return { ok: true, data: data as unknown as string, version: savedVersion };
 }
 
 export async function reportTemplate(templateId: string, reason: string, detail: string): Promise<R> {

@@ -3,6 +3,7 @@ import { Restricted } from "@/components/workspace/kit";
 import { getAdmin } from "@/lib/admin/context";
 import { requestTime } from "@/lib/workspace/format";
 import { Head, Pill } from "../_b/kit";
+import { must } from "../_a/lib";
 import { MaintenanceForm, EndWindow } from "./form";
 import "@/styles/admin-b.css";
 import "@/styles/admin-d.css";
@@ -19,38 +20,38 @@ const list: React.CSSProperties = { listStyle: "none", margin: 0, padding: 0, di
 export default async function MaintenancePage() {
   const admin = await getAdmin();
   if (!admin.permissions.has("settings" as never)) return <Restricted area="Maintenance" />;
-  const { data } = await admin.db.from("maintenance_windows" as never).select("*").order("created_at", { ascending: false }).limit(50);
-  const all = (data ?? []) as W[], now = new Date(requestTime()).getTime();
+  // Q51: a failed read used to show "No active maintenance".
+  const all = (must<W[] | null>(await admin.db.from("maintenance_windows" as never).select("*").order("created_at", { ascending: false }).limit(50)) ?? []), now = new Date(requestTime()).getTime();
   const isActive = (w: W) => !w.ended_at && new Date(w.starts_at).getTime() <= now && (!w.ends_at || new Date(w.ends_at).getTime() > now);
   const active = all.filter(isActive), scheduled = all.filter(w => !w.ended_at && new Date(w.starts_at).getTime() > now);
   const past = all.filter(w => !isActive(w) && !scheduled.includes(w)).slice(0, 20);
   const level = Math.max(0, ...active.map(w => w.level));
   const row = (w: W, end: boolean) => <li key={w.id} className="adb-panel" style={{ display: "grid", gap: 4 }}>
-    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}><Pill status={w.level >= 4 ? "critical" : w.level >= 2 ? "warning" : "info"} label={`M${w.level}`} /><b>{w.title}</b>{w.reference && <small>· {w.reference}</small>}</div>
+    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}><Pill status={w.level >= 4 ? "failed" : w.level >= 2 ? "pending" : "scheduled"} label={`M${w.level}`} /><b>{w.title}</b>{w.reference && <small>· {w.reference}</small>}</div>
     <small>{w.modules.length ? `Modules: ${w.modules.join(", ")}` : "Platform-wide"} · audience {w.audience} · {when(w.starts_at)} → {w.ended_at ? `ended ${when(w.ended_at)}` : when(w.ends_at)}</small>
     {w.message && <small>{w.message}</small>}
     {end && <EndWindow id={w.id} />}
   </li>;
-  return <div className="adb-page" style={{ display: "grid", gap: 16 }}>
-    <Head title="Maintenance" subtitle={level ? `Current level M${level} — ${LEVELS[level - 1]![1].slice(3)}` : "Current level M0 — normal operation"} />
-    <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 style={{ fontSize: 15, margin: 0 }}>Status by audience</h2>
+  return <div className="adb adm-page">
+    <Head back={{ href: "/admin/settings", label: "Back to Settings" }} title="Maintenance" subtitle={level ? `Current level M${level} — ${LEVELS[level - 1]![1].slice(3)}` : "Current level M0 — normal operation"} />
+    <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 className="adm-h2">Status by audience</h2>
       <table className="adb-table"><thead><tr><th>Audience</th><th>Level now</th><th>Modules affected</th><th>Next scheduled</th></tr></thead>
         <tbody>{AUDIENCES.map(([key, name]) => { const mine = active.filter(w => w.audience === "all" || w.audience === key), next = scheduled.filter(w => w.audience === "all" || w.audience === key).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
           const lv = Math.max(0, ...mine.map(w => w.level));
-          return <tr key={key}><td><b>{name}</b></td><td><Pill status={lv >= 4 ? "critical" : lv >= 2 ? "warning" : lv ? "info" : "healthy"} label={`M${lv}`} /></td>
+          return <tr key={key}><td><b>{name}</b></td><td><Pill status={lv >= 4 ? "failed" : lv >= 2 ? "pending" : lv ? "scheduled" : "healthy"} label={`M${lv}`} /></td>
             <td>{mine.length ? [...new Set(mine.flatMap(w => w.modules.length ? w.modules : ["platform-wide"]))].join(", ") : "—"}</td><td>{next ? `M${next.level} · ${when(next.starts_at)}` : "—"}</td></tr>; })}</tbody></table></section>
-    <section className="adb-panel add-preview"><h2 style={{ fontSize: 15, margin: 0 }}>Preview what people see</h2>
+    <section className="adb-panel add-preview"><h2 className="adm-h2">Preview what people see</h2>
       <p className="add-note">A static preview of the banner and maintenance page. Previewing never starts a window or changes what anyone sees.</p>
       <div className="gd-maint-row info"><b>Planned maintenance tonight</b><span>Some features may be briefly unavailable from 23:00.</span></div>
       <div className="gd-maint-row warning"><b>Ticket resale is paused</b><span>Everything else works. Expected back within the hour.</span></div>
       <div className="gd-maint-row critical"><b>Gala Dock is temporarily read-only</b><span>Your tickets still work and check-in stays up.</span></div>
       <div className="add-mini-page"><div><small>Scheduled maintenance</small><b>We’ll be right back</b><p>This part of Gala Dock is briefly unavailable while we carry out maintenance. Your data is safe.</p><p>Tickets already in your wallet still work, and event check-in remains available.</p></div></div>
     </section>
-    <section style={{ display: "grid", gap: 8 }}><h2 style={{ fontSize: 15, margin: 0 }}>Active</h2><ul style={list}>{active.length ? active.map(w => row(w, true)) : <li className="adb-panel">No active maintenance.</li>}</ul></section>
-    {scheduled.length > 0 && <section style={{ display: "grid", gap: 8 }}><h2 style={{ fontSize: 15, margin: 0 }}>Scheduled</h2><ul style={list}>{scheduled.map(w => row(w, true))}</ul></section>}
-    <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 style={{ fontSize: 15, margin: 0 }}>Start or schedule a window</h2>
-      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, lineHeight: 1.6 }}>{LEVELS.map(([n, l, d]) => <li key={n}><b>{l}</b> — {d}</li>)}</ul>
+    <section style={{ display: "grid", gap: 8 }}><h2 className="adm-h2">Active</h2><ul style={list}>{active.length ? active.map(w => row(w, true)) : <li className="adb-panel">No active maintenance.</li>}</ul></section>
+    {scheduled.length > 0 && <section style={{ display: "grid", gap: 8 }}><h2 className="adm-h2">Scheduled</h2><ul style={list}>{scheduled.map(w => row(w, true))}</ul></section>}
+    <section className="adb-panel" style={{ display: "grid", gap: 10 }}><h2 className="adm-h2">Start or schedule a window</h2>
+      <ul className="adm-levels">{LEVELS.map(([n, l, d]) => <li key={n}><b>{l}</b> — {d}</li>)}</ul>
       <MaintenanceForm /></section>
-    {past.length > 0 && <section style={{ display: "grid", gap: 8 }}><h2 style={{ fontSize: 15, margin: 0 }}>History</h2><ul style={list}>{past.map(w => row(w, false))}</ul></section>}
+    {past.length > 0 && <section style={{ display: "grid", gap: 8 }}><h2 className="adm-h2">History</h2><ul style={list}>{past.map(w => row(w, false))}</ul></section>}
   </div>;
 }

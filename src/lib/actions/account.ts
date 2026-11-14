@@ -10,13 +10,13 @@ import type { ActionResult } from "./shell";
 import { untyped } from "@/lib/workspace/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { writeAudit } from "@/lib/audit";
-import { DELETION_GRACE_DAYS, passwordUpdateError, stepUpError } from "@/lib/settings/rules";
+import { DELETION_GRACE_DAYS, passwordUpdateError, profileFieldError, stepUpError } from "@/lib/settings/rules";
 
 const bump = () => { revalidatePath("/account/settings"); revalidatePath("/", "layout"); };
 const Profile = z.object({ full_name: z.string().trim().min(2).max(120), phone: z.string().trim().max(20), country: z.string().regex(/^[A-Z]{2}$/), language: z.string().max(5), bio: z.string().max(250), date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.literal("")) });
 
 export async function saveProfile(input: unknown): Promise<ActionResult> {
-  const p = Profile.safeParse(input); if (!p.success) return { ok: false, error: "Check your details and try again." };
+  const p = Profile.safeParse(input); if (!p.success) return { ok: false, error: profileFieldError(String(p.error.issues[0]?.path[0] ?? "")) };
   const ctx = await getCustomer();
   const { error } = await ctx.supabase.rpc("update_my_profile", { p: p.data });
   if (error) return { ok: false, error: error.message.includes("invalid_phone") ? "Enter a valid phone number." : error.message.includes("invalid_dob") ? "Enter a valid date of birth (13+)." : error.message.includes("invalid_name") ? "Enter your full name." : "Could not save your profile." };

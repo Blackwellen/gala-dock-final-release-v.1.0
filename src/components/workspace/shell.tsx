@@ -13,7 +13,7 @@ import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Bell, MessageSquareText, Plus,
   ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network,
   ChartColumn, ArrowRight, Building2, LayoutGrid, Wrench, Package, Menu, X, LogOut, Check, type LucideIcon,
-  Palette,
+  Palette, Star,
 } from "lucide-react";
 import { Suspense } from "react";
 import { DesignScale, DensityPicker } from "./design-scale";
@@ -166,6 +166,7 @@ export function ProviderShell({ children, workspace, user, counts, messages, not
     ...(venue ? [{ href: "/provider/listings/venues", label: "Venues", icon: Building2, match: /^\/provider\/venues(?!\/[^/]+\/spaces)(\/|$)/ }, { href: "/provider/listings/spaces", label: "Spaces", icon: LayoutGrid, match: /^\/provider\/venues\/[^/]+\/spaces(\/|$)/ }] : []),
     ...(service ? [{ href: "/provider/listings/services", label: "Services", icon: Wrench, match: /^\/provider\/services(\/|$)/ }] : []),
     { href: "/provider/listings/packages", label: "Packages", icon: Package, match: /^\/provider\/packages(\/|$)/ },
+    { href: "/provider/reviews", label: "Reviews", icon: Star },   // Q62 / Q49 review replies
   ];
   const nav: NavItem[] = [
     { href: "/provider", label: "Home", icon: House, exact: true },
@@ -261,7 +262,8 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
     { href: "/admin/commerce", label: "Commerce", icon: Landmark, perm: "commerce" },
     { href: "/admin/commerce/payouts", label: "Payouts", icon: Mail, perm: "commerce" },
     // One "Disputes" entry as in the AD designs: booking disputes, cancellation reviews and card chargebacks (tabs on /admin/disputes); trust chargeback cases highlight it too.
-    { href: "/admin/disputes", label: "Disputes", icon: Headset, perm: ["support", "marketplace", "commerce", "trust"], match: /^\/admin\/(disputes|trust\/disputes)(\/|$)/ },
+    // Q51: the same permissions /admin/disputes accepts (trust-only admins reach chargeback cases under Trust & Safety → Disputes).
+    { href: "/admin/disputes", label: "Disputes", icon: Headset, perm: ["support", "marketplace", "commerce"], match: /^\/admin\/(disputes|trust\/disputes)(\/|$)/ },
     { href: "/admin/trust", label: "Trust & Safety", icon: Shield, perm: "trust" },
     { href: "/admin/support", label: "Support", icon: Headphones, perm: "support", match: /^\/admin\/(support|conversations)(\/|$)/ },
     { href: "/admin/partners", label: "Partners", icon: Mail, perm: "partners" },

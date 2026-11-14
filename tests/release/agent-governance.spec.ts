@@ -116,7 +116,8 @@ test.describe("Q41 governed execution in the database", () => {
     expect((await call({ p_tool: "tickets.publish_tier", p_args: { tier_id: tierId }, p_approval: ap!.id })).error).toBe("approval_actor_mismatch");
     expect((await call({ p_actor: manager.id, p_tool: "tickets.publish_tier", p_args: { tier_id: crypto.randomUUID() }, p_approval: ap!.id })).error).toBe("approval_args_mismatch");
     const asApprover = await call({ p_actor: manager.id, p_tool: "tickets.publish_tier", p_args: { tier_id: tierId }, p_approval: ap!.id });
-    expect(asApprover.refused).toBeFalsy(); expect(asApprover.error).toContain("not_publishable");
+    // Q53 (202611148531): a tier that isn't this workspace's is refused by the argument scope check before the domain update runs.
+    expect(asApprover.refused).toBeFalsy(); expect(asApprover.error).toContain("not_found");
     const { data: calls } = await db.from("agent_tool_calls").select("status,refusal").eq("run_id", run);
     expect((calls ?? []).filter(c => c.status === "refused").length).toBeGreaterThanOrEqual(4);
   });

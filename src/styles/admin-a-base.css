@@ -211,3 +211,10 @@
 .aa-line-tabs a.on{color:#1a1af2;border-color:#1a1af2;font-weight:560}
 .aa-drawer .aa-kv .aa-status{height:18px;font-size:10px}
 .aa-drawer .aa-kv .aa-chip{height:18px;font-size:10px}
+
+/* Q51: VAT page layout (was inline styles incl. a 13px font size). */
+.aa-vat{padding:16px;display:grid;gap:14px}
+.aa-vat-form{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.aa-vat-form label{display:grid;gap:4px}
+.aa-vat-table{width:100%}
+.aa-vat-note{margin:0;font-size:13px}

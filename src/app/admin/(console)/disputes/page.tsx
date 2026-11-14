@@ -5,6 +5,7 @@ import { getAdmin } from "@/lib/admin/context";
 import { money, dateShort, time } from "@/lib/format";
 import { DISPUTE_REASONS, DISPUTE_STATUS } from "@/lib/marketplace/lifecycle";
 import { Head, TabBar, Pill } from "../_b/kit";
+import { must } from "../_a/lib";
 import { DisputeDecision, CancellationDecision, AwardEntry } from "./decide";
 import "@/styles/admin-b.css";
 import "@/styles/admin-disputes.css";
@@ -24,30 +25,37 @@ const PARTY: Record<string, string> = { customer: "Organiser", provider: "Provid
 export default async function DisputesPage(props: PageProps<"/admin/disputes">) {
   const sp = await props.searchParams;
   const admin = await getAdmin();
-  const allowed = ["support", "marketplace", "commerce"].some(p => admin.permissions.has(p as never));
-  if (!allowed) return <Restricted area="Disputes" />;
+  const has = (p: "support" | "marketplace" | "commerce") => admin.permissions.has(p);
+  // Q51: each tab is readable/decidable by the same permissions as its RLS policy and RPC (booking_disputes + admin_dispute_update +
+  // awards: support or marketplace; cancellations + decide_cancellation: support or commerce; stripe_disputes: support or commerce).
+  // Before, a commerce-only admin saw "No booking disputes" (RLS-hidden) and a marketplace-only admin decision forms that always failed.
+  const can = { disputes: has("support") || has("marketplace"), cancellations: has("support") || has("commerce"), chargebacks: has("support") || has("commerce") };
+  if (!can.disputes && !can.cancellations) return <Restricted area="Disputes" />;
   const db = admin.db;
-  const tab = sp.tab === "cancellations" || sp.tab === "chargebacks" ? sp.tab : "disputes";
+  const asked = sp.tab === "cancellations" || sp.tab === "chargebacks" ? sp.tab : "disputes";
+  const tab = can[asked] ? asked : can.disputes ? "disputes" : "cancellations";
   const sel = typeof sp.id === "string" && /^[0-9a-f-]{36}$|^dp_\w+$/.test(sp.id) ? sp.id : null;
-  const [{ data: disputes }, { data: cancels }, { data: charges }] = await Promise.all([
-    db.from("booking_disputes").select("*").order("created_at", { ascending: false }).limit(100),
-    db.from("booking_cancellations").select("id,party,kind,reason,status,calculation,created_at,build_item_id").in("status", ["manual_review", "requested"]).order("created_at").limit(100),
-    db.from("stripe_disputes").select("stripe_dispute_id,amount_minor,currency,reason,status,evidence_due_by,order_ref,livemode,outcome").order("created_at", { ascending: false }).limit(100),
+  const none = Promise.resolve({ data: [], error: null });
+  const [dR, cR, sR] = await Promise.all([
+    can.disputes ? db.from("booking_disputes").select("*").order("created_at", { ascending: false }).limit(100) : none,
+    can.cancellations ? db.from("booking_cancellations").select("id,party,kind,reason,status,calculation,created_at,build_item_id").in("status", ["manual_review", "requested"]).order("created_at").limit(100) : none,
+    can.chargebacks ? db.from("stripe_disputes").select("stripe_dispute_id,amount_minor,currency,reason,status,evidence_due_by,order_ref,livemode,outcome").order("created_at", { ascending: false }).limit(100) : none,
   ]);
-  const D = (disputes ?? []) as Dispute[], C = (cancels ?? []) as Cancel[], S = (charges ?? []) as Charge[];
+  const D = (must<Dispute[] | null>(dR) ?? []), C = (must<Cancel[] | null>(cR) ?? []), S = (must<Charge[] | null>(sR) ?? []);
   const openD = D.filter(d => d.status !== "resolved").length;
   const href = (t: string, id?: string) => `/admin/disputes?tab=${t}${id ? `&id=${encodeURIComponent(id)}` : ""}`;
   const current = tab === "disputes" && sel ? D.find(d => d.id === sel) : null;
-  const { data: entries } = current ? await db.from("booking_dispute_entries").select("id,party,kind,body,files,created_at,internal").eq("dispute_id", current.id).order("created_at") : { data: null };
+  const entries = current ? must<Entry[] | null>(await db.from("booking_dispute_entries").select("id,party,kind,body,files,created_at,internal").eq("dispute_id", current.id).order("created_at")) : null;
   const { data: itemRow } = current ? await db.from("build_items").select("title").eq("id", current.build_item_id).maybeSingle() : { data: null };
   // DEC-107: independent awards (entered by one person, checked by another) and the resolution route for this amount/customer.
-  const { data: awardRows } = current ? await db.from("booking_dispute_awards").select("id,refund_minor,provider,reference,status,entered_by").eq("dispute_id", current.id).order("created_at") : { data: null };
+  const awardRows = current ? must<unknown[] | null>(await db.from("booking_dispute_awards").select("id,refund_minor,provider,reference,status,entered_by").eq("dispute_id", current.id).order("created_at")) : null;
   const awards = ((awardRows ?? []) as { id: string; refund_minor: number; provider: string; reference: string; status: string; entered_by: string }[]).map(a => ({ ...a, mine: a.entered_by === admin.userId }));
 
   return <div className="adb add">
     <Head title="Booking disputes" subtitle="Mediate booking disputes, review cancellations and track card chargebacks." />
-    <TabBar active={tab} tabs={[{ key: "disputes", label: "Booking disputes", href: href("disputes"), count: openD }, { key: "cancellations", label: "Cancellation reviews", href: href("cancellations"), count: C.filter(c => c.status === "manual_review").length },
-      { key: "chargebacks", label: "Card chargebacks", href: href("chargebacks"), count: S.filter(s => !s.outcome).length }]} />
+    <TabBar active={tab} tabs={[...(can.disputes ? [{ key: "disputes", label: "Booking disputes", href: href("disputes"), count: openD }] : []),
+      ...(can.cancellations ? [{ key: "cancellations", label: "Cancellation reviews", href: href("cancellations"), count: C.filter(c => c.status === "manual_review").length }] : []),
+      ...(can.chargebacks ? [{ key: "chargebacks", label: "Card chargebacks", href: href("chargebacks"), count: S.filter(s => !s.outcome).length }] : [])]} />
     {tab === "disputes" && <div className={`add-split ${current ? "has-detail" : ""}`}>
       <section className="adb-panel"><table className="adb-table"><thead><tr><th>Reference</th><th>Reason</th><th>Opened by</th><th className="r">Amount</th><th>Status</th><th>Response due</th></tr></thead>
         <tbody>{D.length ? D.map(d => <tr key={d.id} className={d.id === sel ? "sel" : ""}><td><Link href={href("disputes", d.id)}><b>{d.reference}</b></Link></td><td>{DISPUTE_REASONS.find(([k]) => k === d.reason)?.[1]}</td>

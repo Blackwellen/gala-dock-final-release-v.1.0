@@ -7,6 +7,7 @@ import { paymentDeps } from "@/lib/payments/server";
 import { createDirectMerchantCheckout, createPlatformCheckout, refundedForTag, refundKey, refundMerchantCharge, type MarketplaceOrder } from "@/lib/payments/service";
 import type { RefundReason } from "@/lib/payments/rules";
 import { refundLegacyPlatformOrder } from "@/lib/commerce/legacy-platform-refunds";
+import { boostCheckoutParams } from "@/lib/ads/checkout";
 
 /**
  * Payment orchestration entry points (backend §13.16, cards 123–132).
@@ -25,7 +26,7 @@ export type Order = MarketplaceOrder & { id: string; refunded_minor: number; tra
 
 const ERR: [RegExp, string][] = [
   [/not_authorized/, "You don’t have permission to pay for this booking."], [/already_paid/, "This has already been paid."],
-  [/nothing_due/, "There’s nothing left to pay."], [/hold_expired/, "Your hold has expired — request a new hold or quote."],
+  [/nothing_due/, "There’s nothing left to pay."], [/boost_expired/, "This boost’s dates have passed or the event has ended — choose a new start date to buy it again."], [/hold_expired/, "Your hold has expired — request a new hold or quote."],
   [/quote_expired/, "This quote has expired — ask the provider to refresh it."], [/not_bookable|not_confirmed|not_payable/, "This booking can’t be paid right now."],
 ];
 
@@ -55,13 +56,9 @@ export async function startPayment(kind: PayKind, ids: { itemId?: string; standb
         const s = await platformSalesStripe(deps.stripe).retrieveCheckout(po.stripe_checkout_session);
         if (s.status === "open" && s.url) return { ok: true, url: s.url, reference: po.reference };
       }
-      const s = await createPlatformCheckout(deps, "platform_boost", {
-        mode: "payment", customer_email: user.email ?? "", client_reference_id: po.reference, success_url: successUrl, cancel_url: cancelUrl,
-        expires_at: String(Math.floor(Date.now() / 1000) + 3600), "line_items[0][quantity]": "1", "line_items[0][price_data][currency]": po.currency.toLowerCase(),
-        "line_items[0][price_data][unit_amount]": String(po.amount_minor), "line_items[0][price_data][product_data][name]": po.description.slice(0, 200),
-        "metadata[payment_order]": po.reference, "payment_intent_data[metadata][payment_order]": po.reference,
-        "payment_intent_data[description]": `${po.reference} · ${po.description}`.slice(0, 300),
-      }, `${po.reference}:platform:${Math.floor(Date.now() / 3_600_000)}`);
+      const { platformAccountTaxIds } = await import("@/lib/billing/service");
+      const s = await createPlatformCheckout(deps, "platform_boost", boostCheckoutParams({ po, email: user.email ?? "", successUrl, cancelUrl,
+        nowSec: Math.floor(Date.now() / 1000), accountTaxIds: await platformAccountTaxIds() }), `${po.reference}:platform:${Math.floor(Date.now() / 3_600_000)}`);
       await db.rpc("payment_order_pending", { p_ref: po.reference, p_session: s.id });
       return { ok: true, url: s.url ?? "", reference: po.reference };
     } catch { return { ok: false, error: "Couldn’t reach the payment provider. You haven’t been charged — please try again." }; }
@@ -73,6 +70,43 @@ export async function startPayment(kind: PayKind, ids: { itemId?: string; standb
   // Marketplace bookings: the payee is a supplier/venue. Say so plainly (the generic copy says "seller"); nothing was charged.
   if (r.code === "seller_not_ready") return { ok: false, error: SUPPLIER_NOT_READY };
   return { ok: false, error: r.message };
+}
+
+/**
+ * Q56: undelivered boost spend → card refund. ad_settle_boosts records the undelivered share when a flight ends (it used to become a
+ * "credit" nothing could spend); this refunds that share of what was charged, VAT included, on the original platform charge.
+ * Crash-safe: a refund Stripe already made for this ledger row (metadata.ad_credit) is recorded instead of repeated. The charge.refunded
+ * webhook then posts the ledger refund and marks the order partially refunded (the settled boost keeps its delivery status).
+ */
+export async function processBoostRefunds(limit = 20) {
+  const db = untyped(createAdminClient() as never);
+  const deps = paymentDeps();
+  const out = { boostRefunds: 0, errors: [] as string[] };
+  if (!deps) return out;
+  const { data, error } = await db.rpc("ad_credit_refunds_due", { p_livemode: stripeLive(), p_limit: limit });
+  if (error) { out.errors.push(`boost refunds: ${error.message}`); return out; }
+  for (const r of (data ?? []) as { ledger_id: string; payment_order: string; payment_intent: string; refund_minor: number; attempt: number }[]) {
+    const amount = Number(r.refund_minor);
+    if (!Number.isSafeInteger(amount) || amount <= 0) continue;
+    try {
+      const prior = await deps.stripe.request<{ data: { id: string; status: string; amount: number; metadata?: Record<string, string> }[] }>({ method: "GET",
+        path: `refunds?payment_intent=${encodeURIComponent(r.payment_intent)}&limit=100` });
+      let refund = prior.data.find(x => x.metadata?.ad_credit === r.ledger_id && x.status !== "failed" && x.status !== "canceled");
+      if (!refund) refund = await deps.stripe.request<{ id: string; status: string; amount: number }>({ method: "POST", path: "refunds",
+        idempotencyKey: refundKey(`boost-undelivered:${r.ledger_id}`, r.attempt),
+        params: { payment_intent: r.payment_intent, amount: String(amount), reason: "requested_by_customer", "metadata[payment_order]": r.payment_order,
+          "metadata[ad_credit]": r.ledger_id, "metadata[purpose]": "platform_boost_undelivered" } });
+      if (refund.status === "failed" || refund.status === "canceled") throw new Error(`stripe_refund_${refund.status}`);
+      const { error: e } = await db.rpc("ad_credit_refund_result", { p_ledger: r.ledger_id, p_refund: refund.id, p_amount: Number(refund.amount ?? amount), p_error: null });
+      if (e) throw new Error(`record: ${e.message}`);
+      out.boostRefunds++;
+    } catch (e) {
+      const msg = (e as Error).message.slice(0, 300);
+      await db.rpc("ad_credit_refund_result", { p_ledger: r.ledger_id, p_refund: null, p_amount: null, p_error: msg });
+      out.errors.push(`boost refund ${r.ledger_id}: ${msg}`);
+    }
+  }
+  return out;
 }
 
 /** Shown when a booking's supplier has no ready Stripe account in the current mode (test onboarding unfinished, or not yet re-onboarded in live). */

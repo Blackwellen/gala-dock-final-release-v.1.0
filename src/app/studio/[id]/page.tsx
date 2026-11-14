@@ -41,10 +41,11 @@ export default async function StudioPage({ params, searchParams }: PageProps<"/s
   // Q67: the workspace brand colour (Settings → Brand) is always offered first in the Brand tab, even before a brand kit exists.
   const wsSet = (ws?.settings ?? {}) as { brand_color?: string; brand?: { brand_color?: string } };
   const wsBrand = [wsSet.brand_color, wsSet.brand?.brand_color].find(c => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c));
+  // Q55: the "Workspace brand colour" swatch is passed separately (not merged into kit.colors) so editing the brand kit never saves it there — a stale copy stayed in the kit after
+  // the Settings colour changed, and removing it did nothing because it came back on reload.
   const kitColors = (kit?.colors ?? []) as BrandKit["colors"];
-  const colors = wsBrand && !kitColors.some(c => c.hex.toLowerCase() === wsBrand.toLowerCase()) ? [{ hex: wsBrand.toUpperCase(), name: "Workspace brand colour" }, ...kitColors] : kitColors;
   const brand = d.workspace_id ? { workspaceId: d.workspace_id as string, canManage: ["owner", "manager"].includes(member?.role ?? ""),
-    kit: { colors, fonts: kit?.fonts ?? [], logos: kit?.logos ?? [] } as BrandKit, fonts: (fonts ?? []) as CustomFont[] } : null;
+    kit: { colors: kitColors, fonts: kit?.fonts ?? [], logos: kit?.logos ?? [] } as BrandKit, fonts: (fonts ?? []) as CustomFont[], workspaceColor: wsBrand?.toUpperCase() ?? null } : null;
   return <Studio back={back} brand={brand} openComments={openComments} workspaceId={(d.workspace_id as string | null) ?? null} eventData={eventData} assets={gallery.map((src, i) => ({ src, title: `Event image ${i + 1}` }))}
     versions={(versions ?? []) as { version: number; label: string; created_at: string }[]}
     design={{ id: d.id, title: d.title, version: d.version, document: d.document as DesignDoc, canEdit: access === "owner" || access === "edit", eventId: d.event_id }} />;

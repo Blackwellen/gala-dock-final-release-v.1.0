@@ -134,7 +134,8 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
             <label className="adb-filter">Type<Suspense><ParamSelect param="type" label="Type" value={type} options={[{ value: "", label: "All types" }, { value: "affiliate", label: "Affiliate" }, { value: "strategic", label: "Strategic" }, { value: "promoter", label: "Promoter" }]} /></Suspense></label>
             <label className="adb-filter">Status<Suspense><ParamSelect param="status" label="Status" value={status} options={[{ value: "", label: "All statuses" }, { value: "active", label: "Active" }, { value: "paused", label: "Paused" }, { value: "pending", label: "Under review" }, { value: "terminated", label: "Terminated" }]} /></Suspense></label>
             <label className="adb-filter">Country<Suspense><ParamSelect param="country" label="Country" value={country} options={[{ value: "", label: "All countries" }, ...countries.map(c => ({ value: c, label: c === "GB" ? "United Kingdom" : c }))]} /></Suspense></label>
-            <span className="adb-btn adp-fbtn"><Filter aria-hidden="true" />Filters</span>
+            {/* Q51: was a "Filters" span that looked like a button and did nothing. */}
+            <Link className="adb-btn adp-fbtn" href={tab === "affiliates" ? "/admin/partners" : `/admin/partners?tab=${tab}`} scroll={false}><Filter aria-hidden="true" />Clear filters</Link>
           </div>
           <div className="adb-table-wrap"><table className="adb-table adp-table">
             <colgroup>{[34, 158, 70, 94, 86, 96, 72, 88, 92, 70].map((w, i) => <col key={i} style={{ width: `${(w / 860) * 100}%` }} />)}</colgroup>

@@ -78,7 +78,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
             </ActionForm></div></details>
       </>} />
     <TabBar active={tab} tabs={[...Object.entries(QUEUES).map(([key, [label]]) => ({ key, label: label === "Fraud/Abuse" ? "Fraud / Abuse" : label, href: tab === key ? "/admin/trust" : `/admin/trust?tab=${key}` })),
-      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [{ key: "evidence", label: "Evidence review", href: "/admin/trust/verification" }, { key: "risk", label: "Risk signals", href: "/admin/trust/risk" }])]} />
+      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [{ key: "evidence", label: "Evidence review", href: "/admin/trust/verification" }, { key: "risk", label: "Risk signals", href: "/admin/trust/risk" }, { key: "replies", label: "Review replies", href: "/admin/trust/review-replies" }])]} />
     <section className="adb-kpis ads-kpis">
       <Kpi icon={BookmarkCheck} tone="blue" label="Verification queue" value={kv.n} delta={kv.d} series={kv.series} invert />
       <Kpi icon={ShieldCheck} tone="green" label="Active investigations" value={ki.n} delta={ki.d} series={ki.series} invert />
@@ -88,7 +88,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
     </section>
     <div className="ads-grid">
       <div className="ads-main">
-        <div className="ads-searchrow"><Suspense><SearchParam placeholder="Search cases, users, listings, events, orders..." /></Suspense><span className="adb-btn ads-filters"><Filter aria-hidden="true" />Filters</span></div>
+        <div className="ads-searchrow"><Suspense><SearchParam placeholder="Search cases, users, listings, events, orders..." /></Suspense><Link className="adb-btn ads-filters" href={disputes ? "/admin/trust/disputes" : tab ? `/admin/trust?tab=${tab}` : "/admin/trust"} scroll={false}><Filter aria-hidden="true" />Clear filters</Link></div>
         <div className="ads-filters-row">
           <label className="adb-filter">Case type<Suspense><ParamSelect param="type" label="Case type" value={type} options={[{ value: "", label: "All types" }, ...Object.entries(QUEUES).map(([value, [label]]) => ({ value, label }))]} /></Suspense></label>
           <label className="adb-filter">Status<Suspense><ParamSelect param="status" label="Status" value={status} options={[{ value: "", label: "All statuses" }, { value: "open_all", label: "Open & in review" }, { value: "open", label: "Open" }, { value: "under_review", label: "Under review" }, { value: "investigating", label: "Investigating" }, { value: "info_requested", label: "Info requested" }, { value: "awaiting_info", label: "Awaiting info" }, { value: "monitoring", label: "Monitoring" }, { value: "resolved", label: "Resolved" }, { value: "approved", label: "Approved" }, { value: "dismissed", label: "Dismissed" }]} /></Suspense></label>

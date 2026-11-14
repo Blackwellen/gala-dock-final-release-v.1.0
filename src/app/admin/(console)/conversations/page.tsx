@@ -40,7 +40,7 @@ export default async function BreakGlassPage(props: PageProps<"/admin/conversati
       : <tr><td colSpan={10} className="adb-none">{empty}</td></tr>}</tbody></table></section>;
 
   return <div className="adb acv">
-    <Head title="Break-glass access" subtitle="Controlled, read-only access to member conversations for safeguarding, fraud, abuse, disputes, legal requests and critical support. Start a request from a support or trust case." />
+    <Head back={{ href: "/admin/support", label: "Back to Support" }} title="Break-glass access" subtitle="Controlled, read-only access to member conversations for safeguarding, fraud, abuse, disputes, legal requests and critical support. Start a request from a support or trust case." />
     <TabBar active={tab} tabs={[{ key: "grants", label: "Access grants", href: href("grants"), count: rows.filter(r => r.status === "active").length },
       { key: "approvals", label: "Awaiting approval", href: href("approvals"), count: pending.length }, { key: "report", label: "Compliance report", href: href("report"), count: flagged.length }]} />
     {tab === "grants" && table(rows, `No break-glass requests in the last ${days} days.`)}

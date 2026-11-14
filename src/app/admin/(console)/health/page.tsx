@@ -18,8 +18,9 @@ export const metadata: Metadata = { title: "System health" };
 export const dynamic = "force-dynamic";
 
 type Job = { job: string; schedule: string; active: boolean; last_run: string | null; last_status: string | null; failures_24h: number };
-const TONE: Record<Readiness, string> = { ready: "resolved", sandbox: "pending", degraded: "open", blocked_external: "closed", not_implemented: "neutral" };
-const CTONE: Record<ComponentState, string> = { healthy: "resolved", configured: "resolved", degraded: "open", blocked_external: "closed", not_configured: "neutral", unknown: "pending" };
+// Q51: "closed" is a green pill — blocked integrations showed as healthy. Blocked = amber "on hold".
+const TONE: Record<Readiness, string> = { ready: "resolved", sandbox: "pending", degraded: "open", blocked_external: "on_hold", not_implemented: "neutral" };
+const CTONE: Record<ComponentState, string> = { healthy: "resolved", configured: "resolved", degraded: "open", blocked_external: "on_hold", not_configured: "neutral", unknown: "pending" };
 const LABEL: Record<Readiness, string> = { ready: "Ready", sandbox: "Sandbox", degraded: "Degraded", blocked_external: "Blocked (external)", not_implemented: "Not implemented" };
 
 /** §137 health: integration readiness (live checks), scheduled jobs and operational backlog. Read-only; settings or agent_ops. */
@@ -39,7 +40,8 @@ export default async function HealthPage() {
     healthContracts(db as never, { queue: false }),
     Promise.resolve(db.rpc("admin_ops_overview")).then(r => (r.error ? null : r.data as { dead: number; stuck_running: number; outbox_unpublished: number; outbox_oldest_unpublished: string | null; jobs: Record<string, number> }), () => null),
     Promise.resolve(db.from("service_health_snapshots").select("taken_at,status").order("taken_at", { ascending: false }).limit(48)).then(r => ((r.data ?? []) as { taken_at: string; status: string }[]).reverse(), () => [] as { taken_at: string; status: string }[]),
-    Promise.resolve(db.from("agent_runtime_controls").select("kill_switch,reason,set_at").eq("id", 1).maybeSingle()).then(r => r.data as { kill_switch: boolean; reason: string; set_at: string } | null, () => null),
+    // Q51: a failed read is "unknown" (it used to read as "Running" and offered "Switch off").
+    Promise.resolve(db.from("agent_runtime_controls").select("kill_switch,reason,set_at").eq("id", 1).maybeSingle()).then(r => r.error ? undefined : r.data as { kill_switch: boolean; reason: string; set_at: string } | null, () => undefined),
   ]);
   const now = requestTime();
   const stale = (j: Job) => !j.last_run || now - new Date(j.last_run).getTime() > 26 * 3600e3;
@@ -67,9 +69,10 @@ export default async function HealthPage() {
       {snaps.length > 0 && <div className="add-spark" role="img" aria-label={`${snaps.filter(x => x.status !== "ok").length} of ${snaps.length} recent checks degraded`}>{snaps.map(x => <i key={x.taken_at} className={x.status} style={{ height: x.status === "ok" ? 28 : x.status === "degraded" ? 18 : 10 }} title={`${dateShort(x.taken_at)} ${time(x.taken_at)} · ${x.status}`} />)}</div>}
     </section>
     <section className="adb-panel"><div className="adb-sec-h"><h2>Gala Agent runtime</h2>
-      <Pill status={kill?.kill_switch ? "open" : "resolved"} label={kill?.kill_switch ? "Switched off" : "Running"} /></div>
+      <Pill status={kill === undefined ? "pending" : kill?.kill_switch ? "open" : "resolved"} label={kill === undefined ? "Unknown" : kill?.kill_switch ? "Switched off" : "Running"} /></div>
       <p className="add-note">{kill?.kill_switch ? `Switched off ${dateShort(kill.set_at)} ${time(kill.set_at)} — ${kill.reason}. New runs and every agent tool call are refused; nothing is lost.` : "The platform kill switch stops new Gala Agent runs and refuses every agent tool call in every workspace, before any model spend. Workspaces can also switch the agent off for themselves."}</p>
-      {admin.permissions.has("agent_ops") && <ActionButton action={setAgentKillSwitch} args={[!kill?.kill_switch]} reason variant={kill?.kill_switch ? "primary" : "danger"}
+      {kill === undefined && <p className="add-note">The kill-switch state couldn’t be read. Reload before changing it.</p>}
+      {admin.permissions.has("agent_ops") && kill !== undefined && <ActionButton action={setAgentKillSwitch} args={[!kill?.kill_switch]} reason variant={kill?.kill_switch ? "primary" : "danger"}
         confirm={{ title: kill?.kill_switch ? "Switch Gala Agent back on" : "Switch Gala Agent off everywhere", body: kill?.kill_switch ? "Runs can be resumed by their owners; queued runs continue." : "Every workspace’s agent stops at once. Use for incidents (runaway cost, unsafe behaviour, provider outage). Audited with your reason.", cta: kill?.kill_switch ? "Switch on" : "Switch off" }}>{kill?.kill_switch ? "Switch Gala Agent on" : "Switch Gala Agent off"}</ActionButton>}
     </section>
     <section className="adb-panel"><div className="adb-sec-h"><h2>Scheduled jobs</h2><Link className="adb-link" href="/admin/health/jobs">Jobs and dead letters</Link></div>

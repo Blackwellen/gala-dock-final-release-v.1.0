@@ -26,7 +26,8 @@ import { rows } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { loadMoney, inRange } from "../money/data";
 import { loadPricing, PLAN_NAME } from "@/lib/public/pricing";
-import { setCapability, saveProfile, saveBooking, saveComms, saveNotifications, saveAgent, saveTax, inviteMember, revokeInvite, changeMemberRole, removeMember } from "./actions";
+import { CoverUpload } from "@/components/settings/cover-upload";
+import { saveCoverImage, setCapability, saveProfile, saveBooking, saveComms, saveNotifications, saveAgent, saveTax, inviteMember, revokeInvite, changeMemberRole, removeMember } from "./actions";
 
 export const metadata: Metadata = { title: "Settings" };
 const TABS: [string, string][] = [["workspace", "Workspace"], ["capabilities", "Capabilities"], ["team", "Team & Access"], ["booking", "Marketplace & Booking Rules"], ["billing", "Payments & Billing"],
@@ -68,7 +69,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
     {tab === "workspace" && <div className="ps-grid">
       <section className="ws-panel ps-profile"><h2><span className="ps-ic"><Building2 aria-hidden="true" /></span>Workspace profile</h2>
         <div className="ps-id">{/* eslint-disable-next-line @next/next/no-img-element */}
-          <span className="ps-cover">{ws.cover_image ? <img src={ws.cover_image} alt="" /> : null}{owner && venue && <Link href={`/provider/venues/new?venue=${venue.id}&step=5`}>Change photo</Link>}</span>
+          <span className="ps-cover">{ws.cover_image ? <img src={ws.cover_image} alt="" /> : null}{owner && <CoverUpload workspaceId={ws.id} save={saveCoverImage} label={ws.cover_image ? "Change photo" : "Add cover photo"} />}</span>
           <div><p className="ps-name"><b>{ws.name}</b>{ws.verification_status === "verified" && <Chip tone="green" dot><BadgeCheck aria-hidden="true" />Verified</Chip>}</p><small>{ws.capabilities.map(x => x === "venue" ? "Venue" : "Services").join(" + ")}</small><p className="ps-tag">{p.tagline || venue?.description?.slice(0, 110) || ""}</p></div>
           {owner && <Link href={`${base}?tab=workspace&edit=1`} className="ws-btn outline sm">Edit</Link>}</div>
         {sp.edit && owner ? <ActionForm action={saveProfile} className="pt-form ps-form">

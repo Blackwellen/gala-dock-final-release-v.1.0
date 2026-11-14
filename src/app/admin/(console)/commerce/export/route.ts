@@ -1,5 +1,6 @@
 import { getAdmin } from "@/lib/admin/context";
 import { loadLedger, PERIODS, periodOf, gmv, platformRevenue, bySource, typeOf, statusOf } from "../data";
+import { csvCell } from "@/lib/provider/csv";
 
 /** CSV export of the Commerce ledger (or a period summary). Same RLS-scoped read as the dashboard; denied without the commerce permission. */
 export async function GET(request: Request) {
@@ -8,7 +9,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const period = periodOf(url.searchParams.get("period")), days = PERIODS[period]!.days;
   const { cur } = await loadLedger(ctx.db, days);
-  const esc = (v: unknown) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; };
+  const esc = csvCell;   // Q51: neutralises spreadsheet formulas (=, +, -, @) in user-supplied text (CSV injection)
   let body: string;
   if (url.searchParams.get("kind") === "summary") {
     body = [["metric", "value_gbp"], ["period", period], ["total_gmv", gmv(cur).toFixed(2)], ["platform_revenue", platformRevenue(cur).toFixed(2)],

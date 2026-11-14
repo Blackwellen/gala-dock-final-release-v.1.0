@@ -114,7 +114,8 @@ export default async function AgentPage(props: PageProps<"/admin/agent-integrati
             <Suspense><ParamSelect param="status" label="Status" value={status} options={[{ value: "", label: "All statuses" }, ...["completed", "failed", "running", "paused", "scheduled", "waiting_approval", "queued", "cancelled"].map(v => ({ value: v, label: v.replace("_", " ").replace(/^\w/, c => c.toUpperCase()) }))]} /></Suspense>
             <Suspense><ParamSelect param="tool" label="Tool" value={s("tool")} options={[{ value: "", label: "All tools" }, ...healthList.map(i => ({ value: i.name, label: i.name }))]} /></Suspense>
             <Suspense><ParamSelect param="range" label="Period" value={range} options={Object.entries(RANGES).map(([value, [label]]) => ({ value, label }))} /></Suspense>
-            <span className="adb-btn adag-fbtn"><Filter aria-hidden="true" />Filters</span>
+            {/* Q51: was a "Filters" span that looked like a button and did nothing. */}
+            <Link className="adb-btn adag-fbtn" href={tab === "runs" ? "/admin/agent-integrations" : `/admin/agent-integrations?tab=${tab}`} scroll={false}><Filter aria-hidden="true" />Clear filters</Link>
           </div>
           <div className="adb-table-wrap"><table className="adb-table adag-table">
             <colgroup>{[34, 82, 128, 98, 86, 56, 66, 128, 108, 70].map((w, i) => <col key={i} style={{ width: `${(w / 856) * 100}%` }} />)}</colgroup>

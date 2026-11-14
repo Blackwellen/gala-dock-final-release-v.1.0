@@ -13,6 +13,7 @@ import { MapContent, MapDefs, mapBounds, elBounds, isPoly, FIXTURE_LABEL, UNITS_
 import { MAP_STYLES } from "@/lib/maps/styles";
 import { ASSETS, ASSET, ASSET_CATS, ASSET_IMG, ASSET_SWATCH, KILL_SEATS_SWATCH, alpha, blockSeats, tableSeats, seatingSize, tableSize, type Seating, type TableSpec } from "./assets";
 import { AssetShape, assetDefaults, type SeatFlag } from "./asset-shape";
+import { remapBlock, remapTable, seatCounts } from "./inventory";
 
 type Tool = "select" | "hand" | "room" | "poly" | "wall" | "line" | "label" | "measure" | "calibrate" | "place" | "curve";
 type View = { x: number; y: number; w: number; h: number };
@@ -154,8 +155,10 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const commit = useCallback((next: MapEl[] | ((p: MapEl[]) => MapEl[]), prev?: MapEl[]) => {
     setEls(cur => { const n = typeof next === "function" ? next(cur) : next; setPast(p => [...p.slice(-100), prev ?? cur]); setFuture([]); return n; }); setDirty(true);
   }, []);
-  const undo = useCallback(() => setPast(p => { if (!p.length) return p; const last = p[p.length - 1]; setEls(cur => { setFuture(f => [cur, ...f]); return last; }); setSel([]); return p.slice(0, -1); }), []);
-  const redo = useCallback(() => setFuture(f => { if (!f.length) return f; const [n, ...rest] = f; setEls(cur => { setPast(p => [...p, cur]); return n; }); return rest; }), []);
+  // Q55: undo/redo change the plan, so they mark it unsaved (after a save, an undo used to leave "Save draft" disabled and no leave
+  // warning); both clear the selection because it is index-based and would otherwise point at different elements (Delete hit the wrong one).
+  const undo = useCallback(() => setPast(p => { if (!p.length) return p; const last = p[p.length - 1]; setEls(cur => { setFuture(f => [cur, ...f]); return last; }); setSel([]); setSeats(null); setDirty(true); return p.slice(0, -1); }), []);
+  const redo = useCallback(() => setFuture(f => { if (!f.length) return f; const [n, ...rest] = f; setEls(cur => { setPast(p => [...p, cur]); return n; }); setSel([]); setSeats(null); setDirty(true); return rest; }), []);
   const groupOf = (e: MapEl) => GROUPS.find(g => g[2](e))?.[0] ?? "fixed";
   const editable = (e: MapEl) => !!e && e.type !== "layer" && !e.locked && !lockedGroups.includes(groupOf(e)) && !(e.layer && lockedLayers.includes(e.layer));
   const sn = (v: number) => (snap ? Math.round(v / step) * step : Math.round(v));
@@ -370,9 +373,13 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     setSel([0]); setPanel("inspect"); setSideOpen(true); toast("Added — use Calibrate to set its real-world scale, then draw on top");
   };
   const uploadKind = useRef<"plan" | "aerial">("plan");
+  // Q55: edits made while a save is in flight stay "unsaved" (setDirty(false) used to clear them from the leave warning and the Save button).
+  const latestEls = useRef(els);
+  useEffect(() => { latestEls.current = els; }, [els]);
   const save = (publish: boolean) => start(async () => {
     setConfirmPub(false);
-    const r = await onSave(els, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) setDirty(false);
+    const snapshot = els;
+    const r = await onSave(snapshot, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok && latestEls.current === snapshot) setDirty(false);
   });
   useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
   useEffect(() => { onElementsChange?.(els); }, [els, onElementsChange]);
@@ -395,9 +402,10 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const setSeating = (patch: Partial<Seating>) => {
     if (!s?.seating) return; const ns = { ...s.seating, ...patch }, sz = seatingSize(ns);
     const keepCentre = !!s.rot || "curve" in patch || "rowOffset" in patch;
-    setS({ seating: ns, ...sz, ...(keepCentre ? { x: Math.round(((s.x ?? 0) + (s.w ?? 0) / 2 - sz.w / 2) * 10) / 10, y: Math.round(((s.y ?? 0) + (s.h ?? 0) / 2 - sz.h / 2) * 10) / 10 } : {}) });
+    // Q55: renaming / relabelling / resizing changes seat keys; flags and per-seat tiers follow the physical seat.
+    setS({ seating: ns, ...sz, ...remapBlock(s.seating, ns, s), ...(keepCentre ? { x: Math.round(((s.x ?? 0) + (s.w ?? 0) / 2 - sz.w / 2) * 10) / 10, y: Math.round(((s.y ?? 0) + (s.h ?? 0) / 2 - sz.h / 2) * 10) / 10 } : {}) });
   };
-  const setTable = (patch: Partial<TableSpec>) => { if (!s?.table) return; const nt = { ...s.table, ...patch }; setS({ table: nt, ...tableSize(nt), label: patch.number ? `Table ${patch.number}` : s.label }); };
+  const setTable = (patch: Partial<TableSpec>) => { if (!s?.table) return; const nt = { ...s.table, ...patch }; setS({ table: nt, ...tableSize(nt), ...remapTable(s.table, nt, s), label: patch.number ? `Table ${patch.number}` : s.label }); };
   const align = (how: "l" | "c" | "r" | "t" | "m" | "b" | "dh" | "dv") => {
     if (sel.length < 2) return;
     const bs = sel.map(i => ({ i, b: elBounds(els[i]) })), minX = Math.min(...bs.map(q => q.b.x)), maxX = Math.max(...bs.map(q => q.b.x + q.b.w)), minY = Math.min(...bs.map(q => q.b.y)), maxY = Math.max(...bs.map(q => q.b.y + q.b.h));
@@ -456,7 +464,8 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const placeBasemap = (h: { label: string; lat: number; lng: number }) => {
     setHiddenGroups(g => g.filter(x => x !== "base"));
     if (bm) setBm({ lat: h.lat, lng: h.lng });
-    else { const cx = view.x + view.w / 2, cy = view.y + view.h / 2; commit(l => [{ type: "basemap", label: "Street map", lat: h.lat, lng: h.lng, x: Math.round(cx), y: Math.round(cy), opacity: 0.6, mapStyle: "streets", locked: true }, ...l]); }
+    // The new map goes first, so index-based selection would shift by one: clear it.
+    else { setSel([]); setSeats(null); const cx = view.x + view.w / 2, cy = view.y + view.h / 2; commit(l => [{ type: "basemap", label: "Street map", lat: h.lat, lng: h.lng, x: Math.round(cx), y: Math.round(cy), opacity: 0.6, mapStyle: "streets", locked: true }, ...l]); }
     setGeoHits([]); toast(`Street map centred on ${h.label.split(",")[0]}`);
   };
   const findPlace = async () => {
@@ -519,13 +528,11 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
 
   const visible = els.map(e => ({ ...e, hidden: e.hidden || hiddenGroups.includes(groupOf(e)) || (!!e.layer && hiddenLayers.includes(e.layer)) }));
   const placed = new Set(els.filter(e => e.type === "room" && e.space).map(e => e.space));
+  // Q55: counted like the saved inventory (hidden elements and flags on seats that no longer exist don't count).
   const totals = useMemo(() => {
-    let seatN = 0, tableSeatN = 0, tables = 0, standing = 0, blocked = 0;
-    for (const e of [...base, ...els]) { const d = ASSET[e.asset ?? ""]; if (!d) continue;
-      if (d.kind === "seating" && e.seating) { const n = e.seating.rows * e.seating.cols; seatN += n; blocked += Object.values(e.seatFlags ?? {}).filter(f => f === "blocked").length; }
-      if (d.kind === "table" && e.table) { tables += 1; tableSeatN += e.table.seats; blocked += Object.values(e.seatFlags ?? {}).filter(f => f === "blocked").length; }
-      if (d.capacity && e.capacity) standing += e.capacity; }
-    return { seatN, tableSeatN, tables, standing, blocked };
+    const all = [...base, ...els], c = seatCounts(all);
+    let standing = 0; for (const e of all) { const d = ASSET[e.asset ?? ""]; if (d?.capacity && e.capacity && !e.hidden) standing += e.capacity; }
+    return { seatN: c.seats, tableSeatN: c.tableSeats, tables: c.tables, standing, blocked: c.blocked };
   }, [els, base]);
   const tierColor = useCallback((t?: string | null) => tiers.find(x => x.id === t)?.color, [tiers]);
   const used = useMemo(() => { const m = new Map<string, number>(); for (const e of [...base, ...els]) if (e.type === "asset" && e.asset && ASSET[e.asset]) m.set(e.asset, (m.get(e.asset) ?? 0) + 1); return [...m.entries()].sort((a, b) => ASSETS.findIndex(x => x.key === a[0]) - ASSETS.findIndex(x => x.key === b[0])); }, [base, els]);

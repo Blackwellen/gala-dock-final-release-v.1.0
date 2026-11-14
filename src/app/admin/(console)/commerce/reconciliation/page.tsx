@@ -7,6 +7,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { untyped } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
 import { requestTime } from "@/lib/workspace/format";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = { title: "Reconciliation" };
 
@@ -65,7 +66,7 @@ export default async function ReconciliationPage(props: { searchParams: Promise<
   const stale = last ? now - Date.parse(last.started_at) > 36 * 36e5 : true;
 
   return <div className="aa arc">
-    <header className="ws-page-head"><div><Link className="aa-back" href="/admin/commerce">← Commerce</Link><h1>Payment reconciliation</h1>
+    <header className="ws-page-head"><div><Link className="aa-back" href="/admin/commerce"><ArrowLeft aria-hidden="true" />Back to Commerce</Link><h1>Payment reconciliation</h1>
       <p>Daily check of direct charges against Stripe in each seller’s connected account: amounts, application fees, the account charged, and any platform transfer on a direct order. Results are immutable; fix the cause, and the next run confirms it.</p></div>
       <div className="aa-head-actions"><Link className="arc-btn" href="/admin/health/jobs?status=all&kind=payments.reconcile">Job history</Link></div></header>
 

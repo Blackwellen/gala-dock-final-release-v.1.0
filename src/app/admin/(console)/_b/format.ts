@@ -28,3 +28,13 @@ export function dur(mins: number) {
   const h = Math.floor(mins / 60), m = Math.round(mins % 60);
   return h ? `${h}h ${m}m` : `${m}m`;
 }
+/** Q51: "YYYY-MM-DD" of an instant in Europe/London (UTC slicing gave yesterday's date between midnight and 01:00 BST). */
+export function londonYmd(v: string | number | Date = Date.now()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(v));
+}
+/** Q51: "YYYY-MM-DD HH:mm" London wall time for CSV exports. */
+export function londonStamp(v: string | number | Date) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+    .formatToParts(new Date(v)).map(x => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}`;
+}

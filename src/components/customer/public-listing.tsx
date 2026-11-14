@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { Star, BadgeCheck, MapPin, Users, Home, Tag, Clock, Award, Calendar, CheckCircle2, ChevronRight, ArrowRight, Utensils, Car, Accessibility, Layers, Camera, ShieldCheck, Leaf, Scaling, Salad, Package2, Compass } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MapView } from "@/components/kit/client";
@@ -8,27 +9,36 @@ import { ListingAvailability } from "@/components/public/listing-availability";
 import { PublicPlan, planHasContent } from "@/components/venue-plan/public-plan";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import { untyped } from "@/lib/workspace/db";
+import { publicReply } from "@/lib/profiles/rules";
+import { photoAlt } from "@/lib/media/photo-alt";
 import { SpaceCard, ListingMenus, ListingBars, type PublicBar, ListingGalleries, ListingBanner, VenueGoodToKnow, ServiceDetailsSection, venueFacts, coverageLine, type PublicSpace, type PublicMenu, type PublicMenuSection, type PublicMenuItem, type PublicGallery, type ServiceDetails } from "./public-listing-extras";
 
 type Kind = "venue" | "service";
 const money = (n: number | null | undefined) => n == null ? "On request" : `£${Number(n).toLocaleString("en-GB")}`;
 const COLS = "id,name,slug,kind,category,description,location,city,image,gallery,price_from,price_unit,capacity_min,capacity_max,rating,review_count,response_hours,verified,instant_book,booking_mode,badge,tags,lat,lng,details,workspace_id";
 
-export async function loadListing(kind: Kind, slug: string) {
+/**
+ * Q62: `preview` (the editor's "Preview" button, ?preview=1) also loads an unpublished listing — listings_public_read only returns
+ * one to members of its workspace (or platform admins), so drafts stay private. It used to 404 for every draft. Cached per request
+ * so generateMetadata and the page share one query.
+ */
+export const loadListing = cache(async (kind: Kind, slug: string, preview = false) => {
   const supabase = await createClient();
-  const q = supabase.from("listings").select(COLS).eq("kind", kind).eq("published", true);
+  const base = supabase.from("listings").select(COLS).eq("kind", kind);
+  const q = preview ? base : base.eq("published", true);
   const { data } = await (/^[0-9a-f-]{36}$/i.test(slug) ? q.eq("id", slug) : q.eq("slug", slug)).maybeSingle();
   return { supabase, l: data };
-}
+});
 
-export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }) {
-  const { supabase, l } = await loadListing(kind, slug);
+export async function PublicListing({ kind, slug, preview = false }: { kind: Kind; slug: string; preview?: boolean }) {
+  const { supabase, l } = await loadListing(kind, slug, preview);
   if (!l) notFound();
+  const draft = !(l as { published?: boolean }).published;
   const d = (l.details ?? {}) as Record<string, unknown>;
   const [{ data: spaces }, { data: pkgs }, { data: revs }, { data: { user } }, { data: similar }] = await Promise.all([
     kind === "venue" ? supabase.from("spaces").select("id,name,indoor,capacity_seated,capacity_standing,image,details,area_sqm,layouts,amenities").eq("venue_id", l.id).eq("status", "published").order("capacity_seated", { ascending: false }) : Promise.resolve({ data: [] }),
     supabase.from("packages").select("id,name,description,base_price,price_basis,min_guests,max_guests,image,inclusions,details,booking_mode").eq("listing_id", l.id).eq("status", "published").order("base_price"),
-    supabase.from("reviews").select("id,rating,ratings,body,created_at,build_item_id").eq("listing_id", l.id).eq("status", "published").order("created_at", { ascending: false }).limit(6),
+    supabase.from("reviews").select("id,rating,ratings,body,created_at,build_item_id,provider_response").eq("listing_id", l.id).eq("status", "published").order("created_at", { ascending: false }).limit(6),
     supabase.auth.getUser(),
     supabase.from("listings").select("id,name,slug,kind,image,rating,review_count,price_from,price_unit,location").eq("kind", kind).eq("published", true).eq("category", l.category).neq("id", l.id).order("rating", { ascending: false }).limit(4),
   ]);
@@ -115,7 +125,8 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
   // About + booking card, full-width spaces / packages / events / photos / reviews / location rows, similar, footer.
   return <div className="pl pl3">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
-    <RecordView itemKey={`listing:${l.id}`} signedIn={!!user} />
+    {draft ? <p role="status" className="k-notice amber" style={{ margin: "12px 16px" }}>Preview — this listing isn&apos;t published. Only your team can see this page; customers can&apos;t find or book it yet.</p>
+      : <RecordView itemKey={`listing:${l.id}`} signedIn={!!user} />}
     <section className="pl3-hero" aria-labelledby="pl-title">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="pl3-hero-bg" src={photos[0] ?? "/assets/gd/v-riverside-park.webp"} alt="" />
       <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} kind={kind} />
       <div className="pl3-hero-copy">{l.verified || verifiedBadge ? <span className="pl3-type"><BadgeCheck size={13} />{kind === "venue" ? "Verified venue" : `Verified · ${l.category}`}</span> : <span className="pl3-type">{l.category}</span>}
@@ -163,10 +174,10 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
     {kind === "venue" && (upcoming ?? []).length > 0 && <section id="events" className="pl3-row"><div className="k-between"><h2>Upcoming events at this venue</h2><Link className="k-link" href={l.city ? `/events/in/${encodeURIComponent(String(l.city).toLowerCase())}` : "/events"}>View all events <ArrowRight size={14} /></Link></div>
       <div className="pl3-g4">{(upcoming ?? []).map(ev => { const dt = ev.starts_at ? new Date(ev.starts_at) : null; return <Link key={ev.id} href={`/events/${ev.slug ?? ev.id}`} className="ce-card pl3-ev">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={ev.cover_image || "/assets/gd/oe-neon.webp"} alt="" />{dt && <span className="pl3-date"><small>{dt.toLocaleDateString("en-GB", { month: "short", timeZone: "Europe/London" })}</small><b>{dt.toLocaleDateString("en-GB", { day: "2-digit", timeZone: "Europe/London" })}</b></span>}<b>{ev.name}</b><small>{dt ? dt.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC"}</small></Link>; })}</div></section>}
     <section id="photos" className="pl3-row"><div className="k-between"><h2>{kind === "venue" ? "Photos" : "Recent events"}</h2><span className="k-small"><Camera size={13} /> {photos.length} photos</span></div>
-      <div className="pe3-photos-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt={`${l.name} photo ${i + 1}`} loading="lazy" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6}<small>More photos</small></b>}</span>)}</div></section>
+      <div className="pe3-photos-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt={photoAlt(d, p, `${l.name} photo ${i + 1}`)} loading="lazy" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6}<small>More photos</small></b>}</span>)}</div></section>
     <ListingGalleries galleries={galleries} />
     <section id="reviews" className="pl3-row"><div className="k-between"><h2>Reviews <span className="pl-rate"><Star size={16} fill="#f59e0b" color="#f59e0b" /><b>{Number(l.rating).toFixed(1)}</b><small>· {l.review_count} reviews</small></span></h2></div>
-      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p><small>{/* Q57: only reviews tied to a booking on Gala Dock are "Verified booking" (8 live reviews have none) */}{r.build_item_id ? "Verified booking · " : ""}{new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small></li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
+      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p>{publicReply(r) && <blockquote className="pl3-reply" style={{ margin: "8px 0", padding: "8px 10px", borderLeft: "3px solid var(--org-accent, #c7d2fe)", background: "#f8fafc", borderRadius: 6 }}><b style={{ fontSize: 12 }}>Reply from {l.name}</b><p style={{ margin: "4px 0 0", whiteSpace: "pre-line", fontSize: 13 }}>{publicReply(r)}</p></blockquote>}<small>{/* Q57: only reviews tied to a booking on Gala Dock are "Verified booking" (8 live reviews have none) */}{r.build_item_id ? "Verified booking · " : ""}{new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small></li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
     <div id="location" className="pl3-two">
       <section className="ce-card pl-loc"><div className="k-between"><h2>{kind === "venue" ? "Location & getting here" : "Service areas"}</h2><a className="k-link" href={maps} target="_blank" rel="noopener noreferrer">View on Google Maps <ChevronRight size={13} /></a></div>
         {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={220} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>

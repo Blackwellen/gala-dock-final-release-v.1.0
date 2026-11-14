@@ -30,7 +30,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
   const { id } = await props.params;
   const sp = await props.searchParams;
   if (!isUuid(id)) notFound();
-  const { db, allowed } = await requireAdminPermission("commerce");
+  const { db, allowed, permissions } = await requireAdminPermission("commerce");
   if (!allowed) return <Restricted area="Commerce" />;
   const t = await one<Tx & { details: Details }>(db.from("transactions").select("id,workspace_id,event_id,kind,category,description,amount,status,source,fee_amount,net_amount,counterparty,stripe_ref,occurred_at,details").eq("id", id).maybeSingle());
   if (!t) notFound();
@@ -163,7 +163,8 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
         <section className="adb-panel adt-actions"><h2>Actions</h2>
           <div className="adt-act">
             <RefundButton id={t.id} amount={refundable} label="Process refund" className="adb-btn" />
-            <details className="adb-pop"><summary className="adb-btn"><Headset aria-hidden="true" />Create support case</summary>
+            {/* Q51: admin_create_support_case needs the Support permission — commerce-only admins got an error after filling the form. */}
+            {permissions.has("support") && <details className="adb-pop"><summary className="adb-btn"><Headset aria-hidden="true" />Create support case</summary>
               <div className="adb-pop-body"><h3>New support case</h3>
                 <ActionForm action={createSupportCase} className="adb-form">
                   <input type="hidden" name="transaction_id" value={t.id} /><input type="hidden" name="category" value="payment" />
@@ -172,7 +173,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
                   <label>Priority<select name="priority" defaultValue="medium"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
                   <label>Internal note<textarea name="body" rows={3} /></label>
                   <button className="adb-btn primary" type="submit">Create case</button>
-                </ActionForm></div></details>
+                </ActionForm></div></details>}
             <div className="adt-act-row">{t.stripe_ref ? <a className="adb-btn adt-stripe-btn" href={`https://dashboard.stripe.com/search?query=${encodeURIComponent(t.stripe_ref)}`} target="_blank" rel="noopener noreferrer"><span className="adt-stripe">S</span>Open in Stripe</a> : <span className="adb-btn adt-stripe-btn" aria-disabled="true">No Stripe reference</span>}
             <Menu label="More transaction actions" className="adb-btn adt-more" entries={[{ kind: "link", label: "View payouts", href: "/admin/commerce/payouts" }, { kind: "link", label: "Open Trust & Safety", href: "/admin/trust" }]} trigger={<MoreHorizontal aria-hidden="true" />} /></div>
           </div>
@@ -194,7 +195,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
               <div className="adb-pop-body"><h3>Add internal note</h3><ActionForm action={addNote} className="adb-note-form" resetOnSuccess>
                 <input type="hidden" name="entity_type" value="transaction" /><input type="hidden" name="entity_id" value={t.id} />
                 <textarea name="body" rows={3} required aria-label="Note" placeholder="Visible to platform admins only" /><button className="adb-btn primary" type="submit">Save note</button></ActionForm></div></details></div>
-          {notes.length ? <ul>{notes.slice(0, 2).map(n => <li key={n.id}><Face name={n.author_name} src={n.author_name === "Sarah Mitchell" ? "/assets/gd/av-ava-thompson.webp" : n.author_name === "James Carter" ? "/assets/gd/av-james-carter.webp" : null} size={28} /><span><b>{n.author_name} <small>{ago(n.created_at, now)}</small></b><p>{n.body}</p></span><span className="adb-dots" aria-hidden="true"><MoreHorizontal /></span></li>)}</ul> : <p className="adb-none">No notes yet.</p>}
+          {notes.length ? <ul>{notes.slice(0, 2).map(n => <li key={n.id}><Face name={n.author_name} size={28} /><span><b>{n.author_name} <small>{ago(n.created_at, now)}</small></b><p>{n.body}</p></span></li>)}</ul> : <p className="adb-none">No notes yet.</p>}
         </section>
         <section className="adb-panel adt-cases-p">
           <div className="adb-sec-h"><h2>Support cases</h2><Link className="adb-link" href={`${base}?tab=support`}>View all <ArrowRight aria-hidden="true" /></Link></div>

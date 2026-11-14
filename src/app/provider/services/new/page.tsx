@@ -49,7 +49,7 @@ export default async function AddService(props: PageProps<"/provider/services/ne
     {step === 1 && <SvcStep1 s={s} svc={svc} next={s ? url(2) : "/provider/services/new?service={service}&step=2"} />}
     {step === 2 && s && <SvcStep2 s={s} svc={svc} pkgs={pkgs} back={url(1)} next={url(3)} />}
     {step === 3 && s && <SvcStep3 s={s} svc={svc} back={url(2)} next={url(4)} verify={verify} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
-    {step === 4 && s && <div className="vw vw-s5"><PhotoManager venueId={s.id} initial={[s.image, ...(s.gallery ?? [])].filter(Boolean)} />
+    {step === 4 && s && <div className="vw vw-s5"><PhotoManager venueId={s.id} initial={[s.image, ...(s.gallery ?? [])].filter(Boolean)} initialAlts={((s.details ?? {}) as { photo_alt?: Record<string, string> }).photo_alt} />
       <div className="vw-foot"><Link href={url(3)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 4 of 5</span>
         <Link href={url(5)} className="ws-btn primary">Next: Review &amp; Publish<ArrowRight aria-hidden="true" /></Link></div></div>}
     {step === 5 && s && <div className="vw vw-s6">

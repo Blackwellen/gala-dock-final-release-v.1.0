@@ -38,6 +38,9 @@ async function accountTaxIds(stripe: ReturnType<typeof billingClient>, client?: 
   } catch { return []; }
 }
 
+/** Q56: Gala Dock's gb_vat account tax id(s) for other platform own-sales (promotion boost invoices). Never throws. */
+export const platformAccountTaxIds = (client?: StripeClient) => accountTaxIds(billingClient(client), client);
+
 async function ownerOf(db: Admin, workspaceId: string, userId: string) {
   const { data } = await untypedDb(db).from("workspace_members").select("role").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "active").maybeSingle();
   return data?.role === "owner";

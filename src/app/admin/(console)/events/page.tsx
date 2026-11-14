@@ -103,7 +103,7 @@ export default async function EventsPage(props: PageProps<"/admin/events">) {
                   <td><Link className="aa-who" href={qs(base, sp, { sel: e.id })} scroll={false}><Thumb src={e.cover_image || null} w={36} h={36} /><div><b>{e.name}</b><small>{shortRef("EVT", e.id, e.settings?.reference)}</small></div></Link></td>
                   <td><span className={`aa-chip ${typeTone(e.event_type)}`}>{typeLabel(e.event_type)}</span></td>
                   <td><span className="aa-who"><Avatar src={ws?.cover_image || owner?.avatar_url || null} name={ownerName(e)} size={22} /><span className="nm">{ownerName(e)}</span></span></td>
-                  <td className="ae-date">{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })}<small>{hmRange(e.starts_at, e.ends_at)}</small><small>{e.city ? `${e.city}, UK` : "—"}</small></td>
+                  <td className="ae-date">{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })}<small>{hmRange(e.starts_at, e.ends_at)}</small><small>{e.city || "—"}</small></td>
                   <td><Status value={st.key} label={st.label} dot={st.key === "live"} /></td>
                   <td><span className={`aa-chip ${e.visibility === "public" ? "green" : "purple"}`}>{titleCase(e.visibility)}</span></td>
                   <td>{m?.capacity ? <><span className="ae-sold">{m.sold.toLocaleString("en-GB")} / {m.capacity.toLocaleString("en-GB")}</span><span className="ae-bar"><i style={{ width: `${Math.min(100, (m.sold / m.capacity) * 100)}%` }} /></span></> : <span className="aa-muted">—</span>}</td>
@@ -167,7 +167,7 @@ async function EventDrawer({ e, m, sp, ownerLabel, wsRef, canTrust, canAudit, ca
       <AdminMenu label="More event actions" entries={[{ kind: "link", label: "Export (CSV)", href: `${base}/export?id=${e.id}` }, ...(publicHref ? [{ kind: "link" as const, label: "Public page", href: publicHref }] : [])]} /></nav>
     <ul className="ae-facts">
       <li><CalendarDays aria-hidden="true" />{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })} · {hmRange(e.starts_at, e.ends_at)}</li>
-      <li><MapPin aria-hidden="true" />{[e.venue_name, e.city].filter(Boolean).join(", ") || "Location not set"}{e.city ? ", UK" : ""}{e.venue_listing_id && canMarket && <Link className="aa-link" href={`/admin/marketplace/listings/${e.venue_listing_id}`}>View venue <ArrowRight aria-hidden="true" /></Link>}</li>
+      <li><MapPin aria-hidden="true" />{[e.venue_name, e.city].filter(Boolean).join(", ") || "Location not set"}{e.venue_listing_id && canMarket && <Link className="aa-link" href={`/admin/marketplace/listings/${e.venue_listing_id}`}>View venue <ArrowRight aria-hidden="true" /></Link>}</li>
       <li><Briefcase aria-hidden="true" />{typeLabel(e.event_type)}</li>
       <li><Building2 aria-hidden="true" />{ownerLabel}{wsRef ? ` (${wsRef})` : ""}{e.workspace_id && <Link className="aa-link" href={`/admin/workspaces/${e.workspace_id}`}>Open <ArrowRight aria-hidden="true" /></Link>}</li>
     </ul>

@@ -57,7 +57,7 @@ export default async function VerificationReviewPage(props: PageProps<"/admin/tr
   const enfCodes = codes.filter(c => !c.applies_to?.length || c.applies_to.some(a => a === "workspace" || a === "listing" || a === "verification"));
 
   return <div className="adb ads add">
-    <Head back={{ href: "/admin/trust", label: "Trust & Safety" }} title="Verification review" subtitle="Provider evidence, identity and business checks, and appeals against restrictions. Nothing here self-verifies: every decision is yours, recorded with a reason." />
+    <Head back={{ href: "/admin/trust", label: "Back to Trust & Safety" }} title="Verification review" subtitle="Provider evidence, identity and business checks, and appeals against restrictions. Nothing here self-verifies: every decision is yours, recorded with a reason." />
     <section className="add-kpis">
       <Kpi icon={FileCheck2} tone="blue" label="Documents to review" value={pendingDocs.length} note={pendingDocs.length ? `Oldest ${ago(pendingDocs.at(-1)!.created_at, now)}` : "Queue clear"} />
       <Kpi icon={ShieldCheck} tone="purple" label="Checks to review" value={pendingChecks.length} note={`${checks.filter(c => c.status === "verified").length} verified`} />

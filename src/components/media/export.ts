@@ -1,6 +1,6 @@
 "use client";
 
-import { fontSpecs, googleFontHrefs, type Page } from "@/lib/media/document";
+import { cssFontUrls, fontSpecs, googleFontHrefs, usedFaceCss, type Page } from "@/lib/media/document";
 import { loadFonts } from "@/lib/design-kit/assets";
 
 /**
@@ -13,20 +13,22 @@ const toDataUrl = async (url: string) => {
   return await new Promise<string>((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b); });
 };
 
-async function fontCss(page: Page) {
+async function fontCss(page: Page, faces = "") {
   const specs = fontSpecs({ unit: "px", dpi: 150, pages: [page] });
   if (!specs.length) return "";
   try {
     const catalogue = await loadFonts().then(list => new Map(list.map(f => [f.f, { w: f.w, i: f.i }]))).catch(() => null);
-    const css = (await Promise.all(googleFontHrefs(specs, catalogue).map(h => fetch(h).then(r => (r.ok ? r.text() : "")).catch(() => "")))).join("\n");
-    const urls = [...new Set([...css.matchAll(/url\((https:[^)]+)\)/g)].map(m => m[1]!))].slice(0, 60);
+    const google = (await Promise.all(googleFontHrefs(specs, catalogue).map(h => fetch(h).then(r => (r.ok ? r.text() : "")).catch(() => "")))).join("\n");
+    // Q55: uploaded brand fonts (same-origin @font-face) are embedded too; they used to be left out of every export.
+    const css = `${usedFaceCss(faces, specs.map(s => s.family))}\n${google}`;
+    const urls = cssFontUrls(css).slice(0, 60);
     let out = css;
     for (const u of urls) { try { out = out.replaceAll(u, await toDataUrl(u)); } catch { /* keep remote url */ } }
     return out;
   } catch { return ""; }
 }
 
-export async function renderPage(el: HTMLElement, page: Page, scale = 1, transparent = false): Promise<HTMLCanvasElement> {
+export async function renderPage(el: HTMLElement, page: Page, scale = 1, transparent = false, faces = ""): Promise<HTMLCanvasElement> {
   const clone = el.cloneNode(true) as HTMLElement;
   clone.style.transform = "none"; clone.style.position = "relative"; clone.style.left = "0"; clone.style.top = "0"; clone.style.display = "block"; clone.style.cursor = "";
   // Editor-only chrome inside the page node (transparency checkerboard, in-progress pen/line preview) never reaches the file.
@@ -34,7 +36,7 @@ export async function renderPage(el: HTMLElement, page: Page, scale = 1, transpa
   for (const n of [...clone.querySelectorAll("[contenteditable]")]) n.removeAttribute("contenteditable");
   if (transparent) clone.style.background = "transparent";
   for (const img of [...clone.querySelectorAll("img")]) { try { img.src = await toDataUrl(img.src); } catch { img.remove(); } }
-  const css = await fontCss(page);
+  const css = await fontCss(page, faces);
   const xhtml = new XMLSerializer().serializeToString(clone);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${page.width}" height="${page.height}"><defs><style>${css.replace(/</g, "")}</style></defs><foreignObject width="100%" height="100%">${xhtml}</foreignObject></svg>`;
   const img = new Image();
@@ -48,18 +50,18 @@ export async function renderPage(el: HTMLElement, page: Page, scale = 1, transpa
   return c;
 }
 
-export async function exportDesign(els: HTMLElement[], pages: Page[], format: "png" | "jpeg" | "webp" | "pdf", opts: { scale: number; quality: number; transparent: boolean }): Promise<Blob> {
+export async function exportDesign(els: HTMLElement[], pages: Page[], format: "png" | "jpeg" | "webp" | "pdf", opts: { scale: number; quality: number; transparent: boolean; faces?: string }): Promise<Blob> {
   if (format === "pdf") {
     const { PDFDocument } = await import("pdf-lib");
     const pdf = await PDFDocument.create();
     for (let i = 0; i < pages.length; i++) {
-      const c = await renderPage(els[i]!, pages[i]!, opts.scale, false);
+      const c = await renderPage(els[i]!, pages[i]!, opts.scale, false, opts.faces);
       const jpg = await pdf.embedJpg(await (await new Promise<Blob>(r => c.toBlob(b => r(b!), "image/jpeg", 0.95))).arrayBuffer());
       const p = pdf.addPage([pages[i]!.width * 0.48, pages[i]!.height * 0.48]);   // 150 dpi working px → points
       p.drawImage(jpg, { x: 0, y: 0, width: p.getWidth(), height: p.getHeight() });
     }
     return new Blob([new Uint8Array(await pdf.save())], { type: "application/pdf" });
   }
-  const c = await renderPage(els[0]!, pages[0]!, opts.scale, opts.transparent && format === "png");
+  const c = await renderPage(els[0]!, pages[0]!, opts.scale, opts.transparent && format === "png", opts.faces);
   return await new Promise<Blob>((res, rej) => c.toBlob(b => (b ? res(b) : rej(new Error("export"))), `image/${format}`, opts.quality));
 }

@@ -250,13 +250,14 @@ export const machines = {
     transitions: {
       queued: ["planning", "running", "waiting_approval", "paused", "cancelled", "failed"],
       scheduled: ["queued", "running", "paused", "cancelled", "failed"],
-      planning: ["awaiting_plan_confirmation", "running", "waiting_approval", "paused", "failed", "cancelled"],
+      // Q53: zero-step (conversational) plans complete from planning; a transient planning error re-queues with backoff.
+      planning: ["awaiting_plan_confirmation", "running", "waiting_approval", "paused", "failed", "cancelled", "completed", "queued"],
       awaiting_plan_confirmation: ["running", "cancelled", "planning", "paused"],
       running: ["waiting_external", "waiting_approval", "scheduled_wait", "paused", "retrying", "partially_completed", "completed", "failed", "cancelled", "scheduled"],
       waiting_external: ["queued", "running", "retrying", "paused", "cancelled", "failed", "partially_completed"],
       waiting_approval: ["queued", "running", "paused", "cancelled", "partially_completed"],
       scheduled_wait: ["queued", "running", "cancelled", "paused"],
-      paused: ["queued", "running", "cancelled"],
+      paused: ["queued", "running", "cancelled", "awaiting_plan_confirmation"],   // Q53: resume of an unconfirmed plan
       retrying: ["running", "failed", "cancelled", "paused"],
       partially_completed: ["running", "completed", "cancelled"],
       completed: [], failed: ["retrying", "queued"], cancelled: [],

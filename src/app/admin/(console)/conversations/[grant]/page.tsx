@@ -40,7 +40,7 @@ export default async function GrantPage(props: PageProps<"/admin/conversations/[
   const C = (convs ?? []) as { id: string; subject: string; kind: string; last_message_at: string }[];
   const L = (log ?? []) as { id: string; conversation_id: string; opened_at: string; closed_at: string | null; last_seen_at: string }[];
   return <div className="adb acv">
-    <Link className="adb-back" href="/admin/conversations"><ArrowLeft aria-hidden="true" />Break-glass access</Link>
+    <Link className="adb-back" href="/admin/conversations"><ArrowLeft aria-hidden="true" />Back to Break-glass access</Link>
     <Head title={`${REASONS.find(r => r[0] === G.reason)?.[1] ?? G.reason} · ${G.case_type === "trust" ? "Trust" : "Support"} case ${G.case_reference}`}
       subtitle={`Requested by ${name(G.requester_id)} on ${stamp(G.created_at)}${G.approver_id ? ` · ${G.status === "rejected" ? "rejected" : "approved"} by ${name(G.approver_id)}` : ""}`}
       badges={<Pill status={G.status === "active" ? "open" : G.status === "pending" ? "pending" : "neutral"} label={G.status[0].toUpperCase() + G.status.slice(1)} />} />

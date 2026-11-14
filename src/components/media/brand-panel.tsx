@@ -7,7 +7,7 @@ import { FONTS } from "@/lib/media/document";
 import { confirmDialog } from "@/lib/ui/dialogs";
 
 export type CustomFont = { id: string; family: string; weight: number; style: "normal" | "italic" };
-export type Brand = { workspaceId: string; canManage: boolean; kit: BrandKit; fonts: CustomFont[] };
+export type Brand = { workspaceId: string; canManage: boolean; kit: BrandKit; fonts: CustomFont[]; /** Settings → Brand colour, shown first; not part of the kit. */ workspaceColor?: string | null };
 export const logoSrc = (path: string) => `/api/media/asset?path=${encodeURIComponent(path)}`;
 
 /** @font-face rules for the workspace's uploaded fonts (served same-origin so exports can embed them). */
@@ -26,6 +26,7 @@ export function BrandPanel({ brand, canEdit, onColor, onFont, onLogo, onFontsCha
   const [busy, setBusy] = useState(""); const [msg, setMsg] = useState("");
   const [hex, setHex] = useState("#0b08f8"), [pickFont, setPickFont] = useState("");
   const manage = brand.canManage;
+  const wsColor = brand.workspaceColor && !kit.colors.some(c => c.hex.toLowerCase() === brand.workspaceColor!.toLowerCase()) ? brand.workspaceColor : null;
   const persist = async (next: BrandKit) => {
     setBusy("kit"); setMsg("");
     const r = await saveBrandKit(brand.workspaceId, next); setBusy("");
@@ -55,7 +56,8 @@ export function BrandPanel({ brand, canEdit, onColor, onFont, onLogo, onFontsCha
 
   return <div className="st-brand">
     <h3>Colours</h3>
-    {kit.colors.length ? <div className="st-swatches">{kit.colors.map((c, i) => <span key={`${c.hex}${i}`} className="st-swatch-wrap">
+    {wsColor || kit.colors.length ? <div className="st-swatches">{wsColor && <span className="st-swatch-wrap"><button className="st-swatch" style={{ background: wsColor }} title={`Workspace brand colour · ${wsColor}`} aria-label={`Apply workspace brand colour ${wsColor}`} disabled={!canEdit} onClick={() => onColor(wsColor)} /></span>}
+      {kit.colors.map((c, i) => <span key={`${c.hex}${i}`} className="st-swatch-wrap">
       <button className="st-swatch" style={{ background: c.hex }} title={`${c.name ? `${c.name} · ` : ""}${c.hex}`} aria-label={`Apply ${c.name || c.hex}`} disabled={!canEdit} onClick={() => onColor(c.hex)} />
       {manage && <button className="st-swatch-x" aria-label={`Remove ${c.hex}`} onClick={() => persist({ ...kit, colors: kit.colors.filter((_, j) => j !== i) })}><X size={10} /></button>}
     </span>)}</div> : <p className="st-hint">No brand colours yet.</p>}

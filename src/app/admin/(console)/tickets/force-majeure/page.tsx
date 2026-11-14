@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import "@/styles/admin-a-base.css";
 import { Restricted } from "@/components/workspace/kit";
 import { ActionButton } from "@/components/workspace/actions";
 import { requireAdminPermission } from "@/lib/admin/context";
 import { reviewForceMajeure } from "../../_a/actions";
+import { must } from "../../_a/lib";
 
 export const metadata: Metadata = { title: "Force majeure reviews" };
 type Claim = { event_id: string; reason: string; fm_detail: string | null; fm_status: string; created_at: string; review_note: string | null; reviewed_at: string | null; orders_refunded: number };
@@ -19,20 +21,20 @@ export default async function ForceMajeurePage(props: { searchParams: Promise<Re
   const showAll = (await props.searchParams).all === "1";
   let q = ctx.db.from("event_cancellations").select("event_id,reason,fm_detail,fm_status,created_at,review_note,reviewed_at,orders_refunded").eq("cause", "force_majeure").order("created_at", { ascending: true }).limit(100);
   if (!showAll) q = q.eq("fm_status", "pending");
-  const claims = ((await q).data ?? []) as Claim[];
+  const claims = (must<Claim[] | null>(await q) ?? []);   // Q51: a failed read used to show "No pending claims"
   const ids = claims.map(c => c.event_id);
-  const [{ data: evs }, { data: charges }] = ids.length ? await Promise.all([
+  const [evs, charges] = ids.length ? (await Promise.all([
     ctx.db.from("events").select("id,name,starts_at,workspace_id").in("id", ids),
     ctx.db.from("platform_charges").select("event_id,amount,status").in("event_id", ids).eq("kind", "cancellation_fees"),
-  ]) : [{ data: [] }, { data: [] }];
+  ])).map(r => must<unknown[] | null>(r)) : [[], []];
   const ev = new Map(((evs ?? []) as { id: string; name: string; starts_at: string | null }[]).map(e => [e.id, e]));
   const fee = new Map(((charges ?? []) as { event_id: string; amount: number; status: string }[]).map(c => [c.event_id, c]));
   const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(n));
-  const d = (s: string | null) => s ? new Date(s).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
+  const d = (s: string | null) => s ? new Date(s).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "—";
 
   return <div className="aa">
     <header className="ws-page-head">
-      <div><h1>Force majeure reviews</h1><p>Organisers who say an event couldn’t lawfully or safely go ahead. Buyers are already refunded in full; this decides only whether the organiser’s platform fees are waived.</p></div>
+      <div><Link className="aa-back" href="/admin/tickets"><ArrowLeft aria-hidden="true" />Back to Tickets</Link><h1>Force majeure reviews</h1><p>Organisers who say an event couldn’t lawfully or safely go ahead. Buyers are already refunded in full; this decides only whether the organiser’s platform fees are waived.</p></div>
       <div className="aa-head-actions"><Link className="ws-btn outline" href={showAll ? "/admin/tickets/force-majeure" : "/admin/tickets/force-majeure?all=1"}>{showAll ? "Pending only" : "Show decided"}</Link></div>
     </header>
     <section className="ws-panel" style={{ padding: 16 }}>

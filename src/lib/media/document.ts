@@ -141,3 +141,13 @@ export const googleFontHrefs = (specs: { family: string; weights: number[]; ital
     const ws = [...new Set((weights.length ? weights : [400]).map(nearest))].sort((a, b) => a - b), ital = italic && meta.i;
     return [`https://fonts.googleapis.com/css2?family=${name}:${ital ? `ital,wght@${[...ws.map(w => `0,${w}`), ...ws.map(w => `1,${w}`)].join(";")}` : `wght@${ws.join(";")}`}&display=swap`];
   });
+
+/** Q55 · Font files referenced by a stylesheet that an export must inline: Google Fonts files (https) and the workspace's uploaded brand
+ *  fonts, served same-origin from /api/media/font?id=<uuid>. An SVG rendered through <img> can't fetch either, so un-inlined fonts fell
+ *  back to a default face in PNG/JPEG/PDF exports. */
+export const cssFontUrls = (css: string) => [...new Set([...css.matchAll(/url\(\s*["']?((?:https:\/\/[^)"'\s]+)|(?:\/api\/media\/font\?id=[0-9a-f-]{36}))["']?\s*\)/gi)].map(m => m[1]!))];
+/** @font-face rules (from the Brand tab's uploaded fonts) for just the families a page uses. */
+export const usedFaceCss = (faces: string, families: string[]) => {
+  const want = new Set(families.map(f => f.toLowerCase()));
+  return [...faces.matchAll(/@font-face\{[^}]*\}/g)].map(m => m[0]).filter(r => { const fam = /font-family:\s*"([^"]+)"/.exec(r)?.[1]; return !!fam && want.has(fam.toLowerCase()); }).join("\n");
+};

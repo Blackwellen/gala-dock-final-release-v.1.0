@@ -112,7 +112,9 @@ async function render(cv: HTMLCanvasElement, f: Fmt, c: Content, wsName: string)
   }
   const bw = (land ? 22 : 30) * u, bh = 6.4 * u, bxc = land ? W * .48 : W * .76, byy = top + 2.6 * u;
   g.fillStyle = c.accent; g.shadowColor = c.accent; g.shadowBlur = 2 * u; g.beginPath(); g.roundRect(bxc - bw / 2, byy, bw, bh, bh / 2); g.fill(); g.shadowBlur = 0;
-  g.fillStyle = readableOn(c.accent) === "#ffffff" ? "#fff" : "#0b0620";   // Q67: label contrast follows the accent (brand colours can be light) g.font = `400 ${3 * u}px ${FONTS.impact}`; ls(.1 * u); g.fillText("BUY TICKETS  →", bxc, byy + bh * .7); ls(0);
+  // Q67: label contrast follows the accent (brand colours can be light). Q55: this comment used to swallow the rest of the line, so the
+  // "BUY TICKETS" label was never drawn on any poster.
+  g.fillStyle = readableOn(c.accent) === "#ffffff" ? "#fff" : "#0b0620"; g.font = `400 ${3 * u}px ${FONTS.impact}`; ls(.1 * u); g.fillText("BUY TICKETS  →", bxc, byy + bh * .7); ls(0);
   g.fillStyle = "#fff"; g.font = `700 ${1.35 * u}px ${sans}`; ls(.1 * u); g.fillText(c.url.replace(/^https?:\/\//, "").replace(/\/$/, "").toUpperCase().slice(0, 42), bxc, byy + bh + 2.6 * u); ls(0);
   if (!land && (c.brandGd || c.brandWs || c.brandVenue)) {
     const ry = top + row + 3.6 * u, bsz = 2.6 * u; g.font = `700 ${1.8 * u}px ${sans}`; g.textAlign = "left";

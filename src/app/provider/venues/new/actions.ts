@@ -1,5 +1,6 @@
 "use server";
 
+import { cleanPhotoAlts } from "@/lib/media/photo-alt";
 import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
@@ -110,7 +111,7 @@ export async function saveOperations(venueId: string, next: string | null, fd: F
 }
 
 /** Step 5 — photo order/cover/removal. URLs must be ones this workspace uploaded (or already on the listing). */
-export async function savePhotos(venueId: string, photos: string[]): Promise<ActionResult> {
+export async function savePhotos(venueId: string, photos: string[], alts?: Record<string, string>): Promise<ActionResult> {
   const { db, workspace } = await getProvider();
   const { data: l } = await db.from("listings").select("image,gallery").eq("id", venueId).eq("workspace_id", workspace.id).maybeSingle();
   if (!l) return { ok: false, error: "Venue not found." };
@@ -118,7 +119,8 @@ export async function savePhotos(venueId: string, photos: string[]): Promise<Act
   const mine = (u: string) => known.has(u) || u.includes(`/listing-media/${workspace.id}/`);
   const clean = [...new Set(photos)].filter(mine).slice(0, 40);
   // listing_readiness checks details.photos, so keep it in step with image + gallery.
-  const r = await save(venueId, { image: clean[0] ?? "", gallery: clean.slice(1), details: { photos: clean } });
+  // Q55: per-photo alt text (details.photo_alt); omitted by callers that only reorder/upload, so existing text is kept (details merge).
+  const r = await save(venueId, { image: clean[0] ?? "", gallery: clean.slice(1), details: { photos: clean, ...(alts ? { photo_alt: cleanPhotoAlts(clean, alts) } : {}) } });
   if (!r.ok) return r;
   return { ok: true, message: "Photos saved" };
 }

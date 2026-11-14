@@ -84,3 +84,16 @@
 .ws-app .adca .adb-head h1, .ws-app .adt .adb-head h1 { font-size: 24px; }
 /* Row menus and copy buttons: the dense icon-button token (were 20px tall in commerce / support / transaction tables). */
 .ws-app .adb-dots, .ws-app .adb-copy { min-width: var(--k-icon-btn-dense); min-height: var(--k-icon-btn-dense); }
+
+/* Q51 header consistency (owner: "the header is not consistent between pages"). Every admin page head uses one scale:
+   list/landing titles --k-title-admin, subtitles 18px (14px on phones), detail heroes 24px (above), and one back-link style
+   for both families (_a .aa-back and _b .adb-back). The overview (.ao-head, 17px) and reconciliation (13px) subtitles were outliers. */
+.ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) h1 { font-size: var(--k-title-admin); }
+.ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) > div > p { font-size: 18px; line-height: 1.25; }
+.ws-app.admin :is(.aa-back, .adb-back) { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: #0d0d63; margin: 0 0 6px; }
+.ws-app.admin :is(.aa-back, .adb-back) svg { width: 15px !important; height: 15px !important; }
+.ws-app.admin .aa .ws-page-head > div > .aa-back { display: flex; width: max-content; }
+@media (max-width: 860px) {
+  .ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) h1 { font-size: 28px; }
+  .ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) > div > p { font-size: 14px; }
+}

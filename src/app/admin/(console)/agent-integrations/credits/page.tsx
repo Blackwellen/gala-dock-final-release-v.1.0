@@ -48,7 +48,7 @@ export default async function CreditsPage({ searchParams }: { searchParams: Prom
   const P = (prices ?? []) as Price[], K = (packs ?? []) as Pack[], L = (ledger ?? []) as Entry[], W = (workspaces ?? []) as { id: string; name: string; kind: string }[];
   const wsName = (id: string) => W.find(w => w.id === id)?.name ?? "Workspace";
   return <div className="adb acv">
-    <Link className="adb-back" href="/admin/agent-integrations"><ArrowLeft aria-hidden="true" />Agent &amp; Integrations</Link>
+    <Link className="adb-back" href="/admin/agent-integrations"><ArrowLeft aria-hidden="true" />Back to Agent &amp; Integrations</Link>
     <Head title="AI credits & pricing" subtitle="Model price book, credit packs and manual credit adjustments for organiser and provider workspaces." />
 
     <section className="adb-panel" aria-labelledby="pf-h"><div className="adb-sec-h"><h2 id="pf-h">AI profitability — {monthKey}</h2>

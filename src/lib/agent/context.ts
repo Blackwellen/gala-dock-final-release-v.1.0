@@ -7,7 +7,9 @@ type Sb = SupabaseClient<Database>;
 const clip = (s: string | null | undefined, n = 240) => (s ?? "").replace(/\s+/g, " ").slice(0, n);
 
 /** Compact plain-text snapshot of records the caller can already see (RLS enforced by the user client). */
-export async function buildContext(sb: Sb, userId: string, scope: "customer" | "organizer", eventId?: string): Promise<string | null> {
+/** Q53: `workspaceId` limits the workspace overview to the workspace that pays for the answer (it mixed every workspace the
+ *  person belongs to). */
+export async function buildContext(sb: Sb, userId: string, scope: "customer" | "organizer", eventId?: string, workspaceId?: string): Promise<string | null> {
   const lines: string[] = [];
   if (eventId) {
     const { data: e } = await sb.from("events").select("id,name,event_type,status,starts_at,venue_name,location,guest_count,capacity,budget_total,currency,description,management").eq("id", eventId).maybeSingle();
@@ -40,16 +42,19 @@ export async function buildContext(sb: Sb, userId: string, scope: "customer" | "
     for (const l of listings ?? []) lines.push(`MARKETPLACE ${l.kind} ${l.name} (${l.category}) ${l.location} from ${l.price_from != null ? money(l.price_from) : "n/a"} ${l.price_unit}${l.capacity_max ? `, up to ${l.capacity_max}` : ""}, rating ${l.rating}`);
     return lines.join("\n");
   }
-  const { data: events } = await sb.from("events").select("id,name,status,starts_at,capacity,budget_total,settings").not("workspace_id", "is", null).order("starts_at").limit(20);
+  const evq = sb.from("events").select("id,name,status,starts_at,capacity,budget_total,settings");
+  const { data: events } = await (workspaceId ? evq.eq("workspace_id", workspaceId) : evq.not("workspace_id", "is", null)).order("starts_at").limit(20);
   for (const e of events ?? []) lines.push(`EVENT ${e.name} ${e.status} ${dateShort(e.starts_at)} capacity ${e.capacity ?? "n/a"} budget ${e.budget_total ? money(e.budget_total) : "n/a"}`);
+  const apq = sb.from("agent_approvals").select("title,status,amount").eq("status", "pending");
+  const ldq = sb.from("leads").select("name,stage,value,next_action").neq("stage", "lost");
   const [{ data: approvals }, { data: leads }] = await Promise.all([
-    sb.from("agent_approvals").select("title,status,amount").eq("status", "pending").limit(10),
-    sb.from("leads").select("name,stage,value,next_action").neq("stage", "lost").limit(15),
+    (workspaceId ? apq.eq("workspace_id", workspaceId) : apq).limit(10),
+    (workspaceId ? ldq.eq("workspace_id", workspaceId) : ldq).limit(15),
   ]);
   for (const a of approvals ?? []) lines.push(`APPROVAL PENDING ${a.title}${a.amount ? ` ${money(a.amount)}` : ""}`);
   for (const l of leads ?? []) lines.push(`LEAD ${l.name} ${l.stage} ${money(l.value)} next: ${clip(l.next_action, 60)}`);
   // Q17: server-detected schedule / resource / live-ops conflicts (operational_conflicts) for the caller's organizer workspaces.
-  const { data: wsRows } = await sb.from("events").select("workspace_id").not("workspace_id", "is", null).limit(50);
+  const { data: wsRows } = workspaceId ? { data: [{ workspace_id: workspaceId }] } : await sb.from("events").select("workspace_id").not("workspace_id", "is", null).limit(50);
   const rpc = sb.rpc as unknown as (f: string, a: object) => Promise<{ data: { severity: string; message: string; event_name: string | null }[] | null }>;
   for (const ws of [...new Set((wsRows ?? []).map(r => r.workspace_id as string))].slice(0, 3)) {
     const { data: conflicts } = await rpc.call(sb, "operational_conflicts", { p_ws: ws });

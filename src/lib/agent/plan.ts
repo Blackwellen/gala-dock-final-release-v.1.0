@@ -1,4 +1,5 @@
 import { TOOL, decide, type Policy } from "./registry";
+import { isRefKey } from "./resilience";
 
 /**
  * Plan validation (Q41, domains 10 Reasoning / 13 Output + Action Validation). The model's plan is untrusted output: it is parsed,
@@ -23,10 +24,11 @@ export function parsePlan(text: string, catalog: { id: string }[]): ParsedPlan {
     if (tool.risk >= 5) { dropped.push({ tool: id, reason: "risk_r5_never" }); continue; }
     const input = s.input && typeof s.input === "object" && !Array.isArray(s.input) ? s.input as Record<string, unknown> : {};
     // References may only point backwards to earlier steps (no forward or self references).
-    const badRef = Object.values(input).some(v => typeof v === "string" && v.startsWith("$") && (!REF.test(v) || Number(REF.exec(v)![1]) > steps.length));
+    // Q53: and only fill id arguments — free text (a message body, a memory value) is never taken from a previous tool's output.
+    const badRef = Object.entries(input).some(([k, v]) => typeof v === "string" && v.startsWith("$") && (!REF.test(v) || !isRefKey(k) || Number(REF.exec(v)![1]) > steps.length));
     if (badRef) { dropped.push({ tool: id, reason: "bad_reference" }); continue; }
     // A field filled by a "$stepN.x" reference validates with a placeholder UUID; the resolved value is validated again at execution.
-    const filled = Object.fromEntries(Object.entries(input).map(([k, v]) => [k, typeof v === "string" && REF.test(v) ? PLACEHOLDER : v]));
+    const filled = Object.fromEntries(Object.entries(input).map(([k, v]) => [k, typeof v === "string" && REF.test(v) && isRefKey(k) ? PLACEHOLDER : v]));
     const check = tool.input.safeParse(filled);
     if (!check.success) { dropped.push({ tool: id, reason: "invalid_input" }); continue; }
     if (steps.length >= MAX_STEPS) { dropped.push({ tool: id, reason: "too_many_steps" }); continue; }

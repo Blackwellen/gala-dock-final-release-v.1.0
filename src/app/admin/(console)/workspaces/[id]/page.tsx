@@ -121,7 +121,7 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
       ["Status", <Status key="s" value={w.status === "suspended" ? "suspended" : "active"} label={w.status === "suspended" ? "Suspended" : "Active"} />],
       ["Owner", owner ? <Link className="aa-who" href={`/admin/users/${owner.id}`}><Avatar src={owner.avatar_url} name={owner.full_name} size={26} /><span>{owner.full_name} <em className="aa-muted">({shortRef("USR", owner.id)})</em></span></Link> : "—"],
       ["Company", w.settings?.company || "—"], ["Company no.", w.settings?.company_no || "—"], ["VAT number", w.settings?.vat_number || "—"],
-      ["Location", w.settings?.location ? <span className="aa-loc"><Flag country="GB" />{w.settings.location}</span> : "—"],
+      ["Location", w.settings?.location ? <span className="aa-loc"><Flag country={sellerCode} />{w.settings.location}</span> : "—"],
       ["Created", day(w.created_at, { day: "numeric", month: "short", year: "numeric" })],
       ["Verification", <span key="v" className="awd-ver"><Status value={w.verification_status} />{can("trust") && <Link className="aa-link" href={`/admin/trust?q=${encodeURIComponent(w.name)}`}>View details →</Link>}</span>],
     ]} />
@@ -215,7 +215,8 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
       <div>
         <h1>{w.name} <Status value={w.status === "suspended" ? "suspended" : "active"} label={w.status === "suspended" ? "Suspended" : "Active"} /></h1>
         <p className="aa-hero-meta">{shortRef("ORG", id, w.settings?.reference)}<span className="sep">•</span>{titleCase(w.kind)} Workspace<span className="sep">•</span>{planLabel(w.plan)} Plan</p>
-        <p className="aa-hero-meta"><Flag country="GB" />{w.settings?.company || w.name}{w.settings?.company_no && <><span className="sep">•</span>Company no. {w.settings.company_no}</>}{w.settings?.location && <><span className="sep">•</span>{w.settings.location}</>}</p>
+        {/* Q51: the business country (Seller country), not a hard-coded UK flag; nothing when the country isn’t set. */}
+        <p className="aa-hero-meta"><Flag country={sellerCode} />{w.settings?.company || w.name}{w.settings?.company_no && <><span className="sep">•</span>Company no. {w.settings.company_no}</>}{w.settings?.location && <><span className="sep">•</span>{w.settings.location}</>}</p>
       </div>
       <div className="aa-hero-actions">
         <Link className="ws-btn outline" href={`/admin/events?q=${encodeURIComponent(w.name)}`}><ExternalLink aria-hidden="true" />Open in platform</Link>

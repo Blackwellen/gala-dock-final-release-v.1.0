@@ -53,3 +53,9 @@ export const pct = (a: number, b: number) => (b ? Math.round((a / b) * 100) : 0)
 export const hm = (iso?: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(iso)) : "");
 export const hmRange = (a?: string | null, b?: string | null) => (a ? `${hm(a)} – ${hm(b ?? a)}` : "");
 export const langName = (code?: string | null) => (code ? ({ en: "English", fr: "French", de: "German", es: "Spanish", it: "Italian", pt: "Portuguese", pl: "Polish" } as Record<string, string>)[code.toLowerCase()] ?? code : "—");
+
+/** Q51: a Supabase result's data, or throw so the page shows the error boundary — never "nothing here" when the read failed. */
+export function must<T>(r: { data: unknown; error: { message: string } | null }): T {
+  if (r.error) throw new Error(r.error.message);
+  return (r.data ?? null) as T;
+}

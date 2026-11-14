@@ -134,6 +134,18 @@ export async function applyRestriction(data: FormData): Promise<ActionResult> {
     "Restriction applied — the provider has been told and can appeal", "/admin/trust/verification");
 }
 
+/** Q51: remove a provider's public reply to a review (the text leaves the public row; the audit keeps it) or let them reply again.
+ *  moderate_review_response: trust or marketplace + aal2 + live session + reason; audited; the provider is notified. */
+export async function moderateReviewReply(reviewId: string, hide: boolean, reason: string): Promise<ActionResult> {
+  if (!isUuid(reviewId)) return bad();
+  if (String(reason ?? "").trim().length < 5) return bad("Write a reason of at least 5 characters — it is recorded in the audit log and sent to the provider.");
+  const { db } = await getAdmin();
+  const { error } = await db.rpc("moderate_review_response", { p_review: reviewId, p_hide: !!hide, p_reason: String(reason).trim().slice(0, 500) });
+  if (error) return { ok: false, error: /no_reply/.test(error.message) ? "There is no reply on this review to remove." : friendly(error) };
+  revalidatePath("/admin/trust/review-replies");
+  return { ok: true, message: hide ? "Reply removed — the provider has been told why" : "The provider can reply to this review again" };
+}
+
 // ── Trust: Q33 risk signals, holds, appeals; Q22 ticket flags ──
 export async function decideSignal(id: string, decision: string, reason: string): Promise<ActionResult> {
   if (!isUuid(id) || !["clear", "action", "escalate"].includes(decision)) return bad();

@@ -8,7 +8,7 @@ import { SaveHeart, MapView } from "@/components/kit/client";
 import { DiscoverSearch, AgentBrief } from "@/components/customer/discover-client";
 import { dateBadge, time12, money, num, dateShort } from "@/lib/format";
 import { serveSponsored, type Sponsored } from "@/lib/ads/serve";
-import { clickHref, interleave } from "@/lib/ads/core";
+import { clickHref, interleave, windowIds } from "@/lib/ads/core";
 import { SponsoredCard, SponsoredLabel, SponsoredRow } from "@/components/ads/sponsored";
 import { AdView } from "@/components/ads/beacon";
 
@@ -40,14 +40,18 @@ export default async function Discover({ searchParams }: { searchParams: Promise
   // Sponsored layer (Q23): served server-side from owned inventory, labelled, and kept apart from the organic list — organic
   // results are never re-sorted or re-ranked by a boost. Impressions count only from the slot's visibility beacon.
   const adCtx = { city: s(sp.city) || null, category: !isDate && chip ? chip : null };
+  // Q56: the search row is matched to the query; in-feed slots skip events already within the slot window (no token for an ad that
+  // could not render — it used to be dropped after serving, so the paid feed slot almost never showed).
+  const feedPositions = s(sp.q) ? [] : [4, 8];
   const [heroAds, feedAds] = await Promise.all([
     serveSponsored(adCtx.category ? "category_top" : "discover_hero", adCtx),
-    results && tab === "events" ? serveSponsored(s(sp.q) ? "search_results" : "discover_feed", adCtx) : Promise.resolve([] as Sponsored[]),
+    results && tab === "events" ? (s(sp.q) ? serveSponsored("search_results", { ...adCtx, q: s(sp.q) })
+      : serveSponsored("discover_feed", adCtx, view === "cards" ? windowIds(events, feedPositions) : [])) : Promise.resolve([] as Sponsored[]),
   ]);
   const hero = heroAds.find(a => a.event) ?? null;
   const resultHref = (e: PublicEvent) => evHref(e);
   const featHref = (e: { id: string; slug?: string | null }) => hero ? clickHref(hero.token) : evHref(e as PublicEvent);
-  const feed = interleave(events, feedAds.map(a => ({ ...a, subjectId: a.event_id ?? "" })), s(sp.q) ? [] : [4, 8]);
+  const feed = interleave(events, feedAds.map(a => ({ ...a, subjectId: a.event_id ?? "" })), feedPositions);
   const featVenues = ["the-loft-london", "riverside-events-center", "the-harper"].map(k => venues.find(v => v.slug === k)).filter(Boolean) as Listing[];
   const popServices = ["elite-sounds-dj", "taste-catering-co", "luxe-event-decor"].map(k => services.find(v => v.slug === k)).filter(Boolean) as Listing[];
   const popular = ["neon-nights", "summer-rooftop-party", "taste-tango-fest", "comedy-central-live"].map(k => events.find(e => e.slug === k)).filter(Boolean) as PublicEvent[];
@@ -92,7 +96,7 @@ export default async function Discover({ searchParams }: { searchParams: Promise
         <div className="k-between"><div className="k-row" style={{ gap: 12 }}><div className="k-seg solid">{([["cards", "Cards", LayoutGrid], ["list", "List", List], ["map", "Map", MapIcon]] as const).map(([k, l, I]) => <Link key={k} aria-current={(view === k) ? "page" : undefined} href={qs({ view: k === "cards" ? null : k })}><I size={14} />{l}</Link>)}</div><span className="k-small k-muted">{num(tab === "events" ? events.length : tab === "venues" ? venues.length : services.length)} results{s(sp.q) ? ` for “${s(sp.q)}”` : ""}</span></div><Link className="k-link" href="/discover">Back to Discover</Link></div>
         {tab === "events" && (s(sp.q) || view !== "cards") && <SponsoredRow items={feedAds} />}
         {tab === "events" ? (events.length ? (view === "list" ? <div className="ds-list">{events.map(e => <Link key={e.id} href={resultHref(e)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || FALLBACK_COVER} alt="" /><span className="k-grow"><b>{e.name}</b><span className="k-xs k-muted"><Calendar size={11} /> {dateShort(e.starts_at)} · {time12(e.starts_at)}</span><span className="k-xs k-muted"><MapPin size={11} /> {e.location}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{e.minPrice != null ? (e.minPrice ? money(e.minPrice) : "Free") : "—"}</b><Chip tone={e.remaining < 100 ? "red" : "green"}>{e.remaining < 100 ? `${e.remaining} left` : "Available"}</Chip></span></Link>)}</div> : <div className="ds-events ds-events-grid">{s(sp.q) ? events.map(e => <EventCard key={e.id} e={e} saved={saved.has(`event:${e.id}`)} href={resultHref(e)} />)
-          : feed.map(f => f.kind === "organic" ? <EventCard key={f.item.id} e={f.item} saved={saved.has(`event:${f.item.id}`)} href={resultHref(f.item)} /> : <div key={f.slot.token} className="gd-sp-feed"><SponsoredCard s={f.slot} /></div>)}</div>) : <Empty title="No events match" text="Try another date, area or category." />)
+          : feed.map(f => f.kind === "organic" ? <EventCard key={f.item.id} e={f.item} saved={saved.has(`event:${f.item.id}`)} href={resultHref(f.item)} /> : <div key={f.slot.token} className="gd-sp-feed"><SponsoredCard s={f.slot} why /></div>)}</div>) : <Empty title="No events match" text="Try another date, area or category." />)
           : (() => { const L = tab === "venues" ? venues : services; return L.length ? (view === "list" ? <div className="ds-list">{L.map(l => <Link key={l.id} href={lHref(l)} className="ds-li">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={l.image || FALLBACK_COVER} alt="" /><span className="k-grow"><b>{l.name} {l.verified && <BadgeCheck size={13} className="k-blue" />}</b><span className="k-xs k-muted"><Star size={11} fill="#f59e0b" color="#f59e0b" /> {l.rating.toFixed(1)} ({l.review_count}) · {l.category}</span><span className="k-xs k-muted"><MapPin size={11} /> {l.location}{l.capacity_max ? ` · up to ${num(l.capacity_max)}` : ""}</span></span><span style={{ textAlign: "right" }}><small className="k-xs k-muted">From</small><b style={{ display: "block" }}>{money(l.price_from)}</b><small className="k-xs k-muted">{l.price_unit}</small></span></Link>)}</div> : <div className="ds-events ds-events-grid">{L.map(l => <ListingCard key={l.id} l={l} href={lHref(l)} saved={saved.has(`listing:${l.id}`)} />)}</div>) : <Empty title={`No ${tab} match`} />; })()}
       </div>
       {view === "map" && <div className="ds-results-map"><MapView pins={(tab === "events" ? events.filter(e => e.lat).map(e => ({ id: e.id, lat: e.lat!, lng: e.lng!, label: e.name, price: e.minPrice != null ? money(e.minPrice) : "" })) : (tab === "venues" ? venues : services).filter(l => l.lat).map(l => ({ id: l.id, lat: l.lat!, lng: l.lng!, label: l.name, price: money(l.price_from) })))} center={{ lat: 51.507, lng: -0.11 }} zoom={11} height="100%" showPrices ariaLabel="Results map" /></div>}

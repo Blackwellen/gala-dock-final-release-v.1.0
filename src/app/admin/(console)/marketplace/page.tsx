@@ -11,7 +11,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows, count, isUuid } from "@/lib/workspace/db";
 import { money, day, relative, requestTime, delta, titleCase } from "@/lib/workspace/format";
 import { AdminMenu, ParamSelect, SearchBox, SelectAll } from "../_a/client";
-import { Pager, LineTabs, Status, DrawerClose, SectionHead, KVRows, MiniStat, TimelineItem, Flag } from "../_a/ui";
+import { Pager, LineTabs, Status, DrawerClose, SectionHead, KVRows, MiniStat, TimelineItem } from "../_a/ui";
 import { shortRef, str, pageOf, qs, type SP } from "../_a/lib";
 import { L_COLS, loadListingMetrics, lHealth, cancelRate, responseRate, modeTone, fmtHours, type Listing, type LMetric } from "../_a/listings";
 import { reviewListing } from "../_a/actions";
@@ -83,7 +83,7 @@ export default async function MarketplacePage(props: PageProps<"/admin/marketpla
   return <div className="aa am">
     <header className="ws-page-head">
       <div><h1>Marketplace</h1><p>Operate venue and service supply, response SLAs and listing quality.</p></div>
-      <div className="aa-head-actions"><a className="ws-btn outline" href={qs(`${base}/export`, sp, { page: null, sel: null, per: null })}><Download aria-hidden="true" />Export</a></div>
+      <div className="aa-head-actions"><Link className="ws-btn outline" href="/admin/trust/review-replies">Review replies</Link><a className="ws-btn outline" href={qs(`${base}/export`, sp, { page: null, sel: null, per: null })}><Download aria-hidden="true" />Export</a></div>
     </header>
     <LineTabs base={base} sp={{ q: str(sp, "q") }} active={tab} className="am-tabs" tabs={[{ key: "venues", label: "Venues" }, { key: "services", label: "Services" }, { key: "requests", label: "Requests" }, { key: "reliability", label: "Reliability" }]} />
 
@@ -132,7 +132,7 @@ export default async function MarketplacePage(props: PageProps<"/admin/marketpla
                     <td><Link className="aa-who" href={qs(base, sp, { sel: l.id })} scroll={false}><Thumb src={l.image || null} w={40} h={36} /><div><b>{l.name}</b><small>{shortRef("LST", l.id, (l.details as { reference?: string } | null)?.reference)}</small></div></Link></td>
                     <td><span className={`aa-chip ${l.kind === "venue" ? "pink" : "purple"}`}>{titleCase(l.kind)}</span></td>
                     <td><span className="aa-who"><Avatar src={o.person?.avatar_url} name={o.person?.full_name ?? o.ws?.name ?? "Owner"} size={22} /><span className="nm">{o.person?.full_name ?? o.ws?.name ?? "—"}</span></span></td>
-                    <td>{l.kind === "service" && !l.city ? "Nationwide" : `${l.city || "—"}${l.city ? ", UK" : ""}`}</td>
+                    <td>{l.kind === "service" && !l.city ? "Nationwide" : l.city || "—"}</td>
                     <td>{l.verified ? <Status value="verified" label="Verified" /> : <Status value="pending" label="Pending" />}</td>
                     <td><span className={`aa-chip ${modeTone(l.booking_mode)}`}>{titleCase(l.booking_mode)}</span></td>
                     <td className="c">{m?.requests ?? 0}</td>
@@ -182,7 +182,7 @@ async function ListingDrawer({ l, m, sp, owner }: { l: Listing; m?: LMetric; sp:
       <KVRows rows={[
         ["Name", l.name], ["Type", <span key="t" className={`aa-chip ${l.kind === "venue" ? "pink" : "purple"}`}>{titleCase(l.kind)}</span>],
         ["Owner", owner.person ? <Link className="aa-who" href={`/admin/users/${owner.person.id}`}><Avatar src={owner.person.avatar_url} name={owner.person.full_name} size={18} /><span>{owner.person.full_name} ({owner.ws?.settings?.reference ?? owner.ws?.name})</span></Link> : owner.ws?.name ?? "—"],
-        ["Location", <span key="l" className="aa-loc"><Flag country="GB" />{l.city || "—"}, UK</span>],
+        ["Location", <span key="l" className="aa-loc">{l.city || "—"}</span>],
         ["Categories", [l.category, ...(l.tags ?? []).slice(0, 2)].filter(Boolean).join(", ")],
         ["Availability", modes], ["Capacity", l.capacity_max ? `${l.capacity_min ?? 1} – ${l.capacity_max.toLocaleString("en-GB")}` : "—"],
         ["Created", day(l.created_at, { day: "numeric", month: "short", year: "numeric" })],

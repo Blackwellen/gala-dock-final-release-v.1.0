@@ -190,5 +190,7 @@ export async function discardSettingsDraft(section: string, reason: string): Pro
 }
 export async function rollbackSetting(section: string, version: number, reason: string): Promise<ActionResult> {
   if (!SECTIONS.includes(section) || !Number.isInteger(version)) return bad("That version can’t be restored.");
+  // Q51: the database prefixed the reason ("Rollback to vN: ") before checking it, so an empty reason passed. Checked here and there.
+  if (String(reason ?? "").trim().length < 5) return bad("Write a reason of at least 5 characters — it is recorded in the audit log.");
   return rpc("admin_rollback_setting", { p_section: section, p_version: version, p_reason: reason }, `Rolled back to v${version} (published as a new version)`);
 }

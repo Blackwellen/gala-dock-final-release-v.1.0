@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings, Clock3, FileText, UsersRound, CircleCheck, ArrowRight, Eye, RotateCcw, Download, MoreHorizontal, Info, History, FileDown, FlaskConical, RefreshCcw, X, Plus, Wrench, Activity } from "lucide-react";
+import { Settings, Clock3, FileText, UsersRound, CircleCheck, ArrowRight, Eye, RotateCcw, Download, MoreHorizontal, Info, History, FileDown, FlaskConical, RefreshCcw, X, Wrench, Activity } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-settings.css";
 import { Restricted } from "@/components/workspace/kit";
@@ -138,7 +138,7 @@ function GeneralForm({ v }: { v: Record<string, unknown> }) {
         </div>
         <div className="adst-rows">
           <label className="adst-desc"><span>Platform description</span><textarea name="f:s:description" defaultValue={desc} maxLength={500} rows={4} /><small>{desc.length}/500</small></label>
-          <label className="adst-inline"><span>Default language</span><span className="adst-flagsel"><UkFlag /><Sel name="f:s:default_locale" v={v.default_locale} options={[["en-GB", "English (UK)"], ["en-US", "English (US)"], ["fr-CA", "French (Canada)"]]} /></span></label>
+          <label className="adst-inline"><span>Default language</span><span className="adst-flagsel">{String(v.default_locale ?? "en-GB") === "en-GB" && <UkFlag />}<Sel name="f:s:default_locale" v={v.default_locale} options={[["en-GB", "English (UK)"], ["en-US", "English (US)"], ["fr-CA", "French (Canada)"]]} /></span></label>
         </div>
       </div>
     </fieldset>
@@ -146,8 +146,8 @@ function GeneralForm({ v }: { v: Record<string, unknown> }) {
       <div className="adst-loc">
         <div><span className="adst-lbl">Supported countries</span>
           <div className="adst-chips"><input type="hidden" name="lists" value="supported_countries" />{COUNTRIES.map(([code, l]) => <label key={code} className="adst-chip"><input type="checkbox" name="f:l:supported_countries" aria-label={l} value={code} defaultChecked={countries.includes(code)} /><span>{l}<X aria-hidden="true" /></span></label>)}
-            <span className="adst-add"><Plus aria-hidden="true" />Add country</span></div></div>
-        <label><span className="adst-lbl">Default country for new accounts</span><span className="adst-flagsel"><UkFlag /><Sel name="f:s:default_country" v={v.default_country} options={COUNTRIES.map(([c, l]) => [c, l.replace(/ \(.*/, "")])} /></span></label>
+            </div><small>More countries are added to this list in code once Gala Dock can take payments there.</small></div>
+        <label><span className="adst-lbl">Default country for new accounts</span><span className="adst-flagsel">{String(v.default_country ?? "GB") === "GB" && <UkFlag />}<Sel name="f:s:default_country" v={v.default_country} options={COUNTRIES.map(([c, l]) => [c, l.replace(/ \(.*/, "")])} /></span></label>
         <label><span className="adst-lbl">Tax handling</span><span className="adst-tax"><Sel name="f:s:tax_handling" v={v.tax_handling} options={[["platform_uk_vat", "Platform collects and remits (UK VAT only)"], ["provider", "Providers handle their own tax"], ["none", "No tax collected"]]} /><Info aria-hidden="true" /></span></label>
       </div>
     </fieldset>

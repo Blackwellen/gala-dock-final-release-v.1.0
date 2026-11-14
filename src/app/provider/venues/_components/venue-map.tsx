@@ -2,6 +2,7 @@ import "@/styles/venue-plan.css";
 import type { PointerEvent as ReactPointerEvent, Ref, ReactNode } from "react";
 import { AssetShape, PlanDefs, pointLabelHidden, type SeatFlag, type SeatState } from "@/components/venue-plan/asset-shape";
 import { tileUrl, styleMaxZoom, MAP_ATTRIBUTION } from "@/lib/maps/styles";
+import { safeUnderlayUrlFor } from "@/lib/maps/underlay";
 import type { Seating, TableSpec } from "@/components/venue-plan/assets";
 import { DesignElView, isDesignEl, type DesignEl } from "@/components/venue-plan/design-el-view";
 
@@ -61,11 +62,9 @@ export function basemapTiles(e: MapEl, span: { x?: number; y?: number; w: number
 }
 export { MAP_ATTRIBUTION };
 
-/** Drawings/aerials come from our own upload store (/api/listing-media → Supabase public bucket). Anything else in a saved or
- *  imported plan file (third-party hosts, data:/javascript: URLs) is not drawn, so a plan can't make public map viewers load
- *  arbitrary remote content. */
 const STORE = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/+$/, "") + "/storage/v1/object/public/";
-export const safeUnderlayUrl = (u?: string) => (u && ((STORE.length > 30 && u.startsWith(STORE)) || /^\/(?!\/)/.test(u)) ? u : undefined);
+/** Only our own upload store or same-site paths are drawn (see safeUnderlayUrlFor). */
+export const safeUnderlayUrl = (u?: string) => safeUnderlayUrlFor(STORE, u);
 
 /** Map content (no <svg>) so the read-only map and the builder share one renderer. */
 export function MapContent({ elements, spaces, dim, selected, selectedIndex = null, selectedSet, labelSize = 13, onElDown, span, children, detail = false, tierColor, seatState, selectedSeats, onSeat, px }: {

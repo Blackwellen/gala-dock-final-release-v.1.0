@@ -40,7 +40,7 @@ export default async function PrivacyRequestsPage(props: PageProps<"/admin/suppo
   const rows = tab === "open" ? open : closed, canEdit = admin.permissions.has("support");
   const sel = typeof sp.id === "string" ? all.find(r => r.id === sp.id) ?? null : null;
   return <div className="adb acv">
-    <Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Support</Link>
+    <Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Back to Support</Link>
     <Head title="Privacy requests" subtitle="Requests to access, export, correct, erase, restrict or object to the use of personal data. Respond within one month; one extension of up to two months is allowed with a reason." />
     <PrivacyTabs active={tab} open={open.length} closed={closed.length} />
     <div className={`acv-split ${sel ? "has-detail" : ""}`}>
@@ -87,7 +87,7 @@ type Purge = { id: string; reason: string; workspace_ids: string[]; dry_run: boo
 async function PrivacyOps({ tab, privacy, canFixtures }: { tab: "holds" | "retention" | "fixtures"; privacy: boolean; canFixtures: boolean }) {
   const admin = await getAdmin();
   const db = untyped(admin.db as never);
-  const head = <><Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Support</Link>
+  const head = <><Link className="adb-back" href="/admin/support"><ArrowLeft aria-hidden="true" />Back to Support</Link>
     <Head title="Privacy requests" subtitle="Data subject requests, legal holds, the retention schedule and test-data clean-up. Retention periods are drafts pending legal review." />
     <PrivacyTabs active={tab} /></>;
   if (tab !== "fixtures" && !privacy) return <div className="adb acv add">{head}<Restricted area="Legal holds and retention" /></div>;
