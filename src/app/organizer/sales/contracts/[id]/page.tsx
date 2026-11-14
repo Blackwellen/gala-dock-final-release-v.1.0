@@ -28,7 +28,7 @@ export default async function ContractPage({ params }: PageProps<"/organizer/sal
   const canDecide = ["owner", "manager", "finance"].includes(String(ctx.role));
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales", href: "/organizer/sales" }, { label: "Contracts", href: "/organizer/sales/contracts" }, { label: c.number }]} />
-    <div className="k-page-head"><div><h1 style={{ fontSize: 28 }}>{c.title} <Chip tone={c.status === "signed" ? "green" : c.status === "sent" ? "blue" : "gray"} lg>{c.status}</Chip></h1>
+    <div className="k-page-head"><div><h1>{c.title} <Chip tone={c.status === "signed" ? "green" : c.status === "sent" ? "blue" : "gray"} lg>{c.status}</Chip></h1>
       <p className="sub">{c.number} · v{c.current_version}{c.clients ? <> · <Link className="k-link" href={`/organizer/sales/clients/${c.clients.id}`}>{c.clients.name}</Link></> : null}{c.events ? <> · <Link className="k-link" href={`/organizer/events/${c.events.id}`}>{c.events.name}</Link></> : null}{c.proposals ? <> · from <Link className="k-link" href={`/organizer/sales/proposals/${c.proposals.id}`}>{c.proposals.number}</Link></> : null}</p></div></div>
     <SalesNav active="contracts" />
     {c.status_reason && <div className="k-notice amber" style={{ marginBottom: 12 }}><span className="k-small">{c.status_reason}</span></div>}

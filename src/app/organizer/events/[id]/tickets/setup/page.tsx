@@ -4,6 +4,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { can } from "@/lib/domain/permissions";
 import { loadProSetup } from "@/lib/data/ticket-pro";
 import { ProShell } from "@/components/organizer/ticket-pro/ui";
+import { EventSubHeader } from "@/components/organizer/event/header";
 import { StepModel } from "@/components/organizer/ticket-pro/step-model";
 import { StepTiers } from "@/components/organizer/ticket-pro/step-tiers";
 import { StepSeating } from "@/components/organizer/ticket-pro/step-seating";
@@ -24,9 +25,10 @@ export default async function OrganizerTicketSetup({ params, searchParams }: { p
   if (sp.section === "policies") redirect(`${base}?step=4`);
   if (sp.section === "review") redirect(`${base}?step=5`);
   const step = Math.min(5, Math.max(1, Number(sp.step) || 1));
-  if (!can("organizer", ctx.role, "tickets.manage")) return <ProShell step={step} base={base} event={data.event}><p className="k-notice">Only workspace owners and managers can change ticket setup. Ask an owner for access.</p></ProShell>;
+  const header = <EventSubHeader id={data.event.id} name={data.event.name} tab="sell" page="Ticket setup" canMoney={ctx.canMoney} />;
+  if (!can("organizer", ctx.role, "tickets.manage")) return <ProShell step={step} base={base} event={data.event} header={header}><p className="k-notice">Only workspace owners and managers can change ticket setup. Ask an owner for access.</p></ProShell>;
   // Keyed per step so each step starts from freshly saved server data.
-  return <ProShell step={step} base={base} event={data.event}>
+  return <ProShell step={step} base={base} event={data.event} header={header}>
     {step === 1 && <StepModel key="1" data={data} base={base} />}
     {step === 2 && <StepTiers key="2" data={data} base={base} />}
     {step === 3 && <StepSeating key="3" data={data} base={base} nextHref={`${base}?step=4`} backHref={`${base}?step=2`} />}

@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ArrowLeft, ArrowRight, Globe, Lock, Users, Sparkles, Lightbulb, Search, Wand2, MapPin, Star, CalendarDays, Ticket, Gift, Building2, Briefcase, Armchair, LayoutGrid, Megaphone, ShieldCheck, UserCog, Store, FileText, Loader2, CheckCircle2, Save, MoreHorizontal } from "lucide-react";
 import { Toggle, MapView, useAction, useKitToast } from "@/components/kit/client";
 import { currencies, optionsFor, term, terms, timezones } from "@/lib/master-data";
 import { neverPublic, NEVER_PUBLIC_COPY } from "@/lib/events/type-rules";
+import { wallToIso } from "@/lib/events/wall-time";
 import { saveCreateStep, finishCreate, type CreateStep1, type CreateStep2, type CreateStep3, type CreateStep4 } from "@/lib/actions/create-event";
 
 type Venue = { id: string; name: string; image: string; location: string; rating: number; reviews: number; cap: (number | null)[]; price: number | null; unit: string; tags: string[]; badge: string | null; lat: number | null; lng: number | null; href: string };
@@ -32,11 +33,15 @@ const STEPS = [["Event Basics", "Name, type, goal"], ["Date & Location", "When a
 // One per build category (venue … transport), wording as designed; settings.provider_categories stores the label.
 const PROVIDERS = ["Venue", "Catering & Bar", "Production & AV", "Decor & Styling", "Entertainment (Acts/DJs)", "Photography & Video", "Staff & Crew", "Security", "Furniture & Hire", "Transport"];
 const gbp = (n: number) => `${n < 0 ? "-" : ""}£${Math.abs(Math.round(n)).toLocaleString("en-GB")}`;
-const iso = (local: string) => local ? new Date(local).toISOString() : "";
+// The date inputs hold London wall time (the page seeds them that way), whatever the browser zone (Q48).
+const iso = (local: string) => wallToIso(local) ?? "";
 const fmt = (local: string) => local ? new Date(local).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
 
 export function CreateEventWizard({ step, data }: { step: 1 | 2 | 3 | 4; data: CreateData }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction();
+  // Q48: stay disabled until the next step has rendered. The buttons re-enabled while router.push was in flight, so a second
+  // click on step 1 created a duplicate draft event. ("Create event" redirects through useAction, which now holds pending itself.)
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   const [s1, set1] = useState(data.s1); const [s2, set2] = useState(data.s2); const [s3, set3] = useState(data.s3); const [s4, set4] = useState(data.s4);
   const [q, setQ] = useState(""); const [capMin, setCapMin] = useState(0);
   const TYPES = useMemo(() => tileTypes(data.tiles), [data.tiles]); const MORE = useMemo(() => moreTypes(TYPES), [TYPES]);
@@ -52,7 +57,7 @@ export function CreateEventWizard({ step, data }: { step: 1 | 2 | 3 | 4; data: C
   const go = async (n: 1 | 2 | 3, to: number | "exit") => {
     const payload = n === 1 ? s1 : n === 2 ? { ...s2, starts_at: iso(s2.starts_at), ends_at: iso(s2.ends_at) } : s3;
     const r = await run(() => saveCreateStep(n, data.id, payload), { refresh: false });
-    if (r.ok && r.data) router.push(to === "exit" ? "/organizer/events" : `/organizer/events/new?event=${(r.data as { id: string }).id}&step=${to}`);
+    if (r.ok && r.data) startNav(() => router.push(to === "exit" ? "/organizer/events" : `/organizer/events/new?event=${(r.data as { id: string }).id}&step=${to}`));
   };
   const finish = async () => { if (data.id) await run(() => finishCreate(data.id!, s4)); };
   const totalCost = Object.values(s3.budget_lines).reduce((a, b) => a + b, 0);

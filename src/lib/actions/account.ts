@@ -7,6 +7,10 @@ import { stripeCustomer, ownCard } from "@/lib/payments";
 import { passwordChecks } from "@/lib/password";
 import { customerInterests, currencies } from "@/lib/onboarding-schema";
 import type { ActionResult } from "./shell";
+import { untyped } from "@/lib/workspace/db";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { writeAudit } from "@/lib/audit";
+import { DELETION_GRACE_DAYS, passwordUpdateError, stepUpError } from "@/lib/settings/rules";
 
 const bump = () => { revalidatePath("/account/settings"); revalidatePath("/", "layout"); };
 const Profile = z.object({ full_name: z.string().trim().min(2).max(120), phone: z.string().trim().max(20), country: z.string().regex(/^[A-Z]{2}$/), language: z.string().max(5), bio: z.string().max(250), date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.literal("")) });
@@ -41,19 +45,39 @@ export async function changePassword(current: string, next: string): Promise<Act
   if (passwordChecks(next).some(c => !c.met)) return { ok: false, error: "Your new password doesn't meet the requirements." };
   if (current === next) return { ok: false, error: "Choose a password you haven't used here before." };
   const ctx = await getCustomer();
-  const { error: reauth } = await ctx.supabase.auth.signInWithPassword({ email: ctx.user.email ?? "", password: current });
-  if (reauth) return { ok: false, error: "Your current password is incorrect." };
+  // Q60: the current password used to be re-checked by signing in again on this cookie client. With captcha on that always failed
+  // ("incorrect"), and for MFA users it swapped the aal2 session for a new aal1 one so updateUser failed. verify_my_password checks the
+  // caller's own hash in the database (rate limited) without touching the session.
+  const { data: matches, error: verr } = await untyped(ctx.supabase).rpc("verify_my_password", { p_password: current });
+  if (verr) return { ok: false, error: /rate_limited/.test(verr.message) ? "Too many attempts. Wait 15 minutes and try again." : "Could not check your current password. Please try again." };
+  if (matches !== true) return { ok: false, error: "Your current password is incorrect." };
   const { error } = await ctx.supabase.auth.updateUser({ password: next });
-  if (error) return { ok: false, error: error.message.includes("weak") ? "That password is too weak." : "Could not change your password." };
+  if (error) return { ok: false, error: passwordUpdateError(error) };
+  // The success copy promises other devices are signed out: do it explicitly (audited as auth.sessions_revoked).
+  await untyped(ctx.supabase).rpc("revoke_other_sessions");
+  await writeAudit(ctx.user.id, null, "auth.password_changed", {});
+  await untyped(createAdminClient() as never).from("notifications").insert({ user_id: ctx.user.id, kind: "security", title: "Your password was changed",
+    body: "If this wasn't you, reset your password and contact support immediately.", link: "/account?tab=security" });
   return { ok: true, message: "Password changed. Other devices will need to sign in again." };
 }
 
 export async function accountDeletion(cancel: boolean, confirmText: string): Promise<ActionResult> {
   if (!cancel && confirmText.trim().toUpperCase() !== "DELETE") return { ok: false, error: "Type DELETE to confirm." };
   const ctx = await getCustomer();
+  if (!cancel) {
+    // Q60: scheduling used to succeed even when the deletion worker would refuse (workspace with members, open dispute, upcoming
+    // tickets), so the account sat "scheduled" while nothing happened. Ask first, and require the second factor when one is set up.
+    const { error: stepUp } = await ctx.supabase.rpc("require_step_up", {});
+    if (stepUp) return { ok: false, error: stepUpError(stepUp.message) ?? "Could not update your request." };
+    const { data: blockers, error: berr } = await untyped(ctx.supabase).rpc("deletion_blockers");
+    if (berr) return { ok: false, error: "Could not update your request." };
+    const list = (blockers ?? []) as { detail: string }[];
+    if (list.length) return { ok: false, error: `Before your account can be deleted: ${list.map(b => b.detail).join(" ")}` };
+  }
   const { error } = await ctx.supabase.rpc("request_account_deletion", { p_cancel: cancel });
   if (error) return { ok: false, error: "Could not update your request." };
-  bump(); return { ok: true, message: cancel ? "Deletion cancelled — your account stays active." : "Your account is scheduled for deletion in 30 days. You can cancel any time before then." };
+  await writeAudit(ctx.user.id, null, cancel ? "privacy.deletion_cancelled" : "privacy.deletion_requested", {});
+  bump(); return { ok: true, message: cancel ? "Deletion cancelled — your account stays active." : `Your account is scheduled for deletion in ${DELETION_GRACE_DAYS} days. You can cancel any time before then.` };
 }
 
 export async function calendarFeed(): Promise<ActionResult<{ url: string }>> {

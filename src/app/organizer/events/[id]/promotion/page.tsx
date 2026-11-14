@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, MapPin, ExternalLink, Ticket, Sparkles, CheckCircle2, Circle, Rocket, Plus, ArrowRight, Clock } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
-import { Crumbs, LinkTabs, Spark } from "@/components/kit";
+import { LinkTabs, Spark } from "@/components/kit";
 import { DistToggle, PromoterButton, PromoMenu } from "@/components/organizer/promotion-client";
 import { money } from "@/lib/format";
 import { BrandLogo } from "@/components/kit/brand-logo";
 import { requestTime } from "@/lib/workspace/format";
 import { BoostSelect } from "@/components/organizer/boost-client";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata = { title: "Promotion" };
 const TZ = "Europe/London";
@@ -47,7 +48,7 @@ export default async function PromotionPage({ params, searchParams }: { params: 
   const base = `/organizer/events/${id}/promotion`;
 
   return <div className="pr">
-    <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Promotion & Distribution" }]} />
+    <EventSubHeader id={id} name={e.name} tab="sell" page="Promotion & Distribution" canMoney={ctx.canMoney} />
     <div className="pr-head"><div className="k-grow"><div className="k-row" style={{ gap: 10 }}><h1>{e.name}</h1><span className={`mn-st ${live ? "green" : "gray"}`}>{live ? "On Sale" : e.status}</span></div><p className="pr-meta"><span><CalendarDays size={14} />{fmtD(e.starts_at)}</span><span><MapPin size={14} />{[e.venue_name, e.location].filter(Boolean).join(", ")}</span></p></div>
       <div className="k-row" style={{ gap: 10 }}>{e.slug && <Link className="k-btn outline" href={`/events/${e.slug}`} target="_blank"><ExternalLink size={15} />View public page</Link>}<Link className="k-btn outline" href={`/organizer/events/${id}/tickets/setup`}><Ticket size={15} />View tickets</Link><Link className="k-btn primary" href={`/organizer/promotions/new?event=${id}`}><Sparkles size={15} />Create promotion plan</Link></div></div>
     <LinkTabs current={tab} tabs={[["discover", "Discover"], ["calendars", "Calendars"], ["promoters", "Promoters"], ["audience", "Audience"], ["boosts", "Boosts"], ["performance", "Performance"]].map(([k, l]) => ({ key: k, label: l, href: k === "discover" ? base : `${base}?tab=${k}` }))} />

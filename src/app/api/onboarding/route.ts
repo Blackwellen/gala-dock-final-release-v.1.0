@@ -6,6 +6,8 @@ import { rateLimit, sameOrigin } from "@/lib/security";
 import { createWorkspaceInvite } from "@/lib/workspace/invites";
 import { flowSteps, ruleIssues, validateStep, type Flow, type Values } from "@/lib/onboarding-schema";
 import type { Json } from "@/types/database";
+import { COUNTRIES } from "@/lib/master-data";
+import { CONNECT_COPY, isConnectCountrySupported, resolveCountryCode, workspaceCountryValue } from "@/lib/payments/connect-countries";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 
@@ -57,10 +59,14 @@ export async function POST(request: Request) {
 
   if (flow === "provider" && step === "rules") {
     // Requested settings are stored as-is; effective eligibility is decided here, never by the toggle.
+    // Seller-country gate (owner 2026-11-14): where Gala Dock can't take payments for the seller, bookings fall back to
+    // enquiry-only (publish_listing applies the same rule in the database). Unknown country = not decided here.
+    const country = resolveCountryCode(workspaceCountryValue(draft?.settings), COUNTRIES);
+    const offPlatform = !!country && !isConnectCountrySupported(country);
     values.effective = {
-      booking_mode: values.booking_mode === "Instant Book" ? "Request to Book" : values.booking_mode,
+      booking_mode: offPlatform ? "Enquiry Only" : values.booking_mode === "Instant Book" ? "Request to Book" : values.booking_mode,
       instant_book_eligible: false, emergency_eligible: false,
-      reason: "Instant Book and emergency requests unlock after verification and a connected availability calendar.",
+      reason: offPlatform ? CONNECT_COPY.listingFallback : "Instant Book and emergency requests unlock after verification and a connected availability calendar.",
     };
     values.warnings = ruleIssues(values, capabilities ?? []).map(i => i.message);
   }
@@ -90,6 +96,9 @@ export async function POST(request: Request) {
     if (result.error) return json({ error: "Your workspace was saved, but the draft listing could not be saved." }, 500);
   }
 
+  // Q47 "Save & exit": the step is validated and saved exactly like Continue (country gate above included), then the setup is left
+  // without moving on or completing; resuming opens the saved workspace draft.
+  if (body.action === "exit") return json({ workspaceId, saved: true, next: "/discover" });
   if (index < steps.length - 1) return json({ workspaceId, next: `/onboarding/${flow}?step=${index + 2}` });
   if (body.action !== "complete" && body.action !== "publish") return json({ workspaceId, saved: true });
 

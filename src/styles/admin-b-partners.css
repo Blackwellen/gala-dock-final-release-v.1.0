@@ -73,3 +73,7 @@
 .adp-payout{width:100%;height:32px;margin-top:8px;font-size:11.5px}
 @media (max-width:1360px){.adp-grid{grid-template-columns:1fr}.adp-filters{grid-template-columns:1fr 1fr 1fr}}
 @media (max-width:860px){.adp-kpis,.adp-filters{grid-template-columns:1fr}.adp-table{min-width:860px}}
+/* Q65 statements list (Payouts tab) */
+.adp-stmts{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.adp-stmts li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border:1px solid #edf1f9;border-radius:8px}
+.adp-stmts li>span{display:grid;gap:2px;min-width:0}.adp-stmts small{color:#5b6390}

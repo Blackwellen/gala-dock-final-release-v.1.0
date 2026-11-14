@@ -27,7 +27,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/organize
   const stat = (id: string) => ({ won: props.filter(p => p.client_id === id && ["accepted", "converted"].includes(p.status)).reduce((s, p) => s + Number(p.accepted_total ?? p.total), 0), events: events.filter(e => e.client_id === id).length, open: leads.filter(l => l.client_id === id && !["won", "lost"].includes(l.stage)).length, next: events.filter(e => e.client_id === id && e.starts_at && e.starts_at > new Date().toISOString()).map(e => e.starts_at!).sort()[0] ?? null });
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales", href: "/organizer/sales" }, { label: "Clients" }]} />
-    <div className="k-page-head"><div><h1 style={{ fontSize: 30 }}>Clients</h1><p className="sub">One record per client — leads, proposals, contracts and events link here.</p></div><NewClientButton /></div>
+    <div className="k-page-head"><div><h1>Clients</h1><p className="sub">One record per client — leads, proposals, contracts and events link here.</p></div><NewClientButton /></div>
     <SalesNav active="clients" />
     <Card flush>
       <form className="k-row k-wrap" style={{ gap: 8, padding: 14 }} action="/organizer/sales/clients" role="search"><div className="k-input-icon"><Search size={14} /><input className="k-input" name="q" defaultValue={q} placeholder="Search clients…" aria-label="Search clients" style={{ width: 240 }} /></div>

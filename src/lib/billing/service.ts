@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeKey } from "@/lib/stripe";
 import { modeOfSecretKey } from "@/lib/payments/stripe-mode";
 import { httpStripeClient, platformBillingStripe, type StripeClient } from "@/lib/payments/stripe-client";
-import { billingMode, priceColumn, priceFor, automaticTaxEnabled, BillingModeError, changeDirection, overageItemParams, packCheckoutParams, planChangeParams, planCheckoutParams, type PlanPrice } from "./core";
+import { billingMode, priceColumn, priceFor, automaticTaxEnabled, BillingModeError, planChangeMode, overageItemParams, packCheckoutParams, planChangeParams, planCheckoutParams, type PlanPrice } from "./core";
 
 /**
  * Subscription billing service (Q28). Server-authoritative: the caller's role is checked here with the service client, prices
@@ -54,6 +54,15 @@ async function customerFor(db: Admin, stripe: ReturnType<typeof billingClient>, 
   if (error) throw new Error(`billing_link_customer: ${error.message}`);
   return c.id;
 }
+const label = (p: string) => p ? p[0]!.toUpperCase() + p.slice(1) : p;
+/** The price a scheduled downgrade came from (set by planChangeParams), only while that downgrade is still in the future. */
+function scheduledDowngradeFrom(sub: { metadata?: Record<string, string> }) {
+  const m = sub.metadata ?? {}, at = Number(m.gd_downgrade_at ?? 0);
+  return m.gd_previous_plan && /^price_[A-Za-z0-9]+$/.test(m.gd_previous_price ?? "") && at * 1000 > Date.now() ? m.gd_previous_price! : null;
+}
+async function audit(db: Admin, workspaceId: string, userId: string, event: string, metadata: Record<string, unknown>) {
+  await untypedDb(db).from("audit_events").insert({ actor_id: userId, actor_type: "user", workspace_id: workspaceId, event, metadata });
+}
 const friendly = (e: unknown) => e instanceof BillingModeError ? (e.message === "billing_price_unmapped" ? "This plan isn’t set up for billing yet." : e.message === "billing_test_mode_only" ? "Plan billing is in test mode only during the beta." : "Billing isn’t configured.") : "Couldn’t start billing. Please try again.";
 
 /** Upgrade from Starter (Checkout) or change an existing plan (subscription update). Owner only. */
@@ -72,14 +81,18 @@ export async function choosePlan(o: { workspaceId: string; userId: string; email
     if (sub && ["active", "trialing", "past_due"].includes(sub.status)) {
       if (sub.status === "past_due") return { ok: false, error: "Update your payment method before changing plan." };
       const { data: curPrice } = await untypedDb(db).from("plan_prices").select("*").eq(priceColumn(live), sub.stripe_price_id).maybeSingle();
-      const dir = curPrice ? changeDirection(curPrice as PlanPrice, p) : "upgrade";
-      if (dir === "same") return { ok: false, error: "You’re already on this plan." };
       const current = await stripe.retrieveSubscription(sub.stripe_subscription_id);
       const item = current.items.data[0];
+      // Q60: a scheduled downgrade has already swapped the price in Stripe; Stripe's metadata names the price it came from.
+      const scheduledFrom = scheduledDowngradeFrom(current);
+      const mode = planChangeMode({ from: curPrice as PlanPrice | null, to: p, toPrice: priceId, scheduledFromPrice: scheduledFrom });
+      if (mode === "same") return { ok: false, error: "You’re already on this plan." };
+      if (mode === "scheduled") return { ok: false, error: `A change to ${label(String(sub.plan))} is already scheduled. Choose “Keep my current plan” first, then pick a new plan.` };
       const periodEnd = Number(item?.current_period_end ?? current.current_period_end ?? 0);
-      await stripe.updateSubscription(current.id, planChangeParams({ itemId: item!.id, price: priceId, direction: dir, currentPlan: String(sub.plan), periodEnd, accountTaxIds: await accountTaxIds(stripe, o.stripe) }),
+      await stripe.updateSubscription(current.id, planChangeParams({ itemId: item!.id, price: priceId, direction: mode, currentPlan: String(ws.plan ?? sub.plan), currentPrice: String(sub.stripe_price_id ?? ""), periodEnd, accountTaxIds: await accountTaxIds(stripe, o.stripe) }),
         `gd-plan-${ws.id}-${priceId}-${sub.last_event_created}`);
-      return { ok: true, message: dir === "upgrade" ? "Plan upgraded — the prorated difference is invoiced now." : "Plan change scheduled for the end of this billing period." };
+      await audit(db, ws.id, o.userId, "billing.plan_change_requested", { mode, plan: p.plan, interval: p.billing_interval });
+      return { ok: true, message: mode === "upgrade" ? "Plan changed — the prorated difference is invoiced now." : mode === "revert" ? "Scheduled change cancelled — you keep your current plan." : "Plan change scheduled for the end of this billing period." };
     }
     const customer = await customerFor(db, stripe, ws, o.email);
     const session = await stripe.createCheckout("subscription", planCheckoutParams({ customer, price: priceId, workspaceId: ws.id, plan: p.plan, interval: p.billing_interval, automaticTax: automaticTaxEnabled(),
@@ -87,6 +100,46 @@ export async function choosePlan(o: { workspaceId: string; userId: string; email
       `gd-plan-checkout-${ws.id}-${priceId}-${new Date().toISOString().slice(0, 13)}`);
     return session.url ? { ok: true, url: session.url, message: "Taking you to secure payment…" } : { ok: false, error: "Couldn’t start checkout." };
   } catch (e) { return { ok: false, error: friendly(e) }; }
+}
+
+/** Q60: undo a scheduled end-of-period downgrade — the previous (already paid) price comes back without proration. Owner only. */
+export async function undoScheduledChange(o: { workspaceId: string; userId: string; stripe?: StripeClient }): Promise<BillingResult> {
+  const db = createAdminClient();
+  if (!(await ownerOf(db, o.workspaceId, o.userId))) return { ok: false, error: "Only the workspace owner can change the plan." };
+  const { data: sub } = await untypedDb(db).from("workspace_subscriptions").select("stripe_subscription_id,status,plan,pending_plan,last_event_created").eq("workspace_id", o.workspaceId).maybeSingle();
+  if (!sub || !["active", "trialing"].includes(sub.status) || !sub.pending_plan) return { ok: false, error: "There’s no scheduled plan change to undo." };
+  try {
+    const stripe = billingClient(o.stripe);
+    const current = await stripe.retrieveSubscription(sub.stripe_subscription_id);
+    const from = scheduledDowngradeFrom(current), item = current.items.data[0];
+    if (!from || !item) return { ok: false, error: "There’s no scheduled plan change to undo." };
+    await stripe.updateSubscription(current.id, planChangeParams({ itemId: item.id, price: from, direction: "revert", currentPlan: String(sub.plan), periodEnd: 0, accountTaxIds: await accountTaxIds(stripe, o.stripe) }),
+      `gd-plan-revert-${current.id}-${sub.last_event_created}`);
+    await audit(db, o.workspaceId, o.userId, "billing.plan_change_undone", { subscription: current.id });
+    return { ok: true, message: "Scheduled change cancelled — you keep your current plan." };
+  } catch (e) { return { ok: false, error: friendly(e) }; }
+}
+
+/**
+ * Q60: called by the webhook when a second subscription for the same workspace went live (two Checkout tabs). The older one is
+ * cancelled now with proration (unused time becomes a credit on the customer's next invoice), so the workspace is never billed twice.
+ * If the "old" one is in fact the newer subscription (out-of-order events), nothing is cancelled and ops are told via audit.
+ */
+export async function cancelSupersededSubscription(workspaceId: string, oldId: string, newId: string, client?: StripeClient) {
+  const db = createAdminClient(), stripe = billingClient(client);
+  const [old, cur] = await Promise.all([stripe.retrieveSubscription(oldId), stripe.retrieveSubscription(newId)]);
+  const oldLive = ["active", "trialing", "past_due", "unpaid", "incomplete"].includes(old.status);
+  const cancel = oldLive && old.customer === cur.customer && Number(old.created ?? 0) <= Number(cur.created ?? 0);
+  if (cancel) await stripe.cancelSubscription(old.id, `gd-supersede-${old.id}`);
+  await untypedDb(db).from("audit_events").insert({ actor_type: "webhook", workspace_id: workspaceId, event: "billing.duplicate_subscription",
+    metadata: { cancelled: cancel ? old.id : null, kept: cancel ? cur.id : null, old: old.id, new: cur.id, old_status: old.status } });
+  if (cancel) {
+    const ws = await workspace(db, workspaceId);
+    await untypedDb(db).rpc("notify_workspace", { p_ws: workspaceId, p_roles: ["owner", "finance"], p_kind: "billing", p_title: "Duplicate plan subscription cancelled",
+      p_body: "Your workspace had two Gala Dock plan subscriptions. We kept the newest and cancelled the other; its unused time is credited to your next invoice.",
+      p_link: ws?.kind === "provider" ? "/provider/settings?tab=billing" : "/organizer/settings?tab=billing" });
+  }
+  return { cancelled: cancel };
 }
 
 /** Cancel at period end (entitlements stay until then) or undo a pending cancellation. Owner only. */
@@ -115,7 +168,7 @@ export async function buyCreditPack(o: { workspaceId: string; userId: string; em
     const priceId = priceFor(pack, billingLive());
     const customer = await customerFor(db, stripe, ws, o.email);
     const session = await stripe.createCheckout("ai_credits", packCheckoutParams({ customer, price: priceId, workspaceId: ws.id, packId: pack.id, automaticTax: automaticTaxEnabled(), accountTaxIds: await accountTaxIds(stripe, o.stripe),
-      successUrl: `${o.origin}${o.returnPath}`, cancelUrl: `${o.origin}${o.returnPath}` }), `gd-pack-${ws.id}-${pack.id}-${Date.now()}`);
+      successUrl: `${o.origin}${o.returnPath}${o.returnPath.includes("?") ? "&" : "?"}credits=success`, cancelUrl: `${o.origin}${o.returnPath}` }), `gd-pack-${ws.id}-${pack.id}-${Date.now()}`);
     return session.url ? { ok: true, url: session.url, message: "Taking you to secure payment…" } : { ok: false, error: "Couldn’t start checkout." };
   } catch (e) { return { ok: false, error: friendly(e) }; }
 }

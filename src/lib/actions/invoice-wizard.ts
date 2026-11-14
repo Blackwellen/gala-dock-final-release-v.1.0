@@ -40,14 +40,20 @@ export async function scheduleInvoice(id: string, input: unknown): Promise<Actio
   const ctx = await getOrganizer(); if (!ctx.canMoney) return { ok: false, error: "You need Finance access." };
   if (!z.string().uuid().safeParse(id).success) return { ok: false, error: "Invoice not found." };
   const p = Schedule.safeParse(input); if (!p.success) return { ok: false, error: "Check the payment schedule." };
-  const { data: inv } = await ctx.supabase.from("invoices").select("id,total,due_date,status,issue_date").eq("id", id).maybeSingle();
+  const { data: inv } = await ctx.supabase.from("invoices").select("id,total,due_date,status,issue_date,currency").eq("id", id).maybeSingle();
   if (!inv || inv.status !== "draft") return { ok: false, error: "This invoice has already been sent." };
-  await ctx.supabase.from("invoice_installments").delete().eq("invoice_id", id);
+  // Q48: validate the schedule before touching the saved one (a rejected schedule used to delete the existing instalments), and
+  // quote amounts in the invoice's own currency (EUR/USD invoices were told "£").
+  const sym = ({ GBP: "£", EUR: "€", USD: "$" } as Record<string, string>)[String(inv.currency ?? "GBP")] ?? "£";
   if (p.data.mode === "instalments") {
     const tot = p.data.instalments.reduce((s, x) => s + x.amount, 0);
     if (p.data.instalments.length < 2) return { ok: false, error: "Add at least two instalments, or choose a single payment." };
-    if (Math.abs(tot - Number(inv.total)) > 0.01) return { ok: false, error: `Instalments add up to £${tot.toFixed(2)} — they must equal the £${Number(inv.total).toFixed(2)} total.` };
+    if (Math.abs(tot - Number(inv.total)) > 0.01) return { ok: false, error: `Instalments add up to ${sym}${tot.toFixed(2)} — they must equal the ${sym}${Number(inv.total).toFixed(2)} total.` };
     if (p.data.instalments.some(x => x.due_date < inv.issue_date)) return { ok: false, error: "Instalments can't be due before the issue date." };
+  }
+  const { error: delErr } = await ctx.supabase.from("invoice_installments").delete().eq("invoice_id", id);
+  if (delErr) return { ok: false, error: "Could not update the payment schedule." };
+  if (p.data.mode === "instalments") {
     const { error } = await ctx.supabase.from("invoice_installments").insert(p.data.instalments.map(x => ({ ...x, invoice_id: id, status: "due" })));
     if (error) return { ok: false, error: "Could not save the instalments." };
     await ctx.supabase.from("invoices").update({ due_date: p.data.instalments.at(-1)!.due_date }).eq("id", id);

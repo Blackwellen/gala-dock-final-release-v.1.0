@@ -36,7 +36,7 @@
 .pr-flow i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #cbd3e6; background: #fff; flex-shrink: 0; margin-top: 1px; }
 .pr-flow li[data-on="true"] i { border-color: var(--k-blue); box-shadow: inset 0 0 0 3px #fff; background: var(--k-blue); }
 .pr-flow b { font-size: 12.5px; color: var(--k-ink); font-weight: 550; } .pr-flow small { display: block; font-size: 11px; color: var(--k-muted); }
-@media print { .o-top, .o-side, .o-tabbar, .k-tabs, .ld-head .k-btn, .k-agent, .wz-foot { display: none !important; } .o-main { margin: 0 !important; } }
+@media print { .o-top, .o-side, .k-tabs, .ld-head .k-btn, .k-agent, .wz-foot { display: none !important; } .o-main { margin: 0 !important; } }
 @media (max-width: 1280px) { .wz-grid, .pr-ov { grid-template-columns: minmax(0, 1fr); } .pr-three, .pr-conv { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .pr-two, .pr-three, .pr-conv { grid-template-columns: minmax(0, 1fr); } .pr-opt { grid-template-columns: auto 1fr; } }
 /* D01 proposals (ORG-W02, five steps): linked-lead card, presentation settings and client preview. */

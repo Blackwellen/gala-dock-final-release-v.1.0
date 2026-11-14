@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { GalaLogo } from "@/components/brand/gala-logo";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Bell, ChevronLeft, ChevronDown, Menu, Search, X, Plus, MessageSquare, User, LogOut, type LucideIcon } from "lucide-react";
 import { GlobalSearch } from "@/components/search/global-search";
@@ -42,6 +43,9 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
   const current = [...menu, ...tabs].filter(active).sort((a, b) => b.href.length - a.href.length)[0];
   const primary = tabs.slice(0, 4);
   const remaining = menu.filter(m => !m.titleOnly && !primary.some(p => p.href === m.href));
+  // Q47: only entries the sheet actually shows count as "already linked"; a titleOnly Account/Help used to hide the shared links too,
+  // so phone customers had no way to reach My account or Help.
+  const listed = menu.filter(m => !m.titleOnly);
   const routeKey = pathname + "?" + params.toString();
   useEffect(() => { queueMicrotask(() => { setPanel(null); setFinding(false); }); }, [routeKey]);
   // Pages with their own visible back link ("← Back to events") keep it and the bar's Back hides, so a phone never shows two.
@@ -80,7 +84,7 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
 
   return <>
     <header className="pwa-top">
-      <Link href={home} className="pwa-mark" aria-label="Gala Dock home">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/favicon-48.png" alt="" width={32} height={32} /></Link>
+      <Link href={home} className="pwa-mark" aria-label="Gala Dock home"><GalaLogo /></Link>
       <div className="pwa-top-c">{workspaceSwitcher ? <button type="button" className="pwa-title-button" aria-label="Switch workspace" aria-haspopup="dialog" onClick={e=>{openPanel("menu",e.currentTarget);/* §3 sweep: the workspace list sat below the fold of the menu sheet on phones; jump to it */setTimeout(()=>document.getElementById("pwa-ws")?.scrollIntoView({block:"start"}),60);}}><span className="pwa-title">{title}<small>{home==='/provider'?'Provider':'Organizer'}</small></span><ChevronDown size={15} aria-hidden="true" /></button> : <span className="pwa-title">{title ?? current?.label ?? "Gala Dock"}</span>}</div>
       <div className="pwa-top-r">
         {search && <button type="button" className="pwa-icon" aria-label={finding ? "Close search" : "Search"} aria-expanded={finding} aria-controls="pwa-search" onClick={() => setFinding(f => !f)}>{finding ? <X size={21} /> : <Search size={21} />}</button>}
@@ -108,8 +112,8 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
         {create.length > 0 && <section className="pwa-section" aria-label="Create"><h3>Create</h3><div className="pwa-create">{create.map(c => { const Icon = c.icon ?? Plus; return <Link key={c.href} href={c.href} onClick={() => setPanel(null)}><Icon size={20} aria-hidden="true" /><span>{c.label}</span></Link>; })}</div></section>}
         {workspaceSwitcher && <section className="pwa-section" id="pwa-ws" style={{ scrollMarginTop: 12 }}><h3>Switch workspace</h3>{workspaceSwitcher}</section>}
         <section className="pwa-section pwa-account">{/* W12/W13: skip when the role menu already lists them (Help appeared twice; Account and My account both) */}
-          {!menu.some(m => m.href === "/account" || /^(my )?account$/i.test(m.label)) && <Link href="/account" onClick={() => setPanel(null)}><User size={19} aria-hidden="true" />My account</Link>}
-          {!menu.some(m => /^help$/i.test(m.label)) && <Link href="/help" onClick={() => setPanel(null)}>Help</Link>}<form action="/auth/signout" method="post"><button type="submit"><LogOut size={19} aria-hidden="true" />Sign out</button></form></section>
+          {!listed.some(m => m.href === "/account" || /^(my )?account$/i.test(m.label)) && <Link href="/account" onClick={() => setPanel(null)}><User size={19} aria-hidden="true" />My account</Link>}
+          {!listed.some(m => /^help$/i.test(m.label)) && <Link href="/help" onClick={() => setPanel(null)}>Help</Link>}<form action="/auth/signout" method="post"><button type="submit"><LogOut size={19} aria-hidden="true" />Sign out</button></form></section>
       </> : <div className="pwa-notices">{notifications.length ? notifications.map(n => <Link key={n.id} href={n.link || home} onClick={() => setPanel(null)}><b>{n.title}</b>{n.body && <span>{n.body}</span>}</Link>) : <p>You’re all caught up.</p>}</div>}
     </dialog>
   </>;

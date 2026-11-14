@@ -78,9 +78,9 @@ function shift(e: MapEl, dx: number, dy: number): MapEl {
 /**
  * Enterprise venue/event plan builder. Venue mode edits the structural plan; event mode edits an event overlay above a locked base plan and assigns ticket tiers.
  */
-export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title, apiRef, highlights = [], onDirtyChange, hidePublish = false }: {
+export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, geo, height = 520, onSave, mode = "venue", base = [], tiers = [], title, apiRef, highlights = [], onDirtyChange, onElementsChange, hidePublish = false }: {
   initial: MapEl[]; spaces?: MapSpace[]; version: number; draftVersion?: number; geo: { lat: number; lng: number } | null; height?: number; onSave: SaveFn; mode?: "venue" | "event"; base?: MapEl[]; tiers?: Tier[]; title?: string;
-  apiRef?: MutableRefObject<PlanApi | null>; highlights?: PlanHighlight[]; onDirtyChange?: (dirty: boolean) => void; hidePublish?: boolean;
+  apiRef?: MutableRefObject<PlanApi | null>; highlights?: PlanHighlight[]; onDirtyChange?: (dirty: boolean) => void; /** Optional live element feed (Q48: event map capacity strip counts unsaved edits). */ onElementsChange?: (els: MapEl[]) => void; hidePublish?: boolean;
 }) {
   const toast = useToast();
   const [pending, start] = useTransition();
@@ -375,6 +375,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     const r = await onSave(els, publish); toast(r.ok ? (r.message ?? "Saved") : (r.error ?? "Couldn’t save")); if (r.ok) setDirty(false);
   });
   useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => { onElementsChange?.(els); }, [els, onElementsChange]);
   useEffect(() => {
     if (!apiRef) return;
     apiRef.current = {

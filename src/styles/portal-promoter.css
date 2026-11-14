@@ -79,7 +79,7 @@
 .pp-net.email{background:#4cb8f5}
 .pp-net.whatsapp{background:#25d366}
 .pp-net.linkedin{background:#0a66c2}
-.pp-net.direct,.pp-net.other{background:#6b74b8}
+.pp-net.direct,.pp-net.other,.pp-net.link,.pp-net.qr{background:#6b74b8}
 
 /* Right column */
 .pt-panel.pp-ref{padding:13px 16px 16px}

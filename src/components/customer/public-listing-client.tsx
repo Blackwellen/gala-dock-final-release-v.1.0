@@ -14,7 +14,9 @@ export function RecordView({ itemKey, signedIn }: { itemKey: string; signedIn: b
   return null;
 }
 
-export function ListingActions({ listingId, name, saved: initial, signedIn }: { listingId: string; name: string; saved: boolean; signedIn: boolean }) {
+export function ListingActions({ listingId, name, saved: initial, signedIn, kind = "venue" }: { listingId: string; name: string; saved: boolean; signedIn: boolean; kind?: "venue" | "service" }) {
+  // Compare opens the saved tab for this listing's kind (services used to land on the venues comparison — Q47).
+  const compare = kind === "service" ? "/account/saved?tab=services&compare=services" : "/account/saved?tab=venues&compare=venues";
   const [saved, setSaved] = useState(initial); const toast = useKitToast(); const router = useRouter();
   const save = async () => {
     if (!signedIn) { router.push(`/login?next=${encodeURIComponent(location.pathname)}`); return; }
@@ -23,7 +25,7 @@ export function ListingActions({ listingId, name, saved: initial, signedIn }: { 
     if (!r?.ok) { setSaved(!next); toast("Couldn't update saved items", "error"); } else toast(next ? `${name} saved` : "Removed from saved");
   };
   const share = async () => { try { if (navigator.share) await navigator.share({ title: name, url: location.href }); else { await navigator.clipboard.writeText(location.href); toast("Link copied"); } } catch { /* cancelled */ } };
-  return <div className="pl-acts"><button onClick={() => void save()} aria-pressed={saved}><Heart size={16} fill={saved ? "currentColor" : "none"} />{saved ? "Saved" : "Save"}</button><Link href={signedIn ? "/account/saved?tab=venues&compare=venues" : `/login?next=${encodeURIComponent("/account/saved?tab=venues&compare=venues")}`}><Columns3 size={16} />Compare</Link><button onClick={() => void share()}><Share2 size={16} />Share</button></div>;
+  return <div className="pl-acts"><button onClick={() => void save()} aria-pressed={saved}><Heart size={16} fill={saved ? "currentColor" : "none"} />{saved ? "Saved" : "Save"}</button><Link href={signedIn ? compare : `/login?next=${encodeURIComponent(compare)}`}><Columns3 size={16} />Compare</Link><button onClick={() => void share()}><Share2 size={16} />Share</button></div>;
 }
 
 type Ev = { id: string; name: string; guests?: number };

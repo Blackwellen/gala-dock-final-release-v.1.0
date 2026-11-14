@@ -117,7 +117,7 @@ export async function PublicListing({ kind, slug }: { kind: Kind; slug: string }
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
     <RecordView itemKey={`listing:${l.id}`} signedIn={!!user} />
     <section className="pl3-hero" aria-labelledby="pl-title">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="pl3-hero-bg" src={photos[0] ?? "/assets/gd/v-riverside-park.webp"} alt="" />
-      <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} />
+      <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} kind={kind} />
       <div className="pl3-hero-copy">{l.verified || verifiedBadge ? <span className="pl3-type"><BadgeCheck size={13} />{kind === "venue" ? "Verified venue" : `Verified · ${l.category}`}</span> : <span className="pl3-type">{l.category}</span>}
         <h1 id="pl-title">{l.name}</h1><p>{String(d.tagline ?? "") || l.description?.split(". ")[0]}</p>
         <div className="pl3-meta"><span><MapPin size={16} />{l.location}</span>{l.review_count > 0 && <span><Star size={16} fill="#f59e0b" color="#f59e0b" />{Number(l.rating).toFixed(1)} ({l.review_count} reviews)</span>}{kind === "venue" ? (l.capacity_max ? <span><Users size={16} />{l.capacity_max.toLocaleString("en-GB")} capacity</span> : null) : cover ? <span><Compass size={16} />{cover}</span> : null}{showPrice && l.price_from ? <span><Tag size={16} />From {money(l.price_from)}{l.price_unit ? ` ${l.price_unit}` : ""}</span> : <span><Tag size={16} />Price on request</span>}</div>

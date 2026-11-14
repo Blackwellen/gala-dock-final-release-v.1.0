@@ -18,7 +18,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { data: mine } = await sb.from("tickets").select("id,status,holder_id").eq("id", id).eq("holder_id", user.id).maybeSingle();
   if (!mine) return NextResponse.json({ error: "Not found" }, { status: 404, headers });
   if (mine.status !== "valid") return NextResponse.json({ status: mine.status }, { headers });
-  const { data: t } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce").eq("id", id).maybeSingle();
+  const { data: t } = await untyped(createAdminClient() as never).from("tickets").select("qr_nonce,dispute_hold_at").eq("id", id).maybeSingle();
+  // Owner 2026-11-14: a ticket whose card payment is disputed is on hold — no entry code until the dispute is decided.
+  if (t?.dispute_hold_at) return NextResponse.json({ status: "on_hold" }, { headers });
   if (!t?.qr_nonce) return NextResponse.json({ error: "Ticket unavailable" }, { status: 409, headers });
   const c = walletCredential(id, t.qr_nonce);
   return NextResponse.json({ status: "valid", payload: c.payload, expiresInMs: c.expiresInMs }, { headers });

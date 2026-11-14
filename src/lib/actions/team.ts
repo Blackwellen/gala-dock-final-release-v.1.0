@@ -3,8 +3,8 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
-import type { Json } from "@/types/database";
 import { untyped } from "@/lib/workspace/db";
+import { writeAudit } from "@/lib/audit";
 
 const Id = z.string().uuid();
 const MANAGE = ["owner", "admin", "manager"];
@@ -13,7 +13,9 @@ async function ctxManage() {
   return { ctx, can: MANAGE.includes(String(ctx.role)) };
 }
 const bump = (id?: string) => { revalidatePath("/organizer/team"); if (id) revalidatePath(`/organizer/team/${id}`); };
-const audit = async (ctx: Awaited<ReturnType<typeof getOrganizer>>, event: string, metadata: Record<string, unknown>) => { await ctx.supabase.from("audit_events").insert({ actor_id: ctx.user.id, workspace_id: ctx.workspace.id, event, metadata: metadata as Json }); };
+// Q60: clients have no INSERT policy on audit_events, so the old user-client insert was silently refused (no team.* row was ever
+// written by these actions). writeAudit appends with the service role after the action has been authorised.
+const audit = async (ctx: Awaited<ReturnType<typeof getOrganizer>>, event: string, metadata: Record<string, unknown>) => { await writeAudit(ctx.user.id, ctx.workspace.id, event, metadata); };
 
 const Person = z.object({ name: z.string().trim().min(2).max(80), role: z.string().trim().max(60), member_type: z.enum(["member", "crew"]), email: z.string().trim().email().max(200).or(z.literal("")), phone: z.string().trim().max(30), location: z.string().trim().max(80), day_rate: z.number().min(0).max(100000).nullable(), skills: z.array(z.string().trim().min(1).max(40)).max(20), bio: z.string().max(600) });
 
@@ -22,8 +24,9 @@ export async function savePerson(id: string | null, input: unknown): Promise<Act
   const p = (id ? Person.partial() : Person).safeParse(input) as ReturnType<typeof Person.safeParse>; if (!p.success) return { ok: false, error: p.error.issues[0]?.path[0] === "email" ? "Enter a valid email." : "Check the name and details." };
   if (id) {
     if (!Id.safeParse(id).success) return { ok: false, error: "Person not found." };
-    const { error } = await ctx.supabase.from("crew_members").update(p.data).eq("id", id).eq("workspace_id", ctx.workspace.id);
+    const { data: saved, error } = await ctx.supabase.from("crew_members").update(p.data).eq("id", id).eq("workspace_id", ctx.workspace.id).select("id").maybeSingle();
     if (error) return { ok: false, error: "Could not save." };
+    if (!saved) return { ok: false, error: "Person not found." };
     await audit(ctx, "team.updated", { crew_id: id }); bump(id); return { ok: true, message: "Profile saved.", data: { id } };
   }
   const { data, error } = await ctx.supabase.from("crew_members").insert({ ...p.data, workspace_id: ctx.workspace.id, status: "available" }).select("id").single();
@@ -40,8 +43,9 @@ export async function setPersonStatus(id: string, status: "active" | "available"
     const { count } = await ctx.supabase.from("shifts").select("id", { count: "exact", head: true }).eq("crew_id", id).in("status", ["pending", "confirmed"]).gt("starts_at", new Date().toISOString());
     if (count) return { ok: false, error: `Reassign ${count} upcoming shift${count > 1 ? "s" : ""} before deactivating.` };
   }
-  const { error } = await ctx.supabase.from("crew_members").update({ status }).eq("id", id).eq("workspace_id", ctx.workspace.id);
+  const { data: saved, error } = await ctx.supabase.from("crew_members").update({ status }).eq("id", id).eq("workspace_id", ctx.workspace.id).select("id").maybeSingle();
   if (error) return { ok: false, error: "Could not update status." };
+  if (!saved) return { ok: false, error: "Person not found." };
   await audit(ctx, `team.${status}`, { crew_id: id }); bump(id); return { ok: true, message: status === "deactivated" ? "Access revoked. History is kept." : "Status updated." };
 }
 

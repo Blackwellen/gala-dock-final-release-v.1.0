@@ -62,7 +62,7 @@ export function RfqRequirement({ events, initial, draftScope, initialListing }: 
   const router = useRouter(); const flags = useSearchParams();
   const [d, setD] = useDraft(draftScope, initial, !!flags.get("event") || !!initialListing);
   const [uploading, setUploading] = useState(false); const [tried, setTried] = useState(false); const [changing, setChanging] = useState(false);
-  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD(x => { const n = { ...x, [k]: v }; if (k === "event_id") { const e = events.find(e => e.id === v); if (e) { n.date = e.starts_at?.slice(0, 10) ?? ""; n.location = e.location; n.capacity = String(e.capacity ?? e.guest_count ?? ""); } } return n; });
+  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD(x => { const n = { ...x, [k]: v }; if (k === "event_id") { const e = events.find(e => e.id === v); if (e) { n.date = e.starts_at ? new Date(e.starts_at).toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : ""; /* UK calendar day, not the UTC date */ n.location = e.location; n.capacity = String(e.capacity ?? e.guest_count ?? ""); } } return n; });
   const ev = events.find(e => e.id === d.event_id); const tile = tileOf(d.category); const problems = step1Problems(d);
   return <form className="wz-grid" noValidate onSubmit={e => { e.preventDefault(); setTried(true); if (problems.length) return; store.set(draftKey(draftScope), d); router.push(stepHref(2, d, flags, initialListing)); }}>
     {(flags.get("hold") === "1" || flags.get("emergency") === "1") && <div className={`k-notice ${flags.get("emergency") === "1" ? "red" : "blue"}`} style={{ gridColumn: "1 / -1" }}>{flags.get("emergency") === "1" ? <Zap size={15} /> : <Info size={15} className="k-blue" />}
@@ -201,6 +201,8 @@ export function RfqSuppliers({ candidates, eventId, preselect, eventDate, draftS
 /** Step 4 — Review & send: everything from steps 1–3 in one place; "Send request" is the only action that contacts suppliers. */
 export function RfqReview({ candidates, eventId, eventName, eventDate, draftScope, preselect, initialHold, initialEmergency = false }: { candidates: Candidate[]; eventId: string; eventName: string; eventDate: string; draftScope: string; preselect: string[]; initialHold?: boolean; initialEmergency?: boolean }) {
   const { run, pending } = useAction(); const toast = useKitToast(); const flags = useSearchParams();
+  // Q48: once sent, keep "Send request" disabled while the redirect to the request page loads — a second click re-sent the RFQ.
+  const [sent, setSent] = useState(false);
   const key = draftKey(draftScope);
   const [d, , ready] = useDraft(draftScope, NO_INITIAL);
   const fallback = useMemo(() => DEFAULT_STRATEGY(preselect, initialHold, initialEmergency), [preselect, initialHold, initialEmergency]);
@@ -215,7 +217,7 @@ export function RfqReview({ candidates, eventId, eventName, eventDate, draftScop
     const cut = (v: string) => v.slice(0, 300);
     const requirements = Object.fromEntries(Object.entries({ date: d.date, time: d.time, setup: d.setup, location: d.location, capacity: d.capacity, capacity_range: d.capacity_range, budget_type: d.budget_type, credentials: d.credentials, checklist: reqs.join(", "), respond_by: d.respond_by, questions: d.questions, documents: label(DOCS, d.documents).join(", "), site_notes: d.site_notes }).filter(([, v]) => v).map(([k, v]) => [k, cut(v)]));
     const r = await run(() => sendRequest({ event_id: eventId || d.event_id, category: d.category, title: d.title, scope: d.scope, budget_min: d.budget_min || undefined, budget_max: d.budget_max || undefined, attachments: d.attachments ?? [], requirements, response_hours: st.emergency ? Math.min(st.hours, 4) : st.hours, hold: st.hold, hold_hours: st.holdH, emergency: st.emergency, include_backups: st.backups, recipients: recipients.map(c => ({ listing_id: c.id, role: st.sel[c.id]! })) }));
-    if (r.ok) { store.del(key); store.del(`${key}:strategy`); }
+    if (r.ok) { setSent(true); store.del(key); store.del(`${key}:strategy`); }
   };
   const edit = (n: number) => <Link className="k-link k-small" href={stepHref(n, d, flags, flags.get("listing") ?? undefined)}><Pencil size={12} /> Edit</Link>;
   return <div className="wz-grid">
@@ -233,6 +235,6 @@ export function RfqReview({ candidates, eventId, eventName, eventDate, draftScop
         <dl className="ov-dl rq-dl">{[["Response window", `${st.emergency ? Math.min(st.hours, 4) : st.hours} hours`], ["Conditional hold", st.hold ? `${st.holdH} hours on ${eventDate}` : "Off"], ["Backups", st.backups ? "Included" : "Primary suppliers only"], ["Emergency", st.emergency ? "Yes — urgent" : "No"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <div className="k-notice" style={{ marginTop: 10 }}><Info size={14} className="k-blue" /><span className="k-xs">Sending contacts these suppliers through Gala Dock messages. Nothing is booked or paid until you accept a quote.</span></div></section>
     </div>
-    <div className="wz-foot" style={{ gridColumn: "1 / -1" }}><Link className="k-btn ghost lg" href={stepHref(3, d, flags, flags.get("listing") ?? undefined)}><ArrowLeft size={15} />Back</Link><button className="k-btn primary lg" disabled={pending || !recipients.length} onClick={() => void send()}><Send size={15} />Send request</button></div>
+    <div className="wz-foot" style={{ gridColumn: "1 / -1" }}><Link className="k-btn ghost lg" href={stepHref(3, d, flags, flags.get("listing") ?? undefined)}><ArrowLeft size={15} />Back</Link><button className="k-btn primary lg" disabled={pending || sent || !recipients.length} onClick={() => void send()}><Send size={15} />Send request</button></div>
   </div>;
 }

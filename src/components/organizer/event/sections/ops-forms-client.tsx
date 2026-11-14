@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Plus, Pencil, Check, X, Link2, Send, Ban, RotateCcw, Upload, Ticket, CalendarPlus, ShieldCheck, Loader2, Trash2, FileSignature, Copy, Play, Square, ArrowRightLeft, UserPlus, KeyRound, type LucideIcon } from "lucide-react";
 import { Dialog, useAction } from "@/components/kit/client";
 import { confirmDialog, alertDialog, copyText } from "@/lib/ui/dialogs";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 /**
  * Generic, declarative forms for the event operations sections (partners, logistics, compliance, accessibility, weather)
@@ -23,7 +24,7 @@ const ICONS: Record<string, LucideIcon> = { plus: Plus, edit: Pencil, check: Che
   calendar: CalendarPlus, shield: ShieldCheck, trash: Trash2, sign: FileSignature, copy: Copy, play: Play, stop: Square, swap: ArrowRightLeft, user: UserPlus, key: KeyRound };
 export type IconName = keyof typeof ICONS;
 
-const localDT = (v: unknown) => { if (typeof v !== "string" || !v) return ""; const d = new Date(v); if (Number.isNaN(d.getTime())) return ""; return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+const localDT = (v: unknown) => (typeof v === "string" ? isoToWall(v) : ""); // London wall time (Q48)
 const initial = (f: Field): unknown => {
   if (f.type === "rows") return Array.isArray(f.defaultValue) ? f.defaultValue.map(r => Object.fromEntries((f.columns ?? []).map(c => [c.name, r[c.name] ?? initial(c)]))) : [];
   if (f.type === "checkbox") return f.defaultValue === true;
@@ -37,7 +38,7 @@ const out = (f: Field, v: unknown): unknown => {
   if (f.type === "rows") return (v as Record<string, unknown>[]).map(r => Object.fromEntries((f.columns ?? []).map(c => [c.name, out(c, r[c.name])])));
   if (f.type === "checkbox") return v === true;
   if (f.type === "tri") return v === "yes" ? true : v === "no" ? false : null;
-  if (f.type === "datetime") return v ? new Date(String(v)).toISOString() : "";
+  if (f.type === "datetime") return v ? (wallToIso(String(v)) ?? "") : "";
   return typeof v === "string" ? v.trim() : v;
 };
 

@@ -12,7 +12,7 @@ import { money, delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, Delta } from "../_b/kit";
 import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
 import { stamp } from "../_b/format";
-import { setPartnerStatus, setPartnerTerms, requestPartnerPayout } from "../_b/actions";
+import { setPartnerStatus, setPartnerTerms, requestPartnerPayout, markPartnerStatementPaid } from "../_b/actions";
 
 export const metadata: Metadata = { title: "Partners" };
 
@@ -23,10 +23,36 @@ type Partner = {
     account_manager?: string; account_manager_avatar?: string; agreement?: string; tagline?: string; cover?: string; last_paid?: string; next_due?: string; pending?: number; pending_prev?: number; held?: number;
     paid_30d?: number; paid_prev_30d?: number; rev_series?: number[]; pause_reason?: string; perf?: { clicks: number; signups: number; bookings: number; revenue: number; deltas: number[] } };
 };
+type Earning = { partner_id: string; occurred_at: string; eligible_revenue: number; commission: number; status: string };
+type Statement = { id: string; partner_id: string; period_start: string; commission: number; status: string; payout_due: string | null; paid_at: string | null; reference: string | null };
+/** Q65: money figures come from the commission ledger (partner_earnings / partner_statements), not from seeded rollups in details. */
+type Ledger = { rev30: number; revPrev: number; com30: number; hold: number; owed: number; paid30: number; paidPrev: number; lastPaid: string | null; nextDue: string | null; statements: Statement[] };
 const TYPE_TONE: Record<string, string> = { affiliate: "amber", strategic: "purple", promoter: "red" };
 const PAYOUT: Record<string, [string, string]> = { paid: ["paid", "Paid"], pending: ["pending", "Pending"], on_hold: ["on_hold", "On hold"], hold: ["hold", "Hold"] };
 const typeOf = (p: Partner) => p.details?.type ?? p.kind;
-const rev = (p: Partner) => Number(p.details?.revenue_30d ?? p.eligible_revenue ?? 0);
+const NO_LEDGER: Ledger = { rev30: 0, revPrev: 0, com30: 0, hold: 0, owed: 0, paid30: 0, paidPrev: 0, lastPaid: null, nextDue: null, statements: [] };
+function ledgerOf(earnings: Earning[], statements: Statement[], now: number) {
+  const m = new Map<string, Ledger>(), DAY = 864e5;
+  const get = (id: string) => { let l = m.get(id); if (!l) { l = { ...NO_LEDGER, statements: [] }; m.set(id, l); } return l; };
+  for (const e of earnings) {
+    if (e.status === "reversed") continue;
+    const l = get(e.partner_id), t = Date.parse(e.occurred_at);
+    if (t >= now - 30 * DAY) { l.rev30 += Number(e.eligible_revenue); l.com30 += Number(e.commission); }
+    else if (t >= now - 60 * DAY) l.revPrev += Number(e.eligible_revenue);
+    if (e.status === "pending") l.hold += Number(e.commission);
+  }
+  for (const st of statements) {
+    const l = get(st.partner_id); l.statements.push(st);
+    if (st.status === "open" || st.status === "pending") { l.owed += Number(st.commission); if (st.payout_due && (!l.nextDue || st.payout_due < l.nextDue)) l.nextDue = st.payout_due; }
+    if (st.status === "paid" && st.paid_at) {
+      const t = Date.parse(st.paid_at);
+      if (t >= now - 30 * DAY) l.paid30 += Number(st.commission); else if (t >= now - 60 * DAY) l.paidPrev += Number(st.commission);
+      if (!l.lastPaid || st.paid_at > l.lastPaid) l.lastPaid = st.paid_at;
+    }
+  }
+  return (id: string) => m.get(id) ?? NO_LEDGER;
+}
+const pence = (n: number) => Math.round(n * 100) / 100;
 const sum = (l: Partner[], f: (p: Partner) => number) => l.reduce((a, p) => a + f(p), 0);
 
 export default async function PartnersPage(props: PageProps<"/admin/partners">) {
@@ -37,6 +63,13 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
   const now = requestTime();
   const all = (await rows<Partner>(db.from("partners").select("id,name,kind,status,referral_code,commission_bps,commission_basis,referrals,eligible_revenue,earned,paid,quality_score,logo,created_at,details").order("created_at", { ascending: false })))
     .map(p => ({ ...p, details: p.details ?? {} }));
+  const since = new Date(now - 60 * 864e5).toISOString();
+  const [earnings, statements] = await Promise.all([
+    rows<Earning>(db.from("partner_earnings").select("partner_id,occurred_at,eligible_revenue,commission,status").gte("occurred_at", since).limit(20000)),
+    rows<Statement>(db.from("partner_statements").select("id,partner_id,period_start,commission,status,payout_due,paid_at,reference").order("period_start", { ascending: false }).limit(5000)),
+  ]);
+  const led = ledgerOf(earnings, statements, now);
+  const rev = (p: Partner) => led(p.id).rev30;
   const tab = ["strategic", "policy"].includes(s("tab")) ? s("tab") : "affiliates";
   const type = s("type"), status = s("status"), country = s("country"), q = s("q").toLowerCase();
   const list = all.filter(p => (tab !== "strategic" || p.kind === "strategic") && (!type || typeOf(p) === type) && (!status || p.status === status) && (!country || (p.details.country_code ?? "") === country)
@@ -47,10 +80,10 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
   const active = all.filter(p => p.status === "active"), joined30 = active.filter(p => new Date(p.created_at).getTime() >= now - 30 * 864e5).length;
   const revSeries = Array.from({ length: 10 }, (_, i) => sum(all, p => p.details.rev_series?.[i] ?? 0));
   // Period-over-period deltas only use partners that have a prior-period rollup (no invented baselines).
-  const hasPrev = all.filter(p => p.details.revenue_prev_30d != null);
-  const R = sum(all, rev), Rd = delta(sum(hasPrev, rev), sum(hasPrev, p => Number(p.details.revenue_prev_30d)));
-  const C = sum(all, p => Number(p.details.paid_30d ?? 0)), Cd = delta(sum(hasPrev, p => Number(p.details.paid_30d ?? 0)), sum(hasPrev, p => Number(p.details.paid_prev_30d ?? 0)));
-  const P = sum(all, p => Number(p.details.pending ?? Math.max(0, p.earned - p.paid))), Pd = delta(sum(hasPrev, p => Number(p.details.pending ?? 0)), sum(hasPrev, p => Number(p.details.pending_prev ?? 0)));
+  const R = sum(all, rev), Rd = delta(R, sum(all, p => led(p.id).revPrev));
+  const C = sum(all, p => led(p.id).paid30), Cd = delta(C, sum(all, p => led(p.id).paidPrev));
+  // Pending payouts = cleared, unpaid statements plus earnings still inside the 14-day hold.
+  const P = sum(all, p => led(p.id).owed + led(p.id).hold), Pd = null;
   const policy = tab === "policy" ? await one<{ value: { promoter_policy?: Record<string, unknown> }; version: number; release: string | null }>(db.from("platform_settings").select("value,version,release").eq("section", "commerce").eq("status", "published").maybeSingle()) : null;
   const countries = [...new Set(all.map(p => p.details.country_code).filter(Boolean))] as string[];
 
@@ -91,7 +124,7 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
                 <td><span className={`adb-tag ${TYPE_TONE[t] ?? "grey"}`}>{t[0]!.toUpperCase() + t.slice(1)}</span></td>
                 <td><Pill status={p.status === "pending" ? "processing" : p.status} label={<>{p.status === "active" ? <CircleCheck aria-hidden="true" /> : p.status === "paused" ? <CirclePause aria-hidden="true" /> : <CircleDot aria-hidden="true" />}{p.status === "pending" ? "Under review" : p.status[0]!.toUpperCase() + p.status.slice(1)}</>} /></td>
                 <td>{money(r)}</td>
-                <td>{money(Math.round((r * p.commission_bps) / 10000))} ({Math.round(p.commission_bps / 100)}%)</td>
+                <td>{money(pence(led(p.id).com30), "GBP", { cents: true })} ({(p.commission_bps / 100).toFixed(p.commission_bps % 100 ? 1 : 0)}%)</td>
                 <td>{p.details.conversion != null ? `${p.details.conversion.toFixed(1)}%` : "—"}</td>
                 <td>{stamp(p.created_at).split(",")[0]}</td>
                 <td><Pill status={pk} label={<><CircleCheck aria-hidden="true" />{pl}</>} /></td>
@@ -107,7 +140,7 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
           <Kpi icon={Clock3} tone="orange" label="Pending payouts" value={money(P)} delta={Pd} invert series={revSeries.map(v => v * (P / (R || 1)))} badge={<Pill status="active" label={<><CircleCheck aria-hidden="true" />Active</>} />} />
           <Menu label="Partner programme actions" className="adb-btn adp-dots" entries={[{ kind: "link", label: "Export partners (CSV)", href: "/admin/partners/export" }, { kind: "link", label: "Payout requests", href: "/admin/commerce/payouts" }]} />
         </div>
-        {sel ? <PartnerRail p={sel} tab={s("ptab") || "overview"} qp={qp} /> : <section className="adb-panel"><p className="adb-none">No partners yet.</p></section>}
+        {sel ? <PartnerRail p={sel} l={led(sel.id)} month={new Date(now).toISOString().slice(0, 7)} tab={s("ptab") || "overview"} qp={qp} /> : <section className="adb-panel"><p className="adb-none">No partners yet.</p></section>}
       </aside>
     </div>
   </div>;
@@ -117,9 +150,9 @@ function Flag() {
   return <svg className="adp-flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="adp-uk"><path d="M0,0 v30 h60 v-30 z" /></clipPath><g clipPath="url(#adp-uk)"><path d="M0,0 v30 h60 v-30 z" fill="#012169" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" /><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" /><path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" /><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" /></g></svg>;
 }
 
-function PartnerRail({ p, tab, qp }: { p: Partner; tab: string; qp: (e: Record<string, string>) => string }) {
-  const d = p.details, t = typeOf(p), r = rev(p), earned30 = Math.round((r * p.commission_bps) / 10000), perf = d.perf;
-  const pending = Number(d.pending ?? Math.max(0, p.earned - p.paid));
+function PartnerRail({ p, l, month, tab, qp }: { p: Partner; l: Ledger; month: string; tab: string; qp: (e: Record<string, string>) => string }) {
+  const d = p.details, t = typeOf(p), r = l.rev30, earned30 = pence(l.com30), perf = d.perf;
+  const pending = pence(l.owed);   // cleared onto open statements, not yet paid
   return <>
     <nav className="ads-ctabs adp-tabs">{[["overview", "Overview"], ["attribution", "Attribution"], ["commissions", "Commissions"], ["payouts", "Payouts"], ["agreement", "Agreement"]].map(([k, l]) =>
       <Link key={k} href={qp({ partner: p.id, ptab: k === "overview" ? "" : k })} scroll={false} className={tab === k ? "on" : ""}>{l}</Link>)}</nav>
@@ -143,8 +176,9 @@ function PartnerRail({ p, tab, qp }: { p: Partner; tab: string; qp: (e: Record<s
       <dl className="adb-kv adp-kv">
         {tab === "attribution" && <><div><dt>Referral code</dt><dd>{p.referral_code ?? "—"}</dd></div><div><dt>Referrals</dt><dd>{p.referrals.toLocaleString("en-GB")}</dd></div><div><dt>Quality score</dt><dd>{p.quality_score ?? "—"}</dd></div><div><dt>Basis</dt><dd>{p.commission_basis.replaceAll("_", " ")}</dd></div></>}
         {tab === "commissions" && <><div><dt>Eligible revenue</dt><dd>{money(p.eligible_revenue)}</dd></div><div><dt>Earned (all time)</dt><dd>{money(p.earned)}</dd></div><div><dt>Rate</dt><dd>{(p.commission_bps / 100).toFixed(0)}%</dd></div></>}
-        {tab === "payouts" && <><div><dt>Paid (all time)</dt><dd>{money(p.paid)}</dd></div><div><dt>Pending</dt><dd>{money(pending)}</dd></div><div><dt>Payout status</dt><dd>{(PAYOUT[d.payout_status ?? ""] ?? ["", "—"])[1]}</dd></div></>}
-      </dl></section>}
+        {tab === "payouts" && <><div><dt>Paid (all time)</dt><dd>{money(p.paid, "GBP", { cents: true })}</dd></div><div><dt>Cleared, unpaid</dt><dd>{money(pending, "GBP", { cents: true })}</dd></div><div><dt>In 14-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div></>}
+      </dl>
+      {tab === "payouts" && <StatementList p={p} statements={l.statements} thisMonth={month} />}</section>}
     <section className="adb-panel adp-perf">
       <div className="adb-sec-h"><h2>Performance <small>(Last 30 days)</small></h2><Link className="adb-link" href="/admin/analytics?tab=promotion">View analytics <ArrowRight aria-hidden="true" /></Link></div>
       {perf ? <div className="adp-perf-g">{([["Clicks", perf.clicks.toLocaleString("en-GB")], ["Sign ups", perf.signups.toLocaleString("en-GB")], ["Bookings", perf.bookings.toLocaleString("en-GB")], ["Revenue", money(perf.revenue)]] as const).map(([l, v], i) =>
@@ -155,10 +189,10 @@ function PartnerRail({ p, tab, qp }: { p: Partner; tab: string; qp: (e: Record<s
       <div className="adb-sec-h"><h2>Commission &amp; payout</h2><Link className="adb-link" href={qp({ partner: p.id, ptab: "payouts" })}>View all <ArrowRight aria-hidden="true" /></Link></div>
       <dl>
         <div><dt>Commission rate</dt><dd>{(p.commission_bps / 100).toFixed(0)}% <small>(of {p.commission_basis === "subscription_revenue" ? "subscription revenue" : "platform revenue"})</small> <Info aria-hidden="true" /></dd></div>
-        <div><dt>Total earned (30d)</dt><dd>{money(earned30)}</dd></div>
-        <div className="gap"><dt>Paid</dt><dd>{money(Number(d.paid_30d ?? p.paid))}<em>{d.last_paid ? `Last paid ${stamp(d.last_paid).split(",")[0]}` : ""}</em></dd></div>
-        <div><dt>Pending</dt><dd>{money(pending)}<em>{d.next_due ? `Due ${stamp(d.next_due).split(",")[0]}` : ""}</em></dd></div>
-        <div><dt>Held</dt><dd>{money(Number(d.held ?? 0))}</dd></div>
+        <div><dt>Total earned (30d)</dt><dd>{money(earned30, "GBP", { cents: true })}</dd></div>
+        <div className="gap"><dt>Paid (30d)</dt><dd>{money(pence(l.paid30), "GBP", { cents: true })}<em>{l.lastPaid ? `Last paid ${stamp(l.lastPaid).split(",")[0]}` : ""}</em></dd></div>
+        <div><dt>Cleared, unpaid</dt><dd>{money(pending, "GBP", { cents: true })}<em>{l.nextDue ? `Due ${stamp(l.nextDue).split(",")[0]}` : ""}</em></dd></div>
+        <div><dt>In 14-day hold</dt><dd>{money(pence(l.hold), "GBP", { cents: true })}</dd></div>
       </dl>
     </section>
     <section className="adb-panel adp-qa"><h2>Quick actions</h2>
@@ -170,10 +204,27 @@ function PartnerRail({ p, tab, qp }: { p: Partner; tab: string; qp: (e: Record<s
         <Link className="adb-btn" href={qp({ partner: p.id, ptab: "agreement" })}><FileText aria-hidden="true" />View agreement</Link>
       </div>
       <ActionButton action={requestPartnerPayout} args={[p.id, pending]} reason variant="primary" className="adp-payout" disabled={pending <= 0 || p.status !== "active"}
-        confirm={{ title: "Process partner payout", body: `Records a payout request of ${money(pending)} to ${p.name}. Payouts are executed by Stripe Connect; this console doesn’t move money, so the request stays pending until processed.`, cta: "Record payout request" }}>
+        confirm={{ title: "Process partner payout", body: `Records a payout request of ${money(pending, "GBP", { cents: true })} (cleared, unpaid statements) to ${p.name}. This console doesn’t move money: pay the partner, then mark each statement paid with the payment reference under Payouts.`, cta: "Record payout request" }}>
         <Banknote aria-hidden="true" />Process payout</ActionButton>
     </section>
   </>;
+}
+
+/** Q65: monthly statements and their settlement (admin_partner_statement_paid: reason + reference, ledger memo, audit). */
+function StatementList({ p, statements, thisMonth }: { p: Partner; statements: Statement[]; thisMonth: string }) {
+  if (!statements.length) return <p className="adb-none">No statements yet. Earnings clear onto the month’s statement 14 days after the revenue.</p>;
+  return <ul className="adp-stmts">{statements.slice(0, 12).map(st => {
+    const period = new Date(`${st.period_start}T12:00:00Z`).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "Europe/London" });
+    const closed = st.period_start.slice(0, 7) < thisMonth;
+    return <li key={st.id}><span><b>{period}</b><small>{money(Number(st.commission), "GBP", { cents: true })} · {st.status === "paid" ? `Paid${st.paid_at ? ` ${stamp(st.paid_at).split(",")[0]}` : ""}${st.reference ? ` · ${st.reference}` : ""}` : st.status === "on_hold" ? "On hold" : closed ? `Due ${st.payout_due ? stamp(st.payout_due).split(",")[0] : "now"}` : "Open — month in progress"}</small></span>
+      {(st.status === "open" || st.status === "pending") && closed && Number(st.commission) > 0 && <details className="adb-pop"><summary className="adb-btn">Mark paid</summary><div className="adb-pop-body">
+        <ActionForm action={markPartnerStatementPaid} className="adb-form"><h3>Mark {period} paid — {p.name}</h3>
+          <input type="hidden" name="statement_id" value={st.id} />
+          <label>Payment reference<input name="reference" required minLength={3} maxLength={120} /></label>
+          <label>Reason (recorded in audit log)<textarea name="reason" required minLength={5} rows={2} /></label>
+          <button className="adb-btn primary" type="submit">Mark paid</button>
+        </ActionForm></div></details>}</li>;
+  })}</ul>;
 }
 
 function TermsForm({ p }: { p: Partner }) {

@@ -31,7 +31,7 @@ export default async function ClientPage({ params }: PageProps<"/organizer/sales
   const c = o.client;
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales", href: "/organizer/sales" }, { label: "Clients", href: "/organizer/sales/clients" }, { label: c.name }]} />
-    <div className="k-page-head"><div><h1 style={{ fontSize: 28 }}>{c.name} {c.status !== "active" && <Chip tone="gray">{c.status}</Chip>}</h1><p className="sub">{c.kind === "individual" ? "Individual" : "Company"} · client since {dateShort(c.created_at)}</p></div>
+    <div className="k-page-head"><div><h1>{c.name} {c.status !== "active" && <Chip tone="gray">{c.status}</Chip>}</h1><p className="sub">{c.kind === "individual" ? "Individual" : "Company"} · client since {dateShort(c.created_at)}</p></div>
       <div className="k-row" style={{ gap: 8 }}><MergeClientButton keepId={c.id} others={others} /><Link className="k-btn outline" href={`/organizer/proposals/new?step=1`}>New proposal</Link></div></div>
     <SalesNav active="clients" />
     <div className="k-grid" style={{ gridTemplateColumns: "minmax(0,2fr) minmax(0,1fr)", gap: 14 }}>

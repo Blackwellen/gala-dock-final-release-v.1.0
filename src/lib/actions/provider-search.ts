@@ -36,7 +36,7 @@ export async function searchProviders(eventId: string, category: string, f: Prov
   const guests = Math.max(0, Number(e.guest_count ?? 0));
   let rows = ((data ?? []) as unknown as Row[]).filter(l => category === "venue" || buildCategoryOf(l.kind, l.category) === category);
   if (f.fitsGuests && guests && category === "venue") rows = rows.filter(l => !l.capacity_max || l.capacity_max >= guests);
-  const { data: inBuild } = await ctx.supabase.from("build_items").select("listing_id").eq("event_id", e.id).not("status", "in", "(cancelled,declined,expired)");
+  const { data: inBuild } = await ctx.supabase.from("build_items").select("listing_id").eq("event_id", e.id).not("status", "in", "(cancelled,cancelled_by_customer,cancelled_by_provider,refunded,partially_refunded,declined,unavailable,expired,expired_no_response,fulfilled,completion_pending,completed,disputed)"); // same closed set as addToBuild: finished lines don't block adding again
   const added = new Set((inBuild ?? []).map(b => b.listing_id));
   const per = (l: Row) => /guest|person/.test(l.price_unit ?? "");
   const estimate = (l: Row) => (l.price_from == null ? null : per(l) ? Number(l.price_from) * Math.max(1, guests) : Number(l.price_from));

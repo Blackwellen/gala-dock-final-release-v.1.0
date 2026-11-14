@@ -11,7 +11,7 @@ type Queued = { payload: string; at: string; device: string; local: string; zone
 const LABEL: Record<string, [string, "ok" | "warn" | "bad"]> = {
   admitted: ["Valid — admit", "ok"], readmitted: ["Re-entry — admit", "ok"], duplicate: ["Already scanned", "warn"], invalid: ["Invalid ticket", "bad"],
   revoked: ["Revoked", "bad"], refunded: ["Refunded", "bad"], transferred: ["Transferred — old ticket", "bad"], resold: ["Resold — old ticket", "bad"],
-  wrong_event: ["Wrong event", "bad"], wrong_session: ["Wrong date/session", "bad"], resale_locked: ["Listed for resale — not valid", "bad"],
+  wrong_event: ["Wrong event", "bad"], wrong_session: ["Wrong date/session", "bad"], resale_locked: ["Listed for resale — not valid", "bad"], on_hold: ["Ticket on hold — see box office", "warn"],
   wrong_zone: ["Not valid for this zone", "bad"], outside_window: ["Zone not open now", "bad"], reentry_denied: ["Re-entry limit reached", "bad"],
   suspended: ["Pass suspended", "bad"], expired: ["Pass expired", "bad"], exited: ["Exit recorded", "ok"],
   pass_not_valid_here: ["Pass not valid for this event", "bad"], online_only_ticket: ["Online-only ticket — no in-person entry", "bad"],
@@ -64,10 +64,15 @@ export function TicketScanner({ eventId, eventName }: { eventId: string; eventNa
   const offlineScan = useCallback((payload: string) => {
     if (!manifest) { setRes({ key: "offline_unknown", error: "Offline and no guest list downloaded — download it while online." }); return; }
     const v = payload.trim();
-    const m = /^GD2P?\.([A-Za-z0-9_-]{22})\./.exec(v), legacy = /^GD1:([A-Z0-9-]{6,40}):/i.exec(v);
-    const id = m ? b64ToUuid(m[1]!) : null, codeV = legacy ? legacy[1]!.toUpperCase() : /^[A-Z0-9-]{6,40}$/i.test(v) ? v.toUpperCase() : null;
-    const row = manifest.rows.find(r => (id && r.ticket_id === id) || (codeV && r.code === codeV));
-    const seen = queue.some(q => q.payload === v && q.local === "offline_ok") || row?.status === "used";
+    const find = (val: string) => {
+      const m = /^GD2P?\.([A-Za-z0-9_-]{22})\./.exec(val), legacy = /^GD1:([A-Z0-9-]{6,40}):/i.exec(val);
+      const id = m ? b64ToUuid(m[1]!) : null, codeV = legacy ? legacy[1]!.toUpperCase() : /^[A-Z0-9-]{6,40}$/i.test(val) ? val.toUpperCase() : null;
+      return manifest.rows.find(r => (id && r.ticket_id === id) || (codeV && r.code === codeV));
+    };
+    const row = find(v);
+    // The wallet code rotates every 30s, so a second offline scan of the same ticket has a different payload: match on the
+    // ticket the queued payload resolves to, not the raw string (Q47 — offline double admission on one device).
+    const seen = queue.some(q => q.local === "offline_ok" && (q.payload === v || (!!row && find(q.payload)?.ticket_id === row.ticket_id))) || row?.status === "used";
     const key = !row ? "offline_unknown" : row.status !== "valid" && row.status !== "used" ? (row.status === "resale_listed" ? "resale_locked" : row.status) : seen ? "offline_dup" : "offline_ok";
     persistQueue([...queue, { payload: v, at: new Date().toISOString(), device: device.current, local: key, ...(zone ? { zoneId: zone } : {}) }]);
     setRes({ key, reply: row ? { ok: true, result: "admitted", attendee: row.attendee, tier: row.tier, seat: row.seat, code: row.code } : undefined });
@@ -111,10 +116,17 @@ export function TicketScanner({ eventId, eventName }: { eventId: string; eventNa
   }
   async function sync() {
     if (!queue.length) return;
-    const out = await syncOfflineScans(eventId, queue, manifest?.snapshot);
+    const sent = queue.slice(0, 500);
+    const out = await syncOfflineScans(eventId, sent, manifest?.snapshot).catch(() => null);
+    // Q47: never drop queued scans the server didn't record — a refused snapshot (at === ""), a network failure or a per-scan
+    // error keeps them for the next sync (client scan ids make retries idempotent); scans beyond the 500 batch stay queued too.
+    if (!out) { setReport("Couldn't reach Gala Dock — offline scans are kept and will sync later."); return; }
+    const fatal = out.find(o => o.at === "")?.server;
+    if (fatal && !fatal.ok) { setReport(`${fatal.error} Offline scans are kept.`); return; }
+    const failed = new Set(out.filter(o => !o.server.ok).map(o => o.at));
     const mismatches = out.filter(o => o.server.ok && ((o.local === "offline_ok") !== ["admitted", "readmitted"].includes(o.server.result)));
-    persistQueue([]);
-    setReport(`Synced ${out.length} offline scans. ${mismatches.length ? `${mismatches.length} need attention: ${mismatches.map(m => `${m.server.ok ? (m.server.attendee ?? m.server.code) : ""} → ${m.server.ok ? LABEL[m.server.result]?.[0] : ""}`).join("; ")}` : "No conflicts."}`);
+    persistQueue([...sent.filter(q => failed.has(q.at)), ...queue.slice(500)]);
+    setReport(`Synced ${out.length - failed.size} offline scans.${failed.size ? ` ${failed.size} couldn't be recorded and stay queued.` : ""} ${mismatches.length ? `${mismatches.length} need attention: ${mismatches.map(m => `${m.server.ok ? (m.server.attendee ?? m.server.code) : ""} → ${m.server.ok ? LABEL[m.server.result]?.[0] : ""}`).join("; ")}` : "No conflicts."}`);
     void download(true);
   }
   useEffect(() => { if (online && queue.length) queueMicrotask(() => void sync()); }, [online]); // eslint-disable-line react-hooks/exhaustive-deps

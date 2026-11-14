@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { schemaEventStatus } from "@/lib/events/schema-status";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -105,7 +106,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.venue_name, e.location].filter(Boolean).join(", "))}`;
   const gt = await gettingThere;
   const mode = x.virtual?.format === "hybrid" ? "MixedEventAttendanceMode" : x.virtual?.sessions.length ? "OnlineEventAttendanceMode" : "OfflineEventAttendanceMode";
-  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, eventStatus: "https://schema.org/EventScheduled", eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: x.price, priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
+  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, ...schemaEventStatus(e.status, e.settings as Record<string, unknown> | null), eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: x.price, priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
 
   // §50 launch state (server-computed): drives the badge and whether checkout is offered.
   const { data: launchRaw } = e ? await supabase.rpc("event_launch_state" as never, { p_event: e.id } as never) : { data: null };
@@ -182,7 +183,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
           {features.length > 0 && <ul className="pe3-minis">{features.slice(0, 4).map((f, i) => { const I = FEAT[f] ?? Sparkles; return <li key={f}><span><I size={20} aria-hidden /></span><p><b>{f}</b>{highlights[i] ? <small>{highlights[i]}</small> : null}</p></li>; })}</ul>}
           {photos[1] && on("gallery") && <a className="pe3-banner" href="#photos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[1]} alt="" /><span><b>Event highlights</b><small>{photos.length} photos from the organiser</small></span></a>}</section>}
         {showTickets && <aside id="tickets" className="ce-card pe3-tickets"><div className="k-between"><h2>Get your tickets</h2><span className={`pe-sale ${sale[1]}`}><CheckCircle2 size={13} />{sale[0]}</span></div>
-          <TicketPicker slug={e.slug!} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} /></aside>}
+          <TicketPicker slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} /></aside>}
       </div>);
       const dates = <DatesSection key="dates" extras={x.extras} series={x.series} parent={x.parent} />; rows.push(dates);
       if (x.series || x.parent || x.extras.passes.length || x.extras.sub_events.length || x.extras.days.length > 1) tabs.push(["dates", "Dates"]);
@@ -227,7 +228,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
         <h1 id="pe-title">{(s.hero_title as string) || e.name}</h1>{(s.subtitle as string) ? <p>{String(s.subtitle)}</p> : null}
         <dl className="pe3-facts"><div><dt><CalendarDays size={22} aria-label="Date" /></dt><dd><b>{dateLine}</b><small>{d ? d.toLocaleDateString("en-GB", { weekday: "short", timeZone: TZ }) : ""} {t(e.starts_at)} – {t(e.ends_at)}</small></dd></div>
           <div><dt><MapPin size={22} aria-label="Venue" /></dt><dd><b>{e.venue_name || e.city}</b><small>{e.city ? `${e.city}, UK` : e.location}</small></dd></div>
-          <div><dt><Users size={22} aria-label="Attendance" /></dt><dd><b>{(Number(s.attendance) || e.capacity || 0).toLocaleString("en-GB")}+</b><small>Expected attendees</small></dd></div></dl>
+          {(Number(s.attendance) || e.capacity || 0) > 0 && <div><dt><Users size={22} aria-label="Attendance" /></dt><dd><b>{(Number(s.attendance) || e.capacity || 0).toLocaleString("en-GB")}+</b><small>Expected attendees</small></dd></div>}</dl>
         {(primary || secondaryHref || video) && <div className="pe3-ctas" data-testid="hero-ctas">
           {primary && (primary.href ? <a className="k-btn primary" href={primary.href}>{primary.label}</a> : <span className="k-btn primary" aria-disabled="true">{primary.label}</span>)}
           {secondaryHref && <a className="k-btn ghost-light" href={secondaryHref}>{cta.secondary?.trim() || (showLineup ? "View line-up" : "View schedule")}</a>}

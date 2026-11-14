@@ -3,6 +3,8 @@
  * `shot` describes a real screenshot generated from the release UI by `scripts/help-screenshots.mjs` (Playwright, signed-in demo
  * personas), annotated with numbered markers anchored to live elements; the manifest records version + UI signature for staleness.
  */
+import { CONNECT_COUNTRIES_CHECKED_ON, supportedCountryNames } from "@/lib/payments/connect-countries";
+
 export type Annotation = { selector: string; caption: string };
 export type Article = {
   slug: string; title: string; audience: "Everyone" | "Customers" | "Organizers" | "Providers" | "Developers";
@@ -74,6 +76,12 @@ export const ARTICLES: Article[] = [
     troubleshooting: [{ q: "My payout hasn’t arrived", a: "Each payment is paid out when its booking or event is complete (24 hours after the event, or when the customer confirms), grouped by event. New sellers keep a 10% reserve in their own Stripe balance for 30 days. Check that Stripe payout setup is complete." }, { q: "Plan changes", a: "During the beta, plan changes are handled by Gala Dock support — use Contact support." }],
     related: ["payment-protection", "refunds-cancellations"],
     shot: { route: "/organizer/money", persona: "organizer", annotations: [{ selector: "main .mn-c", caption: "Revenue vs costs per event" }, { selector: 'main a[href*="tab=receivables"]', caption: "Invoices and what clients owe" }, { selector: 'a[href="/api/export/transactions"]', caption: "Export for your accountant" }] } },
+  { slug: "where-you-can-get-paid", title: "Where you can get paid", aliases: ["payout-countries", "supported-countries"], audience: "Everyone", summary: "The countries where sellers can take payments through Gala Dock.",
+    purpose: `Payments on Gala Dock go straight to each seller’s own Stripe account, so a seller can take bookings, deposits and paid tickets only where Stripe can verify a seller account for us. Supported business countries today: ${supportedCountryNames().join(", ")}. List checked against Stripe’s documentation on ${CONNECT_COUNTRIES_CHECKED_ON}.`,
+    prerequisites: ["A business based in one of the supported countries to take payments", "Stripe payouts connected"],
+    steps: ["Set your business country during onboarding (or in workspace settings).", "If your country is supported, set up payouts in Money: accept the Gala Dock Payment Terms, then complete Stripe’s form.", "If it isn’t supported yet, you can still create your profile and publish enquiry-only listings. Clients contact you and you agree payment with them yourself; Gala Dock can’t take bookings, deposits or paid tickets for you, and Gala Dock’s payment protection doesn’t cover payments made outside Gala Dock.", "Organisers outside the supported countries can still run free events and registrations."],
+    troubleshooting: [{ q: "My country isn’t on the list", a: "Stripe doesn’t yet let a UK platform like Gala Dock take card payments for sellers there (for example, it isn’t self-serve, needs a separate Stripe review, or Stripe doesn’t operate there). We add countries when Stripe makes them available." }, { q: "Can I use a business address in another country?", a: "No. Stripe verifies the country where your business is legally based, and it can’t be changed after your payout account is created." }],
+    related: ["money-payouts", "provider-getting-started", "tickets"] },
   { slug: "team", title: "Team, crew and shifts", aliases: ["staffing", "roles"], audience: "Organizers", summary: "Invite people, set roles, check availability and fill shifts.",
     purpose: "Team brings your staff, freelancers and crew together: who can do what in the workspace, who’s available, and who’s working which shift.",
     prerequisites: ["An organizer workspace", "Owner or manager role to invite people and change roles"],

@@ -36,7 +36,7 @@ export function HospitalityPanel({ itemId, eventId, kind, booking, guests, bars,
     {booking?.exists && booking.allergens.length > 0 && <p className="hp-allergens"><AlertTriangle size={14} aria-hidden />Contains: {booking.allergens.join(", ")}{booking.may_contain.length ? ` · May contain: ${booking.may_contain.join(", ")}` : ""}</p>}
     {booking?.warnings?.map(w => <p key={w.code} className="hp-warn"><AlertTriangle size={13} aria-hidden />{w.text}</p>)}
 
-    <fieldset className="hp-set" disabled={pending || cutoffPassed}><legend><Users size={14} aria-hidden />Final numbers{booking?.cutoff_at ? <small> · due {new Date(booking.cutoff_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</small> : null}</legend>
+    <fieldset className="hp-set" disabled={pending || cutoffPassed}><legend><Users size={14} aria-hidden />Final numbers{booking?.cutoff_at ? <small> · due {new Date(booking.cutoff_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Europe/London" })}</small> : null}</legend>
       {cutoffPassed ? <p className="k-small">The final-numbers deadline has passed — message the provider to change it.</p> : <>
         <label className="k-field"><span>Guests</span><input className="k-input" type="number" min={1} max={100000} value={n} onChange={e => setN(Math.max(1, Number(e.target.value) || 1))} /></label>
         <div className="hp-diet">{DIET.map(([k, l]) => <label key={k} className="k-field"><span>{l}</span><input className="k-input" type="number" min={0} max={n} value={diet[k] ?? 0} onChange={e => setDiet(d => ({ ...d, [k]: Math.max(0, Number(e.target.value) || 0) }))} /></label>)}</div>

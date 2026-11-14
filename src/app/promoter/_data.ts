@@ -6,7 +6,7 @@ import { untyped, rows, one, isUuid } from "@/lib/workspace/db";
 export type Promoter = { id: string; event_id: string; name: string; code: string; commission_pct: number; clicks: number; tickets_sold: number; revenue: number; status: string; payout_method: string | null };
 export type PromoEvent = { id: string; name: string; slug: string | null; status: string; visibility: string; starts_at: string | null; ends_at: string | null; venue_name: string; city: string; location: string;
   tags: string[]; cover_image: string; description: string; settings: { hero_image?: string; video_url?: string } | null };
-export type Sale = { id: string; tier_name: string; quantity: number; amount: number; commission: number; status: "pending" | "approved" | "paid" | "reversed"; channel: string; asset_id: string | null; sold_at: string };
+export type Sale = { id: string; tier_name: string; quantity: number; amount: number; commission: number; status: "pending" | "approved" | "held" | "payable" | "paid" | "reversed"; channel: string; asset_id: string | null; sold_at: string };
 export type Payout = { id: string; amount: number; status: string; scheduled_for: string; paid_at: string | null; reference: string | null };
 export type Asset = { id: string; title: string; kind: string; image: string; url: string; caption: string };
 export type ClickStat = { day: string; channel: string; asset_id: string | null; clicks: number };

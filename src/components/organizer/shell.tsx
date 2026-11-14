@@ -3,7 +3,7 @@ import Link from "next/link";
 import { GalaLogo } from "@/components/brand/gala-logo";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Plus, ChevronDown, Bell, CircleHelp, Menu as MenuIcon, X, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon, Palette } from "lucide-react";
+import { House, CalendarDays, Calendar, ChartNoAxesColumnIncreasing, MessageCircle, Store, Ticket, Users, Wallet, Sparkles, Settings, Plus, ChevronDown, Bell, CircleHelp, ArrowRight, FileText, UserPlus, Megaphone, Receipt, Send, LogOut, User, Building2, Check, Store as StoreIcon, Palette } from "lucide-react";
 import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { switchWorkspace, markNotificationsRead } from "@/lib/actions/shell";
@@ -40,6 +40,13 @@ const CREATE = [
   { href: "/organizer/team?invite=1", label: "Invite people", sub: "Members or external crew", icon: Send },
 ];
 
+/** One role rule for the desktop header and the phone/tablet menu (Q48: desktop showed every create action and Money to every role,
+ *  the PWA menu filtered them, so the two headers disagreed). Members can create events (create-event action allows them). */
+export function createFor(role: string) {
+  return CREATE.filter(c => ["owner", "manager"].includes(role) || (role === "member" && c.label === "New event") || (role === "finance" && c.label === "Create invoice"));
+}
+export const navFor = (role: string) => ORG_NAV.filter(n => n.label !== "Money" || ["owner", "manager", "finance"].includes(role));
+
 export function isActive(pathname: string, item: { href: string; exact?: boolean; also?: readonly string[] }) {
   if (item.exact) return pathname === item.href;
   return pathname === item.href || pathname.startsWith(item.href + "/") || !!item.also?.some(a => pathname.startsWith(a));
@@ -47,11 +54,11 @@ export function isActive(pathname: string, item: { href: string; exact?: boolean
 
 export function OrganizerShell({ children, user, workspace, workspaces, unread, notifications, threads }: Props) {
   const pathname = usePathname(); const router = useRouter(); const { run } = useAction();
-  const [navOpen, setNavOpen] = useState(false); const [q, setQ] = useState("");
-  // Close the mobile menu on navigation (reset-on-change during render, not in an effect).
-  const [navPath, setNavPath] = useState(pathname);
-  if (navPath !== pathname) { setNavPath(pathname); setNavOpen(false); }
-  const nav = <nav aria-label="Organizer" className="o-nav">{ORG_NAV.map(item => { const active = isActive(pathname, item); const Icon = item.icon; return <Link key={item.href} href={item.href} className="o-nav-item" aria-current={active ? "page" : undefined}><Icon size={21} aria-hidden strokeWidth={1.9} className={item.label === "Gala Agent" ? "o-agent-icon" : undefined} /><span>{item.label}</span>{"beta" in item && item.beta && <span className="k-beta">BETA</span>}</Link>; })}</nav>;
+  const [q, setQ] = useState("");
+  // Q48: below 1280px the shared MobileNav is the whole chrome (pwa-nav.css hides .pwa-hide-desktop-nav), so the old burger drawer,
+  // scrim and bottom tab bar never rendered visibly and have been removed. The header and sidebar below are desktop-only.
+  const creates = createFor(workspace.role);
+  const nav = <nav aria-label="Organizer" className="o-nav">{navFor(workspace.role).map(item => { const active = isActive(pathname, item); const Icon = item.icon; return <Link key={item.href} href={item.href} className="o-nav-item" aria-current={active ? "page" : undefined}><Icon size={21} aria-hidden strokeWidth={1.9} className={item.label === "Gala Agent" ? "o-agent-icon" : undefined} /><span>{item.label}</span>{"beta" in item && item.beta && <span className="k-beta">BETA</span>}</Link>; })}</nav>;
   const agentCard = <form className="o-side-agent" onSubmit={e => { e.preventDefault(); router.push(`/organizer/agent${q ? `?goal=${encodeURIComponent(q)}` : ""}`); }}>
     <div className="k-row" style={{ gap: 8 }}><Sparkles size={22} className="o-agent-icon" aria-hidden /><b>Gala Agent</b><span className="k-beta">BETA</span></div>
     <p>{pathname.startsWith("/organizer/team") ? "Build staffing plans, check availability and assign crew with AI." : pathname.startsWith("/organizer/marketplace") ? "Find the best suppliers for your event with AI." : pathname.startsWith("/organizer/money") ? "Draft invoice reminders, analyse payment risk and track cash flow with AI." : "Get an operational brief, find suppliers or update an event..."}</p>
@@ -62,13 +69,12 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
     <a href="#main" className="k-sr" style={{ position: "absolute" }}>Skip to content</a>
     <MobileNav home="/organizer" title={workspace.name} search={{ seat: workspace.id, placeholder: "Search events, venues, suppliers, clients…" }}
       tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Marketplace"].includes(n.label))}
-      menu={[...ORG_NAV.filter(n => n.label !== "Money" || ["owner", "manager", "finance"].includes(workspace.role)), { href: "/organizer/inbox", label: "Messages", icon: MessageCircle }, { href: "/organizer/help", label: "Help", icon: CircleHelp }]}
-      create={[...CREATE.filter(c => ["owner", "manager"].includes(workspace.role) || (workspace.role === "finance" && c.label === "Create invoice")), ...(["owner","manager","member"].includes(workspace.role) ? [{ href: "/organizer/media?create=1", label: "New design", icon: Palette }] : []), ...(["owner","manager","member","finance"].includes(workspace.role) ? [{ href: "/organizer/agent#compose", label: "Agent run", icon: Sparkles }] : [])]}
+      menu={[...navFor(workspace.role), { href: "/organizer/inbox", label: "Messages", icon: MessageCircle }, { href: "/help?from=organizer", label: "Help", icon: CircleHelp }]}
+      create={[...creates, ...(["owner","manager","member"].includes(workspace.role) ? [{ href: "/organizer/media?create=1", label: "New design", icon: Palette }] : []), ...(["owner","manager","member","finance"].includes(workspace.role) ? [{ href: "/organizer/agent#compose", label: "Agent run", icon: Sparkles }] : [])]}
       messagesHref="/organizer/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }}
       workspaceSwitcher={<>{workspaces.map(w => <button key={w.id} type="button" disabled={w.id === workspace.id} onClick={async () => { await run(() => switchWorkspace(w.id)); }}><Building2 size={18} aria-hidden /><span>{w.name} · {w.kind} · {w.role}</span>{w.id === workspace.id && <Check size={16} aria-hidden />}</button>)}<Link href="/discover">Customer app</Link></>} />
     <header className="o-top pwa-hide-desktop-nav">
       <div className="o-top-l">
-      <button className="o-burger k-icon-btn plain" aria-label="Open navigation" aria-expanded={navOpen} onClick={() => setNavOpen(true)}><MenuIcon size={20} /></button>
       <Link href="/organizer" className="o-logo" aria-label="Gala Dock — Organizer home"><GalaLogo /></Link>
       <Menu label="Switch workspace" align="left" width={280} trigger={({ open, toggle, id }) => <button className="o-ws" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,9 +90,9 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
       </Menu></div>
       <div className="o-search o-gs"><GlobalSearch seat={workspace.id} placeholder="Search events, venues, suppliers, clients, or anything..." /></div>
       <div className="o-top-r">
-      <Menu label="Create" width={260} trigger={({ open, toggle, id }) => <div className="k-split o-create"><Link href="/organizer/events/new?step=1" className="k-btn primary"><Plus size={17} aria-hidden />Create</Link><button className="k-btn primary" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu" aria-label="More create options"><ChevronDown size={16} /></button></div>}>
-        {close => CREATE.map(c => <Link key={c.href} role="menuitem" href={c.href} className="k-menu-item" onClick={close}><c.icon size={16} className="k-blue" aria-hidden /><span>{c.label}<small>{c.sub}</small></span></Link>)}
-      </Menu>
+      {creates.length > 0 && <Menu label="Create" width={260} trigger={({ open, toggle, id }) => <div className="k-split o-create"><Link href={creates[0]!.href} className="k-btn primary"><Plus size={17} aria-hidden />Create</Link><button className="k-btn primary" onClick={toggle} aria-expanded={open} aria-controls={id} aria-haspopup="menu" aria-label="More create options"><ChevronDown size={16} /></button></div>}>
+        {close => creates.map(c => <Link key={c.href} role="menuitem" href={c.href} className="k-menu-item" onClick={close}><c.icon size={16} className="k-blue" aria-hidden /><span>{c.label}<small>{c.sub}</small></span></Link>)}
+      </Menu>}
       <Menu label="Messages" width={330} trigger={({ open, toggle, id }) => <button className="o-top-btn" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Messages"><span className="o-badge-wrap"><MessageCircle size={21} aria-hidden />{threads.some(t => t.unread) && <i className="o-dot" />}</span><span className="o-top-lbl">Messages</span></button>}>
         {close => <><div className="k-between" style={{ padding: "6px 10px" }}><b>Messages</b></div>
           <RecentMessages items={threads} inbox="/organizer/inbox" onPick={close} empty="No conversations yet. Message suppliers, clients and your team from the inbox." />
@@ -109,16 +115,10 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <form action="/auth/signout" method="post"><button role="menuitem" className="k-menu-item" type="submit"><LogOut size={15} aria-hidden />Sign out</button></form></>}
       </Menu></div>
     </header>
-    <aside className={`o-side pwa-hide-desktop-nav ${navOpen ? "open" : ""}`} aria-label="Workspace navigation">
-      <div className="o-side-mobile-head"><b>{workspace.name}</b><button className="k-icon-btn plain" aria-label="Close navigation" onClick={() => setNavOpen(false)}><X size={18} /></button></div>
+    <aside className="o-side pwa-hide-desktop-nav" aria-label="Workspace navigation">
       {nav}{agentCard}
     </aside>
-    {navOpen && <div className="o-scrim" onClick={() => setNavOpen(false)} aria-hidden />}
     <main id="main" className="o-main">{children}</main>
-    <nav className="o-tabbar pwa-hide-desktop-nav" aria-label="Quick navigation">
-      {ORG_NAV.filter(i => ["Home", "Events", "Calendar", "Gala Agent"].includes(i.label)).map(i => <Link key={i.href} href={i.href} aria-current={isActive(pathname, i) ? "page" : undefined}><i.icon size={20} aria-hidden /><span>{i.label === "Gala Agent" ? "Agent" : i.label}</span></Link>)}
-      <button onClick={() => setNavOpen(true)} aria-label="More navigation"><MenuIcon size={20} aria-hidden /><span>More</span></button>
-    </nav>
   </div>;
 }
 // Megaphone kept for promotion entry points elsewhere

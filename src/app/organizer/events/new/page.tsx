@@ -21,7 +21,7 @@ export default async function CreateEventPage({ searchParams }: { searchParams: 
     untyped(sb).from("event_type_aliases").select("event_type,label").eq("organizer_tile", true).order("sort") as unknown as PromiseLike<{ data: { event_type: string; label: string }[] | null }>,
   ]);
   const maxStep = !e ? 1 : !e.starts_at ? 2 : !e.budget_total && !(e.settings as Record<string, unknown>)?.commercial_model ? 3 : 4;
-  const step = Math.min(Math.max(1, Number(sp.step) || 1), maxStep) as 1 | 2 | 3 | 4;
+  const step = Math.min(Math.max(1, Math.trunc(Number(sp.step)) || 1), maxStep) as 1 | 2 | 3 | 4;
   const tpl = (templates ?? []).find(t => t.id === sp.template) ?? null;
   const s = (e?.settings ?? {}) as Record<string, unknown>;
   /** ISO instant → "YYYY-MM-DDTHH:mm" wall time in London (for datetime-local inputs). */

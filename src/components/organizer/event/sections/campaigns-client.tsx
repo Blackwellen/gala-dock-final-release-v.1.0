@@ -6,6 +6,7 @@ import { Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { money, num, dateShort, timeRange } from "@/lib/format";
 import { timezones } from "@/lib/master-data";
 import { saveCampaignSetupStep, moveCampaign, createTrackedLink, addPromotionBlackout, deletePromotionBlackout, type Blocker } from "@/lib/actions/campaigns-ui";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 export type Channel = { campaign_id: string; channel: string; budget_minor: number; spent_minor: number; status: string };
 export type CampaignRow = { id: string; name: string; goal: string; goal_target: number | null; status: string; starts_at: string | null; ends_at: string | null; timezone: string;
@@ -28,7 +29,7 @@ const CH_LABEL = Object.fromEntries(CHANNELS);
 const ZONES: (readonly [string, string])[] = [...timezones().map(z => [z.tz, z.label] as const), ["UTC", "(GMT+0) UTC"]];
 const STEPS = ["Basics", "Schedule", "Audience", "Channels & budget", "Review"];
 const gbp = (minor: number) => money(minor / 100);
-const localInput = (iso: string | null) => { if (!iso) return ""; const d = new Date(iso); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+const localInput = (iso: string | null) => isoToWall(iso); // London wall time (Q48)
 const rid = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/[^A-Za-z0-9_-]/g, "");
 
 export function CampaignsClient(p: { eventId: string; eventName: string; slug: string | null; eventEnds: string | null; listed: boolean; campaigns: CampaignRow[]; links: LinkRow[];
@@ -152,7 +153,7 @@ function CampaignWizard({ eventId, c, step: initial, canBudget, initialBlockers,
   const minor = (v: string) => Math.round((Number(v) || 0) * 100);
   const list = (v: string) => v.split(",").map(s => s.trim()).filter(Boolean);
   const payload = () => step === 1 ? { step, name: f.name, goal: f.goal, goal_target: f.target ? Number(f.target) : null, event_id: eventId }
-    : step === 2 ? { step, starts_at: f.starts ? new Date(f.starts).toISOString() : "", ends_at: f.ends ? new Date(f.ends).toISOString() : "", timezone: f.tz }
+    : step === 2 ? { step, starts_at: f.starts ? wallToIso(f.starts)! : "", ends_at: f.ends ? wallToIso(f.ends)! : "", timezone: f.tz }
     : step === 3 ? { step, audience: { followers: f.followers, consented_contacts: f.consented, past_attendees: f.past, cities: list(f.cities), categories: list(f.categories) } }
     : step === 4 ? { step, budget_minor: minor(f.budget), channels: Object.entries(f.channels).map(([channel, b]) => ({ channel, budget_minor: minor(b) })) } : { step: 5 };
   const save = async (next: number | null) => {
@@ -227,7 +228,7 @@ function PromotionCalendar({ eventId, cal, canManage }: { eventId: string; cal: 
     <Dialog open={!!del} onClose={() => setDel(null)} title="Remove this blackout?" sub={del ? `“${del.title || "Blackout"}” · ${dateShort(del.starts_at)}${del.ends_at ? ` → ${dateShort(del.ends_at)}` : ""}. Sends in this period will no longer be flagged. The removal is recorded in the audit log.` : undefined}
       footer={<><Btn variant="ghost" onClick={() => setDel(null)}>Keep blackout</Btn><Btn variant="danger" disabled={pending} onClick={async () => { if (!del) return; const r = await run(() => deletePromotionBlackout(eventId, del.id)); if (r.ok) setDel(null); }}>Remove blackout</Btn></>}><span /></Dialog>
     <Dialog open={open} onClose={() => setOpen(false)} title="Add a promotion blackout" sub="No sends should be scheduled inside a blackout; conflicts are flagged on the calendar."
-      footer={<><Btn variant="ghost" onClick={() => setOpen(false)}>Cancel</Btn><Btn disabled={pending || !b.starts || !b.ends || b.reason.trim().length < 3} onClick={async () => { const r = await run(() => addPromotionBlackout(eventId, new Date(b.starts).toISOString(), new Date(b.ends).toISOString(), b.reason, b.channel || null)); if (r.ok) { setOpen(false); setB({ starts: "", ends: "", reason: "", channel: "" }); } }}>Add blackout</Btn></>}>
+      footer={<><Btn variant="ghost" onClick={() => setOpen(false)}>Cancel</Btn><Btn disabled={pending || !b.starts || !b.ends || b.reason.trim().length < 3} onClick={async () => { const r = await run(() => addPromotionBlackout(eventId, wallToIso(b.starts)!, wallToIso(b.ends)!, b.reason, b.channel || null)); if (r.ok) { setOpen(false); setB({ starts: "", ends: "", reason: "", channel: "" }); } }}>Add blackout</Btn></>}>
       <div className="oc-form">
         <label className="k-field"><span>Starts</span><input type="datetime-local" className="k-input" value={b.starts} onChange={e => setB({ ...b, starts: e.target.value })} /></label>
         <label className="k-field"><span>Ends</span><input type="datetime-local" className="k-input" value={b.ends} onChange={e => setB({ ...b, ends: e.target.value })} /></label>

@@ -1,5 +1,6 @@
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs } from "@/components/kit";
+import { EventSubHeader } from "@/components/organizer/event/header";
 import { PromotionWizard } from "@/components/organizer/promotion-wizard";
 
 export const metadata = { title: "New promotion" };
@@ -12,8 +13,9 @@ export default async function NewPromotion({ searchParams }: { searchParams: Pro
   const sold = (tiers ?? []).reduce((a, t) => a + t.sold, 0), cap = (tiers ?? []).reduce((a, t) => a + t.quantity, 0);
   const s = (e?.settings ?? {}) as Record<string, unknown>;
   return <div className="pw2">
-    <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, ...(e ? [{ label: e.name, href: `/organizer/events/${e.id}` }, { label: "Promotion", href: `/organizer/events/${e.id}/promotion` }] : []), { label: "New Promotion" }]} />
-    {e ? <PromotionWizard step={Math.min(3, Math.max(1, Number(sp.step) || 1)) as 1 | 2 | 3} boost={sp.boost ?? ""}
+    {/* Q48: same compact event header as the other event pages; without an event, just the trail. */}
+    {e ? <EventSubHeader id={e.id} name={e.name} tab="sell" page="New Promotion" canMoney={ctx.canMoney} /> : <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: "New Promotion" }]} />}
+    {e ? <PromotionWizard key={e.id} step={Math.min(3, Math.max(1, Math.trunc(Number(sp.step)) || 1)) as 1 | 2 | 3} boost={sp.boost ?? ""}
       events={(events ?? []).map(x => ({ id: x.id, name: x.name }))}
       event={{ id: e.id, name: e.name, /* "View event" only links a page the public can open (same rule as /events/[slug]) */ slug: e.visibility === "public" && ["published", "on_sale", "live"].includes(e.status) ? e.slug : null, starts_at: e.starts_at!, ends_at: e.ends_at, venue: e.venue_name, location: e.location, cover: e.cover_image, capacity: cap || e.capacity || 0, sold, description: e.description, poster: (s.poster as string) ?? "", gallery: ((s.gallery as string[]) ?? []).slice(0, 8), tags: e.tags ?? [] }} />
       : <div className="k-card mn-lock"><h1>No upcoming events</h1><p>Create an event before planning its promotion.</p></div>}

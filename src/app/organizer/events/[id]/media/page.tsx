@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { getOrganizer } from "@/lib/data/context";
-import { Crumbs } from "@/components/kit";
 import { PosterBuilder } from "@/components/organizer/poster-builder";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata = { title: "Poster & media builder" };
 const TZ = "Europe/London";
@@ -25,7 +25,7 @@ export default async function MediaBuilderPage({ params, searchParams }: { param
   const d = e.starts_at ? new Date(e.starts_at) : null; const t = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ }) : "";
   const performers = (lineup ?? []).map(l => l.title).filter(x => !/gates|doors|close|open/i.test(x)).slice(0, 4);
   return <div className="pb">
-    <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Poster & Media Builder" }]} />
+    <EventSubHeader id={id} name={e.name} tab="sell" page="Poster & Media Builder" canMoney={ctx.canMoney} />
     <PosterBuilder site={site} saved={last?.data && typeof last.data === "object" && !Array.isArray(last.data) ? last.data as Record<string, unknown> : null} tab={sp.tab === "library" || sp.tab === "previous" ? sp.tab : "create"} workspaceId={ctx.workspace.id} workspaceName={ctx.workspace.name}
       event={{ id, name: e.name, slug: e.slug, status: e.status, when: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }).toUpperCase() : "DATE TBC", date: d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "", time: `${t(e.starts_at)}${e.ends_at ? ` – ${t(e.ends_at)}` : ""}`, venue: [e.venue_name, e.location.split(",").map(x => x.trim()).filter(Boolean).at(-2) ?? e.location].filter(Boolean).join(", "), cover: (s.hero_image as string) || e.cover_image || "/assets/gd/hero-neon.webp", tags: e.tags ?? [], performers, price: tiers?.[0]?.price ? Number(tiers[0].price) : null, gallery: ((s.gallery as string[]) ?? []).slice(0, 6) }}
       library={(library ?? []).map(m => ({ id: m.id, url: m.url, title: m.title, format: m.format, version: m.version, at: m.created_at }))}

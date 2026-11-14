@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { createInviteToken } from "@/lib/security";
+import { createInviteToken, hashToken } from "@/lib/security";
 import { untyped } from "@/lib/workspace/db";
 import type { ActionResult } from "./shell";
 
@@ -24,6 +24,22 @@ export async function createGuestLink(eventId: string, input: unknown = {}): Pro
     return { ok: false, error: /event_not_shareable/.test(m) ? "Cancelled, archived or restricted events can't be shared." : /too_many_links/.test(m) ? "This event already has 20 active guest links. Revoke one first." : /expiry_in_past/.test(m) ? "Choose an expiry date in the future." : /not_authorized/.test(m) ? "You can't share this event." : "Could not create the guest link." };
   }
   return { ok: true, data: { path: `/guest/${token}`, expires_at: (data as { expires_at: string }).expires_at } };
+}
+
+/**
+ * Q47: the event header's "Share Event". Every tap used to mint a new link (20 active links max, then sharing failed). The browser
+ * remembers the last token it was given (only its holder has it; the server stores just the hash); if that link is still active for
+ * this event and has at least a day left, the same link is shared again, otherwise a new one is issued.
+ */
+export async function shareGuestLink(eventId: string, reuse?: string | null): Promise<ActionResult<{ path: string; expires_at: string }>> {
+  const id = Id.safeParse(eventId); if (!id.success) return { ok: false, error: "Invalid event." };
+  if (reuse && /^[A-Za-z0-9_-]{32,64}$/.test(reuse)) {
+    const { supabase } = await requireUser();
+    const { data } = await untyped(supabase).from("event_guest_links").select("expires_at").eq("event_id", id.data).eq("token_hash", hashToken(reuse))
+      .is("revoked_at", null).gt("expires_at", new Date(Date.now() + 864e5).toISOString()).maybeSingle();
+    if (data) return { ok: true, data: { path: `/guest/${reuse}`, expires_at: (data as { expires_at: string }).expires_at } };
+  }
+  return createGuestLink(id.data, { label: "Shared from event page" });
 }
 
 export async function revokeGuestLink(eventId: string, linkId: string): Promise<ActionResult> {

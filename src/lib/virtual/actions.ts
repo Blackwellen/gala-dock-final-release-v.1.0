@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { VIRTUAL_PROVIDERS } from "./providers";
+import { wallToIso } from "@/lib/events/wall-time";
 
 type R = { ok: true } | { ok: false; error: string };
 const https = (v: FormDataEntryValue | null) => { const s = String(v ?? "").trim(); return s === "" ? "" : /^https:\/\/\S+$/.test(s) ? s : null; };
@@ -18,7 +19,7 @@ export async function saveVirtual(eventId: string, f: FormData): Promise<R> {
     provider, format: String(f.get("format") ?? "virtual"), external_id: String(f.get("external_id") ?? ""), join_url: join, host_url: host, host_notes: String(f.get("host_notes") ?? ""),
     timezone: String(f.get("timezone") ?? "Europe/London"), capacity: String(f.get("capacity") ?? ""), ticket_required: f.get("ticket_required") === "on",
     opens_minutes_before: String(f.get("opens_minutes_before") ?? "30"), closes_minutes_after: String(f.get("closes_minutes_after") ?? "120"),
-    recording_url: rec, replay_available: f.get("replay_available") === "on", replay_until: String(f.get("replay_until") ?? "") ? new Date(String(f.get("replay_until"))).toISOString() : "",
+    recording_url: rec, replay_available: f.get("replay_available") === "on", replay_until: wallToIso(String(f.get("replay_until") ?? "")) ?? "",
   } } as never);
   if (error) return { ok: false, error: /not_authorized/.test(error.message) ? "You can’t edit this event." : /check constraint/.test(error.message) ? "Check the values — links must be https:// and numbers positive." : "Couldn’t save the online session." };
   revalidatePath(`/organizer/events/${eventId}/virtual`);

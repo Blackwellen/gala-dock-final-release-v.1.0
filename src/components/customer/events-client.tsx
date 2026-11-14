@@ -8,10 +8,31 @@ import { upgradeEventToOrganizer } from "@/lib/actions/build-engine";
 import { cancellationImpact, cancelMyEvent, archiveMyEvent, upgradeToOrganizer, toggleMyTask, type CancelImpact } from "@/lib/actions/my-events";
 
 const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(n);
+/** Q47: the cancel-event dialog (impact preview + typed confirmation), shared by My Events / Money and the event header's ⋯ menu,
+ *  which used to only link to My Events. */
+export function useCancelEventDialog({ id, name }: { id: string; name: string }) {
+  const { run, pending } = useAction(); const [cancel, setCancel] = useState(false); const [impact, setImpact] = useState<CancelImpact | null>(null); const [typed, setTyped] = useState(""); const [impactErr, setImpactErr] = useState("");
+  // A failed impact check used to leave the dialog on "Checking…" for ever; say so and offer a retry instead.
+  const openCancel = async () => { setCancel(true); setImpact(null); setImpactErr(""); setTyped("");
+    try { const r = await cancellationImpact(id); if (r.ok && r.data) setImpact(r.data); else setImpactErr((!r.ok && r.error) || "Could not check bookings and payments."); }
+    catch { setImpactErr("Network error — could not check bookings and payments."); } };
+  const dialog = <>
+    <Dialog open={cancel} onClose={() => setCancel(false)} title={`Cancel ${name}?`} sub="Here's exactly what happens before you confirm.">
+      {!impact ? (impactErr ? <div className="k-col" style={{ gap: 10 }}><p className="k-notice red" role="alert">{impactErr}</p><div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn ghost" onClick={() => setCancel(false)}>Keep event</button><button className="k-btn outline" onClick={() => void openCancel()}>Try again</button></div></div> : <p className="k-small">Checking bookings and payments…</p>) : <div className="k-col" style={{ gap: 12 }}>
+        <div className="k-grid k-g3" style={{ gap: 8 }}><div className="k-kpi"><div><div className="lbl">Non-refundable paid</div><div className="val k-red" style={{ fontSize: 17 }}>{gbp(impact.paidNonRefundable)}</div></div></div><div className="k-kpi"><div><div className="lbl">Possibly refundable</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.paidRefundable)}</div><div className="sub">per supplier terms</div></div></div><div className="k-kpi"><div><div className="lbl">Future payments</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.scheduled)}</div><div className="sub">won&apos;t be charged</div></div></div></div>
+        {impact.bookings.length > 0 && <div><b className="k-small">Bookings affected</b><ul className="k-list" style={{ listStyle: "none", margin: "6px 0 0", padding: 0 }}>{impact.bookings.map(b => <li key={b.title} className="k-between k-small"><span>{b.title}</span><span className="k-muted">{b.status === "confirmed" ? "Confirmed — cancellation terms apply" : "Request / hold released"}</span></li>)}</ul></div>}
+        {(impact.tickets > 0 || impact.guests > 0) && <div className="k-notice amber"><AlertTriangle size={15} className="k-amber" /><span>{impact.tickets ? `${impact.tickets} ticket holders must be refunded first. ` : ""}{impact.guests ? `${impact.guests} guests will be told the event is cancelled.` : ""}</span></div>}
+        <label className="k-field"><span>Type <b>{name}</b> to confirm</span><input className="k-input" value={typed} onChange={e => setTyped(e.target.value)} /></label>
+        <div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn ghost" onClick={() => setCancel(false)}>Keep event</button><button className="k-btn danger" disabled={pending || typed.trim() !== name} onClick={async () => { const r = await run(() => cancelMyEvent(id, typed)); if (r.ok) setCancel(false); }}>Cancel event</button></div>
+      </div>}
+    </Dialog>
+  </>;
+  return { open: openCancel, dialog };
+}
+
 export function EventMenu({ id, name, status }: { id: string; name: string; status: string }) {
-  const { run, pending } = useAction(); const [cancel, setCancel] = useState(false); const [impact, setImpact] = useState<CancelImpact | null>(null); const [typed, setTyped] = useState("");
-  const dup = useMyDuplicateDialog();
-  const openCancel = async () => { setCancel(true); setImpact(null); const r = await cancellationImpact(id); if (r.ok && r.data) setImpact(r.data); };
+  const { run, pending } = useAction();
+  const dup = useMyDuplicateDialog(); const cancelDlg = useCancelEventDialog({ id, name }); const openCancel = cancelDlg.open;
   return <>
     <Menu label={`Actions for ${name}`} width={210} trigger={({ toggle, open, id: mid }) => <button className="k-icon-btn plain" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label={`Actions for ${name}`}><MoreHorizontal size={18} /></button>}>
       {close => <><Link role="menuitem" className="k-menu-item" href={`/account/events/${id}`} onClick={close}><Eye size={15} />View details</Link>
@@ -20,15 +41,7 @@ export function EventMenu({ id, name, status }: { id: string; name: string; stat
         {!["completed", "cancelled"].includes(status) && <><div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); void openCancel(); }}><XCircle size={15} />Cancel event</button></>}</>}
     </Menu>
     {dup.dialog}
-    <Dialog open={cancel} onClose={() => setCancel(false)} title={`Cancel ${name}?`} sub="Here's exactly what happens before you confirm.">
-      {!impact ? <p className="k-small">Checking bookings and payments…</p> : <div className="k-col" style={{ gap: 12 }}>
-        <div className="k-grid k-g3" style={{ gap: 8 }}><div className="k-kpi"><div><div className="lbl">Non-refundable paid</div><div className="val k-red" style={{ fontSize: 17 }}>{gbp(impact.paidNonRefundable)}</div></div></div><div className="k-kpi"><div><div className="lbl">Possibly refundable</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.paidRefundable)}</div><div className="sub">per supplier terms</div></div></div><div className="k-kpi"><div><div className="lbl">Future payments</div><div className="val" style={{ fontSize: 17 }}>{gbp(impact.scheduled)}</div><div className="sub">won&apos;t be charged</div></div></div></div>
-        {impact.bookings.length > 0 && <div><b className="k-small">Bookings affected</b><ul className="k-list" style={{ listStyle: "none", margin: "6px 0 0", padding: 0 }}>{impact.bookings.map(b => <li key={b.title} className="k-between k-small"><span>{b.title}</span><span className="k-muted">{b.status === "confirmed" ? "Confirmed — cancellation terms apply" : "Request / hold released"}</span></li>)}</ul></div>}
-        {(impact.tickets > 0 || impact.guests > 0) && <div className="k-notice amber"><AlertTriangle size={15} className="k-amber" /><span>{impact.tickets ? `${impact.tickets} ticket holders must be refunded first. ` : ""}{impact.guests ? `${impact.guests} guests will be told the event is cancelled.` : ""}</span></div>}
-        <label className="k-field"><span>Type <b>{name}</b> to confirm</span><input className="k-input" value={typed} onChange={e => setTyped(e.target.value)} /></label>
-        <div className="k-row" style={{ justifyContent: "flex-end" }}><button className="k-btn ghost" onClick={() => setCancel(false)}>Keep event</button><button className="k-btn danger" disabled={pending || typed.trim() !== name} onClick={async () => { const r = await run(() => cancelMyEvent(id, typed)); if (r.ok) setCancel(false); }}>Cancel event</button></div>
-      </div>}
-    </Dialog>
+    {cancelDlg.dialog}
   </>;
 }
 export function StatusPill({ status }: { status: string }) {

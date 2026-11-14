@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Check, ArrowLeft, ArrowRight, Loader2, Plus, Minus, RotateCcw, Accessibility, DoorOpen, Layers, Users } from "lucide-react";
 import { Toggle } from "@/components/kit/client";
 import type { ProSection } from "@/lib/ticket-pro-model";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 export const gbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
 export const gbp2 = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -11,8 +12,10 @@ export const num = (n: number) => n.toLocaleString("en-GB");
 export const pct = (a: number, b: number, d = 1) => b ? `${(a / b * 100).toFixed(d)}%` : "0%";
 const TZ = "Europe/London";
 export const dt = (iso: string | null) => iso ? new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }).replace(" at ", ", ") : "—";
-export const toLocal = (iso: string | null) => iso ? new Date(new Date(iso).getTime() - new Date(iso).getTimezoneOffset() * 6e4).toISOString().slice(0, 16) : "";
-export const fromLocal = (v: string) => v ? new Date(v).toISOString() : null;
+// datetime-local inputs edit London wall time, matching `dt` above (Q48). Browser-local conversion rendered a different value on
+// the server (UTC) than in the browser during BST, so the inputs mismatched on hydration and disagreed with the summaries.
+export const toLocal = (iso: string | null) => isoToWall(iso);
+export const fromLocal = (v: string) => wallToIso(v);
 export const uid = () => Math.random().toString(36).slice(2, 10);
 
 export const STEPS = [
@@ -22,9 +25,9 @@ export const STEPS = [
 ];
 const INTRO = ["Define your ticket model, capacity and inventory for this event.", "Create your ticket tiers, pricing, release plan and sales settings.", "Allocate your tiers to the venue map and zones.", "Set your policies, holds, comps and buyer questions.", "Review everything and complete all checks before publishing."];
 
-export function ProShell({ step, base, event, crumbs, children }: { step: number; base: string; event: { id: string; name: string }; crumbs?: ReactNode; children: ReactNode }) {
+export function ProShell({ step, base, event, crumbs, header, children }: { step: number; base: string; event: { id: string; name: string }; crumbs?: ReactNode; /** Q48: compact event header replaces the local breadcrumb */ header?: ReactNode; children: ReactNode }) {
   return <div className="tp">
-    <nav className="tp-crumbs" aria-label="Breadcrumb">{crumbs ?? <><Link href="/organizer">Organizer</Link><i>/</i><Link href="/organizer/events">Events</Link><i>/</i><Link href={`/organizer/events/${event.id}`}>{event.name}</Link><i>/</i><Link href="/organizer/tickets">Tickets</Link><i>/</i><b aria-current="page">Setup</b></>}</nav>
+    {header ?? <nav className="tp-crumbs" aria-label="Breadcrumb">{crumbs ?? <><Link href="/organizer">Organizer</Link><i>/</i><Link href="/organizer/events">Events</Link><i>/</i><Link href={`/organizer/events/${event.id}`}>{event.name}</Link><i>/</i><Link href="/organizer/tickets">Tickets</Link><i>/</i><b aria-current="page">Setup</b></>}</nav>}
     <h1 className="tp-h1">Ticket Setup</h1><p className="tp-intro">{INTRO[step - 1]}</p>
     <ol className="tp-steps">{STEPS.map((s, i) => { const n = i + 1, st = n < step ? "done" : n === step ? "on" : "todo"; return <li key={s.title} data-st={st}><Link href={`${base}?step=${n}`} aria-current={n === step ? "step" : undefined}><span className="tp-sn">{st === "done" ? <Check size={15} strokeWidth={3} /> : n}</span><span><b>{s.title}</b><small>{s.sub}</small></span></Link></li>; })}</ol>
     {children}

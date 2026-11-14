@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PlanBilling } from "@/components/billing/plan-billing";
+import { CreditPacks } from "@/components/billing/credit-packs";
 import { Building2, BadgeCheck, UserCog, Users, ChevronRight, ArrowRight, ArrowLeft, Landmark, Wallet, Mail, Plug, Sparkles, Bell, Wrench, Package2, CircleCheck, CalendarCheck, Crown, X } from "lucide-react";
 import "@/styles/provider-venue-setup.css";
 import "@/styles/provider-team.css";
@@ -21,7 +22,7 @@ import { getProvider } from "@/lib/provider/context";
 import { rows } from "@/lib/workspace/db";
 import { workspaceListings } from "@/lib/provider/queries";
 import { loadMoney, inRange } from "../money/data";
-import { setCapability, saveProfile, saveBooking, saveComms, saveNotifications, saveAgent, saveTax, inviteMember, revokeInvite, changeMemberRole } from "./actions";
+import { setCapability, saveProfile, saveBooking, saveComms, saveNotifications, saveAgent, saveTax, inviteMember, revokeInvite, changeMemberRole, removeMember } from "./actions";
 
 export const metadata: Metadata = { title: "Settings" };
 const TABS: [string, string][] = [["workspace", "Workspace"], ["capabilities", "Capabilities"], ["team", "Team & Access"], ["booking", "Marketplace & Booking Rules"], ["billing", "Payments & Billing"],
@@ -122,7 +123,9 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         {/* Other members' names come from their linked Team profile; profiles are self-read only (member directory RPC: Q01). */}
         <ul className="ps-rows">{members.map(m => <li key={m.user_id} className="ps-li"><span>{m.user_id === ctx.userId ? `${ctx.userName} (you)` : crewAv.find(x => x.user_id === m.user_id)?.name ?? "Workspace member"}</span>
           {owner && m.role !== "owner" && m.status === "active" ? <ActionForm action={changeMemberRole.bind(null, m.user_id)} className="ps-invite ps-role"><select name="role" className="ws-select" defaultValue={m.role} aria-label="Role"><option value="manager">Manager</option><option value="member">Staff</option><option value="finance">Finance</option></select><button className="ws-btn outline sm">Change role</button></ActionForm>
-            : <b>{m.role === "member" ? "Staff" : titleCase(m.role)}</b>}<Chip tone={m.status === "active" ? "green" : "grey"}>{titleCase(m.status)}</Chip></li>)}</ul>
+            : <b>{m.role === "member" ? "Staff" : titleCase(m.role)}</b>}<Chip tone={m.status === "active" ? "green" : "grey"}>{titleCase(m.status)}</Chip>
+          {owner && m.role !== "owner" && m.status === "active" && m.user_id !== ctx.userId && <ActionButton action={removeMember} args={[m.user_id]} variant="ghost" confirm={{ title: "Remove this member?", body: "They lose access to this workspace straight away. Their past activity stays in the audit log.", cta: "Remove member" }}><X aria-hidden="true" />Remove</ActionButton>}
+          {owner && m.role !== "owner" && m.status !== "active" && m.user_id !== ctx.userId && <ActionButton action={removeMember} args={[m.user_id, true]} variant="ghost">Restore access</ActionButton>}</li>)}</ul>
         {owner && <><h3>Invite someone</h3><ActionForm action={inviteMember} className="ps-invite" resetOnSuccess><input name="email" type="email" placeholder="name@company.com" required aria-label="Email" />
           <select name="role" className="ws-select" aria-label="Role"><option value="manager">Manager</option><option value="member">Staff</option><option value="finance">Finance</option></select><button className="ws-btn primary">Create invite</button></ActionForm>
           <ul className="ps-rows">{pending.map(i => <li key={i.id} className="ps-li"><span>{i.email}</span><b>{titleCase(i.role)} · sent {relative(i.created_at, now)}</b><ActionButton action={revokeInvite} args={[i.id]} variant="ghost"><X aria-hidden="true" />Revoke</ActionButton></li>)}</ul></>}</>}
@@ -154,6 +157,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         <ActionForm action={saveAgent} className="pt-form ps-form">{([["response_automation", "Response automation"], ["quote_generation", "Quote generation"], ["availability_management", "Availability management"], ["pre_event_confirmations", "Pre-event confirmations"]] as const).map(([k, l]) => <Toggle key={k} name={k} label={l} on={ag[k] !== false} />)}
           {owner && <div className="wide pv-form-foot"><button className="ws-btn primary">Save</button></div>}</ActionForm>
         <AgentCredits db={ctx.db} workspaceId={ws.id} canEdit={ctx.can.manage} canSeeUsage={ctx.can.finance} />
+        <CreditPacks db={ctx.db} workspaceId={ws.id} kind="provider" isOwner={owner} justPaid={sp.credits === "success"} />
         <AgentControls db={ctx.db} workspaceId={ws.id} surface="provider" canManage={ctx.can.manage} /></>}
       {tab === "notifications" && <><h2>Notifications</h2><ActionForm action={saveNotifications} className="ps-notif"><table className="ws-table"><thead><tr><th>Event</th><th>Email</th><th>In-app</th><th>SMS</th></tr></thead>
         <tbody>{([["enquiries", "New enquiries"], ["bookings", "Booking updates"], ["agent", "Agent notifications"], ["mentions", "Team mentions"]] as const).map(([k, l]) => { const x = n[k] ?? { email: true, in_app: true }; return <tr key={k}><td>{l}</td>

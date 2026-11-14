@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { PaymentTermsTick, TraderQuestion, type TraderValue } from "@/components/payments/payment-terms-tick";
 
@@ -7,6 +8,7 @@ import { PaymentTermsTick, TraderQuestion, type TraderValue } from "@/components
 export function ConnectButton({ label, kind = "provider" }: { label: string; kind?: "provider" | "organizer" }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [help, setHelp] = useState<string | null>(null);
   const [terms, setTerms] = useState<string | null>(null);
   const [ticked, setTicked] = useState(false);
   const [traderVersion, setTraderVersion] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export function ConnectButton({ label, kind = "provider" }: { label: string; kin
         if (data.traderRequired && traderVersion) setError(data.error ?? "Couldn’t save your seller status.");
         setBusy(false); return;
       }
-      if (!res.ok) { setError(data.error ?? "Couldn’t open Stripe."); setBusy(false); return; }
+      if (!res.ok) { setError(data.error ?? "Couldn’t open Stripe."); setHelp(data.countryUnsupported ? data.help ?? null : null); setBusy(false); return; }
       window.location.assign(data.url);
     } catch { setError("Couldn’t reach Stripe. Try again."); setBusy(false); }
   }
@@ -32,6 +34,6 @@ export function ConnectButton({ label, kind = "provider" }: { label: string; kin
     {traderVersion && <TraderQuestion version={traderVersion} value={trader} onChange={setTrader} />}
     {terms && <PaymentTermsTick version={terms} checked={ticked} onChange={setTicked} />}
     <button type="button" className="ws-btn primary sm" onClick={go} disabled={busy}>{busy ? "Opening Stripe…" : terms ? "Accept and continue to Stripe" : label}</button>
-    {error && <small role="alert" className="pc-error">{error}</small>}
+    {error && <small role="alert" className="pc-error">{error}{help && <> <Link href={help}>Where you can get paid</Link></>}</small>}
   </>;
 }

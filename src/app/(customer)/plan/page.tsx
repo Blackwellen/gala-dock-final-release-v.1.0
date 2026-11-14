@@ -18,7 +18,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
   const done = Number(s.plan_steps ?? 0) || 0;
   const guestsDone = done >= 3 || !!s.guests_confirmed || prio.length > 0, budgetDone = done >= 5 || (!!s.budget_mode && Number(e?.budget_total ?? 0) > 0);
   const maxStep = !e ? 1 : !e.starts_at ? 2 : !guestsDone ? 3 : !prio.length ? 4 : !budgetDone ? 5 : 6;
-  const step = Math.min(Math.max(1, Number(sp.step) || (e && e.status !== "draft" ? 6 : maxStep)), maxStep) as PlanStepNo;
+  const step = Math.min(Math.max(1, Math.trunc(Number(sp.step)) || (e && e.status !== "draft" ? 6 : maxStep)), maxStep) as PlanStepNo;
   const city = (e?.city || e?.location?.split(",")[0] || "London").trim() || "London";
 
   // Market data for the chosen city from published listings (no fabricated figures).

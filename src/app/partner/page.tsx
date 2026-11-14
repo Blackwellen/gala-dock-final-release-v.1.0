@@ -66,7 +66,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
   const shell = { user: { name: data.me.name, detail: data.me.email, avatar: data.me.avatar, signOut: true }, nav, sideFooter,
     portal: { title: "Partner Portal", subtitle: "Gala Dock Partner", thumb: "/assets/gd/oe-neon.webp" }, context: { label: "Partner Portal", thumb: "/assets/gd/oe-neon.webp" },
     searchPlaceholder: "Search referrals, content or resources…" };
-  if (!data.partner) return <PortalShell {...shell} links={{ messages: "/partner", notifications: "/partner", help: "/partner" }}>
+  if (!data.partner) return <PortalShell {...shell} links={{ messages: "/partner", notifications: "/partner", help: "/help" }}>
     <div className="pt-panel pr-none"><h1>You’re not a Gala Dock partner yet</h1><p>Partner accounts are set up by the Gala Dock partnerships team. If you’ve been invited, sign in with the email address the invitation was sent to.</p></div>
   </PortalShell>;
 
@@ -87,8 +87,11 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
   const cumulative = (xs: number[]) => xs.reduce<number[]>((a, x) => [...a, (a.at(-1) ?? 0) + x], []);
   const signupSeries = cumulative(Array.from({ length: n }, (_, i) => referrals.filter(r => { const t = Date.parse(r.signed_up_at); return t >= dayStart(i) - DAY && t < dayStart(i); }).length));
   const activeSeries = Array.from({ length: n }, (_, i) => referrals.filter(r => r.status === "active" && r.activated_at && Date.parse(r.activated_at) < dayStart(i)).length);
-  const pendingCom = earnings.filter(e => e.status === "pending").reduce((a, e) => a + Number(e.commission), 0);
-  const nextStmt = statements.filter(s => s.status === "pending" && s.payout_due).sort((a, b) => a.payout_due!.localeCompare(b.payout_due!))[0];
+  // Q65: "pending payout" is everything earned and not yet paid — inside the 14-day hold (pending) or cleared onto a statement.
+  const holdCom = earnings.filter(e => e.status === "pending").reduce((a, e) => a + Number(e.commission), 0);
+  const pendingCom = holdCom + statements.filter(s => s.status === "open" || s.status === "pending").reduce((a, s) => a + Number(s.commission), 0);
+  // Statements are built 'open' and settled from there (admin_partner_statement_paid accepts open or pending).
+  const nextStmt = statements.filter(s => (s.status === "open" || s.status === "pending") && s.payout_due).sort((a, b) => a.payout_due!.localeCompare(b.payout_due!))[0];
   const inDays = nextStmt ? Math.max(0, Math.ceil((Date.parse(`${nextStmt.payout_due}T12:00:00Z`) - now) / DAY)) : null;
   const link = `/?ref=${encodeURIComponent(p.referral_code ?? "")}`;
   const hour = Number(fmt(now, { hour: "numeric", hour12: false }));
@@ -107,7 +110,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
     <span><b>{r.title}</b><small>{r.text}</small></span><a href={`/partner/resources/${r.slug}`} aria-label={`Download ${r.title}`} download><Download aria-hidden="true" /></a></li>)}</ul>;
 
   return <PortalShell {...shell}
-    links={{ messages: href("support"), notifications: href("earnings"), notificationsUnread: nextStmt ? 1 : 0, help: href("resources") }}
+    links={{ messages: href("support"), notifications: href("earnings"), notificationsUnread: nextStmt ? 1 : 0, help: "/help" }}
     create={[{ href: `${href("overview")}#share`, label: "Share my referral link" }, { href: "/partner/qr", label: "Download QR code", external: true }, { href: href("support"), label: "Support request" }]}>
     <div className="pr">
       <header className="pr-head">
@@ -154,7 +157,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
               <ul className="pr-legend"><li className="b">Eligible revenue</li><li className="p">Your commission</li></ul><RevenueChart days={days} /></div>
               <div className="pr-rev-side"><div className="pr-box"><div><span>Commission rate</span><b>{(p.commission_bps / 100).toFixed(p.commission_bps % 100 ? 1 : 0)}%</b><em className="plain">of {p.commission_basis.replaceAll("_", " ")} · {p.rate_locked ? "custom terms" : `grade ${p.grade} of 5`}</em></div>
                 {!p.rate_locked && <div><span>Next grade</span><b>{next ? `${next.pct}%` : "Top grade"}</b><em className="plain">{next ? `${Math.max(0, next.from - active)} more active referrals` : "10% on all eligible revenue"}</em></div>}
-                <div><span>Pending commission</span><b>{money(pendingCom)}</b><em className="pend">Clears after 14 days</em></div></div></div></section>
+                <div><span>In 14-day hold</span><b>{money(holdCom)}</b><em className="pend">Clears 14 days after the revenue</em></div></div></div></section>
             <PortalPanel title="Monthly statements" className="pr-hist pr-full">{stmtTable(statements)}</PortalPanel></>}
           {view === "resources" && <PortalPanel title="Partner resources" className="pr-full"><p className="pr-sub">Everything you need to promote Gala Dock. Files that include links are personalised with your referral code.</p>{resourceList}
             <h3 className="pr-h3">Tracked content</h3><ul className="pr-content">{topContent.map(c => <li key={c.id} data-q={c.title}>
@@ -169,7 +172,7 @@ export default async function PartnerPage(props: PageProps<"/partner">) {
             <details className="pr-cust-d"><summary className="pt-link">Customise</summary><LinkBuilder base={link} kind="partner" pages={[["/", "Gala Dock home"], ["/register", "Create an account"]]} /></details>
             <div className="pr-share-row"><div><small>Share on</small><div className="pr-share">
               <SocialLink network="copy" path={link} text="Plan and book events on Gala Dock" label="Copy link"><span className="pr-net link"><BrandGlyph network="link" /></span></SocialLink>
-              {(["facebook", "x", "linkedin", "whatsapp", "email"] as const).map(nw => <SocialLink key={nw} network={nw} path={link} text="Plan and book events on Gala Dock" label={`Share on ${nw === "x" ? "X" : nw[0]!.toUpperCase() + nw.slice(1)}`}><span className={`pr-net ${nw}`}><BrandGlyph network={nw} /></span></SocialLink>)}
+              {(["facebook", "x", "linkedin", "whatsapp", "email"] as const).map(nw => <SocialLink key={nw} network={nw} path={`${link}&c=${nw}`} text="Plan and book events on Gala Dock" label={`Share on ${nw === "x" ? "X" : nw[0]!.toUpperCase() + nw.slice(1)}`}><span className={`pr-net ${nw}`}><BrandGlyph network={nw} /></span></SocialLink>)}
             </div></div>
               <a className="pr-qr" href="/partner/qr?download=1" download>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

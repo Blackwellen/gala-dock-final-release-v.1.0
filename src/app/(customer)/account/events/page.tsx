@@ -19,6 +19,7 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
   const all = await listMyEvents(ctx); const now = new Date().toISOString();
   const upcoming = all.filter(x => x.e.status !== "draft" && !["completed", "cancelled"].includes(x.e.status) && (!x.e.starts_at || x.e.starts_at >= now));
   const drafts = all.filter(x => x.e.status === "draft"), past = all.filter(x => ["completed", "cancelled"].includes(x.e.status) || (x.e.status !== "draft" && !!x.e.starts_at && x.e.starts_at < now));
+  // Upcoming also lists drafts (so a first plan is never hidden); its tab count includes them so the number matches the list (Q47).
   const list = tab === "upcoming" ? [...upcoming, ...drafts] : tab === "past" ? past : drafts;
   const ids = all.map(x => x.e.id);
   const [{ data: tasks }, access, { data: saved }] = await Promise.all([
@@ -43,7 +44,7 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
       <div className="me-agent"><div className="k-row" style={{ gap: 8 }}><ClipboardList size={20} className="k-blue" /><b style={{ fontSize: 14 }}>Planner</b></div><b className="me-agent-q">Planning something new?</b><p>Pick a date, set a budget and line up venues and suppliers in a few steps.</p><Link className="k-btn outline block" href="/plan?step=1">Start planning <ArrowRight size={14} /></Link></div>
     </section>
     <div className="me-tabs-row">
-      <div className="me-tabs" role="group" aria-label="Filter events">{([["upcoming", "Upcoming", upcoming.length, CalendarDays], ["past", "Past", past.length, Clock], ["drafts", "Drafts", drafts.length, FileText]] as const).map(([k, l, n, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={k === "upcoming" ? "/account/events" : `/account/events?tab=${k}`}><I size={17} />{l} ({n})</Link>)}</div>
+      <div className="me-tabs" role="group" aria-label="Filter events">{([["upcoming", "Upcoming", upcoming.length + drafts.length, CalendarDays], ["past", "Past", past.length, Clock], ["drafts", "Drafts", drafts.length, FileText]] as const).map(([k, l, n, I]) => <Link key={k} aria-current={(tab === k) ? "page" : undefined} href={k === "upcoming" ? "/account/events" : `/account/events?tab=${k}`}><I size={17} />{l} ({n})</Link>)}</div>
       <Link className="k-btn primary lg" href="/plan?step=1"><Plus size={17} />Create Event</Link>
     </div>
     <div className="me-grid">
@@ -63,10 +64,10 @@ export default async function MyEvents({ searchParams }: { searchParams: Promise
 
 function EventRow({ e, s, saved }: { e: MyEvent; s: Summary; saved: boolean }) {
   const draft = e.status === "draft";
-  const gallery = s.gallery.slice(0, 3); const more = Math.max(0, s.gallery.length - 3) + (s.gallery.length ? 9 : 0);
+  const gallery = s.gallery.slice(0, 3); const more = Math.max(0, s.gallery.length - 3); // real count only (a fixed +9 was added to every gallery — Q47)
   return <article className={`me-card ${draft ? "draft" : ""}`}>
     <Link href={`/account/events/${e.id}`} className="me-img">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/me-garden.webp"} alt="" /><span className="me-badge" style={{ background: draft ? "#fff" : TYPE_BADGE[e.event_type] ?? "#2563eb", color: draft ? "var(--k-ink)" : "#fff" }}>{draft ? "Draft" : eventTypeLabel(e.event_type)}</span>
-      {!draft && gallery.length > 0 && <span className="me-thumbs">{gallery.map((g, i) => /* eslint-disable-next-line @next/next/no-img-element */ <img key={i} src={g} alt="" />)}<span className="me-more">+{more}</span></span>}</Link>
+      {!draft && gallery.length > 0 && <span className="me-thumbs">{gallery.map((g, i) => /* eslint-disable-next-line @next/next/no-img-element */ <img key={i} src={g} alt="" />)}{more > 0 && <span className="me-more">+{more}</span>}</span>}</Link>
     <SaveHeart itemKey={`event:${e.id}`} saved={saved} className="me-heart" label={e.name} size={17} />
     <div className="me-body">
       <div className="k-between" style={{ alignItems: "flex-start" }}><div><Link href={`/account/events/${e.id}`}><h3 className="me-name">{e.name}</h3></Link><div className="me-meta"><span><CalendarDays size={14} />{dateLong(e.starts_at)}</span><span><MapPin size={14} />{e.venue_name || "Not set"}</span><span><Users size={14} />{e.guest_count} guests</span></div></div><div className="k-row" style={{ gap: 10 }}><StatusPill status={e.status} /><EventMenu id={e.id} name={e.name} status={e.status} /></div></div>

@@ -12,7 +12,8 @@ import { parseCredential, verifySignature, printFingerprint, signSnapshot, verif
 // row-locked transaction. Signatures are verified here with the server-only secret. Offline scans replay through the same
 // path on reconnect, idempotently (client scan id) and with the snapshot they were taken against.
 export type ScanOutcome = "admitted" | "readmitted" | "duplicate" | "invalid" | "revoked" | "refunded" | "transferred" | "resold" | "wrong_event" | "wrong_session" | "resale_locked"
-  | "wrong_zone" | "outside_window" | "reentry_denied" | "suspended" | "expired" | "exited" | "pass_not_valid_here" | "online_only_ticket";
+  | "wrong_zone" | "outside_window" | "reentry_denied" | "suspended" | "expired" | "exited" | "pass_not_valid_here" | "online_only_ticket"
+  | "on_hold";   // owner 2026-11-14: card payment under dispute — "see box office"
 export type ScanReply = { ok: true; result: ScanOutcome; reason?: string; conflict?: string | null; code?: string; attendee?: string | null; tier?: string | null; seat?: string | null; zone?: string | null;
   history?: { result: string; at: string; gate: string | null }[] } | { ok: false; error: string };
 export type ScanOptions = { device?: string; offlineAt?: string; gate?: string; zoneId?: string; clientScanId?: string; snapshotId?: string; localResult?: string; direction?: "in" | "out" };

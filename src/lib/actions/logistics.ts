@@ -5,6 +5,7 @@ import { getOrganizer } from "@/lib/data/context";
 import { untyped } from "@/lib/workspace/db";
 import { opsError } from "@/lib/ops/errors";
 import type { ActionResult } from "./shell";
+import { wallToIso } from "@/lib/events/wall-time";
 
 /**
  * Operations › Logistics (Q25): transport, parking, accommodation, loading bays and windows. Each write is one database
@@ -88,8 +89,8 @@ export async function logisticsCommand(eventId: string, op: LogisticsOp, ref: st
     }
     case "window": {
       const p = Window.safeParse(values); if (!p.success) return { ok: false, error: first(p.error) };
-      if (Date.parse(p.data.ends_at) <= Date.parse(p.data.starts_at)) return { ok: false, error: "The window must end after it starts." };
-      const body: Record<string, unknown> = { ...clean(p.data), starts_at: new Date(p.data.starts_at).toISOString(), ends_at: new Date(p.data.ends_at).toISOString() };
+      if (Date.parse(wallToIso(p.data.ends_at) ?? "") <= Date.parse(wallToIso(p.data.starts_at) ?? "")) return { ok: false, error: "The window must end after it starts." };
+      const body: Record<string, unknown> = { ...clean(p.data), starts_at: wallToIso(p.data.starts_at), ends_at: wallToIso(p.data.ends_at) };
       if (ref && !p.data.bay_id) body.bay_id = "";
       return res("logistics_window_book", { p_event: eventId, p: body, p_id: ref }, d => `Window ${String(d.status)} — bay busy until ${new Date(String(d.busy_until)).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })} (incl. turnaround).`);
     }

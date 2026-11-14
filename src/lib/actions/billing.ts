@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/security";
-import { buyCreditPack, choosePlan, setCancelAtPeriodEnd } from "@/lib/billing/service";
+import { buyCreditPack, choosePlan, setCancelAtPeriodEnd, undoScheduledChange } from "@/lib/billing/service";
 
 type Result = { ok: true; message?: string; redirect?: string } | { ok: false; error: string };
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -35,6 +35,17 @@ export async function cancelPlanAction(workspaceId: string, kind: string, cancel
   if (!UUID.test(workspaceId)) return { ok: false, error: "Workspace not found." };
   if (!(await rateLimit(`billing:${user.id}`, 10, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
   const r = await setCancelAtPeriodEnd({ workspaceId, userId: user.id, cancel });
+  if (!r.ok) return r;
+  revalidatePath(back(kind).split("?")[0]!);
+  return { ok: true, message: r.message };
+}
+
+/** Q60: undo a scheduled end-of-period downgrade (the previous price comes back with no extra charge). */
+export async function undoPlanChangeAction(workspaceId: string, kind: string): Promise<Result> {
+  const user = await caller(); if (!user) return { ok: false, error: "Please sign in again." };
+  if (!UUID.test(workspaceId)) return { ok: false, error: "Workspace not found." };
+  if (!(await rateLimit(`billing:${user.id}`, 10, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
+  const r = await undoScheduledChange({ workspaceId, userId: user.id });
   if (!r.ok) return r;
   revalidatePath(back(kind).split("?")[0]!);
   return { ok: true, message: r.message };

@@ -43,7 +43,7 @@ export function CuEventHeader({ d, tab, variant = "compact", buildPath = false }
         {variant === "full" && e.starts_at && new Date(e.starts_at).getTime() > requestTime() && <div className="ce-count"><Countdown to={e.starts_at} /></div>}
         <div className="k-row" style={{ gap: 10 }}>
           {e.visibility === "public" && e.slug ? <Link className="k-btn ghost ce-btn" href={`/events/${e.slug}`}>Preview Event Page</Link> : <Link className="k-btn ghost ce-btn" href={`/account/events/${e.id}/guests-tickets`}>Preview Event Page</Link>}
-          <HeaderMenu id={e.id} name={e.name} />
+          <HeaderMenu id={e.id} name={e.name} status={e.status} />
         </div>
       </div>
     </section>

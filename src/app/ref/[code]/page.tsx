@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { channelOf, PARTNER_COOKIE, partnerCookieOptions } from "@/lib/partners/referral";
+import { PARTNER_COOKIE, partnerCookieOptions, partnerCookieValue } from "@/lib/partners/referral";
 import { safeNext } from "@/lib/redirects";
 import { CONSENT_COOKIE, consentCookieOptions, mergeConsent } from "@/lib/consent/cookie";
 import "@/styles/legal.css";
@@ -19,7 +19,7 @@ async function choose(code: string, channel: string, next: string, yes: boolean)
   const jar = await cookies(), secure = process.env.NODE_ENV === "production";
   // Merge, never overwrite: keeps the visitor's other choices (e.g. analytics).
   jar.set(CONSENT_COOKIE, mergeConsent(jar.get(CONSENT_COOKIE)?.value, "referral", yes), consentCookieOptions(secure));
-  if (yes) jar.set(PARTNER_COOKIE, `${code}:${channelOf(channel)}`, partnerCookieOptions(secure));
+  if (yes) jar.set(PARTNER_COOKIE, partnerCookieValue(code, channel), partnerCookieOptions(secure));
   else jar.delete(PARTNER_COOKIE);
   redirect(dest);
 }

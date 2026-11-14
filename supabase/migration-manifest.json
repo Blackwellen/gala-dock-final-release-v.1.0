@@ -625,6 +625,106 @@
         "errors": [],
         "warnings": []
       }
+    },
+    {
+      "file": "202611146031_settings_verify_password.sql",
+      "sha256": "96781446d804e5f3eae036b98d8466143eff88ac70e33d877c4068827ad463ed",
+      "lane": "Q60-settings",
+      "reviewer": "claude-settings-lane",
+      "reviewedAt": "2026-11-14T18:19:51.969Z",
+      "exercise": "scripts/db/exercises/202611146031_settings_verify_password.sql",
+      "waivers": [],
+      "rollback": "drop function public.verify_my_password(text)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146101_connect_seller_countries.sql",
+      "sha256": "d3fafa069dbf0ccb01f2281447e1253d1fed8b5e30b9b9e70b094dd982ea536a",
+      "lane": "connect-countries",
+      "reviewer": "claude-connect-countries-lane",
+      "reviewedAt": "2026-11-14T18:04:16.031Z",
+      "exercise": "scripts/db/exercises/202611146101_connect_seller_countries.sql",
+      "waivers": [],
+      "rollback": "Re-run listing_readiness from 202610293002 and event_payment_readiness from 202610295001; drop triggers listings_seller_country_booking_mode / packages_seller_country_booking_mode. Table and helpers are inert.",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146201_money_bughunt_fixes.sql",
+      "sha256": "ccea965f1fc3cac4c63c752475d1ee64513d1b05d23e0c6b8e7b1304a3957b5c",
+      "lane": "bughunt-money",
+      "reviewer": "bughunt-money-opus",
+      "reviewedAt": "2026-11-14T18:16:21.884Z",
+      "exercise": "scripts/db/exercises/202611146201_money_bughunt_fixes.sql",
+      "waivers": [],
+      "rollback": "re-apply previous definitions of issue_checkout/issue_seated_tickets/issue_resale (202610294015 + later), dec107_dispute_close (202611116007), dec107_releases_due; drop checkout_hold_matches_order(text,text), checkout_order_net_unit(text,uuid)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146202_money_bughunt_followups.sql",
+      "sha256": "dc9aa8935ecbcc139e10679dd56f6dde8b6209c241697afe0257d6002df596f0",
+      "lane": "bughunt-money",
+      "reviewer": "bughunt-money-opus",
+      "reviewedAt": "2026-11-14T18:26:49.778Z",
+      "exercise": "scripts/db/exercises/202611146202_money_bughunt_followups.sql",
+      "waivers": [],
+      "rollback": "re-apply previous payment_order_refunded, dec107_invariants (202611146201 era), payout_releases_member_read policy (is_workspace_member OR is_platform_admin); new columns/table/functions unused by old code",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611146203_chargeback_ticket_holds.sql",
+      "sha256": "78c7d9df78924c48d1700e172d770722893c9e239572050bc591d649d2db327a",
+      "lane": "bughunt-money",
+      "reviewer": "bughunt-money-opus",
+      "reviewedAt": "2026-11-14T18:37:21.858Z",
+      "exercise": "scripts/db/exercises/202611146203_chargeback_ticket_holds.sql",
+      "waivers": [],
+      "rollback": "drop trigger gd_0_dispute_hold_guard; re-apply previous ticket_order_dispute, scan_admission, check_in_ticket, create_scan_snapshot; columns stay (nullable, unused by old code)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146401_partner_bughunt_fixes.sql",
+      "sha256": "369b891400b24a2f83af83e19c6031a44012b25a96b5154510f0c710b66617f1",
+      "lane": "bughunt-partner",
+      "reviewer": "bughunt-partner-opus",
+      "reviewedAt": "2026-11-14T18:27:22.509Z",
+      "exercise": "scripts/db/exercises/202611146401_partner_bughunt_fixes.sql",
+      "waivers": [],
+      "rollback": "re-apply previous promoter_track_click (202610150021), promoter_create_payout/promoter_payout_transition (202610292004), admin_request_money (202610150010); cron.unschedule('partner-clear-earnings'); delete job_kinds partners.clear_earnings; new functions partner_clear_due_earnings/job_partner_clear_earnings/partner_attribute_signup_at unused by old code",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611146501_billing_bughunt_fixes.sql",
+      "sha256": "4e823ec580295fcdab88255f42b874887b246f4c0626109a66adfad6d90f693f",
+      "lane": "bughunt-billing",
+      "reviewer": "claude-q60",
+      "reviewedAt": "2026-11-14T18:32:40.976Z",
+      "exercise": "scripts/db/exercises/202611146501_billing_bughunt_fixes.sql",
+      "waivers": [],
+      "rollback": "restore previous bodies of ai_credit_status/billing_credit_pack_paid/billing_apply_subscription/record_ai_usage from 202610291013 + live defs; drop functions ai_credit_balance, billing_credit_pack_refunded; column stripe_payment_intent may stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
     }
   ],
   "recordedOnly": [

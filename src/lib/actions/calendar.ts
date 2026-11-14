@@ -3,12 +3,13 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
+import { wallToIso } from "@/lib/events/wall-time";
 
 const Entry = z.object({ title: z.string().trim().min(1).max(160), detail: z.string().max(500).default(""), starts_at: z.string().min(1), ends_at: z.string().optional(), event_id: z.string().uuid().optional().or(z.literal("")), layer: z.enum(["meetings", "external"]).default("meetings") });
 export async function createCalendarEntry(input: unknown): Promise<ActionResult> {
   const p = Entry.safeParse(input); if (!p.success) return { ok: false, error: "Add a title and start time." };
   const ctx = await getOrganizer();
-  const s = new Date(p.data.starts_at), e = p.data.ends_at ? new Date(p.data.ends_at) : new Date(s.getTime() + 36e5);
+  const s = new Date(wallToIso(p.data.starts_at) ?? NaN), e = p.data.ends_at ? new Date(wallToIso(p.data.ends_at) ?? NaN) : new Date(s.getTime() + 36e5);
   if (Number.isNaN(s.getTime()) || e <= s) return { ok: false, error: "The end must be after the start." };
   if (p.data.event_id) { const { data } = await ctx.supabase.from("events").select("id").eq("id", p.data.event_id).eq("workspace_id", ctx.workspace.id).maybeSingle(); if (!data) return { ok: false, error: "Event not found." }; }
   const { error } = await ctx.supabase.from("calendar_entries").insert({ workspace_id: ctx.workspace.id, owner_id: ctx.user.id, title: p.data.title, detail: p.data.detail, starts_at: s.toISOString(), ends_at: e.toISOString(), event_id: p.data.event_id || null, layer: p.data.layer });

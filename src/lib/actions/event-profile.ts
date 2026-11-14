@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { wallToIso, sameMinute } from "@/lib/events/wall-time";
 import { revalidatePath } from "next/cache";
 import { getOrganizer, type OrganizerCtx } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
@@ -42,10 +43,9 @@ const Basics = z.object({ name: z.string().trim().min(1).max(120), description: 
 export async function updateEventBasics(eventId: string, input: unknown): Promise<ActionResult> {
   const o = await own(eventId); if ("error" in o) return { ok: false, error: o.error };
   const p = Basics.safeParse(input); if (!p.success) return { ok: false, error: "Check the highlighted fields." };
-  const toIso = (v?: string) => (v ? new Date(v).toISOString() : null);
-  const s = toIso(p.data.starts_at), en = toIso(p.data.ends_at);
+  const s = wallToIso(p.data.starts_at), en = wallToIso(p.data.ends_at); // datetime-local = London wall time (Q48)
   if (s && en && en <= s) return { ok: false, error: "The end time must be after the start time." };
-  if (s !== (o.e.starts_at ? new Date(o.e.starts_at).toISOString() : null) && ["published", "on_sale", "live"].includes(o.e.status)) {
+  if (!sameMinute(s, o.e.starts_at) && ["published", "on_sale", "live"].includes(o.e.status)) {
     const { count } = await o.ctx.supabase.from("tickets").select("id", { count: "exact", head: true }).eq("event_id", o.e.id).eq("status", "valid");
     if (count) return { ok: false, error: `Changing the date of an on-sale event affects ${count} ticket holders. Postpone the event to reschedule with notifications and refund rights.` };
   }
@@ -75,7 +75,7 @@ const Prog = z.object({ title: z.string().trim().min(1).max(120), detail: z.stri
 export async function addProgrammeItem(eventId: string, input: unknown): Promise<ActionResult> {
   const o = await own(eventId); if ("error" in o) return { ok: false, error: o.error };
   const p = Prog.safeParse(input); if (!p.success) return { ok: false, error: "Add a title, start time and duration." };
-  const { error } = await untyped(o.ctx.supabase).from("programme_items").insert({ ...p.data, event_id: o.e.id, starts_at: new Date(p.data.starts_at).toISOString() });
+  const { error } = await untyped(o.ctx.supabase).from("programme_items").insert({ ...p.data, event_id: o.e.id, starts_at: wallToIso(p.data.starts_at) });
   if (error) return { ok: false, error: programmeError(error.message) };
   return done(o.e.id, `${p.data.kind === "run_sheet" ? "Run sheet" : "Programme"} item added.`);
 }

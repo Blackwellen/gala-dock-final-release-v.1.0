@@ -53,7 +53,7 @@ export async function adminCheckAward(awardId: string, confirm: boolean, note: s
   if (note.trim().length < 5) return { ok: false, error: "A note of at least 5 characters is required." };
   const supabase = await createClient();
   const { error } = await supabase.rpc("adm_dispute_award_check" as never, { p_award: awardId, p_confirm: confirm, p_note: note.trim().slice(0, 1000) } as never);
-  if (error) return { ok: false, error: /second_person/.test(error.message) ? "A different member of staff must check this award." : /not_authorized|step_up/.test(error.message) ? "You need dispute permissions and two-step verification." : "Could not record the check." };
+  if (error) return { ok: false, error: /second_person/.test(error.message) ? "A different member of staff must check this award." : /not_authorized|step_up/.test(error.message) ? "You need dispute permissions and two-step verification." : /not_open/.test(error.message) ? "This dispute is already resolved, so this award can’t change it. Reject it with a note instead." : "Could not record the check." };
   revalidatePath("/admin/disputes", "page");
   return { ok: true };
 }

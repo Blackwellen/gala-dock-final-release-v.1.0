@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
 import { paymentDeps } from "@/lib/payments/server";
-import { createDirectMerchantCheckout, createPlatformCheckout, refundMerchantCharge, type MarketplaceOrder } from "@/lib/payments/service";
+import { createDirectMerchantCheckout, createPlatformCheckout, refundedForTag, refundKey, refundMerchantCharge, type MarketplaceOrder } from "@/lib/payments/service";
 import type { RefundReason } from "@/lib/payments/rules";
 import { refundLegacyPlatformOrder } from "@/lib/commerce/legacy-platform-refunds";
 
@@ -93,17 +93,28 @@ export async function processPayments(limit = 20) {
   out.legacyAwaitingDecision = count ?? 0;
   if (!deps) return out;
 
-  const { data: cancels } = await db.from("booking_cancellations").select("id,build_item_id,party,calculation,refunded_minor").eq("refund_status", "due").limit(limit);
-  for (const c of (cancels ?? []) as { id: string; build_item_id: string; party: string; calculation: { refund_amount: number | null }; refunded_minor: number }[]) {
+  // Q58: atomic claim (FOR UPDATE SKIP LOCKED); a row a crashed worker left in 'processing' is reclaimed after 15 minutes.
+  const { data: cancels, error: claimError } = await db.rpc("claim_booking_cancellation_refunds", { p_limit: limit });
+  if (claimError) { out.errors.push(`claim cancellations: ${claimError.message}`); return out; }
+  for (const c of (cancels ?? []) as { id: string; build_item_id: string; party: string; calculation: { refund_amount: number | null }; refunded_minor: number; refund_attempt?: number }[]) {
     // The customer admin fee is refunded too when the provider (or the platform) cancelled; not when the customer did.
     const feeBack = c.party === "provider" || c.party === "platform";
-    await db.rpc("cancellation_refund_progress", { p_cancellation: c.id, p_status: "processing", p_refunded_minor: null, p_error: null });
     const { data: orders } = await db.from("payment_orders").select("*").eq("build_item_id", c.build_item_id).not("stripe_payment_intent", "is", null).order("created_at", { ascending: false });
-    let remaining = Math.round(Number(c.calculation.refund_amount ?? 0) * 100) - Number(c.refunded_minor)
-      + (feeBack ? ((orders ?? []) as Order[]).reduce((a, po) => a + Number(po.customer_fee_minor ?? 0), 0) : 0);
+    const list = (orders ?? []) as Order[];
+    const target = Math.round(Number(c.calculation.refund_amount ?? 0) * 100) + (feeBack ? list.reduce((a, po) => a + Number(po.customer_fee_minor ?? 0), 0) : 0);
     let refunded = Number(c.refunded_minor), error: string | null = null;
-    for (const po of (orders ?? []) as Order[]) {
-      if (remaining <= 0) break;
+    // Q58 crash-safe re-run: when every payment is a direct charge, what Stripe already refunded for this cancellation (tagged
+    // metadata.cancellation, failed refunds excluded) is the truth — a worker that died after Stripe accepted a refund never repeats it.
+    if (list.length && list.every(po => po.strategy === "direct" && po.payee_connected_account_id)) {
+      try {
+        let onStripe = 0;
+        for (const po of list) onStripe += await refundedForTag(deps, po.payee_connected_account_id!, po.stripe_payment_intent!, "cancellation", c.id);
+        refunded = onStripe;
+      } catch (e) { error = (e as Error).message; }
+    }
+    let remaining = error ? 0 : target - refunded;
+    for (const po of list) {
+      if (remaining <= 0 || error) break;
       const refundable = po.amount_minor + (feeBack ? Number(po.customer_fee_minor ?? 0) : 0) - po.refunded_minor;
       const amt = Math.min(remaining, refundable);
       if (amt <= 0) continue;
@@ -114,12 +125,16 @@ export async function processPayments(limit = 20) {
           const custFee = Number(po.customer_fee_minor ?? 0), gross = po.amount_minor + custFee;
           const split = { sellerAmountMinor: po.amount_minor, sellerFeeMinor: Math.max(0, Number(po.application_fee_minor ?? po.platform_fee_minor) - custFee),
             customerFeeRefundMinor: feeBack && gross > 0 ? Math.min(custFee, Math.round((custFee * amt) / gross)) : 0 };
+          // The key stays the same on every retry of an attempt; after a FAILED refund (refund_attempt + 1) a retry is a new refund.
+          const key = refundKey(`refund:${c.id}:${po.reference}`, c.refund_attempt);
           const { refund, policy, feeRefund } = await refundMerchantCharge(deps, { account: po.payee_connected_account_id, paymentIntent: po.stripe_payment_intent!, amountMinor: amt,
-            reason: reasonFor(c.party), idempotencyKey: `refund:${c.id}:${po.reference}`, metadata: { payment_order: po.reference, cancellation: c.id },
+            reason: reasonFor(c.party), idempotencyKey: key, metadata: { payment_order: po.reference, cancellation: c.id },
             mode: { rowLivemode: (po as { livemode?: boolean | null }).livemode, platformLive: stripeLive() }, split });
-          await db.from("payment_refunds").upsert({ stripe_refund_id: refund.id, stripe_account_id: po.payee_connected_account_id, payment_intent_id: po.stripe_payment_intent,
+          if (refund.status === "failed" || refund.status === "canceled") throw new Error(`stripe_refund_${refund.status}`);
+          const { error: re } = await db.from("payment_refunds").upsert({ stripe_refund_id: refund.id, stripe_account_id: po.payee_connected_account_id, payment_intent_id: po.stripe_payment_intent,
             source_type: "booking_cancellation", source_ref: c.id, amount_minor: amt, refund_application_fee: !!feeRefund, fee_policy: policy, reason_code: reasonFor(c.party),
-            idempotency_key: `refund:${c.id}:${po.reference}`, status: refund.status === "succeeded" ? "succeeded" : "pending" }, { onConflict: "idempotency_key" });
+            idempotency_key: key, status: refund.status === "succeeded" ? "succeeded" : "pending" }, { onConflict: "idempotency_key" });
+          if (re) out.errors.push(`refund row ${c.id}: ${re.message}`);
         } else await refundLegacyPlatformOrder(deps.stripe, po, amt, c.id);
         remaining -= amt; refunded += amt;
       } catch (e) { error = (e as Error).message; break; }

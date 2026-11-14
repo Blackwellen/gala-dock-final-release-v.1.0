@@ -8,8 +8,26 @@ import { untyped } from "@/lib/workspace/db";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { paymentDeps } from "@/lib/payments/server";
 import { createTicketDirectCheckout } from "@/lib/payments/service";
+import { connectedMerchantStripe } from "@/lib/payments/stripe-client";
 import { toMinor } from "@/lib/payments/rules";
 import { CHECKOUT_COOKIE, summarise, finalise } from "@/lib/checkout";
+
+/**
+ * Q58: a new order replaces this token's pending ones. Their Stripe Checkout sessions are expired on the seller's account too, so an
+ * old tab can't still be paid (it would only be refunded by the hold check in issue_checkout). Best effort: a session Stripe has
+ * already completed or expired stays as it is — the webhook settles it.
+ */
+async function expireSuperseded(db: ReturnType<typeof untyped>, token: string) {
+  const { data: old } = await db.from("checkout_orders").select("order_ref,stripe_session,connected_account_id,strategy").eq("token", token).eq("status", "pending");
+  const deps = paymentDeps(db);
+  for (const o of (old ?? []) as { order_ref: string; stripe_session: string | null; connected_account_id: string | null; strategy: string | null }[]) {
+    // Mark it expired FIRST: the checkout.session.expired webhook releases the token's holds only for a still-pending order, and
+    // those holds now belong to the new order.
+    await db.from("checkout_orders").update({ status: "expired", updated_at: new Date().toISOString() }).eq("order_ref", o.order_ref).eq("status", "pending");
+    if (deps && o.strategy === "direct" && o.stripe_session && o.connected_account_id)
+      await connectedMerchantStripe(deps.stripe).expireCheckout(o.connected_account_id, o.stripe_session).catch(() => null);
+  }
+}
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 
@@ -55,7 +73,7 @@ export async function POST(request: NextRequest) {
   const { data: admittedOk } = await db.rpc("queue_admit_check", { p_event: eventId, p_token_hash: qTok ? createHash("sha256").update(qTok).digest("hex") : "", p_consume: true });
   if (admittedOk === false) return json({ error: "Your waiting-room slot has expired or hasn’t opened yet — please rejoin the queue.", queue: true }, 409);
   const orderRef = `GD-${randomBytes(5).toString("hex").toUpperCase()}`;
-  await db.from("checkout_orders").update({ status: "expired", updated_at: new Date().toISOString() }).eq("token", token).eq("status", "pending");
+  await expireSuperseded(db, token);
   const { data: saved, error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode, ref_channel: refChannel, client_hash: clientHash }).select("fee,fee_vat,commission").single();
   if (oe || !saved) {
     // Q20: the order insert is checked against the server quote, per-customer tier limits and code usage limits.

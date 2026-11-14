@@ -7,6 +7,7 @@ import { CircleCheck, CircleAlert, Ticket, CalendarDays, MapPin, ArrowRight } fr
 import "@/styles/checkout.css";
 import { createClient } from "@/lib/supabase/server";
 import { untyped } from "@/lib/workspace/db";
+import { ConfirmAutoRefresh } from "./auto-refresh";
 
 export const metadata: Metadata = { title: "Order status" };
 const ISSUE: Record<string, string> = { refunded: "Your payment has been refunded. Check your original payment method for the return of funds.", refund_pending: "Your refund is being processed. It will only be marked completed when the payment provider confirms it.", tickets_unavailable: "The tickets on this order are no longer active on your account. Open My Tickets to check their current status.", not_paid: "We haven’t received confirmation of your payment yet. If you were charged, your tickets will appear in your account shortly." };
@@ -38,6 +39,7 @@ export default async function Confirmation(props: PageProps<"/checkout/[event]/c
         <div className="co-actions"><Link href="/account/tickets" className="co-cta">View tickets in my account<ArrowRight aria-hidden="true" /></Link>{ev && <Link href={`/events/${ev.slug}`} className="co-link">Back to event</Link>}</div></>
       : <><span className="co-warn"><CircleAlert aria-hidden="true" /></span><h1>{issue === "refunded" ? "Payment refunded" : issue === "refund_pending" ? "Refund in progress" : issue === "tickets_unavailable" ? "Ticket status changed" : "We’re confirming your order"}</h1>
         <p>{ISSUE[issue ?? ""] ?? (o?.status === "pending" || o?.status === "paid" ? "Your payment is being confirmed. This page will show your tickets once it completes." : "We couldn’t find this order on your account.")}</p>
+        {issue === "not_paid" && (o?.status === "pending" || o?.status === "paid") && <ConfirmAutoRefresh />}
         <div className="co-actions"><Link href={`/checkout/${key}`} className="co-cta">Back to tickets</Link><Link href="/account" className="co-link">My account</Link></div></>}
     </main>
     <LegalFooter />

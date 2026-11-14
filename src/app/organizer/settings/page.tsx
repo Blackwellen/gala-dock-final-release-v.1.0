@@ -5,15 +5,18 @@ import { DevelopersPanel } from "@/components/developer/panel";
 import { AgentCredits } from "@/components/agent/credits";
 import { AgentControls } from "@/components/agent/agent-controls";
 import { PlanBilling } from "@/components/billing/plan-billing";
+import { CreditPacks } from "@/components/billing/credit-packs";
+import { loadPricing, PLAN_NAME } from "@/lib/public/pricing";
 import { MfaCard, WorkspaceMfaPolicy } from "@/components/security/mfa-card";
 import { mfaRequired, policyOf } from "@/lib/mfa/policy";
 import { ClipboardList, CheckCircle2, ExternalLink, Users, CreditCard, Mail, Plug, Sparkles, Bell, CalendarDays, CircleSlash, ShieldCheck, Gauge, KeyRound, Globe2, Clock, ArrowRight, MessageSquare } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { Crumbs, LinkTabs } from "@/components/kit";
-import { EditCard, NotifToggles, RoleSelect } from "@/components/organizer/settings-client";
+import { EditCard, NotifToggles, RoleSelect, RemoveMember } from "@/components/organizer/settings-client";
 import { BrandLogo } from "@/components/kit/brand-logo";
 import { requestTime } from "@/lib/workspace/format";
-import { currencies } from "@/lib/master-data";
+import { currencies, countries, countryBy, TIMEZONES } from "@/lib/master-data";
+import { workspaceCountryValue } from "@/lib/payments/connect-countries";
 
 export const metadata = { title: "Settings" };
 type S = Record<string, unknown>;
@@ -45,8 +48,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     { b: ["resend"], n: "Transactional email", ok: !!(process.env.RESEND_API_KEY || process.env.RESEND_API), d: (process.env.RESEND_API_KEY || process.env.RESEND_API) ? "Resend (production)" : "Not configured", href: "#" },
     { b: ["microsoft"], n: "Gala Agent (Azure OpenAI)", ok: !!(process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY), d: "AI model access", href: "/organizer/agent" },
   ];
-  const plan = String(s.plan ?? (w?.plan === "starter" ? "Starter" : "Pro Plan")); const price = Number(s.plan_price ?? 0);
-  const limits = [[CalendarDays, "Events", events ?? 0, 100], [Users, "Team members", (members ?? []).length + crewN, 25], [Gauge, "AI runs (30d)", (runs ?? []).length, 2000]] as const;
+  // Q60: the plan card read a free-text settings.plan / settings.plan_price and hard-coded limits (100 events, 25 members, 2000 AI
+  // runs) and inclusions for every workspace. It now shows the billed plan (workspaces.plan) with the catalogue's own price, caps and
+  // inclusions (plan_prices / plan_entitlements via loadPricing, the same rows the pricing page and the entitlement checks read).
+  const planKey = String(w?.plan ?? "starter"), planRow = (await loadPricing()).plans.find(p => p.kind === "organizer" && p.plan === planKey);
+  const plan = PLAN_NAME[planKey] ?? planKey; const price = (planRow?.month ?? 0) / 100;
+  const limits = ([[CalendarDays, "Active events", events ?? 0, planRow?.caps.events ?? null], [Users, "Team members", (members ?? []).length + crewN, planRow?.caps.team ?? null], [Gauge, "AI credits (30d)", Math.round(credits), planRow?.caps.credits ?? null]] as const);
+  // Q60: the business country is read from settings.organisation/business.country first (onboarding), so editing the top-level
+  // "Default country" had no effect once onboarding set one, and free text ("UK") did not resolve. Show the effective value; offer a
+  // list, and only when onboarding has not fixed the business country (it drives payouts; support changes it).
+  const fixedCountry = [(s.organisation as S | undefined)?.country, (s.business as S | undefined)?.country].find(v => typeof v === "string" && v.trim()) as string | undefined;
+  const countryRaw = workspaceCountryValue(s); const countryName = typeof countryRaw === "string" ? (countryBy(countryRaw)?.name ?? countryRaw) : "United Kingdom";
+  const tzOptions = [...new Set([...TIMEZONES.map(t => t.tz), ...(typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [])])];
   const fields = (keys: [string, string][]) => keys.map(([k, l]) => ({ key: k, label: l, value: String(s[k] ?? "") }));
 
   return <div className="st">
@@ -58,17 +71,17 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div className="st-r1">
         <section className="k-card st-c st-profile"><div className="k-between"><h2>Workspace profile</h2><EditCard can={can} title="Edit workspace profile" fields={[{ key: "name", label: "Workspace name", value: w?.name ?? "" }, ...fields([["description", "Description"], ["website", "Workspace URL"], ["contact_email", "Contact email"], ["contact_phone", "Contact phone"]])]} /></div>
           <div className="st-id">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={w?.cover_image || "/assets/gd/av-alex-organizer.webp"} alt="" /><div><div className="k-row" style={{ gap: 10 }}><b>{w?.name}</b><span className="st-ok"><CheckCircle2 size={13} />{w?.status === "active" ? "Active" : w?.status}</span></div><p>{String(s.description ?? "")}</p></div></div>
-          <dl className="st-g">{([["Workspace type", w?.kind === "organizer" ? "Organizer" : String(w?.kind)], ["Workspace", String(s.website ?? "—")], ["Default country", String(s.country ?? "United Kingdom")], ["Default currency", `${String(s.currency ?? "GBP")} (${(currencies().find(c => c.code === String(s.currency ?? "GBP"))?.symbol ?? "£")})`], ["Default timezone", String(s.timezone ?? "Europe/London")], ["Contact email", String(s.contact_email ?? "—")], ["Contact phone", String(s.contact_phone ?? "—")]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{k === "Workspace" && v !== "—" ? <span className="k-row" style={{ gap: 6 }}>{v}<ExternalLink size={13} className="k-blue" /></span> : v}</dd></div>)}</dl></section>
-        <section className="k-card st-c st-plan"><div><h2>Subscription &amp; plan</h2><div className="st-pl"><span className="st-pro">{plan.slice(0, 3)}</span><span className="k-grow"><b>{plan}</b><small>Everything you need to run multiple events at scale.</small></span><Link className="k-btn outline" href="/organizer/settings?tab=billing">Change plan</Link></div>
+          <dl className="st-g">{([["Workspace type", w?.kind === "organizer" ? "Organizer" : String(w?.kind)], ["Workspace", String(s.website ?? "—")], ["Default country", countryName], ["Default currency", `${String(s.currency ?? "GBP")} (${(currencies().find(c => c.code === String(s.currency ?? "GBP"))?.symbol ?? "£")})`], ["Default timezone", String(s.timezone ?? "Europe/London")], ["Contact email", String(s.contact_email ?? "—")], ["Contact phone", String(s.contact_phone ?? "—")]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{k === "Workspace" && v !== "—" ? <span className="k-row" style={{ gap: 6 }}>{v}<ExternalLink size={13} className="k-blue" /></span> : v}</dd></div>)}</dl></section>
+        <section className="k-card st-c st-plan"><div><h2>Subscription &amp; plan</h2><div className="st-pl"><span className="st-pro">{plan.slice(0, 3)}</span><span className="k-grow"><b>{plan}</b><small>{planKey === "starter" ? "Free plan for getting started." : "Your current Gala Dock plan."}</small></span><Link className="k-btn outline" href="/organizer/settings?tab=billing">Change plan</Link></div>
           {price > 0 && <p className="st-price"><b>£{price}</b> / month</p>}
-          <div className="st-limits">{limits.map(([I, l, v, max]) => <div key={l}><span><I size={18} /><small>{l}</small></span><b>{v.toLocaleString("en-GB")} / {max.toLocaleString("en-GB")}</b><span className="st-bar"><i style={{ width: `${Math.min(100, (v / max) * 100)}%` }} /></span></div>)}</div></div>
-          <aside className="st-incl"><b>Plan includes</b>{["Up to 100 active events", "25 team members", "Advanced ticketing", "Venue and supplier management", "Gala Agent (full access)", "Priority support"].map(x => <span key={x}><CheckCircle2 size={14} />{x}</span>)}</aside></section>
+          <div className="st-limits">{limits.map(([I, l, v, max]) => <div key={l}><span><I size={18} /><small>{l}</small></span><b>{v.toLocaleString("en-GB")} / {max == null ? "Unlimited" : max.toLocaleString("en-GB")}</b><span className="st-bar"><i style={{ width: `${max ? Math.min(100, (v / max) * 100) : 0}%` }} /></span></div>)}</div></div>
+          <aside className="st-incl"><b>Plan includes</b>{(planRow?.features ?? []).map(x => <span key={x}><CheckCircle2 size={14} />{x}</span>)}</aside></section>
       </div>
       <div className="st-r2">
         <section className="k-card st-c"><div className="k-between"><h2>Legal &amp; business information</h2><EditCard can={can} title="Legal & business information" fields={fields([["legal_name", "Business name"], ["registration", "Registration number"], ["vat", "VAT number"], ["address", "Registered address"]])} /></div>
           <dl className="st-dl">{([["Business name", s.legal_name], ["Registration number", s.registration], ["VAT number", s.vat], ["Registered address", s.address]] as const).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{String(v ?? "—")}</dd></div>)}</dl></section>
-        <section className="k-card st-c"><div className="k-between"><h2>Locale &amp; defaults</h2><EditCard can={can} title="Locale & defaults" fields={[...fields([["country", "Default country"], ["timezone", "Default timezone"], ["date_format", "Date format"], ["time_format", "Time format"]]), { key: "currency", label: "Default currency", value: String(s.currency ?? "GBP"), options: currencies({ transactional: true }).map(c => c.code) }]} /></div>
-          <dl className="st-dl ic">{([[Globe2, "Default country", s.country], [CreditCard, "Default currency", `${String(s.currency ?? "GBP")}`], [Clock, "Default timezone", s.timezone], [CalendarDays, "Date format", s.date_format], [CalendarDays, "Time format", s.time_format]] as const).map(([I, k, v]) => <div key={k}><dt>{k}</dt><dd><I size={15} />{String(v ?? "—")}</dd></div>)}</dl></section>
+        <section className="k-card st-c"><div className="k-between"><h2>Locale &amp; defaults</h2><EditCard can={can} title="Locale & defaults" fields={[...(fixedCountry ? [] : [{ key: "country", label: "Default country", value: countryName, options: countries({ business: true }).map(c => c.name) }]), { key: "timezone", label: "Default timezone", value: String(s.timezone ?? "Europe/London"), options: tzOptions }, { key: "date_format", label: "Date format", value: String(s.date_format ?? "DD/MM/YYYY"), options: ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"] }, { key: "time_format", label: "Time format", value: String(s.time_format ?? "24-hour"), options: ["24-hour", "12-hour"] }, { key: "currency", label: "Default currency", value: String(s.currency ?? "GBP"), options: currencies({ transactional: true }).map(c => c.code) }]} /></div>
+          <dl className="st-dl ic">{([[Globe2, fixedCountry ? "Business country (set at onboarding; contact support to change)" : "Default country", countryName], [CreditCard, "Default currency", `${String(s.currency ?? "GBP")}`], [Clock, "Default timezone", s.timezone ?? "Europe/London"], [CalendarDays, "Date format", s.date_format], [CalendarDays, "Time format", s.time_format]] as const).map(([I, k, v]) => <div key={k}><dt>{k}</dt><dd><I size={15} />{String(v ?? "—")}</dd></div>)}</dl></section>
         <section className="k-card st-c st-brand"><div className="k-between"><h2>Workspace cover &amp; branding</h2><EditCard can={can} title="Branding" fields={[{ key: "cover_image", label: "Cover image URL", value: w?.cover_image ?? "" }, { key: "brand_color", label: "Brand colour (hex)", value: String(s.brand_color ?? "#2563eb") }]} /></div>
           {/* eslint-disable-next-line @next/next/no-img-element */}<img className="st-cover" src="/assets/gd/hero-neon.webp" alt="" /><div className="st-bid">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={w?.cover_image || "/assets/gd/av-alex-organizer.webp"} alt="" /><span><b>{w?.name}</b><small>Primary brand for public pages and communications.</small></span></div></section>
       </div>
@@ -87,7 +100,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <section className="k-card st-c st-mini"><div className="st-mh"><span className="st-mi blue"><Bell size={18} /></span><span className="k-grow"><b>Notifications</b><small>5 channels</small></span></div><NotifToggles can={can} prefs={notif} /></section>
       </div>
     </>}
-    {tab === "team" && <section className="k-card st-c"><h2>Workspace members</h2><table className="mn-t"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead><tbody>{(members ?? []).map(m => <tr key={m.user_id}><td><b>{name(m.user_id)}</b></td><td>{owner && m.role !== "owner" ? <RoleSelect userId={m.user_id} role={m.role} /> : m.role}</td><td>{m.status}</td><td>{new Date(m.created_at).toLocaleDateString("en-GB")}</td></tr>)}</tbody></table>
+    {tab === "team" && <section className="k-card st-c"><h2>Workspace members</h2><table className="mn-t"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Joined</th>{owner && <th><span className="k-sr">Actions</span></th>}</tr></thead><tbody>{(members ?? []).map(m => <tr key={m.user_id}><td><b>{name(m.user_id)}</b></td><td>{owner && m.role !== "owner" && m.status === "active" ? <RoleSelect userId={m.user_id} role={m.role} /> : m.role}</td><td>{m.status}</td><td>{new Date(m.created_at).toLocaleDateString("en-GB")}</td>{owner && <td>{m.role !== "owner" && m.user_id !== ctx.user.id && (m.status === "active" ? <RemoveMember userId={m.user_id} name={name(m.user_id)} /> : <RemoveMember userId={m.user_id} name={name(m.user_id)} restore />)}</td>}</tr>)}</tbody></table>
       <p className="k-small" style={{ marginTop: 10 }}>External crew are managed in <Link href="/organizer/team">Team</Link>.</p>
       <h2 id="audit" style={{ marginTop: 20 }}>Audit log</h2><ul className="iv-comm">{(audit ?? []).map((a, i) => <li key={i}><span className="tm-ci green"><ClipboardList size={15} /></span><span className="k-grow"><b>{a.event}</b></span><small>{new Date(a.created_at).toLocaleString("en-GB")}</small></li>)}</ul></section>}
     {tab === "demo" && <div style={{ maxWidth: 760 }}><DemoCard /></div>}
@@ -95,6 +108,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     {tab === "security" && <div className="st-sec" style={{ display: "grid", gap: 16, maxWidth: 720 }}><MfaCard required={mfaRequired(policyOf(ctx.workspace.settings), ctx.role) ? ctx.workspace.name : null} /><WorkspaceMfaPolicy workspaceId={ctx.workspace.id} policy={policyOf(ctx.workspace.settings)} owner={ctx.role === "owner"} /></div>}
     {tab === "notifications" && <section className="k-card st-c st-narrow"><h2>Notification channels</h2><NotifToggles can={can} prefs={notif} /></section>}
     {tab === "agent" && <AgentCredits db={ctx.supabase} workspaceId={ctx.workspace.id} canEdit={["owner", "manager"].includes(ctx.role)} canSeeUsage={ctx.canMoney} />}
+    {tab === "agent" && <CreditPacks db={ctx.supabase} workspaceId={ctx.workspace.id} kind="organizer" isOwner={ctx.role === "owner"} justPaid={sp.credits === "success"} />}
     {tab === "agent" && <AgentControls db={ctx.supabase} workspaceId={ctx.workspace.id} surface="organizer" canManage={["owner", "manager"].includes(ctx.role)} />}
     {tab === "agent" && <section className="k-card st-c st-narrow"><div className="k-between"><h2>Gala Agent behaviour</h2><EditCard can={can} title="Agent settings" fields={[{ key: "agent.approval_policy", label: "Approval policy", value: agent.approval_policy, options: ["Require approval for high-impact actions", "Require approval for all actions"] }, { key: "agent.autopilot", label: "Autopilot", value: agent.autopilot, options: ["Off", "Limited (suggest & draft only)", "Standard (low-risk actions)"] }, { key: "agent.access_scope", label: "Access scope", value: agent.access_scope, options: ["All events and workspace data", "Assigned events only"] }]} /></div><dl className="st-ag">{Object.entries(agent).map(([k, v]) => <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{v}</dd></div>)}</dl></section>}
     {tab === "billing" && <PlanBilling db={ctx.supabase} workspaceId={ctx.workspace.id} kind="organizer" plan={w?.plan ?? "starter"} isOwner={ctx.role === "owner"} />}

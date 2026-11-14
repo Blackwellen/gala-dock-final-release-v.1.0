@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Star, MapPin, CalendarDays, ImagePlus, Plus, X, ArrowRight, MoreHorizontal, Loader2, MessageSquare, Flag, Pencil, Trash2, FileText } from "lucide-react";
+import { Star, MapPin, CalendarDays, ImagePlus, Image as ImageIcon, Plus, X, ArrowRight, MoreHorizontal, Loader2, MessageSquare, Flag, Pencil, Trash2, FileText } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
 import { submitReview, deleteReview } from "@/lib/actions/reviews";
 import { confirmDialog } from "@/lib/ui/dialogs";
@@ -18,11 +18,12 @@ function Stars({ value, onChange, label }: { value: number; onChange: (n: number
   </div>;
 }
 
-export function ReviewForm({ item, initial, draft }: { item: { id: string; title: string; image: string; location: string; date: string; category: string }; initial: { ratings: Partial<R>; body: string } | null; draft: boolean }) {
+export function ReviewForm({ item, initial, draft }: { item: { id: string; title: string; image: string; location: string; date: string; category: string }; initial: { ratings: Partial<R>; body: string; photos?: string[] } | null; draft: boolean }) {
   const { run, pending } = useAction(); const toast = useKitToast(); const file = useRef<HTMLInputElement>(null);
   const [r, setR] = useState<R>({ overall: 0, quality: 0, communication: 0, value: 0, reliability: 0, ...(initial?.ratings ?? {}) } as R);
   const [body, setBody] = useState(initial?.body ?? ""); const [ok, setOk] = useState(!!initial);
-  const [photos, setPhotos] = useState<{ path: string; url: string | null }[]>([]); const [uploading, setUploading] = useState(false);
+  // Editing keeps the review's existing photos (submit_review replaces the whole list — starting empty deleted them, Q47).
+  const [photos, setPhotos] = useState<{ path: string; url: string | null }[]>(() => (initial?.photos ?? []).map(path => ({ path, url: null }))); const [uploading, setUploading] = useState(false);
   const makeDraft = () => {
     const o = r.overall || 5; const lines = [
       `We booked ${item.title} for our event on ${item.date}.`,
@@ -56,7 +57,7 @@ export function ReviewForm({ item, initial, draft }: { item: { id: string; title
     <div className="k-between" style={{ marginTop: 14 }}><label htmlFor="rv-body" className="rv-label">Your review</label><button type="button" className="k-link rv-draft" onClick={makeDraft}><FileText size={13} />Start from a template</button></div>
     <span className="rv-ta"><textarea id="rv-body" value={body} maxLength={1000} onChange={e => setBody(e.target.value)} placeholder="Share your experience... What did you love? What could be improved? This helps other people plan their events." /><small>{body.length.toLocaleString()}/1,000</small></span>
     <div className="rv-photos"><button type="button" className="rv-add" onClick={() => file.current?.click()} disabled={uploading || photos.length >= 5}>{uploading ? <Loader2 size={16} className="k-spin" /> : <ImagePlus size={16} />}Add photos</button><small>You can add up to 5 photos.</small>
-      <div className="rv-thumbs">{photos.map(p => <span key={p.path}>{p.url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.url} alt="" /> : null}<button type="button" aria-label="Remove photo" onClick={() => setPhotos(x => x.filter(y => y.path !== p.path))}><X size={12} /></button></span>)}{photos.length > 0 && photos.length < 5 && <button type="button" className="rv-more" aria-label="Add another photo" onClick={() => file.current?.click()}><Plus size={18} /></button>}</div>
+      <div className="rv-thumbs">{photos.map(p => <span key={p.path}>{p.url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.url} alt="" /> : <ImageIcon size={18} aria-label="Attached photo" />}<button type="button" aria-label="Remove photo" onClick={() => setPhotos(x => x.filter(y => y.path !== p.path))}><X size={12} /></button></span>)}{photos.length > 0 && photos.length < 5 && <button type="button" className="rv-more" aria-label="Add another photo" onClick={() => file.current?.click()}><Plus size={18} /></button>}</div>
       <input ref={file} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onChange={e => void upload(e.target.files)} /></div>
     <div className="rv-submit"><label className="rv-confirm"><input type="checkbox" checked={ok} onChange={e => setOk(e.target.checked)} />I confirm this review is based on my genuine experience and complies with the <Link href="/help?topic=review-policy">review policy</Link>.</label>
       <button className="k-btn primary rv-go" disabled={pending || missing || !ok || body.trim().length < 20} title={missing ? "Rate every category" : body.trim().length < 20 ? "Write at least 20 characters" : undefined} onClick={() => void run(() => submitReview({ item: item.id, ratings: r, body, photos: photos.map(p => p.path), confirm: ok }))}>{pending && <Loader2 size={15} className="k-spin" />}{initial ? "Save changes" : "Submit review"} <ArrowRight size={16} /></button></div>

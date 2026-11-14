@@ -20,9 +20,7 @@
 .o-avatar { display: inline-flex; align-items: center; gap: 12px; }
 .o-top-help { margin-right: auto !important; }
 .o-avatar img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
-.o-burger { display: none; }
 .o-side { position: fixed; top: var(--o-top); left: 0; bottom: 0; width: var(--o-side); background: #fbfcfe; border-right: 1px solid #edf2fa; display: flex; flex-direction: column; padding: 12px 12px 14px 4px; overflow-y: auto; scrollbar-width: thin; z-index: 30; }
-.o-side-mobile-head { display: none; }
 .o-nav { display: flex; flex-direction: column; gap: 2px; }
 .o-nav-item > svg { width: 21px; height: 21px; }
 .o-nav-item { position: relative; display: flex; align-items: center; gap: 15px; height: 45px; padding: 0 12px 0 14px; border-radius: 10px; margin-left: 4px; font-size: 13px; font-weight: 500; color: var(--k-ink); white-space: nowrap; }
@@ -39,37 +37,12 @@
 .o-side-ask input { flex: 1; min-width: 0; border: 0; outline: 0; font: inherit; font-size: 13px; background: transparent; }
 .o-side-ask button { width: 30px; height: 30px; border-radius: 50%; background: var(--k-agent); color: #fff; display: grid; place-items: center; }
 .o-main { margin-left: var(--o-side); padding: 14px 18px 24px 14px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-.o-tabbar { display: none; }
-.o-scrim { display: none; }
 
 /* Responsive */
 @media (max-width: 1360px) { .o-top-lbl { display: none; } .o-ws { width: 160px; } .o-logo { width: auto; } }
-@media (max-width: 1100px) {
-  .o-root { --o-side: 0px; }
-  .o-burger { display: inline-grid; }
-  .o-side { transform: translateX(-105%); transition: transform .2s; width: 280px; top: 0; z-index: 70; box-shadow: 10px 0 40px #0b0f2e30; padding-top: 10px; }
-  .o-side.open { transform: none; }
-  .o-side-mobile-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 4px 12px 16px; }
-  .o-scrim { display: block; position: fixed; inset: 0; background: #0b0f2e55; z-index: 65; }
-  .o-main { margin-left: 0; }
-  .o-ws { display: none; }
-}
-@media (max-width: 720px) {
-  .o-top { gap: 6px; padding: 0 10px; height: 58px; }
-  .o-root { --o-top: 58px; }
-  .o-logo .gd-lockup { --gd-h: 32px; }
-  .o-search { display: none; }
-  .o-create .k-btn:first-child { padding: 0 12px; }
-  .o-create .k-btn:last-child { display: none; }
-  .o-create .k-btn:first-child { border-radius: 8px; }
-  .o-top-btn { padding: 0 4px; }
-  .o-top-btn:nth-of-type(3) { display: none; }
-  .o-avatar img { width: 34px; height: 34px; } .o-avatar > svg { display: none; }
-  .o-main { padding: 14px 16px calc(84px + env(safe-area-inset-bottom)); }
-  .o-tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #fff; border-top: 1px solid var(--k-line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); justify-content: space-around; }
-  .o-tabbar > * { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10.5px; font-weight: 550; color: var(--k-muted); min-width: 56px; padding: 4px; }
-  .o-tabbar [aria-current="page"] { color: var(--k-blue); }
-}
+/* Below 1280px the shared MobileNav replaces the header, sidebar and drawer (pwa-nav.css hides .pwa-hide-desktop-nav), so only
+   the content padding is set here (Q48 removed the dead burger drawer, scrim and bottom tab bar rules). */
+@media (max-width: 720px) { .o-main { padding: 14px 16px calc(84px + env(safe-area-inset-bottom)); } }
 
 /* Organizer page helpers */
 .o-grid-main { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }

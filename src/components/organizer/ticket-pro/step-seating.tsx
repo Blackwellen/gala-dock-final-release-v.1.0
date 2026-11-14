@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { PenSquare, Info, CheckCircle2, AlertTriangle, Sparkles, Wand2, Lock, Plus, X } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
@@ -10,7 +10,7 @@ import type { ProSetup } from "@/lib/data/ticket-pro";
 import { Card, Footer, VenueMap, num, pct } from "./ui";
 
 export function StepSeating({ data, base, nextHref = `${base}?step=4`, backHref = `${base}?step=2` }: { data: ProSetup; base: string; nextHref?: string; backHref?: string }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction(); const e = data.event;
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction(); const [navigating, startNav] = useTransition(); const pending = saving || navigating; /* stay disabled until the next step renders (Q48) */ const e = data.event;
   const [sections, setSections] = useState<ProSection[]>(data.pro.sections);
   const tiers = data.tiers.filter(t => t.id && !["hidden", "paused"].includes(t.status)) as (ProSetup["tiers"][number] & { id: string })[];
   const set = (i: number, patch: Partial<ProSection>) => setSections(ss => ss.map((s, k) => k === i ? { ...s, ...patch } : s));
@@ -25,7 +25,7 @@ export function StepSeating({ data, base, nextHref = `${base}?step=4`, backHref 
     setSections(ss => ss.map(s => ({ ...s, tiers: s.type === "hold" ? [] : tiers.filter(t => s.type === "standing" ? ["general", "early", "group", "student"].includes(t.kind) && !/seat/i.test(t.name) : s.type === "vip" ? t.kind === "vip" : s.type === "accessible" ? t.kind === "accessible" : s.type === "reserved" ? /seat|premium|reserved/i.test(t.name) || t.kind === "comp" : false).map(t => t.id) })));
     toast("Tiers matched to sections — review the allocation");
   };
-  const save = async (next: boolean) => { const r = await run(() => saveAllocation(e.id, { sections }), { refresh: false }); if (r.ok) router.push(next ? nextHref : `/organizer/events/${e.id}?tab=sell`); };
+  const save = async (next: boolean) => { const r = await run(() => saveAllocation(e.id, { sections }), { refresh: false }); if (r.ok) startNav(() => router.push(next ? nextHref : `/organizer/events/${e.id}?tab=sell`)); };
 
   return <>
     <div className="tp-kp4">{([["Event capacity", num(data.pro.capacity), ""], ["Mapped to sections", num(cap), pct(cap, data.pro.capacity, 0)], ["Assigned to tiers", num(assigned), pct(assigned, cap, 0)], ["Holds & comps", num(held), pct(held, cap, 1)]] as const).map(([l, v, s]) => <div key={l} className="tp-kp"><small>{l}</small><b>{v}</b>{s && <em>{s}</em>}</div>)}</div>

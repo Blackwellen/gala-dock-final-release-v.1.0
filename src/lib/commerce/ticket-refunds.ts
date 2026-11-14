@@ -1,9 +1,9 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
-import { stripe } from "@/lib/stripe";
+import { stripe, stripeLive } from "@/lib/stripe";
 import { paymentDeps } from "@/lib/payments/server";
-import { refundMerchantCharge } from "@/lib/payments/service";
+import { refundKey, refundMerchantCharge } from "@/lib/payments/service";
 
 /**
  * Executes queued ticket-order refunds (event cancellation). Full amount incl. booking fee, to the original payment method,
@@ -16,7 +16,7 @@ export async function processTicketRefunds(limit = 25) {
   let refunded = 0, failed = 0, pending = 0;
   const deps = paymentDeps(db);
   for (const o of (data ?? []) as { order_ref: string; stripe_session: string | null; stripe_refund_id: string | null; refund_reason: string | null; amount: number; fee: number; event_id: string; buyer_id: string;
-    strategy?: string; connected_account_id?: string | null; stripe_payment_intent?: string | null }[]) {
+    strategy?: string; connected_account_id?: string | null; stripe_payment_intent?: string | null; refund_attempt?: number | null }[]) {
     try {
       if (!o.stripe_session) throw new Error("no_payment_record");
       type Refund = { id: string | null; status: string; amount: number };
@@ -35,9 +35,16 @@ export async function processTicketRefunds(limit = 25) {
         const { data: fees } = await db.from("checkout_orders").select("application_fee_minor").eq("order_ref", o.order_ref).maybeSingle();
         const priceMinor = Math.round(Number(o.amount) * 100), bookingFeeMinor = Math.round(Number(o.fee) * 100);
         const appFee = Number((fees as { application_fee_minor: number | null } | null)?.application_fee_minor ?? bookingFeeMinor);
-        const done = await refundMerchantCharge(deps, { account: o.connected_account_id!, paymentIntent: s.payment_intent, reason, idempotencyKey: `ticket-refund:${o.order_ref}`, metadata: { order_ref: o.order_ref },
+        // Q58: a retry after a FAILED refund (stripe_refund_failed → refund_attempt + 1) needs a new key, or Stripe returns the cached failure.
+        const key = refundKey(`ticket-refund:${o.order_ref}`, o.refund_attempt);
+        const done = await refundMerchantCharge(deps, { account: o.connected_account_id!, paymentIntent: s.payment_intent, reason, idempotencyKey: key, metadata: { order_ref: o.order_ref },
           split: { sellerAmountMinor: priceMinor, sellerFeeMinor: Math.max(0, appFee - bookingFeeMinor), customerFeeRefundMinor: bookingFeeMinor } });
         r = { id: done.refund.id, status: done.refund.status, amount: done.refund.amount };
+        // Q58: ticket refunds get a payment_refunds row too, so refunds_exceed_charge and reconciliation see them.
+        const { error: re } = await db.from("payment_refunds").upsert({ stripe_refund_id: done.refund.id, stripe_account_id: o.connected_account_id, payment_intent_id: s.payment_intent,
+          source_type: "checkout_order", source_ref: o.order_ref, amount_minor: done.refund.amount, refund_application_fee: !!done.feeRefund, fee_policy: "dec107", reason_code: reason,
+          idempotency_key: key, status: ["succeeded", "failed", "canceled"].includes(done.refund.status) ? done.refund.status : "pending", livemode: stripeLive() }, { onConflict: "idempotency_key" });
+        if (re) throw new Error(`refund_row: ${re.message}`);
       }
       else {
         const intent=await stripe<{latest_charge:{paid:boolean;amount:number;amount_refunded:number}|null}>(`payment_intents/${s.payment_intent}?expand[]=latest_charge`);

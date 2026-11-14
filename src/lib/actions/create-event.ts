@@ -79,15 +79,22 @@ export async function finishCreate(id: string, input: unknown): Promise<ActionRe
   if (m.promotion) tasks.push(["Publish event page", "promotion", 60, "high"], ["Launch marketing campaign", "promotion", 45, "medium"]);
   if (m.risk) tasks.push(["Complete risk assessment", "risk", 30, "high"], ["Confirm permits, licences and insurance", "risk", 21, "high"]);
   if (m.tickets) tasks.push(["Set up ticket tiers and pricing", "ticketing", 60, "high"]);
-  if (fromTemplate === 0) await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, d, priority]) => ({ event_id: id, workspace_id: o.ctx.workspace.id, owner_id: o.ctx.user.id, title, category, due_at: due(d), priority, status: "todo" })));
+  // Q48: setup writes report failure instead of announcing "created with N tasks" when nothing was written. Nothing has changed the
+  // event's status yet at this point, so the organiser can simply press "Create event" again.
+  if (fromTemplate === 0) {
+    const { count } = await o.ctx.supabase.from("tasks").select("id", { count: "exact", head: true }).eq("event_id", id);
+    const { error: taskErr } = count ? { error: null } : await o.ctx.supabase.from("tasks").insert(tasks.map(([title, category, d, priority]) => ({ event_id: id, workspace_id: o.ctx.workspace.id, owner_id: o.ctx.user.id, title, category, due_at: due(d), priority, status: "todo" })));
+    if (taskErr) return { ok: false, error: "Could not create the starter tasks. Please try again." };
+  }
   if (m.tickets && s.ticketed !== false) {
     const { count } = await o.ctx.supabase.from("ticket_tiers").select("id", { count: "exact", head: true }).eq("event_id", id);
-    if (!count) await o.ctx.supabase.from("ticket_tiers").insert({ event_id: id, name: "General Admission", description: "Standard entry", kind: "general", price: Number(s.avg_ticket_price ?? 0), quantity: Math.max(1, Number(e.capacity ?? 100)), status: "draft", sort: 1 });
+    if (!count) { const { error: tierErr } = await o.ctx.supabase.from("ticket_tiers").insert({ event_id: id, name: "General Admission", description: "Standard entry", kind: "general", price: Number(s.avg_ticket_price ?? 0), quantity: Math.max(1, Number(e.capacity ?? 100)), status: "draft", sort: 1 }); if (tierErr) return { ok: false, error: "Could not create the first ticket tier. Please try again." }; }
   }
   const slug = m.promotion && e.visibility === "public" ? `${e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50)}-${randomBytes(2).toString("hex")}` : null;
   const { data: fresh } = await o.ctx.supabase.from("events").select("settings").eq("id", id).single();
   const s2 = { ...((fresh?.settings ?? s) as Record<string, unknown>) };
-  await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
+  const { error: upErr } = await o.ctx.supabase.from("events").update({ status: "planning", ...(slug && !o.e.slug ? { slug } : {}), settings: { ...s2, modules: m, provider_categories: p.data.provider_categories, template_id: p.data.template_id, public_page: m.promotion ? { details: true, lineup: true, tickets: !!m.tickets, map: true, faqs: true, terms: true } : s.public_page } as Json, updated_at: new Date().toISOString() }).eq("id", id);
+  if (upErr) return { ok: false, error: "Could not finish setting up the event. Please try again." };
   if (p.data.agent_goal.trim().length >= 8) { const { startRun } = await import("./agent"); await startRun({ goal: p.data.agent_goal, scope: ["event"], event_id: id }); }
   revalidatePath("/organizer/events"); revalidatePath("/organizer");
   return { ok: true, message: fromTemplate ? `${e.name} created from the template with ${fromTemplate} tasks.` : `${e.name} created with ${tasks.length} starter tasks.`, redirect: `/organizer/events/${id}` };

@@ -1,6 +1,6 @@
 "use client";
 import { Children, useRef, useState, type ReactNode } from "react";
-import { GripVertical } from "lucide-react";
+import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 import { useAction } from "@/components/kit/client";
 import { reorderBuild } from "@/lib/actions/build-extra";
 
@@ -12,6 +12,10 @@ export function SortableBuild({ eventId, ids, labels, children }: { eventId: str
   // (quote note, hold) render inside it, stopped text selection in their fields.
   const [armed, setArmed] = useState<number | null>(null);
   const before = useRef<number[] | null>(null); const dropped = useRef(false);
+  // Q47: HTML drag-and-drop never fires for touch, so phones and tablets couldn't reorder. Touch/pen drags run on pointer events
+  // from the grip (captured, rows found under the finger); the ↑/↓ buttons give a tap alternative.
+  const list = useRef<HTMLOListElement>(null);
+  const touch = useRef<{ id: number; prev: number[]; cur: number[]; pos: number } | null>(null);
   const { run } = useAction();
   // Reset the local order when the server sends a different list (adjusting state during render, not in an effect).
   const idsKey = ids.join(","); const [prevKey, setPrevKey] = useState(idsKey);
@@ -19,14 +23,35 @@ export function SortableBuild({ eventId, ids, labels, children }: { eventId: str
   // Optimistic: show the new order now, put the previous one back if the save fails (the action already toasts the error).
   const commit = (next: number[], prev: number[]) => { setOrder(next); void run(() => reorderBuild(eventId, next.map(i => ids[i]!)), { refresh: false }).then(r => { if (!r.ok) { setOrder(prev); setMsg("The new order wasn't saved."); } }); };
   const move = (pos: number, to: number) => { if (to < 0 || to >= order.length) return; const n = [...order]; const [x] = n.splice(pos, 1); n.splice(to, 0, x!); setMsg(`${labels[x!]} moved to position ${to + 1} of ${n.length}`); commit(n, order); };
-  return <><ol className="cb-list">{order.map((ix, pos) => <li key={ids[ix]} className={`cb-row ${drag === pos ? "dragging" : ""}`} draggable={armed === ix}
+  return <><ol className="cb-list" ref={list}>{order.map((ix, pos) => <li key={ids[ix]} data-pos={pos} className={`cb-row ${drag === pos ? "dragging" : ""}`} draggable={armed === ix}
     onDragStart={e => { if (armed !== ix) { e.preventDefault(); return; } before.current = order; dropped.current = false; setDrag(pos); e.dataTransfer.effectAllowed = "move"; }}
     onDragEnd={() => { setDrag(null); setArmed(null); if (!dropped.current && before.current) setOrder(before.current); before.current = null; }}
     onDragOver={e => { if (drag === null) return; e.preventDefault(); if (drag !== pos) { const n = [...order]; const [x] = n.splice(drag, 1); n.splice(pos, 0, x!); setOrder(n); setDrag(pos); } }}
     onDrop={e => { if (drag === null) return; e.preventDefault(); dropped.current = true; setDrag(null); const prev = before.current ?? order; if (prev.join(",") !== order.join(",")) commit(order, prev); }}>
+    <span className="cb-move">
+    <button type="button" className="cb-move-btn" aria-label={`Move ${labels[ix]} up`} disabled={pos === 0} onClick={() => move(pos, pos - 1)}><ChevronUp size={14} aria-hidden /></button>
     <button type="button" className="cb-grip" aria-label={`Reorder ${labels[ix]}. Use arrow keys to move.`} title="Drag to reorder — doesn't change bookings"
-      onPointerDown={() => setArmed(ix)} onPointerUp={() => { if (drag === null) setArmed(null); }}
+      onPointerDown={e => {
+        if (e.pointerType === "mouse") { setArmed(ix); return; }
+        e.preventDefault(); e.currentTarget.setPointerCapture?.(e.pointerId);
+        touch.current = { id: e.pointerId, prev: order, cur: order, pos }; setDrag(pos);
+      }}
+      onPointerMove={e => {
+        const t = touch.current; if (!t || t.id !== e.pointerId) return;
+        const li = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("li.cb-row");
+        if (!li || !list.current?.contains(li)) return;
+        const to = Number(li.dataset.pos); if (!Number.isInteger(to) || to === t.pos) return;
+        const n = [...t.cur]; const [x] = n.splice(t.pos, 1); n.splice(to, 0, x!); t.cur = n; t.pos = to; setOrder(n); setDrag(to);
+      }}
+      onPointerUp={e => {
+        const t = touch.current;
+        if (t && t.id === e.pointerId) { touch.current = null; setDrag(null); if (t.prev.join(",") !== t.cur.join(",")) { setMsg(`${labels[ix]} moved to position ${t.pos + 1} of ${t.cur.length}`); commit(t.cur, t.prev); } return; }
+        if (drag === null) setArmed(null);
+      }}
+      onPointerCancel={e => { const t = touch.current; if (t && t.id === e.pointerId) { touch.current = null; setDrag(null); setOrder(t.prev); } }}
       onKeyDown={e => { if (e.key === "ArrowUp") { e.preventDefault(); move(pos, pos - 1); } if (e.key === "ArrowDown") { e.preventDefault(); move(pos, pos + 1); } }}><GripVertical size={16} /></button>
+    <button type="button" className="cb-move-btn" aria-label={`Move ${labels[ix]} down`} disabled={pos === order.length - 1} onClick={() => move(pos, pos + 1)}><ChevronDown size={14} aria-hidden /></button>
+    </span>
     {rows[ix]}
   </li>)}</ol><p className="k-sr" aria-live="polite">{msg}</p></>;
 }

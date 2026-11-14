@@ -5,8 +5,7 @@ import { CalendarClock, CalendarDays, CheckSquare, ClipboardList, ChevronUp, Che
 import { getCustomer } from "@/lib/data/context";
 import { getMyEvent } from "@/lib/data/customer-events";
 import { CuEventHeader } from "@/components/customer/event-header";
-import { TaskCheck } from "@/components/organizer/event/controls";
-import { AddTaskBtn, AddDayItem, SharePlan } from "@/components/customer/plan-client";
+import { AddTaskBtn, AddDayItem, SharePlan, CustomerTaskCheck } from "@/components/customer/plan-client";
 import { Avatar } from "@/components/kit";
 import { EventDateChange } from "@/components/customer/event-date-change";
 
@@ -72,7 +71,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
           {tab !== "day" && <div className="cp-check" role="region" aria-label="Your checklist" tabIndex={0}><h3>Your checklist</h3><p className="k-small">Everything you need to do for a successful event.</p>
             <div className="k-between" style={{ margin: "10px 0" }}><div className="cp-filters">{([["all", "All", counts.all], ["todo", "To do", counts.todo], ["in_progress", "In progress", counts.in_progress], ["done", "Done", counts.done]] as const).map(([k, l, n]) => <Link key={k} href={`/account/events/${e.id}/plan?tab=${tab}&f=${k}`} aria-current={(filter === k) ? "page" : undefined}>{k === "todo" ? <Circle size={11} /> : k === "in_progress" ? <CheckCircle2 size={11} /> : k === "done" ? <CheckCircle2 size={11} /> : null}{l} ({n})</Link>)}</div><AddTaskBtn eventId={e.id} categories={cats.length ? cats : ["General"]} /></div>
             {cats.map(c => { const list = shown.filter(t => catName(t.category ?? "") === c); if (!list.length) return null; const [I, col] = CAT_ICON[c] ?? [ClipboardList, "#2563eb"]; return <div key={c} className="cp-cat"><div className="k-between"><span className="k-row" style={{ gap: 10 }}><span style={{ color: col }}><I size={16} /></span><b>{c}</b><span className="k-muted k-small">({tasks.filter(t => catName(t.category ?? "") === c && t.status === "done").length}/{tasks.filter(t => catName(t.category ?? "") === c).length})</span></span></div>
-              <ul>{list.map(t => <li key={t.id}><TaskCheck eventId={e.id} taskId={t.id} done={t.status === "done"} title={t.title} /><span className="k-grow">{t.title}</span>{stat(t)}<span className="cp-who"><Avatar src={t.assignee_name === "You" ? "/assets/gd/av-alex-customer.webp" : supplierAvatar(t.assignee_name)} name={t.assignee_name || "You"} size="sm" />{t.assignee_name || "You"}</span></li>)}</ul></div>; })}
+              <ul>{list.map(t => <li key={t.id}><CustomerTaskCheck eventId={e.id} taskId={t.id} done={t.status === "done"} title={t.title} /><span className="k-grow">{t.title}</span>{stat(t)}<span className="cp-who"><Avatar src={t.assignee_name === "You" ? "/assets/gd/av-alex-customer.webp" : supplierAvatar(t.assignee_name)} name={t.assignee_name || "You"} size="sm" />{t.assignee_name || "You"}</span></li>)}</ul></div>; })}
             {!shown.length && <p className="k-small">No tasks in this view.</p>}</div>}
           {tab === "day" && <DayPlan e={e} day={day ?? []} eventId={e.id} />}
         </div>

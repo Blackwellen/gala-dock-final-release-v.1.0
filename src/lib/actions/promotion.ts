@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import type { ActionResult } from "./shell";
 import type { Json } from "@/types/database";
+import { wallToIso } from "@/lib/events/wall-time";
 
 const Id = z.string().uuid();
 const Item = z.object({ channel: z.string().trim().min(2).max(60), title: z.string().trim().min(2).max(80), audience: z.string().max(60), scheduled_at: z.string(), cost: z.number().min(0).max(100000), est_reach: z.string().max(40), content: z.string().max(2000) });
@@ -24,7 +25,7 @@ export async function savePromotionPlan(input: unknown): Promise<ActionResult> {
   if (d.launch && !(d.consents.rights && d.consents.terms && d.consents.marketing && d.consents.broadcast && (!paid || d.consents.paid))) return { ok: false, error: "Please confirm every approval & compliance item before launching." };
   if (d.items.some(i => Number.isNaN(Date.parse(i.scheduled_at)))) return { ok: false, error: "Every action needs a date." };
   const high = (i: z.infer<typeof Item>) => i.cost >= 100 || /homepage|spotlight|broadcast/i.test(i.channel);
-  const rows = d.items.map(i => ({ event_id: o.e.id, channel: i.channel, title: i.title, audience: i.audience, scheduled_at: new Date(i.scheduled_at).toISOString(), cost: i.cost, est_reach: i.est_reach, content: i.content || d.copy, sponsored: i.cost > 0, status: !d.launch ? "draft" : high(i) ? "requires_approval" : "scheduled", metrics: {} as Json }));
+  const rows = d.items.map(i => ({ event_id: o.e.id, channel: i.channel, title: i.title, audience: i.audience, scheduled_at: wallToIso(i.scheduled_at)!, cost: i.cost, est_reach: i.est_reach, content: i.content || d.copy, sponsored: i.cost > 0, status: !d.launch ? "draft" : high(i) ? "requires_approval" : "scheduled", metrics: {} as Json }));
   const { error } = await o.ctx.supabase.from("promotions").insert(rows);
   if (error) return { ok: false, error: "Could not save the promotion plan." };
   if (d.launch) for (const r of rows.filter(r => r.status === "requires_approval")) await o.ctx.supabase.from("agent_approvals").insert({ workspace_id: o.ctx.workspace.id, event_id: o.e.id, title: `${r.channel}: ${r.title}`, detail: `Scheduled ${new Date(r.scheduled_at).toLocaleDateString("en-GB")} · reach ${r.est_reach}`, action: "promotion_launch", amount: r.cost || null, impact: r.audience || "Public visibility", status: "pending", payload: { channel: r.channel, event_id: o.e.id } as Json });

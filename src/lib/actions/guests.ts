@@ -43,12 +43,24 @@ export async function sendInvites(eventId: string, ids?: string[]): Promise<Acti
 export async function setGuestStatus(eventId: string, guestId: string, status: "confirmed" | "pending" | "declined" | "invited"): Promise<ActionResult> {
   const o = await own(eventId); if (!o) return { ok: false, error: "Event not found." };
   if (!["confirmed", "pending", "declined", "invited"].includes(status)) return { ok: false, error: "Invalid status." };
-  await o.ctx.supabase.from("guests").update({ status }).eq("id", guestId).eq("event_id", o.e.id);
+  const { error } = await o.ctx.supabase.from("guests").update({ status }).eq("id", guestId).eq("event_id", o.e.id);
+  if (error) return { ok: false, error: "Could not update the guest." };
   bump(o.e.id); return { ok: true };
+}
+/** Q47: bulk status change for the guest list's selected rows (the checkboxes used to do nothing). */
+export async function setGuestsStatus(eventId: string, guestIds: string[], status: "confirmed" | "pending" | "declined"): Promise<ActionResult> {
+  const o = await own(eventId); if (!o) return { ok: false, error: "Event not found." };
+  if (!["confirmed", "pending", "declined"].includes(status)) return { ok: false, error: "Invalid status." };
+  const ids = (Array.isArray(guestIds) ? guestIds : []).filter(i => typeof i === "string" && /^[0-9a-f-]{36}$/i.test(i)).slice(0, 1000);
+  if (!ids.length) return { ok: false, error: "Select at least one guest." };
+  const { data, error } = await o.ctx.supabase.from("guests").update({ status }).eq("event_id", o.e.id).in("id", ids).select("id");
+  if (error) return { ok: false, error: "Could not update the selected guests." };
+  bump(o.e.id); return { ok: true, message: `${data?.length ?? 0} guest${data?.length === 1 ? "" : "s"} marked ${status}.` };
 }
 export async function removeGuest(eventId: string, guestId: string): Promise<ActionResult> {
   const o = await own(eventId); if (!o) return { ok: false, error: "Event not found." };
-  await o.ctx.supabase.from("guests").delete().eq("id", guestId).eq("event_id", o.e.id);
+  const { error } = await o.ctx.supabase.from("guests").delete().eq("id", guestId).eq("event_id", o.e.id);
+  if (error) return { ok: false, error: "Could not remove the guest." };
   bump(o.e.id); return { ok: true, message: "Guest removed." };
 }
 const Tier = z.object({ name: z.string().trim().min(2).max(80), price: z.coerce.number().min(0).max(10000), quantity: z.coerce.number().int().min(1).max(100000), sale_end: z.string().optional() });

@@ -64,6 +64,11 @@ export async function processResaleRefunds(limit=10) {
      refund=(await refundMerchantCharge(deps,{account:o.connected_account_id as string,paymentIntent:session.payment_intent,amountMinor:amount,reason:"customer_cancelled",
       idempotencyKey:`resale-refund:${job.id}`,metadata:{order_ref:job.original_order_ref,resale_payout_id:job.id,resale:"ticket_resold"},
       split:{sellerAmountMinor:price,sellerFeeMinor:Math.max(0,appFee-bookingFee),customerFeeRefundMinor:0}})).refund;
+     // Q58: audit row for refunds_exceed_charge / reconciliation (same key as the Stripe request).
+     const rr=await db.from("payment_refunds").upsert({stripe_refund_id:refund.id,stripe_account_id:o.connected_account_id,payment_intent_id:session.payment_intent,source_type:"resale",source_ref:job.id,
+      amount_minor:refund.amount,refund_application_fee:true,fee_policy:"dec107",reason_code:"ticket_resold",idempotency_key:`resale-refund:${job.id}`,
+      status:["succeeded","failed","canceled"].includes(refund.status)?refund.status:"pending"},{onConflict:"idempotency_key"});
+     if(rr.error)throw new Error(`refund_row: ${rr.error.message}`);
     } else refund=await stripe<Refund>("refunds",{payment_intent:session.payment_intent,amount:String(amount),reason:"requested_by_customer","metadata[order_ref]":job.original_order_ref,"metadata[resale_payout_id]":job.id,"metadata[reason]":"ticket_resold"},{idempotencyKey:`resale-refund:${job.id}`});
    }
   }

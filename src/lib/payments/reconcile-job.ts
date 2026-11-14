@@ -2,6 +2,7 @@ import "server-only";
 import type { ServiceDb } from "@/lib/foundation";
 import { stripeClient, stripeLive } from "@/lib/stripe";
 import { getDirectPaymentStatus } from "./service";
+import { connectedMerchantStripe } from "./stripe-client";
 import { detectVariances, type InternalPayment, type StripeView } from "./reconcile-core";
 
 type Row = Record<string, unknown>;
@@ -26,7 +27,7 @@ export async function reconcileDirectCharges(db: ServiceDb, o: { days?: number }
   let checked = 0;
   const [{ data: pos }, { data: cos }, { data: invs }, { data: mos }] = await Promise.all([
     db.from("payment_orders").select("reference,strategy,status,payee_connected_account_id,stripe_checkout_session,stripe_payment_intent,amount_minor,customer_fee_minor,application_fee_minor,currency,refunded_minor").gte("updated_at", since).eq("livemode", live).neq("strategy", "platform"),
-    db.from("checkout_orders").select("order_ref,strategy,status,connected_account_id,stripe_session,stripe_payment_intent,amount,fee,application_fee_minor,currency").gte("updated_at", since).eq("livemode", live).gt("amount", 0),
+    db.from("checkout_orders").select("order_ref,strategy,status,connected_account_id,stripe_session,stripe_payment_intent,stripe_charge,amount,fee,application_fee_minor,currency").gte("updated_at", since).eq("livemode", live).gt("amount", 0),
     db.from("invoice_card_payments").select("id,status,connected_account_id,stripe_checkout_session,stripe_payment_intent,amount_minor,application_fee_minor,currency").gte("updated_at", since).eq("livemode", live),
     // Q40 merchandise: only orders that reached Stripe; an expired reservation that was charged is "paid" from Stripe's side.
     db.from("merch_orders").select("order_ref,strategy,status,refund_required,connected_account_id,stripe_checkout_session,stripe_payment_intent,total_minor,application_fee_minor,card_refunded_minor,currency").gte("updated_at", since).eq("livemode", live).not("stripe_checkout_session", "is", null),
@@ -44,6 +45,11 @@ export async function reconcileDirectCharges(db: ServiceDb, o: { days?: number }
       status: m.refund_required ? "paid" : String(m.status), account: (m.connected_account_id as string) ?? null, sessionId: (m.stripe_checkout_session as string) ?? null,
       paymentIntent: (m.stripe_payment_intent as string) ?? null, grossMinor: n(m.total_minor), applicationFeeMinor: m.application_fee_minor == null ? null : n(m.application_fee_minor), currency: String(m.currency ?? "GBP") })),
   ];
+  // Q58: ticket orders compare refund totals too — ours (cumulative per charge from charge.refunded, net of failed refunds) vs Stripe's.
+  const charges = ((cos ?? []) as Row[]).filter(c => c.strategy === "direct" && c.stripe_charge).map(c => String(c.stripe_charge));
+  const { data: totals } = charges.length ? await db.from("stripe_refund_totals").select("charge_id,amount_minor").in("charge_id", charges) : { data: [] };
+  const refundedByCharge = new Map(((totals ?? []) as Row[]).map(t => [String(t.charge_id), n(t.amount_minor)]));
+  const chargeOf = new Map(((cos ?? []) as Row[]).map(c => [String(c.order_ref), (c.stripe_charge as string) ?? null]));
   for (const p of internal) {
     if (p.strategy === "direct" && !p.sessionId) continue;   // never reached Stripe
     let view: StripeView = null;
@@ -51,6 +57,12 @@ export async function reconcileDirectCharges(db: ServiceDb, o: { days?: number }
       try {
         const s = await getDirectPaymentStatus(deps, p.account, p.sessionId);
         view = { found: true, account: p.account, paid: s.paid, amountMinor: s.amountMinor, currency: p.currency, applicationFeeMinor: s.applicationFeeMinor, paymentIntent: s.paymentIntent };
+        if (p.sourceType === "checkout_order" && s.paid && s.paymentIntent) {
+          // A failed charge read only skips the refund comparison; it must not turn into "paid without charge".
+          const c = await connectedMerchantStripe(client).charge(p.account, s.paymentIntent).catch(() => null);
+          const ch = chargeOf.get(p.ref);
+          if (c && ch === c.id) { view.amountRefundedMinor = Number(c.amount_refunded ?? 0); p.refundedMinor = refundedByCharge.get(ch) ?? 0; }
+        }
       } catch { view = { found: false, account: null, paid: false, amountMinor: 0, currency: p.currency, applicationFeeMinor: null, paymentIntent: null }; }
     }
     checked++;

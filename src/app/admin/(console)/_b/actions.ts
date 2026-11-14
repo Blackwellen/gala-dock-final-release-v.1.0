@@ -16,6 +16,11 @@ const extra: [RegExp, string][] = [
   [/invalid_subject/, "Enter a subject (at least 3 characters)."],
   [/body_required/, "Write a message first."],
   [/invalid_value/, "Those settings couldn’t be read — check the values and try again."],
+  // Q65 partner payouts
+  [/partner_payout_already_requested/, "A payout request for this partner is already open — process or cancel it first."],
+  [/partner_payout_exceeds_cleared/, "That is more than this partner’s cleared, unpaid statements. Earnings clear 14 days after the revenue."],
+  [/reference_required/, "Enter the payment reference (at least 3 characters)."],
+  [/invalid_state/, "This statement is already settled or on hold."],
 ];
 const friendly = (e: { message?: string } | null) => extra.find(([re]) => re.test(e?.message ?? ""))?.[1] ?? baseFriendly(e);
 async function rpc(fn: string, args: Record<string, unknown>, message: string, redirect?: string): Promise<ActionResult> {
@@ -114,6 +119,13 @@ export async function requestPartnerPayout(id: string, amount: number, reason: s
   if (!isUuid(id)) return bad();
   return rpc("admin_request_money", { p_kind: "partner_payout", p_transaction: null, p_partner: id, p_case: null, p_amount: amount, p_reason: reason },
     "Partner payout requested. It stays pending until Stripe Connect processes it — no money has moved.");
+}
+
+export async function markPartnerStatementPaid(data: FormData): Promise<ActionResult> {
+  const id = str(data, "statement_id"), reference = str(data, "reference"), reason = str(data, "reason");
+  if (!isUuid(id)) return bad();
+  if (reference.length < 3) return { ok: false, error: "Enter the payment reference (at least 3 characters)." };
+  return rpc("admin_partner_statement_paid", { p_statement: id, p_reference: reference, p_reason: reason }, "Statement marked paid — recorded in the ledger and audit log.");
 }
 
 // ── Agent & Integrations ──

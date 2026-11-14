@@ -16,7 +16,7 @@ export async function GET() {
   const db = untyped(supabase as never);
   const q = async (name: string, p: PromiseLike<{ data: unknown; error: unknown }>) => { const r = await p; return [name, r.error ? { error: "unavailable" } : r.data] as const; };
   const sections = await Promise.all([
-    q("profile", db.from("profiles").select("full_name,phone,country,language,bio,date_of_birth,home_area,interests,notifications,marketing_opt_in,created_at,deletion_requested_at").eq("id", user.id).maybeSingle()),
+    q("profile", db.from("profiles").select("full_name,phone,country,language,bio,date_of_birth,home_area,currency,interests,notifications,marketing_opt_in,marketing_opt_in_at,terms_version,terms_accepted_at,avatar_url,identity_verified,last_active_at,created_at,deletion_requested_at").eq("id", user.id).maybeSingle()),
     q("workspace_memberships", db.from("workspace_members").select("workspace_id,role,status,created_at,workspaces(name,kind)").eq("user_id", user.id)),
     q("events_owned", db.from("events").select("id,name,event_type,status,starts_at,ends_at,location,guest_count,budget_total,created_at").eq("owner_id", user.id)),
     q("tickets", db.from("tickets").select("code,status,order_ref,attendee_name,attendee_email,price_paid,created_at,events(name,starts_at)").eq("holder_id", user.id)),
@@ -32,6 +32,14 @@ export async function GET() {
     q("agent_runs", db.from("agent_runs").select("id,goal,status,summary,created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1000)),
     q("tasks", db.from("user_tasks").select("title,complete,created_at").eq("user_id", user.id)),
     q("privacy_requests", db.from("privacy_requests").select("reference,kind,status,received_at,due_at,completed_at,outcome").eq("user_id", user.id)),
+    // Q60: personal records that were missing from the download (all readable by the subject under RLS; secrets and hashes excluded).
+    q("following", db.from("follows").select("subject_kind,subject_key,alerts,created_at").eq("user_id", user.id)),
+    q("enquiries", db.from("enquiries").select("listing_key,event_date,details,status,created_at").eq("user_id", user.id)),
+    q("merch_orders", db.from("merch_orders").select("order_ref,status,total_minor,refunded_minor,currency,created_at,paid_at,collected_at").eq("buyer_id", user.id)),
+    q("support_cases", db.from("support_cases").select("reference,subject,category,status,outcome,created_at,resolved_at").eq("requester_id", user.id)),
+    q("form_responses", db.from("form_responses").select("form_id,event_id,answers,status,created_at").eq("user_id", user.id)),
+    q("waivers_signed", db.from("waiver_signatures").select("event_id,signer_name,signer_email,is_minor,guardian_name,signed_at,status").eq("user_id", user.id)),
+    q("private_uploads", db.from("verified_private_uploads").select("path,mime,size_bytes,verified_at").eq("owner_id", user.id)),
     q("sign_ins", db.rpc("my_sessions")),
     // Q32: records organisers hold about you (guest lists, care needs, registrations, passes, admissions, transfers), resale,
     // waiting rooms, account holds and security events: tables your own RLS-scoped client can't read.

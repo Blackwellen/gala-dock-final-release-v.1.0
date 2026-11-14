@@ -9,7 +9,7 @@ import { CAMERA, cameraAvailable, createFrameDecoder, runScanLoop } from "@/lib/
 // online-only tiers, zones) — the same path as the full-screen scanner, so manual check-in can't admit what the door refuses.
 const MSG: Record<string, string> = {
   admitted: "Admitted", readmitted: "Re-entry — admitted", duplicate: "Already checked in", invalid: "Ticket not valid for this event", wrong_event: "Ticket is for another event",
-  revoked: "Ticket cancelled", refunded: "Ticket refunded", transferred: "Ticket transferred — old ticket", resold: "Ticket resold — old ticket", resale_locked: "Listed for resale — not valid",
+  revoked: "Ticket cancelled", refunded: "Ticket refunded", transferred: "Ticket transferred — old ticket", resold: "Ticket resold — old ticket", resale_locked: "Listed for resale — not valid", on_hold: "Ticket on hold — see box office",
   wrong_session: "Wrong date or session", online_only_ticket: "Online-only ticket — no in-person entry", pass_not_valid_here: "Pass not valid for this event",
   wrong_zone: "Not valid for this zone", outside_window: "Zone not open now", reentry_denied: "Re-entry limit reached",
 };

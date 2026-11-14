@@ -9,6 +9,8 @@ import { ledgerForTicketPayment } from "@/lib/commerce/ticket-ledger";
 import { contextIsConsistent, routeEvent, verifyStripeSignature, webhookDedupeKey, type StripeEvent } from "@/lib/payments/webhook-core";
 import { isStaleAccountError, webhookModeDecision, webhookSecrets } from "@/lib/payments/stripe-mode";
 import { withObservability } from "@/lib/observability/http";
+import { cancelSupersededSubscription } from "@/lib/billing/service";
+import { supersededSubscription } from "@/lib/billing/core";
 
 type Obj = StripeEvent["data"]["object"];
 const str = (v: unknown) => (typeof v === "string" ? v : v && typeof v === "object" && "id" in v ? String((v as { id: unknown }).id) : "");
@@ -20,6 +22,9 @@ async function legacyRefund(db: Db, charge: Obj) {
   const { error } = await db.rpc("post_stripe_refund_delta", { p_charge: charge.id, p_total: refunded, p_currency: String(charge.currency ?? "gbp").toUpperCase(), p_order_ref: charge.metadata?.order_ref ?? null });
   if (error) throw new Error(`ledger: ${error.message}`);
 }
+
+/** finalise() outcomes that are a settled state for a paid session: refund queued/done, or an order this platform doesn't own. */
+const FINALISE_SETTLED = new Set(["hold_expired_refund_pending", "hold_expired_refunded", "order_not_found"]);
 
 const must = async (p: PromiseLike<{ error: { message: string } | null }>, what: string) => { const { error } = await p; if (error) throw new Error(`${what}: ${error.message}`); };
 
@@ -64,7 +69,12 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
     const ref = object.metadata?.order_ref, po = object.metadata?.payment_order, invoice = object.metadata?.invoice_id, merch = object.metadata?.merch_order;
     switch (routeEvent(event)) {
       case "checkout_completed":
-        if (ref) await finalise(ref);
+        if (ref) {
+          // Q58: a paid session whose order could not be issued (or refund-queued) must not be acknowledged as done — the buyer
+          // was charged. Throwing leaves the event claimable, so Stripe retries and the failure is visible in ops.
+          const r = await finalise(ref);
+          if (!r.ok && object.payment_status === "paid" && !FINALISE_SETTLED.has(r.error)) throw new Error(`ticket_order: ${r.error}`);
+        }
         // Q28 platform sales: credit packs add ledger credits once; a subscription checkout links the billing customer.
         if (!account && object.metadata?.purpose === "ai_credits" && object.payment_status === "paid")
           await must(db.rpc("billing_credit_pack_paid", { p_session: object, p_livemode: !!event.livemode }), "credit_pack");
@@ -76,9 +86,10 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
       case "checkout_expired":
         if (ref) {
           const { data: o } = await db.from("checkout_orders").select("token,status").eq("order_ref", ref).maybeSingle();
-          if (o?.status === "pending") { await db.rpc("release_checkout", { p_token: o.token }); await db.from("checkout_orders").update({ status: "expired" }).eq("order_ref", ref); }
+          // Q58: errors throw so Stripe retries (both writes are idempotent: releasing an empty hold and re-expiring are no-ops).
+          if (o?.status === "pending") { await must(db.rpc("release_checkout", { p_token: o.token }), "release_checkout"); await must(db.from("checkout_orders").update({ status: "expired" }).eq("order_ref", ref).eq("status", "pending"), "checkout_expired"); }
         }
-        if (po) await db.rpc("payment_order_failed", { p_ref: po, p_reason: "checkout_expired" });
+        if (po) await must(db.rpc("payment_order_failed", { p_ref: po, p_reason: "checkout_expired" }), "payment_order_failed");
         if (invoice) await db.from("invoice_card_payments").update({ status: "expired", updated_at: new Date().toISOString() }).eq("stripe_checkout_session", object.id).eq("status", "pending");
         break;
       case "payment_succeeded": {
@@ -94,16 +105,27 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         break;
       }
       case "payment_failed":
-        if (po) await db.rpc("payment_order_failed", { p_ref: po, p_reason: String((object.last_payment_error as { message?: string } | undefined)?.message ?? "declined") });
+        if (po) await must(db.rpc("payment_order_failed", { p_ref: po, p_reason: String((object.last_payment_error as { message?: string } | undefined)?.message ?? "declined") }), "payment_order_failed");
         break;
       case "charge_refunded": {
         // charge.refund.updated carries a Refund; charge.refunded carries the Charge with its cumulative total.
-        if (event.type !== "charge.refunded") break;
+        if (event.type !== "charge.refunded") {
+          // Q58: a refund Stripe accepted can fail later (closed card, bank return). Undo it once per refund id: order / cancellation /
+          // instruction back to a failed refund with a new attempt, seller memo reversed, staff alerted.
+          if (object.status === "failed") await must(db.rpc("stripe_refund_failed", { p_refund: object, p_account: account, p_livemode: !!event.livemode }), "refund_failed");
+          break;
+        }
         const pi = str(object.payment_intent);
         if (account) await must(db.rpc("post_direct_refund_delta", { p_charge: object.id, p_pi: pi, p_account: account, p_total: Number(object.amount_refunded ?? 0), p_currency: String(object.currency ?? "gbp").toUpperCase() }), "refund");
-        else await legacyRefund(db, object);
-        if (pi) await db.rpc("payment_order_refunded", { p_pi: pi, p_refunded_minor: Number(object.amount_refunded ?? 0) });
-        if (pi && account) await db.rpc("merch_order_card_refunded", { p_pi: pi, p_account: account, p_refunded_minor: Number(object.amount_refunded ?? 0) });
+        else {
+          // Q60: a refunded Gala Dock credit pack (platform own-sale) reverses the refunded share of its credits, once per refund total.
+          const { data: pack, error: packError } = await db.rpc("billing_credit_pack_refunded", { p_charge: object, p_livemode: !!event.livemode });
+          if (packError) throw new Error(`credit_pack_refund: ${packError.message}`);
+          if (!(pack as { credit_pack?: boolean } | null)?.credit_pack) await legacyRefund(db, object);
+        }
+        // Both take the cumulative total (greatest(...)), so a retry is a no-op; errors throw so Stripe retries (Q58).
+        if (pi) await must(db.rpc("payment_order_refunded", { p_pi: pi, p_refunded_minor: Number(object.amount_refunded ?? 0) }), "payment_order_refunded");
+        if (pi && account) await must(db.rpc("merch_order_card_refunded", { p_pi: pi, p_account: account, p_refunded_minor: Number(object.amount_refunded ?? 0) }), "merch_refunded");
         break;
       }
       case "account_updated": {
@@ -116,8 +138,10 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         break;
       }
       case "dispute":
-        await syncStripeDispute(object as unknown as StripeDispute, event.type, account);
-        if (object.payment_intent) await db.rpc("payment_order_disputed", { p_pi: str(object.payment_intent), p_open: !["won", "lost", "warning_closed"].includes(String(object.status)) });
+        {
+          const status = await syncStripeDispute(object as unknown as StripeDispute, event.type, account);
+          if (object.payment_intent) await must(db.rpc("payment_order_disputed", { p_pi: str(object.payment_intent), p_open: !["won", "lost", "warning_closed"].includes(status) }), "payment_order_dispute");
+        }
         break;
       case "external_account":
         if (account) await must(db.rpc("risk_payout_destination_changed", { p_account: account, p_event: event.type }), "risk");
@@ -133,8 +157,19 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
       case "subscription":
       {
         // A subscription that is not a Gala Dock plan (unknown workspace/price) is acknowledged, not retried forever.
+        // Q60: read the mirror first — a second live subscription for the same workspace (two Checkout tabs) replaces the mirror row,
+        // and the one it replaced would otherwise keep billing in Stripe with no way to see or cancel it in Gala Dock.
+        const wsId = object.metadata?.workspace_id;
+        const { data: before } = wsId ? await db.from("workspace_subscriptions").select("stripe_subscription_id,status").eq("workspace_id", wsId).maybeSingle() : { data: null };
         const { error } = await db.rpc("billing_apply_subscription", { p_sub: object, p_event_created: Number(event.created ?? 0), p_livemode: !!event.livemode });
-        if (error && !/^unknown_(workspace|price)/.test(error.message)) throw new Error(`subscription: ${error.message}`);
+        if (error && !/^(unknown_(workspace|price)|plan_kind_mismatch)/.test(error.message)) throw new Error(`subscription: ${error.message}`);
+        // A retry would not see the old subscription any more (the mirror already moved on), so a Stripe failure here is audited for
+        // ops instead of failing the event.
+        if (!error && wsId && supersededSubscription(before, object))
+          await cancelSupersededSubscription(wsId, String(before!.stripe_subscription_id), object.id).catch(async (e: unknown) => {
+            await db.from("audit_events").insert({ actor_type: "webhook", workspace_id: wsId, event: "billing.duplicate_subscription_failed",
+              metadata: { old: before!.stripe_subscription_id, new: object.id, error: e instanceof Error ? e.message.slice(0, 200) : "error" } });
+          });
       }
         break;
       case "invoice":

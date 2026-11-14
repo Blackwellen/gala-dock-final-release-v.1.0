@@ -58,7 +58,9 @@ const REVIEWED: Record<string, string> = {
   event_payment_readiness: "owner-approved public flag (Q07)", event_launch_state: "anon-allowlisted public launch state (Q20); state label only, no event fields",
   catering_price: "Q45-S04 (P3): prices any menu by id incl. drafts; numbers only, no names", venue_quote: "Q45-S04 (P3): prices any space by id incl. drafts; numbers only",
   // Structured refusals returned as data.
-  partner_attribute_signup: "refusal as data (unknown_code)", respond_to_invite: "refusal as data (unavailable)", virtual_issue_join_token: "refusal as data",
+  partner_attribute_signup: "refusal as data (unknown_code)",
+  partner_attribute_signup_at: "refusal as data (invalid_click / existing_account); otherwise delegates to partner_attribute_signup for the caller's own account (Q65, 202611146401)",
+  respond_to_invite: "refusal as data (unavailable)", virtual_issue_join_token: "refusal as data",
   virtual_join: "refusal as data (not_your_ticket)", virtual_redeem_join_token: "refusal as data (invalid_token)", virtual_replay_access: "refusal as data (not_available)",
 };
 

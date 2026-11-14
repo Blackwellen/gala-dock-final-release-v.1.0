@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const code = (data as { referral_code: string | null } | null)?.referral_code;
   if (!code) return new Response("Not found", { status: 404 });
   const url = new URL(request.url);
-  const target = new URL(`/?ref=${encodeURIComponent(code)}`, url.origin).toString();
+  const target = new URL(`/?ref=${encodeURIComponent(code)}&c=qr`, url.origin).toString();   // Q65: scans count under the QR channel
   const png = await QRCode.toBuffer(target, { type: "png", margin: 1, width: url.searchParams.get("download") ? 600 : 132, color: { dark: "#0d0e5f", light: "#ffffff" } });
   return new Response(new Uint8Array(png), { headers: {
     "Content-Type": "image/png", "Cache-Control": "private, max-age=300",

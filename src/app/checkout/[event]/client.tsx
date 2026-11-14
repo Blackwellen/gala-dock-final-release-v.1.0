@@ -3,7 +3,7 @@
 import { CustomerTermsTick } from "@/components/payments/payment-terms-tick";
 import Link from "next/link";
 import { GalaLogo } from "@/components/brand/gala-logo";
-import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CalendarDays, MapPin, Minus, Plus, Lock, ShieldCheck, Clock3, Ticket, Armchair, CircleAlert, CreditCard, RefreshCw, Check, Repeat, Gift, Tag, X } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -67,13 +67,20 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
   });
   const [terms, setTerms] = useState<string | null>(null);
   const [ticked, setTicked] = useState(false);
+  // A double tap fired two /api/checkout/session calls before React re-rendered the disabled button (the second expires the
+  // first order, and a slow network error left the button stuck on "Opening secure payment…"). One request at a time (Q47).
+  const payLock = useRef(false);
+  // Back from Stripe restores this page from the back/forward cache with the button still locked: unlock it.
+  useEffect(() => { const show = (e: PageTransitionEvent) => { if (e.persisted) { payLock.current = false; setPaying(false); } }; addEventListener("pageshow", show); return () => removeEventListener("pageshow", show); }, []);
   const pay = async () => {
-    setErr(null); setPaying(true);
-    if (terms && !ticked) { setPaying(false); setErr("Tick the box to accept the payment terms."); return; }
-    const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: event.id, ...(terms && ticked ? { acceptTerms: true, termsVersion: terms } : {}) }) });
-    const j = await res.json().catch(() => ({})) as { url?: string; error?: string; login?: boolean; expired?: boolean; queue?: boolean; termsRequired?: boolean; termsVersion?: string };
+    if (payLock.current) return;
+    setErr(null);
+    if (terms && !ticked) { setErr("Tick the box to accept the payment terms."); return; }
+    payLock.current = true; setPaying(true);
+    const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: event.id, ...(terms && ticked ? { acceptTerms: true, termsVersion: terms } : {}) }) }).catch(() => null);
+    const j = (res ? await res.json().catch(() => ({})) : { error: "Couldn’t reach Gala Dock. Check your connection and try again." }) as { url?: string; error?: string; login?: boolean; expired?: boolean; queue?: boolean; termsRequired?: boolean; termsVersion?: string };
     if (j.url) { window.location.assign(j.url); return; }
-    setPaying(false);
+    payLock.current = false; setPaying(false);
     // DEC-107 express term at the first payment (version, user, time); shown once, then recorded server-side.
     if (j.termsRequired && j.termsVersion) { setTerms(j.termsVersion); setTicked(false); setErr(null); return; }
     if (j.login) { router.push(`/login?next=${encodeURIComponent(`/checkout/${event.slug}`)}`); return; }

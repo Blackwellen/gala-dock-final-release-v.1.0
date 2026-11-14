@@ -4,14 +4,18 @@ import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { createWorkspaceInvite, revokeWorkspaceInvite } from "@/lib/workspace/invites";
+import { siteUrl } from "@/lib/site-url";
+import { memberRoleError, removeMemberError } from "@/lib/settings/rules";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const on = (fd: FormData, k: string) => fd.get(k) === "on";
 
 async function save(p: Record<string, unknown>, message: string): Promise<ActionResult> {
-  const { db, workspace } = await getProvider();
+  const { db, workspace, role } = await getProvider();
+  // provider_save_settings is owner-only; say so plainly instead of the generic permission error after a manager fills a form.
+  if (role !== "owner") return { ok: false, error: "Only the workspace owner can change workspace settings." };
   const { error } = await db.rpc("provider_save_settings", { p_ws: workspace.id, p });
-  if (error) return { ok: false, error: friendly(error) };
+  if (error) return { ok: false, error: /invalid_response_window/.test(error.message) ? "Choose a response time from the list." : friendly(error) };
   revalidatePath("/provider", "layout");
   return { ok: true, message };
 }
@@ -56,7 +60,7 @@ export async function inviteMember(fd: FormData): Promise<ActionResult> {
   const created = await createWorkspaceInvite(db, workspace.id, email, r);
   if (!created.ok) return { ok: false, error: created.error };
   revalidatePath("/provider/settings");
-  return { ok: true, message: `Invitation created — share this link with ${email}: /invite/${created.token}` };
+  return { ok: true, message: `Invitation created — share this link with ${email}: ${siteUrl()}/invite/${created.token}` };
 }
 
 /** Owner changes a login member's role (set_member_role: owner only, owner role locked, audited). */
@@ -66,7 +70,7 @@ export async function changeMemberRole(userId: string, fd: FormData): Promise<Ac
   const r = t(fd, "role", 20);
   if (!/^[0-9a-f-]{36}$/i.test(userId) || !["manager", "member", "finance"].includes(r)) return { ok: false, error: "Choose a role." };
   const { error } = await db.rpc("set_member_role", { p_ws: workspace.id, p_user: userId, p_role: r });
-  if (error) return { ok: false, error: error.message.includes("owner_locked") ? "The owner’s role can’t be changed." : friendly(error) };
+  if (error) return { ok: false, error: memberRoleError(error.message) };
   revalidatePath("/provider/settings");
   return { ok: true, message: "Role updated" };
 }
@@ -79,4 +83,15 @@ export async function revokeInvite(id: string): Promise<ActionResult> {
   if (!revoked.ok) return { ok: false, error: revoked.error };
   revalidatePath("/provider/settings");
   return { ok: true, message: "Invitation revoked" };
+}
+
+/** Owner removes (or, with restore, reinstates) a login member (revoke_workspace_member: owner only, the owner can't be removed, audited). History is kept. */
+export async function removeMember(userId: string, restore = false): Promise<ActionResult> {
+  const { db, workspace, role, userId: me } = await getProvider();
+  if (role !== "owner") return { ok: false, error: "Only the workspace owner can remove members." };
+  if (!/^[0-9a-f-]{36}$/i.test(userId) || userId === me) return { ok: false, error: "Member not found." };
+  const { error } = await db.rpc("revoke_workspace_member", { p_ws: workspace.id, p_user: userId, p_status: restore ? "active" : "revoked", p_reason: restore ? "Restored in Settings" : "Removed in Settings" });
+  if (error) return { ok: false, error: removeMemberError(error.message) };
+  revalidatePath("/provider/settings");
+  return { ok: true, message: restore ? "Access restored" : "Member removed. Their past activity stays in the audit log." };
 }

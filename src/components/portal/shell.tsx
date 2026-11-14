@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GalaLogo } from "@/components/brand/gala-logo";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { ChevronDown, MessageSquareText, Bell, CircleHelp, LogOut, Plus, type LucideIcon } from "lucide-react";
 import "@/styles/portal-shell.css";
 import { PortalSearch, NavToggle } from "./client";
@@ -14,7 +14,7 @@ export function PortalAvatar({ src, name, size = 40 }: { src?: string | null; na
   const letters = name.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]!.toUpperCase()).join("");
   // eslint-disable-next-line @next/next/no-img-element
   return src ? <img className="pt-avatar" src={src} alt="" width={size} height={size} style={{ width: size, height: size }} />
-    : <span className="pt-avatar initials" style={{ width: size, height: size, fontSize: size * 0.36 }} aria-hidden="true">{letters}</span>;
+    : <span className="pt-avatar initials" style={{ width: size, height: size, "--pt-av": `${size}px` } as CSSProperties} aria-hidden="true">{letters}</span>;
 }
 
 export function PortalShell({ portal, context, nav, user, links, searchPlaceholder, sideFooter, create, children }: {

@@ -48,7 +48,7 @@ export default async function SalesPage({ searchParams }: PageProps<"/organizer/
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales" }]} />
     <div className="k-page-head" style={{ marginTop: -6 }}>
-      <div><h1 style={{ fontSize: 30 }}>Sales</h1><p className="sub" style={{ fontSize: 14.5 }}>Manage event leads and proposals from first enquiry to confirmed event.</p></div>
+      <div><h1>Sales</h1><p className="sub">Manage event leads and proposals from first enquiry to confirmed event.</p></div>
       <div className="k-row k-wrap" style={{ gap: 10 }}>
         <div className="k-seg">{[[30, "30 days"], [90, "90 days"], [365, "12 months"]].map(([d, l]) => <Link key={d} href={qs({ range: String(d) })} aria-current={(days === d) ? "page" : undefined} aria-label={`Last ${l}`}>{d === 30 && <CalendarRange size={14} aria-hidden />}{l}</Link>)}</div>
         <form className="k-input-icon" role="search" action="/organizer/sales"><Search size={15} /><input className="k-input" name="q" defaultValue={q} placeholder="Search leads, clients, or events..." style={{ width: 240, height: 40 }} aria-label="Search sales" />{tab === "proposals" && <input type="hidden" name="tab" value="proposals" />}</form>
@@ -85,7 +85,9 @@ export default async function SalesPage({ searchParams }: PageProps<"/organizer/
 }
 
 function ProposalsRegister({ proposals, clients, sp }: { proposals: { id: string; number: string; client_name: string; title: string; version: number; total: number; valid_until: string | null; status: string; deposit_status: string; signature_status: string; events: unknown }[]; clients: string[]; sp: Record<string, string> }) {
-  if (!proposals.length) return <Empty icon={FileText} title="No proposals match" action={<Link className="k-btn primary" href="/organizer/proposals/new?step=1"><Plus size={15} />Create proposal</Link>} />;
+  // Q48: an empty filtered result keeps the filter form (and a way to clear it); only a truly empty register shows the bare empty state.
+  const filtered = !!(sp.q || sp.pstatus || sp.client);
+  if (!proposals.length && !filtered) return <Empty icon={FileText} title="No proposals yet" action={<Link className="k-btn primary" href="/organizer/proposals/new?step=1"><Plus size={15} />Create proposal</Link>} />;
   return <>
     <form className="k-row k-wrap" style={{ gap: 8, marginBottom: 10 }} action="/organizer/sales"><input type="hidden" name="tab" value="proposals" /><div className="k-input-icon"><Search size={14} /><input className="k-input" name="q" placeholder="Search proposals..." defaultValue={sp.q ?? ""} style={{ width: 200 }} /></div>
       <select aria-label="Proposal status" className="k-select" name="pstatus" defaultValue={sp.pstatus ?? ""} style={{ width: 130 }}><option value="">All statuses</option>{Object.keys(PSTAT).map(s => <option key={s} value={s}>{PSTAT[s]![1]}</option>)}</select>
@@ -93,7 +95,7 @@ function ProposalsRegister({ proposals, clients, sp }: { proposals: { id: string
       <button className="k-btn ghost"><Filter size={14} />Apply</button><a className="k-btn ghost" href="/api/export/proposals" download><Download size={14} />Export</a><Link className="k-btn primary" href="/organizer/proposals/new?step=1" style={{ marginLeft: "auto" }}><Plus size={14} />Create proposal</Link></form>
     <div className="k-table-wrap"><table className="k-table"><thead><tr><th>Proposal</th><th>Client</th><th>Event concept</th><th>Version</th><th className="num">Value</th><th>Expiry date</th><th>Status</th><th>Deposit / Signature</th><th>Linked event</th></tr></thead>
       <tbody>{proposals.map(p => { const [tone, label] = PSTAT[p.status] ?? ["gray", p.status]; const ev = p.events as { id: string; name: string } | null; const dep = p.deposit_status === "paid" ? ["green", "Deposit paid"] : p.signature_status === "awaiting" || (p.status === "sent" && p.signature_status !== "signed") ? ["amber", "Awaiting signature"] : p.status === "viewed" ? ["red", "Awaiting deposit"] : ["gray", "—"];
-        return <tr key={p.id}><td><Link className="k-link" href={`/organizer/sales/proposals/${p.id}`}>{p.number}</Link></td><td>{p.client_name}</td><td style={{ color: "var(--k-ink)" }}>{p.title}</td><td>v{p.version}</td><td className="num">{money(p.total)}</td><td>{p.valid_until ? dateShort(`${p.valid_until}T12:00:00Z`) : "—"}</td><td><Chip tone={tone}>{label}</Chip></td><td>{dep[1] === "—" ? "—" : <Chip tone={dep[0] as "green"} icon={dep[0] === "green" ? CheckCircle2 : AlertCircle}>{dep[1]}</Chip>}</td><td>{ev ? <Link className="k-link" href={`/organizer/events/${ev.id}`}>{ev.name}</Link> : "—"}</td></tr>; })}</tbody></table></div>
+        return <tr key={p.id}><td><Link className="k-link" href={`/organizer/sales/proposals/${p.id}`}>{p.number}</Link></td><td>{p.client_name}</td><td style={{ color: "var(--k-ink)" }}>{p.title}</td><td>v{p.version}</td><td className="num">{money(p.total)}</td><td>{p.valid_until ? dateShort(`${p.valid_until}T12:00:00Z`) : "—"}</td><td><Chip tone={tone}>{label}</Chip></td><td>{dep[1] === "—" ? "—" : <Chip tone={dep[0] as "green"} icon={dep[0] === "green" ? CheckCircle2 : AlertCircle}>{dep[1]}</Chip>}</td><td>{ev ? <Link className="k-link" href={`/organizer/events/${ev.id}`}>{ev.name}</Link> : "—"}</td></tr>; })}{!proposals.length && <tr><td colSpan={9}><Empty icon={FileText} title="No proposals match these filters" action={<Link className="k-btn outline" href="/organizer/sales?tab=proposals">Clear filters</Link>} /></td></tr>}</tbody></table></div>
   </>;
 }
 export { relative as _rel };

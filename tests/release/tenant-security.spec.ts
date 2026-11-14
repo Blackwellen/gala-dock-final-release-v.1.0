@@ -28,6 +28,8 @@ const ANON_DEFINER_ALLOWLIST = new Set([
   "release_seat_holds", "reliability_band", "resale_holds_for", "resale_listings", "ticket_fee_config",
   // Q07: public "can this event take payments" flag shown on public event pages; owner-approved 2026-10-28.
   "event_payment_readiness",
+  // Q46 (202611146101): boolean "is this ISO country a supported Stripe Connect seller country" — public list (help/pricing), no data exposure.
+  "connect_country_supported",
   // Q27: partner referral click counter for signed-out visitors (mirrors promoter_track_click; rate-limited, visitor hash only); approved 2026-10-29 under owner delegation.
   "partner_track_click",
   // Playbook lane 2026-11-11 (reviewed): consumer-law non-trader flag for an event/listing (boolean only, migration 202611116008) and the
@@ -45,7 +47,7 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   // Q23 ad serving/integrity and Q28 billing/profitability workers (owner-approved 2026-10-28)
   "serve_ad_slots", "record_ad_view", "record_ad_click", "ad_candidates", "ad_viewer_key", "ad_settle_boosts", "ad_impression_goal",
   "billing_apply_subscription", "billing_record_invoice", "billing_credit_pack_paid", "billing_link_customer", "billing_overage_due",
-  "billing_mark_overage_invoiced", "workspace_has_paid_subscription", "job_billing_sweep", "job_ai_profitability_alert",
+  "billing_mark_overage_invoiced", "workspace_has_paid_subscription", "job_billing_sweep", "job_ai_profitability_alert", "ai_credit_balance", "billing_credit_pack_refunded",   // Q60 (202611146501)
   // Q04 files / Q05 communications / Q06 search workers (lane A, 2026-10-28)
   "file_access_decision", "file_register", "file_record_verdict", "file_quarantine", "file_mark_deleted", "job_files_retention_sweep", "job_files_meter_snapshot",
   "notify", "email_record_event", "marketing_subscribe", "marketing_confirm", "marketing_unsubscribe", "contact_submit",
@@ -94,7 +96,7 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   "trg_promoter_sale_snapshot", "trg_promoter_sale_accrued", "trg_promoter_refund_reversal", "trg_promoter_dispute_reversal", "trg_promoter_sale_lock",
   "trg_promoter_payout_conserved", "trg_partner_workspace_referral", "trg_partner_earning_snapshot", "trg_partner_earning_ledger", "trg_partner_invoice",
   "promoter_post_memo", "promoter_reverse_order", "partner_link_referral", "partner_post_memo", "partner_statement_recompute", "partner_qualify_invoice",
-  "partner_reverse_earning", "partner_build_statements",
+  "partner_reverse_earning", "partner_build_statements", "partner_clear_due_earnings", "job_partner_clear_earnings",
   // Q24–Q26 sponsors/talent/riders, logistics, licensing/safety/weather internals, triggers and workers (lane C, 2026-10-29)
   "ops_event_require", "ops_touch", "exhibitor_booths_guard", "talent_riders_immutable", "map_element_exists", "event_space_ok", "event_ops_checks",
   "event_ops_checks_partners", "event_ops_checks_logistics", "event_ops_checks_compliance", "event_compliance_facts", "compliance_rule_applies",

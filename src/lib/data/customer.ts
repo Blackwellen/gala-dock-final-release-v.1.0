@@ -1,5 +1,6 @@
 import "server-only";
 import type { CustomerCtx } from "./context";
+import { dateWindow } from "@/lib/events/date-window";
 
 export type PublicEvent = { id: string; name: string; slug: string | null; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; city: string; cover_image: string; event_type: string; tags: string[]; settings: Record<string, unknown>; minPrice: number | null; remaining: number; capacity: number; lat?: number; lng?: number };
 const CITY: Record<string, [number, number]> = { london: [51.507, -0.12], manchester: [53.48, -2.24], birmingham: [52.49, -1.89], surrey: [51.31, -0.56] };
@@ -10,11 +11,9 @@ export async function publicEvents(ctx: CustomerCtx, opts: { q?: string; cat?: s
   let q = ctx.supabase.from("events_public").select("id,name,slug,starts_at,ends_at,venue_name,location,city,cover_image,event_type,tags,settings").eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("ends_at", new Date().toISOString()).order("starts_at");
   if (opts.q) { const t = opts.q.replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,venue_name.ilike.%${t}%,location.ilike.%${t}%,description.ilike.%${t}%`); }
   if (opts.city) q = q.ilike("location", `%${opts.city}%`);
-  if (opts.date && (DATE_FILTERS as readonly string[]).includes(opts.date)) {
-    const now = new Date(); const end = new Date(now);
-    if (opts.date === "tonight") end.setHours(23, 59, 59); else if (opts.date === "weekend") { const d = (7 - now.getDay()) % 7; end.setDate(now.getDate() + d); end.setHours(23, 59, 59); } else end.setDate(now.getDate() + (opts.date === "week" ? 7 : 31));
-    q = q.lte("starts_at", end.toISOString());
-  }
+  // Q47: UK-time windows (the server is UTC); "weekend" is Friday 17:00 → Sunday night, not "now → Sunday".
+  const win = opts.date && (DATE_FILTERS as readonly string[]).includes(opts.date) ? dateWindow(opts.date) : null;
+  if (win) { q = q.lte("starts_at", win.to.toISOString()); if (win.from) q = q.gte("ends_at", win.from.toISOString()); }
   const { data } = await q.limit(opts.limit ?? 60);
   let rows = (data ?? []) as unknown as PublicEvent[];
   if (opts.cat) { const c = opts.cat.toLowerCase(); rows = rows.filter(e => e.event_type.toLowerCase().includes(c) || e.tags.some(t => t.toLowerCase().includes(c))); }

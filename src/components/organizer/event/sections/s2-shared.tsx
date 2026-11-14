@@ -1,14 +1,13 @@
 "use client";
 import { useState } from "react";
 import { Dialog, useAction } from "@/components/kit/client";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 /** Shared client helpers for the S2 event sections (access, registration, inventory, online). */
-export const toIso = (local: string) => (local ? new Date(local).toISOString() : null);
-export const toLocal = (iso?: string | null) => {
-  if (!iso) return "";
-  const d = new Date(iso); const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-};
+// Q48: datetime-local inputs edit Europe/London wall time on every organiser form (lib/events/wall-time), matching how times are
+// displayed — browser-local conversion disagreed with the London summaries outside the UK and mismatched on hydration in BST.
+export const toIso = (local: string) => wallToIso(local);
+export const toLocal = (iso?: string | null) => isoToWall(iso);
 export const intOrNull = (v: string) => (v.trim() === "" ? null : Math.max(0, Math.floor(Number(v))) || null);
 
 /** Button that runs an action, optionally after a confirm dialog with a reason. */

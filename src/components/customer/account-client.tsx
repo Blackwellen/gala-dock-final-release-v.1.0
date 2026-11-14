@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { SavedCard } from "@/lib/payments";
 import { BrandLogo } from "@/components/kit/brand-logo";
 import { confirmDialog } from "@/lib/ui/dialogs";
+import { DELETION_GRACE_DAYS } from "@/lib/settings/rules";
 
 /** Small inline flag (emoji flags don't render on Windows). */
 function Flag({ cc }: { cc: string }) {
@@ -152,7 +153,8 @@ export function IdentityList({ identities }: { identities: { id: string; provide
 const ICON: Record<string, typeof Ticket> = { event_updates: CalendarCheck, tickets: Ticket, messages: MessageSquare, marketing: Megaphone, quotes: FileText, reminders: Clock4 };
 export function NotificationPrefs({ prefs, rows, editable }: { prefs: Record<string, boolean>; rows: { key: string; title: string; desc: string }[]; editable?: boolean }) {
   const [v, setV] = useState(prefs); const { run } = useAction();
-  const flip = (k: string, val: boolean) => { const next = { ...v, [k]: val }; setV(next); void run(() => saveNotifications(next), { refresh: false }); };
+  // Optimistic toggle, rolled back if the save fails (the switch used to stay on while the error toast said it wasn't saved — Q47).
+  const flip = (k: string, val: boolean) => { const next = { ...v, [k]: val }; setV(next); void run(() => saveNotifications(next), { refresh: false }).then(r => { if (!r.ok) setV(p => ({ ...p, [k]: !val })); }); };
   return <section className="ce-card ac-card">
     <div className="k-between" style={{ alignItems: "flex-start" }}><div><h2>Notification preferences</h2><p className="ac-hint">Choose what you want to be notified about.</p></div>{!editable && <Link className="k-btn outline ac-edit" href="/account?tab=notifications">Edit</Link>}</div>
     <ul className="ac-notifs">{rows.map(r => { const I = ICON[r.key] ?? CalendarCheck; return <li key={r.key}><span className="ac-nico"><I size={18} /></span><span className="k-grow"><b>{r.title}</b><small>{r.desc}</small></span><Toggle checked={!!v[r.key]} onChange={val => flip(r.key, val)} label={r.title} /></li>; })}</ul>
@@ -175,10 +177,10 @@ export function PasswordCard() {
 
 export function DeletionCard({ scheduled, inline }: { scheduled: boolean; inline?: boolean }) {
   const [open, setOpen] = useState(false); const [txt, setTxt] = useState(""); const { run, pending } = useAction();
-  if (inline) return <button className="k-link" onClick={() => void run(() => accountDeletion(true, ""))}>Cancel deletion</button>;
-  return <section className="ce-card ac-card ac-danger"><h2>Delete account</h2><p className="ac-hint">{scheduled ? "Deletion is scheduled. You can cancel any time in the next 30 days." : "Your account and personal data are erased after a 30-day grace period. Bookings with providers and tickets for upcoming events are cancelled under their terms."}</p>
+  if (inline) return <button className="k-link" disabled={pending} onClick={() => void run(() => accountDeletion(true, ""))}>Cancel deletion</button>;
+  return <section id="delete" className="ce-card ac-card ac-danger"><h2>Delete account</h2><p className="ac-hint">{scheduled ? `Deletion is scheduled. You can cancel any time in the next ${DELETION_GRACE_DAYS} days.` : `Your account and personal data are erased after a ${DELETION_GRACE_DAYS}-day grace period. Records we must keep by law (payments, invoices, tax) are kept without your name. If you own a workspace with other members, have an open dispute or hold tickets for upcoming events, sort those out first.`}</p>
     {scheduled ? <button className="k-btn outline" disabled={pending} onClick={() => void run(() => accountDeletion(true, ""))}>Cancel deletion</button> : <button className="k-btn danger" onClick={() => setOpen(true)}><Trash2 size={15} />Delete account</button>}
-    <Dialog open={open} onClose={() => setOpen(false)} title="Delete your account?" sub="Type DELETE to confirm. You'll have 30 days to change your mind.">
+    <Dialog open={open} onClose={() => setOpen(false)} title="Delete your account?" sub={`Type DELETE to confirm. You'll have ${DELETION_GRACE_DAYS} days to change your mind.`}>
       <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); const r = await run(() => accountDeletion(false, txt)); if (r.ok) setOpen(false); }}><input className="k-input" value={txt} onChange={e => setTxt(e.target.value)} aria-label="Type DELETE to confirm" autoComplete="off" />
         <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Keep my account</button><button className="k-btn danger" disabled={pending || txt.trim().toUpperCase() !== "DELETE"}>Schedule deletion</button></div></form>
     </Dialog></section>;

@@ -9,6 +9,7 @@ import { archiveEvent, cancelEvent } from "@/lib/actions/events";
 import { createGuestLink } from "@/lib/actions/event-guest-links";
 import { useDuplicateDialog } from "./duplicate-dialog";
 import { eventStatusOptions, type StatusOptions } from "@/lib/actions/event-lifecycle";
+import { isoToWall } from "@/lib/events/wall-time";
 
 const LABEL: Record<string, string> = { draft: "Draft", planning: "Planning", ready: "Ready", published: "Published", on_sale: "On sale", live: "Live", completed: "Completed", closed: "Closed", archived: "Archived", cancelled: "Cancelled", postponed: "Postponed", suspended: "Suspended" };
 type Blocker = { key: string; label: string; fix?: string };
@@ -60,7 +61,7 @@ export function StatusMenu({ id, status }: { id: string; status: string }) {
 }
 
 export function HeroActions({ id, name, slug, isPublic }: { id: string; name: string; slug: string | null; isPublic: boolean }) {
-  const toast = useKitToast(); const { run, pending } = useAction(); const dup = useDuplicateDialog();
+  const toast = useKitToast(); const { run, pending } = useAction(); const dup = useDuplicateDialog(); const [archive, setArchive] = useState(false);
   const url = slug ? `${typeof window === "undefined" ? "" : window.location.origin}/events/${slug}` : "";
   return <div className="k-row" style={{ gap: 8 }}>
     {isPublic && slug ? <Link href={`/events/${slug}`} target="_blank" className="k-btn ghost"><ExternalLink size={15} />View public page</Link> : <span className="k-btn ghost" title="Publish the event to enable its public page" aria-disabled style={{ opacity: .75 }}><ExternalLink size={15} />Page not published</span>}
@@ -71,14 +72,18 @@ export function HeroActions({ id, name, slug, isPublic }: { id: string; name: st
     <Menu label={`More actions for ${name}`} width={220} trigger={({ toggle, open, id: mid }) => <button className="k-icon-btn" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="More actions"><MoreHorizontal size={17} /></button>}>
       {close => <><button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); dup.open({ id, name }); }}><Copy size={15} />Duplicate event</button>
         <Link role="menuitem" className="k-menu-item" href={`/organizer/events/${id}/template?step=1`} onClick={close}><LayoutTemplate size={15} />Save as template</Link>
-        <div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" disabled={pending} onClick={() => { close(); void run(() => archiveEvent(id)); }}><Archive size={15} />Archive event</button></>}
+        <div className="k-menu-sep" /><button role="menuitem" className="k-menu-item k-red" disabled={pending} onClick={() => { close(); setArchive(true); }}><Archive size={15} />Archive event</button></>}
     </Menu>
     {dup.dialog}
+    {/* Q48: archiving from the event header asked for no confirmation (the events list does); one stray click hid the event. */}
+    <Dialog open={archive} onClose={() => setArchive(false)} title={`Archive ${name}?`} sub="Archived events leave your events lists. Financial records, tickets and bookings are kept."
+      footer={<><button className="k-btn ghost" onClick={() => setArchive(false)}>Cancel</button><button className="k-btn danger" disabled={pending} onClick={async () => { const r = await run(() => archiveEvent(id)); if (r.ok) setArchive(false); }}>Archive event</button></>}><span /></Dialog>
   </div>;
 }
 
 type Basic = { name: string; description: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; capacity: number | null; client_name: string; tags: string[] };
-const local = (iso: string | null) => { if (!iso) return ""; const d = new Date(iso); const off = d.getTimezoneOffset(); return new Date(d.getTime() - off * 6e4).toISOString().slice(0, 16); };
+// datetime-local defaults are London wall time (the server reads them back the same way, Q48), whatever the browser zone.
+const local = (iso: string | null) => isoToWall(iso);
 export function TabActions({ id, name, status, basics }: { id: string; name: string; status: string; basics: Basic }) {
   const { run, pending } = useAction(); const [edit, setEdit] = useState(false); const [close, setClose] = useState(false); const dup = useDuplicateDialog();
   return <div className="k-row eh-tabactions" style={{ gap: 8 }}>

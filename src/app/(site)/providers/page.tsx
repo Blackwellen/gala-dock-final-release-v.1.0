@@ -1,5 +1,7 @@
 import { ArrowRight, BadgeCheck, CalendarCheck, Clock3, ShieldCheck, Star, Wallet, XCircle } from "lucide-react";
+import Link from "next/link";
 import { HREF, pageMetadata } from "@/lib/public/site";
+import { CONNECT_COPY } from "@/lib/payments/connect-countries";
 import { siteUrl } from "@/lib/site-url";
 import { TLink } from "@/components/site/tracked-link";
 import { Eyebrow, JsonLd, SectionHead } from "@/components/site/ui";
@@ -86,7 +88,7 @@ export default function ProvidersPage() {
             <TLink href="/pricing#providers" surface={S} variant="rel_pricing" className="gp-btn gp-btn--ghost">Provider pricing</TLink>
           </div>
           <ul className="gpp-trust">
-            <li><Wallet size={17} aria-hidden="true" />Customers pay into your own Stripe account</li>
+            <li><Wallet size={17} aria-hidden="true" />Customers pay into your own Stripe account (<Link href={CONNECT_COPY.helpPath}>where you can get paid</Link>)</li>
             <li><BadgeCheck size={17} aria-hidden="true" />Listings are reviewed before they appear</li>
             <li><ShieldCheck size={17} aria-hidden="true" />Only completed bookings can be reviewed</li>
           </ul>

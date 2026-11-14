@@ -9,19 +9,24 @@ import { removeFromBuild, requestQuote, setItemHidden, setItemRole } from "@/lib
 import { requestBuildHold } from "@/lib/actions/build-engine";
 import { EventDateDialog } from "./event-date-change";
 import { useMyDuplicateDialog } from "./duplicate-dialog";
-import { createGuestLink } from "@/lib/actions/event-guest-links";
+import { useCancelEventDialog } from "./events-client";
+import { shareGuestLink } from "@/lib/actions/event-guest-links";
 
-export function HeaderMenu({ id, name }: { id: string; name: string }) {
+export function HeaderMenu({ id, name, status }: { id: string; name: string; status?: string }) {
   const { run, pending } = useAction(); const toast = useKitToast(); const [dateOpen, setDateOpen] = useState(false);
-  const dup = useMyDuplicateDialog();
+  const dup = useMyDuplicateDialog(); const cancelDlg = useCancelEventDialog({ id, name });
   return <>
-    <button className="k-btn primary ce-btn" disabled={pending} onClick={async () => { const r = await run(() => createGuestLink(id), { refresh: false }); const path = (r as { data?: { path: string } }).data?.path; if (!r.ok || !path) return; const url = `${location.origin}${path}`; try { if (navigator.share) await navigator.share({ title: name, url }); else { await navigator.clipboard.writeText(url); toast("Private guest link copied — it expires and you can revoke it"); } } catch { /* cancelled */ } }}>Share Event <ExternalLink size={15} /></button>
+    <button className="k-btn primary ce-btn" disabled={pending} onClick={async () => { const key = `gd-share:${id}`; let prev: string | null = null; try { prev = localStorage.getItem(key); } catch {} const r = await run(() => shareGuestLink(id, prev), { refresh: false }); const path = (r as { data?: { path: string } }).data?.path; if (!r.ok || !path) return; try { localStorage.setItem(key, path.replace("/guest/", "")); } catch {} const url = `${location.origin}${path}`; try { if (navigator.share) await navigator.share({ title: name, url }); else { await navigator.clipboard.writeText(url); toast("Private guest link copied — it expires and you can revoke it"); } }
+      // After the server round-trip Safari has dropped the click's user activation, so share/clipboard throw NotAllowedError and the
+      // button looked dead. Only a real cancel (AbortError) stays silent; otherwise show the link so it can be copied by hand.
+      catch (err) { if ((err as { name?: string })?.name !== "AbortError") toast(`Your private guest link: ${url}`); } }}>Share Event <ExternalLink size={15} /></button>
     <Menu label="More" width={220} trigger={({ toggle, open, id: mid }) => <button className="k-icon-btn ce-more" onClick={toggle} aria-expanded={open} aria-controls={mid} aria-label="More actions"><MoreHorizontal size={18} /></button>}>
       {close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); setDateOpen(true); }}><CalendarCog size={15} />Change date</button>
         <button role="menuitem" className="k-menu-item" disabled={pending} onClick={() => { close(); dup.open({ id, name }); }}><Copy size={15} />Duplicate</button>
-        <Link role="menuitem" className="k-menu-item k-red" href="/account/events" onClick={close}><XCircle size={15} />Cancel from My Events</Link></>}
+        {!["completed", "cancelled"].includes(status ?? "") && <button role="menuitem" className="k-menu-item k-red" onClick={() => { close(); void cancelDlg.open(); }}><XCircle size={15} />Cancel event</button>}</>}
     </Menu>
     {dup.dialog}
+    {cancelDlg.dialog}
     <EventDateDialog eventId={id} open={dateOpen} onClose={() => setDateOpen(false)} />
   </>;
 }

@@ -189,6 +189,20 @@ export async function refundMerchantCharge(deps: PaymentDeps, r: { account: stri
   return { refund, policy, feeRefund, plan };
 }
 
+/**
+ * Crash-safe re-run (Q58): what Stripe has already refunded on this payment for one cancellation / instruction / order, found by the
+ * metadata tag the worker put on its refunds. Failed and cancelled refunds don't count. A worker that died after Stripe accepted a
+ * refund but before the database recorded it skips that part instead of refunding it again.
+ */
+export async function refundedForTag(deps: PaymentDeps, account: string, paymentIntent: string, tag: string, value: string) {
+  const list = await connectedMerchantStripe(deps.stripe).retrieve<{ data: { amount: number; status: string; metadata?: Record<string, string> }[] }>(account,
+    `refunds?payment_intent=${encodeURIComponent(paymentIntent)}&limit=100`);
+  return list.data.filter(r => r.metadata?.[tag] === value && r.status !== "failed" && r.status !== "canceled").reduce((a, r) => a + Number(r.amount), 0);
+}
+
+/** Stripe idempotency key for attempt N of one refund: the first attempt keeps the historic key; a retry after a FAILED refund gets a new one. */
+export const refundKey = (base: string, attempt: number | null | undefined) => (attempt && attempt > 0 ? `${base}:a${attempt}` : base);
+
 /** Gala Dock's own sales stay platform charges (124.2, 124.6). */
 export function createPlatformCheckout(deps: PaymentDeps, purpose: PlatformPurpose, params: Record<string, string>, idempotencyKey: string) {
   return platformSalesStripe(deps.stripe).createCheckout(purpose, params, idempotencyKey);

@@ -15,7 +15,8 @@ import { PayoutMethodForm } from "./payout-form";
 
 const VIEWS = ["campaign", "assets", "sales", "commission"] as const;
 type ViewKey = typeof VIEWS[number];
-const SALE_TONE: Record<Sale["status"], [ChipTone, string]> = { pending: ["amber", "Pending"], approved: ["green", "Approved"], paid: ["blue", "Paid"], reversed: ["red", "Reversed"] };
+// Q65: held (locked in a payout) and payable (payout approved) are real sale states since Q27; a missing key crashed the sales table.
+const SALE_TONE: Record<Sale["status"], [ChipTone, string]> = { pending: ["amber", "Pending"], approved: ["green", "Approved"], held: ["purple", "In payout"], payable: ["green", "Payable"], paid: ["blue", "Paid"], reversed: ["red", "Reversed"] };
 const METHOD: Record<string, string> = { bank_transfer: "Bank transfer", paypal: "PayPal", stripe: "Stripe" };
 const SHARE: Network[] = ["whatsapp", "facebook", "x", "instagram", "tiktok", "email"];
 
@@ -67,10 +68,11 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
   // Running conversion (cumulative tickets / cumulative clicks) — a smooth trend rather than noisy daily ratios.
   const cumT = cumulative(perDay(d => sum(salesOn(d), s => s.quantity))), cumC = cumulative(perDay(clicksOn));
   const convSeries = cumT.map((t, i) => (cumC[i] ? t / cumC[i]! : 0));
-  const pending = sum(live.filter(s => s.status === "pending"), s => Number(s.commission)), approved = sum(live.filter(s => s.status === "approved"), s => Number(s.commission));
+  // Approved = confirmed by the organiser and not yet paid, including sales already locked into a payout (held / payable).
+  const pending = sum(live.filter(s => s.status === "pending"), s => Number(s.commission)), approved = sum(live.filter(s => ["approved", "held", "payable"].includes(s.status)), s => Number(s.commission));
   const earned = sum(live, s => Number(s.commission));
   const nextPayout = [...payouts].filter(x => x.status !== "paid" && x.status !== "failed").sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for))[0];
-  const channels = (["instagram", "tiktok", "facebook", "x", "email", "whatsapp", "direct", "other"] as Network[]).map(ch => {
+  const channels = (["link", "qr", "instagram", "tiktok", "facebook", "x", "email", "whatsapp", "direct", "other"] as Network[]).map(ch => {
     const cl = sum(c30.filter(c => c.channel === ch), c => c.clicks), sl = sum(s30.filter(s => s.channel === ch), s => s.quantity);
     return { ch, cl, sl, rate: cl ? (100 * sl) / cl : 0 };
   }).filter(c => c.cl || c.sl).sort((a, b) => b.cl - a.cl);
@@ -87,7 +89,7 @@ export function PromoterView({ data, view: rawView, basePath }: { data: Promoter
   const nextIdx = dates.findIndex(d => Date.parse(d.at) > now);
   const recent = sales.slice(0, 5);
   const salesTable = (list: Sale[]) => <div className="pt-scroll"><table className="pt-table pp-sales"><thead><tr><th>Date</th><th>Ticket type</th><th>Qty</th><th>Amount</th><th>Commission</th><th>Status</th></tr></thead>
-    <tbody>{list.map(s => { const [tone, label] = SALE_TONE[s.status]; return <tr key={s.id} data-q={`${s.tier_name} ${NETWORK_LABEL[s.channel] ?? s.channel}`}><td>{fmt(s.sold_at)}</td><td>{s.tier_name}</td><td>{s.quantity}</td>
+    <tbody>{list.map(s => { const [tone, label] = SALE_TONE[s.status] ?? ["grey", s.status]; return <tr key={s.id} data-q={`${s.tier_name} ${NETWORK_LABEL[s.channel] ?? s.channel}`}><td>{fmt(s.sold_at)}</td><td>{s.tier_name}</td><td>{s.quantity}</td>
       <td>{money(s.amount, "GBP", { cents: true })}</td><td>{money(s.commission, "GBP", { cents: true })}</td><td><PortalChip tone={tone} dot>{label}</PortalChip></td></tr>; })}</tbody></table>
     {!list.length && <p className="pt-empty">No sales through your link yet — share it to get started.</p>}</div>;
   const channelList = <ul className="pp-channels">{channels.map(c => <li key={c.ch} data-q={NETWORK_LABEL[c.ch]}><span className={`pp-net ${c.ch}`}><BrandGlyph network={c.ch} /></span><b>{NETWORK_LABEL[c.ch]}</b>

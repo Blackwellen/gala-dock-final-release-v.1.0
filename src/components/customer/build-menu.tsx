@@ -18,7 +18,7 @@ export function PackageMenu({ eventId, eventName, rows, cat, versions = [], paya
   const csv = () => {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const body = [["Category", "Provider", "Status", "Role", "Amount (GBP)", "Deposit (GBP)"], ...rows.map(r => [r.category, r.title, r.status, r.role, r.amount ?? "", r.deposit ?? ""])].map(r => r.map(esc).join(",")).join("\r\n");
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/csv" })); a.download = `${eventName.replace(/[^\w]+/g, "-").toLowerCase()}-package.csv`; a.click(); URL.revokeObjectURL(a.href);
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/csv" })); a.download = `${eventName.replace(/[^\w]+/g, "-").toLowerCase()}-package.csv`; a.click(); const href = a.href; setTimeout(() => URL.revokeObjectURL(href), 1000); // revoking in the same tick cancels the download in Safari/Firefox
   };
   const summary = async () => {
     const total = rows.filter(r => r.role !== "backup").reduce((s, r) => s + Number(r.amount ?? 0), 0);

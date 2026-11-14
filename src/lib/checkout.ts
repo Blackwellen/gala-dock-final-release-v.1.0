@@ -61,14 +61,17 @@ export async function finalise(orderRef: string) {
   const { error } = await db.rpc(o.kind === "resale" ? "issue_resale" : "issue_checkout", { p_token: o.token, p_order_ref: orderRef, p_attendee: prof?.full_name ?? "", p_holder: o.buyer_id });
   if (error) {
     // Paid but the hold had lapsed: refund automatically rather than keep money without tickets.
-    if (o.amount > 0 && /hold_expired|seat_unavailable|original_payment_required/.test(error.message)) {
+    // 'hold_expired:hold_changed' (Q58): the hold no longer matches what this order was priced for (re-reserved under the same token).
+    if (o.amount > 0 && /hold_expired|hold_changed|seat_unavailable|original_payment_required/.test(error.message)) {
       // Durable queue first. A failed or pending Stripe request must never look like a completed refund.
       // The existing worker owns retries and the stable per-order idempotency key.
       const queued = await db.from("checkout_orders").update({ refund_status: "due", refund_reason: "hold_expired", updated_at: new Date().toISOString() }).eq("order_ref", orderRef).eq("refund_status", "none");
       if (queued.error) throw new Error("Could not queue the expired reservation refund.");
       return { ok: false as const, error: "hold_expired_refund_pending" };
     }
-    await db.from("checkout_orders").update({ status: "failed", updated_at: new Date().toISOString() }).eq("order_ref", orderRef);
+    // Q58: a PAID order is never parked as "failed" (that kept the money with no tickets and no refund). It stays as it is and the
+    // webhook treats the result as an error, so Stripe retries and the failure shows in ops; only an unpaid (free) order fails here.
+    if (!(o.amount > 0)) await db.from("checkout_orders").update({ status: "failed", updated_at: new Date().toISOString() }).eq("order_ref", orderRef);
     return { ok: false as const, error: error.message };
   }
   await db.rpc("attribute_referral", { p_order_ref: orderRef }); // promoter credit (no-op without a valid referral)

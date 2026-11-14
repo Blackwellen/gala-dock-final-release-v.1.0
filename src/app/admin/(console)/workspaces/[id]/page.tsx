@@ -18,6 +18,8 @@ import { Status, SectionHead, KVRows, Flag, LineTabs, Delta, TimelineItem } from
 import { shortRef, str, rpc, planLabel, hmRange, qs, type SP } from "../../_a/lib";
 import { loadMetrics, loadPlans, commissionTier, WS_COLS, type Ws } from "../../_a/workspaces";
 import { setWorkspaceStatus, setWorkspacePlan, setWorkspaceCommission, addRecordNote } from "../../_a/actions";
+import { COUNTRIES } from "@/lib/master-data";
+import { connectCountrySupport, resolveCountryCode, workspaceCountryValue } from "@/lib/payments/connect-countries";
 
 export const metadata: Metadata = { title: "Workspace" };
 
@@ -58,6 +60,13 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
   if (!w) notFound();
   // Storage use against the plan (§115); the page itself is gated on the workspaces permission.
   const storage = await untyped(db as never).rpc("storage_usage", { p_workspace: id, p_user: null }).then(r => r.data as { bytes: number; files: number; limit_bytes: number; pct: number } | null, () => null);
+  // Seller country (owner 2026-11-14): the business country vs. where Gala Dock can take payments (connect-countries.ts), plus the
+  // country Stripe holds on the connected account of the platform mode when one exists.
+  const sellerCode = resolveCountryCode(workspaceCountryValue(w.settings), COUNTRIES);
+  const sellerSupport = connectCountrySupport(sellerCode);
+  const stripeCountry = await untyped(db as never).from("connect_accounts").select("country").eq("workspace_id", id).order("updated_at", { ascending: false }).limit(1).maybeSingle()
+    .then(r => (r.data as { country: string | null } | null)?.country ?? null, () => null);
+  const countryName = (c: string | null) => c ? `${COUNTRIES.find(x => x.code === c)?.name ?? c} (${c})` : "Not set";
   const gb = (b: number) => b >= 1073741824 ? `${(b / 1073741824).toFixed(1)} GB` : `${Math.round(b / 1048576)} MB`;
   const wsEventIds = can("tickets") ? (await rows<{ id: string }>(db.from("events").select("id").eq("workspace_id", id).limit(1000))).map(e => e.id) : [];
   const [metrics, { plans, payoutSchedule }, daily, members, events, eventCount, upcomingCount, listings, tickets, cases, trust, audit, notes, payouts] = await Promise.all([
@@ -145,6 +154,10 @@ export default async function WorkspaceDetailPage(props: PageProps<"/admin/works
       ["Total platform fees (30d)", <span key="f" className="awd-fee"><b>{money(fee)}</b><Delta value={delta(fee, feePrev)} /></span>],
       ["Next payout", can("commerce") ? (nextPayout ? <span key="n" className="awd-plan-now"><b>{money(nextPayout.amount)}</b><small>Scheduled {day(nextPayout.occurred_at, { day: "numeric", month: "short", year: "numeric" })}</small></span> : "None scheduled") : "Needs Commerce permission"],
       ["Payout schedule", titleCase(payoutSchedule)],
+      ["Seller country", <span key="sc" className="awd-plan-now"><b>{countryName(sellerCode)}</b>
+        {sellerCode ? <Status value={sellerSupport.supported ? "active" : "restricted"} label={sellerSupport.supported ? "Payments supported" : "Payments not supported"} /> : <Status value="pending" label="Unknown — Stripe decides" />}
+        {!sellerSupport.supported && sellerCode ? <small>{sellerSupport.reason} Listings stay enquiry-only; paid tickets are blocked.</small> : null}
+        {stripeCountry ? <small>Stripe account country: {countryName(stripeCountry)}</small> : null}</span>],
       ["Payout method", <span key="pm" className="awd-stripe"><b>S</b><span>Stripe Connect<Status value={w.payout_status === "active" ? "active" : "pending"} label={w.payout_status === "active" ? "Connected" : titleCase(w.payout_status)} /></span></span>],
     ]} />
   </section>;

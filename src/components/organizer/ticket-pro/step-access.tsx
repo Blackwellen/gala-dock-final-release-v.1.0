@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Repeat, ShieldCheck, Info, CalendarDays, ChevronDown, GripVertical, Plus, CheckCircle2, AlertTriangle, Landmark, Pencil, Accessibility, Gift, Users, X } from "lucide-react";
 import { Toggle, useAction } from "@/components/kit/client";
@@ -12,11 +12,11 @@ import { Card, Footer, gbp2, toLocal, fromLocal, uid } from "./ui";
 type A = ProSettings["access"];
 
 export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref = `${base}?step=3` }: { data: ProSetup; base: string; nextHref?: string; backHref?: string }) {
-  const router = useRouter(); const { run, pending } = useAction(); const e = data.event;
+  const router = useRouter(); const { run, pending: saving } = useAction(); const [navigating, startNav] = useTransition(); const pending = saving || navigating; /* stay disabled until the next step renders (Q48) */ const e = data.event;
   const [a, setA] = useState<A>(() => ({ ...data.pro.access, refund_cutoff: data.pro.access.refund_cutoff ?? (e.starts_at ? new Date(Date.parse(e.starts_at) - 864e5).toISOString() : null), age_text: data.pro.access.age_text || (data.pro.sales.min_age ? `${data.pro.sales.min_age}+ only` : "") }));
   const set = (p: Partial<A>) => setA(x => ({ ...x, ...p }));
   const ex = data.tiers.find(t => t.price > 0); const f = feeExample(ex?.price ?? 35, a.fee_display);
-  const save = async (next: boolean) => { const r = await run(() => saveAccess(e.id, a), { refresh: false }); if (r.ok) router.push(next ? nextHref : `/organizer/events/${e.id}?tab=sell`); };
+  const save = async (next: boolean) => { const r = await run(() => saveAccess(e.id, a), { refresh: false }); if (r.ok) startNav(() => router.push(next ? nextHref : `/organizer/events/${e.id}?tab=sell`)); };
   const accessibleSecs = data.pro.sections.filter(s => s.type === "accessible").reduce((n, s) => n + s.capacity, 0);
   const holdSecs = data.pro.sections.filter(s => s.type === "hold").reduce((n, s) => n + s.capacity, 0);
 

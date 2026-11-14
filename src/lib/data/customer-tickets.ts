@@ -20,7 +20,8 @@ export async function myTickets(ctx: CustomerCtx) {
   for (const t of rows) {
     const ended = t.event.ends_at ? new Date(t.event.ends_at).getTime() < now : t.event.starts_at ? new Date(t.event.starts_at).getTime() + 864e5 < now : false;
     // A ticket listed for resale is still yours until it sells: it stays in Upcoming ("Resale in progress") and is also listed under Resale.
-    const resale = ["transferred", "resold", "refunded"].includes(t.status) || (t.status === "resale_listed" && ended);
+    // Q47: cancelled/void tickets are no longer usable: handled like refunded (out of Upcoming, never "Ready to attend").
+    const resale = ["transferred", "resold", "refunded", "cancelled", "void"].includes(t.status) || (t.status === "resale_listed" && ended);
     const when = resale ? "resale" : ended || t.status === "used" ? "past" : "upcoming";
     const key = `${t.event.id}:${t.order_ref.replace(/-T$/, "")}:${when}`;
     const g = map.get(key) ?? { key, event: t.event, order: t.order_ref, tickets: [], when, state: { label: "", tone: "" } };
@@ -36,6 +37,7 @@ function stateOf(g: TicketGroup, now: number) {
   if (st.includes("resold")) return { label: "Resold", tone: "green" };
   if (st.every(s => s === "transferred")) return { label: "Transferred", tone: "blue" };
   if (st.includes("refunded")) return { label: "Refunded", tone: "gray" };
+  if (st.every(s => s === "cancelled" || s === "void" || s === "refunded")) return { label: "Cancelled", tone: "gray" };
   if (g.when === "past") return { label: st.includes("used") ? "Attended" : "Event ended", tone: st.includes("used") ? "green" : "gray" };
   const days = g.event.starts_at ? (new Date(g.event.starts_at).getTime() - now) / 864e5 : 99;
   const transfers = g.event.settings?.transfers !== false;

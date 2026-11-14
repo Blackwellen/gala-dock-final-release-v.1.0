@@ -5,8 +5,8 @@ import { untyped } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
 import { paymentDeps } from "@/lib/payments/server";
 import { connectedMerchantStripe, platformFeeStripe } from "@/lib/payments/stripe-client";
-import { refundMerchantCharge } from "@/lib/payments/service";
-import { capGroupToAvailable, planReleaseGroups, type DueRelease, type ChargeNet } from "@/lib/payments/releases-core";
+import { refundedForTag, refundKey, refundMerchantCharge } from "@/lib/payments/service";
+import { capGroupToAvailable, disputedMinor, planReleaseGroups, type DueRelease, type ChargeNet } from "@/lib/payments/releases-core";
 import type { Order } from "@/lib/commerce/orchestrator";
 
 /**
@@ -47,8 +47,10 @@ export async function processReleases(limit = 100) {
       let feeKept = Number(c.application_fee_amount ?? 0);
       const f = feeId ? await platformFeeStripe(deps.stripe).retrieve(feeId) : await platformFeeStripe(deps.stripe).forCharge(c.id);
       if (f) feeKept = f.amount - f.amount_refunded;
-      const { data: disputed } = await db.from("stripe_disputes").select("amount_minor").eq("payment_intent_id", r.payment_intent).is("outcome", null);
-      const open = ((disputed ?? []) as { amount_minor: number }[]).reduce((a, d) => a + Number(d.amount_minor), 0);
+      // Open disputes AND lost ones: Stripe withdrew the disputed amount from this charge's money and (when lost) never gives it back.
+      // Q58: counting only open disputes paid a lost chargeback's amount out again from the seller's other money.
+      const { data: disputed } = await db.from("stripe_disputes").select("amount_minor,outcome").eq("payment_intent_id", r.payment_intent);
+      const open = disputedMinor((disputed ?? []) as { amount_minor: number; outcome: string | null }[]);
       nets.set(r.payment_intent, { netMinor: Math.max(0, c.amount - c.amount_refunded - feeKept - open) });
     } catch (e) { nets.set(r.payment_intent, { netMinor: 0, error: (e as Error).message }); }
   }
@@ -68,29 +70,34 @@ export async function processReleases(limit = 100) {
       if (g.payoutMinor > 0) {
         const bal = await merchant.balance(g.account);
         const avail = bal.available.find(b => b.currency.toUpperCase() === g.currency)?.amount ?? 0;
-        let pay = g;
+        let pay = g, shortfall = 0;
         if (avail < g.payoutMinor) {
           // Covered liability: a chargeback/refund already debited this seller's balance. Pay what is there; the shortfall is the
           // seller's own liability recovered from these releases (never platform money, never an overdraft).
           const capped = capGroupToAvailable(g, Math.max(0, avail));
-          pay = capped.group; out.waiting += capped.shortfallMinor > 0 ? 1 : 0;
-          // Owner 2026-11-11: the seller carries chargebacks; what its balance, reserve and later releases can't cover falls to Gala
-          // Dock (platform-managed fallback). Record it: recovered from later releases first, absorbed by staff decision otherwise.
-          await db.from("dec107_covered_liabilities").insert({ workspace_id: g.workspaceId, stripe_account_id: g.account, event_id: g.eventId, amount_minor: capped.shortfallMinor,
-            recovered_minor: capped.shortfallMinor, status: "recovered", reason: "recovered_from_release", resolved_at: new Date().toISOString(), livemode: live });
-          // A negative balance means the seller's own money no longer covers it: open a liability (later releases first, else staff decide).
-          if (avail < 0) await db.from("dec107_covered_liabilities").insert({ workspace_id: g.workspaceId, stripe_account_id: g.account, event_id: g.eventId, amount_minor: -avail,
-            reason: "negative_seller_balance", livemode: live });
-          await db.from("audit_events").insert({ actor_type: "system", workspace_id: g.workspaceId, event: "payout.covered_liability",
-            metadata: { account: g.account, event_id: g.eventId, due_minor: g.payoutMinor, paid_minor: avail, shortfall_minor: capped.shortfallMinor } });
-          await db.rpc("notify_workspace", { p_ws: g.workspaceId, p_roles: ["owner", "manager", "finance"], p_kind: "payout_shortfall", p_title: "Payout reduced by a chargeback or refund",
-            p_body: `£${(capped.shortfallMinor / 100).toFixed(2)} of this release was used to cover a chargeback or refund already taken from your Stripe balance. If you win the chargeback, the money comes back and is paid out with that sale.`, p_link: "/provider/money" });
+          pay = capped.group; shortfall = capped.shortfallMinor; out.waiting += shortfall > 0 ? 1 : 0;
+          // A negative balance means the seller's own money no longer covers it: open ONE liability per account (later releases first,
+          // else staff decide). Q58: this ran on every cron tick while the balance stayed short, stacking duplicate liabilities.
+          if (avail < 0) await openNegativeBalanceLiability(db, g, -avail, live);
+          // Nothing payable: wait. Q58: nothing is "recovered" and nobody is notified until money actually moves.
           if (pay.payoutMinor <= 0) { await db.rpc("dec107_release_failed", { p_ids: ids, p_error: `waiting_for_available_balance:${avail}<${g.payoutMinor}` }); continue; }
         }
         const p = await merchant.payout(g.account, { amountMinor: pay.payoutMinor, currency: g.currency, description: g.description,
           metadata: { gd_release_group: group, event_id: g.eventId ?? "", releases: String(ids.length), trigger: g.trigger } }, `release:${group}`);
         payoutId = p.id; paidItems = pay.items;
         out.payouts++;
+        if (shortfall > 0) {
+          // Owner 2026-11-11: the seller carries chargebacks; what its balance, reserve and later releases can't cover falls to Gala
+          // Dock (platform-managed fallback). Recorded once, after the reduced payout was actually made (Q58: not before, and not per tick).
+          const cur = g.currency === "GBP" ? "£" : `${g.currency} `;
+          const { error: le } = await db.from("dec107_covered_liabilities").insert({ workspace_id: g.workspaceId, stripe_account_id: g.account, event_id: g.eventId, amount_minor: shortfall,
+            recovered_minor: shortfall, status: "recovered", reason: "recovered_from_release", resolved_at: new Date().toISOString(), livemode: live });
+          if (le) out.errors.push(`${g.key}: covered liability not recorded: ${le.message}`);
+          await db.from("audit_events").insert({ actor_type: "system", workspace_id: g.workspaceId, event: "payout.covered_liability",
+            metadata: { account: g.account, event_id: g.eventId, due_minor: g.payoutMinor, paid_minor: pay.payoutMinor, available_minor: avail, shortfall_minor: shortfall, payout: p.id } });
+          await db.rpc("notify_workspace", { p_ws: g.workspaceId, p_roles: ["owner", "manager", "finance"], p_kind: "payout_shortfall", p_title: "Payout reduced by a chargeback or refund",
+            p_body: `${cur}${(shortfall / 100).toFixed(2)} of this release was used to cover a chargeback or refund already taken from your Stripe balance. If you win the chargeback, the money comes back to your Stripe balance.`, p_link: "/provider/money" });
+        }
       }
       // Nothing left to pay (fully refunded, or all of it held as reserve): the releases close with amount 0 and no payout id.
       const rec = await db.rpc("dec107_release_paid", { p_items: paidItems ?? g.items, p_payout: payoutId, p_group: group });
@@ -105,31 +112,56 @@ export async function processReleases(limit = 100) {
   return out;
 }
 
+/** One open negative-balance liability per seller account and mode; a deeper negative balance raises its amount, never adds a row. */
+async function openNegativeBalanceLiability(db: ReturnType<typeof untyped>, g: { workspaceId: string; account: string; eventId: string | null }, amountMinor: number, live: boolean) {
+  const { data: open } = await db.from("dec107_covered_liabilities").select("id,amount_minor").eq("stripe_account_id", g.account).eq("livemode", live)
+    .eq("reason", "negative_seller_balance").eq("status", "recovering").limit(1).maybeSingle();
+  if (open) {
+    if (amountMinor > Number((open as { amount_minor: number }).amount_minor)) await db.from("dec107_covered_liabilities").update({ amount_minor: amountMinor }).eq("id", (open as { id: string }).id);
+    return;
+  }
+  await db.from("dec107_covered_liabilities").insert({ workspace_id: g.workspaceId, stripe_account_id: g.account, event_id: g.eventId, amount_minor: amountMinor, reason: "negative_seller_balance", livemode: live });
+  await db.from("audit_events").insert({ actor_type: "system", workspace_id: g.workspaceId, event: "payout.negative_balance_liability", metadata: { account: g.account, amount_minor: amountMinor } });
+}
+
 /** Agreed refunds on the seller's charge (DEC-107: the admin fee is kept; the seller fee on the refunded part goes back). */
 async function processRefundInstructions(errors: string[]) {
   const db = untyped(createAdminClient() as never);
   const deps = paymentDeps(db);
   if (!deps) return 0;
-  const { data } = await db.from("dec107_refund_instructions").select("id,basis,build_item_id,amount_minor,refunded_minor,idempotency_key").in("status", ["due", "failed"]).limit(20);
+  // Q58: atomic claim (FOR UPDATE SKIP LOCKED); due rows, failed ones after an hour, and 'processing' rows a crashed run left (15 min).
+  const { data, error: claimError } = await db.rpc("claim_dec107_refund_instructions", { p_limit: 20 });
+  if (claimError) { errors.push(`refund instructions claim: ${claimError.message}`); return 0; }
   let done = 0;
-  for (const ri of (data ?? []) as { id: string; basis: string; build_item_id: string; amount_minor: number; refunded_minor: number; idempotency_key: string }[]) {
-    await db.from("dec107_refund_instructions").update({ status: "processing" }).eq("id", ri.id);
+  for (const ri of (data ?? []) as { id: string; basis: string; build_item_id: string; amount_minor: number; refunded_minor: number; idempotency_key: string; refund_attempt?: number }[]) {
     const { data: orders } = await db.from("payment_orders").select("*").eq("build_item_id", ri.build_item_id).eq("strategy", "direct").not("stripe_payment_intent", "is", null).order("created_at", { ascending: false });
-    let remaining = Number(ri.amount_minor) - Number(ri.refunded_minor), refunded = Number(ri.refunded_minor), error: string | null = null;
-    for (const po of (orders ?? []) as Order[]) {
-      if (remaining <= 0) break;
+    const list = ((orders ?? []) as Order[]).filter(po => !!po.payee_connected_account_id);
+    let refunded = Number(ri.refunded_minor), error: string | null = null;
+    // Crash-safe re-run: what Stripe already refunded for this instruction (metadata.instruction, failed refunds excluded) is the truth.
+    try {
+      let onStripe = 0;
+      for (const po of list) onStripe += await refundedForTag(deps, po.payee_connected_account_id!, po.stripe_payment_intent!, "instruction", ri.id);
+      refunded = onStripe;
+    } catch (e) { error = (e as Error).message; }
+    let remaining = error ? 0 : Number(ri.amount_minor) - refunded;
+    for (const po of list) {
+      if (remaining <= 0 || error) break;
       const refundable = po.amount_minor - po.refunded_minor;   // the price only: the admin fee is not refunded on a dispute outcome
       const amt = Math.min(remaining, refundable);
-      if (amt <= 0 || !po.payee_connected_account_id) continue;
+      if (amt <= 0) continue;
       try {
         const custFee = Number(po.customer_fee_minor ?? 0);
-        const { refund } = await refundMerchantCharge(deps, { account: po.payee_connected_account_id, paymentIntent: po.stripe_payment_intent!, amountMinor: amt, reason: "goodwill",
-          idempotencyKey: `${ri.idempotency_key}:${po.reference}`, metadata: { payment_order: po.reference, dec107_basis: ri.basis, instruction: ri.id },
+        const key = refundKey(`${ri.idempotency_key}:${po.reference}`, ri.refund_attempt);
+        const { refund, feeRefund } = await refundMerchantCharge(deps, { account: po.payee_connected_account_id!, paymentIntent: po.stripe_payment_intent!, amountMinor: amt, reason: "goodwill",
+          idempotencyKey: key, metadata: { payment_order: po.reference, dec107_basis: ri.basis, instruction: ri.id },
           mode: { rowLivemode: (po as { livemode?: boolean | null }).livemode, platformLive: stripeLive() },
           split: { sellerAmountMinor: po.amount_minor, sellerFeeMinor: Math.max(0, Number(po.application_fee_minor ?? po.platform_fee_minor) - custFee), customerFeeRefundMinor: 0 } });
-        await db.from("payment_refunds").upsert({ stripe_refund_id: refund.id, stripe_account_id: po.payee_connected_account_id, payment_intent_id: po.stripe_payment_intent,
-          source_type: `dec107_${ri.basis}`, source_ref: ri.id, amount_minor: amt, refund_application_fee: true, fee_policy: "dec107", reason_code: ri.basis,
-          idempotency_key: `${ri.idempotency_key}:${po.reference}`, status: refund.status === "succeeded" ? "succeeded" : "pending" }, { onConflict: "idempotency_key" });
+        if (refund.status === "failed" || refund.status === "canceled") throw new Error(`stripe_refund_${refund.status}`);
+        // Q58: this row used to violate payment_refunds' CHECKs (source_type dec107_*, fee_policy dec107) and the error was ignored.
+        const { error: re } = await db.from("payment_refunds").upsert({ stripe_refund_id: refund.id, stripe_account_id: po.payee_connected_account_id, payment_intent_id: po.stripe_payment_intent,
+          source_type: `dec107_${ri.basis}`, source_ref: ri.id, amount_minor: amt, refund_application_fee: !!feeRefund, fee_policy: "dec107", reason_code: ri.basis,
+          idempotency_key: key, status: refund.status === "succeeded" ? "succeeded" : "pending", livemode: stripeLive() }, { onConflict: "idempotency_key" });
+        if (re) errors.push(`refund row ${ri.id}: ${re.message}`);
         remaining -= amt; refunded += amt;
       } catch (e) { error = (e as Error).message; break; }
     }

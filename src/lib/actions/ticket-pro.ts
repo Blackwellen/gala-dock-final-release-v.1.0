@@ -1,5 +1,7 @@
 "use server";
 import { ticketWindowMessage } from "@/lib/payments/ticket-window";
+import { COUNTRIES } from "@/lib/master-data";
+import { CONNECT_COPY, unsupportedWorkspaceCountry } from "@/lib/payments/connect-countries";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -101,6 +103,9 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
   for (const [i] of tiers.entries()) { let k = tiers[i]!.after, n = 0; while (k >= 0 && n++ < tiers.length) { if (k === i) return { ok: false, error: `${tiers[i]!.name} has a circular release rule.` }; k = tiers[k]!.after; } }
   if (promos.some(x => x.kind === "percent" && x.amount > 100)) return { ok: false, error: "Percentage discounts can't exceed 100%." };
   if (new Set(promos.map(x => x.code)).size !== promos.length) return { ok: false, error: "Each discount code must be unique." };
+  // Validate before any write (Q48): this check used to run after tiers and codes were already saved, so the error left a half-saved step.
+  const allocTotal = allocations.reduce((a, x) => a + (x.qty ?? 0), 0);
+  if (allocTotal > total) return { ok: false, error: "Promoter allocations can't exceed your total tickets." };
   const sb = o.ctx.supabase;
   const { data: existing } = await sb.from("ticket_tiers").select("id,sold,held,name,status").eq("event_id", o.e.id);
   for (const ex of existing ?? []) {
@@ -129,8 +134,6 @@ export async function saveProTiers(eventId: string, input: unknown): Promise<Act
     const res = x.id ? await sb.from("discount_codes").update(row).eq("id", x.id).eq("event_id", o.e.id) : await sb.from("discount_codes").insert({ ...row, event_id: o.e.id });
     if (res.error) return { ok: false, error: res.error.code === "23505" ? `${x.code} is already used for this event.` : `Could not save ${x.code}.` };
   }
-  const allocTotal = allocations.reduce((a, x) => a + (x.qty ?? 0), 0);
-  if (allocTotal > total) return { ok: false, error: "Promoter allocations can't exceed your total tickets." };
   for (const a of allocations) await sb.from("promoters").update({ ticket_allocation: a.qty }).eq("id", a.id).eq("event_id", o.e.id);
   const error = await writeSettings(o, { phases, sales }, { order_limit: sales.order_limit, resale: sales.resale, countdown: sales.countdown, waiting_list: sales.waiting_list, show_remaining: sales.show_remaining });
   if (error) return { ok: false, error: "Could not save sales settings." };
@@ -189,7 +192,10 @@ export async function activateTickets(eventId: string, agreed: boolean): Promise
   if (active.some(t => !t.sale_start && !t.after_tier)) return { ok: false, error: "Every active tier needs a sale start or a release rule." };
   if (!o.pro.access) return { ok: false, error: "Review Access & Controls before activating." };
   if (active.some(t => Number(t.price) > 0)) {
-    const { data: ws } = await sb.from("workspaces").select("payout_status").eq("id", o.ctx.workspace.id).maybeSingle();
+    const { data: ws } = await sb.from("workspaces").select("payout_status,settings").eq("id", o.ctx.workspace.id).maybeSingle();
+    // Seller-country gate (owner 2026-11-14): say why when Stripe can't pay out in the organiser's country.
+    const offPlatform = ws?.payout_status !== "active" ? unsupportedWorkspaceCountry(ws?.settings, COUNTRIES) : null;
+    if (offPlatform) return { ok: false, error: CONNECT_COPY.paidTicketsRefused(offPlatform) };
     if (ws?.payout_status !== "active") return { ok: false, error: "Finish payout setup in Money before selling paid tickets." };
   }
   const status = ["draft", "planning", "ready", "published"].includes(o.e.status) ? "on_sale" : o.e.status;

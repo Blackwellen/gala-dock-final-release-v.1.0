@@ -33,7 +33,11 @@ const catLabel = (L: BookingData["listing"], buildCat: string) => L?.category ? 
 const fmtDate = (d: string) => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "Date to be confirmed";
 
 export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: string; data: BookingData; steps: { title: string; sub?: string }[] }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: acting } = useAction();
+  // Q47: `acting` clears when the action resolves, before the next page (or Stripe Checkout) loads; stay busy until then so a
+  // second click can't start a second checkout session or resubmit the request.
+  const [leaving, setLeaving] = useState(false); const pending = acting || leaving;
+  useEffect(() => { const f = (e: PageTransitionEvent) => { if (e.persisted) setLeaving(false); }; addEventListener("pageshow", f); return () => removeEventListener("pageshow", f); }, []); // Back from Stripe (bfcache)
   const [r, setR] = useState<BookingRequirements>(data.saved);const [attachmentUploading,setAttachmentUploading]=useState(false);
   const [errs, setErrs] = useState<Record<string, boolean>>({});
   const [avail, setAvail] = useState<Availability | null>(null); const [checking, setChecking] = useState(false);
@@ -71,18 +75,19 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
     if(attachmentUploading)return;
     if (then === "next" && !validate()) return;
     const res = await run(() => saveBookingDraft(data.event.id, data.item.id, r, opt === "accept" ? "request" : opt));
-    if (res.ok) router.push(then === "next" ? `${base}&step=2` : `/account/events/${data.event.id}/build`);
+    if (res.ok) { setLeaving(true); router.push(then === "next" ? `${base}&step=2` : `/account/events/${data.event.id}/build`); }
   };
   const submit = async () => {
+    if (pending) return;
     if (!agree) { toast("Please agree to the terms to continue"); return; }
     if (opt === "accept") {
       // Deposit is taken on Stripe Checkout; the booking confirms when the payment does (webhook), then Stripe returns here.
       const res = await run(() => acceptQuote(data.event.id, data.item.id, agree), { refresh: false });
-      if (res.ok && typeof res.data === "string") window.location.assign(res.data);
+      if (res.ok && typeof res.data === "string") { setLeaving(true); window.location.assign(res.data); }
       return;
     }
     const res = await run(() => submitBooking(data.event.id, data.item.id, opt, agree));
-    if (res.ok) router.push(`${base}&step=3`);
+    if (res.ok) { setLeaving(true); router.push(`${base}&step=3`); }
   };
 
   const fillFromEvent = () => { if(r.date!==data.event.date||r.start!==data.event.start||r.end!==data.event.end){availabilityGeneration.current++;setAvail(null);setChecking(false);}setR(p => ({ ...p, date: data.event.date, start: data.event.start, end: data.event.end, guests: data.event.guests, adults: data.event.adults ?? undefined, children: data.event.children ?? undefined })); toast("Filled in from your event"); };
@@ -140,7 +145,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
       <section className="ce-card bk-sec">
         <h2 className="bk-h">2. Date, time &amp; guests</h2><p className="bk-sub">These details are prefilled from your event. You can adjust them if needed.</p>
         <div className="bk-row3">
-          <div className={`bk-f ${errs.date ? "bk-err" : ""}`}><label htmlFor="bk-date">Event date</label><div className="bk-date"><span className="bk-in bk-in-ic bk-datebox"><CalendarDays size={17} /><span className="bk-date-label">{r.date ? fmtDate(r.date) : "Choose a date"}</span><input id="bk-date" type="date" value={r.date} min={new Date().toISOString().slice(0, 10)} onChange={e => set("date", e.target.value)} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker(); } catch { /* unsupported */ } }} /></span><label className="bk-check"><input type="checkbox" checked={r.flexible_dates} onChange={e => set("flexible_dates", e.target.checked)} />Flexible dates<span title="The provider can suggest nearby dates if yours isn't available."><Info size={14} /></span></label></div></div>
+          <div className={`bk-f ${errs.date ? "bk-err" : ""}`}><label htmlFor="bk-date">Event date</label><div className="bk-date"><span className="bk-in bk-in-ic bk-datebox"><CalendarDays size={17} /><span className="bk-date-label">{r.date ? fmtDate(r.date) : "Choose a date"}</span><input id="bk-date" type="date" value={r.date} min={new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" })} onChange={e => set("date", e.target.value)} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker(); } catch { /* unsupported */ } }} /></span><label className="bk-check"><input type="checkbox" checked={r.flexible_dates} onChange={e => set("flexible_dates", e.target.checked)} />Flexible dates<span title="The provider can suggest nearby dates if yours isn't available."><Info size={14} /></span></label></div></div>
           <div className="bk-f"><label htmlFor="bk-start">Start time</label><span className="bk-in bk-in-ic bk-times"><Clock size={17} /><select id="bk-start" value={r.start} onChange={e => set("start", e.target.value)} aria-label="Start time">{TIMES.map(t => <option key={t}>{t}</option>)}</select><span className="bk-to">to</span><select value={r.end} onChange={e => set("end", e.target.value)} aria-label="End time">{TIMES.map(t => <option key={t}>{t}</option>)}</select></span></div>
           <div className={`bk-f ${errs.guests ? "bk-err" : ""}`}><label>Total guests</label><span className="bk-in bk-in-ic bk-guests"><Users size={17} /><NumberStepper value={r.guests} min={1} max={L?.capacity ? Math.max(L.capacity * 2, 10) : 100000} onChange={v => set("guests", v)} label="Total guests" /></span></div>
         </div>
@@ -280,7 +285,7 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
         {data.card ? <label className="bk-card-row" data-on><input type="radio" name="pm" defaultChecked /><span className="bk-radio on"><Check size={11} strokeWidth={3} /></span><CreditCard size={24} aria-hidden="true"/><b>{data.card.brand.toUpperCase()} ending {data.card.last4}</b><small>Expires {data.card.exp}</small><span className="bk-default">{data.card.test ? "Test mode" : "Default"}</span></label>
           : <div className="bk-card-row empty"><CreditCard size={18} /><span>{data.cardUnavailable ? "Saved payment methods couldn't load. Requests, holds and standby still work." : "No card on file. Add a payment method in secure checkout when accepting a quote."}</span></div>}
         <Link className="bk-card-row add" href="/account?tab=payments"><span className="bk-radio" /><CreditCard size={18} /><b>Add a new card</b></Link>
-        <Menu label="Payment options" width={220} trigger={({ toggle, open, id }) => <button className="k-icon-btn bk-pay-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Payment options"><MoreHorizontal size={16} /></button>}>{close => <><Link role="menuitem" className="k-menu-item" href="/account/settings?tab=payments" onClick={close}><CreditCard size={14} />Manage payment methods</Link><button role="menuitem" className="k-menu-item" onClick={close}><X size={14} />Close</button></>}</Menu>
+        <Menu label="Payment options" width={220} trigger={({ toggle, open, id }) => <button className="k-icon-btn bk-pay-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label="Payment options"><MoreHorizontal size={16} /></button>}>{close => <><Link role="menuitem" className="k-menu-item" href="/account?tab=payments" onClick={close}><CreditCard size={14} />Manage payment methods</Link><button role="menuitem" className="k-menu-item" onClick={close}><X size={14} />Close</button></>}</Menu>
       </div>
     </section>
   </div>;

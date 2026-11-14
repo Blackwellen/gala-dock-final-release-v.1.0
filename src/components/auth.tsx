@@ -81,7 +81,7 @@ function StatusSteps({ items, active, label }: { items: { key: string; label: st
   </div>;
 }
 
-function SocialButtons({ next, providers, onError, captcha, needsCaptcha }: { next: string; providers: AuthProps["providers"]; onError: (message: string) => void; captcha?: string; needsCaptcha?: boolean }) {
+function SocialButtons({ next, providers, onError, captcha, needsCaptcha, onCaptchaUsed }: { next: string; providers: AuthProps["providers"]; onError: (message: string) => void; captcha?: string; needsCaptcha?: boolean; onCaptchaUsed?: () => void }) {
   if (!providers.length) return null;
   async function login(provider: "google" | "azure") {
     // Google uses Gala Dock's own sign-in, so Google's screen says "continue to galadock.com" (src/app/api/auth/google).
@@ -90,6 +90,7 @@ function SocialButtons({ next, providers, onError, captcha, needsCaptcha }: { ne
       const r = await fetch("/api/auth/google/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ next: next || "/continue", captcha }) }).catch(() => null);
       const j = r ? await r.json().catch(() => ({})) as { url?: string; error?: string } : {};
       if (r?.ok && j.url) { location.assign(j.url); return; }
+      if (captcha) onCaptchaUsed?.();
       onError(j.error ?? "We couldn’t start sign-in with Google. Please try again."); return;
     }
     const { error } = await createClient().auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next || "/continue")}`, scopes: provider === "azure" ? "email" : undefined } });
@@ -186,6 +187,8 @@ export function AuthPage(props: AuthProps) {
             emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(withNext("/verify-email"))}`,
           },
         });
+        // Turnstile tokens are single-use: without a fresh one, every retry after a failed sign-up was rejected.
+        if (needsCaptcha) setCaptchaReset(n => n + 1);
         if (error) return fail(resetErrors(error.message) ?? (/password/i.test(error.message) ? "Choose a stronger password." : "We couldn’t create your account. Please try again."));
         // The same neutral next step is shown whether or not the address was already registered.
         router.push(data.session ? continueHref : withNext(`/verify-email?email=${encodeURIComponent(email)}`));
@@ -381,8 +384,8 @@ export function AuthPage(props: AuthProps) {
           {screen === "reset-password" && state === "complete" && <Button href="/login" arrow className="full-width"><LogIn size={18} aria-hidden="true" />Log in with new password</Button>}
           {screen === "reset-password" && state === "expired" && <div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>This reset link is invalid or has expired</b><small>Reset links can be used once and expire after a short time. Request a new link to continue.</small></span></div>}
           {screen === "verify-email" && state === "expired" && <><div className="auth-note danger"><IconTile icon={Clock} color="red" /><span><b>Verification link expired</b><small>This link is no longer valid. Sign in to request a new verification email.</small></span></div><Button href={withNext("/login")} arrow className="full-width">Sign in to resend</Button></>}
-          {screen === "login" && <PasskeySignIn next={next} captcha={needsCaptcha ? captcha : undefined} onError={setError} />}
-          {["login", "register"].includes(screen) && providers.length > 0 && <><div className="auth-divider">{screen === "login" ? "Use another method" : "Or continue with"}</div><SocialButtons next={next} providers={providers} onError={setError} captcha={captcha} needsCaptcha={needsCaptcha} /></>}
+          {screen === "login" && <PasskeySignIn next={next} captcha={needsCaptcha ? captcha : undefined} onError={setError} onCaptchaUsed={() => setCaptchaReset(n => n + 1)} />}
+          {["login", "register"].includes(screen) && providers.length > 0 && <><div className="auth-divider">{screen === "login" ? "Use another method" : "Or continue with"}</div><SocialButtons next={next} providers={providers} onError={setError} captcha={captcha} needsCaptcha={needsCaptcha} onCaptchaUsed={() => setCaptchaReset(n => n + 1)} /></>}
           {screen === "reset-password" && state !== "complete" && <><div className="auth-divider">or</div><Link className="request-new-link" href="/forgot-password">Request new link</Link></>}
           {screen === "forgot-password" && <Link className="auth-back" href="/login">← Back to Log in</Link>}
           {screen === "mfa" && <><div className="auth-divider">Or try a different method</div><Button variant="outline" className="full-width" onClick={() => setMethod(method === "authenticator" ? "recovery" : "authenticator")}><RefreshCw size={20} aria-hidden="true" />Switch method</Button>
@@ -392,7 +395,7 @@ export function AuthPage(props: AuthProps) {
             <Button variant="outline" onClick={switchAccount}><UserRound size={18} aria-hidden="true" />Use another account</Button>
           </div>}
           {screen === "invite" && state !== "valid" && <div className="invitation-expired" role="status"><Clock size={26} aria-hidden="true" /><span><b>{({ expired: "This invite has expired", used: "This invite has already been used", declined: "This invite was declined", revoked: "This invite is no longer valid", mismatch: "This invite belongs to another account" } as Record<string, string>)[state] ?? "This invite is unavailable"}</b>
-            <small>{state === "expired" && props.invite ? `This invitation expired on ${new Date(props.invite.expires_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} and can no longer be used.` : state === "mismatch" ? "Switch to the email address the invitation was sent to." : "Ask the workspace owner to send you a new invitation."}</small></span>
+            <small>{state === "expired" && props.invite ? `This invitation expired on ${new Date(props.invite.expires_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" })} and can no longer be used.` : state === "mismatch" ? "Switch to the email address the invitation was sent to." : "Ask the workspace owner to send you a new invitation."}</small></span>
             {state === "mismatch" && <Button variant="outline" onClick={switchAccount}>Switch account</Button>}</div>}
           {screen === "access" && <div className="social-buttons">
             <form action={`/auth/signout${next ? `?next=${encodeURIComponent(next)}` : ""}`} method="post"><Button variant="outline" type="submit" className="full-width"><RefreshCw size={18} aria-hidden="true" />Reauthenticate</Button></form>
@@ -452,7 +455,7 @@ function RecoveryCode() {
 }
 
 /** Passkey sign-in (release spec §7). Same post-login path as a password sign-in, including the MFA step when it applies. */
-function PasskeySignIn({ next, captcha, onError }: { next: string; captcha?: string; onError: (m: string) => void }) {
+function PasskeySignIn({ next, captcha, onError, onCaptchaUsed }: { next: string; captcha?: string; onError: (m: string) => void; onCaptchaUsed?: () => void }) {
   const router = useRouter(); const [busy, setBusy] = useState(false);
   if (typeof window !== "undefined" && !("PublicKeyCredential" in window)) return null;
   const go = async () => {
@@ -460,6 +463,7 @@ function PasskeySignIn({ next, captcha, onError }: { next: string; captcha?: str
     try {
       const sb = createClient();
       const { error } = await sb.auth.signInWithPasskey(captcha ? { options: { captchaToken: captcha } } : undefined);
+      if (captcha && error) onCaptchaUsed?.();
       if (error) { onError(/abort|cancel|NotAllowed/i.test(error.message) ? "Passkey sign-in was cancelled." : "That passkey didn’t work. Use your password, then add a passkey in Account → Privacy & Security."); return; }
       await sb.rpc("log_auth_event", { p_event: "auth.login_passkey" });
       const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();

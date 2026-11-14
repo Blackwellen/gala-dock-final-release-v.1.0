@@ -3,6 +3,7 @@
  * refund fee policy, and balanced memo-ledger postings. No I/O, so the same code is unit-tested and used by the services.
  * The SQL functions in 202610291009_direct_charge_rpcs.sql post the same line shapes (direct_charge_lines etc.).
  */
+import { isConnectCountrySupported } from "./connect-countries";
 
 // ───────────────────────── fees ─────────────────────────
 export type FeeRule = { rate_bps: number; fixed_minor?: number; source?: string; rule_id?: string; plan?: string | null };
@@ -34,10 +35,13 @@ export const toMinor = (n: number | string) => Math.round(Number(n) * 100);
 // ───────────────────────── seller readiness (125.3–125.4, 123.B.3) ─────────────────────────
 export type SellerAccount = { workspace_id: string; name?: string | null; stripe_account_id: string | null; charges_enabled: boolean; card_payments: string;
   details_submitted: boolean; disabled_reason: string | null; past_due: string[]; country: string | null; default_currency: string | null };
-export type Readiness = { ready: true; account: string } | { ready: false; reason: "no_account" | "charges_disabled" | "card_payments_inactive" | "restricted" | "requirements_past_due" };
+export type Readiness = { ready: true; account: string } | { ready: false; reason: "no_account" | "country_unsupported" | "charges_disabled" | "card_payments_inactive" | "restricted" | "requirements_past_due" };
 
 export function sellerReadiness(a: SellerAccount | null | undefined): Readiness {
   if (!a?.stripe_account_id || !/^acct_[A-Za-z0-9_]+$/.test(a.stripe_account_id)) return { ready: false, reason: "no_account" };
+  // Seller-country backstop (owner 2026-11-14, connect-countries.ts): an account in a country our DEC-107 configuration can't use
+  // (e.g. no application fees there) never takes a direct charge, whatever Stripe reports. Unknown country = older cache row → Stripe decides.
+  if (a.country && !isConnectCountrySupported(a.country)) return { ready: false, reason: "country_unsupported" };
   if (a.disabled_reason) return { ready: false, reason: "restricted" };
   if ((a.past_due ?? []).length) return { ready: false, reason: "requirements_past_due" };
   if (!a.charges_enabled) return { ready: false, reason: "charges_disabled" };
@@ -47,6 +51,7 @@ export function sellerReadiness(a: SellerAccount | null | undefined): Readiness 
 
 export const NOT_READY_COPY: Record<Exclude<Readiness, { ready: true }>["reason"], string> = {
   no_account: "The seller hasn’t set up Stripe payments yet, so this can’t be paid online right now.",
+  country_unsupported: "This seller can’t take payments through Gala Dock in their country yet. Contact them directly to arrange payment.",
   charges_disabled: "The seller’s Stripe account can’t accept payments right now.",
   card_payments_inactive: "The seller’s Stripe account isn’t enabled for card payments yet.",
   restricted: "Stripe has restricted the seller’s account. Payments are paused until the seller resolves it with Stripe.",

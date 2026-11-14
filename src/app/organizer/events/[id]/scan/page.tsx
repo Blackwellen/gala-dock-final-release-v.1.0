@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getOrganizer } from "@/lib/data/context";
-import { Crumbs } from "@/components/kit";
 import { TicketScanner } from "@/components/tickets/scanner";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata = { title: "Check-in" };
 
@@ -13,7 +13,7 @@ export default async function OrganizerScanPage({ params }: PageProps<"/organize
   const { data: e } = await ctx.supabase.from("events").select("id,name,workspace_id").eq("id", id).maybeSingle();
   if (!e || e.workspace_id !== ctx.workspace.id) notFound();
   return <div className="k-col" style={{ gap: 14 }}>
-    <Crumbs items={[{ label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Check-in" }]} />
+    <EventSubHeader id={id} name={e.name} tab="operations" page="Check-in" canMoney={ctx.canMoney} />
     <TicketScanner eventId={id} eventName={e.name} />
   </div>;
 }

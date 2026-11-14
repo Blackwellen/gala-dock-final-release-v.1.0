@@ -17,10 +17,11 @@ import "@/styles/messaging.css";
 export function LiveThread({ conversationId }: { conversationId: string }) {
   const router = useRouter();
   useEffect(() => {
-    void markRead(conversationId);
+    // Refresh after the read is recorded so the list's unread dot and header badges clear now, not at the next 30s poll (Q47).
+    void markRead(conversationId).then(() => router.refresh(), () => {});
     const sb = createClient();
     const ch = sb.channel(`conv:${conversationId}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "conversation_messages", filter: `conversation_id=eq.${conversationId}` },
-      () => { void markRead(conversationId); router.refresh(); }).subscribe();
+      () => { void markRead(conversationId).then(() => router.refresh(), () => router.refresh()); }).subscribe();
     const t = setInterval(() => { if (document.visibilityState === "visible") router.refresh(); }, 30_000);
     return () => { void sb.removeChannel(ch); clearInterval(t); };
   }, [conversationId, router]);
@@ -165,8 +166,11 @@ export function NewConversation({ contacts, asWorkspace, base, me }: { contacts:
     if (!to) { setError("Choose who to message."); return; }
     const r = await startConversation({ toType: to.kind, to: to.id, subject: personalise(subject, values), body: personalise(body, values) || `📎 ${files.map(f => f.name).join(", ")}`, asWorkspace });
     if (!r.ok) { setError(r.error); return; }
-    if (files.length) await sendMessage(r.data!, "", files, asWorkspace);
-    setOpen(false); router.push(`${base}?c=${r.data}`);
+    // The attachments go in a second message: if that fails, open the conversation but keep this panel up with the reason
+    // (they used to be dropped silently — Q47).
+    const att = files.length ? await sendMessage(r.data!, "", files, asWorkspace) : null;
+    if (att && !att.ok) setError(`Your message was sent, but the attachments weren’t: ${att.error}`); else setOpen(false);
+    router.push(`${base}?c=${r.data}`);
   });
   return <form className="mk-form ms-new" aria-label="New message" onSubmit={e => { e.preventDefault(); submit(); }}>
     {to ? <div className="ms-to"><Avatar name={to.label} size={30} /><span><b>{to.label}</b><small>{to.context}</small></span><button type="button" className="mk-btn ghost" onClick={() => setTo(null)}>Change</button></div> : <>

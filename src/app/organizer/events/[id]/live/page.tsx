@@ -8,6 +8,7 @@ import { LiveRefresh, CheckinButtons, ProgrammeButtons, IncidentForm, ResolveInc
 import { time } from "@/lib/format";
 import "@/styles/marketplace.css";
 import "@/styles/live.css";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata = { title: "Live" };
 type Prog = { id: string; title: string; starts_at: string; duration_minutes: number | null; status: string; area: string | null; owner_name: string | null };
@@ -46,7 +47,8 @@ export default async function LivePage({ params }: PageProps<"/organizer/events/
   const Prow = ({ p }: { p: Prog }) => <li><div className="mk-main"><b>{time(p.starts_at)} · {p.title}</b><small>{[p.area, p.owner_name, p.duration_minutes ? `${p.duration_minutes} min` : null].filter(Boolean).join(" · ")}</small></div><ProgrammeButtons eventId={id} itemId={p.id} status={p.status} /></li>;
   return <div className="k-col lv" style={{ gap: 16 }}>
     <LiveRefresh />
-    <PageHead crumbs={[{ label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Live" }]} title={<>Live · {e.name}</>}
+    <EventSubHeader id={id} name={e.name} tab="operations" page="Live" canMoney={ctx.canMoney} />
+    <PageHead title={<>Live · {e.name}</>}
       sub={`${e.venue_name ?? ""}${e.starts_at ? ` · ${time(e.starts_at)}–${time(e.ends_at)}` : ""} · updates every 20 seconds`} actions={<Link className="k-btn ghost" href={`/organizer/events/${id}?tab=operations`}>Operations</Link>} />
     <div className="lv-quad">
       <section className="lv-col now" aria-labelledby="lv-now"><h2 id="lv-now">Now</h2>{nowItems.length ? <ul className="mk-list">{nowItems.map(p => <Prow key={p.id} p={p} />)}</ul> : <p className="mk-empty">Nothing running right now.</p>}</section>

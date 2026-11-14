@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CalendarDays, Info, MapPin } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
 import { getProEvent } from "@/lib/data/event";
@@ -9,6 +8,7 @@ import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import { EventMapEditor, type Binding, type MapTab, type VersionRow, type ZoneRow } from "./editor";
 import type { Validation } from "./actions";
 import "@/styles/org-event-map.css";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata: Metadata = { title: "Venue map" };
 const TABS: MapTab[] = ["design", "ticketing", "operations", "preview"];
@@ -44,8 +44,7 @@ export default async function EventMapPage(props: PageProps<"/organizer/events/[
   const canEdit = ["owner", "manager", "member"].includes(ctx.role);
 
   return <div className="om-page">
-    <nav className="om-crumbs" aria-label="Breadcrumb"><ol><li><Link href="/organizer">Organizer</Link></li><li><Link href="/organizer/events">Events</Link></li>
-      <li><Link href={`/organizer/events/${e.id}`}>{e.name}</Link></li><li aria-current="page">Venue Map</li></ol></nav>
+    <EventSubHeader id={e.id} name={e.name} tab="sell" page="Venue Map" canMoney={ctx.canMoney} />
     <header className="om-head">
       <div><h1>{e.name}<span className={`om-chip ${plan.publishedVersion ? "live" : "draft"}`}>{plan.publishedVersion ? "Published" : "Draft"}</span></h1>
         <p className="om-meta">{when && <span><CalendarDays aria-hidden="true" />{fmtD(when)} · {fmtT(when)}{ends ? ` – ${fmtT(ends)}` : ""}</span>}

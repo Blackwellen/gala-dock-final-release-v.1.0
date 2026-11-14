@@ -20,15 +20,18 @@ export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = tru
   const [payload, setPayload] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "valid" | "offline" | "inactive">("loading");
   const [qr, setQr] = useState("");
+  const [status, setStatus] = useState(ticket.status);
   const [big, setBig] = useState(false);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>, live = true;
     const load = async () => {
       try {
         const r = await fetch(`/api/tickets/${ticket.id}/credential`, { cache: "no-store" });
+        // Only a 200 reply with a non-valid status voids the ticket; 401/409/5xx are transient → offline notice + retry (Q47).
+        if (!r.ok) throw new Error(`credential_${r.status}`);
         const j = await r.json() as { status?: string; payload?: string; expiresInMs?: number };
         if (!live) return;
-        if (j.status !== "valid" || !j.payload) { setState("inactive"); return; }
+        if (j.status !== "valid" || !j.payload) { setStatus(j.status ?? "unavailable"); setState("inactive"); return; }
         setPayload(j.payload); setState("valid");
         setQr(await QRCode.toString(j.payload, { type: "svg", errorCorrectionLevel: "M", margin: 1 }));
         timer = setTimeout(load, Math.max(3000, (j.expiresInMs ?? 30000) - 1500));
@@ -40,7 +43,7 @@ export function TicketCredential({ ticket, defaultMode = "qr", allowSwitch = tru
 
   const dim = state === "offline" ? " dim" : "";
   const seat = [ticket.section && `Section ${ticket.section}`, ticket.row && `Row ${ticket.row}`, ticket.seat && `Seat ${ticket.seat}`].filter(Boolean).join(" · ");
-  const credential = state === "inactive" ? <div className="tc-void">Not valid for entry — {ticket.status.replace("_", " ")}</div>
+  const credential = state === "inactive" ? <div className="tc-void">Not valid for entry — {status.replace(/_/g, " ")}</div>
     : !payload ? <div className="tc-loading">Loading your entry code…</div>
     : mode === "barcode" ? <><div className={`tc-barcode${dim}`} dangerouslySetInnerHTML={{ __html: code128Svg(payload, { height: 90, module: 1 }) }} />
       {/* The inline barcode is capped to its card (<1 CSS px per module on phones — too fine to scan): enlarge fills the screen. */}

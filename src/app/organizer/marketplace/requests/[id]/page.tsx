@@ -43,7 +43,7 @@ export default async function RequestPage({ params, searchParams }: { params: Pr
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Marketplace", href: "/organizer/marketplace" }, { label: "Requests", href: "/organizer/marketplace?section=requests" }, { label: r.reference ?? "Request" }]} />
     <div className="rq-head">
-      <div><div className="k-row" style={{ gap: 10 }}><h1 style={{ fontSize: 28 }}>{r.reference}</h1><Chip tone={r.status === "sent" ? "purple" : "gray"} lg>{r.status === "sent" ? "Open" : r.status}</Chip>{r.emergency && <Chip tone="red" lg>Emergency</Chip>}</div>
+      <div><div className="k-row" style={{ gap: 10 }}><h1>{r.reference}</h1><Chip tone={r.status === "sent" ? "purple" : "gray"} lg>{r.status === "sent" ? "Open" : r.status}</Chip>{r.emergency && <Chip tone="red" lg>Emergency</Chip>}</div>
         <p style={{ fontSize: 13, color: "var(--k-ink-2)", margin: "4px 0" }}>{r.title}</p>
         <div className="k-row k-xs k-muted" style={{ gap: 12 }}><span className="k-row" style={{ gap: 4 }}><CalendarDays size={12} />Event: <Link className="k-link" href={`/organizer/events/${ev.id}`}>{ev.name}</Link></span><span className="k-row" style={{ gap: 4 }}><CalendarDays size={12} />{dateShort(ev.starts_at)}</span><span className="k-row" style={{ gap: 4 }}><MapPin size={12} />{ev.venue_name || ev.location}</span></div>
         <div className="k-row k-wrap" style={{ gap: 6, marginTop: 10 }}>{[r.category, ...String(req.tags ?? "").split(",").map(tag=>tag.trim()).filter(Boolean)].slice(0, 4).map((t, i) => <Chip key={t + i} tone={(["purple", "gray", "gray", "blue"] as const)[i]}>{t[0]!.toUpperCase() + t.slice(1)}</Chip>)}</div></div>

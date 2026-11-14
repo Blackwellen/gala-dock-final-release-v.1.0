@@ -8,6 +8,7 @@ import { getCustomer } from "@/lib/data/context";
 import { savedCards } from "@/lib/payments";
 import { ProfileDetails, AvatarButton, EventPreferences, CardsPanel, IdentityList, NotificationPrefs, QuickActions, PasswordCard, DeletionCard } from "@/components/customer/account-client";
 import { CalendarConnectSection } from "@/components/shared/calendar-connect-section";
+import { deletionDate } from "@/lib/settings/rules";
 
 export const metadata = { title: "My Account" };
 const COUNTRIES: Record<string, string> = { GB: "United Kingdom", IE: "Ireland", US: "United States", FR: "France", DE: "Germany", ES: "Spain", IT: "Italy", NL: "Netherlands", PT: "Portugal", AE: "United Arab Emirates" };
@@ -46,7 +47,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   return <div className="ac">
     <h1>My Account</h1><p className="ac-sub">Manage your details, payments, notifications and security preferences.</p>
     <nav className="ce-card ac-tabs" aria-label="Account sections">{tabs.map(([k, I, l]) => <Link key={k} href={k === "profile" ? "/account" : `/account?tab=${k}`} aria-current={tab === k ? "page" : undefined}><I size={20} />{l}</Link>)}</nav>
-    {p?.deletion_requested_at && <div className="k-notice red ac-del"><ShieldCheck size={16} />Your account is scheduled for deletion on {new Date(new Date(p.deletion_requested_at).getTime() + 30 * 864e5).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. <DeletionCard scheduled inline /></div>}
+    {p?.deletion_requested_at && <div className="k-notice red ac-del"><ShieldCheck size={16} />Your account is scheduled for deletion on {deletionDate(p.deletion_requested_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. <DeletionCard scheduled inline /></div>}
     {tab === "profile" && <div className="ac-grid">
       {profileCard}
       <div className="ac-col">

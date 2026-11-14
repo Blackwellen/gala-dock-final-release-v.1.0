@@ -16,6 +16,8 @@ export function RotatingQr({ ticketId, size = 240, logo = false, compact = false
     const load = async () => {
       try {
         const r = await fetch(`/api/tickets/${ticketId}/credential`, { cache: "no-store" });
+        // Signed-out, rate-limited or server errors are not "this ticket is void": keep the last code and retry (Q47).
+        if (!r.ok) throw new Error(`credential_${r.status}`);
         const j = await r.json() as { status?: string; payload?: string; expiresInMs?: number };
         if (!live) return;
         if (j.status !== "valid" || !j.payload) { setState("inactive"); setStatus(j.status ?? "unavailable"); return; }
@@ -27,7 +29,9 @@ export function RotatingQr({ ticketId, size = 240, logo = false, compact = false
     void load();
     return () => { live = false; clearTimeout(timer); };
   }, [ticketId, size, logo]);
-  if (state === "inactive") return <div className="rq-void" role="status">This ticket is {status.replace("_", " ")} — it can’t be used for entry.</div>;
+  if (state === "inactive") return <div className="rq-void" role="status">{status === "on_hold"
+    ? "On hold — a card payment dispute on this order is being reviewed. This ticket can’t be used for entry for now; see the box office."
+    : `This ticket is ${status.replace(/_/g, " ")} — it can’t be used for entry.`}</div>;
   return <figure className="rq" style={{ margin: 0, textAlign: "center" }}>
     <div style={{ position: "relative", width: size, height: size, margin: "0 auto" }}>
       <div aria-label="Entry QR code" role="img" style={{ width: size, height: size, opacity: state === "offline" ? 0.55 : 1 }} dangerouslySetInnerHTML={{ __html: svg }} />

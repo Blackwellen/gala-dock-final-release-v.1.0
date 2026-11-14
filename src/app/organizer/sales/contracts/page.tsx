@@ -25,7 +25,7 @@ export default async function ContractsPage({ searchParams }: PageProps<"/organi
   const sig = signatureHealth();
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Sales", href: "/organizer/sales" }, { label: "Contracts" }]} />
-    <div className="k-page-head"><div><h1 style={{ fontSize: 30 }}>Contracts</h1><p className="sub">Versioned client contracts: draft, send, sign, renew. Signed contracts are locked.</p></div><NewContractButton clients={clients} proposals={proposals} templates={templates} /></div>
+    <div className="k-page-head"><div><h1>Contracts</h1><p className="sub">Versioned client contracts: draft, send, sign, renew. Signed contracts are locked.</p></div><NewContractButton clients={clients} proposals={proposals} templates={templates} /></div>
     <SalesNav active="contracts" />
     {sig.state !== "ok" && <div className="k-notice amber" style={{ marginBottom: 12 }}><span className="k-small">No e-signature provider is connected. Clients sign through a secure link with their typed name; the version fingerprint, email and time are recorded.</span></div>}
     <Card flush>

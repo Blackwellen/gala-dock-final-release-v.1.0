@@ -98,10 +98,13 @@ export async function loadEventMapVersion(eventId: string, version?: number): Pr
 /** Legacy entry point kept for older callers (unchecked save through organizer_save_event_plan). */
 export async function saveEventPlan(eventId: string, overlay: MapEl[], publish: boolean): Promise<{ ok: boolean; message?: string; error?: string }> {
   if (!UUID.test(eventId)) return { ok: false, error: "Event not found." };
+  // Q48: refuse instead of silently dropping elements past this entry point's limit (it used to slice to 2000 and report success).
+  if (!Array.isArray(overlay)) return { ok: false, error: MSG.invalid_elements };
+  if (overlay.length > 2000) return { ok: false, error: "That’s more than 2,000 elements for this save. Open the event’s Venue Map editor, which supports larger plans." };
   const ctx = await getOrganizer();
   let seats;
   try { seats = planSeats(overlay); } catch (e) { return { ok: false, error: (e as Error).message }; }
-  const clean = overlay.slice(0, 2000).map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
+  const clean = overlay.map(e => ({ ...e, label: String(e.label ?? "").slice(0, 60) }));
   const { data, error } = await (untyped(ctx.supabase) as unknown as Rpc).rpc("organizer_save_event_plan", { p_event: eventId, p_structure: { format: "plan-v2" }, p_overlay: clean, p_seats: seats, p_publish: publish });
   if (error) return { ok: false, error: explain(error) };
   revalidatePath(`/organizer/events/${eventId}`);

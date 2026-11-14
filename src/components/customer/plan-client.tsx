@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Plus, Share2 } from "lucide-react";
 import { Dialog, useAction, useKitToast } from "@/components/kit/client";
-import { addCustomerTask, addDayPlanItem } from "@/lib/actions/plan";
+import { addCustomerTask, addDayPlanItem, toggleCustomerTask } from "@/lib/actions/plan";
 
 export function AddTaskBtn({ eventId, categories }: { eventId: string; categories: string[] }) {
   const { run, pending } = useAction(); const [open, setOpen] = useState(false);
@@ -30,4 +30,11 @@ export function AddDayItem({ eventId }: { eventId: string }) {
 export function SharePlan({ eventId }: { eventId: string }) {
   const toast = useKitToast();
   return <button className="k-btn outline" onClick={async () => { const url = `${location.origin}/account/events/${eventId}/plan?tab=day`; try { await navigator.clipboard.writeText(url); toast("Plan link copied — shared viewers must have access to the event"); } catch { toast(url); } }}><Share2 size={14} />Share plan</button>;
+}
+/** Checklist tick for the customer's own event (the organiser TaskCheck calls a workspace-only action and always failed here). */
+export function CustomerTaskCheck({ eventId, taskId, done, title }: { eventId: string; taskId: string; done: boolean; title: string }) {
+  const { run, pending } = useAction(); const [v, setV] = useState(done);
+  // Follow the server value after a refresh (adjusting state during render, not in an effect).
+  const [prev, setPrev] = useState(done); if (prev !== done) { setPrev(done); setV(done); }
+  return <input type="checkbox" className="eh-check" checked={v} disabled={pending} aria-label={`Mark "${title}" ${v ? "not done" : "done"}`} onChange={async e => { const next = e.target.checked; setV(next); const r = await run(() => toggleCustomerTask(eventId, taskId, next)); if (!r.ok) setV(!next); }} />;
 }

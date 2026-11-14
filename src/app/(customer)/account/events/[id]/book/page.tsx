@@ -17,7 +17,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const [{ id }, sp] = await Promise.all([params, searchParams]); const ctx = await getCustomer(); const d = await getMyEvent(ctx, id); const e = d.e;
   const it = d.items.find(i => i.id === sp.item) ?? (sp.item ? null : d.items.find(i => i.category === "venue" && OPEN.includes(i.status)) ?? d.items.find(i => OPEN.includes(i.status)));
   if (!it) redirect(`/account/events/${e.id}/build`);
-  const step = Math.min(3, Math.max(1, Number(sp.step) || 1));
+  const step = Math.min(3, Math.max(1, Math.trunc(Number(sp.step)) || 1));
   const base = `/account/events/${e.id}/book?item=${it.id}${sp.option === "hold" ? "&option=hold" : ""}`;
   const [{ data: l }, { data: pkg }, { data: pr }, { data: revs }] = await Promise.all([
     it.listing_id ? ctx.supabase.from("listings").select("id,name,kind,category,location,city,image,gallery,rating,review_count,capacity_max,price_from,price_unit,response_hours,description,details,tags,instant_book,slug").eq("id", it.listing_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -29,13 +29,20 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const crumbs = <nav className="bk-crumbs" aria-label="Breadcrumb"><Link href={`/account/events/${e.id}/build`} aria-label="Back to build"><ArrowLeft size={14} /></Link><Link href="/account/events">My Events</Link><ChevronRight size={12} /><Link href={`/account/events/${e.id}`}>{e.name}</Link><ChevronRight size={12} /><span aria-current="page">Book {kindLabel}</span></nav>;
   const steps = [{ title: "Requirements", sub: "Confirm details and answer provider questions" }, { title: it.status === "quoted" || it.status === "available" || it.status === "held" ? "Review & Book" : "Terms, Hold & Payment", sub: "Choose your option and review the commitment" }, { title: "Confirmation", sub: "Request sent to provider" }];
 
+  // Q47: Stripe's cancel URL is this page's step 3 + payment=cancelled, and step 3 is reachable by URL before anything was sent.
+  // Neither may show the "Request sent" confirmation: a cancelled payment goes back to Review, an unsent request to Requirements.
+  if (step === 3 && sp.payment === "cancelled") redirect(`${base}&step=2&payment=cancelled`);
+  if (step === 3 && ["suggested", "draft"].includes(it.status)) redirect(`${base}&step=1`);
   if (step === 3) {
     const done = ["confirmed", "fulfilled"].includes(it.status);
-    const head = done ? `${it.title} is booked` : it.status === "standby" ? `You're on ${it.title}'s standby list` : it.status === "held" ? `Hold requested from ${it.title}` : `Request sent to ${it.title}`;
+    // Back from a successful Checkout before the webhook has confirmed the booking: the line is still quoted.
+    const processing = !done && ["quoted", "available", "quote_received", "quote_revised", "customer_reviewing"].includes(it.status);
+    const head = done ? `${it.title} is booked` : processing ? `Confirming your payment to ${it.title}` : it.status === "standby" ? `You're on ${it.title}'s standby list` : it.status === "held" ? `Hold requested from ${it.title}` : `Request sent to ${it.title}`;
     const deadline = it.response_deadline ? new Date(it.response_deadline) : null;
     const next = done ? [["Deposit paid", "Your receipt is in Money."], ["Balance scheduled", "We'll remind you before it's due."], ["Provider preparing", "They'll confirm final details in Messages."]]
+      : processing ? [["Payment received by Stripe", "We're confirming it now. This usually takes a few seconds."], ["Booking confirms", "Refresh this page or check Money for your receipt."], ["Provider notified", "They'll confirm final details in Messages."]]
       : it.status === "standby" ? [["Standby registered", "The provider knows you're interested."], ["We'll alert you", "If the date opens up, you'll hear first."], ["No commitment", "Nothing is booked or charged."]]
-      : [["Provider reviews your request", deadline ? `They have until ${deadline.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" })} to respond.` : "They have 48 hours to respond."], ["You receive a formal quote", "Compare it in your build before deciding."], ["You choose to book", "No payment is taken unless you approve a quote."]];
+      : [["Provider reviews your request", deadline ? `They have until ${deadline.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })} to respond.` : "They have 48 hours to respond."], ["You receive a formal quote", "Compare it in your build before deciding."], ["You choose to book", "No payment is taken unless you approve a quote."]];
     return <div className="bk">
       <div className="bk-head">{crumbs}</div>
       <div className="bk-grid">
@@ -43,7 +50,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
         <section className="ce-card bk-done">
           <span className="bk-done-ic"><CheckCircle2 size={34} /></span>
           <h1>{head}</h1>
-          <p className="ce-sub">{done ? "Your booking is confirmed and the provider has been notified." : "We've shared your requirements with the provider and added this to your build."}</p>
+          <p className="ce-sub">{done ? "Your booking is confirmed and the provider has been notified." : processing ? "If you completed payment, your booking confirms as soon as the payment clears. If you didn't, nothing has been charged." : "We've shared your requirements with the provider and added this to your build."}</p>
           <div className="bk-done-card">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={it.image || l?.image || "/assets/gd/oe-neon.webp"} alt="" /><div className="k-grow"><b>{it.title}</b><small><CalendarDays size={13} />{dateLong(e.starts_at)}</small><small><Users size={13} />{e.guest_count} guests</small></div><div className="bk-done-amt"><b>{it.amount != null ? money(it.amount) : "Quote pending"}</b><small>{done ? "Confirmed" : it.status === "standby" ? "Standby" : "Estimate"}</small></div></div>
           <ol className="bk-next">{next.map(([t, s], i) => <li key={t}><span>{i + 1}</span><div><b>{t}</b><small>{s}</small></div></li>)}</ol>
           <div className="k-row k-wrap" style={{ gap: 10, justifyContent: "center" }}>
@@ -78,7 +85,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
     cardUnavailable:paymentMethods.unavailable,
   };
   return <div className="bk" data-step={step}>
-    <div className="bk-head">{crumbs}<div className="bk-title"><h1>Booking Request</h1><p className="ce-sub">{step === 1 ? "Tell the provider what you need. This will be sent as a request for availability and a quote." : "Choose how you'd like to proceed, review the terms and add a payment method. No payment is taken unless you approve a quote."}</p></div></div>
+    <div className="bk-head">{crumbs}<div className="bk-title"><h1>Booking Request</h1><p className="ce-sub">{step === 2 && sp.payment === "cancelled" ? "Payment was cancelled and nothing has been charged. You can try again or choose another option." : step === 1 ? "Tell the provider what you need. This will be sent as a request for availability and a quote." : "Choose how you'd like to proceed, review the terms and add a payment method. No payment is taken unless you approve a quote."}</p></div></div>
     <BookingFlow key={it.id} step={step as 1 | 2} base={base} data={data} steps={steps} />
   </div>;
 }

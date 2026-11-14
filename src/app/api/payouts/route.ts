@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
-import { countryByName } from "@/lib/onboarding-schema";
+import { COUNTRIES } from "@/lib/master-data";
+import { CONNECT_COPY, connectCountrySupport, resolveCountryCode, workspaceCountryValue } from "@/lib/payments/connect-countries";
 import { payoutStatus, stripe, stripeKey, stripeMode } from "@/lib/stripe";
 import { idForMode, isStaleAccountError } from "@/lib/payments/stripe-mode";
 import { clearStaleAccountLink, syncConnectAccount, type StripeAccount } from "@/lib/commerce/connect";
@@ -37,6 +38,18 @@ export async function POST(request: NextRequest) {
   if (!stripeKey()) return json({ error: "Payouts are not configured for this environment yet.", unavailable: true }, 503);
   if (!(await rateLimit(`payouts:${owned.user.id}`, 10, 300))) return json({ error: "Too many attempts. Please wait a few minutes." }, 429);
   const { workspace, user } = owned;
+  // Seller-country gate (owner 2026-11-14): Stripe gets the workspace's real business country — never a silent GB default — and
+  // no account is created where our configuration can't take payments (connect-countries.ts). Checked before the terms/trader
+  // questions so an unsupported seller isn't asked to accept terms for something they can't use.
+  const countryValue = workspaceCountryValue(workspace.settings);
+  const country = resolveCountryCode(countryValue, COUNTRIES);
+  if (!country) return json({ error: workspace.kind === "organizer" ? "Add your business country (Settings → Locale & defaults) before setting up payouts, so Stripe verifies the right country."
+    : "Your workspace has no business country yet. Contact support to add it before setting up payouts, so Stripe verifies the right country.", countryRequired: true }, 422);
+  const support = connectCountrySupport(country);
+  if (!support.supported) {
+    const name = COUNTRIES.find(c => c.code === country)?.name ?? String(countryValue ?? country);
+    return json({ error: CONNECT_COPY.payoutsRefused(name), countryUnsupported: true, country, help: CONNECT_COPY.helpPath }, 422);
+  }
   // DEC-107 express term (playbook §4): the seller accepts the Payment Terms (manual payouts on release triggers, reserves, payout
   // pause bases, losses) at payout set-up, recorded with version, user and time. The gate and its write path ship together.
   const admin = createAdminClient();
@@ -62,8 +75,6 @@ export async function POST(request: NextRequest) {
     const { error: termsError } = await supabase.rpc("accept_payment_terms" as never, { p_role: "seller", p_version: terms.payment_terms_version, p_source: "payout_setup" } as never);
     if (termsError) return json({ error: "The Payment Terms changed. Reload the page and accept the current version.", termsRequired: true, termsVersion: terms.payment_terms_version }, 409);
   }
-  const settings = workspace.settings as Record<string, Record<string, unknown>>;
-  const country = countryByName((settings.organisation ?? settings.business)?.country).code;
   try {
     // Go-live (lane A2): the connected account of the CURRENT mode only — a test-mode acct_ never exists in live, so live onboarding
     // creates a fresh live account and stores it in stripe_account_id_live (the test id stays untouched for rollback).
@@ -77,8 +88,11 @@ export async function POST(request: NextRequest) {
         const existing = await stripe<StripeAccount>(`accounts/${accountId}`);
         // DEC-107: an unfinished account from before 2026-11-11 (full Stripe dashboard, automatic payouts) is replaced by a DEC-107
         // account. A finished legacy account is kept; its new payments are refused until the seller moves (COM_SELLER_NOT_READY).
-        if (existing.controller?.stripe_dashboard?.type !== "none" && !existing.charges_enabled) {
-          await clearStaleAccountLink(workspace.id, mode, stored, "payouts.setup.dec107_replace"); accountId = null;
+        // An unfinished account opened for another country (e.g. the old GB default before the business country was set) is
+        // replaced too: Stripe can't change an account's country, and a finished one stays (Stripe verified that country).
+        const wrongCountry = !!existing.country && existing.country !== country && !existing.details_submitted;
+        if ((existing.controller?.stripe_dashboard?.type !== "none" || wrongCountry) && !existing.charges_enabled) {
+          await clearStaleAccountLink(workspace.id, mode, stored, wrongCountry ? "payouts.setup.country_changed" : "payouts.setup.dec107_replace"); accountId = null;
         }
       }
       catch (e) { if (!isStaleAccountError(e)) throw e; await clearStaleAccountLink(workspace.id, mode, stored, "payouts.setup"); accountId = null; }

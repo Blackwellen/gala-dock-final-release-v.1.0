@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useDeferredValue, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, CircleAlert, CircleCheck, Copy, GitCompare, GitMerge, History, Info, RefreshCw, Upload, X } from "lucide-react";
 import { useToast } from "@/components/ui";
@@ -24,7 +24,8 @@ const TABS: [MapTab, string][] = [["design", "Design"], ["ticketing", "Ticketing
 const SAFETY = new Set(["insufficient_exits", "exit_width_insufficient", "exit_blocked", "route_blocked", "aisle_narrow", "density_exceeded", "accessible_allocation", "venue_lock"]);
 const CAPACITY = new Set(["capacity_exceeded", "room_capacity_exceeded", "room_seated_exceeded", "overlap"]);
 const n = (v: number | null | undefined) => (v ?? 0).toLocaleString("en-GB");
-const day = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+// Fixed zone: rendered on the server (UTC) and hydrated in the browser — without it the version list mismatched outside GMT (Q48).
+const day = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
 
 /**
  * ORG-013 · Event layout editor shell. Design (PlanBuilder over the venue's locked structure) · Ticketing (tier ↔ seat/area
@@ -98,8 +99,10 @@ export function EventMapEditor(p: {
   const recheck = () => start(async () => { const r = await validateEventMap(p.eventId); if (r.ok) { setValidation(r.validation); toast(r.validation.ok ? "No blocking issues" : `${r.validation.errors.length} blocking issue${r.validation.errors.length === 1 ? "" : "s"}`); } else toast(r.error); });
   const focus = (f: Finding) => { if (!f.element_id) return; if (tab !== "design") go("design"); setTimeout(() => { if (!api.current?.focus(String(f.element_id))) toast("That element is on the venue’s locked plan or was removed."); }, tab === "design" ? 0 : 60); };
 
-  // Capacity strip (ORG-013 header KPIs) from the editor's current overlay and the server's last validation.
-  const overlayNow = base.overlay;
+  // Capacity strip (ORG-013 header KPIs) from the editor's current overlay — unsaved edits included (Q48; it used to show the last
+  // saved version) — and the server's last validation. Deferred so dragging stays smooth.
+  const [live, setLive] = useState<MapEl[] | null>(null);
+  const overlayNow = useDeferredValue(p.canEdit && live ? live : base.overlay);
   const kpi = useMemo(() => {
     let seated = 0, ga = 0, vip = 0, tables = 0, booths = 0;
     for (const e of overlayNow) { const d = ASSET[e.asset ?? ""]; if (!d || e.hidden) continue;
@@ -108,8 +111,9 @@ export function EventMapEditor(p: {
       if (d.capacity && e.capacity) { if (e.asset === "vip_area" || e.asset === "lounge") vip += e.capacity; else ga += e.capacity; }
       if (["market_stall", "sponsor", "merch", "food_stall"].includes(e.asset ?? "")) booths += 1; }
     const allocated = p.tiers.reduce((a, t) => a + (t.quantity ?? 0), 0);
-    return { seated, ga, vip, tables, booths, allocated, total: Number(validation?.stats?.total ?? seated + ga + vip) };
-  }, [overlayNow, p.tiers, validation]);
+    // The server total describes the saved layout; once there are unsaved edits, count the editor's elements instead.
+    return { seated, ga, vip, tables, booths, allocated, total: dirty ? seated + ga + vip : Number(validation?.stats?.total ?? seated + ga + vip) };
+  }, [overlayNow, p.tiers, validation, dirty]);
   const cap = p.venueCapacity ?? Number(validation?.stats?.venue_capacity ?? 0) ?? 0;
   const pct = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a / b) * 100)) : 0);
   const status = base.version === 0 ? "Not started" : p.publishedVersion === base.version ? "Published" : "Draft";
@@ -153,7 +157,7 @@ export function EventMapEditor(p: {
             <button type="button" className="k-btn ghost sm" onClick={() => setCmp(null)} aria-label="Close comparison"><X aria-hidden="true" /></button></div>}
           {!p.canEdit && <p className="om-note" role="note"><Info aria-hidden="true" />View only: your workspace role can see this layout but not change it. Ask an owner or manager for edit access.</p>}
           {!p.canEdit ? <div className="om-ro"><PlanZoom label="Event layout (view only)"><PlanPreview base={p.base} overlay={base.overlay} spaces={p.spaces} height="100%" tierColor={tierColor} label="Event layout (view only)" /></PlanZoom></div> : <PlanBuilder key={seed.key} mode="event" base={p.base} initial={seed.overlay} spaces={p.spaces} tiers={p.tiers} version={p.publishedVersion}
-            draftVersion={base.version > p.publishedVersion ? base.version : 0} geo={p.geo} height={640} apiRef={api} highlights={highlights} onDirtyChange={setDirty} hidePublish
+            draftVersion={base.version > p.publishedVersion ? base.version : 0} geo={p.geo} height={640} apiRef={api} highlights={highlights} onDirtyChange={setDirty} onElementsChange={setLive} hidePublish
             onSave={(els, publish) => save(els, publish)} />}
         </div>
         {tab === "ticketing" && <section className="k-card om-panel"><h2>Ticket tiers on the layout</h2>

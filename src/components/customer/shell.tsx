@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { GalaLogo } from "@/components/brand/gala-logo";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
-import { Search, MessageSquare, Bell, CircleHelp, ChevronDown, User, Ticket, Heart, CalendarDays, Sparkles, Star, LogOut, Briefcase, Compass, Menu as MenuIcon, X, House } from "lucide-react";
+import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
+import { MessageSquare, Bell, CircleHelp, ChevronDown, User, Ticket, Heart, CalendarDays, Sparkles, Star, LogOut, Briefcase, Compass, House, ShieldCheck } from "lucide-react";
 import { Menu, useAction } from "@/components/kit/client";
 import { DensitySwitch } from "@/components/kit/density";
 import { markNotificationsRead } from "@/lib/actions/shell";
@@ -27,17 +27,15 @@ const CU_TOP_LEVEL = ["/discover", "/plan", "/home", "/account", "/account/event
 type Props = { children: ReactNode; user: { name: string; email: string; avatar?: string | null }; unread: number; notifications: { id: string; title: string; body: string; link: string; read_at: string | null; created_at: string }[]; threads: RecentConversation[]; hasWorkspace: boolean };
 
 export function CustomerShell({ children, user, unread, notifications, threads, hasWorkspace }: Props) {
-  const pathname = usePathname(); const router = useRouter(); const { run } = useAction();
-  const [open, setOpen] = useState(false);
-  // Close the mobile menu on navigation (reset-on-change during render, not in an effect).
-  const [navPath, setNavPath] = useState(pathname);
-  if (navPath !== pathname) { setNavPath(pathname); setOpen(false); }
+  const pathname = usePathname(); const { run } = useAction();
+  // Below 1280px the shared MobileNav is the whole chrome (pwa-nav.css hides .pwa-hide-desktop-nav); the old burger sheet and bottom
+  // tab bar could never show and have been removed (Q47), so phone and desktop no longer carry two drifting menus.
   const active = (href: string) => pathname === href || pathname.startsWith(href + "/") || (href === "/plan" && pathname.startsWith("/plan"));
   return <div className="k-root c-root">
     <a href="#main" className="k-sr">Skip to content</a>
-    <MobileNav home="/discover" topLevel={CU_TOP_LEVEL} search={{ seat: null, placeholder: "Search events, venues, artists…" }}
+    <MobileNav home="/home" topLevel={CU_TOP_LEVEL} search={{ seat: null, placeholder: "Search events, venues, artists…" }}
       tabs={CU_NAV.slice(0, 4).map(n => ({ ...n, label: n.label === "Plan an Event" ? "Plan" : n.label }))}
-      menu={[...CU_NAV, { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "Account", icon: User, exact: true, titleOnly: true }, { href: "/account?tab=security", label: "Security", icon: User, exact: true }, { href: "/account/help", label: "Help", icon: CircleHelp, titleOnly: true }]}
+      menu={[...CU_NAV, { href: "/home", label: "Home", icon: House }, { href: "/account/inbox", label: "Messages", icon: MessageSquare }, { href: "/account/reviews", label: "Reviews", icon: Star }, { href: "/account", label: "Account", icon: User, exact: true }, { href: "/account?tab=security", label: "Security", icon: ShieldCheck, exact: true }, { href: "/help?from=customer", label: "Help", icon: CircleHelp }]}
       create={[{ href: "/plan?step=1", label: "Plan an event", icon: CalendarDays }]}
       messagesHref="/account/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }} />
     <header className="c-top pwa-hide-desktop-nav">
@@ -65,16 +63,9 @@ export function CustomerShell({ children, user, unread, notifications, threads, 
             <Link role="menuitem" className="k-menu-item" href={hasWorkspace ? "/organizer" : "/onboarding/organizer?step=1"} onClick={close}><Briefcase size={15} aria-hidden />{hasWorkspace ? "Organizer workspace" : "Become an organizer"}</Link>
             <form action="/auth/signout" method="post"><button role="menuitem" className="k-menu-item" type="submit"><LogOut size={15} aria-hidden />Sign out</button></form></>}
         </Menu>
-        <button className="c-burger k-icon-btn plain" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}><MenuIcon size={20} /></button>
       </div>
     </header>
-    {open && <div className="c-sheet" role="dialog" aria-modal="true" aria-label="Menu">
-      <div className="k-between" style={{ marginBottom: 10 }}><b>Menu</b><button className="k-icon-btn plain" aria-label="Close menu" onClick={() => setOpen(false)}><X size={18} /></button></div>
-      <form role="search" onSubmit={e => { e.preventDefault(); const v = (e.currentTarget.elements.namedItem("q") as HTMLInputElement).value; router.push(`/discover?q=${encodeURIComponent(v)}`); }}><div className="k-input-icon"><Search size={15} /><input className="k-input" name="q" placeholder="Search events, venues, services" aria-label="Search" /></div></form>
-      {CU_NAV.map(n => <Link key={n.href} href={n.href} className="k-menu-item" aria-current={active(n.href) ? "page" : undefined}><n.icon size={17} aria-hidden />{n.label}</Link>)}
-    </div>}
     <main id="main" className="c-main">{children}</main>
-    <nav className="c-tabbar pwa-hide-desktop-nav" aria-label="Quick navigation">{CU_NAV.map(n => <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}><n.icon size={20} aria-hidden /><span>{n.label === "Plan an Event" ? "Plan" : n.label}</span></Link>)}</nav>
   </div>;
 }
 

@@ -6,6 +6,7 @@ import { loadPricing } from "@/lib/public/pricing";
 import { TLink } from "@/components/site/tracked-link";
 import { Eyebrow, gbp, JsonLd, SectionHead } from "@/components/site/ui";
 import { Credits, PlanExplorer, PricingFaq, ProviderEconomics, type Faq } from "@/components/site/pricing/pricing-client";
+import { supportedCountryNames } from "@/lib/payments/connect-countries";
 import "@/styles/site-pricing.css";
 
 export const metadata = pageMetadata({
@@ -25,6 +26,7 @@ export default async function PricingPage() {
     { q: "Is Gala Dock free for customers?", a: `Yes. Creating an account and planning a personal event are free. When you buy tickets there is a buyer fee of ${LEGAL.fees.ticketBuyer}, and booking payments carry a booking admin fee of ${LEGAL.fees.bookingAdmin}. Both are shown before you pay.` },
     { q: "Can providers list for free?", a: `Yes. Venues and suppliers start on the free Starter plan and pay a platform fee only on bookings: ${LEGAL.fees.supplier}.` },
     { q: "When is the marketplace fee taken?", a: "When the booking payment is taken. Customers pay into the provider’s own Stripe account, and Gala Dock’s fee is taken from that payment as an application fee. Payouts are released on approved triggers." },
+    { q: "Where can sellers get paid?", a: `Venues, suppliers and ticket sellers can take payments through Gala Dock if their business is based in one of the ${supportedCountryNames().length} countries where Stripe supports our seller accounts: ${supportedCountryNames().join(", ")}. Businesses elsewhere can still list as enquiry-only and run free events. Details: Help, “Where you can get paid”.` },
     { q: "How much does it cost to sell tickets?", a: `Ticket sellers pay ${LEGAL.fees.ticketSeller}. Buyers pay ${LEGAL.fees.ticketBuyer}. Free tickets carry no ticket fee.` },
     { q: "How do Gala Agent credits work?", a: `Each organiser and provider plan includes a monthly allowance of Gala Agent credits. Owners can add credit packs (${packLine}), get alerts as usage grows, and choose whether the Agent stops at the limit or uses approved overage.` },
     { q: "Can I upgrade or downgrade at any time?", a: "Yes. Upgrades take effect straight away and are prorated. Downgrades take effect at the end of the current billing period." },

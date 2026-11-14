@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Users, Armchair, Stars, Check, Info, Sparkles, Lightbulb, CheckCircle2, MapPin, Map as MapIcon, PenSquare, Upload, Maximize, Plus, MoreHorizontal, ChevronDown, Trash2, Loader2 } from "lucide-react";
 import { Menu, useAction, useKitToast } from "@/components/kit/client";
@@ -22,7 +22,7 @@ function recommend(model: ProSettings["model"], cap: number): ProSection[] {
 }
 
 export function StepModel({ data, base }: { data: ProSetup; base: string }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction(); const [navigating, startNav] = useTransition(); const pending = saving || navigating; /* stay disabled until the next step renders (Q48) */
   const p = data.pro;
   const [model, setModel] = useState(p.model); const [capacity, setCapacity] = useState(p.capacity); const [buffer, setBuffer] = useState(p.buffer_pct);
   const [source, setSource] = useState(p.map_source); const [mapImg, setMapImg] = useState(p.map_image); const [busy, setBusy] = useState(false);
@@ -35,7 +35,7 @@ export function StepModel({ data, base }: { data: ProSetup; base: string }) {
   const over = (venueCap != null && capacity > venueCap) || sum > capacity;
   const save = async (next: boolean) => {
     const r = await run(() => saveProModel(data.event.id, { model, capacity, buffer_pct: buffer, map_source: source, map_image: mapImg, sections }), { refresh: false });
-    if (r.ok) router.push(next ? `${base}?step=2` : `/organizer/events/${data.event.id}?tab=sell`);
+    if (r.ok) startNav(() => router.push(next ? `${base}?step=2` : `/organizer/events/${data.event.id}?tab=sell`));
   };
   const upload = async (f: File) => {
     if (!/^image\/(png|jpe?g|webp)$/.test(f.type) || f.size > 10_000_000) return toast("Use a PNG, JPG or WebP under 10 MB", "error");

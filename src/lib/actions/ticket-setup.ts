@@ -1,5 +1,7 @@
 "use server";
 import { ticketWindowMessage } from "@/lib/payments/ticket-window";
+import { COUNTRIES } from "@/lib/master-data";
+import { CONNECT_COPY, unsupportedWorkspaceCountry } from "@/lib/payments/connect-countries";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -98,7 +100,10 @@ export async function publishTickets(eventId: string, agreed: boolean): Promise<
   if (!o.e.starts_at || Date.parse(o.e.starts_at) < Date.now()) return { ok: false, error: "Your event needs a future date before tickets can go on sale." };
   const paid = tiers.some(t => Number(t.price) > 0);
   if (paid) {
-    const { data: ws } = o.e.workspace_id ? await o.supabase.from("workspaces").select("payout_status").eq("id", o.e.workspace_id).maybeSingle() : { data: null };
+    const { data: ws } = o.e.workspace_id ? await o.supabase.from("workspaces").select("payout_status,settings").eq("id", o.e.workspace_id).maybeSingle() : { data: null };
+    // Seller-country gate (owner 2026-11-14): say why when Stripe can't pay out in the organiser's country.
+    const offPlatform = ws?.payout_status !== "active" ? unsupportedWorkspaceCountry(ws?.settings, COUNTRIES) : null;
+    if (offPlatform) return { ok: false, error: CONNECT_COPY.paidTicketsRefused(offPlatform) };
     if (ws?.payout_status !== "active") return { ok: false, error: o.e.management === "consumer" ? "Paid tickets need a payout account. Upgrade to Organizer mode to get paid — or make your tickets free." : "Finish payout setup in Money before selling paid tickets." };
   }
   const now = Date.now();

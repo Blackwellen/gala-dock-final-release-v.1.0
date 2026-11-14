@@ -217,3 +217,30 @@ Proposed extra objective step (owner): before an organiser's first paid on-sale,
 - That the ticket sale window (sales from about 82 days before the event) is acceptable to Stripe for GB Accounts v2. Ask Stripe Sales whether a longer hold is allowed for event tickets.
 - That putting chargeback liability on the seller, with Gala Dock absorbing what can't be recovered, is correctly reflected in the Payment Terms and in Stripe's controller settings (Stripe-managed losses vs platform-managed).
 - Consumer refund duties on cancelled or postponed events (CRA 2015, CMA guidance on ticket refunds), given the money sits with the organiser until after the event.
+
+## 10. Ticket validity during card chargebacks (owner decision 2026-11-14, built: migration 202611146203)
+
+The seller carries chargebacks (§9.3). What happens to the tickets of a disputed ticket order:
+
+| Stripe dispute | Tickets | Capacity | Who is told |
+|---|---|---|---|
+| Opened (any open or inquiry status) | **Held**: `tickets.dispute_hold_at`/`dispute_hold_ref`. Same codes. Refused at the door as **"Ticket on hold — see box office"** (scan result `on_hold`; the offline snapshot carries status `on_hold`; the wallet credential API returns `on_hold` and the wallet shows "On hold"). A resale listing is withdrawn; listing, transfer and resale are refused while held (`gd_0_dispute_hold_guard`; a resale purchase in flight is refunded). | unchanged | organiser (owner/manager/finance), audit `ticket.dispute_hold` |
+| Won (or inquiry closed) | Hold lifted, same codes, scan again. Order `chargeback → issued`. | unchanged | buyer, organiser, audit `ticket.dispute_hold_released` |
+| Lost | **Cancelled**, `void_reason = chargeback_lost`. Order `chargeback → refunded`. | Event not ended: the seat goes back to `available`; the tier's `sold` drops; a sold-out tier inside its sale window reopens. Event ended: void only. A tier update the guards refuse is reported to staff (ops alert), the void still stands. | buyer, organiser, ops alert on capacity failure, audit `ticket.dispute_lost_void` |
+
+- **Scope:** the disputed order's own entitlements, meaning its tickets and their gift transfers (`order_ref`, `order_ref-T…`). A ticket already resold belongs to its new holder, who paid separately, so it is never touched.
+- **Idempotent:**
+  - A hold is set once.
+  - A win lifts only that dispute's hold.
+  - A loss voids only live tickets, so capacity is returned once.
+  - The webhook treats won/lost/warning_closed as final (`syncStripeDispute`), so a late "open" event can't re-hold.
+- **Code:**
+  - `ticket_order_dispute()` (called from `src/lib/commerce/disputes.ts`)
+  - `ticket_dispute_scope()`
+  - `scan_admission` / `check_in_ticket` / `create_scan_snapshot`
+  - `src/app/api/tickets/[id]/credential/route.ts`
+  - `src/components/tickets/rotating-qr.tsx`
+  - scanner labels in `src/components/tickets/scanner.tsx` and `src/components/shared/checkin-scanner.tsx`
+- **Ticket terms wording needed** (legal to approve; live text not edited):
+  - "If you dispute a card payment for tickets with your card issuer, your tickets are put on hold and won't admit you until the dispute is decided. If the dispute is decided in the organiser's favour, your tickets become valid again with the same codes. If your card issuer reverses the payment, your tickets are cancelled and may be sold again."
+  - It also has to say that a resale or transfer is not possible while tickets are on hold, and that a transferred ticket is cancelled if the original payment is reversed.

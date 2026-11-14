@@ -59,7 +59,7 @@ export default async function EventsPage({ searchParams }: PageProps<"/organizer
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events" }]} />
     <div className="k-page-head" style={{ marginTop: -4 }}>
-      <div><h1 style={{ fontSize: 34.5 }}>Events</h1><p className="sub" style={{ fontSize: 15.5 }}>Manage your full event portfolio. Plan, track and deliver unforgettable experiences.</p></div>
+      <div><h1>Events</h1><p className="sub">Manage your full event portfolio. Plan, track and deliver unforgettable experiences.</p></div>
       <div className="k-row" style={{ gap: 10 }}><ImportExport rows={exportRows} />
         <CreateEventSplit />
       </div>

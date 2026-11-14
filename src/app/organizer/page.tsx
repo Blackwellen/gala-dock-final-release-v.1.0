@@ -53,7 +53,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
     <OrganizerMobileHome range={range} today={today} role={ctx.role} attention={attention} upcoming={upcoming} leadCount={leadCount} bookingCount={confirmed.data?.length ?? 0} revenue={ticketRevenue} forecast={forecastProfit} amountsDue={amountsDue} completed={runStats.done} waiting={runStats.waiting} approvals={approvals.count ?? 0} conflicts={<TeamConflicts workspaceId={ctx.workspace.id} limit={4} headingId="omh-conflicts" />} />
     <div className="oh-desktop-home">
     <div className="k-page-head" style={{ alignItems: "center" }}>
-      <div><h1 style={{ fontSize: 30 }}>Command Centre</h1><p className="sub" style={{ fontSize: 15 }}>Everything you need to run successful events, all in one place.</p></div>
+      <div><h1>Command Centre</h1><p className="sub">Everything you need to run successful events, all in one place.</p></div>
       <div className="k-row" style={{ gap: 18 }}><span className="k-muted" style={{ fontSize: 13 }}>{today}</span>
         <div className="k-seg solid" role="group" aria-label="Time range">{(["today", "week", "month"] as const).map(r => <Link key={r} href={`/organizer?range=${r}`} aria-current={(range === r) ? "page" : undefined} scroll={false}>{r === "today" ? "Today" : r === "week" ? "This Week" : "This Month"}</Link>)}</div>
       </div>
@@ -103,7 +103,7 @@ export default async function CommandCentre({ searchParams }: PageProps<"/organi
         <div className="k-row" style={{ gap: 14 }}><Link className="k-link" href="/organizer/money?tab=reports">View detailed reports <ArrowRight size={13} /></Link><span className="k-row k-xs k-muted" style={{ gap: 6 }}><CalendarRange size={14} aria-hidden />Totals to date</span></div></div>
       <div className="k-grid k-g5">
         <SumKpi icon={Users} tone="blue" label="Leads & Proposals" value={num(leadCount)} sub={`${leads30} new · 30 days`} spark={series.income.map((v, i) => v / 1000 + i)} color="#3b82f6" href="/organizer/sales" />
-        <SumKpi icon={CalendarDays} tone="purple" label="Confirmed Bookings" value={num(confirmed.data?.length ?? 0)} sub="across all events" spark={series.costs.map(v => v / 1000)} color="#a855f7" href="/organizer/marketplace?section=requests" />
+        <SumKpi icon={CalendarDays} tone="purple" label="Confirmed Bookings" value={num(confirmed.data?.length ?? 0)} sub="across all events" spark={series.costs.map(v => v / 1000)} color="#a855f7" href="/organizer/marketplace?section=bookings" />
         <SumKpi icon={DollarSign} tone="green" label="Ticket Revenue" value={money(ticketRevenue)} sub="gross, all tiers" spark={series.income} color="#16a34a" href="/organizer/money" />
         <SumKpi icon={BarChart3} tone="purple" label="Forecast Profit" value={money(forecastProfit)} sub="upcoming events" spark={series.income.map((v, i) => v - series.costs[i]!)} color="#7c3aed" href="/organizer/money?tab=reports" />
         <SumKpi icon={Receipt} tone="red" label="Amounts Due" value={money(amountsDue)} sub={`across ${dueEvents} event${dueEvents === 1 ? "" : "s"}`} spark={series.costs} color="#e5364f" href="/organizer/money?tab=receivables" />

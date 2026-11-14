@@ -21,7 +21,7 @@ export function PageEditor({ tab, event: e, initial }: { tab: "edit" | "preview"
   const live = ["published", "on_sale", "live"].includes(e.status);
   const src = e.slug ? `/events/${e.slug}?preview=1&t=${stamp}` : null;
   const base = `/organizer/events/${e.id}/page`;
-  const fmt = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Date TBC";
+  const fmt = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC";
 
   return <>
     <div className="pe2-head"><div className="k-grow"><div className="k-row" style={{ gap: 10 }}><h1>{e.name}</h1><span className={`mn-st ${live ? "green" : "gray"}`}>{live ? "Published" : "Draft page"}</span></div>

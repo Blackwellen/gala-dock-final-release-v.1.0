@@ -153,7 +153,7 @@ export function platformSalesStripe(client: StripeClient) {
 
 /** Stripe objects used by platform subscription billing (Q28). Only the fields Gala Dock reads. */
 export type StripeCustomer = { id: string; livemode?: boolean };
-export type StripeSubscription = { id: string; status: string; customer: string; cancel_at_period_end: boolean; livemode?: boolean; metadata?: Record<string, string>;
+export type StripeSubscription = { id: string; status: string; customer: string; cancel_at_period_end: boolean; livemode?: boolean; metadata?: Record<string, string>; created?: number;
   current_period_end?: number; items: { data: { id: string; price: { id: string }; current_period_end?: number }[] } };
 export type StripeInvoiceItem = { id: string; amount: number; currency: string; livemode?: boolean };
 
@@ -185,6 +185,11 @@ export function platformBillingStripe(client: StripeClient) {
     updateSubscription(id: string, params: Record<string, string>, idempotencyKey: string) {
       if (!/^sub_[A-Za-z0-9_]+$/.test(id)) throw new PaymentRouteError("invalid_subscription");
       return client.request<StripeSubscription>({ method: "POST", path: `subscriptions/${id}`, params: guard(params), idempotencyKey });
+    },
+    /** Q60: cancel a duplicate plan subscription now; unused time is credited to the customer (proration), never refunded to a card. */
+    cancelSubscription(id: string, idempotencyKey: string) {
+      if (!/^sub_[A-Za-z0-9_]+$/.test(id)) throw new PaymentRouteError("invalid_subscription");
+      return client.request<StripeSubscription>({ method: "DELETE", path: `subscriptions/${id}?prorate=true`, idempotencyKey });
     },
     /** Gala Dock's own account tax ids (read-only; used to put the VAT number on platform own-sales invoices). */
     listAccountTaxIds() {

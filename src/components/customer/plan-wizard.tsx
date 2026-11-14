@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { neverPublic, NEVER_PUBLIC_COPY } from "@/lib/events/type-rules";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { confirmDialog } from "@/lib/ui/dialogs";
 import { useRouter } from "next/navigation";
 import { Check, CheckCircle2, ArrowRight, ArrowLeft, Save, Lock, Globe, Info, Sparkles, MoreHorizontal, CalendarDays, Clock, MapPin, X, LocateFixed, Users, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Pencil, SlidersHorizontal, RefreshCw, Music2, Trees, Wallet, Gem, Loader2, Bookmark, Star, Palette, Trash2, Compass } from "lucide-react";
 import { VSteps } from "@/components/kit";
@@ -52,9 +53,14 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
   const typeKey = s1.event_type || ev?.event_type || "wedding";
   const occ = OCCASIONS.find(o => o.key === typeKey);
 
+  // Q47: `pending` clears as soon as the action resolves, before router.push lands, so a second click used to re-run step 1
+  // with no event id and create a duplicate draft. Remember the id the first save returned and stay busy until the page changes.
+  const planId = useRef<string | null>(ev?.id ?? null); const [leaving, setLeaving] = useState(false); const busy = pending || leaving;
   const go = async (n: PlanSaveStep, payload: unknown, next: number | "exit") => {
-    const r = await run(() => savePlanStep(n, payload, ev?.id ?? null), { refresh: false });
+    if (leaving) return;
+    const r = await run(() => savePlanStep(n, payload, planId.current), { refresh: false });
     if (!r.ok || !r.data) return;
+    planId.current = r.data.id; setLeaving(true);
     router.push(next === "exit" ? "/account/events" : `/plan?event=${r.data.id}&step=${next}`);
   };
   const payloads: Record<PlanSaveStep, unknown> = { 1: s1, 2: s2, 3: s3, 4: s4, 5: s5 };
@@ -67,7 +73,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
   const steps = STEP_TITLES.map((t, i) => ({ title: t, sub: subFor(i + 1) ?? STEP_HINT[i] }));
 
   const railAgent = step === 1 ? { text: "Pick your occasion and we’ll tailor the checklist, budget guide and suppliers to match.", btn: "Choose an occasion", icon: Sparkles, act: () => document.querySelector<HTMLElement>(".pw-types button, .pw-type, [role=radiogroup] button")?.focus() }
-    : step === 2 ? { text: "Not sure on a date? We’ll suggest one with the widest choice of venues.", btn: "Suggest dates for me", icon: CalendarDays, act: () => { const d = new Date(); d.setMonth(d.getMonth() + 4); while (d.getDay() !== 6) d.setDate(d.getDate() + 1); setS2(p => ({ ...p, date: d.toISOString().slice(0, 10) })); toast(`Suggested ${fmt(d.toISOString().slice(0, 10))} — Saturdays 4+ months out have the widest choice`); } }
+    : step === 2 ? { text: "Not sure on a date? We’ll suggest one with the widest choice of venues.", btn: "Suggest dates for me", icon: CalendarDays, act: () => { const d = new Date(); d.setMonth(d.getMonth() + 4); while (d.getDay() !== 6) d.setDate(d.getDate() + 1); const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; setS2(p => ({ ...p, date: iso })); toast(`Suggested ${fmt(iso)} — Saturdays 4+ months out have the widest choice`); } }
     : step === 3 ? { text: "Not sure of numbers yet? Start with your best estimate. You can change it any time before booking.", btn: "Use breakdown total", icon: Users, act: () => { if (!breakdown) { toast("Add adults or children first"); return; } setS3(p => ({ ...p, guests: breakdown })); toast(`Total set to ${breakdown} guests`); } }
     : step === 4 ? { text: "Most events need a venue, food and drinks. Add extras now and we'll only include them if they fit your budget.", btn: "Use the essentials", icon: CheckCircle2, act: () => { setS4(p => ({ ...p, must: ["venue", "food", "drinks", "entertainment"] })); toast("Essentials selected: venue, catering, drinks and entertainment"); } }
     : step === 5 ? { text: "Set a realistic budget based on similar events in your area.", btn: "Optimise my budget", icon: Wallet, act: () => { setS5(p => ({ ...p, budget_mode: "total", budget: Math.round((data.bench.min + data.bench.max) / 2 / 500) * 500 })); toast("Budget set to the midpoint for similar events"); } }
@@ -78,11 +84,11 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
       <VSteps steps={steps} current={step} hrefFor={n => ev && n <= reach && n !== step ? `/plan?event=${ev.id}&step=${n}` : ""} />
       <section className="pw-agent"><div className="k-row" style={{ gap: 8 }}><Lightbulb size={20} className="pw-spark" /><b>Planning help</b></div><p>{railAgent.text}</p>
         <button className="pw-agent-btn" onClick={railAgent.act}><railAgent.icon size={16} />{railAgent.btn}</button></section>
-      {ev?.status === "draft" && <button className="pw-discard" onClick={() => void run(() => discardPlan(ev.id))}><Trash2 size={13} />Discard draft</button>}
+      {ev?.status === "draft" && <button className="pw-discard" disabled={busy} onClick={async () => { if (await confirmDialog({ title: "Discard this draft?", message: "Your saved answers for this plan will be removed from My Events.", confirmLabel: "Discard draft", danger: true })) void run(() => discardPlan(ev.id)); }}><Trash2 size={13} />Discard draft</button>}
     </aside>
 
     <div className="pw-main">
-      {step < 6 && <button className="k-btn outline pw-save" onClick={() => void saveExit()} disabled={pending}><Save size={17} />Save and exit</button>}
+      {step < 6 && <button className="k-btn outline pw-save" onClick={() => void saveExit()} disabled={busy}><Save size={17} />Save and exit</button>}
       {step === 1 && <section className="ce-card pw-card">
         <small className="pw-step">Step 1 of 6</small><h2 className="pw-h">What are you planning?</h2><p className="pw-sub">Start with the occasion and your goal. We&apos;ll tailor everything to your event.</p>
         <h3 className="pw-label">Event type / occasion <span className="k-red">*</span></h3>
@@ -104,7 +110,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
         <div className="pw-help"><Sparkles size={22} className="pw-spark2" /><span className="k-grow"><b>Build me a checklist and timeline</b><small>We’ll add recommended tasks, a timeline and budget guidance for your occasion.</small></span><Toggle checked={s1.agent_help} onChange={v => setS1(p => ({ ...p, agent_help: v }))} label="Build me a checklist and timeline" /></div>
         <label className="pw-label" htmlFor="pw-desc">Short description</label>
         <span className="pw-ta"><textarea id="pw-desc" value={s1.description} maxLength={500} onChange={e => setS1(p => ({ ...p, description: e.target.value }))} placeholder="Tell us a bit about your event, your vision or any special requirements..." /><small>{s1.description.length}/500</small></span>
-        <div className="pw-foot end"><button className="k-btn primary pw-next" disabled={pending || !s1.event_type} onClick={() => void go(1, s1, 2)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Date &amp; Location <ArrowRight size={17} /></button></div>
+        <div className="pw-foot end"><button className="k-btn primary pw-next" disabled={busy || !s1.event_type} onClick={() => void go(1, s1, 2)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Date &amp; Location <ArrowRight size={17} /></button></div>
       </section>}
 
       {step === 2 && <>
@@ -132,7 +138,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
           <div className="pw-map"><label className="pw-radius"><input type="checkbox" checked readOnly />Search within<select value={s2.radius} onChange={e => setS2(p => ({ ...p, radius: Number(e.target.value) }))} aria-label="Search radius">{[5, 10, 25, 50].map(r => <option key={r} value={r}>{r} miles</option>)}</select></label>
             <MapView pins={data.insights.pins} zoom={s2.radius <= 5 ? 12 : s2.radius <= 10 ? 11 : s2.radius <= 25 ? 10 : 9} height={200} ariaLabel={`Venues near ${s2.location || data.insights.city}`} /></div>
         </section>}
-        <div className="pw-foot pw-foot-card"><Link className="k-btn outline" href={`${base}&step=1`}><ArrowLeft size={16} />Back to Occasion &amp; Goal</Link><button className="k-btn primary pw-next" disabled={pending || !canNext} onClick={() => void go(2, s2, 3)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Guests &amp; Size <ArrowRight size={17} /></button></div>
+        <div className="pw-foot pw-foot-card"><Link className="k-btn outline" href={`${base}&step=1`}><ArrowLeft size={16} />Back to Occasion &amp; Goal</Link><button className="k-btn primary pw-next" disabled={busy || !canNext} onClick={() => void go(2, s2, 3)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Guests &amp; Size <ArrowRight size={17} /></button></div>
       </>}
 
       {step === 3 && <section className="ce-card pw-card pw-guests-card">
@@ -145,7 +151,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
         <div className="pw-note"><Info size={15} />{s3.guests >= 150 ? "Larger guest counts open up halls, marquees and festival sites, and may need extra staff and security." : s3.guests <= 30 ? "Smaller groups open up private dining rooms and intimate spaces." : "Larger guest counts may open up different venue options and supplier packages."}</div>
         <h2 className="pw-h2 mt">2. Any accessibility or special requirements?</h2><p className="pw-sub">Let us know if you have any specific needs so we can recommend suitable venues and suppliers.</p>
         <div className="pw-access">{ACCESS.map(a => <label key={a.key} className="pw-check"><input type="checkbox" checked={s3.access.includes(a.key)} onChange={e => setS3(p => ({ ...p, access: e.target.checked ? [...p.access, a.key] : p.access.filter(x => x !== a.key) }))} />{a.label}</label>)}</div>
-        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=2`}><ArrowLeft size={16} />Back to Date &amp; Location</Link><button className="k-btn primary pw-next" disabled={pending || !canNext} onClick={() => void go(3, s3, 4)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Services &amp; Extras <ArrowRight size={17} /></button></div>
+        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=2`}><ArrowLeft size={16} />Back to Date &amp; Location</Link><button className="k-btn primary pw-next" disabled={busy || !canNext} onClick={() => void go(3, s3, 4)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Services &amp; Extras <ArrowRight size={17} /></button></div>
       </section>}
 
       {step === 4 && <section className="ce-card pw-card pw-services">
@@ -155,7 +161,7 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
         {!s4.must.length && <div className="pw-note warn" role="alert"><Info size={15} />Choose at least one service to continue.</div>}
         <h2 className="pw-h2 mt">2. Any extras?</h2><p className="pw-sub">Add anything else you might like. We&apos;ll include them if they fit within your budget.</p>
         <div className="pw-tiles">{OPTIONALS.map(c => { const on = s4.optional.includes(c.key); return <button key={c.key} className="pw-tile" aria-pressed={on} data-on={on || undefined} onClick={() => setS4(p => ({ ...p, optional: on ? p.optional.filter(x => x !== c.key) : [...p.optional, c.key] }))}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={`/assets/gd/plan/cat-${c.key}.webp`} alt="" /><span>{c.label}</span><i className={`pw-box ${on ? "on" : ""}`}>{on && <Check size={12} strokeWidth={3} />}</i></button>; })}</div>
-        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=3`}><ArrowLeft size={16} />Back to Guests &amp; Size</Link><button className="k-btn primary pw-next" disabled={pending || !canNext} onClick={() => void go(4, s4, 5)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Budget &amp; Priorities <ArrowRight size={17} /></button></div>
+        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=3`}><ArrowLeft size={16} />Back to Guests &amp; Size</Link><button className="k-btn primary pw-next" disabled={busy || !canNext} onClick={() => void go(4, s4, 5)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Budget &amp; Priorities <ArrowRight size={17} /></button></div>
       </section>}
 
       {step === 5 && <section className="ce-card pw-card pw-budget">
@@ -163,14 +169,14 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
         <h2 className="pw-h2">1. What&apos;s your budget?</h2><p className="pw-sub">Set a total budget or a range. Not sure? Use the suggested budget based on similar events.</p>
         <div className="pw-modes" role="radiogroup" aria-label="Budget type">{([["total", "Set a total budget", "I have a fixed amount in mind"], ["range", "Set a budget range", "I'm flexible between two amounts"], ["suggest", "Get a suggestion", "Based on similar events"]] as const).map(([k, t, sub]) => <button key={k} role="radio" aria-checked={s5.budget_mode === k} data-on={s5.budget_mode === k || undefined} className="pw-mode" onClick={() => setS5(p => ({ ...p, budget_mode: k, ...(k === "suggest" ? { budget: Math.round((data.bench.min + data.bench.max) / 2 / 500) * 500 } : {}) }))}><span className={`pw-radio ${s5.budget_mode === k ? "on" : ""}`}>{s5.budget_mode === k && <Check size={12} strokeWidth={3} />}</span><span><b>{t}</b><small>{sub}</small></span></button>)}</div>
         <div className="pw-amount">
-          {s5.budget_mode === "range" ? <div className="pw-range"><span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget_min ? s5.budget_min.toLocaleString("en-GB") : ""} onChange={e => setS5(p => ({ ...p, budget_min: Number(e.target.value.replace(/\D/g, "")) || 0 }))} aria-label="Minimum budget" /></span><b>–</b><span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget_max ? s5.budget_max.toLocaleString("en-GB") : ""} onChange={e => setS5(p => ({ ...p, budget_max: Number(e.target.value.replace(/\D/g, "")) || 0 }))} aria-label="Maximum budget" /></span></div>
-            : <span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget ? s5.budget.toLocaleString("en-GB") : ""} readOnly={s5.budget_mode === "suggest"} onChange={e => setS5(p => ({ ...p, budget: Number(e.target.value.replace(/\D/g, "")) || 0 }))} aria-label="Total budget" /></span>}
+          {s5.budget_mode === "range" ? <div className="pw-range"><span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget_min ? s5.budget_min.toLocaleString("en-GB") : ""} onChange={e => setS5(p => ({ ...p, budget_min: Number(e.target.value.split(".")[0]!.replace(/\D/g, "")) || 0 }))} aria-label="Minimum budget" /></span><b>–</b><span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget_max ? s5.budget_max.toLocaleString("en-GB") : ""} onChange={e => setS5(p => ({ ...p, budget_max: Number(e.target.value.split(".")[0]!.replace(/\D/g, "")) || 0 }))} aria-label="Maximum budget" /></span></div>
+            : <span className="pw-money"><i>£</i><input inputMode="numeric" value={s5.budget ? s5.budget.toLocaleString("en-GB") : ""} readOnly={s5.budget_mode === "suggest"} onChange={e => setS5(p => ({ ...p, budget: Number(e.target.value.split(".")[0]!.replace(/\D/g, "")) || 0 }))} aria-label="Total budget" /></span>}
           <div className="pw-bench"><BarChart3 size={24} /><span><small>Based on similar events in {data.insights.city}</small><b>{gbp(data.bench.min)} – {gbp(data.bench.max)}</b><small>For {s3.guests} guests · {data.occasionTitle} · {data.bench.tier} <span title="Benchmarked from typical per-guest spend for this occasion in your area."><Info size={13} /></span></small></span></div>
         </div>
         {!canNext && <div className="pw-note warn" role="alert"><Info size={15} />{s5.budget_mode === "range" ? "Enter a range where the maximum is above the minimum." : "Enter a budget, or choose Get a suggestion."}</div>}
         <h2 className="pw-h2 mt" id="style">2. What style or experience are you looking for?</h2><p className="pw-sub">This helps us match venues and suppliers to your vision.</p>
         <div className="pw-styles" role="radiogroup" aria-label="Style">{STYLES.map(st => <button key={st.key} role="radio" aria-checked={s5.style === st.key} className="pw-style" data-on={s5.style === st.key || undefined} onClick={() => setS5(p => ({ ...p, style: st.key }))}>{st.key === "custom" ? <span className="pw-style-ic"><Palette size={26} /></span> : /* eslint-disable-next-line @next/next/no-img-element */ <img src={`/assets/gd/plan/style-${st.key}.webp`} alt="" />}<span className="pw-style-l"><span className={`pw-radio sm ${s5.style === st.key ? "on" : ""}`}>{s5.style === st.key && <Check size={10} strokeWidth={3} />}</span><span className="pw-style-t">{st.label}</span></span></button>)}</div>
-        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=4`}><ArrowLeft size={16} />Back to Services &amp; Extras</Link><button className="k-btn primary pw-next" disabled={pending || !canNext} onClick={() => void go(5, s5, 6)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Recommended Build <ArrowRight size={17} /></button></div>
+        <div className="pw-foot"><Link className="k-btn outline" href={`${base}&step=4`}><ArrowLeft size={16} />Back to Services &amp; Extras</Link><button className="k-btn primary pw-next" disabled={busy || !canNext} onClick={() => void go(5, s5, 6)}>{pending && <Loader2 size={16} className="k-spin" />}Continue to Recommended Build <ArrowRight size={17} /></button></div>
       </section>}
 
       {step === 6 && ev && <Review data={data} ev={ev} base={base} />}
@@ -201,14 +207,14 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
         <CurrentPlan ev={ev} s2={s2} s3={s3} s4={s4} s5={s5} total={ev?.budget || 0} />
       </>}
       {(step === 4 || step === 5) && <BudgetSide data={data} s2={s2} s3={s3} s4={s4} s5={s5} ev={ev} />}
-      {step === 6 && ev && <PlanSide data={data} ev={ev} base={base} pending={pending} create={async () => { await run(() => createFromPlan(ev.id, data.venues[0]?.id ?? null)); }} />}
+      {step === 6 && ev && <PlanSide data={data} ev={ev} base={base} pending={busy} create={async () => { if (leaving) return; const r = await run(() => createFromPlan(ev.id, data.venues[0]?.id ?? null)); if (r.ok) setLeaving(true); }} />}
     </aside>
   </div>;
 }
 
 function MonthPicker({ value, to, onPick }: { value: string; to: string; onPick: (d: string) => void }) {
   const init = value ? new Date(`${value}T12:00:00Z`) : new Date(); const [m, setM] = useState({ y: init.getUTCFullYear(), m: init.getUTCMonth() });
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" }); // UK calendar day (matches savePlanStep)
   const first = new Date(Date.UTC(m.y, m.m, 1)); const lead = (first.getUTCDay() + 6) % 7; const days = new Date(Date.UTC(m.y, m.m + 1, 0)).getUTCDate();
   const cells = Array.from({ length: 42 }, (_, i) => { const d = new Date(Date.UTC(m.y, m.m, i - lead + 1)); return { iso: d.toISOString().slice(0, 10), day: d.getUTCDate(), out: i < lead || i >= lead + days, wk: d.getUTCDay() === 0 || d.getUTCDay() === 6 }; });
   const rows = cells.slice(35).every(c => c.out) ? cells.slice(0, 35) : cells;

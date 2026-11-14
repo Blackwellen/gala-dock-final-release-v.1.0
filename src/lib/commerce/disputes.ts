@@ -15,9 +15,12 @@ const CLOSED = new Set(["won", "lost", "warning_closed"]);
  * the first time it is seen, and posts funds movements to the immutable ledger. Gala Dock never decides the outcome —
  * the card issuer does — so the record only reflects what Stripe reports.
  */
-export async function syncStripeDispute(d: StripeDispute, eventType: string, account: string | null = null) {
+export async function syncStripeDispute(d: StripeDispute, eventType: string, account: string | null = null): Promise<string> {
   const db = untyped(createAdminClient() as never);
-  const { data: existing } = await db.from("stripe_disputes").select("stripe_dispute_id,order_ref,event_id").eq("stripe_dispute_id", d.id).maybeSingle();
+  const { data: existing } = await db.from("stripe_disputes").select("stripe_dispute_id,order_ref,event_id,status,outcome").eq("stripe_dispute_id", d.id).maybeSingle();
+  // Q58: won/lost/warning_closed is final at Stripe. A late-delivered earlier event (e.g. charge.dispute.updated "under_review" after
+  // charge.dispute.closed "won") must not reopen it: that re-blocked the seller's release forever and flipped the order back to chargeback.
+  const status = existing?.outcome && !CLOSED.has(d.status) ? String(existing.outcome) : d.status;
   let orderRef: string | null = existing?.order_ref ?? null, eventId: string | null = existing?.event_id ?? null, workspaceId: string | null = null;
   if (!existing && d.payment_intent) {
     const { data: tx } = await db.from("ledger_transactions").select("source_id,event_id,workspace_id").eq("stripe_ref", d.payment_intent).eq("source_type", "checkout_order").maybeSingle();
@@ -34,8 +37,8 @@ export async function syncStripeDispute(d: StripeDispute, eventType: string, acc
   const dueBy = d.evidence_details?.due_by ? new Date(d.evidence_details.due_by * 1000).toISOString() : null;
   const { error } = await db.from("stripe_disputes").upsert({
     stripe_dispute_id: d.id, charge_id: d.charge ?? null, payment_intent_id: d.payment_intent ?? null, amount_minor: d.amount, currency: d.currency.toUpperCase(),
-    reason: d.reason ?? null, status: d.status, evidence_due_by: dueBy, livemode: !!d.livemode, order_ref: orderRef, event_id: eventId,
-    is_charge_refundable: d.is_charge_refundable ?? null, ...(account ? { stripe_account_id: account, liability: "connected_account" } : {}), outcome: CLOSED.has(d.status) ? d.status : null,
+    reason: d.reason ?? null, status, evidence_due_by: dueBy, livemode: !!d.livemode, order_ref: orderRef, event_id: eventId,
+    is_charge_refundable: d.is_charge_refundable ?? null, ...(account ? { stripe_account_id: account, liability: "connected_account" } : {}), outcome: CLOSED.has(status) ? status : null,
     evidence_submitted_at: (d.evidence_details?.submission_count ?? 0) > 0 ? new Date().toISOString() : null, updated_at: new Date().toISOString(),
   }, { onConflict: "stripe_dispute_id" });
   if (error) throw new Error(`dispute: ${error.message}`);
@@ -45,13 +48,13 @@ export async function syncStripeDispute(d: StripeDispute, eventType: string, acc
   // out-of-order events change nothing twice. Orders the machine can't move (e.g. already refunded) still get the flag.
   let ticket = false;
   if (orderRef) {
-    const { data: td, error: te } = await db.rpc("ticket_order_dispute", { p_ref: orderRef, p_dispute: d.id, p_status: d.status });
+    const { data: td, error: te } = await db.rpc("ticket_order_dispute", { p_ref: orderRef, p_dispute: d.id, p_status: status });
     if (te) throw new Error(`ticket_dispute: ${te.message}`);
     ticket = !!(td as { ticket?: boolean } | null)?.ticket;
   }
   // Marketplace / invoice disputes go to the unified risk queue (Q33) — review only, never an automatic action. Ticket orders
   // arrive there through their chargeback flag. Idempotent per dispute id.
-  if (!ticket && !CLOSED.has(d.status)) {
+  if (!ticket && !CLOSED.has(status)) {
     const { error: re } = await db.rpc("risk_raise", { p_domain: "payment", p_kind: "chargeback", p_subject_type: "order", p_subject_id: orderRef ?? d.payment_intent ?? d.id,
       p_severity: "review", p_dedupe: `dispute:${d.id}`, p_evidence: { dispute: d.id, reason: d.reason ?? null, amount_minor: d.amount, liability: account ? "connected_account" : "platform" },
       p_workspace: workspaceId ?? seller, p_event: eventId, p_score: 60, p_source: "webhook", p_rule: "payment.chargeback" });
@@ -90,4 +93,5 @@ export async function syncStripeDispute(d: StripeDispute, eventType: string, acc
     });
     if (le) throw new Error(`ledger: ${le.message}`);
   }
+  return status;
 }

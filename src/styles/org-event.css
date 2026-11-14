@@ -236,3 +236,7 @@
 .o-conf-body .op-ready, .o-conf-body .k-card { margin: 0; box-shadow: none; }
 /* W03: on phones the hero grows with its content (online/draft events have a taller action row; the 118px desktop height clipped the title). */
 @media (max-width: 720px) { .eh-hero:has(+ .eh-tabs) { height: auto; } }
+/* Q48 compact event header on event sub-pages (breadcrumbs + tab strip above the page's own head). */
+.eh-compact { display: grid; gap: 6px; margin-bottom: 16px; min-width: 0; }
+.eh-compact .eh-tabs { margin: 0; }
+.eh-compact .k-tabs { overflow-x: auto; scrollbar-width: none; }

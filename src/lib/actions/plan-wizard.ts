@@ -51,7 +51,7 @@ export async function savePlanStep(step: PlanSaveStep, payload: unknown, eventId
     const p = Step2.safeParse(payload); if (!p.success) return { ok: false, error: "Check the date and location." };
     const d = p.data;
     if (!d.date) return { ok: false, error: "Choose a date to continue." };
-    if (d.date < new Date().toISOString().slice(0, 10)) return { ok: false, error: "Choose a date in the future." };
+    if (d.date < new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" })) return { ok: false, error: "Choose a date in the future." };
     if (d.date_mode === "flexible" && d.flex_to && d.flex_to < d.date) return { ok: false, error: "The end of your date range must be after the start." };
     const startISO = londonISO(d.date, d.start);
     let endISO = londonISO(d.date, d.end); if (endISO <= startISO) endISO = new Date(new Date(endISO).getTime() + 864e5).toISOString();

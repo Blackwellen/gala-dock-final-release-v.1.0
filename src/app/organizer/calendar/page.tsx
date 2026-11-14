@@ -41,7 +41,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/organiz
   return <>
     <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Calendar" }]} />
     <div className="k-page-head" style={{ marginTop: -6 }}>
-      <div><h1 style={{ fontSize: 30 }}>Calendar</h1><p className="sub" style={{ fontSize: 14.5 }}>Coordinate your events, bookings, team, and activity in one place.</p></div>
+      <div><h1>Calendar</h1><p className="sub">Coordinate your events, bookings, team, and activity in one place.</p></div>
       <div className="k-row k-wrap" style={{ gap: 10 }}>
         <Link className="k-btn ghost lg" href={qs({ date: null })}>Today</Link>
         <div className="k-row cal-nav"><Link className="k-icon-btn plain" href={qs({ date: prev })} aria-label="Previous"><ChevronLeft size={17} /></Link><Link className="k-icon-btn plain" href={qs({ date: next })} aria-label="Next"><ChevronRight size={17} /></Link><span className="cal-range">{label}</span></div>

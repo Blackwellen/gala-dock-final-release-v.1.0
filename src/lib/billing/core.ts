@@ -95,11 +95,36 @@ export function packCheckoutParams(o: { customer: string; price: string; workspa
  * Downgrades swap the price without proration (the lower price applies from the next invoice) and record the previous plan
  * plus the period end, so billing_apply_subscription keeps the higher entitlements until then.
  */
-export function planChangeParams(o: { itemId: string; price: string; direction: "upgrade" | "downgrade"; currentPlan: string; periodEnd: number; accountTaxIds?: readonly string[] }) {
+export function planChangeParams(o: { itemId: string; price: string; direction: "upgrade" | "downgrade" | "revert"; currentPlan: string; currentPrice?: string; periodEnd: number; accountTaxIds?: readonly string[] }) {
   const base: Record<string, string> = { "items[0][id]": o.itemId, "items[0][price]": o.price, cancel_at_period_end: "false", ...accountTaxIdParams("invoice_settings", o.accountTaxIds) };
+  const clear = { "metadata[gd_previous_plan]": "", "metadata[gd_downgrade_at]": "", "metadata[gd_previous_price]": "" };
+  // Q60 "revert": undo a scheduled downgrade — the previous (already paid) price comes back with NO proration. Upgrading back with
+  // always_invoice would charge the difference a second time for a period the customer already paid at the higher price.
+  if (o.direction === "revert") return { ...base, proration_behavior: "none", ...clear };
   return o.direction === "upgrade"
-    ? { ...base, proration_behavior: "always_invoice", "metadata[gd_previous_plan]": "", "metadata[gd_downgrade_at]": "" }
-    : { ...base, proration_behavior: "none", "metadata[gd_previous_plan]": o.currentPlan, "metadata[gd_downgrade_at]": String(o.periodEnd) };
+    ? { ...base, proration_behavior: "always_invoice", ...clear }
+    : { ...base, proration_behavior: "none", "metadata[gd_previous_plan]": o.currentPlan, "metadata[gd_downgrade_at]": String(o.periodEnd), "metadata[gd_previous_price]": o.currentPrice ?? "" };
+}
+
+/**
+ * Q60: how a plan change is applied. A change of billing interval resets Stripe's billing cycle and invoices immediately whatever
+ * proration_behavior says, so it is always applied now and prorated ("upgrade" path, credit for unused time) — never as an
+ * end-of-period downgrade that would bill the new interval in full today with no credit. While a downgrade is scheduled, the
+ * only change allowed is choosing the previous price again ("revert"); anything else must wait until it is undone.
+ */
+export function planChangeMode(o: { from: Pick<PlanPrice, "plan" | "price_minor" | "billing_interval"> | null; to: Pick<PlanPrice, "plan" | "price_minor" | "billing_interval">;
+  toPrice: string; scheduledFromPrice?: string | null }): "upgrade" | "downgrade" | "revert" | "same" | "scheduled" {
+  if (o.scheduledFromPrice) return o.scheduledFromPrice === o.toPrice ? "revert" : "scheduled";
+  if (!o.from) return "upgrade";
+  const dir = changeDirection(o.from, o.to);
+  if (dir === "same") return "same";
+  return o.from.billing_interval !== o.to.billing_interval ? "upgrade" : dir;
+}
+
+/** Q60: a different subscription went live while the mirror still held a live one (two Checkout tabs): the old one must be cancelled. */
+export function supersededSubscription(before: { stripe_subscription_id?: string | null; status?: string | null } | null | undefined, incoming: { id: string; status?: unknown }) {
+  return !!before?.stripe_subscription_id && before.stripe_subscription_id !== incoming.id
+    && ["active", "trialing", "past_due"].includes(String(before.status)) && ["active", "trialing"].includes(String(incoming.status));
 }
 
 /** Invoice item for one month's accrued, owner-approved AI overage (ex VAT, at the documented overage rate). */

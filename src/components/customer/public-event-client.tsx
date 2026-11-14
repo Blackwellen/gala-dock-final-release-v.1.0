@@ -26,6 +26,8 @@ export function EventActions({ eventId, name, saved: initial, signedIn }: { even
 }
 
 type Tier = { id: string; name: string; sub: string; price: number; left: number; qty: number; status: string; badge: string | null };
+/** £12.50, £40 — pence always shown when present (toLocaleString printed "£37.5"). */
+const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n);
 /** Choose a ticket type and quantity, then continue to checkout (/checkout/[event]). */
 export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false, launch = null, sellerReady = true }: { slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean; launch?: string | null; sellerReady?: boolean }) {
   // Checkout only reserves in these launch states (§50); otherwise the CTA explains why tickets aren't available.
@@ -43,7 +45,7 @@ export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false,
     <ul className="pe-tiers" aria-label="Ticket type">{tiers.map(x => { const off = x.status !== "on_sale" || x.left === 0; const low = !off && x.qty > 0 && x.left / x.qty < 0.15; return <li key={x.id}>
       <label className={`pe-tier ${sel === x.id ? "on" : ""} ${off ? "off" : ""}`}><input type="radio" name="tier" checked={sel === x.id} disabled={off} onChange={() => { setSel(x.id); setN(1); }} /><span className="pe-radio" />
         <span className="k-grow"><b>{x.name}</b><small>{x.sub}</small></span>
-        <span className="pe-price">{off ? <em className="gray">{x.status === "scheduled" ? "Coming soon" : "Sold out"}</em> : low ? <em>Almost gone</em> : null}<b>{x.price === 0 ? "Free" : `£${x.price.toLocaleString("en-GB")}`}</b></span>
+        <span className="pe-price">{off ? <em className="gray">{x.status === "scheduled" ? "Coming soon" : "Sold out"}</em> : low ? <em>Almost gone</em> : null}<b>{x.price === 0 ? "Free" : gbp(x.price)}</b></span>
         {sel === x.id && !off && <span className="pe-qty" onClick={e => e.preventDefault()}><button type="button" aria-label="Fewer tickets" onClick={() => setN(v => Math.max(1, v - 1))}><Minus size={13} /></button><b aria-live="polite">{n}</b><button type="button" aria-label="More tickets" onClick={() => setN(v => Math.min(max, v + 1))}><Plus size={13} /></button></span>}</label></li>; })}
       {!tiers.length && <li className="k-small">Tickets haven&apos;t been released yet.</li>}</ul>
     {waitlist && eventId && tiers.some(soldOut) && <div className="pe-wait">{tiers.filter(soldOut).map(x => joined.includes(x.id) ? <span key={x.id} className="pe-wait-ok"><CheckCircle2 size={14} />You&apos;re on the {x.name} waiting list — we&apos;ll email you if tickets free up.</span>
@@ -55,7 +57,7 @@ export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false,
         : signedIn ? <button className="k-btn primary pe-buy" disabled={pending} onClick={() => void join(t.id)}><BellRing size={18} />Join the waitlist</button>
         : <Link className="k-btn primary pe-buy" href={`/login?next=${encodeURIComponent(`/events/${slug}`)}`}><BellRing size={18} />Join the waitlist</Link>)
       : <button className="k-btn primary pe-buy" disabled>Tickets on sale soon</button>)
-    : !sellable ? <button className="k-btn primary pe-buy" disabled>{closed[launch!] ?? "Not on sale"}</button> : t && buyable.length > 0 ? <Link className="k-btn primary pe-buy" href={signedIn ? href : `/login?next=${encodeURIComponent(href)}`}><ShoppingCart size={18} />Buy Tickets · £{(t.price * n).toLocaleString("en-GB")}</Link> : <button className="k-btn primary pe-buy" disabled>Not on sale</button>}
+    : !sellable ? <button className="k-btn primary pe-buy" disabled>{closed[launch!] ?? "Not on sale"}</button> : t && buyable.length > 0 ? <Link className="k-btn primary pe-buy" href={signedIn ? href : `/login?next=${encodeURIComponent(href)}`}><ShoppingCart size={18} />Buy Tickets · {gbp(Math.round(t.price * n * 100) / 100)}</Link> : <button className="k-btn primary pe-buy" disabled>Not on sale</button>}
     <div className="pe-trust"><span><ShieldCheck size={14} />Secure checkout</span><span><Smartphone size={14} />Mobile tickets</span><span><CheckCircle2 size={14} />Instant confirmation</span></div>
   </>;
 }

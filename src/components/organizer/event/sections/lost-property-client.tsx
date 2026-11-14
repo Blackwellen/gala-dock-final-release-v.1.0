@@ -5,6 +5,7 @@ import { Card, CardHead, Chip, Empty, Btn, Stat } from "@/components/kit";
 import { Dialog, useAction } from "@/components/kit/client";
 import { num, dateShort, time } from "@/lib/format";
 import { logFoundItem, recordLostReport, claimFoundItem, decideLostPropertyClaim, disposeFoundItem } from "@/lib/actions/composition-ui";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 export type FoundRow = { id: string; category: string; description: string; colour: string | null; brand: string | null; location: string | null; storage_location: string | null; found_at: string; dispose_after: string; status: string; disposed_at?: string | null; disposal_method?: string | null };
 export type LostRow = { id: string; category: string; description: string; colour: string | null; brand: string | null; location: string | null; lost_from: string | null; lost_to: string | null; status: string; contact_email: string | null; created_at: string; self_reported?: boolean };
@@ -17,7 +18,7 @@ const RST: Record<string, [string, "blue" | "amber" | "green" | "gray" | "red"]>
 const FST: Record<string, [string, "blue" | "amber" | "green" | "gray"]> = { logged: ["Logged", "blue"], matched: ["Matched", "amber"], claimed: ["Claimed", "green"], collected: ["Collected", "green"], disposed: ["Disposed", "gray"] };
 const CST: Record<string, [string, "blue" | "amber" | "green" | "gray" | "red"]> = { pending: ["Pending check", "blue"], manual_review: ["Manual review", "amber"], verified: ["Verified", "green"], failed: ["Not the owner", "red"], expired: ["Expired", "gray"], collected: ["Collected", "green"] };
 const why = (f: { colour: number; brand: number; shared_words: number; location: number }) => [f.colour && "same colour (+2)", f.brand && "same brand (+2)", f.shared_words && `${f.shared_words} shared word${f.shared_words > 1 ? "s" : ""} (+${f.shared_words})`, f.location && "same location (+1)"].filter(Boolean).join(" · ") || "category and time window only";
-const local = (iso?: string) => { const d = iso ? new Date(iso) : new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+const local = (iso?: string) => isoToWall(iso ?? new Date().toISOString()); // London wall time (Q48)
 
 export function LostPropertyClient({ eventId, now, found, lost, claims, matches, canWrite }: { eventId: string; now: number; found: FoundRow[]; lost: LostRow[]; claims: ClaimRow[]; matches: Record<string, MatchSet>; canWrite: boolean }) {
   const { run, pending } = useAction();
@@ -67,7 +68,7 @@ export function LostPropertyClient({ eventId, now, found, lost, claims, matches,
         : <Empty icon={PackageSearch} title="Nothing logged" text="Log items handed in at the venue so they can be matched to reports." action={canWrite ? <Btn size="sm" icon={Plus} onClick={() => setFd({ category: "phone", description: "", colour: "", brand: "", location: "", storage_location: "", found_at: local() })}>Log the first item</Btn> : undefined} />}
       {!canWrite && <p className="k-xs k-muted">Read only — event edit permission is needed to log items and decide claims.</p>}
     </Card>
-    <Dialog open={!!fd} onClose={() => setFd(null)} title="Log a found item" footer={<><Btn variant="ghost" onClick={() => setFd(null)}>Cancel</Btn><Btn disabled={pending || !fd || fd.description.trim().length < 3} onClick={async () => { if (!fd) return; const res = await run(() => logFoundItem(eventId, { category: fd.category, description: fd.description, ...(fd.colour ? { colour: fd.colour } : {}), ...(fd.brand ? { brand: fd.brand } : {}), ...(fd.location ? { location: fd.location } : {}), ...(fd.storage_location ? { storage_location: fd.storage_location } : {}), found_at: new Date(fd.found_at).toISOString() })); if (res.ok) setFd(null); }}>Log item</Btn></>}>
+    <Dialog open={!!fd} onClose={() => setFd(null)} title="Log a found item" footer={<><Btn variant="ghost" onClick={() => setFd(null)}>Cancel</Btn><Btn disabled={pending || !fd || fd.description.trim().length < 3} onClick={async () => { if (!fd) return; const res = await run(() => logFoundItem(eventId, { category: fd.category, description: fd.description, ...(fd.colour ? { colour: fd.colour } : {}), ...(fd.brand ? { brand: fd.brand } : {}), ...(fd.location ? { location: fd.location } : {}), ...(fd.storage_location ? { storage_location: fd.storage_location } : {}), found_at: wallToIso(fd.found_at)! })); if (res.ok) setFd(null); }}>Log item</Btn></>}>
       {fd && <ItemFields v={fd} set={v => setFd({ ...fd, ...v })} extra={<><label className="k-field"><span>Stored at</span><input className="k-input" maxLength={120} value={fd.storage_location} onChange={e => setFd({ ...fd, storage_location: e.target.value })} placeholder="e.g. Box 3, info desk" /></label>
         <label className="k-field"><span>Found at</span><input type="datetime-local" className="k-input" value={fd.found_at} onChange={e => setFd({ ...fd, found_at: e.target.value })} /></label></>} />}
     </Dialog>

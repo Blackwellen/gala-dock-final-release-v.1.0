@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { getOrganizer } from "@/lib/data/context";
-import { Crumbs } from "@/components/kit";
 import { TemplateWizard } from "@/components/organizer/template-wizard";
 import { eventTypeLabel } from "@/lib/format";
 import { untyped } from "@/lib/workspace/db";
+import { EventSubHeader } from "@/components/organizer/event/header";
 
 export const metadata = { title: "Save as template" };
 
@@ -27,7 +27,7 @@ export default async function SaveTemplatePage({ params, searchParams }: { param
   const counts = { plan: 4, schedule: prog.count ?? 0, providers: cats.length, tickets: (tiers.data ?? []).length, promotion: [...new Set((promos.data ?? []).map(p => p.channel))].length, staffing: roles.length, risk: (tasks.data ?? []).filter(t => ["risk", "compliance"].includes(t.category)).length };
   const hours = e.starts_at && e.ends_at ? Math.round((Date.parse(e.ends_at) - Date.parse(e.starts_at)) / 36e5) : null;
   return <div className="tw">
-    <Crumbs items={[{ label: "Organizer", href: "/organizer" }, { label: "Events", href: "/organizer/events" }, { label: e.name, href: `/organizer/events/${id}` }, { label: "Save as Template" }]} />
+    <EventSubHeader id={id} name={e.name} tab={null} page="Save as Template" canMoney={ctx.canMoney} />
     <TemplateWizard step={sp.step === "2" ? 2 : 1} event={{ id, name: e.name, type: eventTypeLabel(e.event_type), description: e.description, cover: e.cover_image, when: e.starts_at ? new Date(e.starts_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "", where: [e.venue_name, e.location].filter(Boolean).join(", "), capacity: e.capacity, hours, tags: e.tags ?? [] }}
       counts={counts} families={families} tiers={(tiers.data ?? []).slice(0, 3).map(t => ({ name: t.name, price: Number(t.price), sub: t.description }))} cats={cats} roles={roles} />
   </div>;

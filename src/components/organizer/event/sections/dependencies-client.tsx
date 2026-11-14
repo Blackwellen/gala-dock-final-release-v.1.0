@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Plus, Trash2, Check, X, Save } from "lucide-react";
 import { Dialog, useAction } from "@/components/kit/client";
 import { addDependency, removeDependency, decideApproval, setTaskDependencies } from "@/lib/events/plan";
+import { wallToIso } from "@/lib/events/wall-time";
 
 type Opt = { id: string; label: string };
 export type DepOptions = { tasks: (Opt & { milestone: boolean; done: boolean })[]; tiers: Opt[]; bookings: Opt[]; shifts: Opt[] };
@@ -32,7 +33,7 @@ export function AddDependencyButton({ eventId, options, variant = "primary" }: {
   return <><button className={`k-btn ${variant} sm`} onClick={() => setOpen(true)}><Plus size={14} />Add dependency</button>
     <Dialog open={open} onClose={() => setOpen(false)} title="Add a dependency" sub="The first item waits until the second is done. Circular chains are refused." wide>
       <form className="k-grid k-g2 dp-form" onSubmit={async ev => { ev.preventDefault(); if (!ok) return;
-        const r = await run(() => addDependency({ event_id: eventId, dependent_kind: dk, dependent_id: di, prerequisite_kind: pk, prerequisite_id: needsPre ? pi : null, hard, lag_minutes: lagN * unit, note: note.trim(), approval_expires_at: pk === "approval" && exp ? new Date(exp).toISOString() : null }));
+        const r = await run(() => addDependency({ event_id: eventId, dependent_kind: dk, dependent_id: di, prerequisite_kind: pk, prerequisite_id: needsPre ? pi : null, hard, lag_minutes: lagN * unit, note: note.trim(), approval_expires_at: pk === "approval" && exp ? wallToIso(exp)! : null }));
         if (r.ok) { setOpen(false); reset(); } }}>
         <fieldset className="dp-fs"><legend>What waits</legend>
           <label className="k-field"><span>Kind</span><select className="k-select" value={dk} onChange={x => { setDk(x.target.value as DK); setDi(""); }}>{DEPENDENT.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>

@@ -8,6 +8,7 @@ import { CalendarDays, Users, BarChart3, Sparkles, Ticket, MapPin, Check, ArrowR
 import { Button, Logo, IconTile, Photo, CheckList, Modal } from "./ui";
 import { TextField, TextArea, SelectField, ChoiceGroup, Toggle } from "./form";
 import { assetUrl, hasRegeneratedAsset } from "@/lib/assets";
+import { CONNECT_COPY, isConnectCountrySupported } from "@/lib/payments/connect-countries";
 import { amenities, listingEventTypes, bookingModes, cancellationPolicies, capacityBands, countries, countryByName, currencies, customerInterests, flowSteps, holdDurations, leadTimes, memberRoles, organizerBusinessTypes, organizerEventTypes, responseTimes, ruleIssues, serviceCategories, trustRequirements, validateStep, venueTypes, type Values } from "@/lib/onboarding-schema";
 
 export type Flow = "experience" | "customer" | "organizer" | "provider";
@@ -159,7 +160,14 @@ function TeamPanel({ members, onChange, ownerEmail, ownerNote = true, title = "I
   </section>;
 }
 
-function PayoutPanel({ kind, status, preview, step }: { kind: "organizer" | "provider"; status: string; preview?: boolean; step: number }) {
+/** Seller-country notice (owner 2026-11-14): shown wherever an unsupported business country matters. Never blocks setup. */
+function CountryPaymentsNotice({ country }: { country: { code: string; name: string } }) {
+  if (isConnectCountrySupported(country.code)) return null;
+  return <div className="agent-state warning" role="status"><AlertTriangle size={16} aria-hidden="true" />
+    <span><b>{CONNECT_COPY.unsupportedTitle}.</b> {CONNECT_COPY.unsupportedBody(country.name)} <Link href={CONNECT_COPY.helpPath} className="link-button">Where you can get paid</Link></span></div>;
+}
+
+function PayoutPanel({ kind, status, preview, step, country }: { kind: "organizer" | "provider"; status: string; preview?: boolean; step: number; country?: { code: string; name: string } }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [label, tone] = payoutLabels[status] ?? payoutLabels.not_connected;
@@ -186,6 +194,8 @@ function PayoutPanel({ kind, status, preview, step }: { kind: "organizer" | "pro
       window.location.assign(data.url);
     } catch { setError("Couldn’t reach Stripe. Please try again."); setBusy(false); }
   }
+  // Unsupported business country: no Stripe button (the server refuses too); the seller carries on enquiry-only / with free events.
+  if (country && !isConnectCountrySupported(country.code) && status !== "active") return <CountryPaymentsNotice country={country} />;
   if (kind === "provider") return <div className="stripe-panel stripe-brand">
     <strong className="stripe-word" aria-label="Stripe">stripe</strong>
     <CheckList items={["Secure and regulated payments", "Paid out to your bank when each booking is complete", "Support for multiple currencies", "Full transaction history"]} />
@@ -215,6 +225,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [exitBlocked, setExitBlocked] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
   const [names, setNames] = useState<Record<string, string>>({});
@@ -257,20 +268,20 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
     setValues(v => ({ ...v, country: c.name, timezone: c.timezones[0].value, currency: c.currency, ...(key === "brand" ? { tax_setting: c.tax[0] } : {}) }));
   }
 
-  async function post(action?: "complete" | "publish" | "skip") {
+  async function post(action?: "complete" | "publish" | "skip" | "exit") {
     if (busy) return;
-    setError("");
+    setError(""); setExitBlocked(false);
     if (preview) { setError("Preview only — sign in to save your setup."); return; }
     const apiFlow = flow === "experience" ? "customer" : flow;
     if (action !== "skip") {
       const { errors: found } = validateStep(apiFlow, key === "experience" ? "preferences" : key, values, { capabilities: context.capabilities, ownerEmail: user.email });
-      if (Object.keys(found).length) { setErrors(found); setError("Please fix the highlighted fields."); return; }
+      if (Object.keys(found).length) { setErrors(found); if (action === "exit") { setExitBlocked(true); setError("Fix the highlighted fields to save this step, or leave without saving."); } else setError("Please fix the highlighted fields."); return; }
     }
     setBusy(true);
     try {
       const response = await fetch("/api/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ flow: apiFlow, step: key === "experience" ? "preferences" : key, values, action, next }) });
       const data = await response.json();
-      if (response.status === 422) { setErrors(data.errors ?? {}); setError("Please fix the highlighted fields."); return; }
+      if (response.status === 422) { setErrors(data.errors ?? {}); if (action === "exit") setExitBlocked(true); setError("Please fix the highlighted fields."); return; }
       if (!response.ok) { setError(data.error ?? "Your setup could not be saved."); if (data.next) router.push(data.next); return; }
       try { sessionStorage.removeItem(draftKey); } catch { /* ignore */ }
       if (data.complete && (data.invites?.length || data.publish)) { setDone({ invites: data.invites ?? [], publish: data.publish, next: data.next }); return; }
@@ -345,7 +356,8 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
       {flow === "customer" ? <Link href={prevHref ?? "/onboarding"} className="back-link"><ArrowLeft size={15} aria-hidden="true" />Back</Link> : <div><span>Step {progress.current} of {progress.total}</span><div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.current} aria-label="Setup progress"><i style={{ width: `${progress.current / progress.total * 100}%` }} /></div></div>}
       {flow === "experience" ? <Link href="#invites" onClick={e => { e.preventDefault(); document.getElementById("invites")?.scrollIntoView({ behavior: "smooth" }); }}><Mail size={15} aria-hidden="true" /> Have an invite?</Link>
         : flow === "customer" ? <button type="button" className="link-button" onClick={() => post("skip")}>Skip for now <ArrowRight size={15} aria-hidden="true" /></button>
-        : <Link href="/discover">Save &amp; exit <ArrowRight size={15} aria-hidden="true" /></Link>}
+        : exitBlocked ? <Link href="/discover">Leave without saving <ArrowRight size={15} aria-hidden="true" /></Link>
+        : <button type="button" className="link-button" disabled={busy} onClick={() => void post("exit")}>Save &amp; exit <ArrowRight size={15} aria-hidden="true" /></button>}
     </div>
 
     <div className="setup-columns">
@@ -423,7 +435,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           <div className="two-columns"><SelectField label={`Default tax setting (${country.name})`} value={str("tax_setting")} onChange={v => set("tax_setting", v)} options={country.tax} hint="Tax options follow your workspace country. Confirm with your accountant." />
             <SelectField label="Payment terms" value={str("payment_terms")} onChange={v => set("payment_terms", v)} options={["Due on receipt", "7 days", "14 days", "30 days"]} /></div>
           <p className="muted">Default currency: <b>{context.currency}</b> (set in step 1)</p>
-          <PayoutPanel kind="organizer" status={context.payoutStatus ?? "not_connected"} preview={preview} step={3} />
+          <PayoutPanel kind="organizer" status={context.payoutStatus ?? "not_connected"} preview={preview} step={3} country={country} />
           <div className="integration-row unavailable"><IconTile icon={Mail} /><span><b>Connected email</b><small>Connecting your own Gmail or Outlook mailbox isn’t available yet. Guest and client emails are sent by Gala Dock on your behalf.</small></span><span className="status-pill neutral">Not available</span></div>
         </section>}
 
@@ -484,6 +496,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
         {key === "rules" && <section className="setup-panel">
           <h3>Booking &amp; enquiry settings</h3><p className="muted">Choose how you want to receive and confirm bookings by default.</p>
           <ChoiceGroup legend="Booking mode" hideLegend name="booking_mode" items={bookingModes} value={[str("booking_mode")]} onChange={v => set("booking_mode", v[0])} descriptions={["Confirm automatically when eligible", "Review each request before accepting", "Receive enquiries, quote separately"]} />
+          {context.country && <CountryPaymentsNotice country={country} />}
           <hr /><ChoiceGroup legend="Response commitment" name="response_time" items={responseTimes.filter(t => t !== "Up to 24 hours" || context.capabilities?.includes("venue"))} value={[str("response_time")]} onChange={v => set("response_time", v[0])} error={errors.response_time} />
           <p className="muted">{context.capabilities?.includes("venue") ? "Up to 24 hours is available for complex venue requests." : "Choose how quickly you’ll respond to new requests."}</p>
           <hr /><div className="two-columns">
@@ -507,7 +520,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
               <div className="credential-head"><IconTile icon={[ShieldCheck, Building2, FileText][i % 3]} /><span><b>{r.label}</b><span className={`badge ${r.required ? "required" : "muted"}`}>{r.required ? "Required" : "Recommended"}</span></span></div>
               <UploadBox label="Upload document" purpose="document" preview={preview} compact current={names[r.key] ?? (documents[r.key] ? "Submitted for review" : undefined)} onUploaded={f => { set("documents", { ...documents, [r.key]: f.path }); setNames(n => ({ ...n, [r.key]: f.name })); }} />
             </div>)}</div></section>
-          <section className="setup-panel" id="trust-payouts"><h3>2. Payout connection</h3><p className="muted">Connect your bank account through Stripe to receive payments from bookings on Gala Dock.</p><PayoutPanel kind="provider" status={context.payoutStatus ?? "not_connected"} preview={preview} step={4} />
+          <section className="setup-panel" id="trust-payouts"><h3>2. Payout connection</h3><p className="muted">Connect your bank account through Stripe to receive payments from bookings on Gala Dock.</p><PayoutPanel kind="provider" status={context.payoutStatus ?? "not_connected"} preview={preview} step={4} country={country} />
             {context.payoutsResult && <p className="muted" role="status">Stripe status updated: {(payoutLabels[context.payoutsResult] ?? payoutLabels.error)[0]}.</p>}</section>
           <TeamPanel members={(values.members as { email: string; role: string }[]) ?? []} onChange={m => set("members", m)} ownerEmail={user.email} ownerNote={false} title="3. Invite your team" />
         </>}
@@ -536,7 +549,8 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
           const items: [string, boolean, string][] = [
             ["Business details completed", true, ""], ["First offer added", !!context.listing && !missing.some(m => m.startsWith("listing_")), ""], ["Booking rules configured", true, ""],
             [`Insurance & licences ${docsDone ? "submitted" : "(required)"}`, docsDone, "trust-documents"], ["Gala Dock verification", context.verificationStatus === "verified", "trust-documents"],
-            ["Connect payouts (required)", context.payoutStatus === "active", "trust-payouts"],
+            isConnectCountrySupported(country.code) ? ["Connect payouts (required)", context.payoutStatus === "active", "trust-payouts"]
+              : ["Payouts not available in your country (listing is enquiry-only)", true, ""],
             ["Team invited (optional)", ((values.members as unknown[]) ?? []).length > 0, ""], ["Publish listing", !!context.readiness?.eligible, ""],
           ];
           const firstGap = items.find(([, met, target]) => !met && target)?.[2];
@@ -579,6 +593,7 @@ function LocaleFields({ country, values, set, changeCountry, errors }: { country
     <SelectField label="Timezone" required value={String(values.timezone ?? "")} onChange={v => set("timezone", v)} options={country.timezones} error={errors.timezone} icon={<Clock size={18} aria-hidden="true" />} />
     <SelectField label="Default currency" required value={String(values.currency ?? "")} onChange={v => set("currency", v)} options={currencies} error={errors.currency} />
     <div className="setup-note"><MapPin size={20} aria-hidden="true" /><span>These defaults can be changed later in workspace settings and will be used for events, contracts and payments.</span></div>
+    {values.country ? <CountryPaymentsNotice country={country} /> : null}
   </div>;
 }
 
@@ -603,11 +618,11 @@ function PendingInvite({ invite, preview }: { invite: { id: string; workspace_na
   async function respond(accept: boolean) {
     if (preview) return;
     setBusy(true); setError("");
-    const response = await fetch("/api/invites", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inviteId: invite.id, accept }) });
-    const data = await response.json().catch(() => ({}));
+    const response = await fetch("/api/invites", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inviteId: invite.id, accept }) }).catch(() => null);
+    const data = response ? await response.json().catch(() => ({})) : {};
     setBusy(false);
-    if (!response.ok) return setError(data.error ?? "Couldn’t respond to this invitation.");
-    router.push(accept ? data.next : "/onboarding"); router.refresh();
+    if (!response?.ok) return setError(data.error ?? (response ? "Couldn’t respond to this invitation." : "You appear to be offline. Try again when you’re connected."));
+    router.push(accept ? data.next ?? "/continue" : "/onboarding"); router.refresh();
   }
   return <div className="pending-invite"><span><b>{invite.workspace_name}</b><small>{invite.workspace_kind === "provider" ? "Provider" : "Organizer"} · {memberRoles.find(r => r.value === invite.role)?.label}</small></span>
     <Button variant="outline" disabled={busy} onClick={() => respond(false)}>Decline</Button><Button disabled={busy} onClick={() => respond(true)}>Accept</Button>
@@ -628,7 +643,7 @@ function ExperienceHelp({ preview }: { preview: boolean }) {
       const response = await fetch("/api/agent/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step: "experience", context: { question } }) });
       const data = await response.json();
       if (!response.ok) { setState("error"); setMessage(data.error); return; }
-      setAnswer({ summary: data.summary, path: data.suggestions?.[0]?.value }); setState("done");
+      const path = data.suggestions?.[0]?.value; setAnswer({ summary: data.summary, path: ["customer", "organizer", "provider"].includes(path) ? path : undefined }); setState("done");
     } catch { setState("error"); setMessage("The Gala Agent couldn’t be reached."); }
   }
   return <div className="experience-help">
@@ -655,7 +670,7 @@ function OnboardingShell({ flow, pageClass, storyAsset, s, steps, step, user, pr
       <Logo />
       {flow !== "experience" && <><form className="setup-search" role="search" onSubmit={e => { e.preventDefault(); const q = new FormData(e.currentTarget).get("q"); router.push(`/discover${q ? `?q=${encodeURIComponent(String(q))}` : ""}`); }}>
         <Search size={17} aria-hidden="true" /><input name="q" aria-label="Search events, venues and suppliers" placeholder="Search events, venues, suppliers and more..." /></form>
-        <nav aria-label="Marketplace"><Link href="/events/london">Explore Events</Link><Link href="/venues/riverside-arena">Find Venues</Link><Link href="/onboarding/organizer?step=1">For Organizers</Link><Link href="/onboarding/provider?step=1">For Providers</Link></nav></>}
+        <nav aria-label="Marketplace"><Link href="/events/in/london">Explore Events</Link><Link href="/discover?tab=venues&results=1">Find Venues</Link><Link href="/onboarding/organizer?step=1">For Organizers</Link><Link href="/onboarding/provider?step=1">For Providers</Link></nav></>}
       {flow === "experience" ? <Link href="/help" className="setup-help"><CircleHelp size={18} aria-hidden="true" />Need help?</Link> : <Link href="/help" className="header-icon" aria-label="Help centre"><CircleHelp size={22} aria-hidden="true" /></Link>}
       <div className="account-menu"><button type="button" className="initial-avatar" aria-haspopup="menu" aria-expanded={menu} aria-label="Account menu" onClick={() => setMenu(!menu)}>{user.initials}</button>
         {menu && <div role="menu" className="account-dropdown"><span><b>{user.name || "Your account"}</b><small>{user.email}</small></span>

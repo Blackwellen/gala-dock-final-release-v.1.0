@@ -28,7 +28,12 @@ export default async function Discover({ searchParams }: { searchParams: Promise
   const results = s(sp.results) === "1" || !!s(sp.q) || !!chip || tab !== "events";
   const view = (["list", "map"].includes(s(sp.view)) ? s(sp.view) : "cards") as "cards" | "list" | "map";
   const saved = await savedKeys(ctx);
-  const events = await publicEvents(ctx, { q: tab === "events" ? s(sp.q) : undefined, cat: !isDate ? chip : undefined, date: isDate ? chip : s(sp.date) || undefined, city: s(sp.city) || undefined });
+  // The search bar's date picker writes ?on=YYYY-MM-DD (publicEvents only knows tonight/weekend/week/month): keep events running on
+  // that UK calendar day. Previously the picked date was silently ignored (Q47).
+  const on = /^\d{4}-\d{2}-\d{2}$/.test(s(sp.on)) ? s(sp.on) : "";
+  const ukDay = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : "";
+  const events = (await publicEvents(ctx, { q: tab === "events" ? s(sp.q) : undefined, cat: !isDate ? chip : undefined, date: isDate ? chip : s(sp.date) || undefined, city: s(sp.city) || undefined }))
+    .filter(e => !on || (ukDay(e.starts_at) <= on && (ukDay(e.ends_at) || ukDay(e.starts_at)) >= on));
   const listQ = (kind: "venue" | "service", limit: number) => { let q = ctx.supabase.from("listings").select(LISTING_COLS).eq("published", true).eq("kind", kind); if (results && tab !== "events" && s(sp.q)) { const t = s(sp.q).replace(/[%,()]/g, ""); q = q.or(`name.ilike.%${t}%,category.ilike.%${t}%,description.ilike.%${t}%`); } if (results && s(sp.city)) q = q.ilike("location", `%${s(sp.city)}%`); return q.order("review_count", { ascending: false }).limit(limit); };
   const [{ data: venuesRaw }, { data: servicesRaw }] = await Promise.all([listQ("venue", results ? 60 : 12), listQ("service", results ? 60 : 12)]);
   const venues = (venuesRaw ?? []) as unknown as Listing[], services = (servicesRaw ?? []) as unknown as Listing[];

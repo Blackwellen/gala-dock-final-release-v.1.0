@@ -7,6 +7,7 @@ import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { createCalendarEntry, rescheduleEntry, type Impact } from "@/lib/actions/calendar";
 import type { CalEntry, LayerKey } from "@/lib/data/calendar";
 import { promptDialog } from "@/lib/ui/dialogs";
+import { wallToIso } from "@/lib/events/wall-time";
 
 type Layer = { key: string; label: string; color: string };
 const TZ = "Europe/London";
@@ -43,7 +44,7 @@ export function AddEntry({ events, defaultDate }: { events: { id: string; name: 
       {close => <><button role="menuitem" className="k-menu-item" onClick={() => { close(); setOpen(true); }}><CalendarPlus size={15} />Meeting</button><Link role="menuitem" className="k-menu-item" href="/organizer/events/new?step=1" onClick={close}>Event</Link><Link role="menuitem" className="k-menu-item" href="/organizer/team?tab=shifts" onClick={close}>Crew shift</Link></>}
     </Menu>
     <Dialog open={open} onClose={() => setOpen(false)} title="Add meeting">
-      <form className="k-grid k-g2" onSubmit={async e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.currentTarget)); const r = await run(() => createCalendarEntry({ ...f, starts_at: new Date(String(f.starts_at)).toISOString(), ends_at: f.ends_at ? new Date(String(f.ends_at)).toISOString() : undefined })); if (r.ok) setOpen(false); }}>
+      <form className="k-grid k-g2" onSubmit={async e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.currentTarget)); const r = await run(() => createCalendarEntry({ ...f, starts_at: wallToIso(String(f.starts_at)) ?? "", ends_at: f.ends_at ? wallToIso(String(f.ends_at)) ?? undefined : undefined })); if (r.ok) setOpen(false); }}>
         <label className="k-field" style={{ gridColumn: "1/-1" }}><span>Title <b>*</b></span><input className="k-input" name="title" required /></label>
         <label className="k-field"><span>Starts <b>*</b></span><input className="k-input" type="datetime-local" name="starts_at" required defaultValue={`${defaultDate}T10:00`} /></label>
         <label className="k-field"><span>Ends</span><input className="k-input" type="datetime-local" name="ends_at" defaultValue={`${defaultDate}T11:00`} /></label>
@@ -65,8 +66,8 @@ export function TimeGrid({ days, entries, colors, startHour = 8, endHour = 24, s
   const timed = entries.filter(e => !long(e));
   async function drop(day: string, y: number) {
     if (!drag) return; const hour = Math.max(startHour, Math.min(endHour - 1, startHour + Math.round((y / rowH) * 2) / 2));
-    const local = new Date(`${day}T${String(Math.floor(hour)).padStart(2, "0")}:${hour % 1 ? "30" : "00"}:00`);
-    const r = await run(() => rescheduleEntry(drag.layer, drag.sourceId, local.toISOString()), { refresh: true });
+    const at = wallToIso(`${day}T${String(Math.floor(hour)).padStart(2, "0")}:${hour % 1 ? "30" : "00"}`)!; // the grid is London time (Q48)
+    const r = await run(() => rescheduleEntry(drag.layer, drag.sourceId, at), { refresh: true });
     if (r.ok && r.data && !r.data.allowed) setImpact(r.data); setDrag(null);
   }
   const select = (id: string) => { const p = new URLSearchParams(params.toString()); p.set("sel", id); router.push(`${pathname}?${p}`, { scroll: false }); };

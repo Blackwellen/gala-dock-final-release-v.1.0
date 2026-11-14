@@ -217,6 +217,9 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
 /* ── Public shells (events, venues, services, organisers, help, legal, 404): same canvas, type and chrome ─────────────── */
 .pub-root { background: #fff; font-family: var(--gp-font); }
 .pub-root > .gp-header { margin: 0; }
+/* Q47: customer.css (loaded by the events/help/legal shells) gives .c-logo a 46px right margin for the workspace bar; without this
+   reset the same header laid out differently on / and on /events. */
+.gp-header .c-logo { margin-right: 0; }
 
 /* ── 404 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
 .gp-404 { padding: 112px 0 128px; }

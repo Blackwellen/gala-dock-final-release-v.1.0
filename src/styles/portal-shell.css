@@ -46,7 +46,7 @@
 .pt-account>summary::-webkit-details-marker{display:none}
 .pt-app .pt-account .chev{width:18px;height:18px;color:#1a1ae0}
 .pt-avatar{border-radius:50%;object-fit:cover;display:block;flex-shrink:0}
-.pt-avatar.initials{display:grid;place-items:center;background:linear-gradient(135deg,#dfe8ff,#efe4ff);color:#2a1fd0;font-weight:700}
+.pt-avatar.initials{display:grid;place-items:center;background:linear-gradient(135deg,#dfe8ff,#efe4ff);color:#2a1fd0;font-weight:700;font-size:calc(var(--pt-av,40px) * .36)}
 .pt-pop{position:relative}
 .pt-pop-panel{position:absolute;top:calc(100% + 10px);z-index:60;min-width:220px;background:#fff;border:1px solid var(--pt-border);border-radius:10px;box-shadow:0 16px 40px -12px rgba(20,40,120,.25);padding:6px;display:flex;flex-direction:column}
 .pt-pop-panel.right{right:0}.pt-pop-panel.left{left:0}

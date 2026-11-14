@@ -6,6 +6,7 @@ import { Card, CardHead, Chip, Empty, Btn, Stat, Bar } from "@/components/kit";
 import { Dialog, useAction } from "@/components/kit/client";
 import { money, num, dateShort, timeRange } from "@/lib/format";
 import { createSeriesFromEvent, generateSeriesDates, addSeriesTourDate, editSeriesDates, detachFromSeries, addChildEvent, cascadeEventStatus, saveEventVenues, saveEventDays, savePassComponents, bindComposition } from "@/lib/actions/composition-ui";
+import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 
 type Readiness = { score: number; state?: string };
 export type StructureData = {
@@ -34,7 +35,7 @@ const KIND: Record<string, string> = { series: "Series", recurring: "Recurring",
 const ROLE: Record<string, string> = { stage: "Stage", track: "Track", session: "Session", day: "Day", sub_event: "Sub-event", occurrence: "Occurrence", parent: "Parent", standalone: "Standalone" };
 const PASS: Record<string, string> = { season: "Season pass", multi_day: "Multi-day pass", multi_venue: "Multi-venue pass", series: "Series pass" };
 const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const toIso = (local: string) => (local ? new Date(local).toISOString() : undefined);
+const toIso = (local: string) => wallToIso(local) ?? undefined; // London wall time (Q48)
 const scoreTone = (s: number) => (s >= 80 ? "green" : s >= 50 ? "amber" : "red") as "green" | "amber" | "red";
 
 export function StructureClient({ data, canWrite, canCascade, canTickets }: { data: StructureData; canWrite: boolean; canCascade: boolean; canTickets: boolean }) {
@@ -132,7 +133,7 @@ function SeriesPanel({ data, canWrite, ro }: { data: StructureData; canWrite: bo
 const CASCADE = ["published", "on_sale", "live", "completed", "postponed", "cancelled", "archived"];
 function ChildrenPanel({ data, canWrite, canCascade, ro }: { data: StructureData; canWrite: boolean; canCascade: boolean; ro: ReactNode }) {
   const { run, pending } = useAction(); const ev = data.event; const rd = data.readiness;
-  const local = (iso: string | null) => { if (!iso) return ""; const d = new Date(iso); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+  const local = (iso: string | null) => isoToWall(iso);
   const [f, setF] = useState({ name: "", role: "stage", starts: local(ev.starts_at), ends: local(ev.ends_at), capacity: "" });
   const [cx, setCx] = useState<{ to: string; child: string; reason: string } | null>(null);
   const byId = new Map((rd?.children ?? []).map(c => [c.event_id, c]));

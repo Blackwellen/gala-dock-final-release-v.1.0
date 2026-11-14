@@ -1,6 +1,6 @@
 "use client";
 // Interactive UI primitives (menus, dialogs, toasts, toggles, map, agent ask box).
-import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,14 +25,18 @@ export function KitProviders({ children }: { children: ReactNode }) {
 
 // ── Server action / API caller with toast + refresh ───────────────────────
 export function useAction() {
-  const router = useRouter(); const toast = useKitToast(); const [pending, setPending] = useState(false);
+  const router = useRouter(); const toast = useKitToast(); const [saving, setPending] = useState(false);
+  // Q48: a redirect runs inside a transition so `pending` stays true until the destination renders. Before, the button re-enabled
+  // the moment the action returned, and a second click while the next page loaded re-ran create/send actions (duplicate drafts,
+  // RFQs, leads, proposals).
+  const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   const run = useCallback(async <T,>(fn: () => Promise<{ ok: boolean; error?: string; message?: string; data?: T; redirect?: string }>, opts: { success?: string; refresh?: boolean } = {}) => {
     setPending(true);
     try {
       const r = await fn();
       if (!r.ok) { toast(r.error ?? "Something went wrong. Please try again.", "error"); return r; }
       if (opts.success ?? r.message) toast((opts.success ?? r.message)!);
-      if (r.redirect) router.push(r.redirect); else if (opts.refresh !== false) router.refresh();
+      if (r.redirect) { const to = r.redirect; startNav(() => router.push(to)); } else if (opts.refresh !== false) router.refresh();
       return r;
     } catch { toast("Network error — your change was not saved.", "error"); return { ok: false as const }; } finally { setPending(false); }
   }, [router, toast]);
@@ -130,12 +134,19 @@ export function NumberStepper({ value, onChange, min = 0, max = 100000, step = 1
 }
 export function SaveHeart({ itemKey, saved: initial, className = "heart", size = 15, label = "Save" }: { itemKey: string; saved: boolean; className?: string; size?: number; label?: string }) {
   const [saved, setSaved] = useState(initial); const toast = useKitToast(); const router = useRouter();
+  // Q47: follow the server value after a refresh or when the same heart is reused for another item (reset-on-change during render).
+  const [prop, setProp] = useState({ itemKey, initial });
+  if (prop.itemKey !== itemKey || prop.initial !== initial) { setProp({ itemKey, initial }); setSaved(initial); }
+  const busy = useRef(false);
   async function toggle(e: React.MouseEvent) {
     e.preventDefault(); e.stopPropagation();
+    if (busy.current) return; busy.current = true;
     const next = !saved; setSaved(next);
+    try {
     const r = await fetch("/api/saved", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key: itemKey, saved: next }) }).catch(() => null);
     if (!r?.ok) { setSaved(!next); const j = await r?.json().catch(() => null); toast(j?.error ?? "Could not update saved items.", "error"); return; }
     toast(next ? "Saved to your collection" : "Removed from saved"); router.refresh();
+    } finally { busy.current = false; }
   }
   return <button type="button" className={className} aria-pressed={saved} aria-label={saved ? `Remove ${label} from saved` : `Save ${label}`} onClick={toggle}><Heart size={size} fill={saved ? "currentColor" : "none"} /></button>;
 }

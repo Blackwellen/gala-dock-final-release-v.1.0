@@ -63,3 +63,7 @@ export function capGroupToAvailable(g: ReleaseGroup, availableMinor: number): { 
   const items = g.items.map(i => { const pay = Math.min(i.amount_minor, left); left -= pay; return { ...i, amount_minor: pay }; });
   return { group: { ...g, items, payoutMinor: payable }, shortfallMinor: g.payoutMinor - payable };
 }
+/** Disputed money gone from a charge: open card disputes (withdrawn, outcome pending) plus lost ones (withdrawn for good). */
+export function disputedMinor(rows: { amount_minor: number; outcome: string | null }[]) {
+  return rows.filter(d => d.outcome == null || d.outcome === "lost").reduce((a, d) => a + Number(d.amount_minor), 0);
+}

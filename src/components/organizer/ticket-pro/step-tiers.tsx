@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, LayoutTemplate, GripVertical, MoreHorizontal, Copy, Trash2, ArrowUp, ArrowDown, Tag, CalendarDays, Info, Sparkles, ListChecks, CalendarRange, Calculator, ShieldAlert, Megaphone, CheckCircle2, Clock, CircleDot, EyeOff, Image as ImageIcon, X } from "lucide-react";
 import { Menu, Toggle, useAction, useKitToast } from "@/components/kit/client";
@@ -19,7 +19,7 @@ const PALETTE = ["#2563eb", "#7c3aed", "#e0398b", "#e08a00", "#16a46c", "#64748b
 const at = (iso: string | null, days: number, h = 10) => { if (!iso) return null; const d = new Date(Date.parse(iso) - days * 864e5); d.setHours(h, 0, 0, 0); return d.toISOString(); };
 
 export function StepTiers({ data, base }: { data: ProSetup; base: string }) {
-  const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction(); const e = data.event; const p = data.pro; const [now] = useState(() => Date.now());
+  const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction(); const [navigating, startNav] = useTransition(); const pending = saving || navigating; /* stay disabled until the next step renders (Q48) */ const e = data.event; const p = data.pro; const [now] = useState(() => Date.now());
   const [phases, setPhases] = useState<ProPhase[]>(p.phases);
   const [tiers, setTiers] = useState<T[]>(() => data.tiers.map(t => {
     const ai = t.after_tier ? data.tiers.findIndex(x => x.id === t.after_tier) : -1; const ph = p.phases.find(x => x.name === t.release_name);
@@ -57,7 +57,7 @@ export function StepTiers({ data, base }: { data: ProSetup; base: string }) {
       tiers: tiers.map(t => { const ph = t.release.startsWith("phase:") ? phases.find(x => `phase:${x.id}` === t.release) : null; return { id: t.id, name: t.name, description: t.description, kind: t.kind, price: t.price, quantity: t.quantity, sale_start: ph?.starts_at ?? t.sale_start, sale_end: t.sale_end, release_name: ph?.name ?? null, after: t.release.startsWith("after:") ? Number(t.release.slice(6)) : -1, enabled: t.enabled, image: t.image, order_limit: Math.min(t.order_limit, sales.order_limit), badge: t.badge, color: t.color, valid_from: t.valid_from, valid_to: t.valid_to }; }),
       phases, sales, promos: promos.map(({ used: _u, status: _s, ...x }) => x), allocations: alloc.map(a => ({ id: a.id, qty: a.ticket_allocation })),
     }), { refresh: false });
-    if (r.ok) router.push(next ? `${base}?step=3` : `/organizer/events/${e.id}?tab=sell`);
+    if (r.ok) startNav(() => router.push(next ? `${base}?step=3` : `/organizer/events/${e.id}?tab=sell`));
   };
   const suggest = () => {
     const secs = p.sections.filter(s => s.type !== "hold");
