@@ -1,5 +1,5 @@
 "use client";
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { animate, motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useHydrated } from "@/lib/use-hydrated";
 import { createElement, useEffect, useRef, useState, type CSSProperties, type ElementType, type ReactNode } from "react";
 
@@ -63,4 +63,15 @@ export function useVisibleInterval(active: boolean, ms: number, tick: () => void
     start(); document.addEventListener("visibilitychange", onVis);
     return () => { stop(); document.removeEventListener("visibilitychange", onVis); };
   }, [active, ms]);
+}
+
+/** Hero parallax (Apple-like restraint): the wrapped visual drifts `distance` px slower than the page while its hero scrolls away.
+ *  Transform only (no layout, CLS 0); the server/first paint is the resting position; reduced motion keeps it static. Never wrap
+ *  the LCP element (the hero H1). */
+export function Parallax({ children, className, distance = 48 }: { children: ReactNode; className?: string; distance?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : distance]);
+  return <motion.div ref={ref} className={className} style={{ y }}>{children}</motion.div>;
 }

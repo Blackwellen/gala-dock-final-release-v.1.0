@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HREF, pageMetadata } from "@/lib/public/site";
 import { CONNECT_COPY } from "@/lib/payments/connect-countries";
 import { siteUrl } from "@/lib/site-url";
+import { Parallax } from "@/components/site/motion";
 import { TLink } from "@/components/site/tracked-link";
 import { Eyebrow, JsonLd, SectionHead } from "@/components/site/ui";
 import { AdaptiveWorkspace, OpportunityStream, PackageBuilder, ReliabilityRing, RespondDemo } from "@/components/site/providers/demos";
@@ -37,7 +38,7 @@ export default function ProvidersPage() {
           </div>
           <p className="gpp-hero-fit">For venues, suppliers and businesses that do both. <TLink href={HREF.events} surface={S} variant="hero_events" className="gp-link">See events on Gala Dock<ArrowRight size={16} className="gp-arrow" aria-hidden="true" /></TLink></p>
         </div>
-        <OpportunityStream />
+        <Parallax className="gp-par" distance={32}><OpportunityStream /></Parallax>
       </div>
     </section>
 

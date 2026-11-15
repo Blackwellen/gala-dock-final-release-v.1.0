@@ -41,12 +41,11 @@
 /* Full width at every size (owner 2026-11-14: no content-width cap on large screens); the display scale (density.css) keeps the
    1536px proportions, sections adapt their own grids and keep text measures readable. --gp-max stays as a token for measures. */
 .gp-wrap { width: 100%; margin: 0 auto; padding: 0 var(--gp-gutter); }
-.gp-sec { position: relative; padding: 128px 0; }
-.gp-sec.is-tint { background: linear-gradient(180deg, #fff 0, var(--gp-porcelain) 120px, var(--gp-porcelain) calc(100% - 120px), #fff 100%); }
-.gp-sec.is-tight { padding: 96px 0; }
-.gp-sec + .gp-sec:not(.is-tint) { padding-top: 64px; }
-.gp-sec.is-tint { padding-bottom: 112px; }
-.gp-sec.is-tint + .gp-sec { padding-top: 88px; }
+/* Public designs 1:1 (2026-11-15): each section design is a tight slice with ~40–60px above its eyebrow and below its last row, so a
+   section carries 56px top and bottom and neighbouring sections sit 112px apart (the blueprint's 112–160 rhythm, lower bound). */
+.gp-sec { position: relative; padding: 56px 0; }
+.gp-sec.is-tint { background: linear-gradient(180deg, #fff 0, var(--gp-porcelain) 56px, var(--gp-porcelain) calc(100% - 56px), #fff 100%); }
+.gp-sec.is-tight { padding: 48px 0; }
 .gp-hero { padding: 72px 0 104px; }
 
 /* ── Type ────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -62,9 +61,9 @@
 .gp-eyebrow::before { content: ""; width: 34px; height: 1.5px; background: currentColor; border-radius: 2px; flex: none; }
 .gp-eyebrow.is-center { justify-content: center; }
 .gp-head { max-width: 760px; }
-.gp-head.is-center { margin: 0 auto; text-align: center; max-width: 1240px; }
-.gp-head.is-center .gp-lead { max-width: 820px; }
-.gp-head.is-center .gp-h2 { text-wrap: balance; }
+.gp-head.is-center { margin: 0 auto; text-align: center; max-width: 1480px; }
+.gp-head.is-center .gp-lead { max-width: 880px; margin-top: 16px; }
+.gp-head.is-center .gp-eyebrow { margin-bottom: 14px; }
 /* The party photo carries an overlay in its top half; show the scene. */
 img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-head.is-center .gp-lead { margin-left: auto; margin-right: auto; }
@@ -85,6 +84,22 @@ img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
 .gp-link { display: inline-flex; align-items: center; gap: 7px; color: var(--gp-blue); font-weight: 620; }
 .gp-link:hover { color: var(--gp-blue-ink); }
+
+/* Hover / press (motion pass 2026-11-15): buttons lift a pixel and press in; cards and route links rise on hover. Transform and
+   shadow only (no layout shift); pointer devices only; nothing moves under reduced motion. */
+.gp-par { min-width: 0; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .gp-btn { transition: background-color .2s, border-color .2s, color .2s, box-shadow .25s var(--gp-ease), transform .25s var(--gp-ease); }
+  .gp-btn:hover { transform: translateY(-1px); }
+  .gp-btn--primary:hover { box-shadow: 0 1px 1px rgba(16, 24, 64, .08), 0 16px 28px -12px rgba(36, 87, 230, .65); }
+  /* `translate` composes with the entrance `transform`, so a lift never fights a reveal; the reveal's staggered timing is kept. */
+  html .gp-root .gp-lift { transition: opacity .7s var(--gp-ease) calc(var(--d, 0) * 1ms), transform .85s var(--gp-ease) calc(var(--d, 0) * 1ms),
+    translate .35s var(--gp-ease), box-shadow .35s var(--gp-ease), border-color .25s, background-color .25s; }
+  html .gp-root .gp-lift:hover { translate: 0 -4px; box-shadow: var(--gp-shadow-lg); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gp-btn:active, .gp-pill:active, .gp-seg-btn:active, .gp-tab:active { transform: scale(.97); transition-duration: .08s; }
+}
 
 /* ── Surfaces & small parts ──────────────────────────────────────────────────────────────────────────────────────────── */
 .gp-card { background: #fff; border: 1px solid var(--gp-line); border-radius: var(--gp-radius); box-shadow: var(--gp-shadow); }
@@ -236,13 +251,13 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
 /* ── Responsive (blueprint §10.1) ────────────────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 1099px) {
   :root { --gp-header-h: 68px; }
+  .gp-head.is-center .gp-h2 { text-wrap: balance; }
   .gp-nav { display: none; }
   .gp-menu-btn { display: grid; }
   .gp-header-actions { margin-left: auto !important; gap: 10px; }
   .gp-h1 { font-size: 52px; }
   .gp-h2 { font-size: 42px; }
-  .gp-sec { padding: 96px 0; }
-  .gp-sec + .gp-sec:not(.is-tint) { padding-top: 48px; }
+  .gp-sec { padding: 48px 0; }
   .gp-hero { padding: 56px 0 80px; }
   .gp-footer-top { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .gp-footer-cols { padding-left: 0; border-left: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 32px; }
@@ -256,9 +271,7 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
   .gp-h3 { font-size: 20px; }
   .gp-lead { font-size: 17px; margin-top: 18px; }
   .gp-subline { font-size: 17px; }
-  .gp-sec { padding: 72px 0; }
-  .gp-sec + .gp-sec:not(.is-tint) { padding-top: 32px; }
-  .gp-sec.is-tint + .gp-sec { padding-top: 72px; }
+  .gp-sec { padding: 40px 0; }
   .gp-hero { padding: 36px 0 64px; }
   .gp-eyebrow { font-size: 12px; letter-spacing: .14em; margin-bottom: 16px; }
   .gp-btn { min-height: 50px; padding: 0 22px; }
@@ -277,7 +290,7 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
 @media (max-width: 420px) { .gp-btn { white-space: normal; padding-block: 10px; } .gp-seg-btn { white-space: normal; padding: 6px 12px; line-height: 1.2; } }
 @media (max-width: 400px) { .gp-h1 { font-size: 36px; } .gp-h2 { font-size: 29px; } }
 /* Landscape phones: short viewport — compact hero, never a full-height block. */
-@media (max-height: 500px) and (orientation: landscape) { .gp-hero { padding: 28px 0 48px; } .gp-sec { padding: 56px 0; } }
+@media (max-height: 500px) and (orientation: landscape) { .gp-hero { padding: 28px 0 48px; } .gp-sec { padding: 36px 0; } }
 
 /* globals.css colours bare <em> blue and <p>/<small> muted; public-site numbers and labels set their own colour, these inherit. */
 :is(.gp-root, .gp-header, .gp-footer, .gp-sheet) :where(em) { color: inherit; }

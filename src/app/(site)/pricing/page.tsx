@@ -49,7 +49,7 @@ export default async function PricingPage() {
         <p className="gp-lead">Start free. Organisers pay for the operating capability they need; providers start with marketplace economics; Gala Agent runs on credits with budget controls.</p>
         <div className="gp-cta-row gpr-hero-cta">
           <TLink href={HREF.getStarted} event="hero_primary_cta" surface={S} variant="start_free" className="gp-btn gp-btn--primary">Start Free<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></TLink>
-          <TLink href={HREF.contact} event="hero_secondary_cta" surface={S} variant="talk_to_sales" className="gp-btn gp-btn--ghost">Talk to Sales</TLink>
+          <TLink href={HREF.sales} event="hero_secondary_cta" surface={S} variant="talk_to_sales" className="gp-btn gp-btn--ghost">Talk to Sales</TLink>
         </div>
         <p className="gpr-callout"><PartyPopper size={18} aria-hidden="true" /><span><b>Planning your own event?</b> Customer accounts are free. Ticket and booking fees are shown before you pay — <TLink href="/build-an-event" surface={S} variant="callout_build" className="gp-link">build an event</TLink>.</span></p>
       </div>
@@ -106,7 +106,7 @@ export default async function PricingPage() {
         <PricingFaq items={faqs} />
         <div className="gpr-close">
           <TLink href={HREF.getStarted} surface={S} variant="close_start" className="gp-btn gp-btn--primary">Start Free<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></TLink>
-          <TLink href={HREF.contact} surface={S} variant="close_sales" className="gp-btn gp-btn--ghost">Talk to Sales</TLink>
+          <TLink href={HREF.sales} surface={S} variant="close_sales" className="gp-btn gp-btn--ghost">Talk to Sales</TLink>
         </div>
         <p className="gpr-more">Not sure which plan fits? <TLink href="/organisers" surface={S} variant="more_org" className="gp-link">Organisers</TLink> · <TLink href="/providers" surface={S} variant="more_pro" className="gp-link">Providers</TLink> · <TLink href="/developers" surface={S} variant="more_dev" className="gp-link">Developers</TLink></p>
       </div>

@@ -2,7 +2,7 @@ import { ArrowRight, CalendarDays, CircleCheck, Clock3, Lock, ShieldCheck, Walle
 import { HREF, pageMetadata } from "@/lib/public/site";
 import { siteUrl } from "@/lib/site-url";
 import { TLink } from "@/components/site/tracked-link";
-import { Scope } from "@/components/site/motion";
+import { Scope, Parallax } from "@/components/site/motion";
 import { cx, Eyebrow, JsonLd, SectionHead, vars } from "@/components/site/ui";
 import { Backups, BuildCanvasSignature, BuildPreview, BuildToPlan, Dependencies, Emergency, EventTypes } from "@/components/site/build/demos";
 import "@/styles/site-build.css";
@@ -44,7 +44,7 @@ export default function BuildAnEventPage() {
           </div>
           <p className="gpb-hero-note"><CircleCheck size={17} aria-hidden="true" />Creating an account and planning are free. Booking fees are shown before you pay.</p>
         </div>
-        <BuildPreview />
+        <Parallax className="gp-par" distance={32}><BuildPreview /></Parallax>
       </div>
     </section>
 

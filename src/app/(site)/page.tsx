@@ -3,9 +3,10 @@ import { HREF, pageMetadata } from "@/lib/public/site";
 import { siteUrl } from "@/lib/site-url";
 import { LEGAL } from "@/lib/legal";
 import { TLink } from "@/components/site/tracked-link";
-import { Scope } from "@/components/site/motion";
+import { Parallax, Scope } from "@/components/site/motion";
 import { Eyebrow, Feature, JsonLd, SectionHead, vars } from "@/components/site/ui";
 import { HeroGraph } from "@/components/site/landing/hero-graph";
+import { HeroBackdrop } from "@/components/site/landing/hero-backdrop";
 import { ThreeWays } from "@/components/site/landing/three-ways";
 import { BuildCanvas } from "@/components/site/landing/build-canvas";
 import { Lifecycle } from "@/components/site/landing/lifecycle";
@@ -50,8 +51,9 @@ export default function LandingPage() {
               <li key={h}><TLink href={h} event="persona_route_select" surface={S} variant={`trust_${t}`}><span className="gpl-trust-ic"><I size={22} aria-hidden="true" /></span><span><b>{t}</b><small>{s}</small></span></TLink></li>)}
           </ul>
         </div>
-        <HeroGraph />
+        <Parallax className="gpl-hero-par" distance={36}><HeroGraph /></Parallax>
       </div>
+      <HeroBackdrop />
     </section>
 
     {/* 2.2 Three Ways Into Gala Dock */}
@@ -84,9 +86,10 @@ export default function LandingPage() {
     {/* 2.4 From Plan to Event Day */}
     <section className="gp-sec is-tint gpl-lifecycle" aria-labelledby="life-title">
       <div className="gp-wrap">
-        <SectionHead center id="life-title" eyebrow="One connected lifecycle" title={<>From Plan to <span className="gp-blue">Event Day.</span></>}
-          lead="Gala Dock carries the event through its full lifecycle, with the right tools, people and records at every stage — all connected to the same plan.">
+        {/* Design 2.4: the blue stage line sits between the title and the lead. */}
+        <SectionHead center id="life-title" eyebrow="One connected lifecycle" title={<>From Plan to <span className="gp-blue">Event Day.</span></>}>
           <p className="gp-subline">Plan. Source. Book. Sell. Promote. Run. Settle.</p>
+          <p className="gp-lead">Gala Dock carries the event through its full lifecycle, with the right tools, people and records at every stage — all connected to the same plan.</p>
         </SectionHead>
         <Lifecycle />
       </div>
@@ -132,12 +135,12 @@ export default function LandingPage() {
       <Scope className="gp-wrap" amount={0.3}>
         <header className="gp-head is-center" data-rv="fade">
           <Eyebrow center>Start with the event</Eyebrow>
-          <h2 id="close-title" className="gp-h2">Whether it’s one birthday or fifty live events, <span className="gp-blue">start with the event.</span></h2>
+          <h2 id="close-title" className="gp-h2">Whether it’s one birthday or fifty live events, <span className="gp-blue gpl-close-br">start with the event.</span></h2>
           <p className="gp-lead">Gala Dock gives you the tools, people and connections to plan, book, sell, promote and run your event — all in one place.</p>
         </header>
         <ul className="gpl-close-actions">
           {([["/build-an-event", CalendarDays, "Build an Event", "Plan your celebration or gathering"], ["/organisers", UsersRound, "Run Events Professionally", "For organisers and event managers"], ["/providers", Store, "List Your Business", "For venues and suppliers"]] as const).map(([h, I, t, s], i) =>
-            <li key={h} data-rv="rise" style={vars({ "--d": 120 + i * 90 })}><TLink href={h} event="persona_route_select" surface={S} variant={`close_${t}`} className="gpl-close-link"><span className="gpl-close-ic"><I size={24} aria-hidden="true" /></span><span><b>{t}<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></b><small>{s}</small></span></TLink></li>)}
+            <li key={h} data-rv="rise" style={vars({ "--d": 120 + i * 90 })}><TLink href={h} event="persona_route_select" surface={S} variant={`close_${t}`} className="gpl-close-link gp-lift"><span className="gpl-close-ic"><I size={24} aria-hidden="true" /></span><span><b>{t}<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></b><small>{s}</small></span></TLink></li>)}
         </ul>
         <p className="gpl-close-note" data-rv="fade" style={vars({ "--d": 420 })}><ShieldCheck size={18} aria-hidden="true" /><b>A connected, trusted event network.</b><span>Join the side that fits you — <TLink href={HREF.startBuilding} surface={S} variant="close_signup" className="gp-link">creating an account is free</TLink>.</span></p>
       </Scope>

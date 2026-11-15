@@ -24,7 +24,7 @@ const SUPPLIERS: [string, string, "Primary" | "Backup" | "Emergency", string, st
 
 export function Procurement() {
   const [sort, setSort] = useState<S>("fit");
-  const [open, setOpen] = useState<string | null>("riverside");
+  const [open, setOpen] = useState<string | null>(null);
   const [held, setHeld] = useState<Record<string, boolean>>({});
   const [asked, setAsked] = useState<Record<string, boolean>>({});
   const list = useMemo(() => [...VENUES].sort((a, b) => sort === "cost" ? a.quote - b.quote : sort === "rel" ? b.rel - a.rel : sort === "near" ? a.km - b.km : b.fit - a.fit), [sort]);

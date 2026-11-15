@@ -47,7 +47,9 @@
 .lg-doc .lg-index{list-style:none;padding:0;display:grid;gap:12px}
 .lg-doc .lg-index li{display:grid;gap:2px;margin:0}.lg-doc .lg-index small{color:#5157a4;font-size:12.5px}.lg-doc .lg-index span{font-size:13.5px;color:#3a3f86}
 .lg-nav details{margin:0}.lg-nav summary{cursor:pointer;font-size:12.5px;font-weight:650;color:#03035f;padding:6px 2px;min-height:32px}
-.lg-nav b a{display:inline;padding:0;color:inherit}
+.lg-nav b a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:0;color:inherit}
+/* Q71 touch targets: the "Legal" crumb and "All documents and dates" link are 44px tall on touch screens. */
+@media (pointer:coarse){.lg-nav p a{display:flex;align-items:center;min-height:44px}}
 /* Accept-updates page */
 .lg-doc .lg-accept{display:grid;gap:10px;margin:14px 0}.lg-doc .lg-accept label{display:flex;gap:10px;align-items:flex-start;font-size:14px}
 .lg-doc .lg-accept input[type=checkbox]{margin-top:4px;width:18px;height:18px;flex:none}

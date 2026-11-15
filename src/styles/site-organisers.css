@@ -2,8 +2,10 @@
    (3.2), "Gala Dock Event Procurement Dashboard" (3.3), "Modern Event Promotion Dashboard" (3.4), "Live Event Operations Dashboard"
    (3.5), "Gala Agent Event Command Center" (3.6). Prefix gpo-. */
 
-.gpo-split-head { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: end; margin-bottom: 44px; }
-.gpo-split-head .gp-head { max-width: 820px; }
+.gpo-split-head { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: end; margin-bottom: 32px; }
+.gpo-split-head .gp-head { max-width: 960px; }
+/* Designs 3.3–3.5: the blue phrase always starts the second line of the title. */
+@media (min-width: 1100px) { .gpo-split-head .gp-h2 .gp-blue { display: block; } .gpo-split-head .gp-lead { max-width: 880px; margin-top: 16px; } }
 .gpo-head-feats { align-self: end; }
 .gpo-head-feats .gp-feat { flex-direction: column; gap: 10px; }
 .gpo-sec-cta { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; margin-top: 36px; }

@@ -12,5 +12,5 @@ export default async function HelpPage({ searchParams }: PageProps<"/help">) {
   const topic = typeof sp.topic === "string" ? sp.topic : null;
   if (topic) { const a = article(topic); redirect(a ? `/help/${a.slug}` : "/help"); }
   const ctx = await helpContext(helpFrom(sp.from));
-  return <HelpIndex base="/help" first={ctx.first} q={typeof sp.q === "string" ? sp.q : ""} contact={<SupportPanel workspaceId={ctx.workspaceId} source={ctx.source} />} />;
+  return <HelpIndex base="/help" first={ctx.first} q={typeof sp.q === "string" ? sp.q : ""} contact={<SupportPanel workspaceId={ctx.workspaceId} source={ctx.source} topic={typeof sp.topic === "string" ? sp.topic : undefined} />} />;
 }

@@ -20,6 +20,20 @@
 .gpl-trust small { display: block; font-size: 13px; color: var(--gp-muted); white-space: nowrap; }
 
 .gpl-hero-visual { position: relative; }
+/* Hero foot (design 2.1): skyline band + "Scroll to explore"; the hero's bottom padding moves into it. */
+.gp-hero.gpl-hero { padding-bottom: 0; }
+.gpl-hero-par { min-width: 0; }
+/* Design 2.1: the graph starts just under the header and runs into the right gutter. */
+@media (min-width: 1100px) { .gpl-hero-grid { align-items: start; } .gpl-hero-par { margin: -22px calc(24px - var(--gp-gutter)) 0 0; } .gpl-hero-copy { padding-top: 6px; } }
+.gpl-hero-foot { position: relative; height: 150px; margin-top: 0; display: flex; justify-content: center; }
+.gpl-skyline { position: absolute; left: 0; right: 0; bottom: 0; height: 132px; pointer-events: none; opacity: .62; -webkit-mask-image: linear-gradient(to top, #000 35%, transparent 100%); mask-image: linear-gradient(to top, #000 35%, transparent 100%); }
+.gpl-skyline svg { width: 100%; height: 100%; }
+.gpl-scroll { position: relative; z-index: 1; align-self: flex-start; display: grid; justify-items: center; gap: 10px; padding: 6px 12px; border-radius: 12px; font-size: 11.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: #5a6178; transition: color .2s; }
+.gpl-scroll:hover { color: var(--gp-blue); }
+.gpl-scroll-mouse { width: 20px; height: 30px; border: 1.6px solid currentColor; border-radius: 11px; display: flex; justify-content: center; padding-top: 6px; opacity: .8; }
+.gpl-scroll-mouse i { width: 3px; height: 6px; border-radius: 2px; background: currentColor; }
+@media (max-width: 1099px) { .gpl-hero-foot { height: 120px; margin-top: 8px; } .gpl-skyline { height: 100px; } }
+@media (max-width: 760px) { .gpl-hero-foot { height: 84px; } .gpl-scroll { display: none; } .gpl-skyline { height: 76px; } }
 .gpl-hero-tag { position: absolute; right: 4px; bottom: -34px; }
 .gpl-graph { --u: calc(100cqw / 720); position: relative; container-type: inline-size; width: 100%; aspect-ratio: 720 / 520; }
 .gpl-graph > * { --u: calc(100cqw / 720); }
@@ -53,16 +67,16 @@
 .gpl-seq { display: none; }
 
 /* 2.2 Three ways */
-.gpl-ways .gp-head { margin-bottom: 56px; }
+.gpl-ways .gp-head { margin-bottom: 36px; }
 .gpl-track-rail { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
-.gpl-track { display: flex; flex-direction: column; padding: 28px 28px 30px; border-radius: 22px; background: #fff; border: 1px solid var(--gp-line); box-shadow: var(--gp-shadow); }
+.gpl-track { display: flex; flex-direction: column; padding: 24px 26px 24px; border-radius: 22px; background: #fff; border: 1px solid var(--gp-line); box-shadow: var(--gp-shadow); }
 .gpl-track.is-active { border-color: #9fb9f6; box-shadow: 0 0 0 4px rgba(36, 87, 230, .07), var(--gp-shadow-lg); background: linear-gradient(180deg, #fbfcff, #fff 40%); }
 .gpl-track-head { display: flex; gap: 18px; align-items: flex-start; }
 .gpl-track-ic { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: var(--gp-blue-soft); color: var(--gp-blue); flex: none; }
 .gpl-track-head h3 { font-size: 21px; letter-spacing: -.02em; font-weight: 680; }
 .gpl-track-head p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: var(--gp-body); }
-.gpl-track-visual { position: relative; flex: 1; min-height: 200px; margin: 22px 0 18px; padding-top: 4px; }
-.gpl-track-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 18px 0 22px; border-top: 1px solid var(--gp-line); }
+.gpl-track-visual { position: relative; flex: 1; min-height: 180px; margin: 18px 0 12px; padding-top: 4px; }
+.gpl-track-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--gp-line); }
 .gpl-track-points li { display: flex; gap: 10px; align-items: flex-start; }
 .gpl-track-points svg { color: var(--gp-blue); flex: none; margin-top: 2px; }
 .gpl-track-points b { display: block; font-size: 13.5px; font-weight: 620; color: var(--gp-ink); line-height: 1.3; }
@@ -95,13 +109,13 @@
 .gpl-tv-chain.is-pro .gpl-tv-ic { width: 34px; height: 34px; }
 .gpl-tv-chain.is-pro .gp-state { font-size: 11px; }
 .gpl-tv-org { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 14px; padding-top: 6px; }
-.gpl-tv-events { display: grid; gap: 8px; }
-.gpl-tv-events li { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #fff; border: 1px solid var(--gp-line); box-shadow: var(--gp-shadow); }
+.gpl-tv-events { display: grid; gap: 6px; }
+.gpl-tv-events li { display: flex; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 12px; background: #fff; border: 1px solid var(--gp-line); box-shadow: var(--gp-shadow); }
 .gpl-tv-events img { width: 52px; height: 40px; border-radius: 8px; object-fit: cover; }
 .gpl-tv-events span { min-width: 0; flex: 1; display: grid; }
-.gpl-tv-events b { font-size: 13px; font-weight: 650; }
-.gpl-tv-events small { font-size: 11.5px; color: var(--gp-muted); }
-.gpl-tv-ready { display: flex !important; align-items: center; gap: 8px; margin-top: 4px; }
+.gpl-tv-events b { font-size: 12.5px; font-weight: 650; line-height: 1.25; }
+.gpl-tv-events small { font-size: 11px; line-height: 1.3; color: var(--gp-muted); }
+.gpl-tv-ready { display: flex !important; align-items: center; gap: 8px; margin-top: 2px; }
 .gpl-tv-ready .gp-bar { flex: 1; height: 4px; } .gpl-tv-ready em { font-style: normal; font-size: 11px; color: var(--gp-muted); white-space: nowrap; }
 .gpl-tv-stages { display: grid; gap: 8px; align-content: center; padding-top: 52px; }
 .gpl-tv-stages li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--gp-muted); }
@@ -171,7 +185,9 @@
 .gpl-build-rail .gp-note { font-size: 13px; }
 
 /* 2.4 Lifecycle */
-.gpl-lifecycle .gp-head { margin-bottom: 56px; }
+.gpl-lifecycle .gp-head { margin-bottom: 30px; }
+.gpl-lifecycle .gp-subline { margin-top: 10px; }
+.gpl-lifecycle .gp-lead { margin-top: 10px; font-size: 17px; }
 .gpl-life-ribbon { position: relative; }
 .gpl-life-track { position: absolute; left: calc(100% / 14); right: calc(100% / 14); top: 32px; height: 2px; background: #dbe3f2; }
 .gpl-life-track i { position: absolute; inset: 0; background: var(--gp-blue); transform-origin: left; transform: scaleX(0); }
@@ -185,7 +201,7 @@
 .gpl-life-ribbon li.is-done .gpl-life-ic { border-color: var(--gp-blue-line); }
 .gpl-life-ribbon li > button:hover .gpl-life-ic { transform: translateY(-2px); }
 .gpl-life-inline { display: none; }
-.gpl-life-detail { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.5fr) minmax(0, .9fr); gap: 36px; margin-top: 36px; padding: 34px; }
+.gpl-life-detail { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.5fr) minmax(0, .9fr); gap: 32px; margin-top: 24px; padding: 28px 30px; }
 .gpl-life-step { font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--gp-blue); margin-bottom: 10px; }
 .gpl-life-copy .gp-h3 { font-size: 28px; letter-spacing: -.03em; }
 .gpl-life-copy .gp-body { margin-top: 12px; }
@@ -206,7 +222,7 @@
 .gpl-ld b { color: var(--gp-ink); }
 .gpl-ld-title b { font-size: 18px; } .gpl-ld-title small { display: block; font-size: 13.5px; color: var(--gp-muted); }
 .gpl-ld-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
-.gpl-ld-plan img { width: 100%; height: 150px; object-fit: cover; border-radius: 14px; }
+.gpl-ld-plan img { width: 100%; height: 176px; object-fit: cover; border-radius: 14px; }
 .gpl-ld-facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .gpl-ld-facts span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 10px; background: #fff; border: 1px solid var(--gp-line); font-size: 13.5px; font-weight: 560; }
 .gpl-ld-facts svg { color: var(--gp-blue); }
@@ -270,6 +286,8 @@
 .gpl-mkt-side .gp-state { font-size: 12.5px; }
 .gpl-mkt-scores { display: flex; gap: 6px; }
 .gpl-mkt-scores em { font-style: normal; font-size: 12px; font-weight: 650; padding: 3px 8px; border-radius: 8px; background: var(--gp-porcelain-2); color: var(--gp-ink-2); }
+/* Design 2.5: the title runs on one line at desktop widths. */
+@media (min-width: 1100px) { .gpl-market .gp-h2 { font-size: 44px; } .gpl-market .gp-lead { font-size: 17px; } }
 .gpl-market-cta { display: flex; justify-content: center; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
 
 /* 2.6 One record */
@@ -320,14 +338,15 @@
 .gpl-rec-tag { position: absolute; right: 18px; bottom: -14px; }
 
 /* 2.7 Closing CTA */
-.gpl-close { padding-bottom: 112px; }
-.gpl-close-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1180px; margin: 48px auto 0; }
+.gpl-close { padding-bottom: 64px; }
+@media (min-width: 1100px) { .gpl-close-br { display: block; } .gpl-close .gp-head .gp-lead { max-width: 760px; } }
+.gpl-close-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1240px; margin: 40px auto 0; }
 .gpl-close-link { display: flex; gap: 18px; align-items: center; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--gp-line); background: #fff; transition: border-color .25s, box-shadow .25s, background-color .25s; }
 .gpl-close-link:hover { border-color: var(--gp-blue-line); background: var(--gp-blue-mist); box-shadow: var(--gp-shadow); }
 .gpl-close-ic { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--gp-blue-soft); color: var(--gp-blue); flex: none; }
 .gpl-close-link b { display: flex; align-items: center; gap: 8px; font-size: 18.5px; font-weight: 650; color: var(--gp-blue); letter-spacing: -.015em; }
 .gpl-close-link small { display: block; margin-top: 3px; font-size: 14.5px; color: var(--gp-body); }
-.gpl-close-note { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 30px; font-size: 14.5px; color: var(--gp-body); }
+.gpl-close-note { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 26px; font-size: 14.5px; color: var(--gp-body); }
 .gpl-close-note svg { color: var(--gp-blue); } .gpl-close-note b { color: var(--gp-ink); font-weight: 650; }
 .gpl-close-note > span { padding-left: 12px; border-left: 1px solid var(--gp-line); }
 

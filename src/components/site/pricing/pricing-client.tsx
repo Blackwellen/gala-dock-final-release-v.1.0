@@ -71,7 +71,7 @@ export function PlanExplorer({ plans, vatAdded = true }: { plans: PricingPlan[];
             {yearly && saving > 0 && !p.contact && <p className="lp-plan-save">Save {saving}% with annual billing</p>}
             <p className="gpr-best">{BEST[kind][p.plan]}</p>
             <ul className="gpr-keys">{p.features.slice(0, kind === "organizer" ? 3 : 4).concat(p.caps.credits ? [`${p.caps.credits.toLocaleString("en-GB")} Agent credits / month`] : []).map(f => <li key={f}><Check size={15} aria-hidden="true" />{f}</li>)}</ul>
-            {p.contact ? <TLink href={HREF.contact} event="pricing_plan_select" surface={S} variant={`${p.kind}_${p.plan}`} className="gp-btn gp-btn--ghost gp-btn--sm gpr-cta">Talk to Sales</TLink>
+            {p.contact ? <TLink href={HREF.sales} event="pricing_plan_select" surface={S} variant={`${p.kind}_${p.plan}`} className="gp-btn gp-btn--ghost gp-btn--sm gpr-cta">Talk to Sales</TLink>
               : <TLink href={START[p.kind]} event="pricing_plan_select" surface={S} variant={`${p.kind}_${p.plan}`} className={cx("gp-btn gp-btn--sm gpr-cta", p.month === 0 ? "gp-btn--primary" : "gp-btn--ghost")}>{p.month === 0 ? "Start Free" : `Choose ${p.name}`}</TLink>}
             <button type="button" className="gpr-compare" aria-pressed={sel === p.plan} aria-controls={sel ? "gpr-drawer" : undefined} onClick={() => { setSel(sel === p.plan ? null : p.plan); trackPublic("section_interaction", S, `compare_${p.kind}_${p.plan}`); }}>
               {sel === p.plan ? "Hide comparison" : "Compare plans"}<ChevronDown size={15} aria-hidden="true" />
@@ -168,7 +168,9 @@ export function PricingFaq({ items }: { items: Faq[] }) {
   const base = useId();
   return <div className="gpr-faq">{items.map((it, i) => { const on = open === i, b = `${base}-b${i}`, r = `${base}-r${i}`; return <div key={it.q} className={cx("gpr-faq-item", on && "is-open")}>
     <h3><button id={b} type="button" aria-expanded={on} aria-controls={r} onClick={() => { setOpen(on ? null : i); if (!on) trackPublic("faq_expand", S, `faq_${i + 1}`); }}><span>{it.q}</span>{on ? <Minus size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}</button></h3>
-    <div id={r} role="region" aria-labelledby={b} hidden={!on} className="gpr-faq-a"><p>{it.a}</p></div>
+    {/* Smooth open/close (height + fade); MotionConfig reducedMotion="user" makes it instant under reduced motion. */}
+    <AnimatePresence initial={false}>{on && <motion.div key="a" id={r} role="region" aria-labelledby={b} className="gpr-faq-a"
+      initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: .3, ease: [0.2, 0.7, 0.2, 1] }}><p>{it.a}</p></motion.div>}</AnimatePresence>
   </div>; })}</div>;
 }
 

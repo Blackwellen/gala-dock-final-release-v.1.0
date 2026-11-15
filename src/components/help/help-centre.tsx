@@ -6,6 +6,7 @@ import { ARTICLES, article, type Article } from "@/lib/help/articles";
 import { createClient } from "@/lib/supabase/server";
 import { untyped } from "@/lib/workspace/db";
 import { ContactForm } from "./contact-form";
+import { PublicContactForm } from "./public-contact-form";
 import "@/styles/help.css";
 
 /**
@@ -68,10 +69,12 @@ export function HelpArticleView({ base, a, contact }: { base: string; a: Article
 const STATUS: Record<string, string> = { open: "Open", waiting: "Waiting for you", escalated: "With a specialist", resolved: "Resolved" };
 
 /** Contact panel: the form plus the reader's recent support requests (RLS: requester sees only their own cases). Signed-out → email. */
-export async function SupportPanel({ workspaceId, source }: { workspaceId?: string | null; source: string }) {
+export async function SupportPanel({ workspaceId, source, topic }: { workspaceId?: string | null; source: string; topic?: string }) {
   const sb = untyped(await createClient());
   const { data: { user } } = await sb.auth.getUser();
-  if (!user) return <div className="hc-card"><h2>Contact support</h2><p>Can’t find what you need? <Link href="/login?next=/help%23contact">Sign in</Link> to send us a message and track it here, or email us.</p>
+  // Signed out: the public contact form (POST /api/contact, Turnstile); signing in adds case tracking.
+  if (!user) return <div className="hc-card"><h2>Contact us</h2><p className="hc-sub">Send us a message, or <Link href="/login?next=/help%23contact">sign in</Link> to raise a support request you can track here.</p>
+    <PublicContactForm topic={topic} />
     <a className="hc-btn" href="mailto:support@galadock.com"><Mail size={16} aria-hidden="true" />support@galadock.com</a></div>;
   const { data: cases } = await sb.from("support_cases").select("reference,subject,status,created_at").eq("requester_id", user.id).order("created_at", { ascending: false }).limit(5);
   const list = (cases ?? []) as { reference: string; subject: string; status: string; created_at: string }[];

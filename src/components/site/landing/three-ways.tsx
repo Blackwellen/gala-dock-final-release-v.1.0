@@ -80,7 +80,7 @@ export function ThreeWays() {
       <div className="gpl-track-rail" ref={rail} onScroll={onScroll}>
         {TRACKS.map((t, i) => {
           const Icon = t.icon, Visual = t.visual;
-          return <article key={t.key} className={cx("gpl-track", `is-${t.key}`, active === i && "is-active")} aria-labelledby={`track-${t.key}`}
+          return <article key={t.key} className={cx("gpl-track gp-lift", `is-${t.key}`, active === i && "is-active")} aria-labelledby={`track-${t.key}`}
             onMouseEnter={() => setActive(i)} onFocusCapture={() => setActive(i)} data-rv="rise" style={vars({ "--d": i * 120 })}>
             <header className="gpl-track-head">
               <span className="gpl-track-ic"><Icon size={26} aria-hidden="true" /></span>

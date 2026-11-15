@@ -29,6 +29,7 @@ export const HREF = {
   openapi: "/api/v1/openapi.json",
   apiKeys: "/organizer/settings?tab=developers",
   contact: "/help#contact",
+  sales: "/help?topic=sales#contact",
   help: "/help",
   paymentProtection: "/help/payment-protection",
   fees: "/terms#fees",

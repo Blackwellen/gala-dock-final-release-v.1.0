@@ -1,6 +1,7 @@
 import { ArrowRight, BarChart3, CalendarDays, Clock3, Goal, Link2, ShieldCheck, Target, Ticket, Megaphone, UsersRound, CircleAlert, Workflow, Compass, PlayCircle } from "lucide-react";
 import { HREF, pageMetadata } from "@/lib/public/site";
 import { siteUrl } from "@/lib/site-url";
+import { Parallax } from "@/components/site/motion";
 import { TLink } from "@/components/site/tracked-link";
 import { Eyebrow, Feature, JsonLd, SectionHead } from "@/components/site/ui";
 import { CommandRibbon } from "@/components/site/organisers/command-ribbon";
@@ -44,7 +45,7 @@ export default function OrganisersPage() {
             <Feature icon={BarChart3} title="Less admin" text="More time for the event" />
           </ul>
         </div>
-        <CommandRibbon />
+        <Parallax className="gp-par" distance={32}><CommandRibbon /></Parallax>
       </div>
     </section>
 
