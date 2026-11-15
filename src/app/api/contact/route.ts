@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const [firstName, ...rest] = name.split(/\s+/);
     scheduleTwentyLead({
       brand: "gala_dock", formType: partner ? "partner" : "contact", roles: [partner ? "gd_c_partner" : "gd_a_organiser"],
-      side: partner ? "c_partner" : "a_customer", email, firstName, lastName: rest.join(" "), message, landingPath: "/contact",
+      side: partner ? "c_partner" : "a_customer", email, firstName, lastName: rest.join(" "), message, landingPath: "/help",
       opportunity: topic === "general" ? undefined : { name: `${name} (Gala Dock ${partner ? "partner" : "sales enquiry"})`, partner },
     });
   }
