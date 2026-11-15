@@ -28,8 +28,8 @@ A boost buys an impression goal = paid amount (ex VAT) × 1000 / lowest CPM floo
 
 - Each served slot gets a single-use token. Impressions count only from the visibility beacon (50% visible for 1 s → `POST /api/ads/view`): same viewer, once per token, within 30 min, one per viewer × boost × placement per 30 min (serialised with an advisory lock), 240/h, only while the boost is active, unpaused and inside its flight. The advertiser's own team (owner / active members) is shown its ads but never counted (no self-impressions, self-clicks or self-attribution).
 - Clicks: `GET /api/ads/click?t=` — once per token, same viewer, within 24 h, 60/h; destination from the database only (no open redirect).
-- Legacy `record_boost_event` (anon; still used by the deployed page): once per viewer per hour, ≤600/min per boost; touches only legacy counters, never `delivered_*` or billing.
-- Q75: nothing in the working tree calls `record_boost_event` / `active_boosts` any more; `/api/boosts/[id]/click` is a plain same-site redirect that records nothing. The anon/authenticated grants are revoked post-deploy by `supabase/pending/q75_retire_legacy_boost_rpcs.sql` (update the two tenant-security allowlist entries and the legacy assertions in boost-delivery / ad-inventory specs in the same change). Boost spend/delivery (`promotion_boosts`, `ad_attributions`) is readable by owner / manager / finance only (202611147501). Platform-charge refunds now reverse the VAT share in `tax_payable`.
+- Legacy `record_boost_event` / `active_boosts`: retired 2026-11-15 (migration 202611150002_retire_legacy_boost_rpcs.sql) — no longer executable by anon/authenticated (service_role only); nothing in the app calls them.
+- Q75: `/api/boosts/[id]/click` is a plain same-site redirect that records nothing; sponsored slots are served only through `serve_ad_slots` / `record_ad_view` / `record_ad_click` (server-side).
 
 ## Labelling and organic separation
 
@@ -59,4 +59,4 @@ Every sponsored render carries the "Sponsored" label (tooltip explains the paid 
 
 ## Open items
 
-Provider buy flow for listing boosts (`marketplace_spotlight_7d` inactive); anonymous-to-logged-in attribution; partial ticket refunds do not reverse attribution; legacy anon `record_boost_event` / `active_boosts` are unused by the app and could be retired; legal review of the cookie-less HMAC(IP + user agent) viewer key under PECR reg. 6 (ICO fingerprinting guidance) and of 20% UK VAT on boosts sold to non-UK advertisers; domains 136–139 and 146–149.
+Provider buy flow for listing boosts (`marketplace_spotlight_7d` inactive); anonymous-to-logged-in attribution; partial ticket refunds do not reverse attribution; legal review of the cookie-less HMAC(IP + user agent) viewer key under PECR reg. 6 (ICO fingerprinting guidance) and of 20% UK VAT on boosts sold to non-UK advertisers; domains 136–139 and 146–149.

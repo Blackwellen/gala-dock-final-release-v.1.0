@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-15T15:51:43.469Z",
+ "generatedAt": "2026-11-15T17:23:17.739Z",
  "report": {
   "outsider": {
    "readable": [
@@ -20,8 +20,8 @@
     "credit_packs 3/3",
     "design_templates 80/80",
     "directory_featured 2/3",
-    "event_distribution 10/689",
-    "event_seats 264/474",
+    "event_distribution 10/710",
+    "event_seats 264/477",
     "event_series 2/3",
     "event_templates 3/4",
     "event_type_aliases 30/30",
@@ -29,10 +29,10 @@
     "food_allergens 14/14",
     "food_dietary_tags 8/8",
     "licence_types 9/9",
-    "listings 37/108",
+    "listings 37/135",
     "map_asset_palettes 87/87",
     "map_rule_packs 1/1",
-    "media_assets 3/14",
+    "media_assets 3/15",
     "media_galleries 1/1",
     "media_gallery_items 3/3",
     "media_usages 4/4",
@@ -49,7 +49,7 @@
     "plan_entitlements 72/72",
     "plan_prices 10/10",
     "poster_presets 11/11",
-    "profiles 1/842",
+    "profiles 1/873",
     "programme_items 18/136",
     "promo_landing_pages 1/1",
     "ranking_models 1/1",
@@ -57,7 +57,7 @@
     "ref_currencies 19/19",
     "ref_timezones 54/54",
     "reliability_formulas 1/1",
-    "resale_policies 51/51",
+    "resale_policies 53/53",
     "reviews 31/31",
     "role_permissions 73/73",
     "sanctioned_jurisdictions 10/10",
@@ -66,7 +66,7 @@
     "taxonomies 6/6",
     "taxonomy_spellings 260/260",
     "taxonomy_terms 102/102",
-    "ticket_tiers 24/514",
+    "ticket_tiers 24/537",
     "uk_bank_holidays 82/82",
     "venue_structures 2/10"
    ],
@@ -87,18 +87,18 @@
     "credit_packs 3/3",
     "design_templates 80/80",
     "directory_featured 2/3",
-    "event_distribution 10/689",
-    "event_seats 264/474",
+    "event_distribution 10/710",
+    "event_seats 264/477",
     "event_series 2/3",
     "event_type_aliases 30/30",
     "event_type_profiles 11/11",
-    "events 10/689",
+    "events 10/710",
     "food_allergens 14/14",
     "food_dietary_tags 8/8",
-    "listings 37/108",
+    "listings 37/135",
     "map_asset_palettes 87/87",
     "map_rule_packs 1/1",
-    "media_assets 3/14",
+    "media_assets 3/15",
     "media_galleries 1/1",
     "media_gallery_items 3/3",
     "menu_item_variants 3/3",
@@ -115,14 +115,14 @@
     "ref_countries 38/38",
     "ref_currencies 19/19",
     "ref_timezones 54/54",
-    "resale_policies 51/51",
+    "resale_policies 53/53",
     "reviews 31/31",
     "sanctioned_jurisdictions 10/10",
     "spaces 11/11",
     "taxonomies 6/6",
     "taxonomy_spellings 260/260",
     "taxonomy_terms 102/102",
-    "ticket_tiers 24/514",
+    "ticket_tiers 24/537",
     "venue_structures 2/10"
    ],
    "updatable": [],
@@ -144,7 +144,7 @@
   },
   {
    "t": "access_rules",
-   "total": 0,
+   "total": 1,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -154,7 +154,7 @@
   },
   {
    "t": "access_zones",
-   "total": 47,
+   "total": 48,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -174,7 +174,7 @@
   },
   {
    "t": "account_security_events",
-   "total": 47,
+   "total": 54,
    "vis": null,
    "vis_err": "42501 permission denied for table account_security_events",
    "upd": null,
@@ -314,7 +314,7 @@
   },
   {
    "t": "agent_runs",
-   "total": 664,
+   "total": 667,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -664,7 +664,7 @@
   },
   {
    "t": "booking_dispute_entries",
-   "total": 1,
+   "total": 13,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -684,7 +684,7 @@
   },
   {
    "t": "booking_disputes",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -754,7 +754,7 @@
   },
   {
    "t": "build_items",
-   "total": 254,
+   "total": 282,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -934,7 +934,7 @@
   },
   {
    "t": "checkout_code_applications",
-   "total": 14,
+   "total": 28,
    "vis": null,
    "vis_err": "42501 permission denied for table checkout_code_applications",
    "upd": null,
@@ -944,7 +944,7 @@
   },
   {
    "t": "checkout_orders",
-   "total": 296,
+   "total": 311,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -954,7 +954,7 @@
   },
   {
    "t": "checkout_resale_allocations",
-   "total": 33,
+   "total": 34,
    "vis": null,
    "vis_err": "42501 permission denied for table checkout_resale_allocations",
    "upd": null,
@@ -1024,7 +1024,7 @@
   },
   {
    "t": "conditional_holds",
-   "total": 40,
+   "total": 42,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1314,7 +1314,7 @@
   },
   {
    "t": "dec107_refund_instructions",
-   "total": 0,
+   "total": 2,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -1394,7 +1394,7 @@
   },
   {
    "t": "designs",
-   "total": 53,
+   "total": 56,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1414,7 +1414,7 @@
   },
   {
    "t": "discount_codes",
-   "total": 145,
+   "total": 151,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1464,7 +1464,7 @@
   },
   {
    "t": "email_outbox",
-   "total": 502,
+   "total": 564,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1484,7 +1484,7 @@
   },
   {
    "t": "emergency_candidates",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1494,7 +1494,7 @@
   },
   {
    "t": "emergency_provider_profiles",
-   "total": 1,
+   "total": 5,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1504,7 +1504,7 @@
   },
   {
    "t": "emergency_requests",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -1604,7 +1604,7 @@
   },
   {
    "t": "event_distribution",
-   "total": 689,
+   "total": 710,
    "vis": 10,
    "vis_err": null,
    "upd": null,
@@ -1654,7 +1654,7 @@
   },
   {
    "t": "event_lifecycle_overrides",
-   "total": 1517,
+   "total": 1648,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -1774,7 +1774,7 @@
   },
   {
    "t": "event_scanners",
-   "total": 40,
+   "total": 47,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -1784,7 +1784,7 @@
   },
   {
    "t": "event_seats",
-   "total": 474,
+   "total": 477,
    "vis": 264,
    "vis_err": null,
    "upd": 0,
@@ -1874,7 +1874,7 @@
   },
   {
    "t": "events",
-   "total": 689,
+   "total": 710,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -2024,7 +2024,7 @@
   },
   {
    "t": "file_tombstones",
-   "total": 101,
+   "total": 113,
    "vis": null,
    "vis_err": "42501 permission denied for table file_tombstones",
    "upd": null,
@@ -2034,7 +2034,7 @@
   },
   {
    "t": "fixture_purge_counts",
-   "total": 621,
+   "total": 663,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2044,7 +2044,7 @@
   },
   {
    "t": "fixture_purges",
-   "total": 24,
+   "total": 26,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2164,7 +2164,7 @@
   },
   {
    "t": "idempotency_keys",
-   "total": 2,
+   "total": 3,
    "vis": null,
    "vis_err": "42501 permission denied for table idempotency_keys",
    "upd": null,
@@ -2364,7 +2364,7 @@
   },
   {
    "t": "ledger_entries",
-   "total": 3038,
+   "total": 3109,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2374,7 +2374,7 @@
   },
   {
    "t": "ledger_transactions",
-   "total": 1008,
+   "total": 1038,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2414,7 +2414,7 @@
   },
   {
    "t": "listings",
-   "total": 108,
+   "total": 135,
    "vis": 37,
    "vis_err": null,
    "upd": null,
@@ -2514,7 +2514,7 @@
   },
   {
    "t": "media_assets",
-   "total": 14,
+   "total": 15,
    "vis": 3,
    "vis_err": null,
    "upd": 0,
@@ -2724,7 +2724,7 @@
   },
   {
    "t": "notifications",
-   "total": 1132,
+   "total": 1198,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -2744,7 +2744,7 @@
   },
   {
    "t": "ops_alerts",
-   "total": 36,
+   "total": 37,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2754,7 +2754,7 @@
   },
   {
    "t": "ops_incident_actions",
-   "total": 13,
+   "total": 14,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2764,7 +2764,7 @@
   },
   {
    "t": "ops_incidents",
-   "total": 13,
+   "total": 14,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -2974,7 +2974,7 @@
   },
   {
    "t": "pass_entitlements",
-   "total": 0,
+   "total": 6,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -3004,7 +3004,7 @@
   },
   {
    "t": "payments",
-   "total": 166,
+   "total": 170,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -3164,7 +3164,7 @@
   },
   {
    "t": "profiles",
-   "total": 842,
+   "total": 873,
    "vis": 1,
    "vis_err": null,
    "upd": null,
@@ -3384,7 +3384,7 @@
   },
   {
    "t": "provider_requests",
-   "total": 41,
+   "total": 42,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -3424,7 +3424,7 @@
   },
   {
    "t": "rate_limits",
-   "total": 657,
+   "total": 731,
    "vis": null,
    "vis_err": "42501 permission denied for table rate_limits",
    "upd": null,
@@ -3544,7 +3544,7 @@
   },
   {
    "t": "reliability_metrics",
-   "total": 49,
+   "total": 51,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -3574,7 +3574,7 @@
   },
   {
    "t": "resale_payouts",
-   "total": 33,
+   "total": 34,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -3584,8 +3584,8 @@
   },
   {
    "t": "resale_policies",
-   "total": 51,
-   "vis": 51,
+   "total": 53,
+   "vis": 53,
    "vis_err": null,
    "upd": null,
    "upd_err": "42501 permission denied for table resale_policies",
@@ -3654,7 +3654,7 @@
   },
   {
    "t": "risk_signals",
-   "total": 136,
+   "total": 142,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -3754,7 +3754,7 @@
   },
   {
    "t": "scan_snapshots",
-   "total": 11,
+   "total": 12,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -3764,7 +3764,7 @@
   },
   {
    "t": "search_documents",
-   "total": 1378,
+   "total": 1441,
    "vis": null,
    "vis_err": "42501 permission denied for table search_documents",
    "upd": null,
@@ -3784,7 +3784,7 @@
   },
   {
    "t": "search_index_runs",
-   "total": 33,
+   "total": 34,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -3904,7 +3904,7 @@
   },
   {
    "t": "standby_commitments",
-   "total": 0,
+   "total": 2,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -3934,7 +3934,7 @@
   },
   {
    "t": "state_violations",
-   "total": 218,
+   "total": 230,
    "vis": null,
    "vis_err": "42501 permission denied for table state_violations",
    "upd": null,
@@ -4024,7 +4024,7 @@
   },
   {
    "t": "stripe_refund_totals",
-   "total": 80,
+   "total": 81,
    "vis": null,
    "vis_err": "42501 permission denied for table stripe_refund_totals",
    "upd": null,
@@ -4044,7 +4044,7 @@
   },
   {
    "t": "support_case_events",
-   "total": 180,
+   "total": 184,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4064,7 +4064,7 @@
   },
   {
    "t": "support_cases",
-   "total": 180,
+   "total": 183,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4164,7 +4164,7 @@
   },
   {
    "t": "tasks",
-   "total": 245,
+   "total": 246,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -4244,7 +4244,7 @@
   },
   {
    "t": "threads",
-   "total": 63,
+   "total": 65,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -4254,7 +4254,7 @@
   },
   {
    "t": "ticket_allocations",
-   "total": 35,
+   "total": 36,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -4284,7 +4284,7 @@
   },
   {
    "t": "ticket_resale_listings",
-   "total": 44,
+   "total": 48,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4294,7 +4294,7 @@
   },
   {
    "t": "ticket_risk_flags",
-   "total": 67,
+   "total": 71,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4304,7 +4304,7 @@
   },
   {
    "t": "ticket_tiers",
-   "total": 514,
+   "total": 537,
    "vis": 24,
    "vis_err": null,
    "upd": 0,
@@ -4314,7 +4314,7 @@
   },
   {
    "t": "ticket_transfers",
-   "total": 19,
+   "total": 21,
    "vis": null,
    "vis_err": "42501 permission denied for table users",
    "upd": null,
@@ -4344,7 +4344,7 @@
   },
   {
    "t": "transactions",
-   "total": 750,
+   "total": 752,
    "vis": 0,
    "vis_err": null,
    "upd": 0,
@@ -4634,7 +4634,7 @@
   },
   {
    "t": "webhook_events",
-   "total": 2312,
+   "total": 2321,
    "vis": null,
    "vis_err": "42501 permission denied for table webhook_events",
    "upd": null,
@@ -4674,7 +4674,7 @@
   },
   {
    "t": "workspace_members",
-   "total": 586,
+   "total": 599,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4704,7 +4704,7 @@
   },
   {
    "t": "workspaces",
-   "total": 581,
+   "total": 596,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -4726,7 +4726,7 @@
   },
   {
    "t": "access_rules",
-   "total": 0,
+   "total": 1,
    "vis": null,
    "vis_err": "42501 permission denied for table access_rules",
    "upd": null,
@@ -4736,7 +4736,7 @@
   },
   {
    "t": "access_zones",
-   "total": 47,
+   "total": 48,
    "vis": null,
    "vis_err": "42501 permission denied for table access_zones",
    "upd": null,
@@ -4756,7 +4756,7 @@
   },
   {
    "t": "account_security_events",
-   "total": 47,
+   "total": 54,
    "vis": null,
    "vis_err": "42501 permission denied for table account_security_events",
    "upd": null,
@@ -4896,7 +4896,7 @@
   },
   {
    "t": "agent_runs",
-   "total": 664,
+   "total": 667,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5246,7 +5246,7 @@
   },
   {
    "t": "booking_dispute_entries",
-   "total": 1,
+   "total": 13,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5266,7 +5266,7 @@
   },
   {
    "t": "booking_disputes",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5336,7 +5336,7 @@
   },
   {
    "t": "build_items",
-   "total": 254,
+   "total": 282,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5516,7 +5516,7 @@
   },
   {
    "t": "checkout_code_applications",
-   "total": 14,
+   "total": 28,
    "vis": null,
    "vis_err": "42501 permission denied for table checkout_code_applications",
    "upd": null,
@@ -5526,7 +5526,7 @@
   },
   {
    "t": "checkout_orders",
-   "total": 296,
+   "total": 311,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5536,7 +5536,7 @@
   },
   {
    "t": "checkout_resale_allocations",
-   "total": 33,
+   "total": 34,
    "vis": null,
    "vis_err": "42501 permission denied for table checkout_resale_allocations",
    "upd": null,
@@ -5606,7 +5606,7 @@
   },
   {
    "t": "conditional_holds",
-   "total": 40,
+   "total": 42,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5896,7 +5896,7 @@
   },
   {
    "t": "dec107_refund_instructions",
-   "total": 0,
+   "total": 2,
    "vis": null,
    "vis_err": "42501 permission denied for table dec107_refund_instructions",
    "upd": null,
@@ -5976,7 +5976,7 @@
   },
   {
    "t": "designs",
-   "total": 53,
+   "total": 56,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -5996,7 +5996,7 @@
   },
   {
    "t": "discount_codes",
-   "total": 145,
+   "total": 151,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -6046,7 +6046,7 @@
   },
   {
    "t": "email_outbox",
-   "total": 502,
+   "total": 564,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -6066,7 +6066,7 @@
   },
   {
    "t": "emergency_candidates",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -6076,7 +6076,7 @@
   },
   {
    "t": "emergency_provider_profiles",
-   "total": 1,
+   "total": 5,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -6086,7 +6086,7 @@
   },
   {
    "t": "emergency_requests",
-   "total": 1,
+   "total": 3,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -6186,7 +6186,7 @@
   },
   {
    "t": "event_distribution",
-   "total": 689,
+   "total": 710,
    "vis": 10,
    "vis_err": null,
    "upd": null,
@@ -6236,7 +6236,7 @@
   },
   {
    "t": "event_lifecycle_overrides",
-   "total": 1517,
+   "total": 1648,
    "vis": null,
    "vis_err": "42501 permission denied for table event_lifecycle_overrides",
    "upd": null,
@@ -6356,7 +6356,7 @@
   },
   {
    "t": "event_scanners",
-   "total": 40,
+   "total": 47,
    "vis": null,
    "vis_err": "42501 permission denied for table event_scanners",
    "upd": null,
@@ -6366,7 +6366,7 @@
   },
   {
    "t": "event_seats",
-   "total": 474,
+   "total": 477,
    "vis": 264,
    "vis_err": null,
    "upd": null,
@@ -6456,7 +6456,7 @@
   },
   {
    "t": "events",
-   "total": 689,
+   "total": 710,
    "vis": 10,
    "vis_err": null,
    "upd": null,
@@ -6606,7 +6606,7 @@
   },
   {
    "t": "file_tombstones",
-   "total": 101,
+   "total": 113,
    "vis": null,
    "vis_err": "42501 permission denied for table file_tombstones",
    "upd": null,
@@ -6616,7 +6616,7 @@
   },
   {
    "t": "fixture_purge_counts",
-   "total": 621,
+   "total": 663,
    "vis": null,
    "vis_err": "42501 permission denied for table fixture_purge_counts",
    "upd": null,
@@ -6626,7 +6626,7 @@
   },
   {
    "t": "fixture_purges",
-   "total": 24,
+   "total": 26,
    "vis": null,
    "vis_err": "42501 permission denied for table fixture_purges",
    "upd": null,
@@ -6746,7 +6746,7 @@
   },
   {
    "t": "idempotency_keys",
-   "total": 2,
+   "total": 3,
    "vis": null,
    "vis_err": "42501 permission denied for table idempotency_keys",
    "upd": null,
@@ -6946,7 +6946,7 @@
   },
   {
    "t": "ledger_entries",
-   "total": 3038,
+   "total": 3109,
    "vis": null,
    "vis_err": "42501 permission denied for table ledger_entries",
    "upd": null,
@@ -6956,7 +6956,7 @@
   },
   {
    "t": "ledger_transactions",
-   "total": 1008,
+   "total": 1038,
    "vis": null,
    "vis_err": "42501 permission denied for table ledger_transactions",
    "upd": null,
@@ -6996,7 +6996,7 @@
   },
   {
    "t": "listings",
-   "total": 108,
+   "total": 135,
    "vis": 37,
    "vis_err": null,
    "upd": null,
@@ -7096,7 +7096,7 @@
   },
   {
    "t": "media_assets",
-   "total": 14,
+   "total": 15,
    "vis": 3,
    "vis_err": null,
    "upd": null,
@@ -7306,7 +7306,7 @@
   },
   {
    "t": "notifications",
-   "total": 1132,
+   "total": 1198,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -7326,7 +7326,7 @@
   },
   {
    "t": "ops_alerts",
-   "total": 36,
+   "total": 37,
    "vis": null,
    "vis_err": "42501 permission denied for table ops_alerts",
    "upd": null,
@@ -7336,7 +7336,7 @@
   },
   {
    "t": "ops_incident_actions",
-   "total": 13,
+   "total": 14,
    "vis": null,
    "vis_err": "42501 permission denied for table ops_incident_actions",
    "upd": null,
@@ -7346,7 +7346,7 @@
   },
   {
    "t": "ops_incidents",
-   "total": 13,
+   "total": 14,
    "vis": null,
    "vis_err": "42501 permission denied for table ops_incidents",
    "upd": null,
@@ -7556,7 +7556,7 @@
   },
   {
    "t": "pass_entitlements",
-   "total": 0,
+   "total": 6,
    "vis": null,
    "vis_err": "42501 permission denied for table pass_entitlements",
    "upd": null,
@@ -7586,7 +7586,7 @@
   },
   {
    "t": "payments",
-   "total": 166,
+   "total": 170,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -7746,7 +7746,7 @@
   },
   {
    "t": "profiles",
-   "total": 842,
+   "total": 873,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -7966,7 +7966,7 @@
   },
   {
    "t": "provider_requests",
-   "total": 41,
+   "total": 42,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -8006,7 +8006,7 @@
   },
   {
    "t": "rate_limits",
-   "total": 657,
+   "total": 731,
    "vis": null,
    "vis_err": "42501 permission denied for table rate_limits",
    "upd": null,
@@ -8126,7 +8126,7 @@
   },
   {
    "t": "reliability_metrics",
-   "total": 49,
+   "total": 51,
    "vis": null,
    "vis_err": "42501 permission denied for table reliability_metrics",
    "upd": null,
@@ -8156,7 +8156,7 @@
   },
   {
    "t": "resale_payouts",
-   "total": 33,
+   "total": 34,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -8166,8 +8166,8 @@
   },
   {
    "t": "resale_policies",
-   "total": 51,
-   "vis": 51,
+   "total": 53,
+   "vis": 53,
    "vis_err": null,
    "upd": null,
    "upd_err": "42501 permission denied for table resale_policies",
@@ -8236,7 +8236,7 @@
   },
   {
    "t": "risk_signals",
-   "total": 136,
+   "total": 142,
    "vis": null,
    "vis_err": "42501 permission denied for table risk_signals",
    "upd": null,
@@ -8336,7 +8336,7 @@
   },
   {
    "t": "scan_snapshots",
-   "total": 11,
+   "total": 12,
    "vis": null,
    "vis_err": "42501 permission denied for table scan_snapshots",
    "upd": null,
@@ -8346,7 +8346,7 @@
   },
   {
    "t": "search_documents",
-   "total": 1378,
+   "total": 1441,
    "vis": null,
    "vis_err": "42501 permission denied for table search_documents",
    "upd": null,
@@ -8366,7 +8366,7 @@
   },
   {
    "t": "search_index_runs",
-   "total": 33,
+   "total": 34,
    "vis": null,
    "vis_err": "42501 permission denied for table search_index_runs",
    "upd": null,
@@ -8486,7 +8486,7 @@
   },
   {
    "t": "standby_commitments",
-   "total": 0,
+   "total": 2,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -8516,7 +8516,7 @@
   },
   {
    "t": "state_violations",
-   "total": 218,
+   "total": 230,
    "vis": null,
    "vis_err": "42501 permission denied for table state_violations",
    "upd": null,
@@ -8606,7 +8606,7 @@
   },
   {
    "t": "stripe_refund_totals",
-   "total": 80,
+   "total": 81,
    "vis": null,
    "vis_err": "42501 permission denied for table stripe_refund_totals",
    "upd": null,
@@ -8626,7 +8626,7 @@
   },
   {
    "t": "support_case_events",
-   "total": 180,
+   "total": 184,
    "vis": null,
    "vis_err": "42501 permission denied for table support_case_events",
    "upd": null,
@@ -8646,7 +8646,7 @@
   },
   {
    "t": "support_cases",
-   "total": 180,
+   "total": 183,
    "vis": null,
    "vis_err": "42501 permission denied for table support_cases",
    "upd": null,
@@ -8746,7 +8746,7 @@
   },
   {
    "t": "tasks",
-   "total": 245,
+   "total": 246,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -8826,7 +8826,7 @@
   },
   {
    "t": "threads",
-   "total": 63,
+   "total": 65,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -8836,7 +8836,7 @@
   },
   {
    "t": "ticket_allocations",
-   "total": 35,
+   "total": 36,
    "vis": null,
    "vis_err": "42501 permission denied for table ticket_allocations",
    "upd": null,
@@ -8866,7 +8866,7 @@
   },
   {
    "t": "ticket_resale_listings",
-   "total": 44,
+   "total": 48,
    "vis": null,
    "vis_err": "42501 permission denied for table ticket_resale_listings",
    "upd": null,
@@ -8876,7 +8876,7 @@
   },
   {
    "t": "ticket_risk_flags",
-   "total": 67,
+   "total": 71,
    "vis": null,
    "vis_err": "42501 permission denied for table ticket_risk_flags",
    "upd": null,
@@ -8886,7 +8886,7 @@
   },
   {
    "t": "ticket_tiers",
-   "total": 514,
+   "total": 537,
    "vis": 24,
    "vis_err": null,
    "upd": null,
@@ -8896,7 +8896,7 @@
   },
   {
    "t": "ticket_transfers",
-   "total": 19,
+   "total": 21,
    "vis": null,
    "vis_err": "42501 permission denied for table users",
    "upd": null,
@@ -8926,7 +8926,7 @@
   },
   {
    "t": "transactions",
-   "total": 750,
+   "total": 752,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -9216,7 +9216,7 @@
   },
   {
    "t": "webhook_events",
-   "total": 2312,
+   "total": 2321,
    "vis": null,
    "vis_err": "42501 permission denied for table webhook_events",
    "upd": null,
@@ -9256,7 +9256,7 @@
   },
   {
    "t": "workspace_members",
-   "total": 586,
+   "total": 599,
    "vis": 0,
    "vis_err": null,
    "upd": null,
@@ -9286,7 +9286,7 @@
   },
   {
    "t": "workspaces",
-   "total": 581,
+   "total": 596,
    "vis": 0,
    "vis_err": null,
    "upd": null,

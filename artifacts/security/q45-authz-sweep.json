@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-15T15:51:01.014Z",
- "outsider": "dcd37ec7-7781-4be7-81a4-26864d940790",
+ "generatedAt": "2026-11-15T17:22:35.623Z",
+ "outsider": "c6dc7c87-7bb5-4cb4-836c-3a4006b34f6e",
  "targets": {
   "ALEX": "75e6c471-8d5e-4b9f-b076-ff10cf209f01",
   "RIVERSIDE": "960fab34-54fc-40a0-85ab-cc4ea6197701",
@@ -20,7 +20,7 @@
   "build_items": "01a2f55f-b71e-4e4c-8bda-f36c9402fb64",
   "campaign_links": "a7d19930-6f76-4398-b029-d380e7f69fbe",
   "clients": "f30742d8-d2ed-45d9-966a-ba7db0dc69c9",
-  "conditional_holds": "a30b2224-3241-4d01-99dd-f4e975245e61",
+  "conditional_holds": "f1006a08-9794-41bf-b91e-6af41b76446e",
   "contingency_plans": "7f952f0b-46ce-4493-8ee1-f3d89d1a3d67",
   "contract_approvals": "5de282a9-c25e-4c3c-b3f3-b8877c677577",
   "contract_parties": "c62f4f03-016b-404c-96f5-260ebda8cd53",
@@ -31,7 +31,7 @@
   "crew_members": "c88f76af-f9aa-45af-b26e-ed645cb4660f",
   "design_templates": "d27d8cfc-55d4-4137-a63c-64f5824f80e4",
   "designs": "e5139ad8-067a-40b8-b225-c3610f639447",
-  "email_outbox": "4c94fe36-1b0e-49d3-8161-b2a61cc6937d",
+  "email_outbox": "91edfc31-6528-4ad4-98b8-f637db703582",
   "emergency_candidates": "e88d168e-2e86-42c0-a9a7-8baaa791584e",
   "emergency_requests": "3396b8a3-54f4-46df-a022-fcea2157a671",
   "enforcement_actions": "b470944e-cfc6-40f6-a1bf-dc732fbcbed3",
@@ -76,7 +76,7 @@
   "portal_documents": "594fe013-0586-41f1-a40c-f4488cfe0b8f",
   "portal_links": "876edd40-5fe6-4bb2-8fb1-45ada95c45de",
   "privacy_requests": "e9b361e3-f1b6-4789-a443-a0cb67e40bb4",
-  "profiles": "a92558dc-d156-42b8-b51a-15d81b5004e1",
+  "profiles": "0bbf8ac4-c86c-4e6f-b07b-d46562c9042c",
   "promo_landing_pages": "2a02119b-8d4b-4002-96a5-11dae87e5384",
   "promoter_assets": "6a2cceb3-386f-4fdb-8df2-65b7e43c9b3a",
   "promoter_payouts": "bce0075a-eac1-4e2c-acb6-f4a942f917c0",
@@ -92,15 +92,16 @@
   "provider_requests": "6c44d895-083e-49e8-bb25-10a01b040d21",
   "registration_forms": "2df843af-e7b0-4c9f-a4dd-11ffead1e360",
   "registrations": "f2e37253-5d6c-49f4-93a1-2ddcd8f87249",
-  "resale_payouts": "a6263d53-5850-4e94-b81d-6da9562e7eb3",
+  "resale_payouts": "4896672e-5c41-430e-8c71-d60f558d5083",
   "review_reports": "09d52782-203f-477c-ac6a-db17432a7519",
   "reviews": "de43b402-4915-4e34-a2dd-5a78e5ed5f7f",
   "risk_holds": "d1a8df8b-39ca-404b-aacb-428dabfc36e0",
   "risk_signals": "2e1c0f9b-a946-4dda-b6ab-61a324737dc2",
   "safety_plans": "8b2e9bf8-7159-4fa0-bbb7-123b28ad6321",
-  "scan_snapshots": "9c0970f4-67fb-413f-9d47-387ae7acb31e",
+  "scan_snapshots": "80b7e62a-5529-4b03-925c-f51818bfddf4",
   "shifts": "9de0f419-6f9e-4a03-ae16-78e38c83bf3c",
   "spaces": "2bc82343-c905-43dc-8f6b-f341a369fd7a",
+  "standby_commitments": "713f295a-8f8a-4b58-8811-3f8724acb57f",
   "stock_items": "b30f0e61-2082-4e3c-9dd9-f4986344cc7b",
   "support_cases": "c0000000-0000-4000-8000-000000004421",
   "support_macros": "0abf4893-c33a-4965-ae81-769a9d85aa86",
@@ -111,7 +112,7 @@
   "ticket_allocations": "a8f46610-70bd-41c4-872c-8851d3cb4a70",
   "ticket_risk_flags": "4229c17f-0696-4abc-baf0-c49232cc4ddd",
   "ticket_tiers": "55da2c75-11fe-40bb-9896-430c3e5af0a7",
-  "ticket_transfers": "c8c7c521-a51a-445a-b970-cac72926f627",
+  "ticket_transfers": "5a40cc11-d887-4d90-90af-472a197cef01",
   "tickets": "95047efe-91b0-42ee-b406-d0a4063ad92d",
   "trust_cases": "54633062-01ab-4b2a-9df3-0777a518ecc7",
   "verification_checks": "b8af2069-6dfb-497f-941d-3bcfe274ad50",
@@ -127,11 +128,11 @@
   "workspaces": "75e6c471-8d5e-4b9f-b076-ff10cf209f01"
  },
  "summary": {
-  "REFUSED": 550,
-  "INPUT_REJECTED": 27,
-  "NOT_FOUND_BOTH": 19,
-  "EMPTY": 132,
+  "REFUSED": 552,
+  "INPUT_REJECTED": 26,
+  "NOT_FOUND_BOTH": 17,
   "DATA": 41,
+  "EMPTY": 131,
   "REFUSED_UNIFORM_404": 5,
   "WROTE": 7
  },
@@ -310,7 +311,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.accept_standby(null::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.accept_standby('713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "accept_ticket_transfer",
@@ -410,27 +411,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.activate_standby(null::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
-  },
-  {
-   "name": "active_boosts",
-   "ident": "p_placement text, p_city text, p_category text, p_limit integer",
-   "anon": true,
-   "tenantArgs": false,
-   "verdict": "EMPTY",
-   "outsider": {
-    "ok": true,
-    "state": null,
-    "msg": null,
-    "res": "[]",
-    "writes": {}
-   },
-   "control": {
-    "ok": true,
-    "state": null,
-    "msg": null
-   },
-   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.active_boosts('Q45 sweep'::text, 'Q45 sweep'::text, 'venue'::text, 1::integer) limit 50) x"
+   "call": "select coalesce(nullif(public.activate_standby('713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "add_design_comment",
@@ -1650,7 +1631,7 @@
     "state": "42501",
     "msg": "forbidden"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_open_email(null::uuid, '4c94fe36-1b0e-49d3-8161-b2a61cc6937d'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_open_email(null::uuid, '91edfc31-6528-4ad4-98b8-f637db703582'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "admin_ops_alert_ack",
@@ -4370,7 +4351,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.cancel_ownership_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.cancel_ownership_transfer('5a40cc11-d887-4d90-90af-472a197cef01'::uuid)::text, ''), 'void')"
   },
   {
    "name": "cancel_ticket_transfer",
@@ -4390,7 +4371,7 @@
     "state": "P0002",
     "msg": "not_found"
    },
-   "call": "select coalesce(nullif(public.cancel_ticket_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.cancel_ticket_transfer('5a40cc11-d887-4d90-90af-472a197cef01'::uuid)::text, ''), 'void')"
   },
   {
    "name": "cancellation_quote",
@@ -5218,7 +5199,7 @@
     "state": "22023",
     "msg": "not_bookable:awaiting"
    },
-   "call": "select left(coalesce(to_jsonb(public.create_payment_order('deposit', '01a2f55f-b71e-4e4c-8bda-f36c9402fb64'::uuid, null::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.create_payment_order('deposit', '01a2f55f-b71e-4e4c-8bda-f36c9402fb64'::uuid, '713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "create_promotion_boost",
@@ -5816,7 +5797,7 @@
    "control": {
     "ok": false,
     "state": "22023",
-    "msg": "illegal party_deliverable transition pending -> Q45 sweep"
+    "msg": "illegal party_deliverable transition in_progress -> Q45 sweep"
    },
    "call": "select left(coalesce(to_jsonb(public.deliverable_transition('e601869a-7b24-4ffb-9900-43e4a5414b22'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
@@ -6055,8 +6036,8 @@
    },
    "control": {
     "ok": false,
-    "state": "40P01",
-    "msg": "deadlock detected"
+    "state": "22023",
+    "msg": "no_escalation"
    },
    "call": "select coalesce(nullif(public.dispute_record_filing('f85186de-9531-433f-ab86-04d764b30c47'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
   },
@@ -7998,7 +7979,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.legal_hold_release('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.legal_hold_release('f1006a08-9794-41bf-b91e-6af41b76446e'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "legal_terms_version",
@@ -8190,7 +8171,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T15:50:33.499645+00:00\", \"identity_verified\": true, \"insurance_verified\": true}",
+    "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T17:22:14.012139+00:00\", \"identity_verified\": true, \"insurance_verified\": true}",
     "writes": {}
    },
    "control": {
@@ -9030,7 +9011,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "[{\"id\": \"84b97351-6ed6-4444-a819-2c4db7324296\", \"ip\": \"82.13.3.250\", \"aal\": \"aal1\", \"current\": true, \"created_at\": \"2026-11-15T15:50:24.807772+00:00\", \"user_agent\": \"node\", \"last_active\": \"2026-11-15T15:50:24.807772+00:00\"}]",
+    "res": "[{\"id\": \"b41699c1-8a01-466c-914a-e40726c39362\", \"ip\": \"82.13.3.250\", \"aal\": \"aal1\", \"current\": true, \"created_at\": \"2026-11-15T17:22:08.645143+00:00\", \"user_agent\": \"node\", \"last_active\": \"2026-11-15T17:22:08.645143+00:00\"}]",
     "writes": {}
    },
    "control": {
@@ -9298,7 +9279,7 @@
     "state": null,
     "msg": null
    },
-   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.ownership_transfer_blockers('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid) limit 50) x"
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.ownership_transfer_blockers('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, '0bbf8ac4-c86c-4e6f-b07b-d46562c9042c'::uuid) limit 50) x"
   },
   {
    "name": "owns_partner",
@@ -10585,20 +10566,20 @@
    "ident": "p_standby uuid, p_reason text",
    "anon": false,
    "tenantArgs": true,
-   "verdict": "NOT_FOUND_BOTH",
+   "verdict": "REFUSED",
    "outsider": {
     "ok": false,
-    "state": "P0002",
-    "msg": "not_found",
+    "state": "42501",
+    "msg": "not_authorized",
     "res": null,
     "writes": null
    },
    "control": {
     "ok": false,
-    "state": "P0002",
-    "msg": "not_found"
+    "state": "42501",
+    "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.provider_decline_standby(null::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.provider_decline_standby('713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "provider_document_access",
@@ -10725,20 +10706,20 @@
    "ident": "p_standby uuid, p_fee numeric, p_activation_price numeric, p_valid_hours integer, p_terms text",
    "anon": false,
    "tenantArgs": true,
-   "verdict": "NOT_FOUND_BOTH",
+   "verdict": "REFUSED",
    "outsider": {
     "ok": false,
-    "state": "P0002",
-    "msg": "not_found",
+    "state": "42501",
+    "msg": "not_authorized",
     "res": null,
     "writes": null
    },
    "control": {
     "ok": false,
-    "state": "P0002",
-    "msg": "not_found"
+    "state": "42501",
+    "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.provider_offer_standby(null::uuid, 1::numeric, 1::numeric, 1::integer, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.provider_offer_standby('713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid, 1::numeric, 1::numeric, 1::integer, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "provider_pause_listing",
@@ -10858,7 +10839,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.provider_respond_hold('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, false, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.provider_respond_hold('f1006a08-9794-41bf-b91e-6af41b76446e'::uuid, false, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "provider_save_crew",
@@ -11703,26 +11684,6 @@
    "call": "select left(coalesce(to_jsonb(public.record_badge_print('cdadc34b-bbdb-4260-ac2b-80bdf9d5dec3'::uuid))::text, 'null'), 3000)"
   },
   {
-   "name": "record_boost_event",
-   "ident": "p_boost uuid, p_kind text",
-   "anon": true,
-   "tenantArgs": true,
-   "verdict": "INPUT_REJECTED",
-   "outsider": {
-    "ok": false,
-    "state": "22023",
-    "msg": "invalid_kind",
-    "res": null,
-    "writes": null
-   },
-   "control": {
-    "ok": false,
-    "state": "22023",
-    "msg": "invalid_kind"
-   },
-   "call": "select coalesce(nullif(public.record_boost_event(null::uuid, 'venue'::text)::text, ''), 'void')"
-  },
-  {
    "name": "record_consent",
    "ident": "p_purpose text, p_granted boolean, p_version text, p_source text",
    "anon": false,
@@ -11860,7 +11821,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.release_conditional_hold('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.release_conditional_hold('f1006a08-9794-41bf-b91e-6af41b76446e'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "release_resale_holds",
@@ -11920,7 +11881,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.release_standby(null::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.release_standby('713f295a-8f8a-4b58-8811-3f8724acb57f'::uuid)::text, ''), 'void')"
   },
   {
    "name": "reliability_band",
@@ -12262,7 +12223,7 @@
     "state": "22023",
     "msg": "confirm_mismatch"
    },
-   "call": "select left(coalesce(to_jsonb(public.request_ownership_transfer('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.request_ownership_transfer('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, '0bbf8ac4-c86c-4e6f-b07b-d46562c9042c'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "request_standby",
@@ -12442,7 +12403,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.respond_ownership_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid, false))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.respond_ownership_transfer('5a40cc11-d887-4d90-90af-472a197cef01'::uuid, false))::text, 'null'), 3000)"
   },
   {
    "name": "respond_to_invite",
@@ -12996,7 +12957,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "\"0e36cb10ab13ab16871e3b7394f275b46bfe07881e65a0a6\"",
+    "res": "\"338b8b63729e9be5ba10707c280e326557e7fb8b75518bf3\"",
     "writes": {
      "profiles": 1
     }
@@ -13546,7 +13507,7 @@
     "state": "22023",
     "msg": "invalid_offline_time"
    },
-   "call": "select left(coalesce(to_jsonb(public.scan_admission('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '5150a702-9db0-48f8-b5df-652283654ece'::uuid, '95047efe-91b0-42ee-b406-d0a4063ad92d'::uuid, 'cdadc34b-bbdb-4260-ac2b-80bdf9d5dec3'::uuid, 'Q45SWEEP'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 'Q45 sweep'::text, 'Q45 sweep'::text, '9c0970f4-67fb-413f-9d47-387ae7acb31e'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.scan_admission('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '5150a702-9db0-48f8-b5df-652283654ece'::uuid, '95047efe-91b0-42ee-b406-d0a4063ad92d'::uuid, 'cdadc34b-bbdb-4260-ac2b-80bdf9d5dec3'::uuid, 'Q45SWEEP'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 'Q45 sweep'::text, 'Q45 sweep'::text, '80b7e62a-5529-4b03-925c-f51818bfddf4'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "scan_lookup",
@@ -13606,7 +13567,7 @@
     "state": null,
     "msg": null
    },
-   "call": "select left(coalesce(to_jsonb(public.scan_snapshot_valid('9c0970f4-67fb-413f-9d47-387ae7acb31e'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.scan_snapshot_valid('80b7e62a-5529-4b03-925c-f51818bfddf4'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "scan_ticket",
@@ -14478,7 +14439,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "\"PR-52B35624\"",
+    "res": "\"PR-62258383\"",
     "writes": {
      "audit_events": 1,
      "email_outbox": 1,
@@ -14791,7 +14752,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.transfer_stock('c88f76af-f9aa-45af-b26e-ed645cb4660f'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.transfer_stock('c88f76af-f9aa-45af-b26e-ed645cb4660f'::uuid, '0bbf8ac4-c86c-4e6f-b07b-d46562c9042c'::uuid, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "transfer_ticket",
@@ -15023,7 +14984,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "{\"badge\": false, \"scope\": \"Verified means Gala Dock or Stripe checked the business identity and Gala Dock reviewed the required, current compliance documents. It does not guarantee service quality.\", \"computed_at\": \"2026-11-15T15:50:39.939133+00:00\", \"identity_verified\": false, \"required_credentials",
+    "res": "{\"badge\": false, \"scope\": \"Verified means Gala Dock or Stripe checked the business identity and Gala Dock reviewed the required, current compliance documents. It does not guarantee service quality.\", \"computed_at\": \"2026-11-15T17:22:18.661728+00:00\", \"identity_verified\": false, \"required_credentials",
     "writes": {}
    },
    "control": {

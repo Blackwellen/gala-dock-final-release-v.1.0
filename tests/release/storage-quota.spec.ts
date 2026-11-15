@@ -23,13 +23,16 @@ test.describe("storage quotas", () => {
   test("usage is attributed to the workspace and uploads stop past the allowance", async () => {
     const c = await signedIn(u.email) as unknown as SupabaseClient;
     const p1 = `${ws}/q1-${Date.now()}.png`;
-    const up1 = await c.storage.from("event-media").upload(p1, png(1800), { contentType: "image/png" });
+    // Q04 (202611150003): clients can't write public buckets directly; the server uploads with the service role (after its checks)
+    // and the quota trigger attributes by the workspace folder whoever uploads.
+    expect((await c.storage.from("event-media").upload(`${ws}/direct-${Date.now()}.png`, png(100), { contentType: "image/png" })).error).not.toBeNull();
+    const up1 = await db.storage.from("event-media").upload(p1, png(1800), { contentType: "image/png" });
     expect(up1.error).toBeNull(); uploaded.push(p1);
     const usage = (await c.rpc("my_storage_usage", { p_workspace: ws })).data as { bytes: number; files: number; limit_bytes: number; pct: number };
     expect(usage.files).toBe(1); expect(usage.bytes).toBeGreaterThanOrEqual(1500);
     // A second 1.5 KB file would exceed 2 KB + 10% grace → refused.
     const p2 = `${ws}/q2-${Date.now()}.png`;
-    const up2 = await c.storage.from("event-media").upload(p2, png(1500), { contentType: "image/png" });
+    const up2 = await db.storage.from("event-media").upload(p2, png(1500), { contentType: "image/png" });
     if (!up2.error) uploaded.push(p2);
     expect(up2.error).not.toBeNull(); expect(up2.error?.message).toMatch(/P0001|quota/);  // storage surfaces the trigger as P0001 → routes map it to a clear 413
     // Deleting frees the allowance.
@@ -38,7 +41,7 @@ test.describe("storage quotas", () => {
     expect((await db.from("storage_attribution").select("name").eq("name", p1)).data).toEqual([]);   // attribution follows deletes
     expect(((await c.rpc("my_storage_usage", { p_workspace: ws })).data as { files: number }).files).toBe(0);
     const p3 = `${ws}/q3-${Date.now()}.png`;
-    expect((await c.storage.from("event-media").upload(p3, png(1500), { contentType: "image/png" })).error).toBeNull(); uploaded.push(p3);
+    expect((await db.storage.from("event-media").upload(p3, png(1500), { contentType: "image/png" })).error).toBeNull(); uploaded.push(p3);
     // Outsiders can't read another workspace's (or person's) usage.
     const stranger = await signedIn((await createUser("quota-x")).email) as unknown as SupabaseClient;
     expect((await stranger.rpc("storage_usage", { p_workspace: ws, p_user: null })).error?.message).toMatch(/forbidden/);

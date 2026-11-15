@@ -117,7 +117,7 @@ test.describe("Q23 serving, pacing and integrity (live DB)", () => {
     expect(((await db.rpc("ad_candidates", { p_placement: "discover_hero", p_ctx: ctx(), p_now: later, p_exclude: [] })).data as { boost_id: string }[]).some(r => r.boost_id === C)).toBe(false);
   });
 
-  test("impression and click integrity: single-use tokens bound to the viewer; legacy anon counter deduped", async () => {
+  test("impression and click integrity: single-use tokens bound to the viewer", async () => {
     const v = vid();
     const s = (await serve("discover_hero", v, { ctx: ctx() })).find(x => x.boost_id === A)!;
     expect(s.token).toMatch(/^[0-9a-f]{36}$/);
@@ -140,11 +140,6 @@ test.describe("Q23 serving, pacing and integrity (live DB)", () => {
     const a = anon() as unknown as SupabaseClient;
     expect((await a.rpc("record_ad_view", { p_token: s.token, p_user: null, p_anon: v })).error).not.toBeNull();
     expect((await a.rpc("serve_ad_slots", { p_placement: "discover_hero", p_user: null, p_anon: v })).error).not.toBeNull();
-    // Legacy anon counter (still called by the deployed page): 10 calls from one client count once.
-    for (let i = 0; i < 10; i++) await a.rpc("record_boost_event", { p_boost: A, p_kind: "impression" });
-    const legacy = ((await db.from("promotion_boosts").select("impressions,delivered_impressions").eq("id", A).single()).data as { impressions: number; delivered_impressions: number });
-    expect(legacy.impressions - after.impressions).toBeLessThanOrEqual(1);
-    expect(legacy.delivered_impressions).toBe(after.delivered_impressions);       // legacy calls never touch verified delivery
   });
 
   test("attribution reconciles to ticket orders and reverses on refund; undelivered budget becomes credit", async () => {

@@ -1183,6 +1183,56 @@
           "revoke"
         ]
       }
+    },
+    {
+      "file": "202611150001_reviews_column_grants.sql",
+      "sha256": "ac44dfd682b22fcff8970e9958d4172874d62798897a22371b461f9c757faf5f",
+      "lane": "bughunt-admin",
+      "reviewer": "claude-postdeploy",
+      "reviewedAt": "2026-11-15T17:17:35.747Z",
+      "exercise": "scripts/db/exercises/202611150001_reviews_column_grants.sql",
+      "waivers": [],
+      "rollback": "grant select on public.reviews to authenticated;",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611150002_retire_legacy_boost_rpcs.sql",
+      "sha256": "1a64b945ec7d9a4db3ee1c3c37ca3316c90ad63d8d44a5e5e3b611a0f3d13272",
+      "lane": "bughunt-ads",
+      "reviewer": "claude-postdeploy",
+      "reviewedAt": "2026-11-15T17:19:51.085Z",
+      "exercise": "scripts/db/exercises/202611150002_retire_legacy_boost_rpcs.sql",
+      "waivers": [],
+      "rollback": "grant execute on function public.active_boosts(text, text, text, integer), public.record_boost_event(uuid, text) to anon, authenticated;",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611150003_public_buckets_server_only.sql",
+      "sha256": "e2e9520009ce64464385a35f5e9f8506b80a2b930af15a344840ac559fbd7456",
+      "lane": "q04-files",
+      "reviewer": "claude-postdeploy",
+      "reviewedAt": "2026-11-15T17:21:40.467Z",
+      "exercise": "scripts/db/exercises/202611150003_public_buckets_server_only.sql",
+      "waivers": [
+        "drop_policy"
+      ],
+      "rollback": "recreate event_media_insert / listing_media_insert / avatars_insert with their 202610140011 / 202610130007 / 202610140006 bodies",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "drop_policy",
+          "drop_policy",
+          "drop_policy"
+        ]
+      }
     }
   ],
   "recordedOnly": [

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-15T15:51:47.284Z",
+ "generatedAt": "2026-11-15T17:23:22.155Z",
  "summary": {
   "functions": 173,
   "aalRefused": 88,
@@ -1500,7 +1500,7 @@
    "ok": true,
    "state": null,
    "msg": null,
-   "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T15:51:45.104152+00:00\", \"identity_verified\": true, \"insurance_v",
+   "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T17:23:19.747412+00:00\", \"identity_verified\": true, \"insurance_v",
    "writes": {},
    "aalRefused": false,
    "adminNamed": false

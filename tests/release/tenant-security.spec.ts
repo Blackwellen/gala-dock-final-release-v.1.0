@@ -24,10 +24,10 @@ const ANON_DEFINER_ALLOWLIST = new Set([
   // invited name + state for a 64-hex token hash only (the raw token is never stored).
   "partner_terms_version", "portal_invite_preview",
   "public_event_extras", "public_listing_availability", "public_event_getting_there", "event_is_public", "stripe_livemode", "stripe_platform_livemode",
-  "accept_proposal", "active_boosts", "can_see_agent_run", "checkout_holds", "event_launch_state", "event_virtual_public", "feature_enabled",
+  "accept_proposal", "can_see_agent_run", "checkout_holds", "event_launch_state", "event_virtual_public", "feature_enabled",
   "hold_seats", "hold_tickets", "invite_preview", "is_workspace_member", "maintenance_level", "maintenance_state",
   "portal_comment", "portal_decide", "portal_document", "portal_view", "promoter_track_click", "proposal_by_token", "public_event_plan",
-  "public_organizer", "public_workspace", "queue_join", "queue_status", "record_boost_event", "release_checkout", "release_resale_holds",
+  "public_organizer", "public_workspace", "queue_join", "queue_status", "release_checkout", "release_resale_holds",
   "release_seat_holds", "reliability_band", "resale_holds_for", "resale_listings", "ticket_fee_config",
   // Q07: public "can this event take payments" flag shown on public event pages; owner-approved 2026-10-28.
   "event_payment_readiness",
