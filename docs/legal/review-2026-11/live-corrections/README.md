@@ -1,4 +1,7 @@
-# Live-text corrections (Q74, 2026-11-14) — DRAFT, NOT PUBLISHED
+# Live-text corrections (Q74, 2026-11-14) — SUPERSEDED 2026-11-15
+
+> **Superseded by the signed-off legal pack 3.0** (R3, owner sign-off 2026-11-15): the published texts are `content/legal/*.md`, rendered by
+> `src/components/legal/legal-document.tsx`; the 2026-10 pages are archived at `/legal/archive/*-2026-10`. These drafts are kept as the record of the interim corrections.
 
 > **AI-drafted, not legal advice. Do not publish until the owner and counsel have signed off (decision D1).** The live pages in
 > `src/app/(legal)/**` and `src/lib/legal.ts` are **unchanged**. Each `*.txt` file here is the full replacement text for one live

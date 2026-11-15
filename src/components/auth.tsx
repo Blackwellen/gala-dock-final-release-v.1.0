@@ -23,7 +23,7 @@ export type AuthProps = {
   workspaces?: { id: string; name: string; kind: string }[];
 };
 
-const TERMS_VERSION = LEGAL.version;   // single source: src/lib/legal.ts (mirrored in platform_settings section "legal")
+const TERMS_VERSION = LEGAL.version;   // the published Terms of Service version (src/lib/legal/registry.ts); profiles.terms_version → legal_acceptances
 const titles: Record<AuthScreen, string> = { login: "Log in", register: "Create your account", "verify-email": "Verify your email", "forgot-password": "Forgot your password?", "reset-password": "Reset your password", mfa: "Multi-factor authentication", invite: "Workspace invite", access: "Secure access" };
 const descriptions: Record<AuthScreen, string> = {
   login: "Sign in to Gala Dock and we’ll take you back to your last valid Customer, Organizer, Provider, or Admin destination.",
@@ -176,7 +176,7 @@ export function AuthPage(props: AuthProps) {
         if (fullName.length < 2) fields.full_name = "Enter your full name.";
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) fields.email = "Enter a valid email address.";
         if (!passwordChecks(password).every(c => c.met)) fields.password = "Your password doesn’t meet all the requirements yet.";
-        if (form.get("terms") !== "on") fields.terms = "You need to agree to the Terms of Service and Privacy Policy.";
+        if (form.get("terms") !== "on") fields.terms = "You need to agree to the Terms of Service to create an account.";
         if (Object.keys(fields).length) return fail("Please check the highlighted fields.", fields);
         if (needsCaptcha && !captcha) return fail("Please complete the security check.");
         const { data, error } = await supabase.auth.signUp({
@@ -331,7 +331,7 @@ export function AuthPage(props: AuthProps) {
             {screen === "login" && <AuthInput label="Password" name="password" type="password" placeholder="Enter your password" autoComplete="current-password" error={fieldErrors.password} aside={<Link href="/forgot-password">Forgot password?</Link>} />}
             {screen === "register" && <><AuthInput label="Password" name="password" type="password" placeholder="Create a password" autoComplete="new-password" onValueChange={setPassword} error={fieldErrors.password} />
               {password ? <PasswordRules value={password} strength /> : <p className="password-hint">Use at least 8 characters with a mix of letters, numbers, and symbols.</p>}
-              <label className={`check-row ${fieldErrors.terms ? "invalid" : ""}`}><input name="terms" type="checkbox" aria-invalid={!!fieldErrors.terms} /><span>I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and <Link href="/privacy" target="_blank">Privacy Policy</Link> ↗</span></label>
+              <label className={`check-row ${fieldErrors.terms ? "invalid" : ""}`}><input name="terms" type="checkbox" aria-invalid={!!fieldErrors.terms} /><span>I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and the documents for customers it lists (including the <Link href="/legal/customer-terms" target="_blank">Customer Terms</Link> and <Link href="/ticket-terms" target="_blank">Ticket Terms</Link>), and I have read the <Link href="/privacy" target="_blank">Privacy Policy</Link> ↗</span></label>
               {fieldErrors.terms && <small className="field-error" role="alert">{fieldErrors.terms}</small>}
               <label className="check-row"><input name="marketing" type="checkbox" /><span>Send me product updates, event insights, and special offers (from Gala Dock) (optional).</span></label></>}
             {screen === "reset-password" && state === "valid" && <><AuthInput label="New password" name="password" type="password" placeholder="Enter your new password" autoComplete="new-password" onValueChange={setPassword} error={fieldErrors.password} />

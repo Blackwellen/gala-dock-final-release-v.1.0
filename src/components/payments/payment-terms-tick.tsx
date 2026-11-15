@@ -11,12 +11,12 @@ export function PaymentTermsTick({ version, checked, onChange }: { version: stri
       <li>Customers pay you directly into your own Stripe account. Gala Dock’s fee is taken from each payment as an application fee.</li>
       <li>Payouts to your bank are manual: each payment is released when its trigger is met — the event has finished and the review window (24 hours) has passed, the customer confirms, you and the customer settle, an independent award is entered, or the payment provider’s hold limit is reached.</li>
       <li>A reserve may stay in your own Stripe balance only under the published rules: 10% for 30 days while you are new (first 90 days or £2,000 of releases), or up to 50% for up to 60 days if chargebacks exceed 0.75% or refunds exceed 10% over 90 days. Never for suspicion alone.</li>
-      <li>Gala Dock can pause payouts only for a court order, a regulator or law-enforcement request, the payment provider’s instruction, sanctions screening, your insolvency or your own request — with a recorded reference.</li>
+      <li>Gala Dock can pause payouts only for a court order, a regulator or law-enforcement request, the payment provider’s instruction, a sanctions restriction, your insolvency, your own request, a suspension of your workspace decided by a person after review, or missing tax-reporting details after the required reminders — always with a recorded reference.</li>
       <li>Refunds and chargebacks on your sales come out of your Stripe balance; Stripe may debit your bank for a negative balance.</li>
     </ul>
     <label style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
-      <span>I accept the Gala Dock Payment Terms (version {version}) for this workspace. <a href="/terms" target="_blank" rel="noreferrer">Read the full terms</a></span>
+      <span>I accept the Gala Dock Payment Terms (version {version}) for this workspace. <a href="/legal/payment-terms" target="_blank" rel="noreferrer">Read the full terms</a></span>
     </label>
   </div>;
 }
@@ -33,7 +33,7 @@ export function CustomerTermsTick({ version, checked, onChange }: { version: str
     </ul>
     <label style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
-      <span>I accept these payment terms (version {version}). <a href="/terms" target="_blank" rel="noreferrer">Full terms</a></span>
+      <span>I accept these payment terms (version {version}). <a href="/legal/payment-terms" target="_blank" rel="noreferrer">Full terms</a></span>
     </label>
   </div>;
 }

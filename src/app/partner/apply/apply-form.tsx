@@ -30,7 +30,7 @@ export function ApplyForm({ email, name, countries, termsVersion }: { email: str
     <label><span>Who will you refer, and how?</span><textarea name="audience" maxLength={1000} rows={4} placeholder="e.g. venues in Manchester through our newsletter" /></label>
     <label className="pr-check"><input type="checkbox" name="vat_registered" checked={vat} onChange={e => setVat(e.target.checked)} /><span>I’m VAT-registered</span></label>
     {vat && <label><span>VAT number</span><input name="vat_number" required pattern="[A-Za-z]{2}[A-Za-z0-9 ]{2,16}" maxLength={20} placeholder="GB123456789" /></label>}
-    <label className="pr-check"><input type="checkbox" name="accept_terms" required /><span>I accept the Gala Dock Affiliate &amp; Partner Terms (version {termsVersion}).</span></label>
+    <label className="pr-check"><input type="checkbox" name="accept_terms" required /><span>I accept the Gala Dock <a href="/legal/partner-terms" target="_blank" rel="noreferrer">Affiliate and Partner Terms</a> (version {termsVersion}), including the self-billing agreement in Schedule 1.</span></label>
     <label className="pr-check"><input type="checkbox" name="accept_self_billing" required /><span>I agree that Gala Dock issues self-billed statements for my commission, and that I won’t issue my own invoices for the same amounts.</span></label>
     {error && <p className="pt-notice red" role="alert">{error}</p>}
     <button type="submit" className="pt-btn primary" disabled={pending}>{pending ? "Sending…" : "Submit application"}</button>

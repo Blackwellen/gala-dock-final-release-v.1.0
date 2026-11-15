@@ -1233,6 +1233,22 @@
           "drop_policy"
         ]
       }
+    },
+    {
+      "file": "202611150101_legal_signoff_v3.sql",
+      "sha256": "ff36d862be263e73c252e7be66ae103ea4d54109362ae4c8687a13189924f32e",
+      "lane": "legal-signoff",
+      "reviewer": "claude-legal-signoff",
+      "reviewedAt": "2026-11-15T18:50:48.454Z",
+      "exercise": "scripts/db/exercises/202611150101_legal_signoff_v3.sql",
+      "waivers": [],
+      "rollback": "additive: drop trigger legal_signup_acceptance on profiles; restore legal_terms_version/partner_terms_version from 202610291006/202611146951; new tables can stay (nothing reads them before publication)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
     }
   ],
   "recordedOnly": [

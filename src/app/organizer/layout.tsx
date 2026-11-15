@@ -29,12 +29,20 @@ import { KitProviders } from "@/components/kit/client";
 import { OrganizerShell } from "@/components/organizer/shell";
 import { getOrganizer } from "@/lib/data/context";
 import { recentConversations } from "@/lib/messaging/recent";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { loadPending, businessGate } from "@/lib/legal/published";
+import { LegalUpdateBanner } from "@/components/legal/legal-update-banner";
+import { RETURN_PATH_HEADER, safeNext } from "@/lib/redirects";
 
 export const metadata: Metadata = { title: { default: "Organizer · Gala Dock", template: "%s · Gala Dock Organizer" }, manifest: "/organizer.webmanifest" };
 
 export default async function OrganizerLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getOrganizer();
-  const threads = await recentConversations(ctx.supabase as never, ctx.workspace.id, "/organizer/inbox");
+  const [threads, legal, h] = await Promise.all([recentConversations(ctx.supabase as never, ctx.workspace.id, "/organizer/inbox"), loadPending(), headers()]);
+  // R3: once changed business terms apply (or for a role begun after publication), the workspace waits for acceptance.
+  const here = safeNext(h.get(RETURN_PATH_HEADER), "/organizer");
+  if (businessGate(legal)) redirect(`/legal/updates?next=${encodeURIComponent(here)}`);
   return <KitProviders>
     <OrganizerShell
       user={{ name: ctx.name, email: ctx.user.email ?? "", avatar: ctx.avatar }}
@@ -43,6 +51,6 @@ export default async function OrganizerLayout({ children }: { children: React.Re
       unread={ctx.unread}
       notifications={ctx.notifications}
       threads={threads}
-    >{children}</OrganizerShell>
+    ><LegalUpdateBanner pending={legal} next={here} />{children}</OrganizerShell>
   </KitProviders>;
 }

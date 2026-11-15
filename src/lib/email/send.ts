@@ -17,18 +17,19 @@ export const emailConfigured = () => Boolean(apiKey());
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.galadock.com").replace(/\/+$/, "");
 /** Q75: HMAC key for one-click unsubscribe tokens (EMAIL_UNSUBSCRIBE_SECRET; falls back to CRON_SECRET, purpose-separated in rules.ts). */
 export const unsubscribeSecret = () => process.env.EMAIL_UNSUBSCRIBE_SECRET || process.env.CRON_SECRET || "";
-const EYEBROW: Record<string, string> = { security: "Account security", payments: "Payments", tickets: "Tickets", quotes: "Bookings & quotes", messages: "Messages", reminders: "Reminder", event_updates: "Event update" };
-const CTA: Record<string, string> = { security: "Review your account", payments: "View payment details", tickets: "View tickets", quotes: "Open in Gala Dock", messages: "Reply in Gala Dock", reminders: "Take a look", event_updates: "View in Gala Dock" };
+const EYEBROW: Record<string, string> = { legal: "Legal update", security: "Account security", payments: "Payments", tickets: "Tickets", quotes: "Bookings & quotes", messages: "Messages", reminders: "Reminder", event_updates: "Event update" };
+const CTA: Record<string, string> = { legal: "Review the changes", security: "Review your account", payments: "View payment details", tickets: "View tickets", quotes: "Open in Gala Dock", messages: "Reply in Gala Dock", reminders: "Take a look", event_updates: "View in Gala Dock" };
 
 export function render(o: { subject: string; body: string; link?: string | null; category: string; user_id?: string | null }) {
   const url = o.link ? (o.link.startsWith("http") ? o.link : `${site()}${o.link}`) : null;
   const prefs = `${site()}/account?tab=notifications`;
-  const essential = ["security", "payments"].includes(o.category);
+  // R3: legal notices (changed terms, P2B notice to business users) are service messages: no opt-out, no unsubscribe link.
+  const essential = ["security", "payments", "legal"].includes(o.category);
   // Q75: optional mail also carries a one-click unsubscribe for its category (the page asks for one confirming click: link scanners
   // only GET, and GET never changes anything).
   const tok = !essential && o.user_id ? unsubscribeToken(unsubscribeSecret(), o.user_id, o.category) : null;
   const unsub = tok ? `${site()}/api/email/unsubscribe?t=${tok}` : null;
-  const footer = essential ? "You’re receiving this because it concerns your account’s security or payments." : `You can change which emails you get in your notification settings: ${prefs}${unsub ? `\nUnsubscribe from these emails: ${unsub}` : ""}`;
+  const footer = essential ? (o.category === "legal" ? "You’re receiving this because the terms that apply to your Gala Dock account are changing." : "You’re receiving this because it concerns your account’s security or payments.") : `You can change which emails you get in your notification settings: ${prefs}${unsub ? `\nUnsubscribe from these emails: ${unsub}` : ""}`;
   const text = `${o.subject}\n\n${o.body}${url ? `\n\nOpen in Gala Dock: ${url}` : ""}\n\n—\nGala Dock · Blackwellen Limited · VAT No. GB508480488\n${footer}`;
   const html = emailHtml({
     preheader: o.body.split("\n")[0]!.slice(0, 140), eyebrow: EYEBROW[o.category] ?? "Gala Dock", heading: o.subject,

@@ -97,7 +97,7 @@ export default async function PayPage({ params, searchParams }: { params: Promis
       : <form action={pay}><input type="hidden" name="token" value={token} />
           <label className="pay-terms" style={{ display: "flex", gap: 8, alignItems: "flex-start", margin: "10px 0", fontSize: 14 }}>
             <input type="checkbox" name="terms" value={termsVersion} required />
-            <span>I accept the payment terms (version {termsVersion}): I am paying {inv.workspace_name} directly through Stripe; Gala Dock does not hold the money; refunds and disputes are between me and {inv.workspace_name}, and card chargebacks stay open to me. <a href="/terms" target="_blank" rel="noreferrer">Full terms</a></span>
+            <span>I accept the payment terms (version {termsVersion}): I am paying {inv.workspace_name} directly through Stripe; Gala Dock does not hold the money; refunds and disputes are between me and {inv.workspace_name}, and card chargebacks stay open to me. <a href="/legal/payment-terms" target="_blank" rel="noreferrer">Full terms</a></span>
           </label>
           <button className="k-btn primary pay-btn"><Lock size={16} />Pay {gbp(due)} securely</button></form>}
     <p className="pay-note"><ShieldCheck size={14} />Paid to {inv.workspace_name} through Stripe. Gala Dock never sees your card details.</p></section></div>;

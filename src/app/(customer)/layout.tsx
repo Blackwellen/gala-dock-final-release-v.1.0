@@ -21,12 +21,16 @@ import { CustomerShell } from "@/components/customer/shell";
 import { getCustomer } from "@/lib/data/context";
 import { recentConversations } from "@/lib/messaging/recent";
 import { listWorkspaceAccess } from "@/lib/auth";
+import { headers } from "next/headers";
+import { loadPending } from "@/lib/legal/published";
+import { LegalUpdateBanner } from "@/components/legal/legal-update-banner";
+import { RETURN_PATH_HEADER, safeNext } from "@/lib/redirects";
 
 export const metadata: Metadata = { title: { default: "Gala Dock", template: "%s · Gala Dock" }, manifest: "/customer.webmanifest" };
 
 export default async function CustomerLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getCustomer();
-  const [threads, access] = await Promise.all([recentConversations(ctx.supabase as never, null, "/account/inbox"), listWorkspaceAccess(ctx.supabase)]);
+  const [threads, access, legal, h] = await Promise.all([recentConversations(ctx.supabase as never, null, "/account/inbox"), listWorkspaceAccess(ctx.supabase), loadPending(), headers()]);
   return <KitProviders><Suspense>
     <CustomerShell
       user={{ name: ctx.name, email: ctx.user.email ?? "", avatar: ctx.profile?.avatar_url }}
@@ -34,6 +38,6 @@ export default async function CustomerLayout({ children }: { children: React.Rea
       notifications={ctx.notifications}
       hasWorkspace={access.some(w => w.kind === "organizer" && w.member_status === "active" && w.onboarding_complete)}
       threads={threads}
-    >{children}</CustomerShell>
+    ><LegalUpdateBanner pending={legal} next={safeNext(h.get(RETURN_PATH_HEADER), "/discover")} />{children}</CustomerShell>
   </Suspense></KitProviders>;
 }

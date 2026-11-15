@@ -35,3 +35,27 @@
 .lg-doc .lg-toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin:0 0 8px;padding:0;list-style:none}
 @media (max-width:860px){.lg-body{grid-template-columns:minmax(0,1fr)}.lg-nav{position:static}.lg-doc{padding:24px 18px;font-size:14px}}
 @media print{.lg-nav,.lg header{display:none}.lg-body{display:block}.lg-doc{border:0;box-shadow:none;padding:0}}
+
+/* Legal sign-off (R3): document header (Gigvora pattern: title, summary, version + in-force line, company identity; no named person). */
+.lg-doc .lg-eyebrow{font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:#5157a4;margin:0 0 4px}
+.lg-doc .lg-summary{font-size:15.5px;color:#3a3f86;margin:0 0 12px}
+.lg-doc .lg-ver{display:inline-block;border:1px solid #dfe5f5;border-radius:6px;padding:1px 8px;margin-right:6px;font-weight:650;color:#03035f}
+.lg-doc .lg-id{font-size:12.5px;color:#5157a4;border-top:1px solid #eef1f8;border-bottom:1px solid #eef1f8;padding:8px 0;margin:0 0 22px}
+.lg-doc .lg-table{overflow-x:auto;margin:8px 0 16px}.lg-doc .lg-table table{display:table;margin:0}
+.lg-doc .lg-table:focus-visible{outline:2px solid #0b08f8;outline-offset:2px}
+.lg-doc code{font-size:.92em;background:#f4f6fd;border-radius:4px;padding:0 4px}
+.lg-doc .lg-index{list-style:none;padding:0;display:grid;gap:12px}
+.lg-doc .lg-index li{display:grid;gap:2px;margin:0}.lg-doc .lg-index small{color:#5157a4;font-size:12.5px}.lg-doc .lg-index span{font-size:13.5px;color:#3a3f86}
+.lg-nav details{margin:0}.lg-nav summary{cursor:pointer;font-size:12.5px;font-weight:650;color:#03035f;padding:6px 2px;min-height:32px}
+.lg-nav b a{display:inline;padding:0;color:inherit}
+/* Accept-updates page */
+.lg-doc .lg-accept{display:grid;gap:10px;margin:14px 0}.lg-doc .lg-accept label{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.lg-doc .lg-accept input[type=checkbox]{margin-top:4px;width:18px;height:18px;flex:none}
+.lg-doc .lg-pending{list-style:none;padding:0;display:grid;gap:8px}.lg-doc .lg-pending li{border:1px solid #eef1f8;border-radius:10px;padding:10px 12px;margin:0}
+.lg-doc .lg-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.lg-doc .lg-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid #0b08f8;background:#0b08f8;color:#fff;font-weight:650;cursor:pointer;text-decoration:none}
+.lg-doc .lg-btn.ghost{background:#fff;color:#0b08f8}
+.lg-doc .lg-err{color:#b42318;font-weight:600}
+/* In-app banner for changed terms (workspace shells). */
+.lg-banner{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;border:1px solid #c9d3ff;background:#f3f5ff;color:#1d2068;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:14px}
+.lg-banner a{color:#0b08f8;font-weight:650;text-decoration:underline;text-underline-offset:2px}

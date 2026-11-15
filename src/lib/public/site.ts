@@ -40,7 +40,7 @@ export const FOOTER_COLUMNS: { title: string; links: [href: string, label: strin
   { title: "Discover", links: [["/events", "Events"], [HREF.browseVenues, "Venues"], [HREF.browseSuppliers, "Suppliers"], ["/events/calendar", "Event calendar"]] },
   { title: "Developers", links: [["/developers#interfaces", "API"], ["/developers#mcp", "MCP"], ["/developers#webhooks", "Webhooks"], [HREF.docs, "Documentation"]] },
   { title: "Company", links: [["/about", "About"], [HREF.contact, "Contact"], [HREF.help, "Help Centre"]] },
-  { title: "Legal", links: [["/terms", "Terms"], ["/privacy", "Privacy"], ["/cookies", "Cookies"], ["/ticket-terms", "Ticket terms"], ["/accessibility", "Accessibility"]] },
+  { title: "Legal", links: [["/terms", "Terms"], ["/privacy", "Privacy"], ["/cookies", "Cookies"], ["/ticket-terms", "Ticket terms"], ["/accessibility", "Accessibility"], ["/legal", "All legal documents"]] },
 ];
 
 /** Per-page metadata: unique title + description, canonical, Open Graph and Twitter (blueprint §1.6). The social image is the

@@ -87,7 +87,9 @@ test.describe("Q02 canonical master data", () => {
     const { data, error } = await db.rpc("master_data_audit");
     expect(error).toBeNull();
     expect(data).toEqual([]);
-    expect((await db.rpc("legal_terms_version")).data).toBe(LEGAL.version);
+    // Legal sign-off (R3): the database follows the published pack; before scripts/legal/publish-pack.mjs runs it still reports 2026-10.
+    const { data: cur } = await db.rpc("legal_current_versions" as never);
+    expect((await db.rpc("legal_terms_version")).data).toBe(((cur as unknown[] | null) ?? []).length ? LEGAL.version : "2026-10");
     const { data: at, error: e2 } = await db.rpc("setting_at", { p_section: "commerce", p_at: new Date(Date.now() + 864e5).toISOString() });
     expect(e2).toBeNull();
     const { data: pub } = await db.from("platform_settings").select("version").eq("section", "commerce").eq("status", "published").single();

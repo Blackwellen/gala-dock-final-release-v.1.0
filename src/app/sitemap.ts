@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 import { siteUrl } from "@/lib/site-url";
 import { SITE_ROUTES } from "@/lib/public/site";
+import { LEGAL_DOCUMENTS } from "@/lib/legal/registry";
 
 export const revalidate = 3600;
 
@@ -15,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // The seven public website routes (blueprint §10.6), then help and legal.
   const fixed: MetadataRoute.Sitemap = [
     ...SITE_ROUTES.map(path => ({ url: `${base}${path}`, changeFrequency: "weekly" as const, priority: path === "/" ? 1 : 0.9 })),
-    ...["/help", "/terms", "/privacy", "/cookies", "/ticket-terms", "/data-retention", "/accessibility"].map(path => ({ url: `${base}${path}`, changeFrequency: "monthly" as const, priority: 0.4 })),
+    ...["/help", "/legal", ...LEGAL_DOCUMENTS.map(d => d.href)].map(path => ({ url: `${base}${path}`, changeFrequency: "monthly" as const, priority: 0.4 })),
   ];
   try {
     const { url, anonKey } = getSupabaseConfig();

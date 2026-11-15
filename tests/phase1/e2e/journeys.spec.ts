@@ -38,7 +38,7 @@ test("register: terms must be explicitly accepted and marketing is opt-in", asyn
   await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
   await expect(page.getByText("5 of 5 met")).toBeVisible();
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByText("You need to agree to the Terms of Service and Privacy Policy.").first()).toBeVisible();
+  await expect(page.getByText("You need to agree to the Terms of Service to create an account.").first()).toBeVisible();
 });
 
 test("protected routes redirect to login and preserve the destination", async ({ page }) => {

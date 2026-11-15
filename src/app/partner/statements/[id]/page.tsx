@@ -49,6 +49,6 @@ export default async function StatementPage({ params }: { params: Promise<{ id: 
       <tr><th>Status</th><td>{st.status === "paid" ? `Paid ${st.paid_at ? fmt(st.paid_at) : ""} by Stripe transfer ${st.transfer_id ?? ""}` : "Payment in progress"}</td></tr>
     </tbody></table>
     <p className="pr-doc-note">This is a self-billed invoice issued by {LEGAL.entity.name} under the self-billing agreement in the {LEGAL.service} Affiliate &amp; Partner Terms. The supplier agrees not to issue its own VAT invoice for this supply.
-      {vat > 0 ? " The VAT shown is payable to HMRC by the supplier." : ""}</p>
+      {vat > 0 ? " The VAT shown is your output tax due to HMRC." : ""}</p>
   </main>;
 }

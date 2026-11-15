@@ -35,7 +35,7 @@ test("deletion grace period matches the worker (14 days) everywhere the user is 
   for (const f of ["src/components/customer/account-client.tsx", "src/lib/actions/account.ts", "src/app/(customer)/account/page.tsx"]) {
     expect(src(f)).not.toMatch(/30 days|30-day|30 \* 864e5/);
   }
-  expect(src("src/app/(legal)/data-retention/page.tsx")).toMatch(/14 days after you ask us to delete your account/);
+  expect(src("content/legal/data-retention.md")).toMatch(/14 days after you ask us to delete it/);   // published text (legal pack 3.0)
 });
 
 test("scheduling deletion checks blockers and step-up first, and is audited", () => {

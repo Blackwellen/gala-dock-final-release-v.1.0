@@ -6,7 +6,8 @@ import { KitProviders } from "@/components/kit/client";
 import { PublicHeader } from "@/components/customer/public-header";
 import { SiteFooter } from "@/components/public/site-footer";
 import "@/styles/pub-directory.css";
-import { LEGAL, LEGAL_DOCS } from "@/lib/legal";
+import { LEGAL_NAV } from "@/lib/legal";
+import { LEGAL_PACK_LABEL } from "@/lib/legal/registry";
 import { LegalToc } from "@/components/legal/legal-toc";
 import "@/styles/legal.css";
 
@@ -15,9 +16,10 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
   return <KitProviders><div className="c-root k-root pub-root lg">
     <PublicHeader />
     <div className="lg-body">
-      <nav className="lg-nav" aria-label="Legal documents"><b>Legal</b>
-        <ul>{LEGAL_DOCS.map(d => <li key={d.href}><Link href={d.href}>{d.title}</Link></li>)}</ul>
-        <p>Version {LEGAL.version} · effective {LEGAL.effective}</p></nav>
+      <nav className="lg-nav" aria-label="Legal documents"><b><Link href="/legal">Legal</Link></b>
+        {LEGAL_NAV.map(g => <details key={g.group} open={g.group === "General"}><summary>{g.group}</summary>
+          <ul>{g.docs.map(d => <li key={d.href}><Link href={d.href}>{d.title}</Link></li>)}</ul></details>)}
+        <p>Legal pack {LEGAL_PACK_LABEL} · <Link href="/legal">All documents and dates</Link></p></nav>
       <main className="lg-doc" id="main">{children}</main>
       <LegalToc />
     </div>
