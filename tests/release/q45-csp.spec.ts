@@ -48,7 +48,7 @@ test.describe("Q45 CSP and Permissions-Policy", () => {
       expect(ro["base-uri"]).toEqual(["'self'"]);
       expect(ro["report-uri"]).toEqual(["/api/csp-report"]);
       expect(ro["report-to"]).toEqual(["csp"]);
-      expect(ro["frame-ancestors"]).toBeUndefined();              // ignored (and warned about) in report-only; next.config enforces it
+      expect(ro["frame-ancestors"]).toBeUndefined();              // ignored (and warned about) in report-only; X-Frame-Options covers it
       const en = directives(buildCsp({ nonce, mode: "enforce", dev, path: "/organizer" }));
       expect(en["frame-ancestors"]).toEqual(["'none'"]);
       expect(directives(buildCsp({ nonce, mode: "enforce", dev, path: "/events/neon-nights" }))["frame-ancestors"]).toEqual(["'self'"]);

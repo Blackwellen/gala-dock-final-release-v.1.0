@@ -4,7 +4,9 @@ const security = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
-  { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.supabase.co https://connect.stripe.com; object-src 'none'" },
+  // No Content-Security-Policy here (R6b): on Vercel a config CSP reached the render request ahead of the proxy's nonce policy, so
+  // Next found no nonce and left every framework <script> un-nonced (all blocked once enforced). The nonce policy in src/proxy.ts
+  // (src/lib/security/csp.ts) carries frame-ancestors / base-uri / form-action / object-src; X-Frame-Options covers framing meanwhile.
   { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(self), payment=(self)" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
@@ -26,7 +28,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: security },
       // Public event pages may be framed by this origin only (organizer page-editor live preview).
-      { source: "/events/:path*", headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }, { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://*.supabase.co https://connect.stripe.com; object-src 'none'" }] },
+      { source: "/events/:path*", headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }] },
       ...privatePaths.map(source => ({ source, headers: noStore })),
       ...tokenPaths.map(source => ({ source, headers: tokenHeaders })),
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Service-Worker-Allowed", value: "/" }] },

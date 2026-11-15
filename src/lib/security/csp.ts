@@ -35,7 +35,8 @@ const VIDEO = "https://www.youtube-nocookie.com https://player.vimeo.com";
 /**
  * The policy for one response. `framePath` decides frame-ancestors (public event pages may be framed by this origin for the
  * organiser page-editor preview, everything else by nobody) — only emitted when enforced, because browsers ignore
- * frame-ancestors in a report-only policy and warn about it; next.config.ts already enforces it.
+ * frame-ancestors in a report-only policy and warn about it; X-Frame-Options (next.config.ts) covers framing until enforced.
+ * next.config.ts must not set its own Content-Security-Policy: it shadows this nonce policy on the render request (see there).
  */
 export function buildCsp({ nonce, mode, dev, path = "/" }: { nonce: string; mode: Exclude<CspMode, "off">; dev: boolean; path?: string }) {
   const d = [

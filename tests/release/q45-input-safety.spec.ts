@@ -54,8 +54,10 @@ test.describe("Q45 input safety", () => {
       const h = (k: string) => r.headers.get(k) ?? "";
       expect(h("x-content-type-options"), cls).toBe("nosniff");
       expect(h("strict-transport-security"), cls).toMatch(/max-age=63072000; includeSubDomains/);
-      expect(h("content-security-policy"), cls).toMatch(/frame-ancestors '(none|self)'/);
-      expect(h("content-security-policy"), cls).toMatch(/object-src 'none'/);
+      // Nonce CSP from src/proxy.ts: enforced (CSP_ENFORCE=1) carries frame-ancestors; report-only relies on X-Frame-Options for framing.
+      const csp = h("content-security-policy");
+      if (csp) expect(csp, cls).toMatch(/frame-ancestors '(none|self)'/); else expect(h("x-frame-options"), cls).toMatch(/^(DENY|SAMEORIGIN)$/);
+      expect(csp || h("content-security-policy-report-only"), cls).toMatch(/object-src 'none'/);
       expect(h("permissions-policy"), cls).toMatch(/microphone=\(\)/);
       expect(h("referrer-policy"), cls).toMatch(/strict-origin-when-cross-origin|no-referrer/);
       expect(h("cross-origin-opener-policy"), cls).toBe("same-origin-allow-popups");
