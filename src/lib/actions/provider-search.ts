@@ -3,7 +3,8 @@ import { z } from "zod";
 import { getCustomer } from "@/lib/data/context";
 import { buildCategoryOf } from "@/lib/build-categories";
 import { listingHref } from "@/lib/links";
-import { cityPoint, coversPoint } from "@/lib/marketplace/coverage";
+import { coversPoint } from "@/lib/marketplace/coverage";
+import { placePoint } from "@/lib/maps/geocode";
 
 // Provider search for "Add to your event": the marketplace filtered by category and by what this event needs —
 // availability on the event date, capacity for the guest count, price, rating, location and booking options.
@@ -38,7 +39,7 @@ export async function searchProviders(eventId: string, category: string, f: Prov
   let rows = ((data ?? []) as unknown as Row[]).filter(l => category === "venue" || buildCategoryOf(l.kind, l.category) === category);
   if (f.fitsGuests && guests && category === "venue") rows = rows.filter(l => !l.capacity_max || l.capacity_max >= guests);
   // Q57: coverage radius — keep suppliers whose stated travel radius (or national cover) reaches the event city.
-  const pt = f.coversEvent ? cityPoint(e.city) : null;
+  const pt = f.coversEvent ? await placePoint(e.city) : null;   // Q72: worldwide (geocoded), not only 12 UK cities
   if (pt) rows = rows.filter(l => coversPoint(l, pt));
   const { data: inBuild } = await ctx.supabase.from("build_items").select("listing_id").eq("event_id", e.id).not("status", "in", "(cancelled,cancelled_by_customer,cancelled_by_provider,refunded,partially_refunded,declined,unavailable,expired,expired_no_response,fulfilled,completion_pending,completed,disputed)"); // same closed set as addToBuild: finished lines don't block adding again
   const added = new Set((inBuild ?? []).map(b => b.listing_id));

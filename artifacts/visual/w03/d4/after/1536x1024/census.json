@@ -1,0 +1,266 @@
+{
+ "results": [
+  {
+   "route": "/organizer",
+   "name": "org-001",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer",
+   "controls": 63,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Command Centre",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Command Centre",
+     "Command Centre"
+    ]
+   },
+   "docH": 1369
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell",
+   "name": "org-003s",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell",
+   "controls": 83,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1503
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations",
+   "name": "org-003o",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations",
+   "controls": 80,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1505
+  },
+  {
+   "route": "/organizer/calendar",
+   "name": "org-004",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/calendar",
+   "controls": 121,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Calendar · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Calendar"
+    ]
+   },
+   "docH": 1956
+  },
+  {
+   "route": "/organizer/marketplace",
+   "name": "org-008",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/marketplace",
+   "controls": 145,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Marketplace · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Venues"
+    ]
+   },
+   "docH": 3277
+  },
+  {
+   "route": "/organizer/tickets",
+   "name": "org-011",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/tickets",
+   "controls": 134,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Tickets & Promotion · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Tickets & Promotion Hub"
+    ]
+   },
+   "docH": 3143
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=logistics",
+   "name": "s-logistics",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=logistics",
+   "controls": 71,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1430
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=access",
+   "name": "s-access",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=access",
+   "controls": 77,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1340
+  },
+  {
+   "route": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=sell&section=registration",
+   "name": "s-registration",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=sell&section=registration",
+   "controls": 102,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Global Tech Conference · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Global Tech Conference"
+    ]
+   },
+   "docH": 1906
+  },
+  {
+   "route": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan&section=structure",
+   "name": "s-structure-gt",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan&section=structure",
+   "controls": 71,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Global Tech Conference · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Global Tech Conference"
+    ]
+   },
+   "docH": 1174
+  }
+ ],
+ "links": []
+}

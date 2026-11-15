@@ -5,6 +5,8 @@ import { automaticTaxEnabled, planVatCopy } from "@/lib/billing/core";
 import type { Db } from "@/lib/workspace/db";
 import { untyped } from "@/lib/workspace/db";
 import { stripeLive } from "@/lib/stripe";
+import { BillingBusinessDetails } from "./business-details";
+import { VatPrice } from "./vat-price";
 
 type Price = { plan: string; billing_interval: string; price_minor: number; currency: string; self_serve: boolean; stripe_price_test: string | null; stripe_price_live: string | null };
 type Sub = { plan: string; billing_interval: string; status: string; current_period_end: string | null; cancel_at_period_end: boolean; pending_plan: string | null; pending_effective_at: string | null; dunning_since: string | null };
@@ -36,6 +38,9 @@ export async function PlanBilling({ db, workspaceId, kind, plan, isOwner, role }
   const dueInvoice = I.find(i => i.status === "open");
   // Q60: while a downgrade is scheduled the only change offered is undoing it (any other change would bill the period twice).
   const scheduled = !!(live && S?.pending_plan);
+  const tax = automaticTaxEnabled();
+  // Owner 2026-11-15: GBP plan prices show "+ VAT" and the inc-VAT price (UK rate) when VAT is added (src/lib/billing/vat-display.ts).
+  const priceOf = (p: Price, per: string) => p.currency.toUpperCase() === "GBP" ? <VatPrice minor={p.price_minor} vatAdded={tax} per={per} /> : `${gbp(p.price_minor, p.currency)} ${per}`;
   return <section className="k-card st-c st-narrow" aria-labelledby="plan-billing-h">
     <h2 id="plan-billing-h">Plan &amp; billing</h2>
     <p className="k-small">Current plan: <b>{label(plan)}</b>{S ? <> · {STATUS[S.status] ?? S.status}{S.current_period_end && live && !S.cancel_at_period_end ? <> · renews {day(S.current_period_end)}</> : null}</> : null}</p>
@@ -44,7 +49,8 @@ export async function PlanBilling({ db, workspaceId, kind, plan, isOwner, role }
     {S?.status === "past_due" && <p className="ws-form-error" role="alert">Your last payment failed. Stripe will retry; your plan stays active for 14 days from {day(S.dunning_since)}.
       {/* Q60: pay the open invoice with another card (Q67: or update the card in the billing portal below). */}
       {dueInvoice?.hosted_invoice_url && <> <a href={dueInvoice.hosted_invoice_url} target="_blank" rel="noreferrer">Pay the open invoice or use another card</a>.</>}</p>}
-    <p className="k-small k-muted">{planVatCopy(automaticTaxEnabled())}{liveMode ? " Payments are taken securely by Stripe." : " Billing runs in Stripe test mode — no real card is charged."}</p>
+    <BillingBusinessDetails db={db} workspaceId={workspaceId} kind={kind} canEdit={canPortal} />
+    <p className="k-small k-muted">{planVatCopy(tax)}{liveMode ? " Payments are taken securely by Stripe." : " Billing runs in Stripe test mode — no real card is charged."}</p>
     <div className="k-row" style={{ gap: 12, flexWrap: "wrap", alignItems: "stretch" }}>
       {plans.map(pl => {
         const month = P.find(p => p.plan === pl && p.billing_interval === "month"), year = P.find(p => p.plan === pl && p.billing_interval === "year");
@@ -54,7 +60,7 @@ export async function PlanBilling({ db, workspaceId, kind, plan, isOwner, role }
         const showYear = mapped(year) && !scheduled && (!current || (live && S?.billing_interval !== "year"));
         return <div key={pl} className="k-card" style={{ padding: 14, minWidth: 200, flex: "1 1 200px" }}>
           <b>{label(pl)}</b>{current && <span className="st-pill ok" style={{ marginLeft: 8 }}>Current</span>}
-          <p className="k-small">{month ? `${gbp(month.price_minor, month.currency)} / month` : ""}{year ? ` · ${gbp(year.price_minor, year.currency)} / year` : ""}</p>
+          <p className="k-small">{month ? priceOf(month, "/ month") : null}{month && year ? " · " : null}{year ? priceOf(year, "/ year") : null}</p>
           {!month?.self_serve ? <Link className="k-btn outline sm" href="/help?topic=billing">Contact sales</Link>
             : isOwner && (showMonth || showYear) ? <div className="k-row" style={{ gap: 6, flexWrap: "wrap" }}>
               {showMonth && <ActionButton action={choosePlanAction} args={[workspaceId, kind, pl, "month"]} variant="primary">{live ? (current ? "Switch to monthly" : "Switch monthly") : "Choose monthly"}</ActionButton>}

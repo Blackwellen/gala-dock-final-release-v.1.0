@@ -4,6 +4,7 @@ import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { untyped, one } from "@/lib/workspace/db";
 import { refreshPartnerAccount, startPartnerOnboarding, type PartnerPayoutRow } from "@/lib/partners/payouts";
+import { requestSanctioned, sanctionedJurisdiction, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 
 const COLS = "id,user_id,status,payout_country,stripe_account_id,stripe_account_id_live,payout_status,details";
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -24,6 +25,9 @@ export async function POST(request: NextRequest) {
   if (!m) return json({ error: "Only Gala Dock partners can set up partner payouts." }, 403);
   if (!(await hasRequiredAssurance(m.supabase))) return json({ error: "Complete two-step verification first." }, 403);
   if (!(await rateLimit(`partner-payouts:${m.user.id}`, 10, 300))) return json({ error: "Too many attempts. Please wait a few minutes." }, 429);
+  // Q74 (D4): no partner payout account for a sanctioned country (the partner's payout country or the request's).
+  const hit = sanctionedJurisdiction(m.partner.payout_country) ?? requestSanctioned(request.headers);
+  if (hit) return json({ error: SANCTIONS_COPY.payouts(hit.name), sanctioned: true }, 422);
   try {
     const r = await startPartnerOnboarding(m.partner, m.user.email ?? "", new URL(request.url).origin);
     return r.ok ? json({ url: r.url }) : json({ error: r.error }, r.status);

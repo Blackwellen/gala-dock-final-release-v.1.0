@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, Undo2, Redo2, ZoomIn, ZoomOut, Maximize, Type, Square, Circle, QrCode, Barcode, Layers, Pencil, Sparkles, Download, Eye, EyeOff, Lock, Unlock,
   Trash2, Copy, ChevronUp, ChevronDown, History, Share2, Plus, Upload, Loader2, LayoutTemplate, Ruler, Palette, MessageSquare, Smile, Shapes, LayoutDashboard, FileImage,
-  Spline, Eraser, Crop, Brush as BrushIcon, Highlighter, SprayCan, PenTool, MousePointer2, Check, X, Hand } from "lucide-react";
+  Spline, Eraser, Crop, Brush as BrushIcon, Highlighter, SprayCan, PenTool, MousePointer2, Check, X, Hand, Save } from "lucide-react";
 import { LayerView, fillCss, qrContrast, pathD } from "./layer-view";
 import { exportDesign } from "./export";
 import { BrandPanel, fontFaceCss, type Brand, type CustomFont } from "./brand-panel";
@@ -42,7 +41,8 @@ const TEXT_STYLES: { name: string; font: string; weight: number; italic?: boolea
 
 /**
  * Gala Dock Studio — the single design editor for posters, social, screens, menus and QR posters (media spec §4–54).
- * Every control edits the canonical document; autosave persists it with optimistic concurrency; exports render from it.
+ * Every control edits the canonical document; Save (button or Ctrl/⌘+S) persists it with optimistic concurrency; exports render from it.
+ * Owner rule (2026-11-15): no server auto-save. Unsaved edits are kept only on this device until the person saves.
  */
 export function Studio({ design, versions: initialVersions, eventData, assets, back, brand = null, openComments = false, workspaceId = null }: {
   design: { id: string; title: string; version: number; document: DesignDoc; canEdit: boolean; eventId: string | null };
@@ -101,13 +101,19 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const burst = useRef("");
   const pushPast = useCallback((snapshot: string) => { burst.current = ""; past.current = [...past.current.slice(-HISTORY + 1), snapshot]; future.current = []; syncHist(); }, [syncHist]);
   const commit = useCallback((next: DesignDoc, record = true) => {
-    if (!design.canEdit) return;
-    if (record) pushPast(JSON.stringify(doc));
+    if (!design.canEdit || next === doc) return;
+    if (record) {
+      // Q75: a click that changes nothing (same swatch, an already-aligned layer, re-picking the current font) adds no undo step
+      // and doesn't mark the design unsaved.
+      const before = JSON.stringify(doc);
+      if (before === JSON.stringify(next)) return;
+      pushPast(before);
+    }
     setDoc(next); setSave("dirty");
   }, [doc, design.canEdit, pushPast]);
   // Latest document, so async saves can tell whether the user kept editing while they were in flight.
-  const latest = useRef(doc);
-  useEffect(() => { latest.current = doc; }, [doc]);
+  const latest = useRef(doc), latestTitle = useRef(title);
+  useEffect(() => { latest.current = doc; latestTitle.current = title; }, [doc, title]);
   const updatePage = (fn: (p: Page) => Page, record = true) => commit({ ...doc, pages: doc.pages.map((p, i) => (i === pageIdx ? fn(p) : p)) }, record);
   const updateLayers = (ids: string[], patch: (l: Layer) => Layer, record = true) => updatePage(p => ({ ...p, layers: p.layers.map(l => (ids.includes(l.id) ? patch(l) : l)) }), record);
   const set = (patch: Partial<Layer>, record = true) => one && updateLayers([one.id], l => ({ ...l, ...patch }) as Layer, record);
@@ -121,9 +127,13 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   const center = (w: number, h: number) => ({ x: (page.width - w) / 2, y: (page.height - h) / 2, w, h, rotation: 0 });
   const unit = Math.min(page.width, page.height);
 
-  // ── autosave (debounced) with conflict detection; offline drafts are kept locally until they can be saved
+  // ── explicit save with conflict detection; unsaved edits are kept as a local draft (this device only, never sent) until then
+  // Checked once per design on open: a later server re-render (a labelled save revalidates this page) must not re-offer the draft
+  // of edits the person is making right now.
+  const draftChecked = useRef("");
   useEffect(() => {
-    if (!design.canEdit) return;
+    if (!design.canEdit || draftChecked.current === design.id) return;
+    draftChecked.current = design.id;
     try { const raw = localStorage.getItem(`gd_design_${design.id}`); if (!raw) return;
       const draft = JSON.parse(raw);
       // Q55: a draft from an older version (a save that hit "changed in another tab", then Reload) is offered too, flagged as older —
@@ -133,48 +143,48 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
       }
     } catch { /* An unavailable or corrupt local draft never replaces the server document. */ }
   }, [design.id, design.version, design.canEdit]);
+  // Local draft only: written on every edit so a crash or closed tab loses nothing. Nothing here touches the server.
   useEffect(() => {
     if (save !== "dirty") return;
     try { localStorage.setItem(`gd_design_${design.id}`, JSON.stringify({ doc, title, version: version.current })); } catch { /* storage unavailable */ }
-    if (!online) { queueMicrotask(() => setNotice("Offline — your changes are kept on this device and will save when you reconnect.")); return; }
-    const t = setTimeout(() => { inflight.current = inflight.current.then(async () => {
-      setSave("saving");
-      try {
-      if (!navigator.onLine) { setSave("dirty"); setNotice("Offline — your changes are kept on this device and will save when you reconnect."); return; }
-      const r = await saveDesign(design.id, doc, version.current, title);
-      if (r.ok) { version.current = r.data!; setSave(s => (s === "saving" ? "saved" : s)); setNotice(""); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }
-      else if (/another tab/.test(r.error)) { setSave("conflict"); setNotice(r.error); }
-      else { setSave(s => (s === "saving" ? "error" : s)); setNotice(r.error); }
-      } catch { setSave(s => s === "saving" ? "error" : s); setNotice("Could not save. Your changes are kept on this device; reconnect and try again."); }
-    }); }, 1200);
-    return () => clearTimeout(t);
-  }, [save, doc, title, design.id, online]);
+  }, [save, doc, title, design.id]);
   useEffect(() => { const sync = () => { setOnline(navigator.onLine); if (navigator.onLine) setSave(s => s === "error" ? "dirty" : s); }; sync(); addEventListener("online", sync); addEventListener("offline", sync); return () => { removeEventListener("online", sync); removeEventListener("offline", sync); }; }, []);
-  /** Saves now, queued behind any autosave in flight (so it never races it into a self-inflicted version conflict). */
+  /** Saves now, queued behind any save in flight (so two never race into a self-inflicted version conflict). Only called from an
+   *  explicit action: Save, Ctrl/⌘+S, or an action that needs the design saved first (versions, publish, duplicate, share). */
   const saveNow = (label?: string) => {
-    const snap = doc, run = inflight.current.then(async () => {
-      if (!label && latest.current === snap && save === "saved") return;
-      const r = await saveDesign(design.id, snap, version.current, title, label); if (!r.ok) throw new Error(r.error);
-      version.current = r.data!; if (latest.current === snap) { setSave("saved"); setNotice(""); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }
+    const snap = doc, snapTitle = title, run = inflight.current.then(async () => {
+      if (!label && latest.current === snap && latestTitle.current === snapTitle && save === "saved") return;
+      const r = await saveDesign(design.id, snap, version.current, snapTitle, label); if (!r.ok) throw new Error(r.error);
+      // Edits made while the save was in flight stay "Unsaved" (and in the local draft).
+      version.current = r.data!; if (latest.current === snap && latestTitle.current === snapTitle) { setSave("saved"); setNotice(""); try { localStorage.removeItem(`gd_design_${design.id}`); } catch { /* ignore */ } }
       return r.data!;
     });
     inflight.current = run.then(() => undefined, () => undefined);
     return run;
   };
+  /** The Save button / Ctrl+S. */
+  const saveClick = async () => {
+    if (!design.canEdit || save === "saving" || save === "conflict") return;
+    if (!online || !navigator.onLine) { setNotice("Offline — your changes are kept on this device. Save again when you reconnect."); return; }
+    setSave("saving");
+    try { await saveNow(); setSave(s => (s === "saving" ? "saved" : s)); }
+    catch (err) {
+      const msg = err instanceof Error ? err.message : "Couldn’t save — try again.";
+      if (/another tab/.test(msg)) setSave("conflict"); else setSave(s => (s === "saving" ? "error" : s));
+      setNotice(/another tab/.test(msg) ? msg : `${msg} Your changes are kept on this device.`);
+    }
+  };
 
-  // Q55: warn before closing the tab with unsaved or failed saves (the debounced autosave hadn't run yet).
+  // Q55: warn before closing the tab with unsaved or failed saves.
   useEffect(() => {
     if (!design.canEdit || save === "saved") return;
     const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
     addEventListener("beforeunload", h); return () => removeEventListener("beforeunload", h);
   }, [save, design.canEdit]);
-  const router = useRouter();
-  /** Back to the library: pending edits are saved first (unmounting cancelled the debounced autosave). */
-  const leave = async (e: React.MouseEvent) => {
-    if (!design.canEdit || save === "saved" || save === "conflict" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-    e.preventDefault();
-    try { await saveNow(); router.push(back); }
-    catch (err) { setNotice(err instanceof Error ? `${err.message} Your changes are kept on this device.` : "Couldn’t save — your changes are kept on this device."); }
+  /** Back to the library with unsaved edits: ask first (no silent save). Leaving keeps them as this device's draft, offered next time. */
+  const leave = (e: React.MouseEvent) => {
+    if (!design.canEdit || save === "saved" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (!window.confirm("You have unsaved changes. Leave without saving? They stay on this device and you can restore them next time.")) e.preventDefault();
   };
   const fit = useCallback(() => { const el = stage.current; if (!el) return; setZoom(Math.max(0.05, Math.min((el.clientWidth - 64) / page.width, (el.clientHeight - 64) / page.height, 2))); }, [page.width, page.height]);
   useEffect(() => { const t = setTimeout(fit, 0); return () => clearTimeout(t); }, [fit, pageIdx]);
@@ -208,6 +218,8 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
+      // Ctrl/⌘+S saves from anywhere in the editor, including while typing in a field.
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "s") { e.preventDefault(); void saveClick(); return; }
       if (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
       // Popovers, dialogs and menus own their keys (Backspace/Delete on a focused "Restore" must not delete the selected layer).
       if (target.closest?.(".st-pop, [role=dialog], [role=menu], dialog")) return;
@@ -427,9 +439,10 @@ export function Studio({ design, versions: initialVersions, eventData, assets, b
     {fontHrefs.map(h => <link key={h} rel="stylesheet" href={h} />)}
     {faces && <style>{faces}</style>}
     <header className="st-top">
-      <Link href={back} className="st-icon" aria-label="Back" onClick={e => void leave(e)}><ArrowLeft size={18} /></Link>
+      <Link href={back} className="st-icon" aria-label="Back" onClick={leave}><ArrowLeft size={18} /></Link>
       <input className="st-title" value={title} onChange={e => { setTitle(e.target.value); setSave("dirty"); }} aria-label="Design name" maxLength={140} disabled={!design.canEdit} />
       <span className={`st-save ${save}`} role="status">{save === "saving" && <Loader2 size={13} className="mk-spin" />}{status}</span>
+      {design.canEdit && <button type="button" className="st-btn" onClick={() => void saveClick()} disabled={save === "saved" || save === "saving" || save === "conflict"} title="Save (Ctrl/⌘+S)" aria-keyshortcuts="Control+S Meta+S"><Save size={15} />Save</button>}
       <div className="st-grow" />
       {design.canEdit && <div className="st-tools" role="toolbar" aria-label="Tools">
         {([["select", MousePointer2, "Select (V)"], ["pen", PenTool, "Draw (P)"], ["line", Spline, "Bendy line (L)"], ["erase", Eraser, "Rubber"], ["crop", Crop, "Crop image"]] as const).map(([k, I, label]) =>
@@ -820,11 +833,13 @@ function ExportPanel({ pages, pageIdx, els, title, onClose, faces }: { pages: Pa
       const all = els(), list = format === "pdf" ? pages : [pages[pageIdx]!], nodes = format === "pdf" ? all : [all[pageIdx]!];
       const prev = nodes.map(n => [n.style.display, n.style.transform] as const);
       nodes.forEach(n => { n.style.display = "block"; });
-      let blob: Blob;
-      try { blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent, faces }); }
+      let blob: Blob; const report = { dropped: 0 };
+      try { blob = await exportDesign(nodes, list, format, { scale, quality: q, transparent, faces, report }); }
       finally { nodes.forEach((n, i) => { n.style.display = prev[i]![0]; n.style.transform = prev[i]![1]; }); }
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[^\w\- ]+/g, "").trim() || "design"}.${format === "jpeg" ? "jpg" : format}`; a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      // Q75: images from another site that doesn't allow downloads (CORS) can't be embedded; say so instead of a silently missing photo.
+      if (report.dropped) setErr(`Downloaded, but ${report.dropped} image${report.dropped === 1 ? "" : "s"} from another website couldn’t be included. Upload ${report.dropped === 1 ? "it" : "them"} to your media library and swap ${report.dropped === 1 ? "it" : "them"} in, then export again.`);
     } catch { setErr("Export failed. Try a smaller scale, or remove images that can’t be loaded."); } finally { setBusy(false); }
   };
   const p = pages[pageIdx]!;
@@ -839,7 +854,7 @@ function ExportPanel({ pages, pageIdx, els, title, onClose, faces }: { pages: Pa
 }
 
 function PublishPanel({ designId, title, onClose, flush, portal, onSaved }: { designId: string; title: string; onClose: () => void; flush: () => Promise<void>; portal: "organiser" | "provider";
-  /** Q55: publishing with private uploads saves the design server-side (safe public copies); the editor must adopt that version or its next autosave conflicts. */ onSaved?: (version: number) => void }) {
+  /** Q55: publishing with private uploads saves the design server-side (safe public copies); the editor must adopt that version or its next save conflicts. */ onSaved?: (version: number) => void }) {
   const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   return <Popover title="Share as a template" onClose={onClose}>
     <form className="st-form" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true); setMsg(""); try { await flush();

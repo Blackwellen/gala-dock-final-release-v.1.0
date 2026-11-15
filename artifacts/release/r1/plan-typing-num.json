@@ -1,0 +1,9 @@
+[
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ }
+]

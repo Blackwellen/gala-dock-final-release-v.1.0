@@ -4,8 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeKey } from "@/lib/stripe";
 import { modeOfSecretKey } from "@/lib/payments/stripe-mode";
 import { httpStripeClient, platformBillingStripe, StripeApiError, type StripeClient } from "@/lib/payments/stripe-client";
-import { billingMode, priceColumn, priceFor, automaticTaxEnabled, BillingModeError, planChangeMode, overageItemParams, packCheckoutParams, planChangeParams, planCheckoutParams, portalConfigurationParams, portalSessionParams, subscriptionTaxIdParams, PORTAL_PURPOSE, PORTAL_ROLES, type PlanPrice } from "./core";
+import { billingMode, priceColumn, priceFor, automaticTaxEnabled, BillingModeError, BUSINESS_ONLY_COPY, type BillingDetails, planChangeMode, overageItemParams, packCheckoutParams, planChangeParams, planCheckoutParams, portalConfigurationParams, portalSessionParams, subscriptionTaxIdParams, PORTAL_PURPOSE, PORTAL_ROLES, type PlanPrice } from "./core";
 import { siteUrl } from "@/lib/site-url";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 
 /**
  * Subscription billing service (Q28). Server-authoritative: the caller's role is checked here with the service client, prices
@@ -15,7 +16,7 @@ import { siteUrl } from "@/lib/site-url";
  */
 type Admin = ReturnType<typeof createAdminClient>;
 const untypedDb = (db: Admin) => db as unknown as { from(t: string): any; rpc(fn: string, a: Record<string, unknown>): any };   // eslint-disable-line @typescript-eslint/no-explicit-any
-export type BillingResult = { ok: true; url?: string; message: string } | { ok: false; error: string };
+export type BillingResult = { ok: true; url?: string; message: string } | { ok: false; error: string; needsBusinessDetails?: boolean };
 
 export function billingClient(client?: StripeClient) {
   return platformBillingStripe(client ?? httpStripeClient(billingMode(stripeKey()).key));
@@ -58,6 +59,19 @@ async function customerFor(db: Admin, stripe: ReturnType<typeof billingClient>, 
   const { error } = await untypedDb(db).rpc("billing_link_customer", { p_workspace: ws.id, p_customer: c.id, p_livemode: !!c.livemode });
   if (error) throw new Error(`billing_link_customer: ${error.message}`);
   return c.id;
+}
+/** Q74 (D15): the workspace's business billing details, or null (plans and credit packs need them). */
+async function billingDetails(db: Admin, workspaceId: string): Promise<BillingDetails | null> {
+  const { data } = await untypedDb(db).from("workspace_billing_details").select("business_name,vat_number,country").eq("workspace_id", workspaceId).maybeSingle();
+  return (data as BillingDetails | null) ?? null;
+}
+const EU = new Set(["AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO", "SE", "SI", "SK"]);
+/** Puts the business name (and a UK/EU VAT number) on the Stripe billing customer before Checkout. Best effort: Checkout collects both too. */
+async function applyBusinessDetails(stripe: ReturnType<typeof billingClient>, customer: string, d: BillingDetails) {
+  try { await stripe.updateCustomer(customer, { name: d.business_name.slice(0, 200) }, `gd-bizname-${customer}-${Buffer.from(d.business_name).toString("base64url").slice(0, 40)}`); } catch { /* Checkout asks again */ }
+  const vat = d.vat_number?.toUpperCase() ?? "";
+  const prefix = vat.slice(0, 2), type = prefix === "GB" ? "gb_vat" : EU.has(prefix === "EL" ? "GR" : prefix) ? "eu_vat" : null;
+  if (type) { try { await stripe.createCustomerTaxId(customer, { type, value: vat }, `gd-taxid-${customer}-${vat}`); } catch { /* duplicate or invalid: Checkout's tax_id_collection covers it */ } }
 }
 const label = (p: string) => p ? p[0]!.toUpperCase() + p.slice(1) : p;
 /** The price a scheduled downgrade came from (set by planChangeParams), only while that downgrade is still in the future. */
@@ -108,7 +122,11 @@ export async function choosePlan(o: { workspaceId: string; userId: string; email
       await audit(db, ws.id, o.userId, "billing.plan_change_requested", { mode, plan: p.plan, interval: p.billing_interval });
       return { ok: true, message: mode === "upgrade" ? "Plan changed — the prorated difference is invoiced now." : mode === "revert" ? "Scheduled change cancelled — you keep your current plan." : "Plan change scheduled for the end of this billing period." };
     }
+    // Q74 (D15): new plan subscriptions are business-only — business details first.
+    const details = await billingDetails(db, ws.id);
+    if (!details) return { ok: false, error: BUSINESS_ONLY_COPY.required, needsBusinessDetails: true };
     const customer = await customerFor(db, stripe, ws, o.email);
+    await applyBusinessDetails(stripe, customer, details);
     const session = await stripe.createCheckout("subscription", planCheckoutParams({ customer, price: priceId, workspaceId: ws.id, plan: p.plan, interval: p.billing_interval, automaticTax: automaticTaxEnabled(),
       successUrl: `${o.origin}${o.returnPath}${o.returnPath.includes("?") ? "&" : "?"}billing=success`, cancelUrl: `${o.origin}${o.returnPath}` }),
       `gd-plan-checkout-${ws.id}-${priceId}-${new Date().toISOString().slice(0, 13)}`);
@@ -213,7 +231,11 @@ export async function buyCreditPack(o: { workspaceId: string; userId: string; em
   try {
     const stripe = billingClient(o.stripe);
     const priceId = priceFor(pack, billingLive());
+    // Q74 (D15): credit packs are business-only — business details first.
+    const details = await billingDetails(db, ws.id);
+    if (!details) return { ok: false, error: BUSINESS_ONLY_COPY.required, needsBusinessDetails: true };
     const customer = await customerFor(db, stripe, ws, o.email);
+    await applyBusinessDetails(stripe, customer, details);
     const session = await stripe.createCheckout("ai_credits", packCheckoutParams({ customer, price: priceId, workspaceId: ws.id, packId: pack.id, automaticTax: automaticTaxEnabled(), accountTaxIds: await accountTaxIds(stripe, o.stripe),
       successUrl: `${o.origin}${o.returnPath}${o.returnPath.includes("?") ? "&" : "?"}credits=success`, cancelUrl: `${o.origin}${o.returnPath}` }), `gd-pack-${ws.id}-${pack.id}-${Date.now()}`);
     return session.url ? { ok: true, url: session.url, message: "Taking you to secure payment…" } : { ok: false, error: "Couldn’t start checkout." };
@@ -325,4 +347,17 @@ export async function syncCustomerContact(payload: { workspace_id?: string; user
     updated++;
   }
   return { updated };
+}
+
+/** Q74 (D15): save the business details for Gala Dock invoices (owner or finance; the database validates and audits). */
+export async function saveBillingDetails(o: { workspaceId: string; userId: string; businessName: string; vatNumber: string; country: string; confirm: boolean }): Promise<BillingResult> {
+  const sb = await createServerClient();
+  const { error } = await untypedDb(sb as unknown as Admin).rpc("billing_details_save", { p_workspace: o.workspaceId, p_business_name: o.businessName.trim().slice(0, 200),
+    p_vat_number: o.vatNumber.trim() || null, p_country: o.country.trim().toUpperCase() || null, p_confirm: o.confirm });
+  if (error) {
+    const m = error.message;
+    return { ok: false, error: /business_name_required/.test(m) ? "Enter your business name." : /invalid_vat_number/.test(m) ? "Enter the VAT number with its country prefix, e.g. GB123456789."
+      : /confirmation_required/.test(m) ? "Confirm you’re buying for a business." : /sanctioned/.test(m) ? (error.hint ?? "This country can’t be used on Gala Dock.") : /not_authorized/.test(m) ? "Only the owner or a finance member can change billing details." : "Couldn’t save — try again." };
+  }
+  return { ok: true, message: "Business details saved. They appear on your Gala Dock invoices." };
 }

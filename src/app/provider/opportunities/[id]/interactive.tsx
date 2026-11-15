@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, type ReactNode } from "react";
 import { CircleCheck, Ban, CircleHelp, FileText, LockKeyhole, Users, Share2, Bookmark, X, type LucideIcon } from "lucide-react";
 import { useToast } from "@/components/ui";
+import { useEscape } from "@/components/shared/use-escape";
 import type { ActionResult } from "@/components/workspace/actions";
 import { respondToRequest } from "../actions";
 import { offerOption, askClarification, toggleSaved } from "./actions";
@@ -12,6 +13,7 @@ import { offerOption, askClarification, toggleSaved } from "./actions";
 type Mode = "available" | "unavailable" | "clarify" | "hold" | "standby";
 
 function Dialog({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+  useEscape(true, onClose);
   return <div className="ws-dialog-backdrop" onClick={onClose}><div className="ws-dialog" role="dialog" aria-modal="true" aria-label={title} onClick={e => e.stopPropagation()}>
     <div className="ws-dialog-head"><h2>{title}</h2><button type="button" aria-label="Close" onClick={onClose}><X aria-hidden="true" /></button></div>{children}</div></div>;
 }

@@ -72,7 +72,7 @@
 .tp-mapsvg { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: center; transition: transform .2s; }
 .tp-mstage { font-size: 15px; font-weight: 800; fill: #fff; letter-spacing: .06em; } .tp-mlabel { font-size: 11px; font-weight: 700; fill: #fff; } .tp-mcap { font-size: 11px; font-weight: 600; fill: #fff; }
 .tp-layers { position: absolute; left: 10px; top: 10px; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; background: #fff; border-radius: 8px; box-shadow: 0 6px 18px #0b14372e; font-size: 11px; min-width: 140px; }
-.tp-layers b { font-size: 12px; margin-bottom: 2px; } .tp-layers label { display: flex; align-items: center; gap: 7px; } .tp-layers label span { flex: 1; } .tp-layers .k-toggle { transform: scale(.8); transform-origin: right center; }
+.tp-layers b { font-size: 12px; margin-bottom: 2px; } .tp-layers label { display: flex; align-items: center; gap: 7px; } .tp-layers label span { flex: 1; } /* R1: no per-component scaling (owner design standard) — the layer switches use the kit size, which also keeps their 44px touch target */
 .tp-zoom { position: absolute; left: 10px; bottom: 10px; display: flex; flex-direction: column; background: #fff; border-radius: 8px; box-shadow: 0 6px 18px #0b14372e; } .tp-zoom button { display: grid; place-items: center; width: 32px; height: 30px; color: var(--k-ink); } .tp-zoom button + button { border-top: 1px solid #eef2f9; }
 .tp-map.compact .tp-zoom { display: none; }
 .tp-mapempty { position: absolute; inset: auto 0 12px; text-align: center; font-size: 12px; color: #fff; }

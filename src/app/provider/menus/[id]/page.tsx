@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getProvider } from "@/lib/provider/context";
 import { PageHeader, Panel } from "@/components/workspace/kit";
-import { MenuForm, SectionForm, ItemForm, EditItem, DeleteRow, VariantEditor, type Menu, type MenuItem, type MenuVariant } from "@/components/venue/menus-client";
+import { MenuForm, SectionForm, ItemForm, EditItem, DeleteRow, VariantEditor, type Menu, type MenuItem, type MenuVariant, MenuCurrency } from "@/components/venue/menus-client";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { DIETARY, COURSES } from "@/components/venue/menu-constants";
 import { money } from "@/lib/format";
 import "@/styles/marketplace.css";
@@ -29,7 +30,8 @@ export default async function MenuEditorPage({ params }: PageProps<"/provider/me
   const groups = [...secs.map(s => ({ ...s, items: its.filter(i => i.section_id === s.id) })), { id: "", name: "Other items", items: its.filter(i => !i.section_id) }].filter(g => g.id || g.items.length);
   const dl = (k: string) => DIETARY.find(([x]) => x === k)?.[1] ?? k;
   const undeclared = its.filter(i => i.allergen_status !== "declared").length;
-  return <>
+  const cur = workspaceLocale(ctx.workspace.settings).currency;
+  return <MenuCurrency currency={cur}>
     <PageHeader title={(menu as Menu).name} subtitle="Sections, items, variants, dietary tags and allergens." back={{ href: "/provider/menus", label: "Food & drink" }} />
     <div className="mk-page"><div className="mk-grid">
       <div style={{ display: "grid", gap: 16 }}>
@@ -38,7 +40,7 @@ export default async function MenuEditorPage({ params }: PageProps<"/provider/me
           {g.id && ctx.can.manage && <div className="mk-row" style={{ justifyContent: "flex-end" }}><DeleteRow table="menu_sections" id={g.id} label={`section ${g.name}`} /></div>}
           {!g.items.length ? <p className="mk-empty">No items in this section.</p> : <ul className="mk-list">{g.items.map(i => { const iv = vars.filter(x => x.menu_item_id === i.id); return <li key={i.id} style={{ display: "grid", gap: 8 }}>
             <div className="mk-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div className="mk-main"><b>{i.name}{!i.available && " (unavailable)"}{i.price ? ` · ${money(i.price)}` : ""}{i.course ? ` · ${COURSES.find(([k]) => k === i.course)?.[1] ?? i.course}` : ""}</b>{i.description && <small>{i.description}</small>}
+              <div className="mk-main"><b>{i.name}{!i.available && " (unavailable)"}{i.price ? ` · ${money(i.price, cur)}` : ""}{i.course ? ` · ${COURSES.find(([k]) => k === i.course)?.[1] ?? i.course}` : ""}</b>{i.description && <small>{i.description}</small>}
                 <small>{i.dietary.map(dl).join(" · ") || "No dietary tags"}{i.allergen_status !== "declared" ? " · Allergens not declared" : i.allergens.length ? ` · Contains: ${i.allergens.join(", ")}` : " · Contains none of the 14 allergens"}
                   {(i.may_contain ?? []).length ? ` · May contain: ${(i.may_contain ?? []).join(", ")}` : ""}{i.allergen_note ? ` · ${i.allergen_note}` : ""}</small>
                 {i.allergen_status === "declared" && i.allergen_declared_at && <small>Declared {new Date(i.allergen_declared_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</small>}</div>
@@ -53,5 +55,5 @@ export default async function MenuEditorPage({ params }: PageProps<"/provider/me
         <Panel title="Menu details"><MenuForm workspaceId={ctx.workspace.id} listings={listings ?? []} menu={menu as Menu} /></Panel>
       </div>}
     </div></div>
-  </>;
+  </MenuCurrency>;
 }

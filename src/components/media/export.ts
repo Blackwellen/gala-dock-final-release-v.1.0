@@ -28,14 +28,16 @@ async function fontCss(page: Page, faces = "") {
   } catch { return ""; }
 }
 
-export async function renderPage(el: HTMLElement, page: Page, scale = 1, transparent = false, faces = ""): Promise<HTMLCanvasElement> {
+/** Q75: counts images left out of an export (another site's image without CORS, or one that no longer loads) so the editor can say so. */
+export type ExportReport = { dropped: number };
+export async function renderPage(el: HTMLElement, page: Page, scale = 1, transparent = false, faces = "", report?: ExportReport): Promise<HTMLCanvasElement> {
   const clone = el.cloneNode(true) as HTMLElement;
   clone.style.transform = "none"; clone.style.position = "relative"; clone.style.left = "0"; clone.style.top = "0"; clone.style.display = "block"; clone.style.cursor = "";
   // Editor-only chrome inside the page node (transparency checkerboard, in-progress pen/line preview) never reaches the file.
   for (const n of [...clone.querySelectorAll(".st-checker, .st-live")]) n.remove();
   for (const n of [...clone.querySelectorAll("[contenteditable]")]) n.removeAttribute("contenteditable");
   if (transparent) clone.style.background = "transparent";
-  for (const img of [...clone.querySelectorAll("img")]) { try { img.src = await toDataUrl(img.src); } catch { img.remove(); } }
+  for (const img of [...clone.querySelectorAll("img")]) { try { img.src = await toDataUrl(img.src); } catch { img.remove(); if (report) report.dropped++; } }
   const css = await fontCss(page, faces);
   const xhtml = new XMLSerializer().serializeToString(clone);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${page.width}" height="${page.height}"><defs><style>${css.replace(/</g, "")}</style></defs><foreignObject width="100%" height="100%">${xhtml}</foreignObject></svg>`;
@@ -50,18 +52,18 @@ export async function renderPage(el: HTMLElement, page: Page, scale = 1, transpa
   return c;
 }
 
-export async function exportDesign(els: HTMLElement[], pages: Page[], format: "png" | "jpeg" | "webp" | "pdf", opts: { scale: number; quality: number; transparent: boolean; faces?: string }): Promise<Blob> {
+export async function exportDesign(els: HTMLElement[], pages: Page[], format: "png" | "jpeg" | "webp" | "pdf", opts: { scale: number; quality: number; transparent: boolean; faces?: string; report?: ExportReport }): Promise<Blob> {
   if (format === "pdf") {
     const { PDFDocument } = await import("pdf-lib");
     const pdf = await PDFDocument.create();
     for (let i = 0; i < pages.length; i++) {
-      const c = await renderPage(els[i]!, pages[i]!, opts.scale, false, opts.faces);
+      const c = await renderPage(els[i]!, pages[i]!, opts.scale, false, opts.faces, opts.report);
       const jpg = await pdf.embedJpg(await (await new Promise<Blob>(r => c.toBlob(b => r(b!), "image/jpeg", 0.95))).arrayBuffer());
       const p = pdf.addPage([pages[i]!.width * 0.48, pages[i]!.height * 0.48]);   // 150 dpi working px → points
       p.drawImage(jpg, { x: 0, y: 0, width: p.getWidth(), height: p.getHeight() });
     }
     return new Blob([new Uint8Array(await pdf.save())], { type: "application/pdf" });
   }
-  const c = await renderPage(els[0]!, pages[0]!, opts.scale, opts.transparent && format === "png", opts.faces);
+  const c = await renderPage(els[0]!, pages[0]!, opts.scale, opts.transparent && format === "png", opts.faces, opts.report);
   return await new Promise<Blob>((res, rej) => c.toBlob(b => (b ? res(b) : rej(new Error("export"))), `image/${format}`, opts.quality));
 }

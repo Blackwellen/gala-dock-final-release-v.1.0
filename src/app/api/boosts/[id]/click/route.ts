@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
-/** Sponsored placement click: records the click (active boosts only, bounded definer RPC) then redirects to the event page.
- *  Only same-site /events/<slug> targets are allowed, so this can't be used as an open redirect. */
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params; const url = new URL(req.url);
+/** Q75: legacy sponsored-click URL, retired. Sponsored clicks are counted by GET /api/ads/click?t= (single-use served token);
+ *  this path only exists so links in pages cached before the deploy still land somewhere. It records nothing (the anon
+ *  record_boost_event RPC is revoked post-deploy, supabase/pending/q75_retire_legacy_boost_rpcs.sql) and only redirects to a
+ *  same-site /events/<slug> page, so it can't be used as an open redirect. */
+export async function GET(req: Request) {
+  const url = new URL(req.url);
   const to = url.searchParams.get("to") ?? "/discover";
   const target = /^\/events\/[a-z0-9-]{1,120}$/i.test(to) ? to : "/discover";
-  if (/^[0-9a-f-]{36}$/i.test(id)) {
-    const sb = await createClient();
-    await sb.rpc("record_boost_event", { p_boost: id, p_kind: "click" }).then(() => null, () => null);
-  }
   return NextResponse.redirect(new URL(target, url.origin), 302);
 }

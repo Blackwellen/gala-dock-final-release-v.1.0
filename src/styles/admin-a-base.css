@@ -218,3 +218,5 @@
 .aa-vat-form label{display:grid;gap:4px}
 .aa-vat-table{width:100%}
 .aa-vat-note{margin:0;font-size:13px}
+/* R1: filter pills never widen the page — they scroll inside their bar (admin events at 540px with 44px touch pills). */
+.aa-pills{max-width:100%;overflow-x:auto;scrollbar-width:none}

@@ -11,7 +11,7 @@ export async function agentActivityCsv(db: Db, workspaceId: string, days: number
   const since = new Date(Date.now() - days * 864e5).toISOString();
   const [{ data: runs }, { data: calls }] = await Promise.all([
     db.from("agent_runs").select("id,created_at,finished_at,mode,status,goal,summary,user_id,tokens,cost_cents,retries").eq("workspace_id", workspaceId).gte("created_at", since).order("created_at", { ascending: false }).limit(5000),
-    db.from("agent_tool_calls").select("run_id,created_at,tool_id,risk,decision,status,refusal,actor_id,duration_ms").eq("workspace_id", workspaceId).gte("created_at", since).order("created_at", { ascending: false }).limit(20000),
+    db.from("agent_tool_calls").select("run_id,started_at,tool_id,risk,decision,status,refusal,actor_id,duration_ms").eq("workspace_id", workspaceId).gte("started_at", since).order("started_at", { ascending: false }).limit(20000),
   ]);
   const cols = ["record", "run_id", "at", "finished_at", "mode_or_tool", "risk", "decision", "status", "refusal", "person", "goal", "summary", "tokens", "cost_pence", "retries_or_ms"];
   const line = (v: unknown[]) => v.map(csvCell).join(",");
@@ -19,7 +19,7 @@ export async function agentActivityCsv(db: Db, workspaceId: string, days: number
   for (const r of (runs ?? []) as Record<string, unknown>[])
     out.push(line(["run", r.id, r.created_at, r.finished_at, r.mode, "", "", r.status, "", r.user_id, String(r.goal ?? "").slice(0, 500), String(r.summary ?? "").slice(0, 1000), r.tokens, r.cost_cents, r.retries]));
   for (const c of (calls ?? []) as Record<string, unknown>[])
-    out.push(line(["tool_call", c.run_id, c.created_at, "", c.tool_id, c.risk, c.decision, c.status, c.refusal, c.actor_id, "", "", "", "", c.duration_ms]));
+    out.push(line(["tool_call", c.run_id, c.started_at, "", c.tool_id, c.risk, c.decision, c.status, c.refusal, c.actor_id, "", "", "", "", c.duration_ms]));
   return out.join("\n");
 }
 

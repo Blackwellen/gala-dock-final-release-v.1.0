@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { Hourglass, CheckCircle2 } from "lucide-react";
 
 type Q = { required: boolean; joined?: boolean; admitted?: boolean; expired?: boolean; ahead?: number; eta_minutes?: number; admit_expires_at?: string | null; opens_at?: string | null };
-const clock = (iso: string) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
+// Q72: queue times are shown in the VIEWER's own clock (rendered only after the client fetch, so no hydration mismatch).
+const clock = (iso: string) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 
 /**
  * Waiting room (§52). Shows only what the server returns from /api/events/{id}/queue: no invented positions or times.

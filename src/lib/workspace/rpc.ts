@@ -1,6 +1,7 @@
 import "server-only";
 import type { Db } from "./db";
 import { planLimitError } from "@/lib/settings/rules";
+import { sanctionsErrorMessage } from "@/lib/legal/sanctions";
 
 export type ActionResult = { ok: true; message?: string; redirect?: string } | { ok: false; error: string };
 
@@ -47,9 +48,10 @@ const messages: [RegExp, string][] = [
   [/not_found/, "That record no longer exists."],
 ];
 
-export function friendly(error: { message?: string; code?: string; details?: string | null } | null | undefined) {
+export function friendly(error: { message?: string; code?: string; details?: string | null; hint?: string | null } | null | undefined) {
   const text = error?.message ?? "";
   const limit = planLimitError(error); if (limit) return limit;   // Q67: plan caps on new publish/creation (listings, seats, events)
+  const sanctioned = sanctionsErrorMessage(error); if (sanctioned) return sanctioned;   // Q74 (D4): sanctioned business country
   return messages.find(([re]) => re.test(text))?.[1] ?? "Something went wrong. Nothing was changed — please try again.";
 }
 

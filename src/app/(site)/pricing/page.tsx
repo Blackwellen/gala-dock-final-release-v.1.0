@@ -4,8 +4,9 @@ import { siteUrl } from "@/lib/site-url";
 import { LEGAL } from "@/lib/legal";
 import { loadPricing } from "@/lib/public/pricing";
 import { automaticTaxEnabled } from "@/lib/billing/core";
+import { vatPriceLine } from "@/lib/billing/vat-display";
 import { TLink } from "@/components/site/tracked-link";
-import { Eyebrow, gbp, JsonLd, SectionHead } from "@/components/site/ui";
+import { Eyebrow, JsonLd, SectionHead } from "@/components/site/ui";
 import { Credits, PlanExplorer, PricingFaq, ProviderEconomics, type Faq } from "@/components/site/pricing/pricing-client";
 import { supportedCountryNames } from "@/lib/payments/connect-countries";
 import "@/styles/site-pricing.css";
@@ -13,7 +14,7 @@ import "@/styles/site-pricing.css";
 export const metadata = pageMetadata({
   path: "/pricing",
   title: "Pricing — event management software, marketplace and ticketing fees",
-  description: "Gala Dock pricing for organisers and providers: free Starter plans, Pro, Business and Enterprise, provider marketplace fees, ticketing fees and Gala Agent credit packs. Prices exclude VAT.",
+  description: "Gala Dock pricing for organisers and providers: free Starter plans, Pro, Business and Enterprise, provider marketplace fees, ticketing fees and Gala Agent credit packs.",
 });
 
 const S = "pricing";
@@ -22,7 +23,8 @@ export default async function PricingPage() {
   const base = siteUrl();
   const { plans, packs } = await loadPricing();
   const vatPct = Number.parseFloat(LEGAL.vatRate) || 20;
-  const packLine = packs.length ? packs.map(p => `${p.credits.toLocaleString("en-GB")} credits for ${gbp(p.priceMinor)}`).join(", ") + (automaticTaxEnabled() ? " (plus VAT)" : "") : "Pricing confirmed before purchase";
+  const vatAdded = automaticTaxEnabled();
+  const packLine = packs.length ? packs.map(p => `${p.credits.toLocaleString("en-GB")} credits for ${vatPriceLine(p.priceMinor, vatAdded)}`).join(", ") : "Pricing confirmed before purchase";
   const faqs: Faq[] = [
     { q: "Is Gala Dock free for customers?", a: `Yes. Creating an account and planning a personal event are free. When you buy tickets there is a buyer fee of ${LEGAL.fees.ticketBuyer}, and booking payments carry a booking admin fee of ${LEGAL.fees.bookingAdmin}. Both are shown before you pay.` },
     { q: "Can providers list for free?", a: `Yes. Venues and suppliers start on the free Starter plan and pay a platform fee only on bookings: ${LEGAL.fees.supplier}.` },
@@ -54,14 +56,14 @@ export default async function PricingPage() {
     </section>
 
     {/* 8.1 controls + 8.2 Plans */}
-    {plans.length ? <PlanExplorer plans={plans} vatAdded={automaticTaxEnabled()} /> : <section className="gp-sec"><div className="gp-wrap"><p className="gpr-unavailable">Plan prices are temporarily unavailable. Please try again shortly or <TLink href={HREF.contact} surface={S} variant="prices_unavailable" className="gp-link">contact us</TLink>.</p></div></section>}
+    {plans.length ? <PlanExplorer plans={plans} vatAdded={vatAdded} /> : <section className="gp-sec"><div className="gp-wrap"><p className="gpr-unavailable">Plan prices are temporarily unavailable. Please try again shortly or <TLink href={HREF.contact} surface={S} variant="prices_unavailable" className="gp-link">contact us</TLink>.</p></div></section>}
 
     {/* 8.3 Provider Economics */}
     <section className="gp-sec is-tint gpr-econ-sec" id="providers" aria-labelledby="price-econ">
       <div className="gp-wrap">
         <SectionHead id="price-econ" eyebrow="Providers" title={<>Start with marketplace economics, <span className="gp-blue">then upgrade when the business needs more.</span></>}
           lead="List free and pay a platform fee only when you’re booked. Higher plans lower the fee and add team tools, Gala Agent and integrations." />
-        <ProviderEconomics plans={plans} vatPct={vatPct} bookingAdmin={LEGAL.fees.bookingAdmin} />
+        <ProviderEconomics plans={plans} vatPct={vatPct} bookingAdmin={LEGAL.fees.bookingAdmin} vatAdded={vatAdded} />
         <div className="gpr-sec-cta"><TLink href={HREF.joinProvider} surface={S} variant="econ_join" className="gp-btn gp-btn--primary">Join as a Provider<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></TLink><TLink href="/providers" surface={S} variant="econ_providers" className="gp-link">How it works for providers</TLink></div>
       </div>
     </section>
@@ -71,7 +73,7 @@ export default async function PricingPage() {
       <div className="gp-wrap">
         <SectionHead id="price-credits" eyebrow="Gala Agent credits" title={<>Use Agent capacity when the work needs it — <span className="gp-blue">with budget controls built in.</span></>}
           lead="Every organiser and provider plan includes monthly credits. Top up with packs when you need more, and decide what happens at the limit." />
-        <Credits plans={plans} packs={packs} />
+        <Credits plans={plans} packs={packs} vatAdded={vatAdded} />
         <div className="gpr-sec-cta"><TLink href="/organisers" surface={S} variant="credits_organisers" className="gp-link">Gala Agent for organisers<ArrowRight size={17} className="gp-arrow" aria-hidden="true" /></TLink></div>
       </div>
     </section>

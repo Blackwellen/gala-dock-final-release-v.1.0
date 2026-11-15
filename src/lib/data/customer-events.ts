@@ -2,8 +2,8 @@ import "server-only";
 import { notFound } from "next/navigation";
 import type { CustomerCtx } from "./context";
 
-export type MyEvent = { id: string; name: string; event_type: string; status: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; city: string; guest_count: number; budget_total: number | null; cover_image: string; tags: string[]; settings: Record<string, unknown>; management: string; workspace_id: string | null; description: string; priorities: string[]; capacity: number | null; adults: number | null; children: number | null; currency: string; visibility: string; slug: string | null };
-const COLS = "id,name,event_type,status,starts_at,ends_at,venue_name,location,city,guest_count,budget_total,cover_image,tags,settings,management,workspace_id,description,priorities,capacity,adults,children,currency,visibility,slug";
+export type MyEvent = { id: string; name: string; event_type: string; status: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; city: string; guest_count: number; budget_total: number | null; cover_image: string; tags: string[]; settings: Record<string, unknown>; management: string; workspace_id: string | null; description: string; priorities: string[]; capacity: number | null; adults: number | null; children: number | null; currency: string; visibility: string; slug: string | null; timezone?: string | null };
+const COLS = "id,name,event_type,status,starts_at,ends_at,venue_name,location,city,guest_count,budget_total,cover_image,tags,settings,management,workspace_id,description,priorities,capacity,adults,children,currency,visibility,slug,timezone";
 export type Summary = ReturnType<typeof summarise>;
 
 /** Plain-language planning stage (1 Details · 2 Venue · 3 Providers · 4 Payments · 5 Ready) from canonical records. */

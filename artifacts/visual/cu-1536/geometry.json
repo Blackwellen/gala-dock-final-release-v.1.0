@@ -1,0 +1,58 @@
+[
+  {
+    "role": "customer",
+    "route": "/account",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-1536x1024",
+    "geometry": {
+      "url": "/account",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 568,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 397,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1096
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1043
+      }
+    },
+    "errors": []
+  }
+]

@@ -1,9 +1,11 @@
 import type { CSSProperties } from "react";
+import { DEFAULT_LOCALE } from "@/lib/i18n/messages";   // Q72: <html lang="en-GB"> (UI language; profiles.language is the preference)
 import regeneratedAssets from "@/lib/regenerated-assets.json";
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "./globals.css";
 import "@/styles/density.css";
+import "@/styles/touch-targets.css";
 import "@/styles/popovers.css";
 import "@/styles/brand.css";
 import { Providers } from "@/components/ui";
@@ -12,6 +14,7 @@ import { AnalyticsBeacon } from "@/components/analytics-beacon";
 import { MaintenanceBanner } from "@/components/maintenance-banner";
 import { GuidedTour } from "@/components/guided-tour";
 import { PopoverFit } from "@/components/shared/popover-fit";
+import { TruncationTitle } from "@/components/shared/truncation-title";
 import { SelectUpgrade } from "@/components/shared/select-upgrade";
 import { KeyboardScrollRegions } from "@/components/shared/keyboard-scroll-regions";
 import { InlineScript } from "@/components/shared/inline-script";
@@ -35,9 +38,10 @@ export const viewport: Viewport = { themeColor: "#1b64f5", viewportFit: "cover",
 // Scales the desktop auth and onboarding layouts so a full design screen fits the viewport at 100% browser zoom.
 // Fits the design height where possible, but never widens the layout beyond 1.3x (onboarding) / 1.6x (auth card) the design width
 // (so forms keep their proportions) and never scales below 0.7 so text stays readable. Runs before first paint.
-const fitScript = `(function(){function f(){var w=innerWidth,h=innerHeight,c=function(v){return Math.max(.7,Math.min(1,v)).toFixed(3)},d=document.documentElement.style;
-if(w<1101){d.setProperty("--gd-fit-auth","1");d.setProperty("--gd-fit-setup","1");return}
-var z=function(dw,dh,k){return c(Math.max(Math.min(w/dw,h/dh),w/(dw*k)))};d.setProperty("--gd-fit-auth",z(1448,1086,1.6));d.setProperty("--gd-fit-setup",z(1536,1024,1.3))}f();addEventListener("resize",f)})()`;
+// Q71: touch screens below 1536px render 1:1 (as density.css does) so 44px touch targets are not shrunk.
+const fitScript = `(function(){var t=matchMedia("(pointer: coarse)");function f(){var w=innerWidth,h=innerHeight,c=function(v){return Math.max(.7,Math.min(1,v)).toFixed(3)},d=document.documentElement.style;
+if(w<1101||(t.matches&&w<1536)){d.setProperty("--gd-fit-auth","1");d.setProperty("--gd-fit-setup","1");return}
+var z=function(dw,dh,k){return c(Math.max(Math.min(w/dw,h/dh),w/(dw*k)))};d.setProperty("--gd-fit-auth",z(1448,1086,1.6));d.setProperty("--gd-fit-setup",z(1536,1024,1.3))}f();addEventListener("resize",f);t.addEventListener("change",f)})()`;
 
 // Public website motion (src/components/site/motion.tsx): entrance choreography exists only when the visitor has not asked for
 // reduced motion. Set before first paint so server HTML is never hidden for crawlers, no-JS or reduced-motion visitors.
@@ -47,9 +51,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // H-02: the proxy's per-request CSP nonce (src/lib/security/csp.ts). Next nonces its own scripts; this is for ours.
   const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
       <head><InlineScript id="gd-fit" html={fitScript} nonce={nonce} /><InlineScript id="gp-motion" html={motionScript} nonce={nonce} /></head>
-      <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers><MaintenanceBanner /><PopoverFit /><SelectUpgrade /><Suspense fallback={null}><KeyboardScrollRegions /></Suspense>{children}<Suspense fallback={null}><GuidedTour /></Suspense><PwaLifecycle /><CookieBanner /><Suspense fallback={null}><AnalyticsBeacon /></Suspense></Providers></body>
+      <body style={Object.fromEntries(Object.entries(regeneratedAssets).map(([name,url])=>[`--asset-${name}`,`url(${url})`])) as CSSProperties}><Providers><MaintenanceBanner /><PopoverFit /><TruncationTitle /><SelectUpgrade /><Suspense fallback={null}><KeyboardScrollRegions /></Suspense>{children}<Suspense fallback={null}><GuidedTour /></Suspense><PwaLifecycle /><CookieBanner /><Suspense fallback={null}><AnalyticsBeacon /></Suspense></Providers></body>
     </html>
   );
 }

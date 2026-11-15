@@ -17,7 +17,7 @@ These terms apply to people and organisations who join the Gala Dock Partner Pro
 
 ## 3. Your link and attribution
 3.1 Referrals are tracked by your link or code. A visitor is credited to you only if they agree to the partner cookie (Cookie Policy, `gd_partner`, 30 days) and create a **new** workspace within that period. Accounts that existed before the click aren't credited.
-3.2 A referral qualifies when the referred workspace starts a paid plan [owner: within 60 days of sign-up — align with the build].
+3.2 A referral qualifies when the referred workspace, created within the 30-day cookie period in 3.1, starts paying for a plan or credit pack. Commission is then earned on its payments while these terms apply to you and it keeps paying (subject to 4–6).
 3.3 No commission is earned on: your own or connected workspaces (self-referral); fake, fraudulent or duplicate accounts; existing customers; or accounts obtained by spam, cookie stuffing, bidding on "Gala Dock" brand terms, or misleading claims.
 
 ## 4. Commission
@@ -49,7 +49,8 @@ These terms apply to people and organisations who join the Gala Dock Partner Pro
 ## 7. Payment
 7.1 We pay by **Stripe Connect transfer** to your own connected account (no Stripe dashboard), then a payout to your bank. You must complete Stripe's checks. Until your account is set up, commission accrues and is held.
 7.2 If Stripe can't support your country, we will agree another way to pay you; until then commission accrues.
-7.3 **Holding payment.** We may hold a statement while we investigate a reasonable suspicion of breach of 3.3 or fraud, for up to 90 days, telling you the reason; or where a law, regulator or Stripe requires it.
+7.3 **Holding payment.** We may hold a statement while we investigate a reasonable suspicion of breach of 3.3 or fraud, for up to 90 days, telling you the reason; while a **security review** of your Gala Dock account is open (for example after signs that someone else has accessed it), until a person completes it; or where a law, regulator, sanctions rules or Stripe require it. Commission is paid from Gala Dock's own balance, so these holds are our decision under this agreement, not a pause of a seller's own Stripe balance. *[Q74 2026-11-14: owner decision D5 / M-39]*
+7.3A **Statements and VAT.** For UK VAT-registered partners each statement is a self-billed VAT invoice under Schedule 1 with a sequential number. Commission is calculated on amounts paid **net of VAT** (4.1). A statement is paid by Stripe Connect transfer only when it reaches the minimum payout in 5.3 (fee-driven, never below **£50**); smaller balances roll forward. Commission becomes payable after the **60-day** hold in 5.1.
 7.4 You are responsible for your own income tax, National Insurance and other taxes.
 
 ## 8. Marketing rules

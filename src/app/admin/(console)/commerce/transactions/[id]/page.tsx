@@ -12,7 +12,7 @@ import { rows, one, isUuid } from "@/lib/workspace/db";
 import { money, requestTime } from "@/lib/workspace/format";
 import { Head, Pill, Face, Mark, TabBar, Img } from "../../../_b/kit";
 import { CopyButton, Menu } from "../../../_b/ui";
-import { stamp, ago } from "../../../_b/format";
+import { stamp, ago, stripeDashboardUrl } from "../../../_b/format";
 import { requestRefund, addNote, createSupportCase } from "../../../_b/actions";
 import { statusOf, typeOf, type Tx } from "../../data";
 
@@ -32,9 +32,10 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
   if (!isUuid(id)) notFound();
   const { db, allowed, permissions } = await requireAdminPermission("commerce");
   if (!allowed) return <Restricted area="Commerce" />;
-  const t = await one<Tx & { details: Details }>(db.from("transactions").select("id,workspace_id,event_id,kind,category,description,amount,status,source,fee_amount,net_amount,counterparty,stripe_ref,occurred_at,details").eq("id", id).maybeSingle());
+  const t = await one<Tx & { details: Details }>(db.from("transactions").select("id,workspace_id,event_id,kind,category,description,amount,status,source,fee_amount,net_amount,counterparty,stripe_ref,occurred_at,details,livemode").eq("id", id).maybeSingle());
   if (!t) notFound();
-  const [notes, cases, reqs] = await Promise.all([
+  const [stripeTarget, notes, cases, reqs] = await Promise.all([
+    t.stripe_ref ? db.rpc("admin_transaction_stripe_target" as never, { p_tx: id } as never).then(r => (r.error ? null : r.data) as { platform: boolean; account: string | null } | null) : Promise.resolve(null),
     rows<{ id: number; body: string; author_name: string; created_at: string }>(db.from("admin_notes").select("id,body,author_name,created_at").eq("entity_type", "transaction").eq("entity_id", id).order("created_at", { ascending: false })),
     rows<{ id: string; reference: string; subject: string; status: string; created_at: string }>(db.from("support_cases").select("id,reference,subject,status,created_at").eq("related->>transaction_id", id).order("created_at", { ascending: false })),
     rows<{ id: string; kind: string; status: string; amount: number; reason: string; requested_by_name: string; created_at: string }>(db.from("admin_money_requests").select("id,kind,status,amount,reason,requested_by_name,created_at").eq("transaction_id", id).order("created_at", { ascending: false })),
@@ -49,6 +50,9 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
   const base = `/admin/commerce/transactions/${id}`;
   const steps = (d.timeline ?? []).map(s => ({ ...s, iso: at(s.at), done: new Date(at(s.at)).getTime() <= now }));
   const subtotal = (d.unit_price ?? 0) * (d.tickets ?? 0) + (d.booking_fee ?? 0) * (d.tickets ?? 0);
+  // Q75: links into other admin areas only render when this admin holds that area's permission (no dead-end "Restricted" pages).
+  const stripeUrl = stripeTarget ? stripeDashboardUrl(t.stripe_ref, stripeTarget, Boolean((t as { livemode?: boolean }).livemode)) : null;
+  const can = (p: Parameters<typeof permissions.has>[0]) => permissions.has(p);
   const custLink = d.customer ? `/admin/users?q=${encodeURIComponent(d.customer.email)}` : `/admin/users?q=${encodeURIComponent(t.counterparty)}`;
 
   const timeline = <section className="adb-panel adt-tl">
@@ -62,9 +66,9 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
     <Head back={{ href: "/admin/commerce", label: "Back to Commerce" }} title={`Transaction #${ref}`} badges={<span className="adt-badge"><Pill status={st.key} label={st.label} dot /></span>}
       subtitle={<>{type} <span className="adt-sep">•</span> {stamp(t.occurred_at).replace(",", " at")}</>}
       actions={<>
-        <Link className="adb-btn blue" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev?.ref ?? ev?.name ?? "")}`}><ExternalLink aria-hidden="true" />Open event</Link>
-        <Link className="adb-btn blue" href={`/admin/tickets?q=${encodeURIComponent(d.order ?? ref)}`}><Navigation aria-hidden="true" />View order</Link>
-        <Link className="adb-btn blue" href={custLink}><UserRound aria-hidden="true" />View customer</Link>
+        {can("events") && <Link className="adb-btn blue" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev?.ref ?? ev?.name ?? "")}`}><ExternalLink aria-hidden="true" />Open event</Link>}
+        {can("tickets") && <Link className="adb-btn blue" href={`/admin/tickets?tab=orders&q=${encodeURIComponent(d.order ?? ref)}`}><Navigation aria-hidden="true" />View order</Link>}
+        {can("users") && <Link className="adb-btn blue" href={custLink}><UserRound aria-hidden="true" />View customer</Link>}
         <Menu label="More actions" className="adb-btn adt-more" entries={[{ kind: "link", label: "Export ledger (CSV)", href: "/admin/commerce/export" }, { kind: "link", label: "Payouts", href: "/admin/commerce/payouts" }]} />
       </>} />
     {ev && <div className="adt-event">
@@ -87,7 +91,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
                 <div><dt>Transaction ID</dt><dd>{ref} <CopyButton value={ref} /></dd></div>
                 <div><dt>Type</dt><dd>{type}</dd></div>
                 <div><dt>Source</dt><dd>{ev ? <Link href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>Event: {ev.name} ({ev.ref}) <ExternalLink aria-hidden="true" /></Link> : t.source}</dd></div>
-                <div><dt>Order ID</dt><dd>{d.order ? <Link href={`/admin/tickets?q=${encodeURIComponent(d.order)}`}>{d.order} <ExternalLink aria-hidden="true" /></Link> : "—"}</dd></div>
+                <div><dt>Order ID</dt><dd>{d.order ? can("tickets") ? <Link href={`/admin/tickets?tab=orders&q=${encodeURIComponent(d.order)}`}>{d.order} <ExternalLink aria-hidden="true" /></Link> : d.order : "—"}</dd></div>
                 {d.ticket_label && <div><dt>Ticket(s)</dt><dd>{d.ticket_label}</dd></div>}
                 <div><dt>Date &amp; time</dt><dd>{new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZoneName: "short" }).format(new Date(t.occurred_at)).replace(/ at /, ", ").replace("BST", "(BST)").replace("GMT", "(GMT)")}</dd></div>
                 <div><dt>Payment provider</dt><dd><span className="adt-stripe">S</span> {d.provider ?? "Stripe"}</dd></div>
@@ -99,9 +103,9 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
             </section>
             <section className="adb-panel adt-parties"><h2>Parties</h2>
               <h3>Customer</h3>
-              <div className="adt-party"><Face src={d.customer?.avatar} name={d.customer?.name ?? t.counterparty} size={38} /><span><b>{d.customer?.name ?? t.counterparty}</b><small>{d.customer?.email ?? ""}</small></span><Link className="adb-link" href={custLink}>View profile <ArrowRight aria-hidden="true" /></Link></div>
+              <div className="adt-party"><Face src={d.customer?.avatar} name={d.customer?.name ?? t.counterparty} size={38} /><span><b>{d.customer?.name ?? t.counterparty}</b><small>{d.customer?.email ?? ""}</small></span>{can("users") && <Link className="adb-link" href={custLink}>View profile <ArrowRight aria-hidden="true" /></Link>}</div>
               <h3>Provider / Organizer</h3>
-              <div className="adt-party"><Mark text="G" color="#0d0d63" size={38} /><span><b>{d.provider_party?.name ?? "—"}</b><small>{d.provider_party?.ref ?? ""}</small></span>{t.workspace_id && <Link className="adb-link" href={`/admin/workspaces/${t.workspace_id}`}>View workspace <ArrowRight aria-hidden="true" /></Link>}</div>
+              <div className="adt-party"><Mark text="G" color="#0d0d63" size={38} /><span><b>{d.provider_party?.name ?? "—"}</b><small>{d.provider_party?.ref ?? ""}</small></span>{t.workspace_id && can("workspaces") && <Link className="adb-link" href={`/admin/workspaces/${t.workspace_id}`}>View workspace <ArrowRight aria-hidden="true" /></Link>}</div>
               {ev && <><h3>Event</h3>
                           <div className="adt-party"><Img src={ev.image} alt="" width={52} height={40} /><span><b>{ev.name}</b><small>{ev.ref}</small></span><Link className="adb-link" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View event <ArrowRight aria-hidden="true" /></Link></div></>}
             </section>
@@ -126,8 +130,8 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
               <section className="adb-panel adt-related"><h2>Related records</h2>
                 <ul>
                   {ev && <li><CalendarClock aria-hidden="true" /><span>Event</span><b>{ev.name} ({ev.ref})</b><Link className="adb-link" href={t.event_id ? `/admin/events?sel=${t.event_id}` : `/admin/events?q=${encodeURIComponent(ev.ref)}`}>View <ArrowRight aria-hidden="true" /></Link></li>}
-                  {d.order && <li><Receipt aria-hidden="true" /><span>Order</span><b>{d.order}</b><Link className="adb-link" href={`/admin/tickets?q=${encodeURIComponent(d.order)}`}>View <ArrowRight aria-hidden="true" /></Link></li>}
-                  {d.tickets ? <li><Ticket aria-hidden="true" /><span>Tickets</span><b>{d.tickets} tickets</b><Link className="adb-link" href={`/admin/tickets?q=${encodeURIComponent(d.order ?? ref)}`}>View <ArrowRight aria-hidden="true" /></Link></li> : null}
+                  {d.order && <li><Receipt aria-hidden="true" /><span>Order</span><b>{d.order}</b>{can("tickets") && <Link className="adb-link" href={`/admin/tickets?tab=orders&q=${encodeURIComponent(d.order)}`}>View <ArrowRight aria-hidden="true" /></Link>}</li>}
+                  {d.tickets ? <li><Ticket aria-hidden="true" /><span>Tickets</span><b>{d.tickets} tickets</b>{can("tickets") && <Link className="adb-link" href={`/admin/tickets?tab=orders&q=${encodeURIComponent(d.order ?? ref)}`}>View <ArrowRight aria-hidden="true" /></Link>}</li> : null}
                   {!ev && !d.order && <li><Receipt aria-hidden="true" /><span>Counterparty</span><b>{t.counterparty}</b></li>}
                 </ul>
               </section>
@@ -151,7 +155,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
             {vat > 0 && <tr><td>VAT on fees</td><td className="r">{money(vat, "GBP", { cents: true })}</td><td>{d.vat_rate}% UK VAT on platform fee</td></tr>}
             <tr><td><b>Net to provider</b></td><td className="r"><b>{netAmt === null ? "—" : money(netAmt, "GBP", { cents: true })}</b></td><td>Paid out by Stripe Connect</td></tr></tbody></table></section>}
         {tab === "support" && <section className="adb-panel adt-fees"><h2>Support cases</h2>
-          {cases.length ? <ul className="adt-cases">{cases.map(c => <li key={c.id}><Link href={`/admin/support/${c.id}`}>#{c.reference}</Link><Pill status={c.status} /><span>{c.subject}</span><small>{ago(c.created_at, now)}</small></li>)}</ul> : <p className="adb-none">No support cases reference this transaction.</p>}</section>}
+          {cases.length ? <ul className="adt-cases">{cases.map(c => <li key={c.id}>{can("support") ? <Link href={`/admin/support/${c.id}`}>#{c.reference}</Link> : <b>#{c.reference}</b>}<Pill status={c.status} /><span>{c.subject}</span><small>{ago(c.created_at, now)}</small></li>)}</ul> : <p className="adb-none">No support cases reference this transaction.</p>}</section>}
       </div>
 
       <aside className="adt-rail">
@@ -174,8 +178,8 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
                   <label>Internal note<textarea name="body" rows={3} /></label>
                   <button className="adb-btn primary" type="submit">Create case</button>
                 </ActionForm></div></details>}
-            <div className="adt-act-row">{t.stripe_ref ? <a className="adb-btn adt-stripe-btn" href={`https://dashboard.stripe.com/search?query=${encodeURIComponent(t.stripe_ref)}`} target="_blank" rel="noopener noreferrer"><span className="adt-stripe">S</span>Open in Stripe</a> : <span className="adb-btn adt-stripe-btn" aria-disabled="true">No Stripe reference</span>}
-            <Menu label="More transaction actions" className="adb-btn adt-more" entries={[{ kind: "link", label: "View payouts", href: "/admin/commerce/payouts" }, { kind: "link", label: "Open Trust & Safety", href: "/admin/trust" }]} trigger={<MoreHorizontal aria-hidden="true" />} /></div>
+            <div className="adt-act-row">{stripeUrl ? <a className="adb-btn adt-stripe-btn" href={stripeUrl} target="_blank" rel="noopener noreferrer"><span className="adt-stripe">S</span>Open in Stripe</a> : <span className="adb-btn adt-stripe-btn" aria-disabled="true" title={t.stripe_ref ? "Charged on a connected account we could not resolve; search the reference in Stripe" : undefined}>{t.stripe_ref ? "Connected account unknown" : "No Stripe reference"}</span>}
+            <Menu label="More transaction actions" className="adb-btn adt-more" entries={[{ kind: "link", label: "View payouts", href: "/admin/commerce/payouts" }, ...(can("trust") ? [{ kind: "link" as const, label: "Open Trust & Safety", href: "/admin/trust" }] : [])]} trigger={<MoreHorizontal aria-hidden="true" />} /></div>
           </div>
         </section>
         <section className="adb-panel adt-risk">
@@ -187,7 +191,7 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
             <li><ShieldAlert aria-hidden="true" /><span>Chargeback history</span><b className="g">{d.risk.chargebacks}</b></li>
             <li><MapPinned aria-hidden="true" /><span>Device / Location</span><b>{d.risk.location}</b></li>
           </ul> : <p className="adb-none">No risk assessment recorded for this payment.</p>}
-          <Link className="adb-link adt-risk-l" href="/admin/trust">View risk details <ArrowRight aria-hidden="true" /></Link>
+          {can("trust") && <Link className="adb-link adt-risk-l" href="/admin/trust">View risk details <ArrowRight aria-hidden="true" /></Link>}
         </section>
         <section className="adb-panel adt-notes">
           <div className="adb-sec-h"><h2>Internal notes</h2>
@@ -199,8 +203,8 @@ export default async function TransactionPage(props: PageProps<"/admin/commerce/
         </section>
         <section className="adb-panel adt-cases-p">
           <div className="adb-sec-h"><h2>Support cases</h2><Link className="adb-link" href={`${base}?tab=support`}>View all <ArrowRight aria-hidden="true" /></Link></div>
-          {cases.length ? cases.slice(0, 1).map(c => <div key={c.id} className="adt-case"><i><Headset aria-hidden="true" /></i><span><span><Link href={`/admin/support/${c.id}`}>#{c.reference}</Link><Pill status={c.status} /><small>{ago(c.created_at, now)}</small></span><small>{c.subject}</small></span>
-            <Menu label={`Actions for ${c.reference}`} entries={[{ kind: "link", label: "Open case", href: `/admin/support/${c.id}` }]} /></div>) : <p className="adb-none">No support cases for this transaction.</p>}
+          {cases.length ? cases.slice(0, 1).map(c => <div key={c.id} className="adt-case"><i><Headset aria-hidden="true" /></i><span><span>{can("support") ? <Link href={`/admin/support/${c.id}`}>#{c.reference}</Link> : <b>#{c.reference}</b>}<Pill status={c.status} /><small>{ago(c.created_at, now)}</small></span><small>{c.subject}</small></span>
+            {can("support") && <Menu label={`Actions for ${c.reference}`} entries={[{ kind: "link", label: "Open case", href: `/admin/support/${c.id}` }]} />}</div>) : <p className="adb-none">No support cases for this transaction.</p>}
         </section>
       </aside>
     </div>

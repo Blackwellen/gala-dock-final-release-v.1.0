@@ -1,6 +1,18 @@
 /* Legal documents — readable single column on the public look. */
 .lg{min-height:100dvh;background:#f7f9fd;color:#1d2068}
-.lg-body{max-width:1120px;margin:0 auto;padding:28px 16px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
+/* Q71: full width (no cap); the document keeps a readable measure (≤80ch) inside its card. */
+.lg-body{margin:0 auto;padding:28px clamp(16px,3.05vw,47px) 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
+.lg-doc{min-width:0;overflow-wrap:anywhere}.lg-doc :is(p,li,h1,h2,h3,.lg-meta){max-width:80ch}
+.lg-toc{display:none}
+/* Wide screens: index | document sized to its 80ch measure | "On this page" contents rail (fills the rest of the width). */
+@media (min-width:1600px){.lg-body{grid-template-columns:260px minmax(0,calc(80ch + 112px)) minmax(240px,1fr);gap:36px}.lg-doc{padding:44px 56px}
+  .lg-toc{display:block;position:sticky;top:88px;align-self:start;max-height:calc(100dvh / var(--k-zoom,1) - 104px);overflow-y:auto;scrollbar-width:thin}
+  .lg-toc nav{display:grid;gap:8px;font-size:13px;max-width:340px}.lg-toc b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5157a4}
+  .lg-toc ol{list-style:none;margin:0;padding:0 0 0 12px;display:grid;gap:2px;border-left:1px solid #e3e8f4}
+  .lg-toc a{display:block;padding:6px 10px;border-radius:8px;color:#1d2068;line-height:1.35}.lg-toc a:hover{background:#eef2fe;color:#0b08f8}}
+/* A document without section headings (e.g. the retention schedule table) takes the full width instead of an empty rail. */
+@media (min-width:1600px){.lg-body:has(> .lg-toc:empty){grid-template-columns:260px minmax(0,1fr)}.lg-body:has(> .lg-toc:empty) .lg-toc{display:none}}
+@media print{.lg-toc{display:none}}
 .lg-nav{position:sticky;top:88px;display:grid;gap:8px;font-size:13px}
 .lg-nav b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5157a4}
 .lg-nav ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
@@ -21,5 +33,5 @@
 .lg-doc th{background:#f6f8fe;color:#03035f;font-weight:650;white-space:nowrap}
 .lg-doc .lg-note{background:#f4f6ff;border-left:3px solid #0b08f8;border-radius:8px;padding:12px 14px;margin:12px 0}
 .lg-doc .lg-toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin:0 0 8px;padding:0;list-style:none}
-@media (max-width:860px){.lg-body{grid-template-columns:1fr}.lg-nav{position:static}.lg-doc{padding:24px 18px;font-size:14px}}
+@media (max-width:860px){.lg-body{grid-template-columns:minmax(0,1fr)}.lg-nav{position:static}.lg-doc{padding:24px 18px;font-size:14px}}
 @media print{.lg-nav,.lg header{display:none}.lg-body{display:block}.lg-doc{border:0;box-shadow:none;padding:0}}

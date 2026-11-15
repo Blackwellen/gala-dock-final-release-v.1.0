@@ -11,6 +11,10 @@ import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import { CheckoutClient } from "./client";
 import { LegalFooter } from "@/components/public/token-chrome";
 import { PublicPlan, planHasContent } from "@/components/venue-plan/public-plan";
+import { safeTz, tzAbbrev } from "@/lib/i18n/tz";
+import { t } from "@/lib/i18n/messages";
+import { cancellationNotice, taxDisplayNote } from "@/lib/i18n/rules";
+import { currencies } from "@/lib/master-data";
 
 export const metadata: Metadata = { title: "Checkout" };
 const PALETTE = ["#2f6bff", "#e08a00", "#7c4dff", "#16a46c", "#e0398b", "#0ea5c6"];
@@ -21,7 +25,7 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
   const sp = await props.searchParams;
   const sb = untyped(await createClient());
   const isId = /^[0-9a-f-]{36}$/i.test(key);
-  const { data: ev } = await sb.from("events_public").select("id,name,slug,starts_at,ends_at,venue_name,city,location,cover_image,status,visibility,currency,settings").eq(isId ? "id" : "slug", key).maybeSingle();
+  const { data: ev } = await sb.from("events_public").select("id,name,slug,starts_at,ends_at,venue_name,city,location,cover_image,status,visibility,currency,timezone,settings").eq(isId ? "id" : "slug", key).maybeSingle();
   if (!ev || ev.visibility !== "public" || !["published", "on_sale", "live"].includes(ev.status)) notFound();
   const [{ data: tiers }, { data: seats }, { data: plan }, { data: fee }, { data: { user } }, { data: resale }, { data: launch }, { data: readiness }] = await Promise.all([
     sb.from("ticket_tiers").select("id,name,description,kind,price,quantity,sold,held,order_limit,status,sale_start,sale_end,color,badge,sort").eq("event_id", ev.id).neq("status", "hidden").order("sort"),
@@ -36,6 +40,13 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
   ]);
   const seatedTiers = new Set((seats ?? []).map((s: { tier_id: string | null }) => s.tier_id).filter(Boolean));
   const now = requestTime();
+  // Q72: the event's own zone and currency; buyer-country notices (profile country, else the UK rules every pre-Q72 order used).
+  const tz = safeTz(ev.timezone as string | null), cur = String(ev.currency || "GBP").toUpperCase();
+  const { data: prof } = user ? await sb.from("profiles").select("country").eq("id", user.id).maybeSingle() : { data: null };
+  const buyerCountry = ((prof as { country?: string } | null)?.country ?? "GB").toUpperCase();
+  const curName = currencies().find(c => c.code === cur)?.name ?? cur;
+  const notices = { currency: t("checkout.currency_notice", { currency: cur, currencyName: curName }), tax: taxDisplayNote(buyerCountry),
+    cancellation: cancellationNotice({ buyerCountry, kind: "ticket" }), zone: t("checkout.times_in_zone", { zone: tzAbbrev(ev.starts_at ?? new Date(now).toISOString(), tz) }) };
   // Q57: access-code tiers are no longer publicly readable; the ones this checkout's applied codes unlock come from
   // checkout_unlocked_tiers (keyed by the httpOnly checkout token), merged in the organiser's order.
   const codeToken = (await cookies()).get(CHECKOUT_COOKIE(ev.id))?.value;
@@ -46,7 +57,7 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
     id: t.id, name: t.name, description: t.description, price: Number(t.price), remaining: Math.max(0, t.quantity - t.sold - t.held), limit: t.order_limit, seated: seatedTiers.has(t.id), badge: t.badge,
     color: t.color && t.color !== "#5b5bff" ? t.color : PALETTE[i % PALETTE.length],
     onSale: t.status === "on_sale" && (!t.sale_start || new Date(t.sale_start).getTime() <= now) && (!t.sale_end || new Date(t.sale_end).getTime() > now),
-    note: t.status === "sold_out" ? "Sold out" : t.sale_start && new Date(t.sale_start).getTime() > now ? `On sale ${new Date(t.sale_start).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Europe/London" })}` : t.sale_end && new Date(t.sale_end).getTime() <= now ? "Sales ended" : t.status !== "on_sale" ? "Not on sale" : null,
+    note: t.status === "sold_out" ? "Sold out" : t.sale_start && new Date(t.sale_start).getTime() > now ? `On sale ${new Date(t.sale_start).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: tz })}` : t.sale_end && new Date(t.sale_end).getTime() <= now ? "Sales ended" : t.status !== "on_sale" ? "Not on sale" : null,
   }));
   const sellerBlocked = readiness !== "ready" && tierList.some((t: { price: number }) => t.price > 0);
   // Consumer law: buyers are told before paying when the organiser declared it sells as a private individual (not a trader).
@@ -61,7 +72,7 @@ export default async function Checkout(props: PageProps<"/checkout/[event]">) {
   const mapSlot = seatedTiers.size === 0 && planHasContent([...(Array.isArray(p.base) ? p.base : []), ...(Array.isArray(p.overlay) ? p.overlay : [])]) ? <PublicPlan bare title="Event map" label={`Event map for ${ev.name}`} base={Array.isArray(p.base) ? p.base : []} overlay={Array.isArray(p.overlay) ? p.overlay : []}
     tiers={tierList.map((t: { id: string; name: string; color: string }) => ({ id: t.id, name: t.name, color: t.color }))} /> : null;
   const presetTier = typeof sp.tier === "string" ? sp.tier : null, presetQty = Math.min(20, Math.max(1, Number(sp.qty) || 1));
-  return <>{nonTrader === true && <div style={{ maxWidth: 1100, margin: "12px auto 0", padding: "0 16px" }}><NonTraderNotice seller="This organiser" /></div>}<CheckoutClient event={{ id: ev.id, name: ev.name, slug: ev.slug || ev.id, startsAt: ev.starts_at, endsAt: ev.ends_at, venue: ev.venue_name || ev.location, city: ev.city, cover: ev.cover_image }}
+  return <>{nonTrader === true && <div style={{ maxWidth: 1100, margin: "12px auto 0", padding: "0 16px" }}><NonTraderNotice seller="This organiser" /></div>}<CheckoutClient event={{ id: ev.id, name: ev.name, slug: ev.slug || ev.id, startsAt: ev.starts_at, endsAt: ev.ends_at, venue: ev.venue_name || ev.location, city: ev.city, cover: ev.cover_image, timezone: tz, currency: cur }} notices={notices}
     tiers={tierList} seats={(seats ?? []).map((s: { seat_key: string; tier_id: string | null; accessible: boolean; status: string }) => ({ key: s.seat_key, tier_id: s.tier_id, accessible: s.accessible, status: s.status as "available" }))}
     overlay={Array.isArray(p.overlay) ? p.overlay : []} base={Array.isArray(p.base) ? p.base : []} fee={(fee ?? { fixed: 0, pct_bps: 0 }) as { fixed: number; pct_bps: number }}
     user={user ? { email: user.email ?? "" } : null} preset={presetTier ? { tier: presetTier, qty: presetQty } : null}

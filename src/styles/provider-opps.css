@@ -70,10 +70,12 @@
 .po-promo-icon.blue{background:#e8f0ff;color:#2459f5}.po-promo-icon.red{background:#ffe5ea;color:#ec2f52}
 .po-promo-icon svg{width:22px!important;height:22px!important}
 @media (max-width:1280px){.po-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:860px){.po-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.po-promos{grid-template-columns:1fr}.po-promo{flex-wrap:wrap}.po-sort,.po-views{display:none}.po-toolbar .ws-search-sm{width:100%}}
+@media (max-width:860px){.po-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.po-promos{grid-template-columns:1fr}.po-promo{flex-wrap:wrap}.po-sort,.po-views{display:none}.po-toolbar{flex-wrap:wrap}.po-toolbar .ws-search-sm{width:100%}}
 .po-grid{table-layout:fixed}
 .po-grid .ws-cell-text{max-width:100%;overflow:hidden}
 .po-grid .ws-cell{min-width:0}
 .po-grid td:first-child .ws-cell-text b{overflow:hidden;text-overflow:ellipsis}
 .po-grid td:first-child .ws-cell{gap:9px}
 .po-grid td:first-child .ws-thumb{width:48px!important;height:48px!important}
+@media (pointer:coarse){.po-toolbar{flex-wrap:wrap}.po-toolbar .ws-search-sm{flex:1 1 220px;width:auto}}
+.po-toolbar{flex-wrap:wrap}

@@ -9,18 +9,25 @@ import { DecimalInput, StepFocus } from "@/components/kit/wizard-client";
 import { saveTicketModel, saveSalesRules, publishTickets } from "@/lib/actions/ticket-setup";
 import type { SetupData } from "@/lib/data/ticket-setup";
 import { eventTypeLabel } from "@/lib/format";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
+import { tzAbbrev, utcToWallString, wallToUtcIso } from "@/lib/i18n/tz";
 
 type Tier = SetupData["tiers"][number]; type Promo = SetupData["promos"][number]; type Rules = SetupData["rules"];
 const COLORS = ["#e11d48", "#2563eb", "#d99a18", "#10a37f", "#7c3aed", "#0ea5e9", "#f97316", "#64748b"];
-const gbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
-const gbp2 = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const TZ = "Europe/London";
 /** "wedding events", "children's party events" — the canonical label, never the raw key ("childrens_partys", "customs"). */
 const typeWord = (t: string) => t && t !== "custom" ? `${eventTypeLabel(t).toLowerCase()} events` : "events like this";
-const dLabel = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "";
-const tLabel = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }) : "";
-const toLocal = (iso: string | null) => iso ? new Date(new Date(iso).getTime() - new Date(iso).getTimezoneOffset() * 6e4).toISOString().slice(0, 16) : "";
-const fromLocal = (v: string) => v ? new Date(v).toISOString() : null;
+/** Q76: prices in the event's currency and sale windows read/written in the event's zone (was £ + London labels + browser-local inputs). */
+function helpersFor(currency: string, TZ: string) {
+  return {
+    sym: currencySymbol(currency),
+    gbp: (n: number) => formatMoney(n, currency, { decimals: n % 1 !== 0 }),
+    gbp2: (n: number) => formatMoney(n, currency, { decimals: true }),
+    dLabel: (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "",
+    tLabel: (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }) + (TZ === "Europe/London" ? "" : ` ${tzAbbrev(iso, TZ)}`) : "",
+    toLocal: (iso: string | null) => utcToWallString(iso, TZ),
+    fromLocal: (v: string) => wallToUtcIso(v, TZ),
+  };
+}
 const SUGGEST: Record<string, Omit<Tier, "sold" | "status" | "sale_start" | "sale_end">[]> = {
   default: [
     { name: "Early Bird", description: "Discounted entry for early guests.", price: 30, quantity: 50, badge: "Limited time", color: COLORS[0]!, kind: "early" },
@@ -32,6 +39,7 @@ const SUGGEST: Record<string, Omit<Tier, "sold" | "status" | "sale_start" | "sal
 
 export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "customer" | "organizer"; step: 1 | 2 | 3; data: SetupData; base: string; back: string; crumbs: [string, string][] }) {
   const router = useRouter(); const toast = useKitToast(); const { run, pending: saving } = useAction();
+  const { sym, gbp, gbp2, dLabel, tLabel, toLocal, fromLocal } = helpersFor(data.event.currency, data.event.timezone);
   // Q70: stay disabled until the next step renders (the buttons re-enabled while router.push was in flight).
   const [navigating, startNav] = useTransition(); const pending = saving || navigating;
   // Owner decision: no AI in the customer workspace. These helpers are rule-based in both modes; only Organizer brands them Gala Agent.
@@ -104,7 +112,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
             <ol className="ts-tiers">{tiers.map((t, i) => <li key={t.id ?? `n${i}`} className="ts-tier">
               <span className="ts-grip" aria-hidden><GripVertical size={15} /></span><Menu label={`Colour for ${t.name}`} width={170} trigger={({ toggle, open, id }) => <button className="ts-dot" style={{ background: t.color }} onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Change colour for ${t.name}`} />}>{close => <div className="ts-colors">{COLORS.map(c => <button key={c} style={{ background: c }} aria-label={c} onClick={() => { setTier(i, { color: c }); close(); }} />)}</div>}</Menu>
               <span className="ts-tname"><span className="k-row" style={{ gap: 8 }}><input className="ts-in-name" value={t.name} maxLength={60} onChange={x => setTier(i, { name: x.target.value })} aria-label="Tier name" />{t.badge && <i className={`ts-badge ${/popular/i.test(t.badge) ? "amber" : "red"}`}>{t.badge}</i>}</span><input className="ts-in-desc" value={t.description} maxLength={200} placeholder="Add a short description" onChange={x => setTier(i, { description: x.target.value })} aria-label={`${t.name} description`} /></span>
-              <label className="ts-field"><small>Price</small><span className="ts-step"><span className="ts-pre">£</span><DecimalInput fixed disabled={model === "free"} value={model === "free" ? 0 : t.price} onValue={n => setTier(i, { price: Math.max(0, n) })} aria-label={`${t.name} price`} /><button disabled={model === "free"} onClick={() => setTier(i, { price: Math.max(0, t.price - 5) })} aria-label="Lower price"><Minus size={13} /></button><button disabled={model === "free"} onClick={() => setTier(i, { price: t.price + 5 })} aria-label="Raise price"><Plus size={13} /></button></span></label>
+              <label className="ts-field"><small>Price</small><span className="ts-step"><span className="ts-pre">{sym}</span><DecimalInput fixed disabled={model === "free"} value={model === "free" ? 0 : t.price} onValue={n => setTier(i, { price: Math.max(0, n) })} aria-label={`${t.name} price`} /><button disabled={model === "free"} onClick={() => setTier(i, { price: Math.max(0, t.price - 5) })} aria-label="Lower price"><Minus size={13} /></button><button disabled={model === "free"} onClick={() => setTier(i, { price: t.price + 5 })} aria-label="Raise price"><Plus size={13} /></button></span></label>
               <label className="ts-field"><small>Quantity</small><span className="ts-step"><input inputMode="numeric" value={t.quantity} onChange={x => setTier(i, { quantity: Math.max(t.sold, Number(x.target.value.replace(/\D/g, "")) || 0) })} aria-label={`${t.name} quantity`} /><button onClick={() => setTier(i, { quantity: Math.max(t.sold, t.quantity - 5) })} aria-label="Fewer"><Minus size={13} /></button><button onClick={() => setTier(i, { quantity: t.quantity + 5 })} aria-label="More"><Plus size={13} /></button></span></label>
               <span className="ts-val"><b>{gbp(model === "free" ? 0 : t.price * t.quantity)}</b><small>{t.sold ? `${t.sold} sold` : "Total value"}</small></span>
               <Menu label={`Options for ${t.name}`} width={210} trigger={({ toggle, open, id }) => <button className="k-icon-btn ts-more" onClick={toggle} aria-expanded={open} aria-controls={id} aria-label={`Options for ${t.name}`}><MoreHorizontal size={16} /></button>}>{close => <>
@@ -125,7 +133,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
             <aside className="ts-side-tips"><div className={`ts-good ${saleDays != null && saleDays >= 14 ? "" : "warn"}`}><b>{saleDays != null && saleDays >= 14 ? <CheckCircle2 size={17} /> : <Info size={17} />}{saleDays != null && saleDays >= 14 ? "Sale timing looks good" : "Short sales window"}</b><p>{days != null ? `Your event is in ${days} days.` : ""} {saleDays != null ? `This gives you a ${saleDays}-day sales window.` : ""}</p></div>
               <div className="ts-tip"><Lightbulb size={18} /><span><b>{cu ? "Tip" : "Tip from Gala Agent"}</b><p>Most similar {typeWord(e.event_type)} start ticket sales 6–8 weeks before the event.</p></span></div></aside></section>
           <section className="ce-card ts-sec"><h2 className="bk-h">2. Purchase rules</h2><p className="bk-sub">Set simple rules for how tickets can be bought and used.</p>
-            <div className="ts-rgrid"><label className="bk-f"><span>Maximum tickets per order</span><span className="ts-num sm"><CalendarDays size={18} /><input inputMode="numeric" value={rules.order_limit} onChange={x => setRules(r => ({ ...r, order_limit: Math.min(100, Math.max(1, Number(x.target.value.replace(/\D/g, "")) || 1)) }))} aria-label="Maximum tickets per order" /><button onClick={() => setRules(r => ({ ...r, order_limit: Math.max(1, r.order_limit - 1) }))} aria-label="Fewer"><Minus size={15} /></button><button onClick={() => setRules(r => ({ ...r, order_limit: Math.min(100, r.order_limit + 1) }))} aria-label="More"><Plus size={15} /></button></span><small>Helps prevent bulk buying.</small></label>
+            <div className="ts-rgrid"><label className="bk-f"><span>Maximum tickets per order</span><span className="ts-num sm"><CalendarDays size={18} /><input inputMode="numeric" value={rules.order_limit || ""} onChange={x => setRules(r => ({ ...r, order_limit: Math.min(100, Number(x.target.value.replace(/\D/g, "")) || 0) }))} onBlur={() => setRules(r => ({ ...r, order_limit: Math.max(1, r.order_limit || 1) }))} aria-label="Maximum tickets per order" /><button onClick={() => setRules(r => ({ ...r, order_limit: Math.max(1, r.order_limit - 1) }))} aria-label="Fewer"><Minus size={15} /></button><button onClick={() => setRules(r => ({ ...r, order_limit: Math.min(100, r.order_limit + 1) }))} aria-label="More"><Plus size={15} /></button></span><small>Helps prevent bulk buying.</small></label>
               <label className="bk-f"><span>Ticket transfer</span><span className="bk-in bk-in-ic"><Repeat size={17} /><select value={rules.transfers ? "yes" : "no"} onChange={x => setRules(r => ({ ...r, transfers: x.target.value === "yes" }))}><option value="yes">Allowed</option><option value="no">Not allowed</option></select></span><small>{rules.transfers ? "Guests can transfer tickets to friends." : "Tickets stay with the original buyer."}</small></label>
               <label className="bk-f"><span>Official resale</span><span className="bk-in bk-in-ic"><Tag size={17} /><select value={rules.resale ? "yes" : "no"} onChange={x => setRules(r => ({ ...r, resale: x.target.value === "yes" }))}><option value="yes">Allowed (platform only)</option><option value="no">Not allowed</option></select></span><small>{rules.resale ? "Guests can resell through Gala Dock at face value." : "No resale — tickets can't be resold."}</small></label></div></section>
           <section className="ce-card ts-sec"><h2 className="bk-h">3. Refund policy</h2><p className="bk-sub">Choose a policy for customer refunds. You can add more detail in your event terms.</p>
@@ -135,7 +143,7 @@ export function TicketSetup({ mode, step, data, base, back, crumbs }: { mode: "c
             <div className="ts-promos">{promos.length > 0 && <div className="ts-ph"><span>Code</span><span>Discount type</span><span>Valid from</span><span>Valid until</span><span>Max uses (optional)</span><span /></div>}
               {promos.map((p, i) => <div key={p.id ?? `p${i}`} className="ts-prow">
                 <span className="bk-in bk-in-ic"><Tag size={16} /><input value={p.code} maxLength={24} placeholder="e.g. VIPGUEST" onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, code: x.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "") } : q))} aria-label="Promo code" /></span>
-                <span className="ts-disc"><select value={p.kind} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, kind: x.target.value as Promo["kind"] } : q))} aria-label="Discount type"><option value="percent">Percentage</option><option value="amount">Amount (£)</option></select><DecimalInput value={p.amount} onValue={n => setPromos(ps => ps.map((q, k) => k === i ? { ...q, amount: n } : q))} aria-label="Discount amount" /><i>{p.kind === "percent" ? "%" : "£"}</i></span>
+                <span className="ts-disc"><select value={p.kind} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, kind: x.target.value as Promo["kind"] } : q))} aria-label="Discount type"><option value="percent">Percentage</option><option value="amount">Amount ({sym})</option></select><DecimalInput value={p.amount} onValue={n => setPromos(ps => ps.map((q, k) => k === i ? { ...q, amount: n } : q))} aria-label="Discount amount" /><i>{p.kind === "percent" ? "%" : sym}</i></span>
                 <span className="bk-in"><input type="date" value={p.valid_from?.slice(0, 10) ?? ""} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, valid_from: x.target.value ? new Date(`${x.target.value}T00:00:00`).toISOString() : null } : q))} aria-label="Valid from" /></span>
                 <span className="bk-in"><input type="date" value={p.valid_until?.slice(0, 10) ?? ""} onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, valid_until: x.target.value ? new Date(`${x.target.value}T23:59:00`).toISOString() : null } : q))} aria-label="Valid until" /></span>
                 <span className="bk-in bk-in-ic"><InfinityIcon size={16} /><input inputMode="numeric" value={p.max_uses ?? ""} placeholder="No limit" onChange={x => setPromos(ps => ps.map((q, k) => k === i ? { ...q, max_uses: Number(x.target.value.replace(/\D/g, "")) || null } : q))} aria-label="Max uses" /></span>

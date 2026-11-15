@@ -8,6 +8,8 @@ import { untyped } from "@/lib/workspace/db";
 import { isCurrency, isTerm, isTimezone } from "@/lib/master-data";
 import type { Json, TablesInsert } from "@/types/database";
 import { planLimitError } from "@/lib/settings/rules";
+import { wallToIso } from "@/lib/events/wall-time";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 
 const Id = z.string().uuid();
 // Event type and currency validate against canonical master data (Q02) rather than local lists.
@@ -15,7 +17,7 @@ const EventType = z.string().refine(v => isTerm("event_type", v), "Unknown event
 const Currency = z.string().refine(v => isCurrency(v, { transactional: true }), "Unsupported currency");
 const S1 = z.object({ name: z.string().trim().min(2).max(100), event_type: EventType, client_name: z.string().max(120), visibility: z.enum(["public", "private"]), goal: z.string().trim().min(10).max(500), cover_image: z.string().max(300) });
 const S2 = z.object({ starts_at: z.string(), ends_at: z.string(), timezone: z.string().max(40).refine(v => isTimezone(v), "Unknown timezone"), flexible_dates: z.boolean(), venue_mode: z.enum(["known", "unknown"]), venue_listing_id: z.string().uuid().nullable(), venue_name: z.string().max(120), location: z.string().max(200), capacity: z.number().int().min(1).max(1_000_000), capacity_type: z.enum(["standing", "seated", "mixed"]), age: z.string().max(10), recurring: z.boolean() });
-const S3 = z.object({ model: z.enum(["ticketed", "free", "private", "client"]), currency: Currency, budget: z.number().min(0).max(100_000_000), revenue: z.number().min(0).max(100_000_000), profit: z.number().min(-100_000_000).max(100_000_000), avg_price: z.number().min(0).max(100000), tax: z.string().max(40), budget_lines: z.record(z.string().max(40), z.number().min(0)) });
+const S3 = z.object({ model: z.enum(["ticketed", "free", "private", "client"]), currency: Currency, budget: z.number().min(0).max(100_000_000), revenue: z.number().min(0).max(100_000_000), profit: z.number().min(-100_000_000).max(100_000_000), avg_price: z.number().min(0).max(100000), tax: z.string().max(80) /* Q76: country tax options (ref_countries) run to ~55 chars */, budget_lines: z.record(z.string().max(40), z.number().min(0)) });
 const S4 = z.object({ template_id: z.string().uuid().nullable(), modules: z.record(z.string().max(30), z.boolean()), provider_categories: z.array(z.string().max(40)).max(12), agent_goal: z.string().max(500), publish: z.boolean() });
 export type CreateStep1 = z.infer<typeof S1>; export type CreateStep2 = z.infer<typeof S2>; export type CreateStep3 = z.infer<typeof S3>; export type CreateStep4 = z.infer<typeof S4>;
 
@@ -37,7 +39,8 @@ export async function saveCreateStep(step: 1 | 2 | 3, id: string | null, input: 
     patch = { name: p.data.name, event_type: p.data.event_type, client_name: p.data.client_name, visibility: p.data.visibility, goal: p.data.goal, description: p.data.goal, ...(p.data.cover_image ? { cover_image: p.data.cover_image } : {}) };
   } else if (step === 2) {
     const p = S2.safeParse(input); if (!p.success) return { ok: false, error: "Check the dates, venue and capacity." };
-    const a = Date.parse(p.data.starts_at), b = Date.parse(p.data.ends_at);
+    // Q72: a naive "YYYY-MM-DDTHH:mm" is wall time in the chosen event timezone (ISO instants pass through unchanged).
+    const a = Date.parse(wallToIso(p.data.starts_at, p.data.timezone) ?? ""), b = Date.parse(wallToIso(p.data.ends_at, p.data.timezone) ?? "");
     if (Number.isNaN(a) || Number.isNaN(b) || b <= a) return { ok: false, error: "The event must end after it starts." };
     if (a < Date.now() - 864e5) return { ok: false, error: "Choose a future start date." };
     if (p.data.venue_listing_id) { const { data: v } = await o.ctx.supabase.from("listings").select("capacity_max,name,location").eq("id", p.data.venue_listing_id).maybeSingle(); if (v?.capacity_max && p.data.capacity > v.capacity_max) return { ok: false, error: `${v.name} holds up to ${v.capacity_max.toLocaleString("en-GB")}.` }; }
@@ -50,7 +53,9 @@ export async function saveCreateStep(step: 1 | 2 | 3, id: string | null, input: 
   }
   patch.settings = s as Json;
   if (!o.e) {
-    const { data, error } = await o.ctx.supabase.from("events").insert({ ...patch, owner_id: o.ctx.user.id, workspace_id: o.ctx.workspace.id, management: "professional", status: "draft" } as TablesInsert<"events">).select("id").single();
+    // Q72: a new event starts in the workspace's zone and currency (business country / Connect default currency), not London/GBP.
+    const loc = workspaceLocale(o.ctx.workspace.settings);
+    const { data, error } = await o.ctx.supabase.from("events").insert({ timezone: loc.timezone, currency: loc.currency, ...patch, owner_id: o.ctx.user.id, workspace_id: o.ctx.workspace.id, management: "professional", status: "draft" } as TablesInsert<"events">).select("id").single();
     if (error || !data) return { ok: false, error: "Could not create the event." };
     revalidatePath("/organizer/events"); return { ok: true, data: { id: data.id } };
   }

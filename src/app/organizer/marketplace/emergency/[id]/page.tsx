@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeTz } from "@/lib/i18n/tz";
 import { notFound } from "next/navigation";
 import { getOrganizer } from "@/lib/data/context";
 import { untyped } from "@/lib/workspace/db";
@@ -17,23 +18,25 @@ export default async function EmergencyRequestPage({ params }: PageProps<"/organ
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const ctx = await getOrganizer(`/organizer/marketplace/emergency/${id}`);
   const db = untyped(ctx.supabase as never);
-  const { data: r } = await db.from("emergency_requests").select("*, events!inner(id,name,workspace_id)").eq("id", id).eq("events.workspace_id", ctx.workspace.id).maybeSingle();
+  const { data: r } = await db.from("emergency_requests").select("*, events!inner(id,name,workspace_id,currency,timezone)").eq("id", id).eq("events.workspace_id", ctx.workspace.id).maybeSingle();
   if (!r) notFound();
   const { data: cands } = await db.from("emergency_candidates").select("id,workspace_id,listing_id,distance_km,status,quote_amount,eta_minutes,note,responded_at,build_item_id").eq("request_id", id).order("quote_amount", { ascending: true, nullsFirst: false });
   const listingIds = ((cands ?? []) as Cand[]).map(c => c.listing_id).filter(Boolean);
-  const { data: listings } = listingIds.length ? await db.from("listings").select("id,name,rating,review_count,slug").in("id", listingIds) : { data: [] };
-  const L = new Map((listings ?? []).map((l: { id: string; name: string; rating: number | null; review_count: number | null }) => [l.id, l]));
+  const { data: listings } = listingIds.length ? await db.from("listings").select("id,name,rating,review_count,slug,currency").in("id", listingIds) : { data: [] };
+  const L = new Map((listings ?? []).map((l: { id: string; name: string; rating: number | null; review_count: number | null; currency?: string | null }) => [l.id, l]));
+  // Q76: each quote is in that supplier's (listing) currency — the booking charges in it; the budget is the event's currency.
+  const evCur = String(r.events.currency || "GBP").toUpperCase(), tz = safeTz(r.events.timezone);
   const open = r.status === "open" || r.status === "matching";
   const accepted = ((cands ?? []) as Cand[]).find(c => c.status === "accepted");
   const counts = ((cands ?? []) as Cand[]).reduce((a, c) => { a.seen += c.status !== "delivered" ? 1 : 0; a.replied += ["interested", "quoted", "declined", "accepted", "not_selected"].includes(c.status) && c.responded_at ? 1 : 0; return a; }, { seen: 0, replied: 0 });
   return <div className="k-col" style={{ gap: 16 }}>
     <PageHead crumbs={[{ label: "Organizer", href: "/organizer" }, { label: "Marketplace", href: "/organizer/marketplace" }, { label: "Emergency Supply", href: "/organizer/marketplace/emergency" }, { label: r.reference }]}
-      title={`${categoryLabel(r.category)} — ${r.events.name}`} sub={`Needed on site by ${dateShort(r.required_arrival)}, ${time(r.required_arrival)}${r.location ? ` · ${r.location}` : ""}`}
+      title={`${categoryLabel(r.category)} — ${r.events.name}`} sub={`Needed on site by ${dateShort(r.required_arrival, tz)}, ${time(r.required_arrival, tz)}${r.location ? ` · ${r.location}` : ""}`}
       actions={open ? <EmergencyDecision requestId={r.id} kind="cancel" /> : undefined} />
     <div className="mk-page">
       <div className="mk-row"><span className={`mk-tag ${SEVERITY[r.severity]?.[1]}`}>{SEVERITY[r.severity]?.[0]}</span>
         <span className="mk-tag grey">{r.pool_size} contacted · {counts.seen} seen · {counts.replied} replied</span>
-        {r.budget_max != null && <span className="mk-tag grey">Budget up to {money(r.budget_max)}</span>}</div>
+        {r.budget_max != null && <span className="mk-tag grey">Budget up to {money(r.budget_max, evCur)}</span>}</div>
       {accepted?.build_item_id && <p className="mk-note">You accepted a quote. <Link className="mk-link" href={`/organizer/marketplace/bookings/${accepted.build_item_id}`}>Confirm and pay for the booking</Link>.</p>}
       {r.scope && <section className="mk-card"><h2>Scope</h2><p className="mk-note">{r.scope}</p>{r.failure_reason && <p className="mk-note">What happened: {r.failure_reason}</p>}</section>}
       <section className="mk-card" aria-labelledby="em-c"><h2 id="em-c">Providers contacted</h2>
@@ -42,7 +45,7 @@ export default async function EmergencyRequestPage({ params }: PageProps<"/organ
           <div className="mk-main"><b>{l?.name ?? "Provider"}</b>
             <small>{c.distance_km != null ? `${c.distance_km} km away` : "Distance unknown"}{l?.rating ? ` · ★ ${Number(l.rating).toFixed(1)}` : ""}{c.eta_minutes != null ? ` · arrives in ~${c.eta_minutes} min` : ""}</small>
             {c.note && <small>“{c.note}”</small>}</div>
-          <span className="mk-row">{c.quote_amount != null && <b>{money(c.quote_amount)}</b>}<span className={`mk-tag ${tone}`}>{label}</span>
+          <span className="mk-row">{c.quote_amount != null && <b>{money(c.quote_amount, l?.currency || "GBP")}</b>}<span className={`mk-tag ${tone}`}>{label}</span>
             {open && c.status === "quoted" && <EmergencyDecision candidateId={c.id} kind="accept" />}</span>
         </li>; })}</ul>}
       </section>

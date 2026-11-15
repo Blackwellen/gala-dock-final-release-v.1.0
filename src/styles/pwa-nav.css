@@ -48,6 +48,13 @@
 @media (max-width:1279px) and (max-height:500px) {
   .pwa-top { min-height:48px; }.pwa-search { top:48px; }.pwa-back { min-height:36px; }
   .pwa-sheet[open] { max-height:calc(100dvh - 8px); }.pwa-grid a { min-height:76px; padding:8px 4px; }
+  /* R1: phone landscape (≤500px tall) — fixed chrome took 41% of a 390px screen. The top bar scrolls away with the page and the
+     tab bar is one row (icon beside label), still 44px per target; together they now hold ~15% of the height. */
+  :root { --pwa-bottom:calc(52px + env(safe-area-inset-bottom,0px)); }
+  html { scroll-padding-block:8px var(--pwa-bottom); }
+  .pwa-top { position:relative; }
+  .pwa-tabs { padding-top:3px; padding-bottom:max(3px, env(safe-area-inset-bottom,0px)); }
+  .pwa-tabs a,.pwa-tabs button { min-height:44px; flex-direction:row; gap:6px; padding:2px 4px; }
 }
 @media (prefers-reduced-motion:no-preference) { .pwa-sheet[open] { animation:pwa-rise .18s ease-out; } }
 @keyframes pwa-rise { from { transform:translateY(24px); opacity:.5; } to { transform:translateY(0); opacity:1; } }
@@ -65,3 +72,6 @@
  .pwa-title-button:focus-visible { outline:2px solid #0b08f8;outline-offset:2px;border-radius:8px; }
 }
 @media(max-width:1279px) and (max-height:500px){.pwa-title small{display:none}}
+/* Q64: unread marks in the notifications sheet */
+.pwa-notices a.new { background:#edf1ff; }
+.pwa-notices .pwa-new { display:inline-block; width:8px; height:8px; margin-right:7px; border-radius:50%; background:#0038fd; vertical-align:middle; }

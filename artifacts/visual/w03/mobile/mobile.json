@@ -1,0 +1,470 @@
+[
+ {
+  "route": "/organizer",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/events",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/money",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/team",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/sales",
+  "w": 390,
+  "h": 844,
+  "scrollWidth": 390,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    0,
+    16,
+    390,
+    828
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/events",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/money",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/team",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ },
+ {
+  "route": "/organizer/sales",
+  "w": 820,
+  "h": 1180,
+  "scrollWidth": 820,
+  "overflowX": false,
+  "tabs": [
+   "Home",
+   "Events",
+   "Calendar",
+   "Marketplace",
+   "Menu"
+  ],
+  "leaks": [],
+  "leakCount": 0,
+  "desktopSide": false,
+  "sheet": {
+   "open": true,
+   "box": [
+    30,
+    169,
+    760,
+    1011
+   ],
+   "outside": 0,
+   "items": [
+    "Notifications",
+    "Sales",
+    "Tickets & Promotion",
+    "Media Studio",
+    "Team",
+    "Money",
+    "Gala Agent",
+    "Settings",
+    "Messages",
+    "Help"
+   ]
+  }
+ }
+]

@@ -1,0 +1,21 @@
+{
+  "observedUtc": "2026-10-13T20:21:30.416Z",
+  "scope": "Linked production configuration only; no deployment or payment mutation",
+  "variables": {
+    "STRIPE_CONNECT_SECRET_KEY": {
+      "status": "value_unavailable",
+      "storageType": "sensitive"
+    },
+    "STRIPE_PUBLIC_KEY": {
+      "status": "value_unavailable",
+      "storageType": "sensitive"
+    },
+    "STRIPE_WEBHOOK_SECRET": {
+      "status": "value_unavailable",
+      "storageType": "sensitive"
+    }
+  },
+  "payment": {
+    "status": "unverified"
+  }
+}

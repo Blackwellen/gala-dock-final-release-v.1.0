@@ -13,7 +13,7 @@ export type Item = {
   id: string; status: string; role: string; listing_id: string; package: string; scope: string; image: string; amount: number | null; deposit: number;
   response_deadline: string | null; hold_expires_at: string | null; created_at: string; updated_at: string; notes: string;
   quote: Record<string, unknown>; terms_snapshot: Record<string, unknown> | null;
-  event: { id: string; name: string; event_type: string; starts_at: string | null; ends_at: string | null; guest_count: number; location: string; city: string; venue_name: string; description: string; client_name: string; cover_image: string; settings: Record<string, unknown> } | null;
+  event: { id: string; name: string; event_type: string; starts_at: string | null; ends_at: string | null; /** Q72 */ timezone?: string | null; /** Q72 */ currency?: string | null; guest_count: number; location: string; city: string; venue_name: string; description: string; client_name: string; cover_image: string; settings: Record<string, unknown> } | null;
   request: { id: string; reference: string; title: string; scope: string; requirements: Record<string, unknown>; budget_min: number | null; budget_max: number | null; emergency: boolean; response_hours: number } | null;
 };
 export type Job = {
@@ -26,7 +26,7 @@ export type Space = { id: string; venue_id: string; name: string; status: string
 export type Crew = { id: string; name: string; role: string; member_type: string; status: string; avatar: string; skills: string[]; day_rate: number | null; location: string };
 
 const ITEM_SELECT = "id,status,role,listing_id,package,scope,image,amount,deposit,response_deadline,hold_expires_at,created_at,updated_at,notes,quote,terms_snapshot," +
-  "event:events(id,name,event_type,starts_at,ends_at,guest_count,location,city,venue_name,description,client_name,cover_image,settings)," +
+  "event:events(id,name,event_type,starts_at,ends_at,timezone,currency,guest_count,location,city,venue_name,description,client_name,cover_image,settings)," +
   "request:provider_requests(id,reference,title,scope,requirements,budget_min,budget_max,emergency,response_hours)";
 
 /** Everything below is scoped to the active workspace; RLS additionally limits rows to the caller's memberships. */

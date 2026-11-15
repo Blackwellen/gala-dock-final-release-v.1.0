@@ -1,0 +1,1038 @@
+{
+  "observedUtc": "2026-10-13T00:45:30.789Z",
+  "scope": "Actual authenticated route and in-page query tab/wizard navigation, 390x844 DPR2. No mutation or whole-workflow certification.",
+  "report": [
+    {
+      "role": "organizer",
+      "route": "/organizer/money?tab=transactions",
+      "landed": "/organizer/money?tab=transactions",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Money",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/organizer",
+          "label": "Organizer"
+        },
+        {
+          "href": "/organizer/money",
+          "label": "Overview"
+        },
+        {
+          "href": "/organizer/money?tab=receivables",
+          "label": "Receivables"
+        },
+        {
+          "href": "/organizer/money?tab=payables",
+          "label": "Payables"
+        },
+        {
+          "href": "/organizer/money?tab=transactions",
+          "label": "Transactions"
+        },
+        {
+          "href": "/organizer/money?tab=settlements",
+          "label": "Settlements"
+        },
+        {
+          "href": "/organizer/money?tab=reports",
+          "label": "Reports"
+        }
+      ]
+    },
+    {
+      "role": "organizer",
+      "route": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9?tab=schedule",
+      "landed": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9?tab=schedule",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Invoice INV-1047",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/organizer",
+          "label": "Organizer"
+        },
+        {
+          "href": "/organizer/money",
+          "label": "Money"
+        },
+        {
+          "href": "/organizer/money?tab=receivables",
+          "label": "Invoices"
+        },
+        {
+          "href": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9",
+          "label": "Invoice"
+        },
+        {
+          "href": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9?tab=schedule",
+          "label": "Schedule"
+        },
+        {
+          "href": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9?tab=activity",
+          "label": "Activity"
+        }
+      ]
+    },
+    {
+      "role": "organizer",
+      "route": "/organizer/media?tab=templates",
+      "landed": "/organizer/media?tab=templates",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Media Studio",
+      "issues": [
+        "axe:color-contrast"
+      ],
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "div[data-layer=\"tor\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpi\"] > span"
+            ],
+            [
+              "div[data-layer=\"tt2\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3d\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3m\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3v\"] > span"
+            ],
+            [
+              "div[data-layer=\"t44\"] > span"
+            ],
+            [
+              "div[data-layer=\"t9j\"] > span"
+            ],
+            [
+              "div[data-layer=\"ta9\"] > span"
+            ],
+            [
+              "div[data-layer=\"tab\"] > span"
+            ],
+            [
+              "div[data-layer=\"tad\"] > span"
+            ],
+            [
+              "div[data-layer=\"tav\"] > span"
+            ],
+            [
+              "div[data-layer=\"ted\"] > span"
+            ],
+            [
+              "div[data-layer=\"tee\"] > span"
+            ],
+            [
+              "div[data-layer=\"tel\"] > span"
+            ],
+            [
+              "div[data-layer=\"tev\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf7\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf8\"] > span"
+            ],
+            [
+              "div[data-layer=\"tff\"] > span"
+            ],
+            [
+              "div[data-layer=\"tfp\"] > span"
+            ],
+            [
+              "div[data-layer=\"tk4\"] > span"
+            ]
+          ]
+        }
+      ],
+      "subviewLinks": [
+        {
+          "href": "/organizer/media?tab=designs",
+          "label": "My designs"
+        },
+        {
+          "href": "/organizer/media?tab=templates",
+          "label": "Templates"
+        },
+        {
+          "href": "/organizer/media?tab=community",
+          "label": "Community"
+        }
+      ]
+    },
+    {
+      "role": "organizer",
+      "route": "/organizer/media?tab=community",
+      "landed": "/organizer/media?tab=community",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Media Studio",
+      "issues": [
+        "axe:color-contrast"
+      ],
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "div[data-layer=\"tt2\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpi\"] > span"
+            ],
+            [
+              "div[data-layer=\"tor\"] > span"
+            ],
+            [
+              "div[data-layer=\"tk4\"] > span"
+            ],
+            [
+              "div[data-layer=\"tnp\"] > span"
+            ],
+            [
+              "div[data-layer=\"tog\"] > span"
+            ],
+            [
+              "div[data-layer=\"toj\"] > span"
+            ],
+            [
+              "div[data-layer=\"tnf\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpu\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpx\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq0\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq3\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq6\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq9\"] > span"
+            ],
+            [
+              "div[data-layer=\"tra\"] > span"
+            ],
+            [
+              "div[data-layer=\"trd\"] > span"
+            ],
+            [
+              "div[data-layer=\"trg\"] > span"
+            ],
+            [
+              "div[data-layer=\"tp9\"] > span"
+            ],
+            [
+              "div[data-layer=\"ts2\"] > span"
+            ],
+            [
+              "div[data-layer=\"tsq\"] > span"
+            ],
+            [
+              "div[data-layer=\"ted\"] > span"
+            ],
+            [
+              "div[data-layer=\"tee\"] > span"
+            ],
+            [
+              "div[data-layer=\"tel\"] > span"
+            ],
+            [
+              "div[data-layer=\"tev\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf7\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf8\"] > span"
+            ],
+            [
+              "div[data-layer=\"tff\"] > span"
+            ],
+            [
+              "div[data-layer=\"tfp\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3d\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3m\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3v\"] > span"
+            ],
+            [
+              "div[data-layer=\"t44\"] > span"
+            ]
+          ]
+        }
+      ],
+      "subviewLinks": [
+        {
+          "href": "/organizer/media?tab=designs",
+          "label": "My designs"
+        },
+        {
+          "href": "/organizer/media?tab=templates",
+          "label": "Templates"
+        },
+        {
+          "href": "/organizer/media?tab=community",
+          "label": "Community"
+        }
+      ]
+    },
+    {
+      "role": "organizer",
+      "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?section=checkin&tab=operations",
+      "landed": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?section=checkin&tab=operations",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Neon Nights Festival",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/organizer",
+          "label": "Organizer"
+        },
+        {
+          "href": "/organizer/events",
+          "label": "Events"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228",
+          "label": "Overview"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan",
+          "label": "Plan"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell",
+          "label": "Sell & Promote"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations",
+          "label": "Operations"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=money",
+          "label": "Money"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=live",
+          "label": "Live Mode"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations",
+          "label": "Run Sheet"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=team",
+          "label": "Team/Crew"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=checkin",
+          "label": "Check-in"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/map?tab=operations",
+          "label": "Floor & Map"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=hospitality",
+          "label": "Hospitality"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=logistics",
+          "label": "Logistics"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=risk",
+          "label": "Risk"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=incidents",
+          "label": "Incidents"
+        },
+        {
+          "href": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=live",
+          "label": "Live Event Mode"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/media?tab=templates",
+      "landed": "/provider/media?tab=templates",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Media Studio",
+      "issues": [
+        "axe:color-contrast"
+      ],
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "div[data-layer=\"tor\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpi\"] > span"
+            ],
+            [
+              "div[data-layer=\"tt2\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3d\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3m\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3v\"] > span"
+            ],
+            [
+              "div[data-layer=\"t44\"] > span"
+            ],
+            [
+              "div[data-layer=\"t9j\"] > span"
+            ],
+            [
+              "div[data-layer=\"ta9\"] > span"
+            ],
+            [
+              "div[data-layer=\"tab\"] > span"
+            ],
+            [
+              "div[data-layer=\"tad\"] > span"
+            ],
+            [
+              "div[data-layer=\"tav\"] > span"
+            ],
+            [
+              "div[data-layer=\"ted\"] > span"
+            ],
+            [
+              "div[data-layer=\"tee\"] > span"
+            ],
+            [
+              "div[data-layer=\"tel\"] > span"
+            ],
+            [
+              "div[data-layer=\"tev\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf7\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf8\"] > span"
+            ],
+            [
+              "div[data-layer=\"tff\"] > span"
+            ],
+            [
+              "div[data-layer=\"tfp\"] > span"
+            ],
+            [
+              "div[data-layer=\"tk4\"] > span"
+            ]
+          ]
+        }
+      ],
+      "subviewLinks": [
+        {
+          "href": "/provider/media?tab=designs",
+          "label": "My designs"
+        },
+        {
+          "href": "/provider/media?tab=templates",
+          "label": "Templates"
+        },
+        {
+          "href": "/provider/media?tab=community",
+          "label": "Community"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/media?tab=community",
+      "landed": "/provider/media?tab=community",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Media Studio",
+      "issues": [
+        "axe:color-contrast"
+      ],
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "div[data-layer=\"tt2\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpi\"] > span"
+            ],
+            [
+              "div[data-layer=\"tor\"] > span"
+            ],
+            [
+              "div[data-layer=\"tk4\"] > span"
+            ],
+            [
+              "div[data-layer=\"tnp\"] > span"
+            ],
+            [
+              "div[data-layer=\"tog\"] > span"
+            ],
+            [
+              "div[data-layer=\"toj\"] > span"
+            ],
+            [
+              "div[data-layer=\"tnf\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpu\"] > span"
+            ],
+            [
+              "div[data-layer=\"tpx\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq0\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq3\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq6\"] > span"
+            ],
+            [
+              "div[data-layer=\"tq9\"] > span"
+            ],
+            [
+              "div[data-layer=\"tra\"] > span"
+            ],
+            [
+              "div[data-layer=\"trd\"] > span"
+            ],
+            [
+              "div[data-layer=\"trg\"] > span"
+            ],
+            [
+              "div[data-layer=\"tp9\"] > span"
+            ],
+            [
+              "div[data-layer=\"ts2\"] > span"
+            ],
+            [
+              "div[data-layer=\"tsq\"] > span"
+            ],
+            [
+              "div[data-layer=\"ted\"] > span"
+            ],
+            [
+              "div[data-layer=\"tee\"] > span"
+            ],
+            [
+              "div[data-layer=\"tel\"] > span"
+            ],
+            [
+              "div[data-layer=\"tev\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf7\"] > span"
+            ],
+            [
+              "div[data-layer=\"tf8\"] > span"
+            ],
+            [
+              "div[data-layer=\"tff\"] > span"
+            ],
+            [
+              "div[data-layer=\"tfp\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3d\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3m\"] > span"
+            ],
+            [
+              "div[data-layer=\"t3v\"] > span"
+            ],
+            [
+              "div[data-layer=\"t44\"] > span"
+            ]
+          ]
+        }
+      ],
+      "subviewLinks": [
+        {
+          "href": "/provider/media?tab=designs",
+          "label": "My designs"
+        },
+        {
+          "href": "/provider/media?tab=templates",
+          "label": "Templates"
+        },
+        {
+          "href": "/provider/media?tab=community",
+          "label": "Community"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/bookings?tab=cancelled",
+      "landed": "/provider/bookings?tab=cancelled",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Bookings",
+      "issues": [
+        "axe:color-contrast"
+      ],
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(5) > .ws-chip.red"
+            ],
+            [
+              "tr:nth-child(2) > td:nth-child(5) > .ws-chip.red"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(5) > .ws-chip.red"
+            ]
+          ]
+        }
+      ],
+      "subviewLinks": [
+        {
+          "href": "/provider/bookings",
+          "label": "Upcoming (11)"
+        },
+        {
+          "href": "/provider/bookings?tab=active",
+          "label": "Active (3)"
+        },
+        {
+          "href": "/provider/bookings?tab=past",
+          "label": "Past (10)"
+        },
+        {
+          "href": "/provider/bookings?tab=cancelled",
+          "label": "Cancelled (3)"
+        },
+        {
+          "href": "/provider/bookings?tab=cancelled",
+          "label": ""
+        },
+        {
+          "href": "/provider/calendar",
+          "label": ""
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/team?tab=people&week=2026-10-05",
+      "landed": "/provider/team?tab=people&week=2026-10-05",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Team",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/team",
+          "label": "People"
+        },
+        {
+          "href": "/provider/team?tab=availability",
+          "label": "Availability"
+        },
+        {
+          "href": "/provider/team?tab=assignments",
+          "label": "Assignments"
+        },
+        {
+          "href": "/provider/team?tab=people&week=2026-09-28",
+          "label": ""
+        },
+        {
+          "href": "/provider/team?tab=people",
+          "label": "Today"
+        },
+        {
+          "href": "/provider/team?tab=people&week=2026-10-12",
+          "label": ""
+        },
+        {
+          "href": "/provider/calendar?view=day&layers=crew",
+          "label": "Day"
+        },
+        {
+          "href": "/provider/calendar?view=month&layers=crew",
+          "label": "Month"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/team?tab=people&week=2026-10-19",
+      "landed": "/provider/team?tab=people&week=2026-10-19",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Team",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/team",
+          "label": "People"
+        },
+        {
+          "href": "/provider/team?tab=availability",
+          "label": "Availability"
+        },
+        {
+          "href": "/provider/team?tab=assignments",
+          "label": "Assignments"
+        },
+        {
+          "href": "/provider/team?tab=people&week=2026-10-12",
+          "label": ""
+        },
+        {
+          "href": "/provider/team?tab=people",
+          "label": "Today"
+        },
+        {
+          "href": "/provider/team?tab=people&week=2026-10-26",
+          "label": ""
+        },
+        {
+          "href": "/provider/calendar?view=day&layers=crew",
+          "label": "Day"
+        },
+        {
+          "href": "/provider/calendar?view=month&layers=crew",
+          "label": "Month"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/settings?tab=booking",
+      "landed": "/provider/settings?tab=booking",
+      "status": 200,
+      "overflow": 39,
+      "heading": "Settings",
+      "issues": [
+        "page overflow 39px"
+      ],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/settings",
+          "label": "Workspace"
+        },
+        {
+          "href": "/provider/settings?tab=capabilities",
+          "label": "Capabilities"
+        },
+        {
+          "href": "/provider/settings?tab=team",
+          "label": "Team & Access"
+        },
+        {
+          "href": "/provider/settings?tab=booking",
+          "label": "Marketplace & Booking Rules"
+        },
+        {
+          "href": "/provider/settings?tab=billing",
+          "label": "Payments & Billing"
+        },
+        {
+          "href": "/provider/settings?tab=communications",
+          "label": "Communications"
+        },
+        {
+          "href": "/provider/settings?tab=integrations",
+          "label": "Integrations"
+        },
+        {
+          "href": "/provider/settings?tab=agent",
+          "label": "Agent"
+        },
+        {
+          "href": "/provider/settings?tab=notifications",
+          "label": "Notifications"
+        },
+        {
+          "href": "/provider/settings?tab=security",
+          "label": "Security"
+        },
+        {
+          "href": "/provider/settings?tab=developers",
+          "label": "Developers"
+        },
+        {
+          "href": "/provider/settings?tab=demo",
+          "label": "Demo"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/settings?tab=billing",
+      "landed": "/provider/settings?tab=billing",
+      "status": 200,
+      "overflow": 39,
+      "heading": "Settings",
+      "issues": [
+        "page overflow 39px"
+      ],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/settings",
+          "label": "Workspace"
+        },
+        {
+          "href": "/provider/settings?tab=capabilities",
+          "label": "Capabilities"
+        },
+        {
+          "href": "/provider/settings?tab=team",
+          "label": "Team & Access"
+        },
+        {
+          "href": "/provider/settings?tab=booking",
+          "label": "Marketplace & Booking Rules"
+        },
+        {
+          "href": "/provider/settings?tab=billing",
+          "label": "Payments & Billing"
+        },
+        {
+          "href": "/provider/settings?tab=communications",
+          "label": "Communications"
+        },
+        {
+          "href": "/provider/settings?tab=integrations",
+          "label": "Integrations"
+        },
+        {
+          "href": "/provider/settings?tab=agent",
+          "label": "Agent"
+        },
+        {
+          "href": "/provider/settings?tab=notifications",
+          "label": "Notifications"
+        },
+        {
+          "href": "/provider/settings?tab=security",
+          "label": "Security"
+        },
+        {
+          "href": "/provider/settings?tab=developers",
+          "label": "Developers"
+        },
+        {
+          "href": "/provider/settings?tab=demo",
+          "label": "Demo"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/settings?tab=communications",
+      "landed": "/provider/settings?tab=communications",
+      "status": 200,
+      "overflow": 39,
+      "heading": "Settings",
+      "issues": [
+        "page overflow 39px"
+      ],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/settings",
+          "label": "Workspace"
+        },
+        {
+          "href": "/provider/settings?tab=capabilities",
+          "label": "Capabilities"
+        },
+        {
+          "href": "/provider/settings?tab=team",
+          "label": "Team & Access"
+        },
+        {
+          "href": "/provider/settings?tab=booking",
+          "label": "Marketplace & Booking Rules"
+        },
+        {
+          "href": "/provider/settings?tab=billing",
+          "label": "Payments & Billing"
+        },
+        {
+          "href": "/provider/settings?tab=communications",
+          "label": "Communications"
+        },
+        {
+          "href": "/provider/settings?tab=integrations",
+          "label": "Integrations"
+        },
+        {
+          "href": "/provider/settings?tab=agent",
+          "label": "Agent"
+        },
+        {
+          "href": "/provider/settings?tab=notifications",
+          "label": "Notifications"
+        },
+        {
+          "href": "/provider/settings?tab=security",
+          "label": "Security"
+        },
+        {
+          "href": "/provider/settings?tab=developers",
+          "label": "Developers"
+        },
+        {
+          "href": "/provider/settings?tab=demo",
+          "label": "Demo"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/settings?tab=agent",
+      "landed": "/provider/settings?tab=agent",
+      "status": 200,
+      "overflow": 39,
+      "heading": "Settings",
+      "issues": [
+        "page overflow 39px"
+      ],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/settings",
+          "label": "Workspace"
+        },
+        {
+          "href": "/provider/settings?tab=capabilities",
+          "label": "Capabilities"
+        },
+        {
+          "href": "/provider/settings?tab=team",
+          "label": "Team & Access"
+        },
+        {
+          "href": "/provider/settings?tab=booking",
+          "label": "Marketplace & Booking Rules"
+        },
+        {
+          "href": "/provider/settings?tab=billing",
+          "label": "Payments & Billing"
+        },
+        {
+          "href": "/provider/settings?tab=communications",
+          "label": "Communications"
+        },
+        {
+          "href": "/provider/settings?tab=integrations",
+          "label": "Integrations"
+        },
+        {
+          "href": "/provider/settings?tab=agent",
+          "label": "Agent"
+        },
+        {
+          "href": "/provider/settings?tab=notifications",
+          "label": "Notifications"
+        },
+        {
+          "href": "/provider/settings?tab=security",
+          "label": "Security"
+        },
+        {
+          "href": "/provider/settings?tab=developers",
+          "label": "Developers"
+        },
+        {
+          "href": "/provider/settings?tab=demo",
+          "label": "Demo"
+        }
+      ]
+    },
+    {
+      "role": "provider",
+      "route": "/provider/opportunities?tab=quotes&view=map",
+      "landed": "/provider/opportunities?tab=quotes&view=map",
+      "status": 200,
+      "overflow": 0,
+      "heading": "Opportunities",
+      "issues": [],
+      "axe": [],
+      "subviewLinks": [
+        {
+          "href": "/provider/opportunities",
+          "label": "Requests (0)"
+        },
+        {
+          "href": "/provider/opportunities?tab=quotes",
+          "label": "Quotes (3)"
+        },
+        {
+          "href": "/provider/opportunities?tab=holds",
+          "label": "Holds (0)"
+        },
+        {
+          "href": "/provider/opportunities?tab=emergency",
+          "label": "Emergency (0)"
+        },
+        {
+          "href": "/provider/opportunities?tab=quotes",
+          "label": ""
+        },
+        {
+          "href": "/provider/opportunities?tab=quotes&view=map",
+          "label": ""
+        }
+      ]
+    }
+  ]
+}

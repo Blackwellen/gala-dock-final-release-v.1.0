@@ -13,3 +13,5 @@
 .op-feas li{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 10px;border-radius:9px;background:#fffaf2}
 .op-feas li.blocker{background:#fff5f7}.op-feas li.blocker svg{color:#e8233c}.op-feas li.warning svg{color:#e27a00}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* R1: readiness domains sit two across on very wide monitors. */
+@media (min-width:2400px){.op-domains:has(>li+li+li){grid-template-columns:repeat(2,minmax(0,1fr))}}

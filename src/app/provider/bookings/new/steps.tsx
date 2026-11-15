@@ -1,4 +1,5 @@
 "use client";
+import { currencySymbol } from "@/lib/i18n/money";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -187,8 +188,9 @@ export function StepSpace({ draft, venue, spaces, layouts, packages, busy, daySt
 
 /* ───────── Step 3: Pricing & Terms ───────── */
 type Svc = { id: string; name: string; category: string; price: number; unit: string; image: string };
-export function StepPricing({ draft, venue, space, packages, services, taxBps, defaults, policies, conflict }: { draft: BookingDraft; venue: { id: string; name: string; image: string }; space: { id: string; name: string; rate_hourly: number | null; image: string } | null;
+export function StepPricing({ draft, venue, space, packages, services, taxBps, defaults, policies, conflict, currency = "GBP" }: { currency?: string; draft: BookingDraft; venue: { id: string; name: string; image: string }; space: { id: string; name: string; rate_hourly: number | null; image: string } | null;
   packages: Pkg[]; services: Svc[]; taxBps: number; defaults: { hire: number; minimumSpend: number; depositPct: number }; policies: Record<string, string>; conflict: string | null }) {
+  const sym = currencySymbol(currency);   // Q76: the provider's own currency
   const { pending, error, run } = useStep();
   const guests = draft.guests ?? 0;
   const pkg = packages.find(p => p.id === draft.packageId);
@@ -215,17 +217,17 @@ export function StepPricing({ draft, venue, space, packages, services, taxBps, d
         <Link className="ws-btn outline sm" href="/provider/bookings/new?step=1">Edit event details</Link></div></section>
       <div className="wz-2col">
         <section className="ws-panel wz-card"><h2>1. Hire &amp; venue fees</h2><p className="qb-sub">Set the venue hire, minimum spend and any included items.</p>
-          <div className="wz-2"><label className="ws-field"><span>Venue hire (GBP) *</span><span className="wz-money"><span>£</span><input type="number" min={0} value={d.hire ?? 0} onChange={e => set({ hire: Number(e.target.value) })} /></span></label>
+          <div className="wz-2"><label className="ws-field"><span>Venue hire ({currency}) *</span><span className="wz-money"><span>{sym}</span><input type="number" min={0} value={d.hire ?? 0} onChange={e => set({ hire: Number(e.target.value) })} /></span></label>
             <label className="ws-field"><span>Basis</span><select value={d.hireBasis} onChange={e => set({ hireBasis: e.target.value as "fixed" | "hourly" })}><option value="fixed">Fixed</option><option value="hourly">Per hour ({hours}h)</option></select></label></div>
-          <div className="wz-2"><label className="ws-field"><span>Minimum spend <small>(optional)</small></span><span className="wz-money"><span>£</span><input type="number" min={0} value={d.minimumSpend ?? 0} onChange={e => set({ minimumSpend: Number(e.target.value) })} /></span></label>
+          <div className="wz-2"><label className="ws-field"><span>Minimum spend <small>(optional)</small></span><span className="wz-money"><span>{sym}</span><input type="number" min={0} value={d.minimumSpend ?? 0} onChange={e => set({ minimumSpend: Number(e.target.value) })} /></span></label>
             <label className="ws-field"><span>Applies to</span><select disabled><option>Hire + F&amp;B</option></select></label></div>
           {[["furniture", "Include standard furniture (tables, chairs, stage)"], ["av", "Include basic AV (sound system, lighting)"], ["cleaning", "Include cleaning"], ["security", "Include security"]].map(([k, l]) =>
             <label key={k} className="wz-check"><input type="checkbox" checked={(d.includes ?? []).includes(k)} onChange={e => set({ includes: e.target.checked ? [...(d.includes ?? []), k] : (d.includes ?? []).filter(x => x !== k) })} />{l}</label>)}</section>
         <section className="ws-panel wz-card"><h2>2. Food &amp; beverage <small>(optional)</small></h2><p className="qb-sub">Add catering and drink packages.</p>
           <div className="wz-seg" role="radiogroup">{(["none", "package", "custom"] as const).map(m => <button key={m} type="button" role="radio" aria-checked={d.fnbMode === m} className={d.fnbMode === m ? "on" : ""} onClick={() => set({ fnbMode: m })}>{m === "none" ? "No F&B" : m === "package" ? "Use package" : "Custom menu"}</button>)}</div>
-          {d.fnbMode !== "none" && <><div className="wz-2"><label className="ws-field"><span>Price per guest</span><span className="wz-money"><span>£</span><input type="number" min={0} value={d.fnbPerGuest ?? 0} onChange={e => set({ fnbPerGuest: Number(e.target.value) })} /></span></label>
+          {d.fnbMode !== "none" && <><div className="wz-2"><label className="ws-field"><span>Price per guest</span><span className="wz-money"><span>{sym}</span><input type="number" min={0} value={d.fnbPerGuest ?? 0} onChange={e => set({ fnbPerGuest: Number(e.target.value) })} /></span></label>
             <label className="ws-field"><span>Guest count</span><input readOnly value={guests} /></label></div>
-            <p className="wz-line"><b>Total (GBP)</b><b>{gbp(fnb)}</b></p>
+            <p className="wz-line"><b>Total ({currency})</b><b>{gbp(fnb)}</b></p>
             {(d.fnbIncludes ?? []).length > 0 && <ul className="wz-incl">{d.fnbIncludes!.map(i => <li key={i}><CircleCheck aria-hidden="true" />{i}</li>)}</ul>}</>}</section>
         <section className="ws-panel wz-card"><h2>3. Additional services <small>(optional)</small></h2><p className="qb-sub">Add any extra services for this booking.</p>
           {(d.services ?? []).length > 0 && <table className="wz-svc"><thead><tr><th>Service</th><th>Qty</th><th>Unit price</th><th>Total</th><th /></tr></thead><tbody>{d.services!.map((s, i) => <tr key={i}>
@@ -256,7 +258,7 @@ export function StepPricing({ draft, venue, space, packages, services, taxBps, d
           <div><dt>Setup / breakdown</dt><dd>{draft.setupHours ?? 0} hrs / {draft.breakdownHours ?? 0} hrs</dd></div><div><dt>Guests</dt><dd>{guests}</dd></div></dl></section>
       <section className={`ws-panel wz-status ${conflict || !schedOk ? "bad" : ""}`}>{conflict || !schedOk ? <CircleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
         <span><b>{conflict ? "Can’t create yet" : !schedOk ? "Check payment schedule" : "Ready to create booking"}</b><small>{conflict ? "The space is no longer available for this time." : !schedOk ? "Milestones must total 100%." : "All requirements are met and the space is available for the selected dates and times."}</small></span></section>
-      <section className="ws-panel wz-totals"><h2>Estimated totals (GBP)</h2><dl><div><dt>Venue hire</dt><dd>{gbp(hire)}</dd></div>{fnb > 0 && <div><dt>F&amp;B ({guests} guests)</dt><dd>{gbp(fnb)}</dd></div>}
+      <section className="ws-panel wz-totals"><h2>Estimated totals ({currency})</h2><dl><div><dt>Venue hire</dt><dd>{gbp(hire)}</dd></div>{fnb > 0 && <div><dt>F&amp;B ({guests} guests)</dt><dd>{gbp(fnb)}</dd></div>}
         {minTop > 0 && <div><dt>Minimum spend top-up</dt><dd>{gbp(minTop)}</dd></div>}{svc > 0 && <div><dt>Additional services</dt><dd>{gbp(svc)}</dd></div>}
         <div className="sub"><dt>Subtotal</dt><dd>{gbp(subtotal)}</dd></div>{taxBps > 0 && <div><dt>VAT ({taxBps / 100}%)</dt><dd>{gbp(tax)}</dd></div>}<div className="total"><dt>Total</dt><dd>{gbp(total)}</dd></div></dl></section>
     </aside>

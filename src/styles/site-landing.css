@@ -4,18 +4,20 @@
 
 /* 2.1 Hero */
 .gpl-hero { overflow: hidden; background: radial-gradient(1200px 520px at 78% 40%, #f3f7ff 0, rgba(243, 247, 255, 0) 70%), #fff; }
-.gpl-hero-grid { display: grid; grid-template-columns: minmax(0, 46fr) minmax(0, 54fr); gap: 56px; align-items: center; }
-.gpl-hero-copy .gp-h1 { max-width: 620px; }
+.gpl-hero-grid { display: grid; grid-template-columns: minmax(0, 43fr) minmax(0, 57fr); gap: 40px; align-items: center; }
+/* Design 2.1 at 1536: the H1 runs "Everything an event / needs. One place / to build it." (≈62px). */
+.gpl-hero-copy .gp-h1 { max-width: 640px; }
+@media (min-width: 1100px) { .gpl-hero-copy .gp-h1 { font-size: 62px; } }
 .gpl-hero-copy .gp-lead { max-width: 560px; }
 .gpl-trust { display: flex; flex-wrap: wrap; gap: 0; margin-top: 44px; }
 .gpl-trust { flex-wrap: nowrap; }
-.gpl-trust li { padding-right: 16px; margin-right: 16px; border-right: 1px solid var(--gp-line); min-width: 0; }
+.gpl-trust li { padding-right: 14px; margin-right: 14px; border-right: 1px solid var(--gp-line); min-width: 0; }
 .gpl-trust li:last-child { border: 0; margin: 0; padding: 0; }
 .gpl-trust a { display: flex; align-items: center; gap: 12px; min-height: 48px; }
 .gpl-trust a:hover b { color: var(--gp-blue); }
 .gpl-trust-ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--gp-blue-soft); color: var(--gp-blue); flex: none; }
 .gpl-trust b { display: block; font-size: 15px; font-weight: 620; color: var(--gp-ink); }
-.gpl-trust small { display: block; font-size: 13.5px; color: var(--gp-muted); }
+.gpl-trust small { display: block; font-size: 13px; color: var(--gp-muted); white-space: nowrap; }
 
 .gpl-hero-visual { position: relative; }
 .gpl-hero-tag { position: absolute; right: 4px; bottom: -34px; }
@@ -59,7 +61,7 @@
 .gpl-track-ic { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: var(--gp-blue-soft); color: var(--gp-blue); flex: none; }
 .gpl-track-head h3 { font-size: 21px; letter-spacing: -.02em; font-weight: 680; }
 .gpl-track-head p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: var(--gp-body); }
-.gpl-track-visual { position: relative; flex: 1; min-height: 250px; margin: 22px 0 18px; padding-top: 4px; }
+.gpl-track-visual { position: relative; flex: 1; min-height: 200px; margin: 22px 0 18px; padding-top: 4px; }
 .gpl-track-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 18px 0 22px; border-top: 1px solid var(--gp-line); }
 .gpl-track-points li { display: flex; gap: 10px; align-items: flex-start; }
 .gpl-track-points svg { color: var(--gp-blue); flex: none; margin-top: 2px; }
@@ -70,11 +72,12 @@
 .gpl-track-dots button { width: 44px; height: 28px; display: grid; place-items: center; }
 .gpl-track-dots i { width: 28px; height: 5px; border-radius: 4px; background: #d7deeb; transition: background-color .25s, width .25s; }
 .gpl-track-dots button[aria-pressed="true"] i { background: var(--gp-blue); width: 40px; }
-.gpl-tv { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.gpl-tv { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
 .gpl-tv-org { display: grid; }
 .gpl-tv-note { position: absolute; font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; font-size: 13.5px; color: #4b536b; font-style: italic; }
 .gpl-tv-cust .gpl-tv-note, .gpl-tv-pro .gpl-tv-note { left: 8px; top: 0; }
-.gpl-tv-note.is-end { left: auto; right: 4px; top: auto; bottom: 6px; }
+/* Design: both hand-written notes sit above the chain ("From idea…" left, "…to the day itself" right). */
+.gpl-tv-note.is-end { left: auto; right: 4px; top: 0; bottom: auto; text-align: right; }
 .gpl-tv-note.is-org { right: 0; top: 4px; left: auto; max-width: 110px; text-align: right; }
 .gpl-tv-chain { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: center; padding-top: 38px; }
 .gpl-tv-chain > li { position: relative; display: grid; justify-items: start; gap: 5px; padding: 10px; border-radius: 14px; background: #fff; border: 1px solid var(--gp-line); box-shadow: var(--gp-shadow); min-width: 0; }
@@ -270,7 +273,10 @@
 .gpl-market-cta { display: flex; justify-content: center; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
 
 /* 2.6 One record */
-.gpl-record-grid { display: grid; grid-template-columns: minmax(0, 3.4fr) minmax(0, 8.6fr); gap: 40px; align-items: center; }
+.gpl-record-grid { display: grid; grid-template-columns: minmax(0, 3.6fr) minmax(0, 8.4fr); gap: 40px; align-items: center; }
+/* Design 2.6: "One event." then the blue "One operating record." on its own lines. */
+.gpl-record-copy .gp-h2 .gp-blue { display: block; }
+@media (min-width: 1100px) { .gpl-record-copy .gp-cta-row { flex-wrap: nowrap; gap: 12px; } .gpl-record-copy .gp-cta-row > .gp-btn { padding-inline: 20px; } }
 .gpl-rec { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: center; }
 .gpl-rec-tree { position: relative; aspect-ratio: 600 / 520; container-type: inline-size; }
 .gpl-rec-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -428,3 +434,6 @@
   .gpl-close-note > span { border: 0; padding: 0; }
 }
 @media (max-width: 420px) { .gpl-rec-branches { grid-template-columns: minmax(0, 1fr); } }
+
+/* Q71: short windows (1280×600, 1920×600 landscape) — a sticky copy column taller than the window would hide its own CTA. */
+@media (max-height: 720px) { .gpl-whole-copy { position: static; } }

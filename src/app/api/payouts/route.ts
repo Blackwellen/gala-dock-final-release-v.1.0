@@ -5,6 +5,7 @@ import { hasRequiredAssurance } from "@/lib/supabase/assurance";
 import { rateLimit, sameOrigin } from "@/lib/security";
 import { COUNTRIES } from "@/lib/master-data";
 import { CONNECT_COPY, connectCountrySupport, resolveCountryCode, workspaceCountryValue } from "@/lib/payments/connect-countries";
+import { requestSanctioned, sanctionedJurisdiction, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 import { payoutStatus, stripe, stripeKey, stripeMode } from "@/lib/stripe";
 import { idForMode, isStaleAccountError } from "@/lib/payments/stripe-mode";
 import { clearStaleAccountLink, syncConnectAccount, type StripeAccount } from "@/lib/commerce/connect";
@@ -42,6 +43,9 @@ export async function POST(request: NextRequest) {
   // no account is created where our configuration can't take payments (connect-countries.ts). Checked before the terms/trader
   // questions so an unsupported seller isn't asked to accept terms for something they can't use.
   const countryValue = workspaceCountryValue(workspace.settings);
+  // Q74 (D4): no payout account for a sanctioned business country, or set up from a sanctioned country/region.
+  const sanctioned = sanctionedJurisdiction(countryValue) ?? requestSanctioned(request.headers);
+  if (sanctioned) return json({ error: SANCTIONS_COPY.payouts(sanctioned.name), sanctioned: true, help: SANCTIONS_COPY.helpPath }, 422);
   const country = resolveCountryCode(countryValue, COUNTRIES);
   if (!country) return json({ error: workspace.kind === "organizer" ? "Add your business country (Settings → Locale & defaults) before setting up payouts, so Stripe verifies the right country."
     : "Your workspace has no business country yet. Contact support to add it before setting up payouts, so Stripe verifies the right country.", countryRequired: true }, 422);
@@ -74,6 +78,15 @@ export async function POST(request: NextRequest) {
       return json({ error: "Please read and accept the Gala Dock Payment Terms first.", termsRequired: true, termsVersion: terms.payment_terms_version }, 409);
     const { error: termsError } = await supabase.rpc("accept_payment_terms" as never, { p_role: "seller", p_version: terms.payment_terms_version, p_source: "payout_setup" } as never);
     if (termsError) return json({ error: "The Payment Terms changed. Reload the page and accept the current version.", termsRequired: true, termsVersion: terms.payment_terms_version }, 409);
+  }
+  // Q74 (D7): UK platform reporting (Platform Operators Regulations 2023) — venues and suppliers give their tax details at payout
+  // set-up (organisers selling tickets are not asked; adviser to confirm). Stored as sensitive data; RPC access only.
+  if (workspace.kind === "provider") {
+    const [{ data: required }, { data: complete }] = await Promise.all([
+      admin.rpc("platform_reporting_required" as never, { p_workspace: workspace.id } as never),   // service client: ownership checked above
+      admin.rpc("platform_reporting_complete" as never, { p_workspace: workspace.id } as never)]);
+    if (required === true && complete !== true)
+      return json({ error: "Add your tax details for HMRC reporting first.", taxDetailsRequired: true, workspaceId: workspace.id, country }, 409);
   }
   try {
     // Go-live (lane A2): the connected account of the CURRENT mode only — a test-mode acct_ never exists in live, so live onboarding

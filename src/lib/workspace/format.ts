@@ -1,26 +1,27 @@
 /** Display formatters shared by Provider and Admin screens. Pure functions; safe on server and client. */
+import { formatMoney } from "@/lib/i18n/money";
+import { DEFAULT_TZ, safeTz } from "@/lib/i18n/tz";
 
 /** Request time for server-rendered screens (deadlines and countdowns are computed against it). */
 export const requestTime = () => Date.now();
 const locale = "en-GB";
 
-export function money(value: number | string | null | undefined, currency = "GBP", opts: { cents?: boolean; compact?: boolean } = {}) {
+/** Q72: Intl by currency (src/lib/i18n/money.ts); compact from 10,000. */
+export function money(value: number | string | null | undefined, currency: string | null = "GBP", opts: { cents?: boolean; compact?: boolean } = {}) {
   const n = Number(value ?? 0);
-  if (opts.compact && Math.abs(n) >= 10_000) {
-    return new Intl.NumberFormat(locale, { style: "currency", currency, notation: "compact", maximumFractionDigits: 1 }).format(n);
-  }
-  return new Intl.NumberFormat(locale, { style: "currency", currency, minimumFractionDigits: opts.cents ? 2 : 0, maximumFractionDigits: opts.cents ? 2 : 0 }).format(n);
+  return formatMoney(n, currency || "GBP", { decimals: opts.cents, compact: opts.compact && Math.abs(n) >= 10_000 });
 }
 export const num = (value: number | null | undefined) => new Intl.NumberFormat(locale).format(Number(value ?? 0));
 export const pct = (value: number, digits = 0) => `${value.toFixed(digits)}%`;
 
-export function day(iso: string | null | undefined, opts: Intl.DateTimeFormatOptions = { weekday: "short", day: "numeric", month: "short", year: "numeric" }) {
-  return iso ? new Intl.DateTimeFormat(locale, { timeZone: "Europe/London", ...opts }).format(new Date(iso)) : "—";
+// Q72: London is the default; pass the event's zone (events.timezone) for event times.
+export function day(iso: string | null | undefined, opts: Intl.DateTimeFormatOptions = { weekday: "short", day: "numeric", month: "short", year: "numeric" }, tz: string = DEFAULT_TZ) {
+  return iso ? new Intl.DateTimeFormat(locale, { timeZone: safeTz(tz), ...opts }).format(new Date(iso)) : "—";
 }
-export function time(iso: string | null | undefined) {
-  return iso ? new Intl.DateTimeFormat("en-US", { timeZone: "Europe/London", hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : "";
+export function time(iso: string | null | undefined, tz: string = DEFAULT_TZ) {
+  return iso ? new Intl.DateTimeFormat("en-US", { timeZone: safeTz(tz), hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : "";
 }
-export const timeRange = (a?: string | null, b?: string | null) => (a ? `${time(a)} – ${time(b)}` : "");
+export const timeRange = (a?: string | null, b?: string | null, tz: string = DEFAULT_TZ) => (a ? `${time(a, tz)} – ${time(b, tz)}` : "");
 
 /** "1h 36m", "2d 4h" — remaining time until a server-issued deadline. Negative means overdue. */
 export function countdown(iso: string | null | undefined, now = Date.now()) {

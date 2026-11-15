@@ -3,7 +3,8 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/security";
-import { buyCreditPack, choosePlan, openBillingPortal, setCancelAtPeriodEnd, undoScheduledChange } from "@/lib/billing/service";
+import { buyCreditPack, choosePlan, openBillingPortal, saveBillingDetails, setCancelAtPeriodEnd, undoScheduledChange } from "@/lib/billing/service";
+import { requestSanctioned, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 
 type Result = { ok: true; message?: string; redirect?: string } | { ok: false; error: string };
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -24,6 +25,8 @@ export async function choosePlanAction(workspaceId: string, kind: string, plan: 
   const user = await caller(); if (!user) return { ok: false, error: "Please sign in again." };
   if (!UUID.test(workspaceId) || !["pro", "business", "enterprise"].includes(plan) || !["month", "year"].includes(interval)) return { ok: false, error: "Choose a plan." };
   if (!(await rateLimit(`billing:${user.id}`, 10, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
+  const sanctioned = requestSanctioned(await headers());   // Q74 (D4)
+  if (sanctioned) return { ok: false, error: SANCTIONS_COPY.checkout(sanctioned.name) };
   const r = await choosePlan({ workspaceId, userId: user.id, email: user.email ?? null, plan, interval, origin: await origin(), returnPath: back(kind) });
   if (!r.ok) return r;
   revalidatePath(back(kind).split("?")[0]!);
@@ -55,6 +58,8 @@ export async function buyCreditPackAction(workspaceId: string, kind: string, pac
   const user = await caller(); if (!user) return { ok: false, error: "Please sign in again." };
   if (!UUID.test(workspaceId) || !UUID.test(packId)) return { ok: false, error: "Choose a credit pack." };
   if (!(await rateLimit(`billing:${user.id}`, 10, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
+  const sanctioned = requestSanctioned(await headers());   // Q74 (D4)
+  if (sanctioned) return { ok: false, error: SANCTIONS_COPY.checkout(sanctioned.name) };
   const r = await buyCreditPack({ workspaceId, userId: user.id, email: user.email ?? null, packId, origin: await origin(), returnPath: kind === "provider" ? "/provider/settings?tab=agent" : "/organizer/settings?tab=agent" });
   return r.ok ? { ok: true, message: r.message, ...(r.url ? { redirect: r.url } : {}) } : r;
 }
@@ -66,4 +71,16 @@ export async function openBillingPortalAction(workspaceId: string, kind: string)
   if (!(await rateLimit(`billing-portal:${user.id}`, 20, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
   const r = await openBillingPortal({ workspaceId, userId: user.id, origin: await origin(), returnPath: back(kind) });
   return r.ok ? { ok: true, message: r.message, ...(r.url ? { redirect: r.url } : {}) } : r;
+}
+
+/** Q74 (D15): plans and credit packs are for businesses — the business name (and VAT number, optional) used on Gala Dock's invoices. */
+export async function saveBillingDetailsAction(workspaceId: string, kind: string, data: FormData): Promise<Result> {
+  const user = await caller(); if (!user) return { ok: false, error: "Please sign in again." };
+  if (!UUID.test(workspaceId)) return { ok: false, error: "Workspace not found." };
+  if (!(await rateLimit(`billing-details:${user.id}`, 20, 600))) return { ok: false, error: "Too many attempts — try again in a few minutes." };
+  const r = await saveBillingDetails({ workspaceId, userId: user.id, businessName: String(data.get("business_name") ?? ""), vatNumber: String(data.get("vat_number") ?? ""),
+    country: String(data.get("country") ?? ""), confirm: data.get("confirm_business") === "on" });
+  if (!r.ok) return r;
+  revalidatePath(back(kind).split("?")[0]!);
+  return { ok: true, message: r.message };
 }

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { effectiveResaleCapPct } from "@/lib/i18n/countries";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CalendarDays, MapPin, CheckCircle2, XCircle, CalendarClock, Diamond, ShieldCheck, Check, FileText, Repeat, Lock, CircleHelp, ChevronRight, CreditCard } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
@@ -50,7 +51,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   ]);
   const policy = (Array.isArray(pol) ? pol[0] : pol) as Policy | null;
   const restr = (rx ?? {}) as Restr;
-  const capPct = Number(policy?.price_cap_pct ?? cfg?.value?.resale_cap_pct ?? 100);
+  // Q72: never above the legal cap of the policy's country (src/lib/i18n/countries.ts resale rules; face value in IE, BE, IT, PT, DK, NO, JP …).
+  const capPct = effectiveResaleCapPct(Number(policy?.price_cap_pct ?? cfg?.value?.resale_cap_pct ?? 100), (policy?.jurisdiction ?? "GB").slice(0, 2));
   // Q57 (CRA s.90): face value is the ticket's price when bought (tickets.face_value), not today's tier price.
   const face = Number(t.face_value ?? tier?.price ?? 0), cap = (face * capPct) / 100, paid = Number(t.price_paid);
   const purchase = await db.from("checkout_orders").select("buyer_id,status,refund_status,stripe_session,currency").eq("order_ref", t.order_ref).maybeSingle();

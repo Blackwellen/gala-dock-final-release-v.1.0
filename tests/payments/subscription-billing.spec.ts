@@ -38,7 +38,9 @@ test.describe("Q28 billing rules (unit)", () => {
     expect(taxParams(false)).toEqual({});
     const base = { customer: "cus_1", price: "price_1", workspaceId: "w", successUrl: "s", cancelUrl: "c" };
     const off = planCheckoutParams({ ...base, plan: "pro", interval: "month" });
-    expect(Object.keys(off).some(k => /automatic_tax|customer_update|billing_address/.test(k))).toBe(false);
+    expect(Object.keys(off).some(k => /automatic_tax|customer_update\[address\]|billing_address/.test(k))).toBe(false);
+    // Q74 (D2/D15): the buyer can always enter a VAT / tax ID where Gala Dock is the merchant (needs customer_update[name]=auto).
+    expect(off).toMatchObject({ "tax_id_collection[enabled]": "true", "customer_update[name]": "auto" });
     for (const p of [planCheckoutParams({ ...base, plan: "pro", interval: "month", automaticTax: true }), packCheckoutParams({ ...base, packId: "p", automaticTax: true })]) {
       expect(p).toMatchObject({ "automatic_tax[enabled]": "true", billing_address_collection: "required", "customer_update[address]": "auto" });
     }

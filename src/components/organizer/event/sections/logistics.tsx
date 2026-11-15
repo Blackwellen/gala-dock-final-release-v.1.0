@@ -1,4 +1,5 @@
 import { Truck, ParkingSquare, BedDouble, Warehouse, ClipboardList, Lock } from "lucide-react";
+import { todayIn } from "@/lib/i18n/tz";
 import { Card, Chip, Empty } from "@/components/kit";
 import { createClient } from "@/lib/supabase/server";
 import { untyped } from "@/lib/workspace/db";
@@ -117,7 +118,7 @@ export async function LogisticsSection({ e, d, role }: SectionProps) {
 
         <Card><div className="k-between eo-head"><div><h2 className="ov-h">Accommodation</h2><p className="k-small">Room blocks with per-night capacity, cut-off dates and rate snapshots.</p></div>
           <FormDialog label="Add room block" icon="plus" variant="primary" title="Add room block" disabledReason={dr} action={cmd.bind(null, "block", null, {})} fields={blockFields()} /></div>
-          {BL.length ? BL.map(b => { const rs = RM.filter(r => r.block_id === b.id); const past = b.cutoff_date && b.cutoff_date < new Date().toISOString().slice(0, 10);
+          {BL.length ? BL.map(b => { const rs = RM.filter(r => r.block_id === b.id); const past = b.cutoff_date && b.cutoff_date < todayIn(e.timezone ?? undefined);
             return <div key={b.id} className="eo-sub"><div className="k-between"><h4>{b.hotel_name} <span className="eo-muted">· {dateShort(b.check_in)} – {dateShort(b.check_out)} · {roomNights(b)}/{totalNights(b)} room nights · {money(b.nightly_rate, b.currency)}/night (v{b.rate_version})</span></h4>
               <span className="eo-acts"><StatusChip s={b.status} />{b.cutoff_date && <Chip tone={past ? "red" : "amber"}>{past ? "Past cut-off" : `Cut-off ${dateShort(b.cutoff_date)}`}</Chip>}
                 <FormDialog label="Allocate room" icon="plus" title={`Allocate a room — ${b.hotel_name}`} disabledReason={dr ?? (["released", "cancelled"].includes(b.status) ? "This block is closed." : past ? "Past the cut-off — ask the hotel to extend it, then update the cut-off." : null)} action={cmd.bind(null, "room", b.id, {})} fields={[

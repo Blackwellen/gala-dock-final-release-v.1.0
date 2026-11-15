@@ -1,0 +1,192 @@
+{
+ "page_line_drift": 56.7,
+ "design": "Designs/customer & Organizer workspace/Gala\u00b7Dock Wedding Planning Dashboard(2).png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b3-w02/after/plan-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 4,
+ "passed": 0,
+ "weighted_drift": 53.0,
+ "worst": [
+  {
+   "design": [
+    35,
+    412,
+    1070,
+    531
+   ],
+   "ours": [
+    59,
+    569,
+    340,
+    425
+   ],
+   "iou": 0.217,
+   "box_drift": 78.3,
+   "line_drift": 72.3,
+   "drift": 78.3,
+   "dx": 24,
+   "dy": 157,
+   "dw": -730,
+   "dh": -106
+  },
+  {
+   "design": [
+    449,
+    693,
+    641,
+    80
+   ],
+   "ours": [
+    447,
+    690,
+    634,
+    40
+   ],
+   "iou": 0.439,
+   "box_drift": 56.1,
+   "line_drift": 40.3,
+   "drift": 56.1,
+   "dx": -2,
+   "dy": -3,
+   "dw": -7,
+   "dh": -40
+  },
+  {
+   "design": [
+    34,
+    278,
+    1457,
+    119
+   ],
+   "ours": [
+    44,
+    275,
+    1452,
+    148
+   ],
+   "iou": 0.797,
+   "box_drift": 20.3,
+   "line_drift": 48.9,
+   "drift": 20.3,
+   "dx": 10,
+   "dy": -3,
+   "dw": -5,
+   "dh": 29
+  },
+  {
+   "design": [
+    1121,
+    412,
+    386,
+    531
+   ],
+   "ours": [
+    1110,
+    433,
+    386,
+    513
+   ],
+   "iou": 0.903,
+   "box_drift": 9.7,
+   "line_drift": 58.2,
+   "drift": 9.7,
+   "dx": -11,
+   "dy": 21,
+   "dw": 0,
+   "dh": -18
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    34,
+    278,
+    1457,
+    119
+   ],
+   "ours": [
+    44,
+    275,
+    1452,
+    148
+   ],
+   "iou": 0.797,
+   "box_drift": 20.3,
+   "line_drift": 48.9,
+   "drift": 20.3,
+   "dx": 10,
+   "dy": -3,
+   "dw": -5,
+   "dh": 29
+  },
+  {
+   "design": [
+    35,
+    412,
+    1070,
+    531
+   ],
+   "ours": [
+    59,
+    569,
+    340,
+    425
+   ],
+   "iou": 0.217,
+   "box_drift": 78.3,
+   "line_drift": 72.3,
+   "drift": 78.3,
+   "dx": 24,
+   "dy": 157,
+   "dw": -730,
+   "dh": -106
+  },
+  {
+   "design": [
+    1121,
+    412,
+    386,
+    531
+   ],
+   "ours": [
+    1110,
+    433,
+    386,
+    513
+   ],
+   "iou": 0.903,
+   "box_drift": 9.7,
+   "line_drift": 58.2,
+   "drift": 9.7,
+   "dx": -11,
+   "dy": 21,
+   "dw": 0,
+   "dh": -18
+  },
+  {
+   "design": [
+    449,
+    693,
+    641,
+    80
+   ],
+   "ours": [
+    447,
+    690,
+    634,
+    40
+   ],
+   "iou": 0.439,
+   "box_drift": 56.1,
+   "line_drift": 40.3,
+   "drift": 56.1,
+   "dx": -2,
+   "dy": -3,
+   "dw": -7,
+   "dh": -40
+  }
+ ]
+}

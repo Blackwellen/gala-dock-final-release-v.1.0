@@ -15,7 +15,7 @@ export async function sendMessage(threadId: string, body: string): Promise<Actio
   const { data: th } = await supabase.from("threads").select("id,event_id").eq("id", id.data).maybeSingle();
   if (!th) return { ok: false, error: "Conversation not found." };
   const { data: prof } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
-  const { error } = await supabase.from("messages").insert({ thread_id: th.id, sender_id: user.id, sender_name: prof?.full_name || user.email || "You", body: text });
+  const { error } = await supabase.from("messages").insert({ thread_id: th.id, sender_id: user.id, sender_name: prof?.full_name || user.email?.split("@")[0] || "Member", body: text });   // never the full email address (the DB guard sets the name too)
   if (error) return { ok: false, error: "Message not sent — try again." };
   await supabase.from("threads").update({ updated_at: new Date().toISOString() }).eq("id", th.id);
   revalidatePath(`/account/events/${th.event_id}/messages`);
@@ -24,6 +24,7 @@ export async function sendMessage(threadId: string, body: string): Promise<Actio
 export async function markThreadRead(threadId: string): Promise<ActionResult> {
   const id = z.string().uuid().safeParse(threadId); if (!id.success) return { ok: false };
   const { supabase } = await requireUser();
-  await supabase.from("messages").update({ read_at: new Date().toISOString() }).eq("thread_id", id.data).eq("from_provider", true).is("read_at", null);
+  // Q52: a direct UPDATE of the provider's rows always failed RLS (WITH CHECK sender_id = caller), so unread never cleared.
+  await supabase.rpc("mark_thread_read" as never, { p_thread: id.data } as never);
   return { ok: true };
 }

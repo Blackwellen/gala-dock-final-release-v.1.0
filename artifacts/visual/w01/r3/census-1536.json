@@ -1,0 +1,1465 @@
+{
+ "results": [
+  {
+   "route": "/",
+   "name": "landing",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/",
+   "controls": 47,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Gala Dock — the connected event platform",
+    "canonical": "https://www.galadock.com/",
+    "robots": null,
+    "ogTitle": "Gala Dock — the connected event platform",
+    "ogImage": "https://www.galadock.com/assets/regenerated/home-hero.png",
+    "h1": [
+     "One place to bring every event together."
+    ]
+   },
+   "docH": 6887
+  },
+  {
+   "route": "/events",
+   "name": "events",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events",
+   "controls": 82,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you · Gala Dock",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 2670
+  },
+  {
+   "route": "/events?when=weekend",
+   "name": "events-weekend",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?when=weekend",
+   "controls": 79,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you · Gala Dock",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 2618
+  },
+  {
+   "route": "/events?q=neon",
+   "name": "events-search",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?q=neon",
+   "controls": 59,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you · Gala Dock",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 2054
+  },
+  {
+   "route": "/events?q=zzzz-no-match",
+   "name": "events-empty",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?q=zzzz-no-match",
+   "controls": 58,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you · Gala Dock",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 1980
+  },
+  {
+   "route": "/events/in/london",
+   "name": "city-london",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/in/london",
+   "controls": 83,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events in London · Gala Dock",
+    "canonical": "https://www.galadock.com/events/in/london",
+    "robots": null,
+    "ogTitle": "Events in London · Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "London Events"
+    ]
+   },
+   "docH": 2670
+  },
+  {
+   "route": "/events/category/nightlife",
+   "name": "category-nightlife",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/category/nightlife",
+   "controls": 83,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Nightlife events · Gala Dock",
+    "canonical": "https://www.galadock.com/events/category/nightlife",
+    "robots": null,
+    "ogTitle": "Nightlife events · Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Nightlife events"
+    ]
+   },
+   "docH": 2670
+  },
+  {
+   "route": "/events/calendar",
+   "name": "calendar-weekend",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar",
+   "controls": 49,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Weekend of 30 October"
+    ]
+   },
+   "docH": 1701
+  },
+  {
+   "route": "/events/calendar?range=month",
+   "name": "calendar-month",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar?range=month",
+   "controls": 28,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "October 2026"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/calendar?range=today",
+   "name": "calendar-day",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar?range=today",
+   "controls": 28,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Thursday 29 October"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/series/no-such-series",
+   "name": "series-missing",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/series/no-such-series",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/p/no-such-page",
+   "name": "landing-page-missing",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/p/no-such-page",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/neon-nights",
+   "name": "event-neon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/neon-nights",
+   "controls": 45,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock",
+    "canonical": "https://www.galadock.com/events/neon-nights",
+    "robots": null,
+    "ogTitle": "Neon Nights Festival",
+    "ogImage": "https://www.galadock.com/assets/gd/covers/neon-nights.webp",
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1587
+  },
+  {
+   "route": "/events/summer-rooftop-party",
+   "name": "event-rooftop",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/summer-rooftop-party",
+   "controls": 29,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Summer Rooftop Party · Gala Dock",
+    "canonical": "https://www.galadock.com/events/summer-rooftop-party",
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Summer Rooftop Party"
+    ]
+   },
+   "docH": 1165
+  },
+  {
+   "route": "/events/alex-taylor-wedding",
+   "name": "event-private",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/events/alex-taylor-wedding",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/venues/riverside-arena",
+   "name": "venue-riverside",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/venues/riverside-arena",
+   "controls": 37,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Riverside Arena · Gala Dock",
+    "canonical": "https://www.galadock.com/venues/riverside-arena",
+    "robots": null,
+    "ogTitle": "Riverside Arena",
+    "ogImage": "https://www.galadock.com/assets/gd/v-riverside-events-centre.webp",
+    "h1": [
+     "Riverside Arena"
+    ]
+   },
+   "docH": 2552
+  },
+  {
+   "route": "/services/elite-sounds-dj",
+   "name": "service-elite",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/services/elite-sounds-dj",
+   "controls": 36,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Elite Sounds DJ · Gala Dock",
+    "canonical": "https://www.galadock.com/services/elite-sounds-dj",
+    "robots": null,
+    "ogTitle": "Elite Sounds DJ",
+    "ogImage": "https://www.galadock.com/assets/gd/s-elite-sounds.webp",
+    "h1": [
+     "Elite Sounds DJ"
+    ]
+   },
+   "docH": 1597
+  },
+  {
+   "route": "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "name": "organizer-alex",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Alex Events — events · Gala Dock",
+    "canonical": "https://www.galadock.com/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "robots": null,
+    "ogTitle": "Alex Events — events",
+    "ogImage": null,
+    "h1": [
+     "Alex Events"
+    ]
+   },
+   "docH": 1426
+  },
+  {
+   "route": "/help",
+   "name": "help",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/help",
+   "controls": 35,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Help Centre · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "How can we help?"
+    ]
+   },
+   "docH": 1657
+  },
+  {
+   "route": "/help/getting-started-organizers",
+   "name": "help-article",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/help/getting-started-organizers",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Getting started as an organizer · Help",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Getting started as an organizer"
+    ]
+   },
+   "docH": 1526
+  },
+  {
+   "route": "/terms",
+   "name": "terms",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/terms",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Terms of Service · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Terms of Service"
+    ]
+   },
+   "docH": 3535
+  },
+  {
+   "route": "/privacy",
+   "name": "privacy",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/privacy",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Privacy Policy · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Privacy Policy"
+    ]
+   },
+   "docH": 4928
+  },
+  {
+   "route": "/cookies",
+   "name": "cookies",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/cookies",
+   "controls": 13,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Cookie Policy · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Cookie Policy"
+    ]
+   },
+   "docH": 1353
+  },
+  {
+   "route": "/ticket-terms",
+   "name": "ticket-terms",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/ticket-terms",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket Purchase & Resale Terms · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Ticket Purchase & Resale Terms"
+    ]
+   },
+   "docH": 1900
+  },
+  {
+   "route": "/data-retention",
+   "name": "data-retention",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/data-retention",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Data Retention Schedule · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Data Retention Schedule"
+    ]
+   },
+   "docH": 1433
+  },
+  {
+   "route": "/login",
+   "name": "login",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/login",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Log in · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Extraordinaryevents start here."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/register",
+   "name": "register",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/register",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Turn yournext eventinto somethingextraordinary."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/forgot-password",
+   "name": "forgot",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/forgot-password",
+   "controls": 12,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Forgot Password · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Extraordinaryevents start here."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/checkout/neon-nights",
+   "name": "checkout-neon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/checkout/neon-nights",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Checkout",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/neon-nights/register",
+   "name": "register-form",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/neon-nights/register",
+   "controls": 10,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, follow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "name": "rsvp-bad",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "controls": 8,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "Your RSVP · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "This RSVP link isn't valid"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/this-page-does-not-exist",
+   "name": "not-found",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/this-page-does-not-exist",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  }
+ ],
+ "links": [
+  {
+   "href": "/",
+   "status": 200
+  },
+  {
+   "href": "/help/developers-api",
+   "status": 200
+  },
+  {
+   "href": "/help",
+   "status": 200
+  },
+  {
+   "href": "/help/buying-tickets",
+   "status": 200
+  },
+  {
+   "href": "/help/payment-protection",
+   "status": 200
+  },
+  {
+   "href": "/terms",
+   "status": 200
+  },
+  {
+   "href": "/discover",
+   "status": 200
+  },
+  {
+   "href": "/login",
+   "status": 200
+  },
+  {
+   "href": "/register?next=/plan",
+   "status": 200
+  },
+  {
+   "href": "/register?next=/onboarding/organizer?step=1",
+   "status": 200
+  },
+  {
+   "href": "/register?next=/onboarding/provider?step=1",
+   "status": 200
+  },
+  {
+   "href": "/help/tickets",
+   "status": 200
+  },
+  {
+   "href": "/help/event-day-check-in",
+   "status": 200
+  },
+  {
+   "href": "/help/security-mfa",
+   "status": 200
+  },
+  {
+   "href": "/help/privacy-data",
+   "status": 200
+  },
+  {
+   "href": "/help/getting-started-organizers",
+   "status": 200
+  },
+  {
+   "href": "/privacy",
+   "status": 200
+  },
+  {
+   "href": "/cookies",
+   "status": 200
+  },
+  {
+   "href": "/ticket-terms",
+   "status": 200
+  },
+  {
+   "href": "/events",
+   "status": 200
+  },
+  {
+   "href": "/plan",
+   "status": 200
+  },
+  {
+   "href": "/register",
+   "status": 200
+  },
+  {
+   "href": "/events/category/custom",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife",
+   "status": 200
+  },
+  {
+   "href": "/events/category/festival",
+   "status": 200
+  },
+  {
+   "href": "/events/category/charity",
+   "status": 200
+  },
+  {
+   "href": "/events/category/comedy",
+   "status": 200
+  },
+  {
+   "href": "/events/category/community",
+   "status": 200
+  },
+  {
+   "href": "/events/category/food_drink",
+   "status": 200
+  },
+  {
+   "href": "/events/category/gala",
+   "status": 200
+  },
+  {
+   "href": "/events/category/party",
+   "status": 200
+  },
+  {
+   "href": "/events/category/webinar",
+   "status": 200
+  },
+  {
+   "href": "/events?when=today",
+   "status": 200
+  },
+  {
+   "href": "/events?when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/events?when=month",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar",
+   "status": 200
+  },
+  {
+   "href": "/events/hope-starts-here-charity-ball",
+   "status": 200
+  },
+  {
+   "href": "/events/3de9a340-9dbe-41f5-8623-61d2eeba530a",
+   "status": 200
+  },
+  {
+   "href": "/events/33bf57f8-9848-4956-beb3-a60ce6b6421e",
+   "status": 200
+  },
+  {
+   "href": "/events/0c581646-59e8-4634-b999-09d6e1d77590",
+   "status": 200
+  },
+  {
+   "href": "/events/d2e039d4-1249-40d4-ac54-9d8d19d002c2",
+   "status": 200
+  },
+  {
+   "href": "/events/971a8a20-d2fd-4aab-bb50-eb1667fe782d",
+   "status": 200
+  },
+  {
+   "href": "/events/cba35ef8-3aa1-4e11-8247-a375e937e04d",
+   "status": 200
+  },
+  {
+   "href": "/events/72b0acc7-e204-4e2b-9ffe-a72ccf590ba1",
+   "status": 200
+  },
+  {
+   "href": "/events/715550f5-7aea-4c3b-adb3-11822fa1c4e7",
+   "status": 200
+  },
+  {
+   "href": "/events/071a89e2-d873-41c2-bcf9-820acefdd521",
+   "status": 200
+  },
+  {
+   "href": "/events/a8007566-f465-4f02-965d-716fd9751b9e",
+   "status": 200
+  },
+  {
+   "href": "/events/7a16a4b3-2889-4688-a26a-103831536708",
+   "status": 200
+  },
+  {
+   "href": "/events/94771593-137a-4659-b524-5823c7822f6a",
+   "status": 200
+  },
+  {
+   "href": "/events?page=2",
+   "status": 200
+  },
+  {
+   "href": "/events?m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events?m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=weekend&date=2026-11-05",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london",
+   "status": 200
+  },
+  {
+   "href": "/events/in/manchester",
+   "status": 200
+  },
+  {
+   "href": "/events/in/online",
+   "status": 200
+  },
+  {
+   "href": "/register?intent=organizer",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=weekend",
+   "status": 200
+  },
+  {
+   "href": "/register?intent=provider",
+   "status": 200
+  },
+  {
+   "href": "/events?when=weekend&m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events?when=weekend&m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon&when=today",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon&when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon&when=month",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon",
+   "status": 200
+  },
+  {
+   "href": "/events/neon-nights",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon&m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events?q=neon&m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match&when=today",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match&when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match&when=month",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match&m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events?q=zzzz-no-match&m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fevents%2Fin%2Flondon",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?when=today",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?when=month",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?city=london",
+   "status": 200
+  },
+  {
+   "href": "/events/3bad5b93-665e-48fa-bc61-c2213da6dd42",
+   "status": 200
+  },
+  {
+   "href": "/events/7c6a02b9-2b24-4148-9dfb-fdb19cf59f82",
+   "status": 200
+  },
+  {
+   "href": "/events/89834ab5-89ab-4fa8-923e-1dff085c78c1",
+   "status": 200
+  },
+  {
+   "href": "/events/e292dac3-561f-4265-b354-a804b7e114c4",
+   "status": 200
+  },
+  {
+   "href": "/events/5c5104cd-7a6c-469e-9fab-df6c1af08f67",
+   "status": 200
+  },
+  {
+   "href": "/events/soho-late-lounge-fridays",
+   "status": 200
+  },
+  {
+   "href": "/events/076e2199-b0bd-421d-90ad-b6df64643830",
+   "status": 200
+  },
+  {
+   "href": "/events/1ad7c03c-d1e0-4076-847e-bf7524999d57",
+   "status": 200
+  },
+  {
+   "href": "/events/21009853-aa9d-4d19-9d43-9ed26cd9dc01",
+   "status": 200
+  },
+  {
+   "href": "/events/2c8c602f-2a41-4107-9438-1f15efdbe839",
+   "status": 200
+  },
+  {
+   "href": "/events/64a6c6f9-3b48-42d3-b191-d4f1acc6349b",
+   "status": 200
+  },
+  {
+   "href": "/events/32f6bdd8-0ed0-4a03-8e5c-47fc98f0270e",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?page=2",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events/in/london?m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=weekend&date=2026-11-05&city=london",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fevents%2Fcategory%2Fnightlife",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?when=today",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?when=month",
+   "status": 200
+  },
+  {
+   "href": "/events/warehouse-sessions-bassline",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?page=2",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?m=2026-09",
+   "status": 200
+  },
+  {
+   "href": "/events/category/nightlife?m=2026-11",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=today&date=2026-10-29",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=weekend&date=2026-10-29",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=month&date=2026-10-29",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=weekend&date=2026-10-22",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=month&date=2026-09-01",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=month&date=2026-11-01",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=today&date=2026-10-28",
+   "status": 200
+  },
+  {
+   "href": "/events/calendar?range=today&date=2026-10-30",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=events&results=1",
+   "status": 200
+  },
+  {
+   "href": "/venues/riverside-park-events-venue",
+   "status": 200
+  },
+  {
+   "href": "/events/sunset-sessions",
+   "status": 200
+  },
+  {
+   "href": "/events/summer-rooftop-party",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fcheckout%2Fneon-nights%3Ftier%3Dc350d94d-53d0-4bb5-8da9-97461a1fb039%26qty%3D1",
+   "status": 200
+  },
+  {
+   "href": "/login?next=/account/tickets",
+   "status": 200
+  },
+  {
+   "href": "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fcheckout%2Fsummer-rooftop-party%3Ftier%3De4915a11-9bf8-4e3f-b276-8c12c7daa544%26qty%3D1",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1",
+   "status": 200
+  },
+  {
+   "href": "/venues/southbank-events-arena",
+   "status": 200
+  },
+  {
+   "href": "/venues/docklands-arena",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fvenues%2Friverside-arena",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Faccount%2Fsaved%3Ftab%3Dvenues%26compare%3Dvenues",
+   "status": 200
+  },
+  {
+   "href": "/login?next=/venues/riverside-arena",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=services&results=1",
+   "status": 200
+  },
+  {
+   "href": "/services/elite-sounds-dj",
+   "status": 200
+  },
+  {
+   "href": "/login?next=%2Fservices%2Felite-sounds-dj",
+   "status": 200
+  },
+  {
+   "href": "/services/dj-marcus-lee",
+   "status": 200
+  },
+  {
+   "href": "/login?next=/services/elite-sounds-dj",
+   "status": 200
+  },
+  {
+   "href": "/events/future-of-live-events-webinar",
+   "status": 200
+  },
+  {
+   "href": "/events/taste-tango-fest",
+   "status": 200
+  },
+  {
+   "href": "/events/comedy-central-live",
+   "status": 200
+  },
+  {
+   "href": "/events/elite-sounds-night",
+   "status": 200
+  },
+  {
+   "href": "/events/community-summer-fair",
+   "status": 200
+  },
+  {
+   "href": "/help/media-studio",
+   "status": 200
+  },
+  {
+   "href": "/help/gala-agent",
+   "status": 200
+  },
+  {
+   "href": "/help/money-payouts",
+   "status": 200
+  },
+  {
+   "href": "/help/venue-maps",
+   "status": 200
+  },
+  {
+   "href": "/help/refunds-cancellations",
+   "status": 200
+  },
+  {
+   "href": "/help/reviews",
+   "status": 200
+  },
+  {
+   "href": "/help/events",
+   "status": 200
+  },
+  {
+   "href": "/help/marketplace-booking",
+   "status": 200
+  },
+  {
+   "href": "/help/virtual-events",
+   "status": 200
+  },
+  {
+   "href": "/help/team",
+   "status": 200
+  },
+  {
+   "href": "/help/listings",
+   "status": 200
+  },
+  {
+   "href": "/help/provider-getting-started",
+   "status": 200
+  },
+  {
+   "href": "/help/transfer-resale",
+   "status": 200
+  },
+  {
+   "href": "/help/plan-personal-event",
+   "status": 200
+  },
+  {
+   "href": "/help/customer-account",
+   "status": 200
+  },
+  {
+   "href": "/login?next=/help%23contact",
+   "status": 200
+  },
+  {
+   "href": "/data-retention",
+   "status": 200
+  },
+  {
+   "href": "/forgot-password",
+   "status": 200
+  }
+ ]
+}

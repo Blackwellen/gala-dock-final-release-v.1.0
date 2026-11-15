@@ -7,5 +7,6 @@ export const metadata = { title: "Messages" };
 export default async function ProviderInboxPage({ searchParams }: PageProps<"/provider/inbox">) {
   const sp = await searchParams;
   const ctx = await getProvider();
-  return <Inbox seat={ctx.workspace.id} base="/provider/inbox" selected={typeof sp.c === "string" ? sp.c : undefined} />;
+  return <Inbox seat={ctx.workspace.id} base="/provider/inbox" selected={typeof sp.c === "string" ? sp.c : undefined}
+    q={typeof sp.q === "string" ? sp.q : undefined} pages={typeof sp.pages === "string" ? sp.pages : undefined} />;
 }

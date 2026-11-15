@@ -1,3 +1,4 @@
+import { safeTz } from "@/lib/i18n/tz";
 import Link from "next/link";
 import { ArrowRight, Search, MapPin, CalendarDays, Clock, ChevronRight, CheckCircle2, Repeat, Tag, CircleHelp, X, Ticket } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
@@ -45,7 +46,7 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
         </form>
         <ol className="tk-list">{list.map(g => { const n = g.tickets.length; const d = g.event.starts_at ? new Date(g.event.starts_at) : null; const first = g.tickets[0]!; const active = sel?.key === g.key;
           return <li key={g.key} className={`ce-card tk-card ${active ? "on" : ""}`}>
-            <Link href={href({ t: g.key })} className="tk-img" aria-label={`Show ${g.event.name} tickets`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={g.event.cover_image || "/assets/gd/oe-neon.webp"} alt="" />{d && <span className="tk-date"><small>{d.toLocaleDateString("en-GB", { month: "short", timeZone: "Europe/London" }).toUpperCase()}</small><b>{d.toLocaleDateString("en-GB", { day: "numeric", timeZone: "Europe/London" })}</b></span>}</Link>
+            <Link href={href({ t: g.key })} className="tk-img" aria-label={`Show ${g.event.name} tickets`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={g.event.cover_image || "/assets/gd/oe-neon.webp"} alt="" />{d && <span className="tk-date"><small>{d.toLocaleDateString("en-GB", { month: "short", timeZone: safeTz(g.event.timezone) }).toUpperCase()}</small><b>{d.toLocaleDateString("en-GB", { day: "numeric", timeZone: safeTz(g.event.timezone) })}</b></span>}</Link>
             <div className="tk-body">
               <div className="tk-top"><h2><Link href={href({ t: g.key })}>{g.event.name}</Link></h2><span className={`tk-state ${g.state.tone}`}>{g.state.tone === "green" ? <CheckCircle2 size={17} /> : g.state.label === "Available to transfer" ? <ArrowRight size={17} /> : g.state.label.startsWith("Resale") ? <Tag size={15} /> : g.state.label === "Transferred" ? <Repeat size={15} /> : <Clock size={15} />}{g.state.label}</span><span className="tk-count">{n > 1 && g.when !== "resale" ? `Ticket 1 of ${n}` : `${n} ticket${n === 1 ? "" : "s"}`}</span><Link href={`/account/tickets/${first.id}`} className="tk-chev" aria-label={`Open ${g.event.name} ticket`}><ChevronRight size={18} /></Link></div>
               <p className="tk-line"><MapPin size={16} />{[g.event.venue_name, g.event.city].filter(Boolean).join(", ") || g.event.location}</p>

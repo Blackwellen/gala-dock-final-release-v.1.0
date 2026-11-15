@@ -1,0 +1,84 @@
+[
+  {
+    "role": "organizer",
+    "route": "/organizer/events/2ac86a01-7e12-4400-91df-b9fd37827102/tickets/setup?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "organizer-events-2ac86a01-7e12-4400-91df-b9fd37827102-tickets-setup-step-1-1536x1024",
+    "geometry": {
+      "url": "/organizer/events/2ac86a01-7e12-4400-91df-b9fd37827102/tickets/setup?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 66
+      },
+      "logo": null,
+      "search": {
+        "x": 382,
+        "y": 12,
+        "w": 772,
+        "h": 42
+      },
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 222,
+        "y": 66,
+        "w": 1314,
+        "h": 1124
+      },
+      "firstChild": {
+        "x": 236,
+        "y": 80,
+        "w": 1282,
+        "h": 1086
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "organizer",
+    "route": "/organizer/events/f28907ac-6748-484a-87be-9e5231fc78f5/tickets/setup?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "organizer-events-f28907ac-6748-484a-87be-9e5231fc78f5-tickets-setup-step-1-1536x1024",
+    "geometry": {
+      "url": "/organizer/events/f28907ac-6748-484a-87be-9e5231fc78f5/tickets/setup?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 66
+      },
+      "logo": null,
+      "search": {
+        "x": 382,
+        "y": 12,
+        "w": 772,
+        "h": 42
+      },
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 222,
+        "y": 66,
+        "w": 1314,
+        "h": 1124
+      },
+      "firstChild": {
+        "x": 236,
+        "y": 80,
+        "w": 1282,
+        "h": 1086
+      }
+    },
+    "errors": []
+  }
+]

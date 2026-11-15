@@ -1,0 +1,786 @@
+[
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1004
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 951
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-plan-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1536
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1483
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-money-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1152
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1099
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-messages-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 968
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 915
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-guests-tickets-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1542
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1489
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-build-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1687
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1634
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-book-step-1-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1385
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1332
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-book-step-2-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1300
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1247
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=3",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-book-step-3-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=3",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 633
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 580
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-tickets-setup-step-1-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1188
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1135
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-tickets-setup-step-2-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 999
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 946
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-tickets-setup-step-3-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1202
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1149
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-tickets-15651ef4-f685-4727-a242-966aea0a6f1f-1536x1024",
+    "geometry": {
+      "url": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1926
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1873
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-tickets-15651ef4-f685-4727-a242-966aea0a6f1f-resale-1536x1024",
+    "geometry": {
+      "url": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 11,
+        "w": 172,
+        "h": 46
+      },
+      "search": {
+        "x": 252,
+        "y": 13,
+        "w": 567,
+        "h": 42
+      },
+      "nav": {
+        "x": 851,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1272,
+        "y": 12,
+        "w": 224,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 368
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1100,
+        "h": 315
+      }
+    },
+    "errors": []
+  }
+]

@@ -1,0 +1,161 @@
+{
+  "method": "Native Chrome profile partition default zoom; DPR-verified; no CSS or CDP page scaling",
+  "results": [
+    {
+      "role": "customer",
+      "requestedZoom": 1,
+      "measuredZoom": 1,
+      "geometry": {
+        "width": 1264,
+        "height": 805,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 1,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "1",
+        "nav": {
+          "x": 0,
+          "y": 735,
+          "width": 1264,
+          "height": 70,
+          "top": 735,
+          "right": 1264,
+          "bottom": 805,
+          "left": 0
+        }
+      },
+      "issues": []
+    },
+    {
+      "role": "customer",
+      "requestedZoom": 0.8,
+      "measuredZoom": 0.800000011920929,
+      "geometry": {
+        "width": 1580,
+        "height": 1006,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 0.800000011920929,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "0.8",
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "issues": []
+    },
+    {
+      "role": "customer",
+      "requestedZoom": 1.25,
+      "measuredZoom": 1.25,
+      "geometry": {
+        "width": 1011,
+        "height": 644,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 1.25,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "1",
+        "nav": {
+          "x": 0,
+          "y": 574,
+          "width": 1011.2000122070312,
+          "height": 70,
+          "top": 574,
+          "right": 1011.2000122070312,
+          "bottom": 644,
+          "left": 0
+        }
+      },
+      "issues": []
+    },
+    {
+      "role": "customer",
+      "requestedZoom": 1.5,
+      "measuredZoom": 1.5,
+      "geometry": {
+        "width": 843,
+        "height": 537,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 1.5,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "1",
+        "nav": {
+          "x": 0,
+          "y": 466.66668701171875,
+          "width": 842.6666870117188,
+          "height": 70,
+          "top": 466.66668701171875,
+          "right": 842.6666870117188,
+          "bottom": 536.6666870117188,
+          "left": 0
+        }
+      },
+      "issues": []
+    },
+    {
+      "role": "customer",
+      "requestedZoom": 2,
+      "measuredZoom": 2,
+      "geometry": {
+        "width": 632,
+        "height": 402,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 2,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "1",
+        "nav": {
+          "x": 0,
+          "y": 332.5,
+          "width": 632,
+          "height": 70,
+          "top": 332.5,
+          "right": 632,
+          "bottom": 402.5,
+          "left": 0
+        }
+      },
+      "issues": []
+    },
+    {
+      "role": "customer",
+      "requestedZoom": 4,
+      "measuredZoom": 4,
+      "geometry": {
+        "width": 316,
+        "height": 201,
+        "outerWidth": 1280,
+        "outerHeight": 900,
+        "dpr": 4,
+        "overflow": 0,
+        "bodyZoom": "1",
+        "rootZoom": "1",
+        "nav": {
+          "x": 0,
+          "y": 131.25,
+          "width": 316,
+          "height": 70,
+          "top": 131.25,
+          "right": 316,
+          "bottom": 201.25,
+          "left": 0
+        }
+      },
+      "issues": []
+    }
+  ]
+}

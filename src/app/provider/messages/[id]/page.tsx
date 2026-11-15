@@ -15,13 +15,15 @@ export const metadata: Metadata = { title: "Messages" };
 export default async function ThreadPage(props: PageProps<"/provider/messages/[id]">) {
   const { id } = await props.params;
   if (!isUuid(id)) notFound();
-  const { db } = await getProvider();
+  const { db, userId } = await getProvider();
   // RLS limits threads to listings in workspaces the user belongs to.
   const thread = await one<{ id: string; title: string; subtitle: string; image: string; build_item_id: string | null; response_due_at: string | null;
     messages: { id: string; sender_name: string; body: string; from_provider: boolean; created_at: string; read_at: string | null }[] }>(
     db.from("threads").select("id,title,subtitle,image,build_item_id,response_due_at,messages(id,sender_name,body,from_provider,created_at,read_at)").eq("id", id).maybeSingle());
   if (!thread) notFound();
   if (thread.messages.some(m => !m.from_provider && !m.read_at)) await db.rpc("provider_mark_thread_read", { p_thread: id });
+  // Q52: opening the thread also clears its bell alert (own rows only, RLS notifications_mark).
+  await db.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", userId).eq("kind", "message").eq("link", `/provider/messages/${id}`).is("read_at", null);
   const messages = [...thread.messages].sort((a, b) => a.created_at.localeCompare(b.created_at));
   return <div className="pmsg">
     <Link href={thread.build_item_id ? `/provider/opportunities/${thread.build_item_id}` : "/provider/opportunities"} className="ws-back"><ArrowLeft aria-hidden="true" />Back to opportunity</Link>

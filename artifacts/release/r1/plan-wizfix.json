@@ -1,0 +1,86 @@
+[
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=5",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=6",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=5",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/packages/new?package=bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/packages/new"
+ }
+]

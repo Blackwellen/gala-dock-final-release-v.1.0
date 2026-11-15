@@ -11,6 +11,7 @@ import { isStaleAccountError, webhookModeDecision, webhookSecrets } from "@/lib/
 import { withObservability } from "@/lib/observability/http";
 import { applySubscriptionTaxIds, cancelSupersededSubscription, invoiceForPayment, recordPaymentFingerprint } from "@/lib/billing/service";
 import { supersededSubscription } from "@/lib/billing/core";
+import { directChargeSanctionsSignal, platformSaleSignals, type ComplianceSignal, type TaxObject } from "@/lib/tax/eu-vat";
 
 type Obj = StripeEvent["data"]["object"];
 const str = (v: unknown) => (typeof v === "string" ? v : v && typeof v === "object" && "id" in v ? String((v as { id: unknown }).id) : "");
@@ -19,8 +20,23 @@ const str = (v: unknown) => (typeof v === "string" ? v : v && typeof v === "obje
 async function legacyRefund(db: Db, charge: Obj) {
   const refunded = Number(charge.amount_refunded ?? 0);
   if (!refunded) return;
-  const { error } = await db.rpc("post_stripe_refund_delta", { p_charge: charge.id, p_total: refunded, p_currency: String(charge.currency ?? "gbp").toUpperCase(), p_order_ref: charge.metadata?.order_ref ?? null });
+  // Q75: the PaymentIntent lets the ledger find the sale (posted under it) and reverse its VAT share with the refund.
+  const { error } = await db.rpc("post_stripe_refund_delta" as never, { p_charge: charge.id, p_total: refunded, p_currency: String(charge.currency ?? "gbp").toUpperCase(), p_order_ref: charge.metadata?.order_ref ?? null,
+    p_payment_intent: str(charge.payment_intent) || null } as never);
   if (error) throw new Error(`ledger: ${error.message}`);
+}
+
+/**
+ * Q74 (D2/D4): staff alerts for Gala Dock's own sales — Stripe Tax not collecting on a consumer sale in a zero-threshold country
+ * (register there; EU: IE OSS by the 10th of next month) and billing addresses in sanctioned countries. Recorded once per object;
+ * a failure is audited and never fails the event (the payment itself is already handled).
+ */
+async function recordSignals(db: Db, signals: (ComplianceSignal | null)[]) {
+  for (const sig of signals) {
+    if (!sig) continue;
+    const { error } = await db.rpc("record_compliance_signal", { p: sig });
+    if (error) await db.from("audit_events").insert({ actor_type: "webhook", event: "compliance.signal_failed", metadata: { kind: sig.kind, source_id: sig.source_id.slice(0, 120), error: error.message.slice(0, 200) } });
+  }
 }
 
 /** finalise() outcomes that are a settled state for a paid session: refund queued/done, or an order this platform doesn't own. */
@@ -83,6 +99,9 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         // Q67: Gala Dock's VAT number on every later invoice of a Checkout-created plan subscription (Checkout can't set it). Audited, never retried.
         if (!account && object.metadata?.purpose === "subscription" && object.metadata?.workspace_id && str(object.subscription))
           await applySubscriptionTaxIds(str(object.subscription)).catch(async (e: unknown) => { await db.from("audit_events").insert({ actor_type: "webhook", workspace_id: object.metadata!.workspace_id, event: "billing.subscription_tax_id_failed", metadata: { subscription: str(object.subscription), error: e instanceof Error ? e.message.slice(0, 200) : "error" } }); });
+        if (!account && object.payment_status === "paid" && ["subscription", "ai_credits", "platform_boost"].includes(String(object.metadata?.purpose ?? "")))
+          await recordSignals(db, platformSaleSignals(object as unknown as TaxObject, object.metadata?.purpose));
+        if (account && object.payment_status === "paid") await recordSignals(db, [directChargeSanctionsSignal(object as unknown as TaxObject, account)]);
         if (invoice && account && object.payment_status === "paid")
           await must(db.rpc("invoice_card_payment_succeeded", { p_session: object.id, p_pi: str(object.payment_intent), p_amount_minor: Number(object.amount_total ?? 0), p_account: account, p_livemode: !!event.livemode }), "invoice");
         break;
@@ -192,6 +211,8 @@ export const POST = withObservability("webhook.stripe", async (request: Request)
         break;
       case "invoice":
         await must(db.rpc("billing_record_invoice", { p_inv: object, p_event_created: Number(event.created ?? 0), p_livemode: !!event.livemode }), "invoice");
+        // Q74: plan renewals — Stripe Tax not_collecting for a consumer in a zero-threshold country (staff alert).
+        if (event.type === "invoice.paid" && !account) await recordSignals(db, platformSaleSignals(object as unknown as TaxObject, "subscription"));
         break;
       default: break;
     }

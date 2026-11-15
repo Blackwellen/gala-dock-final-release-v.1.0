@@ -1,4 +1,5 @@
 import "@/styles/public-listing-extras.css";
+import { milesToUnit } from "@/lib/i18n/countries";
 import Link from "next/link";
 import { Users, Building2, Ruler, LayoutGrid, Utensils, Wine, Clock, Accessibility, Car, ShieldCheck, Truck, Music2, Ban, Wallet, CheckCircle2, XCircle, MapPin, Plug, CalendarClock } from "lucide-react";
 
@@ -146,7 +147,7 @@ export function coverageLine(c: ServiceDetails["coverage"]) {
   if (!c) return null;
   if (c.mode === "national") return "Covers the whole UK";
   if (c.mode === "international") return "UK and international";
-  return [c.radius_miles && c.base ? `Within ${c.radius_miles} miles of ${c.base}` : c.base ?? null, txt(c.areas)].filter(Boolean).join(" · ") || null;
+  return [c.radius_miles && c.base ? `Within ${c.radius_miles} miles (${milesToUnit(c.radius_miles, "km")} km) of ${c.base}` : c.base ?? null, txt(c.areas)].filter(Boolean).join(" · ") || null;
 }
 export function ServiceDetailsSection({ s, insuranceVerified = false }: { s: ServiceDetails; /** listing_trust().insurance_verified — reviewed by Gala Dock, in date */ insuranceVerified?: boolean }) {
   const showPrice = s.pricing?.show_price !== false;

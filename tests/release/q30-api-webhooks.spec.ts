@@ -225,6 +225,9 @@ test.describe("Q30 developer API, MCP, webhooks and feed", () => {
     expect((await request.post(`${BASE}/api/v1/tools/task.create`, { headers: auth("gd_live_nope") , data: {} })).status()).toBe(401);
     expect((await call(request, keyA, "task.create", { event_id: "x" })).status()).toBe(422);
     expect((await call(request, keyA, "nope.tool", {})).status()).toBe(404);
+    // Authentication runs before tool lookup and input validation: a bad key gets 401 for an unknown tool or invalid input too.
+    expect((await request.post(`${BASE}/api/v1/tools/nope.tool`, { headers: auth("gd_live_nope"), data: {} })).status()).toBe(401);
+    expect((await request.post(`${BASE}/api/v1/tools/task.create`, { headers: auth("gd_live_nope"), data: { event_id: "x" } })).status()).toBe(401);
     expect((await request.post(`${BASE}/api/v1/tools/task.create`, { headers: { ...auth(keyA), "Content-Type": "application/json" }, data: "[1]" })).status()).toBe(400);
   });
 

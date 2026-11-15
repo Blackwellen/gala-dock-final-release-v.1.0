@@ -89,6 +89,12 @@ test("header: menu button pattern, signed-out actions unchanged, phone panel ins
   expect(b).not.toMatch(/zoom/);
   const css = src("src/styles/public-site.css");
   expect(css).toMatch(/@media \(max-width: 640px\) \{\s*\.gp-acct \{ display: none; \}\s*\.gp-acct-panel \{ display: block; \}/);
-  expect(css.slice(css.indexOf("Q69 account menu"))).not.toMatch(/zoom|scale\(/);
+  // The Q69 block only (up to the next top-level comment): later blocks such as Q71's sticky rails use var(--k-zoom) in height maths.
+  const q69At = css.indexOf("Q69 account menu"); expect(q69At).toBeGreaterThan(-1);
+  const q69End = css.indexOf("\n/* ", q69At);
+  const q69 = css.slice(q69At, q69End === -1 ? undefined : q69End);
+  expect(q69).toMatch(/\.gp-acct-panel \{ display: block; \}/);   // the bound still covers the whole account-menu block
+  expect(q69).not.toMatch(/zoom|scale\(/);
+  expect(css.slice(q69At)).not.toMatch(/(^|[\s;{])zoom\s*:/m);   // and nothing after it applies a zoom property either
   expect(src("src/components/pwa/mobile-nav.tsx")).not.toMatch(/AccountMenu/);    // workspace chrome untouched
 });

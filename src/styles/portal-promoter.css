@@ -178,3 +178,5 @@
 
 /* W12: tap target ≥ 24px */
 .pp-manage { min-height: 24px; }
+/* R1: touch-size share buttons wrap rather than widen the card. */
+.pp-share{flex-wrap:wrap}

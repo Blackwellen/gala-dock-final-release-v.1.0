@@ -66,9 +66,13 @@ const REVIEWED: Record<string, string> = {
   dec107_funding_lead_days: "public policy setting (days)", dec107_public_rules: "public DEC-107 reserve/hold rules shown in Payment Terms",
   demo_public_visible: "public platform flag", partner_terms_version: "public terms version string", payment_terms_customer_required: "public terms version + required flag",
   portal_invite_accept: "refusal as data (unavailable) without the caller's own matching invite token (Q68)",
+  public_organizer_profile: "public organiser description/website/accent of a public organiser; no contact PII (Q62)",
   // Public-by-design seller facts already shown on public event/listing pages and checkout (trader notice, country gate, sale window).
   seller_trader_status: "trader/non-trader status disclosed at checkout by law (CCRs/DMCC)", ticket_sales_open_from: "public sale-open date shown on event pages",
   workspace_business_country: "seller country shown on public pages; ISO code only", workspace_payments_country_ok: "boolean derived from the public seller country (Q46)",
+  // Q74 (202611147401/7402, reviewed 2026-11-14, lane legal-engineering).
+  is_sanctioned_jurisdiction: "boolean from the public sanctions list (sanctioned_jurisdictions is anon-readable); no tenant data",
+  report_content: "self: files the CALLER's own report on content the caller can already see (published listing / public event / published review / active business profile; not_found otherwise); rate-limited; the reported party never sees the reporter",
 };
 
 // Tables an outsider / anon may read rows of (RLS restricts them to the public subset). Reviewed Q45 2026-10-29.
@@ -79,6 +83,7 @@ const PUBLIC_TABLES: Record<string, [string, string?]> = {
   agent_tools: ["tool catalogue"],
   bar_jurisdiction_rules: ["licensing reference"],
   connect_supported_countries: ["Stripe Connect supported seller countries (Q46, public help/pricing)"],
+  sanctioned_jurisdictions: ["public sanctions list (Q74, 202611147401; shown in Help → Where Gala Dock is available)"],
   uk_bank_holidays: ["public UK bank holiday calendar (ticket release dates)"],
   boost_products: ["boost price list"],
   build_category_profiles: ["builder catalogue"],

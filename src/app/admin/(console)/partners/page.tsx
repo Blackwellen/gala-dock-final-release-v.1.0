@@ -10,7 +10,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows, one } from "@/lib/workspace/db";
 import { money, delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, Delta } from "../_b/kit";
-import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
+import { ParamSelect, SearchParam, Menu } from "../_b/ui";
 import { stamp } from "../_b/format";
 import { setPartnerStatus, setPartnerTerms } from "../_b/actions";
 import { payStatementViaStripe, sendStatementToBank, recoverStatementClawback, invitePartnerLogin } from "./actions";
@@ -138,11 +138,10 @@ export default async function PartnersPage(props: PageProps<"/admin/partners">) 
             <Link className="adb-btn adp-fbtn" href={tab === "affiliates" ? "/admin/partners" : `/admin/partners?tab=${tab}`} scroll={false}><Filter aria-hidden="true" />Clear filters</Link>
           </div>
           <div className="adb-table-wrap"><table className="adb-table adp-table">
-            <colgroup>{[34, 158, 70, 94, 86, 96, 72, 88, 92, 70].map((w, i) => <col key={i} style={{ width: `${(w / 860) * 100}%` }} />)}</colgroup>
-            <thead><tr><th><RowCheck label="Select all" /></th><th>Partner</th><th>Type</th><th>Status</th><th>Revenue (30d)</th><th>Commission</th><th>Conversion</th><th>Joined</th><th>Payout status</th><th className="r">Actions</th></tr></thead>
+            <colgroup>{[158, 70, 94, 86, 96, 72, 88, 92, 70].map((w, i) => <col key={i} style={{ width: `${(w / 826) * 100}%` }} />)}</colgroup>
+            <thead><tr><th>Partner</th><th>Type</th><th>Status</th><th>Revenue (30d)</th><th>Commission</th><th>Conversion</th><th>Joined</th><th>Payout status</th><th className="r">Actions</th></tr></thead>
             <tbody>{list.slice((page - 1) * per, page * per).map(p => { const t = typeOf(p), [pk, pl] = PAYOUT[p.details.payout_status ?? ""] ?? ["pending", "Pending"], r = rev(p);
               return <tr key={p.id} className={sel?.id === p.id ? "sel" : ""}>
-                <td><RowCheck label={`Select ${p.name}`} /></td>
                 <td><Link href={qp({ partner: p.id })} scroll={false} className="adb-cell"><Mark text={p.details.mark ?? p.name.slice(0, 1)} color={p.details.color ?? "#1a4fe0"} size={28} /><span><b>{p.name}</b><small>{p.details.domain ?? p.referral_code ?? ""}</small></span></Link></td>
                 <td><span className={`adb-tag ${TYPE_TONE[t] ?? "grey"}`}>{t[0]!.toUpperCase() + t.slice(1)}</span></td>
                 <td><Pill status={p.status === "pending" ? "processing" : p.status} label={<>{p.status === "active" ? <CircleCheck aria-hidden="true" /> : p.status === "paused" ? <CirclePause aria-hidden="true" /> : <CircleDot aria-hidden="true" />}{p.status === "pending" ? "Under review" : p.status[0]!.toUpperCase() + p.status.slice(1)}</>} /></td>

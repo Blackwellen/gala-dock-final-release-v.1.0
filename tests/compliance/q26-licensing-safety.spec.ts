@@ -40,6 +40,9 @@ test.describe("Q26 licensing, compliance, safety, accessibility & weather", () =
       starts_at: iso(Date.now() + day), ends_at: iso(Date.now() + day + 5 * H), capacity: 80 }).select("id").single()).data as Id).id;
     E3 = ((await db.from("events").insert({ owner_id: O.id, workspace_id: W, management: "professional", name: "Q26 Abroad", event_type: "conference", status: "planning",
       starts_at: iso(t0), ends_at: iso(t0 + 4 * H), capacity: 50 }).select("id").single()).data as Id).id;
+    // Q75 (Q73): a late finish alone is not licensable; late-night REFRESHMENT is. A booked caterer (hot food) + the derived late finish
+    // makes premises_or_ten apply before any answers, as this test expects.
+    await db.from("build_items").insert({ event_id: E, category: "catering", title: "Q26 street food", status: "confirmed", amount: 500, role: "primary" });
     MAP = ((await db.from("venue_maps").insert({ event_id: E, version: 1, status: "draft", structure: { elements: [{ id: "route-1", type: "path" }] }, overlay: {} }).select("id").single()).data as Id).id;
     const gs = (await db.from("guests").insert([{ event_id: E, name: "Wheel One" }, { event_id: E, name: "Wheel Two" }, { event_id: E, name: "Hear Three" }]).select("id,name")).data as { id: string; name: string }[];
     await db.from("guest_care").insert([

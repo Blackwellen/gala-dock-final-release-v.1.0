@@ -1,0 +1,103 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { LEGAL } from "@/lib/legal";
+
+// DRAFT (Q74, 2026-11-14) — full replacement for src/app/(legal)/terms/page.tsx. NOT PUBLISHED. Owner + counsel sign-off required.
+// Live-text corrections only (the full v3 Terms follow after counsel, decision D1). See README.md for the diff summary.
+export const metadata: Metadata = { title: "Terms of Service · Gala Dock", description: "The terms that apply when you use Gala Dock as a customer, organiser, venue or service provider." };
+
+export default function Terms() {
+  return <article>
+    <h1>Terms of Service</h1>
+    <p className="lg-meta">Version {LEGAL.version} · effective {LEGAL.effective}</p>
+    <p>These terms form an agreement between you and {LEGAL.entity.name} about using {LEGAL.service}. Please read them with our <Link href="/privacy">Privacy Policy</Link>. Our <Link href="/ticket-terms">Ticket Purchase &amp; Resale Terms</Link> also apply if you buy, transfer or resell tickets. If you are a consumer, nothing in these terms affects your statutory rights, including those under the Consumer Rights Act 2015.</p>
+
+    <h2 id="service">1. What Gala Dock is</h2>
+    <p>{LEGAL.service} is a platform for planning events, selling tickets and booking venues and services. It connects:</p>
+    <ul>
+      <li><b>customers</b>, who plan personal events and buy tickets;</li>
+      <li><b>organisers</b>, who run events, sell tickets and manage teams; and</li>
+      <li><b>providers</b>, venues and suppliers who list spaces, services and packages.</li>
+    </ul>
+    <p>{LEGAL.service} is software. Organisers, venues and suppliers are <b>independent businesses that use our software</b> under their own agreements with us. They are not our employees, workers, partners or contractors, and they don’t act for us. When you buy a ticket or book a venue or service, your contract for that event, venue or service is with the organiser or provider, which sells in its own name and is responsible for delivering it.</p>
+    <p><b>We don’t hold your money.</b> Payments are taken by Stripe, an authorised payment institution, straight into the seller’s own Stripe account. {LEGAL.service} provides the checkout and sends Stripe the payout and refund instructions our Payment Terms set out; our fees are deducted by Stripe as an application fee. {LEGAL.service} is not a bank, an escrow service or an insurer.</p>
+
+    <h2 id="accounts">2. Your account and where Gala Dock is available</h2>
+    <ul>
+      <li>You must be 18 or over and give accurate information.</li>
+      <li>Keep your password and two-step verification secure. You are responsible for activity on your account.</li>
+      <li>One login can belong to several workspaces. Workspace owners decide who joins and what each member can do. A workspace owner is responsible for the actions of its members on the platform.</li>
+      <li>You can use {LEGAL.service} from the UK, the EU and the other countries we support, consumers included. You must not use it if you are subject to UK, UN, EU or US sanctions or are based in a comprehensively sanctioned country or region (today Cuba, Iran, North Korea, Syria, Russia, Belarus, Crimea, Sevastopol and the non-government-controlled areas of the Donetsk and Luhansk regions). We refuse sign-up, publishing, payout set-up and payments there. See <Link href={LEGAL.availabilityHelp}>Where Gala Dock is available</Link>; contact support if we refuse you by mistake.</li>
+    </ul>
+
+    <h2 id="marketplace">3. Requests, quotes and bookings</h2>
+    <ul>
+      <li>Providers set their own prices, deposits, balance dates, cancellation terms, hold and standby options and response times. These are shown before you book.</li>
+      <li>A booking is confirmed when the provider accepts it (or it is instant-booked) and any required deposit is paid. The terms shown at that moment are saved with the booking. Later changes to a listing do not alter an accepted booking.</li>
+      <li>A request that is not answered in time is marked expired, not declined.</li>
+      <li>Conditional holds and standby options last only for the period shown.</li>
+      <li>Cancellations follow the saved terms of that booking, together with your statutory rights. Refunds are paid to the original payment method from the seller’s Stripe balance.</li>
+    </ul>
+
+    <h2 id="fees">4. Fees and payments</h2>
+    <ul>
+      <li>All of our fees are <b>platform usage fees</b> for using the {LEGAL.service} software and payment tools. They are shown before you pay or agree.</li>
+      <li><b>Tickets:</b> buyers pay a booking fee of {LEGAL.fees.ticketBuyer}, which is {LEGAL.service}’s charge for its booking service. Ticket sellers pay {LEGAL.fees.ticketSeller}, deducted from the payment.</li>
+      <li><b>Venue and supplier bookings:</b> providers pay commission of {LEGAL.fees.supplier}. Customers pay a booking admin fee of {LEGAL.fees.bookingAdmin}, shown as its own line at checkout.</li>
+      <li>Our fees to businesses carry UK VAT for businesses in the UK. Businesses outside the UK that are in business are charged without UK VAT (reverse charge).</li>
+      <li>Plans and credit packs are sold to businesses only, with prices shown excluding VAT.</li>
+      <li>If an organiser cancels an event after tickets have sold, buyers are always refunded in full, including the booking fee. The organiser still owes the platform fees on the tickets sold, unless {LEGAL.service} accepts that the event couldn’t lawfully or safely go ahead for reasons outside the organiser’s control (force majeure), in which case the fees are waived.</li>
+      <li><b>Payouts.</b> Money stays in the seller’s own Stripe balance until a payout trigger in the Payment Terms is met: for tickets, resales and merchandise, 5 UK business days after the event ends; for bookings, when the customer confirms delivery or 24 hours after the event with no dispute opened. Payouts are paused only on the grounds the Payment Terms list (for example a court order, a payment-provider instruction, a workspace suspension after review, or missing tax details that UK platform-reporting law requires).</li>
+      <li><b>Keeping bookings on {LEGAL.service}.</b> For 12 months after a business user is introduced to another user through {LEGAL.service}, it must not take or make payment outside {LEGAL.service} for that engagement to avoid our fees. This doesn’t apply to consumers or to sellers whose listings are enquiry-only because we can’t take payments for them; payments you agree directly with an enquiry-only seller aren’t covered by our payment rules, disputes process or refunds.</li>
+    </ul>
+
+    <h2 id="providers">5. Additional obligations for providers and organisers</h2>
+    <ul>
+      <li>Keep your listings, capacities, prices and availability accurate, and honour accepted bookings.</li>
+      <li>Hold the licences, permissions and certifications your activity needs, and keep the documents you give us valid. Suppliers and venues must hold public liability insurance of at least {LEGAL.insurance.standard} per occurrence, or {LEGAL.insurance.higherRisk} for higher-risk categories (security; staging, rigging, special effects and pyrotechnics; marquees, temporary structures, inflatables and rides).</li>
+      <li>Venues and suppliers give us the tax details UK platform-reporting law (the Platform Operators Regulations 2023) requires; we report their earnings to HMRC each year.</li>
+      <li>Follow the law, including on health and safety, licensing, equality, consumer protection, data protection and tax.</li>
+      <li>Where you process attendees’ or customers’ personal data, you are its controller and must handle it lawfully.</li>
+      <li>You are responsible, and liable, for your events, venues and services, and for what happens at them. You indemnify us against claims arising from them.</li>
+    </ul>
+
+    <h2 id="conduct">6. Acceptable use and reporting</h2>
+    <p>You must not:</p>
+    <ul>
+      <li>break the law or infringe anyone’s rights;</li>
+      <li>post false, misleading, discriminatory, hateful or harassing content, or illegal content;</li>
+      <li>commit fraud, ticket touting or scalping, or ask anyone to pay outside {LEGAL.service} to get round our protections;</li>
+      <li>interfere with the platform or other members’ accounts; or</li>
+      <li>scrape or copy the platform at scale.</li>
+    </ul>
+    <p>Use <b>Report</b> on any listing, event page, review or message to tell us about content that breaks these rules; our Trust &amp; Safety team reviews every report and tells you the outcome. We may remove content, pause listings or restrict accounts. A person reviews any account-level action, and we give reasons and a way to appeal unless the law or someone’s safety prevents it. Money already in a seller’s own Stripe balance is paused only on the grounds the Payment Terms list.</p>
+
+    <h2 id="content">7. Your content</h2>
+    <p>You keep ownership of what you upload, including photos, listings, plans and messages. You give us a licence to host, display and process it, but only to run and promote the service. For public listings and event pages, this includes showing them in search and marketing. The licence ends when you delete the content, except where we must keep it (see our <Link href="/data-retention">Data Retention Schedule</Link>).</p>
+
+    <h2 id="agent">8. Gala Agent (AI features for organiser and provider workspaces)</h2>
+    <p>In organiser and provider workspaces, Gala Agent can draft messages, plans and suggestions, and can carry out actions you approve. It runs on Microsoft Azure OpenAI Service. Its output may be inaccurate, so check it before relying on it. Actions that send messages, commit to bookings or move money need your approval, and you are responsible for the actions you approve. Customer accounts don’t use AI features.</p>
+
+    <h2 id="disputes">9. Problems and disputes</h2>
+    <p>Contact the other party first. If you can’t resolve it, open a dispute from the booking within 24 hours after the event ends, or contact <a href={`mailto:${LEGAL.contact.support}`}>{LEGAL.contact.support}</a>.</p>
+    <p>{LEGAL.service} does not hold your money: payments go to the seller’s own Stripe account. While a dispute is open, the payment is not paid out to the seller. We may review the evidence and the saved booking terms and give a recommendation, but we do not decide disputes. Money moves only when you both accept the recommendation, you settle, an independent body or court decides, or the payment provider’s hold limit is reached and the default rule in the Payment Terms applies.</p>
+    <p>Consumers are never required to use arbitration for claims of £5,000 or less. The 24-hour window affects only when a payout can be made, not your legal rights. This does not prevent you from going to court or using an alternative dispute resolution scheme.</p>
+
+    <h2 id="liability">10. Our liability</h2>
+    <ul>
+      <li>We do not exclude or limit our liability for death or personal injury caused by our negligence, for fraud, or for anything else that cannot be limited by law.</li>
+      <li>If you are a consumer, we are responsible for loss you suffer that is a foreseeable result of our breaking these terms or failing to use reasonable care and skill. Organisers and providers, not {LEGAL.service}, are responsible for their events and services and for any loss they cause. Your rights against them are not affected.</li>
+      <li>If you use the platform for business, we are not liable for indirect or consequential loss, or for loss of profit, revenue, business, goodwill or data. Our total liability in any 12 months is limited to the greater of {LEGAL.liabilityFloor} and the fees you paid us in the previous 12 months. This limit doesn’t apply to our duty to send Stripe the payout and refund instructions the Payment Terms require, including a missed or misdirected instruction.</li>
+    </ul>
+
+    <h2 id="ending">11. Suspension and closing your account</h2>
+    <p>You can close your account at any time from Settings. Accepted bookings, tickets and any amounts owed are not affected by closing it. We may suspend or close accounts that breach these terms or put members at risk. Where it is safe and lawful to do so, we will give reasons and a chance to respond.</p>
+
+    <h2 id="changes">12. Changes</h2>
+    <p>We may update these terms to reflect changes in the law or the service, and we will give reasonable notice of significant changes (at least 15 days for business users). Bookings already accepted stay under the terms that applied when they were accepted.</p>
+
+    <h2 id="law">13. Law and courts</h2>
+    <p>These terms are governed by {LEGAL.law}. If you are a consumer living in Scotland or Northern Ireland, or outside the UK, you can also bring proceedings in your local courts and keep the protection of the mandatory consumer law where you live.</p>
+    <p>Contact: <a href={`mailto:${LEGAL.contact.legal}`}>{LEGAL.contact.legal}</a>.</p>
+  </article>;
+}

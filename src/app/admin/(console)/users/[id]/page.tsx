@@ -191,7 +191,7 @@ export default async function UserProfilePage(props: PageProps<"/admin/users/[id
             : <p className="aa-empty">This user hasn’t created any events.</p>}
         </section>
         <section className="aa-panel ap-tickets">
-          <SectionHead title="Recent tickets" href={canTickets ? `/admin/tickets?q=${encodeURIComponent(identity.email)}` : undefined} />
+          <SectionHead title="Recent tickets" href={canTickets ? `/admin/tickets?tab=orders&q=${encodeURIComponent(identity.email)}` : undefined} />
           {!canTickets ? <p className="aa-empty">Ticket history needs the Tickets permission.</p> : recentTickets.length ? <table className="aa-mtable"><thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Status</th></tr></thead>
             <tbody>{recentTickets.map(t => <tr key={t.id}><td>{t.event?.name}</td><td>{day(t.event?.starts_at, { day: "numeric", month: "short", year: "numeric" })}</td><td className="aa-muted">{t.tier?.name}</td>
               <td>{t.status === "valid" ? <Status value="valid" label="Valid" /> : <Status value={t.status} dot={false} />}</td></tr>)}</tbody></table> : <p className="aa-empty">No tickets held.</p>}

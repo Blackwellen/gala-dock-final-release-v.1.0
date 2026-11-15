@@ -1,0 +1,27 @@
+{
+  "observedUtc": "2026-10-13T20:51:28.726Z",
+  "scope": "Isolated local desktop Chrome install/launch; no physical mobile certification",
+  "checks": [
+    {
+      "name": "install_command",
+      "passed": true
+    },
+    {
+      "name": "os_app_query",
+      "passed": true
+    },
+    {
+      "name": "standalone_display_mode",
+      "passed": false
+    },
+    {
+      "name": "installed_five_option_navigation",
+      "passed": true
+    },
+    {
+      "name": "isolated_app_uninstalled",
+      "passed": true
+    }
+  ],
+  "status": "failed"
+}

@@ -1,0 +1,163 @@
+[
+ {
+  "route": "/admin/commerce",
+  "pattern": "/admin/commerce",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin",
+  "pattern": "/admin",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/settings",
+  "pattern": "/admin/settings",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/money",
+  "pattern": "/account/events/[id]/money",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/inbox",
+  "pattern": "/account/inbox",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account",
+  "pattern": "/account",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/tickets",
+  "pattern": "/account/tickets",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/account/events/[id]/book"
+ },
+ {
+  "route": "/checkout/elite-sounds-night",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/checkout/[event]"
+ },
+ {
+  "route": "/organizer/events/new",
+  "pattern": "/organizer/events/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/inbox",
+  "pattern": "/organizer/inbox",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/money",
+  "pattern": "/organizer/money",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer",
+  "pattern": "/organizer",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/settings",
+  "pattern": "/organizer/settings",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=1",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/provider/inbox",
+  "pattern": "/provider/inbox",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/money",
+  "pattern": "/provider/money",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider",
+  "pattern": "/provider",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/settings",
+  "pattern": "/provider/settings",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/venues/new",
+  "pattern": "/provider/venues/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/venues/new?venue=976f8ef9-1f17-4882-8f37-5bc634b20ee3&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/partner",
+  "pattern": "/partner",
+  "label": "partner",
+  "state": "artifacts/auth/r1-partner.json",
+  "set": "full"
+ },
+ {
+  "route": "/promoter",
+  "pattern": "/promoter",
+  "label": "promoter",
+  "state": "artifacts/auth/r1-promoter.json",
+  "set": "full"
+ }
+]

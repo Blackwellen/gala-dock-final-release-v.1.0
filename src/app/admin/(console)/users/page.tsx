@@ -111,13 +111,13 @@ export default async function UsersPage(props: PageProps<"/admin/users">) {
         <Pager base={base} sp={sp} page={page} per={per} total={total} />
       </div>
 
-      {selId ? <Suspense fallback={<aside className="aa-drawer" aria-busy="true" />}><UserDrawer id={selId} sp={sp} row={list.find(r => r.id === selId)} canSupport={permissions.has("support")} canTrust={permissions.has("trust")} self={selId === userId} /></Suspense>
+      {selId ? <Suspense fallback={<aside className="aa-drawer" aria-busy="true" />}><UserDrawer id={selId} sp={sp} row={list.find(r => r.id === selId)} canSupport={permissions.has("support")} canTrust={permissions.has("trust")} canTickets={permissions.has("tickets")} self={selId === userId} /></Suspense>
         : <aside className="aa-drawer aa-drawer-empty"><p className="aa-empty">Select a user to see their identity, workspaces and activity.</p></aside>}
     </div>
   </div>;
 }
 
-async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: string; sp: SP; row?: Dir; canSupport: boolean; canTrust: boolean; self: boolean }) {
+async function UserDrawer({ id, sp, row, canSupport, canTrust, canTickets, self }: { id: string; sp: SP; row?: Dir; canSupport: boolean; canTrust: boolean; canTickets: boolean; self: boolean }) {
   const { db } = await requireAdminPermission("users");
   const now = requestTime();
   const [identity, profile, members, tickets, events, cases, trust] = await Promise.all([
@@ -126,7 +126,8 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
       db.from("profiles").select("full_name,avatar_url,phone,home_area,country,status,identity_verified,last_active_at,created_at").eq("id", id).maybeSingle()),
     rows<{ role: string; status: string; created_at: string; workspace: { id: string; name: string; kind: string } | null }>(
       db.from("workspace_members").select("role,status,created_at,workspace:workspaces(id,name,kind)").eq("user_id", id).order("created_at")),
-    rows<{ id: string; status: string; price_paid: number; order_ref: string; created_at: string; event: { name: string } | null }>(
+    // Q51: ticket rows are RLS-gated on the Tickets permission — without it the drawer said "No tickets held" / £0 spend.
+    !canTickets ? Promise.resolve([] as { id: string; status: string; price_paid: number; order_ref: string; created_at: string; event: { name: string } | null }[]) : rows<{ id: string; status: string; price_paid: number; order_ref: string; created_at: string; event: { name: string } | null }>(
       db.from("tickets").select("id,status,price_paid,order_ref,created_at,event:events(name)").eq("holder_id", id).order("created_at", { ascending: false }).limit(500)),
     rows<{ id: string; name: string; starts_at: string | null; status: string }>(db.from("events").select("id,name,starts_at,status").eq("owner_id", id).order("starts_at", { ascending: false }).limit(50)),
     canSupport ? rows<{ id: string; reference: string; subject: string; priority: string; status: string; created_at: string }>(
@@ -150,7 +151,7 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
     <nav className="aa-dtabs" aria-label="User sections">
       <Link href={qs(base, sp, { sel: id, dtab: null })} scroll={false} className={dtab === "overview" ? "on" : ""}>Overview</Link>
       <Link href={qs(base, sp, { sel: id, dtab: "events" })} scroll={false} className={dtab === "events" ? "on" : ""}>Events ({events.length})</Link>
-      <Link href={qs(base, sp, { sel: id, dtab: "tickets" })} scroll={false} className={dtab === "tickets" ? "on" : ""}>Tickets ({tickets.length})</Link>
+      <Link href={qs(base, sp, { sel: id, dtab: "tickets" })} scroll={false} className={dtab === "tickets" ? "on" : ""}>Tickets{canTickets ? ` (${tickets.length})` : ""}</Link>
       <AdminMenu label="More user actions" entries={[{ kind: "link", label: "Open full profile", href: `${base}/${id}` }, ...(identity?.email ? [{ kind: "link" as const, label: "Copy email (mailto)", href: `mailto:${identity.email}`, external: true }] : [])]} />
     </nav>
 
@@ -176,8 +177,8 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
         <SectionHead title="Activity summary" />
         <div className="aa-acts">
           <div><span className="ico blue"><CalendarCheck aria-hidden="true" /></span><b>{events.length}</b><small>Events</small><small>{upcoming} upcoming</small></div>
-          <div><span className="ico purple"><Ticket aria-hidden="true" /></span><b>{tickets.length}</b><small>Tickets</small><small>{tickets.filter(t => t.status === "used").length} used</small></div>
-          <div><span className="ico blue"><Layers aria-hidden="true" /></span><b>{money(spend)}</b><small>Total spend</small><small>{orders} orders</small></div>
+          <div><span className="ico purple"><Ticket aria-hidden="true" /></span><b>{canTickets ? tickets.length : "—"}</b><small>Tickets</small><small>{tickets.filter(t => t.status === "used").length} used</small></div>
+          <div><span className="ico blue"><Layers aria-hidden="true" /></span><b>{canTickets ? money(spend) : "—"}</b><small>Total spend</small><small>{canTickets ? `${orders} orders` : "Needs Tickets"}</small></div>
         </div>
       </section>
       <section>
@@ -201,7 +202,7 @@ async function UserDrawer({ id, sp, row, canSupport, canTrust, self }: { id: str
     {dtab === "events" && <ul className="aa-dlist">{events.length ? events.map(e => <li key={e.id}><b>{e.name}</b><small>{day(e.starts_at, { day: "numeric", month: "short", year: "numeric" })}</small><Status value={e.status} dot={false} /></li>)
       : <li className="aa-empty">No events created by this user.</li>}</ul>}
     {dtab === "tickets" && <ul className="aa-dlist">{tickets.length ? tickets.slice(0, 30).map(t => <li key={t.id}><b>{t.event?.name ?? "Event"}</b><small>#{t.order_ref} · {money(t.price_paid, "GBP", { cents: true })}</small><Status value={t.status} dot={false} /></li>)
-      : <li className="aa-empty">No tickets held.</li>}</ul>}
+      : <li className="aa-empty">{canTickets ? "No tickets held." : "Ticket history needs the Tickets permission."}</li>}</ul>}
 
     <div className="aa-drawer-actions">
       <SectionHead title="Actions" />

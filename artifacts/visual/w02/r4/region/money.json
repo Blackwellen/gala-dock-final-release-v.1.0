@@ -1,0 +1,481 @@
+{
+ "leaf_weighted": 54.5,
+ "leaves": 12,
+ "leaves_passed": 0,
+ "page_line_drift": 52.3,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Gala\u00b7Dock Wedding Money Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p13/money-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 13,
+ "passed": 1,
+ "weighted_drift": 42.4,
+ "worst": [
+  {
+   "design": [
+    33,
+    525,
+    1090,
+    66
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.109,
+   "box_drift": 89.1,
+   "line_drift": 44.3,
+   "drift": 89.1,
+   "dx": -1,
+   "dy": 6,
+   "dw": 4,
+   "dh": 478
+  },
+  {
+   "design": [
+    33,
+    622,
+    764,
+    92
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.118,
+   "box_drift": 88.2,
+   "line_drift": 92.5,
+   "drift": 88.2,
+   "dx": -1,
+   "dy": -91,
+   "dw": 330,
+   "dh": 452
+  },
+  {
+   "design": [
+    46,
+    807,
+    1064,
+    94
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.168,
+   "box_drift": 83.2,
+   "line_drift": 94.8,
+   "drift": 83.2,
+   "dx": -14,
+   "dy": -276,
+   "dw": 30,
+   "dh": 450
+  },
+  {
+   "design": [
+    1139,
+    730,
+    368,
+    96
+   ],
+   "ours": [
+    1138,
+    788,
+    370,
+    114
+   ],
+   "iou": 0.22,
+   "box_drift": 78.0,
+   "line_drift": 55.6,
+   "drift": 78.0,
+   "dx": -1,
+   "dy": 58,
+   "dw": 2,
+   "dh": 18
+  },
+  {
+   "design": [
+    1139,
+    937,
+    368,
+    68
+   ],
+   "ours": [
+    1138,
+    914,
+    370,
+    234
+   ],
+   "iou": 0.289,
+   "box_drift": 71.1,
+   "line_drift": 67.3,
+   "drift": 71.1,
+   "dx": -1,
+   "dy": -23,
+   "dw": 2,
+   "dh": 166
+  },
+  {
+   "design": [
+    1139,
+    838,
+    368,
+    100
+   ],
+   "ours": [
+    1140,
+    790,
+    368,
+    112
+   ],
+   "iou": 0.431,
+   "box_drift": 56.9,
+   "line_drift": 72.0,
+   "drift": 56.9,
+   "dx": 1,
+   "dy": -48,
+   "dw": 0,
+   "dh": 12
+  },
+  {
+   "design": [
+    1139,
+    421,
+    368,
+    91
+   ],
+   "ours": [
+    1138,
+    432,
+    370,
+    121
+   ],
+   "iou": 0.603,
+   "box_drift": 39.7,
+   "line_drift": 39.6,
+   "drift": 39.7,
+   "dx": -1,
+   "dy": 11,
+   "dw": 2,
+   "dh": 30
+  },
+  {
+   "design": [
+    1139,
+    525,
+    368,
+    193
+   ],
+   "ours": [
+    1138,
+    564,
+    370,
+    212
+   ],
+   "iou": 0.611,
+   "box_drift": 38.9,
+   "line_drift": 68.0,
+   "drift": 38.9,
+   "dx": -1,
+   "dy": 39,
+   "dw": 2,
+   "dh": 19
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    32,
+    72,
+    1475,
+    143
+   ],
+   "ours": [
+    32,
+    74,
+    1476,
+    143
+   ],
+   "iou": 0.972,
+   "box_drift": 2.8,
+   "line_drift": 4.2,
+   "drift": 2.8,
+   "dx": 0,
+   "dy": 2,
+   "dw": 1,
+   "dh": 0
+  },
+  {
+   "design": [
+    57,
+    88,
+    128,
+    114
+   ],
+   "ours": [
+    58,
+    91,
+    128,
+    114
+   ],
+   "iou": 0.934,
+   "box_drift": 6.6,
+   "line_drift": 41.7,
+   "drift": 6.6,
+   "dx": 1,
+   "dy": 3,
+   "dw": 0,
+   "dh": 0
+  },
+  {
+   "design": [
+    1139,
+    278,
+    368,
+    130
+   ],
+   "ours": [
+    1138,
+    280,
+    370,
+    140
+   ],
+   "iou": 0.897,
+   "box_drift": 10.3,
+   "line_drift": 18.3,
+   "drift": 10.3,
+   "dx": -1,
+   "dy": 2,
+   "dw": 2,
+   "dh": 10
+  },
+  {
+   "design": [
+    33,
+    332,
+    737,
+    180
+   ],
+   "ours": [
+    32,
+    333,
+    1094,
+    186
+   ],
+   "iou": 0.646,
+   "box_drift": 35.4,
+   "line_drift": 51.7,
+   "drift": 35.4,
+   "dx": -1,
+   "dy": 1,
+   "dw": 357,
+   "dh": 6
+  },
+  {
+   "design": [
+    786,
+    332,
+    323,
+    166
+   ],
+   "ours": [
+    779,
+    348,
+    330,
+    156
+   ],
+   "iou": 0.855,
+   "box_drift": 14.5,
+   "line_drift": 70.9,
+   "drift": 14.5,
+   "dx": -7,
+   "dy": 16,
+   "dw": 7,
+   "dh": -10
+  },
+  {
+   "design": [
+    1139,
+    421,
+    368,
+    91
+   ],
+   "ours": [
+    1138,
+    432,
+    370,
+    121
+   ],
+   "iou": 0.603,
+   "box_drift": 39.7,
+   "line_drift": 39.6,
+   "drift": 39.7,
+   "dx": -1,
+   "dy": 11,
+   "dw": 2,
+   "dh": 30
+  },
+  {
+   "design": [
+    33,
+    525,
+    1090,
+    66
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.109,
+   "box_drift": 89.1,
+   "line_drift": 44.3,
+   "drift": 89.1,
+   "dx": -1,
+   "dy": 6,
+   "dw": 4,
+   "dh": 478
+  },
+  {
+   "design": [
+    1139,
+    525,
+    368,
+    193
+   ],
+   "ours": [
+    1138,
+    564,
+    370,
+    212
+   ],
+   "iou": 0.611,
+   "box_drift": 38.9,
+   "line_drift": 68.0,
+   "drift": 38.9,
+   "dx": -1,
+   "dy": 39,
+   "dw": 2,
+   "dh": 19
+  },
+  {
+   "design": [
+    33,
+    622,
+    764,
+    92
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.118,
+   "box_drift": 88.2,
+   "line_drift": 92.5,
+   "drift": 88.2,
+   "dx": -1,
+   "dy": -91,
+   "dw": 330,
+   "dh": 452
+  },
+  {
+   "design": [
+    1139,
+    730,
+    368,
+    96
+   ],
+   "ours": [
+    1138,
+    788,
+    370,
+    114
+   ],
+   "iou": 0.22,
+   "box_drift": 78.0,
+   "line_drift": 55.6,
+   "drift": 78.0,
+   "dx": -1,
+   "dy": 58,
+   "dw": 2,
+   "dh": 18
+  },
+  {
+   "design": [
+    46,
+    807,
+    1064,
+    94
+   ],
+   "ours": [
+    32,
+    531,
+    1094,
+    544
+   ],
+   "iou": 0.168,
+   "box_drift": 83.2,
+   "line_drift": 94.8,
+   "drift": 83.2,
+   "dx": -14,
+   "dy": -276,
+   "dw": 30,
+   "dh": 450
+  },
+  {
+   "design": [
+    1139,
+    838,
+    368,
+    100
+   ],
+   "ours": [
+    1140,
+    790,
+    368,
+    112
+   ],
+   "iou": 0.431,
+   "box_drift": 56.9,
+   "line_drift": 72.0,
+   "drift": 56.9,
+   "dx": 1,
+   "dy": -48,
+   "dw": 0,
+   "dh": 12
+  },
+  {
+   "design": [
+    1139,
+    937,
+    368,
+    68
+   ],
+   "ours": [
+    1138,
+    914,
+    370,
+    234
+   ],
+   "iou": 0.289,
+   "box_drift": 71.1,
+   "line_drift": 67.3,
+   "drift": 71.1,
+   "dx": -1,
+   "dy": -23,
+   "dw": 2,
+   "dh": 166
+  }
+ ]
+}

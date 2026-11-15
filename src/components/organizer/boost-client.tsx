@@ -4,6 +4,7 @@ import { Loader2, Rocket } from "lucide-react";
 import { Dialog, useAction } from "@/components/kit/client";
 import { buyBoost } from "@/lib/actions/boosts";
 import { BOOST_PLACEMENT, londonToday } from "@/lib/ads/flight";
+import { incVatMinor } from "@/lib/billing/vat-display";
 
 type Product = { key: string; label: string; placement: string; price_minor: number; duration_days: number };
 
@@ -15,7 +16,7 @@ export function BoostSelect({ eventId, product, defaultCity, defaultCategory }: 
   const [cities, setCities] = useState(defaultCity); const [cats, setCats] = useState(defaultCategory);
   const list = (s: string) => s.split(",").map(x => x.trim()).filter(x => x.length >= 2).slice(0, 5);
   const gbp = (minor: number) => `£${(minor / 100).toLocaleString("en-GB", { minimumFractionDigits: minor % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
-  const price = gbp(product.price_minor), total = gbp(Math.round(product.price_minor * 1.2));
+  const price = gbp(product.price_minor), total = gbp(incVatMinor(product.price_minor));   // UK VAT, integer pennies (vat-display)
   return <>
     <button type="button" className="k-btn outline sm" onClick={() => setOpen(true)}>Select</button>
     <Dialog open={open} onClose={() => setOpen(false)} title={product.label} sub={`${BOOST_PLACEMENT[product.placement] ?? product.placement} for up to ${product.duration_days} days · ${price} plus VAT at 20% (${total} total). Always shown with a “Sponsored” label.`}>

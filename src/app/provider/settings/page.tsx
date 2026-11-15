@@ -52,7 +52,7 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
   const now = requestTime(), g30 = txs.filter(t => t.kind === "income" && inRange(t, now - 30 * 864e5, now)).reduce((a, t) => a + t.amount, 0);
   const better = Object.entries(plans).filter(([, x]) => x.commission_bps < bps).map(([k, x]) => ({ k, save: Math.round((g30 * (bps - x.commission_bps)) / 10000 - (x.monthly - (plans[ws.plan]?.monthly ?? 0))) })).sort((x, y) => y.save - x.save)[0];
   const roleCount = (r: string) => members.filter(m => m.role === r && m.status === "active").length;
-  const chan = (k: string) => { const x = n[k] ?? { email: true, in_app: true }; return [x.email && "Email", x.in_app && "In-app", x.sms && "SMS"].filter(Boolean).join(" + ") || "Off"; };
+  const chan = (k: string) => { const x = n[k] ?? { email: true, in_app: true }; return [x.email && "Email", x.in_app && "In-app"].filter(Boolean).join(" + ") || "Off"; };
   const pending = invites.filter(i => !i.accepted_at && !i.revoked_at && new Date(i.expires_at).getTime() > now);
   const base = "/provider/settings";
   // Q49: the plan box lists the live catalogue's inclusions for this plan (plan_entitlements via loadPricing — the same rows the
@@ -171,9 +171,11 @@ export default async function Settings(props: PageProps<"/provider/settings">) {
         <AgentCredits db={ctx.db} workspaceId={ws.id} canEdit={ctx.can.manage} canSeeUsage={ctx.can.finance} />
         <CreditPacks db={ctx.db} workspaceId={ws.id} kind="provider" isOwner={owner} justPaid={sp.credits === "success"} />
         <AgentControls db={ctx.db} workspaceId={ws.id} surface="provider" canManage={ctx.can.manage} /></>}
-      {tab === "notifications" && <><h2>Notifications</h2><ActionForm action={saveNotifications} className="ps-notif"><table className="ws-table"><thead><tr><th>Event</th><th>Email</th><th>In-app</th><th>SMS</th></tr></thead>
+      {tab === "notifications" && <><h2>Notifications</h2><ActionForm action={saveNotifications} className="ps-notif"><table className="ws-table"><thead><tr><th>Event</th><th>Email</th><th>In-app</th></tr></thead>
         <tbody>{([["enquiries", "New enquiries"], ["bookings", "Booking updates"], ["agent", "Agent notifications"], ["mentions", "Team mentions"]] as const).map(([k, l]) => { const x = n[k] ?? { email: true, in_app: true }; return <tr key={k}><td>{l}</td>
-          <td><input type="checkbox" name={`${k}_email`} defaultChecked={!!x.email} aria-label={`${l} email`} /></td><td><input type="checkbox" name={`${k}_app`} defaultChecked={x.in_app !== false} aria-label={`${l} in-app`} /></td><td><input type="checkbox" name={`${k}_sms`} defaultChecked={!!x.sms} aria-label={`${l} SMS`} /></td></tr>; })}</tbody></table>
+          <td><input type="checkbox" name={`${k}_email`} defaultChecked={!!x.email} aria-label={`${l} email`} /></td><td><input type="checkbox" name={`${k}_app`} defaultChecked={x.in_app !== false} aria-label={`${l} in-app`} /></td></tr>; })}</tbody></table>
+        {/* Q75 (owner decision): SMS and push aren't sent at launch, so there is no switch for them. */}
+        <p className="ws-muted">Gala Dock sends these by email and in-app. Text-message and push alerts aren’t available yet.</p>
         {owner && <div className="pv-form-foot"><button className="ws-btn primary">Save preferences</button></div>}</ActionForm></>}
     </section>}
     {tab !== "workspace" && <Link href={base} className="ws-back"><ArrowLeft aria-hidden="true" />Back to overview</Link>}

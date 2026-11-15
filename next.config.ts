@@ -38,7 +38,12 @@ const nextConfig: NextConfig = {
       { source: "/about-us", destination: "/about", permanent: true },
       { source: "/customers", destination: "/build-an-event", permanent: true },
       { source: "/build", destination: "/build-an-event", permanent: true },
-      { source: "/developer", destination: "/developers", permanent: true },    ];
+      { source: "/developer", destination: "/developers", permanent: true },
+      // Q75: there is no /venues or /services index page (only /venues/<slug>, /services/<slug>); send them to the public
+      // directory (HREF.browseVenues / HREF.browseSuppliers in src/lib/public/site.ts). permanent → 308.
+      { source: "/venues", destination: "/discover?tab=venues&results=1", permanent: true },
+      { source: "/services", destination: "/discover?tab=services&results=1", permanent: true },
+    ];
   },
 };
 

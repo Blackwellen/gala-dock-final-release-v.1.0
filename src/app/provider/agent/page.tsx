@@ -122,7 +122,7 @@ export default async function AgentPage(props: PageProps<"/provider/agent">) {
           <td>{r.last_run_at ? relative(r.last_run_at, now) : "Never"}{r.last_result ? <small className="pa-d">{r.last_result}</small> : null}</td><td>{titleCase(r.approval_policy ?? "required")}</td>
           <td><ActionButton action={toggleRoutine} args={[r.id, !r.enabled]} variant="ghost" className={`pa-sw${r.enabled ? " on" : ""}`}><i aria-hidden="true" /><span className="sr-only">{r.enabled ? "Turn off" : "Turn on"}</span></ActionButton></td></tr>)}</tbody></table></section>}
 
-    {tab === "history" && <section className="ws-panel pa-list"><h2>Run history</h2>
+    {tab === "history" && <section className="ws-panel pa-list"><h2>Run history</h2>{ctx.can.manage && <a className="k-link" href="/provider/agent/export?range=90d" download>Export CSV (90 days)</a>}
       <table className="ws-table"><thead><tr><th>Goal</th><th>Status</th><th>Result</th><th>Started</th><th aria-label="Controls" /></tr></thead>
         <tbody>{runs.map(r => <tr key={r.id}><td><b>{r.goal.slice(0, 80)}</b>{r.routine_id && <small className="pa-d">From a routine</small>}</td><td>{statusChip(r)}</td>
           <td><small className="pa-d">{r.status === "failed" ? (r.errors?.[0]?.message ?? "Failed") : (r.result ?? r.waiting_reason ?? "").slice(0, 140) || "—"}</small></td><td>{relative(r.created_at, now)}</td>

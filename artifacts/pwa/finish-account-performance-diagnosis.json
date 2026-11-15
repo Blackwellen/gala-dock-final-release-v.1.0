@@ -1,0 +1,138 @@
+{
+  "mode": "local production, Chrome lab, 390x844 DPR3, 4x CPU, 1.6Mbps/150ms",
+  "limits": "Single sample per route; automation menu duration is not INP; no field or physical-device certification.",
+  "report": [
+    {
+      "role": "customer",
+      "route": "/account",
+      "lcp": 3308,
+      "cls": 0.12164324940074375,
+      "longTasks": 5,
+      "shifts": [
+        {
+          "value": 0.12164324940074375,
+          "sources": [
+            {
+              "node": "ac-fields",
+              "previous": {
+                "x": 34,
+                "y": 481.640625,
+                "width": 322,
+                "height": 293.65625,
+                "top": 481.640625,
+                "right": 356,
+                "bottom": 775.296875,
+                "left": 34
+              },
+              "current": {
+                "x": 34,
+                "y": 535.640625,
+                "width": 322,
+                "height": 308.359375,
+                "top": 535.640625,
+                "right": 356,
+                "bottom": 844,
+                "left": 34
+              }
+            },
+            {
+              "node": "ce-card ac-card",
+              "previous": {
+                "x": 0,
+                "y": 797.296875,
+                "width": 390,
+                "height": 46.703125,
+                "top": 797.296875,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0,
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            },
+            {
+              "node": "",
+              "previous": {
+                "x": 217.90625,
+                "y": 222.390625,
+                "width": 119.1875,
+                "height": 44,
+                "top": 222.390625,
+                "right": 337.09375,
+                "bottom": 266.390625,
+                "left": 217.90625
+              },
+              "current": {
+                "x": 224.765625,
+                "y": 222.390625,
+                "width": 123.578125,
+                "height": 44,
+                "top": 222.390625,
+                "right": 348.34375,
+                "bottom": 266.390625,
+                "left": 224.765625
+              }
+            },
+            {
+              "node": "k-btn outline ac-edit",
+              "previous": {
+                "x": 295.34375,
+                "y": 418.953125,
+                "width": 60.65625,
+                "height": 44,
+                "top": 418.953125,
+                "right": 356,
+                "bottom": 462.953125,
+                "left": 295.34375
+              },
+              "current": {
+                "x": 34,
+                "y": 491.640625,
+                "width": 61.984375,
+                "height": 44,
+                "top": 491.640625,
+                "right": 95.984375,
+                "bottom": 535.640625,
+                "left": 34
+              }
+            },
+            {
+              "node": "",
+              "previous": {
+                "x": 343.09375,
+                "y": 222.390625,
+                "width": 30.90625,
+                "height": 44,
+                "top": 222.390625,
+                "right": 374,
+                "bottom": 266.390625,
+                "left": 343.09375
+              },
+              "current": {
+                "x": 354.34375,
+                "y": 222.390625,
+                "width": 19.65625,
+                "height": 44,
+                "top": 222.390625,
+                "right": 374,
+                "bottom": 266.390625,
+                "left": 354.34375
+              }
+            }
+          ]
+        }
+      ],
+      "ttfb": 1199.699999988079,
+      "bytes": 563218,
+      "automationMenuMs": 657
+    }
+  ]
+}

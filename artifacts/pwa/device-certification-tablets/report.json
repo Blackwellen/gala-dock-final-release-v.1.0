@@ -1,0 +1,112 @@
+{
+  "observedUtc": "2026-10-13T21:06:58.657Z",
+  "base": "http://localhost:3120",
+  "scope": "2 browser-emulated route/device/orientation cases; Safari behavior approximated by WebKit, not physical iOS; Firefox is a responsive desktop viewport",
+  "axeExclusion": "Incidental noninteractive .ml-thumb[aria-hidden=true] artwork only; library controls remain included",
+  "results": [
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "engineVersion": "27.2",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "requestedViewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "viewTargets": [
+        {
+          "width": 63.5625,
+          "height": 44
+        },
+        {
+          "width": 77.109375,
+          "height": 44
+        },
+        {
+          "width": 95.109375,
+          "height": 44
+        }
+      ],
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "engineVersion": "155.0.8059.40",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "requestedViewport": {
+        "width": 1138,
+        "height": 712
+      },
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "viewTargets": [
+        {
+          "width": 63.5625,
+          "height": 44
+        },
+        {
+          "width": 77.109375,
+          "height": 44
+        },
+        {
+          "width": 95.109375,
+          "height": 44
+        }
+      ],
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import { untyped } from "@/lib/workspace/db";
 import { rateLimit } from "@/lib/security";
 import { ask, applyApproval, compileRoutine, FAR_FUTURE, workerTick } from "./runtime";
 import { parseSchedule, nextRunAt } from "./schedule";
+import { workspaceTimezone } from "./schedule-db";
 import { TOOL } from "./registry";
 
 // Gala Agent UI actions (§5, §10–13). Seat = the workspace the person is acting in; membership is re-checked server-side.
@@ -132,9 +133,10 @@ export async function saveRoutine(workspaceId: string, text: string): Promise<R>
   const c = await compileRoutine(s.kind, text, { workspaceId, userId: s.user.id });
   if (!c.ok) return c;
   const t = c.compiled.trigger;
-  // Compiled cron is Europe/London wall-clock time (compileRoutine's tz) — evaluate it there, not in UTC.
+  // Q76: the compiled cron is wall-clock time in the WORKSPACE's zone (London when unset) — evaluate it there, not in UTC.
   const spec = t.type === "event" ? null : parseSchedule(t.cron, t);
-  const next = t.type === "event" ? new Date(FAR_FUTURE) : spec ? nextRunAt(spec, new Date())?.at ?? null : null;
+  const tz = spec ? await workspaceTimezone(untyped(createAdminClient() as never) as never, workspaceId) : null;
+  const next = t.type === "event" ? new Date(FAR_FUTURE) : spec ? nextRunAt(spec, new Date(), { tz })?.at ?? null : null;
   const { error } = await untyped(createAdminClient() as never).from("agent_routines").insert({ workspace_id: workspaceId, owner_id: s.user.id, title: c.compiled.title, detail: c.compiled.goal,
     schedule: t.type === "event" ? `on ${t.event}` : t.cron, trigger: t, actions: c.compiled.actions, limits: c.compiled.limits, compiled_at: new Date().toISOString(), enabled: true, next_run_at: next?.toISOString(), approval_policy: "policy" });
   if (error) return { ok: false, error: "Couldn’t save the routine." };
@@ -151,7 +153,7 @@ export async function toggleRoutine(routineId: string, enabled: boolean): Promis
 
 /** Agent policy (§11). Owners only; a user can never grant the agent more than their own role (enforced at execution). */
 export async function savePolicy(workspaceId: string, p: { mode: string; allowedTools: string[] | null; autoTools: string[]; quietFrom: string; quietTo: string; approvalExpiryHours: number;
-  maxParallel: number; maxRunMinutes: number; minConfidence: number; dailySpendCapMinor: number; monthlySpendCapMinor: number; refundThresholdMinor: number; bookingAuthorityMinor: number;
+  maxParallel: number; maxRunMinutes: number; retentionDays?: number; minConfidence: number; dailySpendCapMinor: number; monthlySpendCapMinor: number; refundThresholdMinor: number; bookingAuthorityMinor: number;
   autopilotRules: { tool: string; max_amount_minor?: number }[] }): Promise<R> {
   const s = await seat(workspaceId, ["owner"]); if (!s) return { ok: false, error: "Only the workspace owner can change Agent policy." };
   if (!["always_ask", "suggest", "draft", "execute_with_approval", "operational", "policy_autopilot"].includes(p.mode)) return { ok: false, error: "Choose a mode." };
@@ -159,7 +161,9 @@ export async function savePolicy(workspaceId: string, p: { mode: string; allowed
   const { error } = await s.sb.from("agent_policies" as never).upsert({
     workspace_id: workspaceId, mode: p.mode, allowed_tools: p.allowedTools ? known(p.allowedTools) : null, auto_tools: known(p.autoTools).filter(i => TOOL.get(i)!.risk === 3),
     quiet_hours: { from: p.quietFrom || "21:00", to: p.quietTo || "08:00", tz: "Europe/London" }, approval_expiry_hours: Math.max(1, Math.min(720, p.approvalExpiryHours)),
-    max_parallel_runs: Math.max(1, Math.min(20, p.maxParallel)), max_run_minutes: Math.max(5, Math.min(10080, p.maxRunMinutes)), min_confidence: Math.max(0, Math.min(1, p.minConfidence)),
+    max_parallel_runs: Math.max(1, Math.min(20, p.maxParallel)), max_run_minutes: Math.max(5, Math.min(10080, p.maxRunMinutes)),
+    // Q75: conversation retention, one of the offered choices (agent_retention_purge also clamps to 30..2190 days).
+    ...(p.retentionDays && [30, 90, 180, 365].includes(p.retentionDays) ? { retention_days: p.retentionDays } : {}), min_confidence: Math.max(0, Math.min(1, p.minConfidence)),
     daily_spend_cap_minor: Math.max(0, p.dailySpendCapMinor), monthly_spend_cap_minor: Math.max(0, p.monthlySpendCapMinor), refund_threshold_minor: Math.max(0, p.refundThresholdMinor),
     booking_authority_minor: Math.max(0, p.bookingAuthorityMinor),
     autopilot_rules: p.mode === "policy_autopilot" ? p.autopilotRules.filter(r => TOOL.has(r.tool) && TOOL.get(r.tool)!.risk <= 4) : [],

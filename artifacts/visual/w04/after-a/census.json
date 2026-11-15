@@ -1,0 +1,2054 @@
+{
+ "email": "provider.demo@example.com",
+ "checkedLinks": 214,
+ "dead": [
+  {
+   "href": "/provider",
+   "status": 0
+  },
+  {
+   "href": "/provider/inbox",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings",
+   "status": 0
+  },
+  {
+   "href": "/provider/beo/2517c9c8-1a38-41b6-a6b3-685d07e5f0dc",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/12899b6e-bfc5-4fc5-b505-cc80c337cdba",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings#credentials",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/33f58233-c90e-4f17-9bf5-ed3436911d37",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7db49282-3773-4a56-af3d-630676bd8853",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/3f1d7778-9a9d-4a62-bf86-e39634f500c2",
+   "status": 0
+  },
+  {
+   "href": "/provider/help",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities",
+   "status": 0
+  },
+  {
+   "href": "/provider/media",
+   "status": 0
+  },
+  {
+   "href": "/provider/team",
+   "status": 0
+  },
+  {
+   "href": "/provider/money",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=today",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=upcoming",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=overdue",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=attention",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=day",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/10892a79-dc9a-45a8-9f6b-4e28baa0a03b",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/1692d6c0-4492-48f9-84a1-9c1c4ab12c2d",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/a1203181-4a37-46dd-a99d-72357a69321d",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/00ee555e-28c7-4c89-abe9-94ac9513ea1d",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=block",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?tab=payouts",
+   "status": 0
+  },
+  {
+   "href": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "status": 0
+  },
+  {
+   "href": "/provider/team/32dfceea-8d85-457e-a21a-e780fa2053ed",
+   "status": 0
+  },
+  {
+   "href": "/provider/team/13f9b325-ae29-4899-8327-6129c8494a60",
+   "status": 0
+  },
+  {
+   "href": "/provider/team/f71769e7-54f1-4305-8d46-60f251e229d4",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Draft%20responses%20to%20my%200%20pending%20enquiries",
+   "status": 0
+  },
+  {
+   "href": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Send%20review%20requests%20for%20bookings%20completed%20in%20the%20last%2030%20days",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=booking-rules",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=quotes",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=holds",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?view=map",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Prepare%20responses%20for%20my%200%20open%20requests%20based%20on%20availability%20and%20packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e?tab=response",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e?tab=activity",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-12-01&view=day",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Draft%20a%20response%20for%20Engagement%20Party",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/venues",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/spaces",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/services",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1&quote=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Draft%20a%20quote%20message%20for%20Engagement%20Party",
+   "status": 0
+  },
+  {
+   "href": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f/print",
+   "status": 0
+  },
+  {
+   "href": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "status": 0
+  },
+  {
+   "href": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f?tab=terms",
+   "status": 0
+  },
+  {
+   "href": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f?tab=activity",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1&from=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=active",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=past",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=cancelled",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/ac8c698b-6425-49a1-a9b8-5b6362664808",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/1c8d11e3-450b-48c4-a79c-b25ab67ffa7a",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/6ffdd8e4-06db-4eda-a435-84ce3f75def0",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?page=2",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=week",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046?tab=delivery",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046?tab=team",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046?tab=commercial",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046?tab=files",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-29&view=day",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Generate%20event%20run%20sheet%20for%20Rooftop%20Launch%20Drinks%20(BK-7812)",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Prepare%20staff%20briefing%20for%20Rooftop%20Launch%20Drinks%20(BK-7812)",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Check%20checklist%20for%20Rooftop%20Launch%20Drinks%20(BK-7812)",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Draft%20client%20update%20for%20Rooftop%20Launch%20Drinks%20(BK-7812)",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=integrations",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=month",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=agenda",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=bookings",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=holds",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=standby",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=team",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=resources",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-19",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-02",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A797bf40a-f809-499d-a3d7-ebd075ddf62f&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Af7e5f92c-6818-4d23-9cb6-33e047b18ba5&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3Aea4a6a66-c868-4642-886c-eae265b655c9&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A745d3e04-8723-491a-8098-d379e8b84ab3&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=space%3A2bc82343-c905-43dc-8f6b-f341a369fd7a&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A10892a79-dc9a-45a8-9f6b-4e28baa0a03b&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3A7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-02",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-03",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-04",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-05",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-06",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-07",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-08",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-09",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-10",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-11",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-12",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-13",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-14",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-15",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-16",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-17",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-18",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-20",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-21",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-22",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-23",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-24",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-25",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-03",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-04",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-05",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-06",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-07",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-08",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=published",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=draft",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=paused",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/745d3e04-8723-491a-8098-d379e8b84ab3",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/ea4a6a66-c868-4642-886c-eae265b655c9",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/f7e5f92c-6818-4d23-9cb6-33e047b18ba5",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?page=2",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Improve%20the%20quality%20of%20my%20Riverside%20Arena%20listing",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/packages/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/venues/riverside-arena",
+   "status": 0
+  },
+  {
+   "href": "/venues/riverside-arena?preview=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=spaces",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=operations",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=commercial",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/aa4528da-48ac-4b1d-9147-8f432bcb762d",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/645201f9-7ef2-4877-a2fa-e94ecf5cc244",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities/69ed79b3-d535-4473-9fde-c9853c10c9fa",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Improve%20performance%20of%20Riverside%20Arena",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f?tab=layouts",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f?tab=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=3&space=797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "status": 0
+  },
+  {
+   "href": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=2&space=797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?space=797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings/4f4eaaa5-bba6-47f8-a6e5-f0b56d783037",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?space=797bf40a-f809-499d-a3d7-ebd075ddf62f&view=month",
+   "status": 0
+  }
+ ],
+ "routes": [
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Jordan",
+   "controls": 55,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 41
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/opportunities",
+   "h1": "Opportunities",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 26
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "h1": "Engagement Party",
+   "controls": 41,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "h1": "Respond with Quote",
+   "controls": 61,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 23
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "h1": "Respond with Quote",
+   "controls": 40,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "h1": "Quote for Engagement Party",
+   "controls": 36,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/bookings",
+   "h1": "Bookings",
+   "controls": 69,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 34
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "h1": "Rooftop Launch Drinks",
+   "controls": 45,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 28
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/bookings/new",
+   "h1": "Create Venue Booking",
+   "controls": 50,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 19
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 152,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 126
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/listings",
+   "h1": "Listings",
+   "controls": 64,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 39
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "h1": "Riverside Arena",
+   "controls": 68,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 38
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "h1": "Grounds & Gardens",
+   "controls": 47,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 33
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "h1": "Add Space",
+   "controls": 67,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 23
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1536x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunitie",
+   "linkCount": 0
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/quotes/8a71efed-181",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/3e73b60c",
+   "linkCount": 0
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/327451a6-069",
+   "linkCount": 0
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f\nCall log:\n\u001b[2m  - navigating to \"http:/",
+   "linkCount": 0
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/3",
+   "linkCount": 0
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1448x1086",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunitie",
+   "linkCount": 0
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/quotes/8a71efed-181",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/3e73b60c",
+   "linkCount": 0
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/327451a6-069",
+   "linkCount": 0
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f\nCall log:\n\u001b[2m  - navigating to \"http:/",
+   "linkCount": 0
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/3",
+   "linkCount": 0
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1280x800",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunitie",
+   "linkCount": 0
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/quotes/8a71efed-181",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/3e73b60c",
+   "linkCount": 0
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/327451a6-069",
+   "linkCount": 0
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f\nCall log:\n\u001b[2m  - navigating to \"http:/",
+   "linkCount": 0
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/3",
+   "linkCount": 0
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunitie",
+   "linkCount": 0
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/quotes/8a71efed-181",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/3e73b60c",
+   "linkCount": 0
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/327451a6-069",
+   "linkCount": 0
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f\nCall log:\n\u001b[2m  - navigating to \"http:/",
+   "linkCount": 0
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/3",
+   "linkCount": 0
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opp",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunitie",
+   "linkCount": 0
+  },
+  {
+   "name": "quote1",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quote2",
+   "route": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider",
+   "linkCount": 0
+  },
+  {
+   "name": "quoteview",
+   "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/quotes/8a71efed-181",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "booking",
+   "route": "/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/3e73b60c-2b7b-46b9-a7ed-9688d8214046\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/3e73b60c",
+   "linkCount": 0
+  },
+  {
+   "name": "newbooking",
+   "route": "/provider/bookings/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "venue",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/327451a6-069",
+   "linkCount": 0
+  },
+  {
+   "name": "space",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/797bf40a-f809-499d-a3d7-ebd075ddf62f\nCall log:\n\u001b[2m  - navigating to \"http:/",
+   "linkCount": 0
+  },
+  {
+   "name": "spacenew",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/3",
+   "linkCount": 0
+  },
+  {
+   "name": "venuenew",
+   "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/ve",
+   "linkCount": 0
+  },
+  {
+   "name": "package",
+   "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/bc246b8a",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team/afc2c7ae-88e2-4c",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/menus/12490843-3694-",
+   "linkCount": 0
+  },
+  {
+   "name": "logistics",
+   "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/venues/32",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  }
+ ]
+}

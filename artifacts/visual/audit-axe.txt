@@ -1,0 +1,117 @@
+OK   200 customer  /home
+FAIL 200 customer  /discover
+      axe: aria-allowed-attr(1), aria-required-children(1), target-size(1)
+FAIL 200 customer  /account/events
+      axe: aria-required-children(1)
+OK   200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62
+OK   200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan
+      axe: aria-required-children(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets
+      axe: aria-required-children(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money
+      axe: aria-required-children(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages
+      axe: aria-allowed-attr(2)
+OK   200 customer  /account/tickets
+OK   200 customer  /account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2
+OK   200 customer  /account/saved
+OK   200 customer  /account/reviews
+OK   200 customer  /account
+OK   200 customer  /plan?step=1
+FAIL 200 customer  /plan?event=efd4d0af-9437-4b0b-99cf-af7816fa2a62&step=2
+      axe: target-size(4)
+OK   200 customer  /plan?event=efd4d0af-9437-4b0b-99cf-af7816fa2a62&step=3
+OK   200 customer  /plan?event=efd4d0af-9437-4b0b-99cf-af7816fa2a62&step=4
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=a45159c5-17ae-445b-8099-b2ddcb15b9df&step=1
+      axe: target-size(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=a45159c5-17ae-445b-8099-b2ddcb15b9df&step=2
+      axe: target-size(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1
+      axe: target-size(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2
+      axe: target-size(1)
+FAIL 200 customer  /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3
+      axe: target-size(1)
+OK   200 anon      /events/neon-nights
+OK   200 anon      /venues/riverside-park-events-venue
+OK   200 anon      /services/gourmet-catering-co
+OK   200 anon      /organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01
+FAIL 200 anon      /
+      axe: color-contrast(4)
+FAIL 200 organizer /organizer
+      axe: aria-required-children(1), color-contrast(1)
+FAIL 200 organizer /organizer/events
+      axe: aria-required-children(1)
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228
+FAIL 200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan
+      axe: color-contrast(1)
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=money
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=ops
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell
+FAIL 200 organizer /organizer/calendar
+      axe: aria-required-children(1), color-contrast(1)
+FAIL 200 organizer /organizer/calendar?view=month
+      axe: aria-required-children(1), aria-required-parent(1), color-contrast(1)
+OK   200 organizer /organizer/sales
+OK   200 organizer /organizer/sales/leads/a7cdf606-292e-4523-8015-9c25886ceb61
+OK   200 organizer /organizer/sales/proposals/884a2d74-46a1-443e-a1df-410b4490c967
+FAIL 200 organizer /organizer/marketplace
+      axe: target-size(5)
+FAIL 200 organizer /organizer/marketplace?tab=services
+      axe: target-size(11)
+OK   200 organizer /organizer/marketplace/venue/3967b579-8910-4198-b4b9-42587d1f01ea
+OK   200 organizer /organizer/marketplace/service/5a645ba8-b780-45d2-837d-70d263c2379e
+OK   200 organizer /organizer/marketplace/requests/6c44d895-083e-49e8-bb25-10a01b040d21
+OK   200 organizer /organizer/marketplace/requests/new?event=392fdf17-4e5c-4473-987c-251dc0a97228
+OK   200 organizer /organizer/marketplace/requests/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=2
+FAIL 200 organizer /organizer/marketplace/bookings/6b8b25c9-7fa9-408a-a1c8-67fa510cb0ed
+      axe: color-contrast(1)
+OK   200 organizer /organizer/tickets
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/page
+FAIL 200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/map
+      console: Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render functio
+      console: Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. C
+      pageerror: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can
+      axe: color-contrast(10)
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion
+FAIL 200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/media
+      axe: target-size(2)
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/media?tab=library
+FAIL 200 organizer /organizer/team
+      axe: color-contrast(1)
+OK   200 organizer /organizer/team/8edf6774-6b2f-48d0-a0f6-8c1579e4300c
+OK   200 organizer /organizer/money
+OK   200 organizer /organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9
+OK   200 organizer /organizer/money/invoices/new
+OK   200 organizer /organizer/money/invoices/new?from=916eec0d-3b93-46e0-8be3-f6c5033cb7b9&duplicate=1&step=2
+FAIL 200 organizer /organizer/agent
+      axe: color-contrast(1)
+OK   200 organizer /organizer/settings
+OK   200 organizer /organizer/events/new?step=1
+FAIL 200 organizer /organizer/events/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=2
+      axe: color-contrast(1)
+OK   200 organizer /organizer/events/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=3
+OK   200 organizer /organizer/events/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=4
+OK   200 organizer /organizer/proposals/new
+OK   200 organizer /organizer/proposals/new?step=2
+OK   200 organizer /organizer/proposals/new?step=3
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=1
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=2
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=3
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=4
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup?step=5
+OK   200 organizer /organizer/promotions/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=1
+OK   200 organizer /organizer/promotions/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=2
+OK   200 organizer /organizer/promotions/new?event=392fdf17-4e5c-4473-987c-251dc0a97228&step=3
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template
+OK   200 organizer /organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template?step=2
+
+— axe violations by rule —
+serious target-size                      routes=10 nodes=28  All touch targets must be 24px large, or leave sufficient space
+serious color-contrast                   routes=10 nodes=22  Elements must meet minimum color contrast ratio thresholds
+critical aria-required-children          routes=9 nodes=9  Certain ARIA roles must contain particular children
+critical aria-allowed-attr               routes=2 nodes=3  Elements must only use supported ARIA attributes
+critical aria-required-parent            routes=1 nodes=1  Certain ARIA roles must be contained by particular parents
+
+53/79 routes clean. Designs: 85, uncovered by any audited route: 0

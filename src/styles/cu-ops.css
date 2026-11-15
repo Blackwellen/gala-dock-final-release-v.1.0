@@ -212,7 +212,9 @@ a.gt-dots:hover { border-color: var(--k-blue); color: var(--k-blue); }
   .c-root .mn-legend { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 8px; }
   .c-root .mn-legend b { font-size: 12.5px; } .c-root .mn-legend small { font-size: 10.5px; }
   .c-root .mn-totals { display: none; }
-  .c-root .mn-table .k-table-wrap { overflow: visible; border: 0; }
+  /* R1: only the transformed (10-column) table drops its scroller; any other table here keeps scrolling inside its card (a 9-column
+     variant widened the page to 730px at 390). */
+  .c-root .mn-table .k-table-wrap:has(td:nth-child(10)) { overflow: visible; border: 0; }
   .c-root .mn-table table:has(td:nth-child(10)) thead { display: none; }
   .c-root .mn-table table:has(td:nth-child(10)), .c-root .mn-table table:has(td:nth-child(10)) tbody { display: block; }
   .c-root .mn-table tr:has(> td:nth-child(10)) { display: grid; grid-template-columns: minmax(0, 1fr) auto 28px; align-items: center; gap: 2px 8px; padding: 8px 6px 8px 8px; margin-bottom: 8px; border: 1px solid var(--k-line); border-radius: 12px; background: #fff; }

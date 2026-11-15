@@ -1,0 +1,1604 @@
+{
+  "date": "2026-10-12T20:21:51.728Z",
+  "commit": "3f3c0c8e20f75f9fa6fb7f4ca712191741cbf789",
+  "browser": "webkit",
+  "dpr": 2,
+  "results": [
+    {
+      "role": "customer",
+      "width": 320,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 791.5,
+        "width": 320,
+        "height": 52.5,
+        "top": 791.5,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 45,
+        "top": 0,
+        "right": 320,
+        "bottom": 45,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 45,
+        "width": 320,
+        "height": 2645.921875,
+        "top": 45,
+        "right": 320,
+        "bottom": 2690.921875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 225.5,
+          "width": 320,
+          "height": 618.5,
+          "top": 225.5,
+          "right": 320,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 320,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 320,
+        "height": 70,
+        "top": 290,
+        "right": 320,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 48,
+        "top": 0,
+        "right": 320,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 320,
+        "height": 3689.96875,
+        "top": 48,
+        "right": 320,
+        "bottom": 3737.96875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 320,
+          "height": 352,
+          "top": 8,
+          "right": 320,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 390,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 390,
+        "height": 70,
+        "top": 774,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 60,
+        "top": 0,
+        "right": 390,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 390,
+        "height": 3592,
+        "top": 60,
+        "right": 390,
+        "bottom": 3652,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 225.5,
+          "width": 390,
+          "height": 618.5,
+          "top": 225.5,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "customer",
+      "width": 390,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 390,
+        "height": 70,
+        "top": 290,
+        "right": 390,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 48,
+        "top": 0,
+        "right": 390,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 390,
+        "height": 3592,
+        "top": 48,
+        "right": 390,
+        "bottom": 3640,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 390,
+          "height": 352,
+          "top": 8,
+          "right": 390,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 820,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 820,
+        "height": 70,
+        "top": 774,
+        "right": 820,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 60,
+        "top": 0,
+        "right": 820,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 820,
+        "height": 2253.25,
+        "top": 60,
+        "right": 820,
+        "bottom": 2313.25,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 225.5,
+          "width": 760,
+          "height": 618.5,
+          "top": 225.5,
+          "right": 790,
+          "bottom": 844,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 820,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 820,
+        "height": 70,
+        "top": 290,
+        "right": 820,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 48,
+        "top": 0,
+        "right": 820,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 820,
+        "height": 2253.25,
+        "top": 48,
+        "right": 820,
+        "bottom": 2301.25,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 790,
+          "bottom": 360,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 1180,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 1180,
+        "height": 70,
+        "top": 774,
+        "right": 1180,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 60,
+        "top": 0,
+        "right": 1180,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 1180,
+        "height": 1437.296875,
+        "top": 60,
+        "right": 1180,
+        "bottom": 1497.296875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 225.5,
+          "width": 760,
+          "height": 618.5,
+          "top": 225.5,
+          "right": 970,
+          "bottom": 844,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "customer",
+      "width": 1180,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Discover",
+        "Plan",
+        "My Events",
+        "My Tickets",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 1180,
+        "height": 70,
+        "top": 290,
+        "right": 1180,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 48,
+        "top": 0,
+        "right": 1180,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 1180,
+        "height": 1437.296875,
+        "top": 48,
+        "right": 1180,
+        "bottom": 1485.296875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 970,
+          "bottom": 360,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "customer",
+      "width": 1440,
+      "height": 900,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 80,
+        "y": 52.796875,
+        "width": 1280,
+        "height": 812.421875,
+        "top": 52.796875,
+        "right": 1360,
+        "bottom": 865.21875,
+        "left": 80
+      },
+      "issues": []
+    },
+    {
+      "role": "organizer",
+      "width": 320,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 769.40625,
+        "width": 320,
+        "height": 74.59375,
+        "top": 769.40625,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 60,
+        "top": 0,
+        "right": 320,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 320,
+        "height": 4551.796875,
+        "top": 60,
+        "right": 320,
+        "bottom": 4611.796875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 16,
+          "width": 320,
+          "height": 828,
+          "top": 16,
+          "right": 320,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 320,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 285.40625,
+        "width": 320,
+        "height": 74.59375,
+        "top": 285.40625,
+        "right": 320,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 48,
+        "top": 0,
+        "right": 320,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 320,
+        "height": 4551.796875,
+        "top": 48,
+        "right": 320,
+        "bottom": 4599.796875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 320,
+          "height": 352,
+          "top": 8,
+          "right": 320,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 390,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 769.40625,
+        "width": 390,
+        "height": 74.59375,
+        "top": 769.40625,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 60,
+        "top": 0,
+        "right": 390,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 390,
+        "height": 4011.359375,
+        "top": 60,
+        "right": 390,
+        "bottom": 4071.359375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 16,
+          "width": 390,
+          "height": 828,
+          "top": 16,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "organizer",
+      "width": 390,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 390,
+        "height": 70,
+        "top": 290,
+        "right": 390,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 48,
+        "top": 0,
+        "right": 390,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 390,
+        "height": 4011.359375,
+        "top": 48,
+        "right": 390,
+        "bottom": 4059.359375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 390,
+          "height": 352,
+          "top": 8,
+          "right": 390,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 820,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 820,
+        "height": 70,
+        "top": 774,
+        "right": 820,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 60,
+        "top": 0,
+        "right": 820,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 820,
+        "height": 2506.03125,
+        "top": 60,
+        "right": 820,
+        "bottom": 2566.03125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 16,
+          "width": 760,
+          "height": 828,
+          "top": 16,
+          "right": 790,
+          "bottom": 844,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 820,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 820,
+        "height": 70,
+        "top": 290,
+        "right": 820,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 48,
+        "top": 0,
+        "right": 820,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 820,
+        "height": 2506.03125,
+        "top": 48,
+        "right": 820,
+        "bottom": 2554.03125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 790,
+          "bottom": 360,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 1180,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 1180,
+        "height": 70,
+        "top": 774,
+        "right": 1180,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 60,
+        "top": 0,
+        "right": 1180,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 1180,
+        "height": 1885.484375,
+        "top": 60,
+        "right": 1180,
+        "bottom": 1945.484375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 16,
+          "width": 760,
+          "height": 828,
+          "top": 16,
+          "right": 970,
+          "bottom": 844,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "organizer",
+      "width": 1180,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Events",
+        "Calendar",
+        "Marketplace",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 1180,
+        "height": 70,
+        "top": 290,
+        "right": 1180,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 48,
+        "top": 0,
+        "right": 1180,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 1180,
+        "height": 1885.484375,
+        "top": 48,
+        "right": 1180,
+        "bottom": 1933.484375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 970,
+          "bottom": 360,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "organizer",
+      "width": 1440,
+      "height": 900,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 222,
+        "y": 66,
+        "width": 1218,
+        "height": 1547.25,
+        "top": 66,
+        "right": 1440,
+        "bottom": 1613.25,
+        "left": 222
+      },
+      "issues": []
+    },
+    {
+      "role": "provider",
+      "width": 320,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 320,
+        "height": 70,
+        "top": 774,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 60,
+        "top": 0,
+        "right": 320,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 320,
+        "height": 2766.484375,
+        "top": 60,
+        "right": 320,
+        "bottom": 2826.484375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 16,
+          "width": 320,
+          "height": 828,
+          "top": 16,
+          "right": 320,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 320,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 320,
+        "height": 70,
+        "top": 290,
+        "right": 320,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 48,
+        "top": 0,
+        "right": 320,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 320,
+        "height": 2766.484375,
+        "top": 48,
+        "right": 320,
+        "bottom": 2814.484375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 320,
+          "height": 352,
+          "top": 8,
+          "right": 320,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "90.65625px 90.671875px 90.671875px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 390,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 390,
+        "height": 70,
+        "top": 774,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 60,
+        "top": 0,
+        "right": 390,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 390,
+        "height": 2646.59375,
+        "top": 60,
+        "right": 390,
+        "bottom": 2706.59375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 16,
+          "width": 390,
+          "height": 828,
+          "top": 16,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "provider",
+      "width": 390,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 390,
+        "height": 70,
+        "top": 290,
+        "right": 390,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 48,
+        "top": 0,
+        "right": 390,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 390,
+        "height": 2646.59375,
+        "top": 48,
+        "right": 390,
+        "bottom": 2694.59375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 390,
+          "height": 352,
+          "top": 8,
+          "right": 390,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 820,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 820,
+        "height": 70,
+        "top": 774,
+        "right": 820,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 60,
+        "top": 0,
+        "right": 820,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 820,
+        "height": 1918.296875,
+        "top": 60,
+        "right": 820,
+        "bottom": 1978.296875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 16,
+          "width": 760,
+          "height": 828,
+          "top": 16,
+          "right": 790,
+          "bottom": 844,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 820,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 820,
+        "height": 70,
+        "top": 290,
+        "right": 820,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 48,
+        "top": 0,
+        "right": 820,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 820,
+        "height": 1918.296875,
+        "top": 48,
+        "right": 820,
+        "bottom": 1966.296875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 790,
+          "bottom": 360,
+          "left": 30
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 1180,
+      "height": 844,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 1180,
+        "height": 70,
+        "top": 774,
+        "right": 1180,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 60,
+        "top": 0,
+        "right": 1180,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 1180,
+        "height": 1406.078125,
+        "top": 60,
+        "right": 1180,
+        "bottom": 1466.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 16,
+          "width": 760,
+          "height": 828,
+          "top": 16,
+          "right": 970,
+          "bottom": 844,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "provider",
+      "width": 1180,
+      "height": 360,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [
+        "Home",
+        "Bookings",
+        "Calendar",
+        "Listings",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 1180,
+        "height": 70,
+        "top": 290,
+        "right": 1180,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 48,
+        "top": 0,
+        "right": 1180,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 1180,
+        "height": 1406.078125,
+        "top": 48,
+        "right": 1180,
+        "bottom": 1454.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 970,
+          "bottom": 360,
+          "left": 210
+        },
+        "columns": "237.328125px 237.328125px 237.34375px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "provider",
+      "width": 1440,
+      "height": 900,
+      "browser": "webkit",
+      "dpr": 2,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 230,
+        "y": 64,
+        "width": 1210,
+        "height": 1061,
+        "top": 64,
+        "right": 1440,
+        "bottom": 1125,
+        "left": 230
+      },
+      "issues": []
+    }
+  ]
+}

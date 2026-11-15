@@ -7,11 +7,12 @@ import { Toggle, useAction } from "@/components/kit/client";
 import { saveAccess } from "@/lib/actions/ticket-pro";
 import { TERMS_TEMPLATES, feeExample, type ProSettings } from "@/lib/ticket-pro-model";
 import type { ProSetup } from "@/lib/data/ticket-pro";
-import { Card, Footer, gbp2, toLocal, fromLocal, uid } from "./ui";
+import { Card, Footer, tpLocale, uid } from "./ui";
 
 type A = ProSettings["access"];
 
 export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref = `${base}?step=3` }: { data: ProSetup; base: string; nextHref?: string; backHref?: string }) {
+  const { cur, sym, gbp2, toLocal, fromLocal } = tpLocale(data);
   const router = useRouter(); const { run, pending: saving } = useAction(); const [navigating, startNav] = useTransition(); const pending = saving || navigating; /* stay disabled until the next step renders (Q48) */ const e = data.event;
   const [a, setA] = useState<A>(() => ({ ...data.pro.access, refund_cutoff: data.pro.access.refund_cutoff ?? (e.starts_at ? new Date(Date.parse(e.starts_at) - 864e5).toISOString() : null), age_text: data.pro.access.age_text || (data.pro.sales.min_age ? `${data.pro.sales.min_age}+ only` : "") }));
   const set = (p: Partial<A>) => setA(x => ({ ...x, ...p }));
@@ -61,12 +62,12 @@ export function StepAccess({ data, base, nextHref = `${base}?step=5`, backHref =
       </Card>
       <Card title="Fees and pricing display" sub="Choose how fees are shown to buyers.">
         <div className="tp-radios">{([["upfront", "Show all fees upfront", "Transparent pricing (recommended)."], ["included", "Include fees in ticket price", "Ticket price includes all fees."], ["checkout", "Show base price, fees at checkout", "Display fees later in the checkout process."]] as const).map(([k, t, d]) => <button key={k} role="radio" aria-checked={a.fee_display === k} data-on={a.fee_display === k || undefined} onClick={() => set({ fee_display: k })}><i /><span><b>{t}</b><small>{d}</small></span></button>)}</div>
-        <dl className="tp-fee"><dt className="h">Example ({ex?.name ?? "ticket"})</dt><dd /><dt>Ticket price</dt><dd>{gbp2(f.price)}</dd>{a.fee_display !== "included" && <><dt>Service fee (5%)</dt><dd>{gbp2(f.service)}</dd><dt>Payment fee (2.9% + £0.30)</dt><dd>{gbp2(f.processing)}</dd></>}<dt className="t">Total (to buyer)</dt><dd className="t">{gbp2(f.total)}</dd></dl>
+        <dl className="tp-fee"><dt className="h">Example ({ex?.name ?? "ticket"})</dt><dd /><dt>Ticket price</dt><dd>{gbp2(f.price)}</dd>{a.fee_display !== "included" && <><dt>Service fee (5%)</dt><dd>{gbp2(f.service)}</dd><dt>{`Payment fee (2.9% + ${gbp2(0.3)})`}</dt><dd>{gbp2(f.processing)}</dd></>}<dt className="t">Total (to buyer)</dt><dd className="t">{gbp2(f.total)}</dd></dl>
       </Card>
       <Card title="Payout & verification" sub="Set up how you receive funds from ticket sales.">
         {data.payoutReady ? <div className="tp-ok"><CheckCircle2 size={20} /><span><b>Connected account verified</b><small>Your Stripe account is verified and ready to receive payouts.</small></span></div>
           : <div className="tp-warn"><AlertTriangle size={20} /><span><b>Payouts not set up</b><small>Paid tickets can&apos;t go on sale until payouts are verified.</small></span></div>}
-        <div className="tp-g2f"><label className="tp-f"><span>Payout currency</span><span className="tp-in ro">GBP (£)</span></label><label className="tp-f"><span>Payout schedule</span><span className="tp-in ro">24 hours after the event</span></label></div>
+        <div className="tp-g2f"><label className="tp-f"><span>Payout currency</span><span className="tp-in ro">{cur} ({sym})</span></label><label className="tp-f"><span>Payout schedule</span><span className="tp-in ro">24 hours after the event</span></label></div>
         <label className="tp-f"><span>Bank account</span><span className="tp-in ro"><Landmark size={14} />{data.payoutLabel ?? (data.payoutReady ? "Connected via Stripe" : "Not connected")}<Link className="k-link tp-chg" href="/organizer/money?tab=payouts">{data.payoutReady ? "Change" : "Set up"}</Link></span></label>
         <p className="tp-note">Ticket and resale revenue (minus Gala Dock fees) goes straight into your own Stripe account and is paid out to your bank, grouped by event, 24 hours after the event ends. New sellers keep a 10% reserve for 30 days.</p>
       </Card>

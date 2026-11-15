@@ -2,12 +2,16 @@ import "@/styles/public-event-extras.css";
 import Link from "next/link";
 import { Star, Store, Video, Captions, Hand, FileText, AudioLines, CalendarDays, Layers, Ticket, ShoppingBag, ArrowRight, Accessibility, CheckCircle2, Megaphone, ExternalLink } from "lucide-react";
 import type { Banner, Extras, PublicAccess, VirtualSession, EventExtras } from "@/lib/public/event-extras";
+import { formatMoney } from "@/lib/i18n/money";
+import { DEFAULT_TZ, safeTz } from "@/lib/i18n/tz";
 
 /** Public event page sections fed by loadEventExtras (public-safe sources only). Each returns null when it has nothing real to show. */
-const TZ = "Europe/London";
-const day = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "Date TBC";
-const time = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }) : "";
-const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: Number.isInteger(n) ? 0 : 2 }).format(n);
+// Q72: times in the event's zone (passed by the page; London for pre-Q72 rows), money in the event's currency.
+const TZ = DEFAULT_TZ;
+// A bare "YYYY-MM-DD" is a calendar date, not an instant: format it in UTC so no zone moves it a day.
+const day = (iso: string | null, tz = TZ) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? "UTC" : safeTz(tz) }) : "Date TBC";
+const time = (iso: string | null, tz = TZ) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: safeTz(tz) }) : "";
+const gbp = (n: number, currency = "GBP") => formatMoney(n, currency, { decimals: !Number.isInteger(n) });
 
 /** Published banners: Media Studio banner / wide exports the organiser approved for public use, and published promo campaign pages featuring this event. */
 export function BannerStrip({ banners }: { banners: Banner[] }) {
@@ -32,12 +36,12 @@ export function SponsorsSection({ partners }: { partners: Extras["partners"] }) 
 
 const KIND: Record<string, string> = { main: "Main stage", breakout: "Breakout", workshop: "Workshop", webinar: "Webinar", live_audio: "Live audio", podcast: "Podcast", remote: "Remote", replay: "Replay" };
 /** Online / hybrid sessions (event_virtual_public). Join links are never on the public page: they are issued to ticket holders. */
-export function OnlineSection({ virtual }: { virtual: EventExtras["virtual"] }) {
+export function OnlineSection({ virtual, tz = TZ }: { virtual: EventExtras["virtual"]; /** Q72 */ tz?: string }) {
   if (!virtual || !virtual.sessions.length) return null;
   const fmt = virtual.format === "hybrid" ? "In person and online" : "Online event";
   return <section id="online" className="ce-card px-online" aria-labelledby="px-on-h"><div className="k-between"><h2 id="px-on-h">Online sessions</h2><span className="px-chip"><Video size={13} aria-hidden />{fmt}</span></div>
     <p className="px-sub">Ticket holders join from their ticket in Gala Dock when a session opens.</p>
-    <ul className="px-rows">{virtual.sessions.map((s: VirtualSession) => <li key={s.id}><time>{day(s.starts_at)}<small>{time(s.starts_at)}–{time(s.ends_at)}</small></time>
+    <ul className="px-rows">{virtual.sessions.map((s: VirtualSession) => <li key={s.id}><time>{day(s.starts_at, tz)}<small>{time(s.starts_at, tz)}–{time(s.ends_at, tz)}</small></time>
       <span className="k-grow"><b>{s.title}</b><small>{KIND[s.kind] ?? s.kind}{s.track && s.track !== KIND[s.kind] ? ` · ${s.track}` : ""}</small>
         {(s.captions && s.captions !== "none") || s.sign_language || s.transcript || s.audio_description ? <span className="px-a11y">
           {s.captions && s.captions !== "none" && <span><Captions size={12} aria-hidden />{s.captions === "post_event" ? "Captions after the event" : "Live captions"}</span>}
@@ -46,7 +50,7 @@ export function OnlineSection({ virtual }: { virtual: EventExtras["virtual"] }) 
 }
 
 /** Q40 series / tour dates, parent event, sub-events, days and passes. */
-export function DatesSection({ extras, series, parent }: { extras: Extras; series: EventExtras["series"]; parent: EventExtras["parent"] }) {
+export function DatesSection({ extras, series, parent, tz = TZ }: { extras: Extras; series: EventExtras["series"]; parent: EventExtras["parent"]; /** Q72 */ tz?: string }) {
   const others = series?.others ?? [];
   const days = extras.days.length > 1 ? extras.days : [];
   if (!others.length && !extras.sub_events.length && !days.length && !extras.passes.length && !parent && !series) return null;
@@ -56,7 +60,7 @@ export function DatesSection({ extras, series, parent }: { extras: Extras; serie
     {(series || parent) && <p className="px-sub">{parent && <>Part of <Link className="k-link" href={`/events/${parent.slug ?? parent.id}`}>{parent.name}</Link>. </>}
       {series && <>{KINDS[series.kind] ?? "Series"}: {series.slug ? <Link className="k-link" href={`/series/${series.slug}`}>{series.name}</Link> : series.name}</>}</p>}
     <div className="px-dt-g">
-      {days.length > 0 && <div><h3><CalendarDays size={15} aria-hidden />Event days</h3><ul className="px-list">{days.map(d => <li key={d.date + (d.label ?? "")}><b>{d.label || day(d.date)}</b><small>{d.label ? `${day(d.date)} · ` : ""}{time(d.starts_at)}{d.ends_at ? `–${time(d.ends_at)}` : ""}</small></li>)}</ul></div>}
+      {days.length > 0 && <div><h3><CalendarDays size={15} aria-hidden />Event days</h3><ul className="px-list">{days.map(d => <li key={d.date + (d.label ?? "")}><b>{d.label || day(d.date, tz)}</b><small>{d.label ? `${day(d.date)} · ` : ""}{time(d.starts_at)}{d.ends_at ? `–${time(d.ends_at)}` : ""}</small></li>)}</ul></div>}
       {extras.sub_events.length > 0 && <div><h3><Layers size={15} aria-hidden />Also part of this event</h3><ul className="px-list">{extras.sub_events.map(s => <li key={s.slug}><Link href={`/events/${s.slug}`}><b>{s.name}</b><small>{day(s.starts_at)} · {time(s.starts_at)}</small></Link></li>)}</ul></div>}
       {others.length > 0 && <div><h3><CalendarDays size={15} aria-hidden />Other dates</h3><ul className="px-list">{others.map(o => <li key={o.id}><Link href={`/events/${o.slug ?? o.id}`}><b>{day(o.starts_at)}</b><small>{[o.venue_name, o.city].filter(Boolean).join(", ") || o.name}</small></Link></li>)}</ul></div>}
       {extras.passes.length > 0 && <div><h3><Ticket size={15} aria-hidden />Passes</h3><ul className="px-list">{extras.passes.map(p => <li key={p.name}><b>{p.name}</b><small>{PASS[p.kind] ?? "Pass"}{p.includes.length ? ` · includes ${p.includes.join(", ")}` : ""}</small></li>)}</ul></div>}

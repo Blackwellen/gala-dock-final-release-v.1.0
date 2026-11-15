@@ -1,0 +1,50 @@
+{
+  "observedUtc": "2026-10-13T19:59:35.424Z",
+  "scope": "Local production env and read-only linked Vercel variable metadata; presence is not live certification",
+  "local": {
+    "STRIPE_CONNECT_SECRET_KEY": {
+      "present": false
+    },
+    "STRIPE_PUBLIC_KEY": {
+      "present": true
+    },
+    "STRIPE_WEBHOOK_SECRET": {
+      "present": true
+    },
+    "CLAMAV_SCAN_URL": {
+      "present": false
+    },
+    "CLAMAV_SCAN_TOKEN": {
+      "present": false
+    }
+  },
+  "paymentModes": {
+    "secret": "missing",
+    "publishable": "live"
+  },
+  "remote": {
+    "status": "metadata_checked",
+    "production": {
+      "STRIPE_CONNECT_SECRET_KEY": {
+        "present": true,
+        "valueVerified": false
+      },
+      "STRIPE_PUBLIC_KEY": {
+        "present": true,
+        "valueVerified": false
+      },
+      "STRIPE_WEBHOOK_SECRET": {
+        "present": true,
+        "valueVerified": false
+      },
+      "CLAMAV_SCAN_URL": {
+        "present": false,
+        "valueVerified": false
+      },
+      "CLAMAV_SCAN_TOKEN": {
+        "present": false,
+        "valueVerified": false
+      }
+    }
+  }
+}

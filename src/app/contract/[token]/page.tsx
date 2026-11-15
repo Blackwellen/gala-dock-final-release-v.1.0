@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { todayIn } from "@/lib/i18n/tz";
 import { notFound } from "next/navigation";
 import "@/styles/kit.css";
 import { headers } from "next/headers";
@@ -20,7 +21,7 @@ export default async function ContractSigning({ params }: { params: Promise<{ to
   if (!(await tokenPageAllowed("contract", await headers()))) throw new Error("Too many requests. Please try again shortly.");
   const { data } = await untyped(createAdminClient() as never).rpc("contract_by_token", { p_token: token });
   const c = data as View | null; if (!c || !c.body) notFound();
-  const expired = c.status === "expired" || (!!c.expires_at && c.expires_at < new Date().toISOString().slice(0, 10));
+  const expired = c.status === "expired" || (!!c.expires_at && c.expires_at < todayIn());   // Q72: UK calendar date (Blackwellen terms), not the UTC date
   return <div className="k-root" style={{ padding: "32px 16px", minHeight: "100dvh" }}><main style={{ maxWidth: 860, margin: "0 auto" }} className="k-col">
     <div className="k-between"><b style={{ color: "var(--k-blue)", fontSize: 18 }}>{c.workspace}</b><span className="k-small k-muted">{c.number} · version {c.version}</span></div>
     <section className="k-card" style={{ padding: 28 }}>

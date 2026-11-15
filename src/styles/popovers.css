@@ -1,6 +1,6 @@
 /* Dropdowns & popovers, app-wide. Never taller than the screen: content scrolls inside a calm, premium surface.
    src/components/shared/popover-fit.tsx then flips / nudges / tightens each one to the space actually available. */
-:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover]) {
+:is(.k-pop, .gp-acct-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover]) {
   max-height: min(440px, calc(100vh - 96px));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -12,10 +12,10 @@
   scrollbar-color: #cdd5eb transparent;
   scroll-padding: 6px;
 }
-:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar { width: 10px; }
-:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb { background: #d3daee; border-radius: 10px; border: 3px solid #fff; }
-:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb:hover { background: #b9c3e2; }
-:is(.k-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-track { background: transparent; }
+:is(.k-pop, .gp-acct-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar { width: 10px; }
+:is(.k-pop, .gp-acct-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb { background: #d3daee; border-radius: 10px; border: 3px solid #fff; }
+:is(.k-pop, .gp-acct-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-thumb:hover { background: #b9c3e2; }
+:is(.k-pop, .gp-acct-pop, .pv-menu-panel, .ws-pop-panel, .pt-pop-panel, .aa-menu-panel, .adb-menu-panel, .adb-pop-body, .gs-panel, .pb-menu, .dm-menu, .mb-menu, [data-popover])::-webkit-scrollbar-track { background: transparent; }
 
 /* Kit menu items: comfortable rows, clear hover / focus, quiet section labels. */
 .k-pop { padding: 6px; }

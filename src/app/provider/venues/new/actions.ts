@@ -6,6 +6,12 @@ import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
 import { sellerBookingMode } from "@/lib/provider/seller-country";
+import { geocodePlace } from "@/lib/maps/geocode";
+import { COUNTRIES } from "@/lib/master-data";
+import { resolveCountryCode } from "@/lib/payments/connect-countries";
+import { checkPostcode, countryProfile, normalisePhone } from "@/lib/i18n/countries";
+import { isCheckoutCurrency } from "@/lib/i18n/money";
+import { defaultTzForCountry, isValidTimeZone } from "@/lib/i18n/tz";
 
 const t = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 const num = (fd: FormData, k: string) => { const v = String(fd.get(k) ?? "").trim(); const n = Number(v); return v !== "" && Number.isFinite(n) ? n : null; };
@@ -26,14 +32,11 @@ async function details(venueId: string) {
   return data ? (data.details ?? {}) as Record<string, unknown> : null;
 }
 
-/** Geocodes a UK address with OpenStreetMap Nominatim (server-side, identified). Returns null when not found — never a guessed point. */
-async function geocode(q: string): Promise<{ lat: number; lng: number } | null> {
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=gb,ie&q=${encodeURIComponent(q)}`,
-      { headers: { "User-Agent": "GalaDock/1.0 (venue setup)" }, signal: AbortSignal.timeout(5000), next: { revalidate: 86400 } });
-    const [hit] = (await res.json()) as { lat: string; lon: string }[];
-    return hit ? { lat: Number(hit.lat), lng: Number(hit.lon) } : null;
-  } catch { return null; }
+/** Geocodes the venue address in its own country (Q72: worldwide via src/lib/maps/geocode.ts; was GB/IE only). Null when not
+ *  found — never a guessed point. */
+async function geocode(q: string, country: string | null): Promise<{ lat: number; lng: number } | null> {
+  try { const [hit] = await geocodePlace(q, { country, limit: 1, signal: AbortSignal.timeout(5000) }); return hit ? { lat: hit.lat, lng: hit.lng } : null; }
+  catch { return null; }
 }
 
 /** Step 1 — identity, contact and address. Creates the draft venue on first save. */
@@ -44,14 +47,22 @@ export async function saveIdentity(venueId: string | null, next: string | null, 
   if (name.length < 2) return { ok: false, error: "Enter the venue name." };
   if (summary.length < 40) return { ok: false, error: "Write a summary of at least 40 characters." };
   if (!email || !EMAIL.test(email)) return { ok: false, error: "Enter a valid contact email." };
-  if (!a.line1 || !a.city || !a.postcode) return { ok: false, error: "Add the address, city and postcode." };
+  // Q72: postcode and phone rules follow the venue's country (postcode optional where a country has none, e.g. Hong Kong, UAE).
+  const cc = resolveCountryCode(a.country, COUNTRIES);
+  const needsPostcode = !cc || countryProfile(cc)?.postcode !== null;
+  if (!a.line1 || !a.city || (needsPostcode && !a.postcode)) return { ok: false, error: needsPostcode ? "Add the address, city and postcode." : "Add the address and city." };
+  if (a.postcode) { const pc = checkPostcode(a.postcode, cc); if (!pc.ok) return { ok: false, error: pc.error }; a.postcode = pc.value; }
+  let phone = t(fd, "phone", 40);
+  if (phone) { const ph = normalisePhone(phone, cc ?? "GB"); if (!ph.ok) return { ok: false, error: `Contact phone: ${ph.error}` }; phone = ph.e164; }
+  const tzIn = t(fd, "timezone", 40);
   const prev = venueId ? await details(venueId) : {};
   if (venueId && !prev) return { ok: false, error: "Venue not found." };
-  const geo = await geocode(`${a.line1}, ${a.city}, ${a.postcode}`);
+  const geo = await geocode([a.line1, a.city, a.postcode].filter(Boolean).join(", "), cc);
   const r = await save(venueId, {
     ...(venueId ? {} : { kind: "venue" }), name, description: summary, city: a.city, location: [a.line1, a.city, a.postcode].filter(Boolean).join(", "), category: t(fd, "type", 60),
-    details: { type: t(fd, "type", 60), timezone: t(fd, "timezone", 40) || "Europe/London", address: a, geo,
-      contact: { ...((prev?.contact ?? {}) as object), person: t(fd, "person", 80), email, phone: t(fd, "phone", 40) } },
+    // Q76: provider_save_listing copies details.country_code / details.timezone into listings.country / listings.timezone.
+    details: { type: t(fd, "type", 60), timezone: (isValidTimeZone(tzIn) ? tzIn : "") || defaultTzForCountry(cc), country_code: cc, address: a, geo,
+      contact: { ...((prev?.contact ?? {}) as object), person: t(fd, "person", 80), email, phone } },
   });
   if (!r.ok) return r;
   return { ok: true, message: geo ? "Venue details saved" : "Saved — we couldn’t place this address on the map; check the postcode", redirect: fd.get("_draft") ? `/provider/venues/new?venue=${r.id}&step=1` : (next ?? "").replace("{venue}", r.id) || `/provider/venues/new?venue=${r.id}&step=1` };
@@ -72,7 +83,10 @@ export async function saveCommercialStep(venueId: string, next: string | null, f
   if (!cancellation.length) return { ok: false, error: "Add at least one cancellation window." };
   const { workspace } = await getProvider();
   const { mode, note } = sellerBookingMode(workspace.settings, t(fd, "booking_mode", 10) || "request");
+  // Q76: the venue's own currency (validated by provider_save_listing: two-decimal transactional currencies only).
+  const currency = t(fd, "currency", 3).toUpperCase();
   const r = await save(venueId, {
+    ...(isCheckoutCurrency(currency) ? { currency } : {}),
     booking_mode: mode, response_hours: response, price_from: pricing === "quote" ? null : from, price_unit: pricing === "daily" ? "per day" : pricing === "package" ? "per package" : "per hour",
     emergency_supply: on(fd, "emergency"),
     details: { commercial: { ...((prev.commercial ?? {}) as object), pricing, rate_from: from, rate_to: to, variable_rates: on(fd, "variable_rates"), minimum_spend: num(fd, "minimum_spend") ?? 0,

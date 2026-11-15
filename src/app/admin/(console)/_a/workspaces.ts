@@ -1,5 +1,5 @@
 import "server-only";
-import { rows, type Db } from "@/lib/workspace/db";
+import { rowsIn, type Db } from "@/lib/workspace/db";
 import { rpc } from "./lib";
 
 export type Ws = { id: string; name: string; kind: "organizer" | "provider"; plan: string; status: string; verification_status: string; payout_status: string; commission_bps: number;
@@ -32,6 +32,22 @@ export async function loadMetrics(db: Db, days = 30) {
 }
 export async function loadOwners(db: Db, ids: string[], allowed: boolean) {
   if (!allowed || !ids.length) return new Map<string, Owner>();
-  const list = await rows<Owner>(db.from("profiles").select("id,full_name,avatar_url").in("id", [...new Set(ids)]));
+  const list = await rowsIn<Owner>(ids, batch => db.from("profiles").select("id,full_name,avatar_url").in("id", batch));
   return new Map(list.map(o => [o.id, o]));
+}
+
+/** Q51: the Workspaces list filter, shared by the page and its CSV export (the export used to ignore plan, verification,
+ *  commission tier, GMV, health and created date, and matched `q` on the name only). */
+export function workspaceMatches(w: Ws, m: WsMetric | undefined, f: (k: string) => string, ownerName: string | undefined, now: number) {
+  const kind = ["organizer", "provider", "suspended"].includes(f("filter")) ? f("filter") : "all";
+  const q = f("q").trim().toLowerCase().slice(0, 80), h = health(w, m).key, gmv = m?.gmv ?? 0;
+  if (kind === "suspended" ? w.status !== "suspended" : kind !== "all" && w.kind !== kind) return false;
+  if (q && !`${w.name} ${w.settings?.reference ?? ""} ${w.id} ${ownerName ?? ""}`.toLowerCase().includes(q)) return false;
+  if (f("plan") && w.plan !== f("plan")) return false;
+  if (f("ver") && w.verification_status !== f("ver")) return false;
+  if (f("tier") && !(f("tier") === "low" ? w.commission_bps <= 600 : f("tier") === "mid" ? w.commission_bps > 600 && w.commission_bps <= 700 : w.commission_bps > 700)) return false;
+  if (f("gmv") && !(f("gmv") === "none" ? gmv === 0 : f("gmv") === "s" ? gmv > 0 && gmv < 10000 : f("gmv") === "m" ? gmv >= 10000 && gmv <= 50000 : gmv > 50000)) return false;
+  if (f("health") && h !== f("health")) return false;
+  if (f("created") && new Date(w.created_at).getTime() < now - Number(f("created")) * 864e5) return false;
+  return true;
 }

@@ -153,7 +153,11 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
   const detail = scale * 5 >= 5.5; // seats ≥ ~5.5px drawn individually
 
   const commit = useCallback((next: MapEl[] | ((p: MapEl[]) => MapEl[]), prev?: MapEl[]) => {
-    setEls(cur => { const n = typeof next === "function" ? next(cur) : next; setPast(p => [...p.slice(-100), prev ?? cur]); setFuture([]); return n; }); setDirty(true);
+    // Q75: a commit that leaves the plan unchanged (re-picking the same flag / tier / layer, a click without a drag) adds no undo step
+    // and doesn't mark the plan unsaved. `prev` is passed after a live drag, so that path always records.
+    setEls(cur => { const n = typeof next === "function" ? next(cur) : next;
+      if (!prev && (n === cur || (n.length === cur.length && JSON.stringify(n) === JSON.stringify(cur)))) return cur;
+      setPast(p => [...p.slice(-100), prev ?? cur]); setFuture([]); setDirty(true); return n; });
   }, []);
   // Q55: undo/redo change the plan, so they mark it unsaved (after a save, an undo used to leave "Save draft" disabled and no leave
   // warning); both clear the selection because it is index-based and would otherwise point at different elements (Delete hit the wrong one).
@@ -201,7 +205,7 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
     const up = (e: KeyboardEvent) => { if (e.key === " ") space.current = false; };
     const key = (e: KeyboardEvent) => {
       if (!wrap.current?.contains(document.activeElement) && document.activeElement !== document.body) return;
-      if ((e.target as HTMLElement)?.closest("input,textarea,select")) return;
+      if (e.target instanceof Element && e.target.closest("input,textarea,select")) return; // keydown can target document / window
       const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
       if (e.key === " ") { space.current = true; e.preventDefault(); return; }
       if (mod && k === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
@@ -735,6 +739,12 @@ export function PlanBuilder({ initial, spaces = [], version, draftVersion = 0, g
             {sel.some(i => ASSET[els[i]?.asset ?? ""]?.kind === "table") && <button type="button" title="Renumber tables" onClick={renumberTables}><ListOrdered aria-hidden="true" /></button>}
             <button type="button" title="Delete (Del)" className="danger" onClick={removeSel}><Trash2 aria-hidden="true" /></button></div></div>
           : s ? <div className="mb-props">
+            {/* Q75: keyboard path for per-seat flags / tiers — the canvas seat click needs a pointer; this list works with arrows + Shift/Ctrl. */}
+            {seatList.length > 0 && <label>Select seats (keyboard)<select multiple size={Math.min(6, seatList.length)} className="ws-select mb-seatlist" aria-describedby="mb-seatlist-help"
+              value={seats && seats.el === sel[0] ? [...seats.keys] : []}
+              onChange={e => { const keys = new Set([...e.currentTarget.selectedOptions].map(o => o.value)); setSeats(keys.size ? { el: sel[0]!, keys } : null); }}>
+              {seatList.map(x => <option key={x.key} value={x.key}>{x.label}</option>)}</select>
+              <small id="mb-seatlist-help" className="mb-note">Shift or Ctrl + arrow keys select several; then choose a flag or tier below.</small></label>}
             {seats && seats.keys.size > 0 ? <div className="mb-seatsel"><h4><Armchair aria-hidden="true" />{seats.keys.size} seat{seats.keys.size === 1 ? "" : "s"} selected</h4>
               <p className="mb-note">{[...seats.keys].slice(0, 4).map(k => seatList.find(x => x.key === k)?.label ?? k).join(", ")}{seats.keys.size > 4 ? "…" : ""}</p>
               <div className="mb-flags">{FLAGS.map(([f, l]) => <button key={f} type="button" className={`f-${f}`} onClick={() => flagSeats(f)}>{l}</button>)}</div>

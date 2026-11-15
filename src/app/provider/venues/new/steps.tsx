@@ -5,6 +5,7 @@ import { Sparkles, Lightbulb, CircleCheck, CircleAlert, Info, ArrowLeft, ArrowRi
 import type { ReactNode } from "react";
 import { ActionForm, ActionButton } from "@/components/workspace/actions";
 import { money } from "@/lib/workspace/format";
+import { CHECKOUT_CURRENCIES, currencySymbol } from "@/lib/i18n/money";
 import type { Listing } from "@/lib/provider/queries";
 import { saveIdentity, saveCommercialStep, saveOperations } from "./actions";
 import { PhotoManager } from "../_components/photo-manager";
@@ -79,36 +80,38 @@ export function StepIdentity({ venue, next }: { venue: Listing | null; next: str
   </div>;
 }
 
-export function StepCommercial({ venue, back, next, enquiryOnly = null }: { venue: Listing; back: string; next: string; enquiryOnly?: string | null }) {
+export function StepCommercial({ venue, back, next, enquiryOnly = null, currency = "GBP" }: { venue: Listing; back: string; next: string; enquiryOnly?: string | null; currency?: string }) {
+  // Q76: the venue's own currency (listings.currency) — bookings charge in the seller's currency.
+  const sym = currencySymbol(currency);
   const c = ((venue.details as D).commercial ?? {}) as NonNullable<D["commercial"]>;
   const pricing = c.pricing ?? "hourly", canc = c.cancellation ?? [{ window: "7+ days", refund: 100 }, { window: "3–7 days", refund: 50 }, { window: "<3 days", refund: 0 }];
   const depMode = c.deposit_mode ?? "percent";
   const summary: [typeof PoundSterling, string, string][] = [
-    [PoundSterling, "Pricing mode", pricing === "quote" ? "Quote only" : `${pricing === "daily" ? "Day rate" : pricing === "package" ? "Package based" : pricing === "minimum" ? "Minimum spend" : "Hourly rate"}${c.rate_from ? ` (${money(c.rate_from)}${c.rate_to ? `–${money(c.rate_to)}` : ""})` : ""}`],
-    [Percent, "Minimum spend", c.minimum_spend ? money(c.minimum_spend) : "None"], [Percent, "Deposit", depMode === "fixed" ? money(c.deposit_fixed ?? 0) : `${c.deposit_pct ?? 30}%`],
+    [PoundSterling, "Pricing mode", pricing === "quote" ? "Quote only" : `${pricing === "daily" ? "Day rate" : pricing === "package" ? "Package based" : pricing === "minimum" ? "Minimum spend" : "Hourly rate"}${c.rate_from ? ` (${money(c.rate_from, currency)}${c.rate_to ? `–${money(c.rate_to, currency)}` : ""})` : ""}`],
+    [Percent, "Minimum spend", c.minimum_spend ? money(c.minimum_spend, currency) : "None"], [Percent, "Deposit", depMode === "fixed" ? money(c.deposit_fixed ?? 0, currency) : `${c.deposit_pct ?? 30}%`],
     [CalendarDays, "Balance due", `${c.balance_days ?? 14} days before event`], [Mail, "Booking mode", venue.booking_mode === "instant" ? "Instant booking" : venue.booking_mode === "enquiry" ? "Enquiry only" : "Request to book"],
     [Clock3, "Response commitment", `Within ${venue.response_hours} hours`], [CalendarDays, "Minimum lead time", `${c.lead_days ?? 0} days${c.short_notice ? " (short notice allowed)" : ""}`],
     [Ban, "Cancellation policy", canc.map(x => `${x.window}: ${x.refund}%`).join(" | ")], [PauseCircle, "Conditional holds", c.holds?.enabled ? `Enabled (${c.holds.hours} hours)` : "Off"],
-    [Repeat, "Standby option", c.standby?.enabled ? `Enabled (${money(c.standby.fee)})` : "Off"], [Siren, "Emergency bookings", c.emergency?.enabled ? `Enabled (${c.emergency.multiplier}× rate)` : "Off"],
+    [Repeat, "Standby option", c.standby?.enabled ? `Enabled (${money(c.standby.fee, currency)})` : "Off"], [Siren, "Emergency bookings", c.emergency?.enabled ? `Enabled (${c.emergency.multiplier}× rate)` : "Off"],
   ];
   return <ActionForm action={saveCommercialStep.bind(null, venue.id, next)} className="vw vw-s3">
     <section className="ws-panel vw-pricing"><h2>Pricing configuration</h2><p>Choose how you price this venue and set your base rates.</p>
       <div className="vw-seg">{[["hourly", "Hourly rate"], ["daily", "Day rate"], ["package", "Package based"], ["minimum", "Minimum spend"], ["quote", "Quote only"]].map(([k, l]) =>
         <label key={k}><input type="radio" name="pricing" value={k} defaultChecked={pricing === k} /><span>{l}</span></label>)}</div>
-      <div className="vw-grid3"><label>Rate (from) <i>*</i><span className="vw-money"><em>£</em><input name="rate_from" type="number" min={0} defaultValue={c.rate_from ?? venue.price_from ?? ""} /></span></label>
-        <label>Rate (to)<span className="vw-money"><em>£</em><input name="rate_to" type="number" min={0} defaultValue={c.rate_to ?? ""} /></span></label>
-        <label>Currency<select className="ws-select" disabled defaultValue="GBP"><option value="GBP">GBP (£)</option></select></label></div>
+      <div className="vw-grid3"><label>Rate (from) <i>*</i><span className="vw-money"><em>{sym}</em><input name="rate_from" type="number" min={0} defaultValue={c.rate_from ?? venue.price_from ?? ""} /></span></label>
+        <label>Rate (to)<span className="vw-money"><em>{sym}</em><input name="rate_to" type="number" min={0} defaultValue={c.rate_to ?? ""} /></span></label>
+        <label>Currency<select className="ws-select" name="currency" defaultValue={currency}>{CHECKOUT_CURRENCIES.map(c => <option key={c} value={c}>{c} ({currencySymbol(c)})</option>)}</select></label></div>
       <div className="vw-boxrow"><Toggle name="variable_rates" label="Different rates by day/time" sub="Set custom rates for weekdays, weekends or seasonal periods." on={c.variable_rates} /></div>
       <div className="vw-pair"><div className="vw-minspend"><CalendarDays aria-hidden="true" /><span><b>Minimum spend <small>(optional)</small></b><small>Set a minimum total spend for bookings at this venue.</small></span>
-        <span className="vw-money sm"><em>£</em><input name="minimum_spend" type="number" min={0} defaultValue={c.minimum_spend ?? ""} aria-label="Minimum spend" /></span></div>
+        <span className="vw-money sm"><em>{sym}</em><input name="minimum_spend" type="number" min={0} defaultValue={c.minimum_spend ?? ""} aria-label="Minimum spend" /></span></div>
         <p className="vw-info"><Info aria-hidden="true" />Use minimum spend for high-demand dates, weddings or exclusive hire.</p></div></section>
     <section className="ws-panel vw-deposits"><h2>Deposits &amp; payments</h2><p>Configure deposits and payment schedule.</p>
       <label>Deposit amount <i>*</i><span className="vw-dual"><select name="deposit_mode" className="ws-select" defaultValue={depMode}><option value="percent">Percentage</option><option value="fixed">Fixed amount</option></select>
-        <span className="vw-money"><input name="deposit" type="number" min={0} defaultValue={depMode === "fixed" ? c.deposit_fixed ?? "" : c.deposit_pct ?? 30} /><em className="r">{depMode === "fixed" ? "£" : "%"}</em></span></span></label>
+        <span className="vw-money"><input name="deposit" type="number" min={0} defaultValue={depMode === "fixed" ? c.deposit_fixed ?? "" : c.deposit_pct ?? 30} /><em className="r">{depMode === "fixed" ? sym : "%"}</em></span></span></label>
       <small className="vw-hint"><Info aria-hidden="true" />Deposit required to confirm the booking</small>
       <label>Balance due<span className="vw-dual"><select className="ws-select" disabled defaultValue="before"><option value="before">Before event date</option></select>
         <span className="vw-money"><input name="balance_days" type="number" min={0} defaultValue={c.balance_days ?? 14} /><em className="r">days</em></span></span></label>
-      <label>Security / damage deposit <small>(optional)</small><span className="vw-money"><em>£</em><input name="security_deposit" type="number" min={0} defaultValue={c.security_deposit ?? ""} /></span></label>
+      <label>Security / damage deposit <small>(optional)</small><span className="vw-money"><em>{sym}</em><input name="security_deposit" type="number" min={0} defaultValue={c.security_deposit ?? ""} /></span></label>
       <small className="vw-hint">Held securely and released after the event (see terms).</small></section>
     <aside className="vw-side">
       <section className="ws-panel vw-agent"><h2><span className="sb-agent-ic"><Sparkles aria-hidden="true" /></span>Gala Agent <em>Online</em></h2>
@@ -138,7 +141,7 @@ export function StepCommercial({ venue, back, next, enquiryOnly = null }: { venu
       <div className="vw-hold"><Toggle name="holds" label="Allow conditional holds" sub="Temporarily hold dates while discussing with a customer." on={c.holds?.enabled ?? true} />
         <label>Hold duration<select name="hold_hours" className="ws-select" defaultValue={c.holds?.hours ?? 48}>{[24, 48, 72, 168].map(h => <option key={h} value={h}>{h} hours</option>)}</select></label></div>
       <div className="vw-hold"><Toggle name="standby" label="Offer standby option" sub="Allow customers to book a standby date if unavailable." on={c.standby?.enabled} />
-        <label>Standby fee <small>(optional)</small><span className="vw-money"><em>£</em><input name="standby_fee" type="number" min={0} defaultValue={c.standby?.fee ?? ""} /></span></label></div>
+        <label>Standby fee <small>(optional)</small><span className="vw-money"><em>{sym}</em><input name="standby_fee" type="number" min={0} defaultValue={c.standby?.fee ?? ""} /></span></label></div>
       <div className="vw-hold"><Toggle name="emergency" label="Emergency bookings" sub="Allow last-minute bookings at premium rate." on={c.emergency?.enabled} />
         <label>Emergency rate multiplier<select name="emergency_multiplier" className="ws-select" defaultValue={c.emergency?.multiplier ?? 1.5}>{[1.25, 1.5, 2].map(x => <option key={x} value={x}>{x}× ({Math.round((x - 1) * 100)}% extra)</option>)}</select></label></div></section>
     <Foot back={back} next="Next: Operations" step={3} />

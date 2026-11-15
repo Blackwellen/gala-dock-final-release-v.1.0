@@ -56,12 +56,15 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
   await page.keyboard.press('Escape');await expect(menu).not.toHaveAttribute('open','');await expect(trigger).toBeFocused();await trigger.press('Enter');
   await menu.getByRole('link',{name:'Event Map Studio',exact:true}).click();await expect(page).toHaveURL(new RegExp(`/organizer/events/${event}/map`));
  });
- test('Studio keeps an offline draft, restores after reload and saves it on reconnection',async({page})=>{
+ test('Studio keeps an offline draft, restores after reload and saves it explicitly once back online',async({page})=>{
   await fixtureSession(page,owner.email);await page.goto(`${BASE}/studio/${design}`);
   await expect(page.getByLabel('Design name')).toBeVisible();
   await page.context().setOffline(true);await page.getByLabel('Design name').fill('Recovered offline design');
   await expect(page.locator('.st-save')).toHaveText('Unsaved');
-  await expect(page.locator('.st-notice')).toContainText('Offline');
+  // Owner rule 2026-11-15: no server auto-save. Saving while offline keeps the edit on this device and says so.
+  await page.getByRole('button',{name:'Save',exact:true}).click();
+  await expect(page.locator('.st-notice')).toContainText('Offline — your changes are kept on this device. Save again when you reconnect.');
+  await expect(page.locator('.st-save')).toHaveText('Unsaved');
   const stored=await page.evaluate(id=>JSON.parse(localStorage.getItem(`gd_design_${id}`)??'null'),design);
   expect(stored.title).toBe('Recovered offline design');
   // Leave while offline, as with closing a tab. Reopening must offer the unsaved local document.
@@ -69,6 +72,10 @@ test.describe('PWA Media Studio, Event Map Studio and Agent detail',()=>{
   await expect(page.getByRole('button',{name:'Restore local draft',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Restore local draft',exact:true}).click();
   await expect(page.getByLabel('Design name')).toHaveValue('Recovered offline design');
+  // Restoring does not write to the server; the explicit Save does.
+  await expect(page.locator('.st-save')).toHaveText('Unsaved');
+  expect((await db.from('designs').select('title').eq('id',design).single()).data?.title).toBe('PWA Studio test');
+  await page.getByRole('button',{name:'Save',exact:true}).click();
   await expect(page.locator('.st-save')).toHaveText('Saved',{timeout:30000});
   const saved=await db.from('designs').select('title').eq('id',design).single();expect(saved.error).toBeNull();expect(saved.data?.title).toBe('Recovered offline design');
   expect(await page.evaluate(id=>localStorage.getItem(`gd_design_${id}`),design)).toBeNull();

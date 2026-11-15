@@ -57,6 +57,9 @@ export function PlanWizard({ step, base, data }: { step: PlanStepNo; base: strin
   // Q47: `pending` clears as soon as the action resolves, before router.push lands, so a second click used to re-run step 1
   // with no event id and create a duplicate draft. Remember the id the first save returned and stay busy until the page changes.
   const planId = useRef<string | null>(ev?.id ?? null); const [leaving, setLeaving] = useState(false); const busy = pending || leaving;
+  // The next step is the same route (/plan?step=n), so this component stays mounted: clear the latch once the new step renders,
+  // or every later step's Continue / Save and exit stays disabled (adjust-state-during-render, no effect).
+  const [shownStep, setShownStep] = useState(step); if (shownStep !== step) { setShownStep(step); setLeaving(false); }
   const go = async (n: PlanSaveStep, payload: unknown, next: number | "exit") => {
     if (leaving) return;
     const r = await run(() => savePlanStep(n, payload, planId.current), { refresh: false });

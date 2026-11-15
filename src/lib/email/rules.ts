@@ -74,3 +74,34 @@ export function mailboxStatus(env: Record<string, string | undefined>) {
   }
   return out;
 }
+
+/**
+ * Q75 one-click unsubscribe (RFC 8058) for OPTIONAL email categories. Security and payments mail is mandatory and carries only a
+ * settings link. The token is `<user id>.<category>.<HMAC-SHA256 base64url>`; the key is derived from the server secret with a
+ * purpose label so it can't be replayed against another HMAC use of the same secret.
+ */
+export const MANDATORY_EMAIL_CATEGORIES = ["security", "payments"] as const;
+export const OPTIONAL_EMAIL_CATEGORIES = ["tickets", "quotes", "messages", "reminders", "event_updates"] as const;
+export type OptionalEmailCategory = typeof OPTIONAL_EMAIL_CATEGORIES[number];
+export const isOptionalEmailCategory = (c: unknown): c is OptionalEmailCategory => (OPTIONAL_EMAIL_CATEGORIES as readonly string[]).includes(String(c));
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const unsubSig = (secret: string, userId: string, category: string) =>
+  createHmac("sha256", createHmac("sha256", secret).update("gala-dock:email-unsubscribe:v1").digest()).update(`${userId.toLowerCase()}.${category}`).digest("base64url");
+export function unsubscribeToken(secret: string, userId: string, category: string) {
+  if (!secret || !UUID_RE.test(userId) || !isOptionalEmailCategory(category)) return null;
+  return `${userId.toLowerCase()}.${category}.${unsubSig(secret, userId, category)}`;
+}
+export function verifyUnsubscribeToken(secret: string, token: unknown): { userId: string; category: OptionalEmailCategory } | null {
+  if (!secret || typeof token !== "string" || token.length > 200) return null;
+  const [userId, category, sig, ...rest] = token.split(".");
+  if (rest.length || !userId || !sig || !UUID_RE.test(userId) || !isOptionalEmailCategory(category)) return null;
+  const want = Buffer.from(unsubSig(secret, userId, category)), got = Buffer.from(sig);
+  return want.length === got.length && timingSafeEqual(want, got) ? { userId: userId.toLowerCase(), category } : null;
+}
+/** List-Unsubscribe headers for one outbox row: one-click POST URL + settings page; none for mandatory mail or without a user. */
+export function unsubscribeHeaders(site: string, secret: string, userId: string | null | undefined, category: string): Record<string, string> | undefined {
+  if (!isOptionalEmailCategory(category)) return undefined;
+  const t = userId ? unsubscribeToken(secret, userId, category) : null;
+  if (!t) return { "List-Unsubscribe": `<${site}/account?tab=notifications>` };
+  return { "List-Unsubscribe": `<${site}/api/email/unsubscribe?t=${t}>, <${site}/account?tab=notifications>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+}

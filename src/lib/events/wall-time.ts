@@ -1,23 +1,18 @@
-// Q48: `<input type="datetime-local">` values carry no timezone ("2026-07-04T19:00"). The app displays event times in
-// Europe/London (lib/format), so a naive value is a London wall-clock time. Parsing it with `new Date(v)` on the server reads it
-// as UTC instead, which moved every edited time one hour later during BST (and, on an on-sale event, made an untouched date
-// look "changed" and blocked the save). Pure module: safe on the client and the server.
-import { londonOffset, londonToUtc } from "@/lib/agent/schedule";
+// Q48: `<input type="datetime-local">` values carry no timezone ("2026-07-04T19:00"). Parsing it with `new Date(v)` on the server
+// reads it as UTC instead, which moved every edited time one hour later during BST (and, on an on-sale event, made an untouched date
+// look "changed" and blocked the save).
+// Q72: a naive value is a wall-clock time in the EVENT's zone (events.timezone). Every helper takes that zone; it defaults to
+// Europe/London, so existing UK data and call sites that don't pass a zone behave exactly as before. Pure module: client + server.
+import { DEFAULT_TZ, utcToWallString, wallToUtcIso } from "@/lib/i18n/tz";
 
-const NAIVE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2}(?:\.\d+)?)?$/;
-
-/** datetime-local value (London wall time) or any ISO instant → UTC ISO string; null for blank or unparseable input. */
-export function wallToIso(v: string | null | undefined): string | null {
-  const s = (v ?? "").trim(); if (!s) return null;
-  const m = NAIVE.exec(s);
-  if (m) return londonToUtc(Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]), Number(m[5])).toISOString();
-  const t = Date.parse(s); return Number.isNaN(t) ? null : new Date(t).toISOString();
+/** datetime-local value (wall time in `tz`, default London) or any ISO instant → UTC ISO string; null for blank or unparseable input. */
+export function wallToIso(v: string | null | undefined, tz: string = DEFAULT_TZ): string | null {
+  return wallToUtcIso(v, tz);
 }
 
-/** UTC instant → "YYYY-MM-DDTHH:mm" London wall time for a datetime-local input ("" when blank). */
-export function isoToWall(iso: string | null | undefined): string {
-  if (!iso) return ""; const d = new Date(iso); if (Number.isNaN(d.getTime())) return "";
-  return new Date(d.getTime() + londonOffset(d) * 60000).toISOString().slice(0, 16);
+/** UTC instant → "YYYY-MM-DDTHH:mm" wall time in `tz` (default London) for a datetime-local input ("" when blank). */
+export function isoToWall(iso: string | null | undefined, tz: string = DEFAULT_TZ): string {
+  return utcToWallString(iso, tz);
 }
 
 /** Same instant to the minute (datetime-local inputs drop seconds). */

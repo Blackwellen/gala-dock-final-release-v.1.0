@@ -1,0 +1,826 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/marketplace/payments.spec.ts",
+      "tests/foundation/webhook.spec.ts",
+      "--project=desktop",
+      "--timeout=90000",
+      "--output=artifacts/pwa/traces/continuation-webhook-finance",
+      "--reporter=line,json"
+    ],
+    "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
+    "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/traces/continuation-webhook-finance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [
+          "/responsive/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/traces/continuation-webhook-finance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "responsive",
+        "name": "responsive",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/responsive/"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "desktop",
+        "testDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "snapshotDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "testIgnore": {},
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "http://localhost:3120",
+          "trace": "retain-on-failure",
+          "launchOptions": {
+            "executablePath": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+          },
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "desktop"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "foundation\\webhook.spec.ts",
+      "file": "foundation/webhook.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "stripe webhook: idempotent, authoritative",
+          "file": "foundation/webhook.spec.ts",
+          "line": 16,
+          "column": 6,
+          "specs": [
+            {
+              "title": "rejects unsigned/forged payloads",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 185,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:41.659Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8149c7feafae4c946624-1d063c20ce8390fdc9b3",
+              "file": "foundation/webhook.spec.ts",
+              "line": 33,
+              "column": 7
+            },
+            {
+              "title": "account.updated syncs Connect state once; duplicates are ignored",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1530,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:42.736Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8149c7feafae4c946624-018e5ed92a53416053cc",
+              "file": "foundation/webhook.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "payment_intent.succeeded posts one balanced ledger transaction",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 471,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m1\u001b[39m\nReceived length: \u001b[31m0\u001b[39m\nReceived array:  \u001b[31m[]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m1\u001b[39m\nReceived length: \u001b[31m0\u001b[39m\nReceived array:  \u001b[31m[]\u001b[39m\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:59:17",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                          "column": 17,
+                          "line": 59
+                        },
+                        "snippet": "  57 |     await send(event); await send({ ...event, id: `evt_${randomUUID()}` }); // a second delivery with a new event id must still not double-post\n  58 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"id,kind\").eq(\"stripe_ref\", pi);\n> 59 |     expect(txs).toHaveLength(1);\n     |                 ^\n  60 |     const { data: lines } = await admin.from(\"ledger_entries\" as never).select(\"account,amount_minor\").eq(\"transaction_id\", (txs as { id: string }[])[0].id);\n  61 |     const byAccount = Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]));\n  62 |     // £5.00 booking fee includes £0.83 Gala Dock VAT, which is owed to HMRC rather than revenue."
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                            "column": 17,
+                            "line": 59
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m1\u001b[39m\nReceived length: \u001b[31m0\u001b[39m\nReceived array:  \u001b[31m[]\u001b[39m\n\n  57 |     await send(event); await send({ ...event, id: `evt_${randomUUID()}` }); // a second delivery with a new event id must still not double-post\n  58 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"id,kind\").eq(\"stripe_ref\", pi);\n> 59 |     expect(txs).toHaveLength(1);\n     |                 ^\n  60 |     const { data: lines } = await admin.from(\"ledger_entries\" as never).select(\"account,amount_minor\").eq(\"transaction_id\", (txs as { id: string }[])[0].id);\n  61 |     const byAccount = Object.fromEntries((lines as { account: string; amount_minor: number }[]).map(l => [l.account, Number(l.amount_minor)]));\n  62 |     // £5.00 booking fee includes £0.83 Gala Dock VAT, which is owed to HMRC rather than revenue.\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:59:17"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:44.287Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--7df76-balanced-ledger-transaction-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--7df76-balanced-ledger-transaction-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--7df76-balanced-ledger-transaction-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                        "column": 17,
+                        "line": 59
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8149c7feafae4c946624-df4ff15c13944c40b97e",
+              "file": "foundation/webhook.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "charge.dispute.* mirrors the chargeback, opens one support case and posts funds movements once",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1960,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"event_id\": \"8f988ea1-71b1-4ff6-b7b1-09a5fde28cf7\",\u001b[39m\n\u001b[32m-   \"order_ref\": \"GD-T3B7C64\",\u001b[39m\n\u001b[31m+   \"event_id\": null,\u001b[39m\n\u001b[31m+   \"order_ref\": null,\u001b[39m\n\u001b[2m    \"outcome\": \"won\",\u001b[22m\n\u001b[2m    \"status\": \"won\",\u001b[22m\n\u001b[2m  }\u001b[22m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"event_id\": \"8f988ea1-71b1-4ff6-b7b1-09a5fde28cf7\",\u001b[39m\n\u001b[32m-   \"order_ref\": \"GD-T3B7C64\",\u001b[39m\n\u001b[31m+   \"event_id\": null,\u001b[39m\n\u001b[31m+   \"order_ref\": null,\u001b[39m\n\u001b[2m    \"outcome\": \"won\",\u001b[22m\n\u001b[2m    \"status\": \"won\",\u001b[22m\n\u001b[2m  }\u001b[22m\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:76:17",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                          "column": 17,
+                          "line": 76
+                        },
+                        "snippet": "  74 |     await send({ id: `evt_${randomUUID()}`, type: \"charge.dispute.funds_reinstated\", data: { object: dispute(\"won\") } });\n  75 |     const row = (await admin.from(\"stripe_disputes\" as never).select(\"status,outcome,order_ref,event_id\").eq(\"stripe_dispute_id\", dp).single()).data;\n> 76 |     expect(row).toEqual({ status: \"won\", outcome: \"won\", order_ref: ref, event_id: eventId });\n     |                 ^\n  77 |     const { count } = await admin.from(\"support_cases\").select(\"id\", { count: \"exact\", head: true }).contains(\"related\", { stripe_dispute_id: dp });\n  78 |     expect(count).toBe(1);\n  79 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"kind\").eq(\"source_id\", dp).order(\"posted_at\");"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                            "column": 17,
+                            "line": 76
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"event_id\": \"8f988ea1-71b1-4ff6-b7b1-09a5fde28cf7\",\u001b[39m\n\u001b[32m-   \"order_ref\": \"GD-T3B7C64\",\u001b[39m\n\u001b[31m+   \"event_id\": null,\u001b[39m\n\u001b[31m+   \"order_ref\": null,\u001b[39m\n\u001b[2m    \"outcome\": \"won\",\u001b[22m\n\u001b[2m    \"status\": \"won\",\u001b[22m\n\u001b[2m  }\u001b[22m\n\n  74 |     await send({ id: `evt_${randomUUID()}`, type: \"charge.dispute.funds_reinstated\", data: { object: dispute(\"won\") } });\n  75 |     const row = (await admin.from(\"stripe_disputes\" as never).select(\"status,outcome,order_ref,event_id\").eq(\"stripe_dispute_id\", dp).single()).data;\n> 76 |     expect(row).toEqual({ status: \"won\", outcome: \"won\", order_ref: ref, event_id: eventId });\n     |                 ^\n  77 |     const { count } = await admin.from(\"support_cases\").select(\"id\", { count: \"exact\", head: true }).contains(\"related\", { stripe_dispute_id: dp });\n  78 |     expect(count).toBe(1);\n  79 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"kind\").eq(\"source_id\", dp).order(\"posted_at\");\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:76:17"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:45.825Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--42d5a--posts-funds-movements-once-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--42d5a--posts-funds-movements-once-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--42d5a--posts-funds-movements-once-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                        "column": 17,
+                        "line": 76
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8149c7feafae4c946624-696fdfbb72754a9290d0",
+              "file": "foundation/webhook.spec.ts",
+              "line": 66,
+              "column": 7
+            },
+            {
+              "title": "charge.refunded records each cumulative refund once and never issues a refund",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 769,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Array [\u001b[22m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 1000)\",\u001b[39m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 2500)\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[2m  ]\u001b[22m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Array [\u001b[22m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 1000)\",\u001b[39m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 2500)\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[2m  ]\u001b[22m\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:90:72",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                          "column": 72,
+                          "line": 90
+                        },
+                        "snippet": "  88 |     await send(refund(1000)); await send(refund(1000)); await send(refund(2500));\n  89 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"description\").eq(\"stripe_ref\", ch).order(\"posted_at\");\n> 90 |     expect((txs as { description: string }[]).map(t => t.description)).toEqual([`Refund ${ref} (cumulative 1000)`, `Refund ${ref} (cumulative 2500)`]);\n     |                                                                        ^\n  91 |   });\n  92 | });\n  93 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                            "column": 72,
+                            "line": 90
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Array [\u001b[22m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 1000)\",\u001b[39m\n\u001b[32m-   \"Refund GD-T46735B (cumulative 2500)\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[31m+   \"Refund increment\",\u001b[39m\n\u001b[2m  ]\u001b[22m\n\n  88 |     await send(refund(1000)); await send(refund(1000)); await send(refund(2500));\n  89 |     const { data: txs } = await admin.from(\"ledger_transactions\" as never).select(\"description\").eq(\"stripe_ref\", ch).order(\"posted_at\");\n> 90 |     expect((txs as { description: string }[]).map(t => t.description)).toEqual([`Refund ${ref} (cumulative 1000)`, `Refund ${ref} (cumulative 2500)`]);\n     |                                                                        ^\n  91 |   });\n  92 | });\n  93 |\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts:90:72"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:49.661Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--dd8cc-e-and-never-issues-a-refund-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--dd8cc-e-and-never-issues-a-refund-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\continuation-webhook-finance\\foundation-webhook-stripe--dd8cc-e-and-never-issues-a-refund-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\foundation\\webhook.spec.ts",
+                        "column": 72,
+                        "line": 90
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8149c7feafae4c946624-2346d41cfbc9c2780650",
+              "file": "foundation/webhook.spec.ts",
+              "line": 85,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "marketplace\\payments.spec.ts",
+      "file": "marketplace/payments.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "payment orchestration",
+          "file": "marketplace/payments.spec.ts",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "order amount and commission come from the database, never the client; outsiders cannot create orders",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 444,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:52.321Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-10dae5a01921d9632d76",
+              "file": "marketplace/payments.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "a redirect never confirms; the signed webhook does — once, with a balanced ledger and protection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1036,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:53.793Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-3ddd546e9a555707808c",
+              "file": "marketplace/payments.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "§70 build budget keeps committed, paid and due separate from estimates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 266,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:54.852Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-15848a9dc84756339d31",
+              "file": "marketplace/payments.spec.ts",
+              "line": 90,
+              "column": 7
+            },
+            {
+              "title": "tampered amount is rejected and recorded, not applied",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 286,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:55.139Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-32cc92b78676c29f31de",
+              "file": "marketplace/payments.spec.ts",
+              "line": 99,
+              "column": 7
+            },
+            {
+              "title": "release waits for delivery and is blocked by an open dispute",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 559,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:55.444Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-4367c03e3e738859d549",
+              "file": "marketplace/payments.spec.ts",
+              "line": 107,
+              "column": 7
+            },
+            {
+              "title": "refunds and chargebacks reconcile onto the order",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 900,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:56.020Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-62bb8d4397b6c4a352e6",
+              "file": "marketplace/payments.spec.ts",
+              "line": 121,
+              "column": 7
+            },
+            {
+              "title": "an accepted cancellation with a refund joins the refund queue",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "serial",
+                      "location": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                        "line": 0,
+                        "column": 0
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 340,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T20:27:56.932Z",
+                      "annotations": [
+                        {
+                          "type": "serial",
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\payments.spec.ts",
+                            "line": 0,
+                            "column": 0
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a77d585156a43ecacdd0-adaad23546c8977d7d82",
+              "file": "marketplace/payments.spec.ts",
+              "line": 130,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T20:27:40.515Z",
+    "duration": 17433.69,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

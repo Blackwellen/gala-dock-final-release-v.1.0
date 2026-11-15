@@ -1,0 +1,452 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/marketplace/pwa-editors.spec.ts",
+      "tests/release/pwa-resilience.spec.ts",
+      "--project=desktop",
+      "--output=artifacts/pwa/traces/maximum-editors"
+    ],
+    "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
+    "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/traces/maximum-editors",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [
+          "/responsive/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/traces/maximum-editors",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "responsive",
+        "name": "responsive",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/responsive/"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\maximum-editors",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "desktop",
+        "testDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "snapshotDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "testIgnore": {},
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "baseURL": "http://localhost:3120",
+          "trace": "retain-on-failure",
+          "launchOptions": {
+            "executablePath": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+          },
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "desktop"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/testing/playwright-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "marketplace\\pwa-editors.spec.ts",
+      "file": "marketplace/pwa-editors.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "PWA Media Studio, Event Map Studio and Agent detail",
+          "file": "marketplace/pwa-editors.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "mobile and tablet editors reflow; inspector stays closed until requested; run refresh and inaccessible ID",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 41294,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('meta[name=\"robots\"][content=\"noindex\"]')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('meta[name=\"robots\"][content=\"noindex\"]') with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('meta[name=\"robots\"][content=\"noindex\"]')\u001b[22m\n\u001b[2m    62 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('meta[name=\"robots\"][content=\"noindex\"]')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('meta[name=\"robots\"][content=\"noindex\"]') with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('meta[name=\"robots\"][content=\"noindex\"]')\u001b[22m\n\u001b[2m    62 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\pwa-editors.spec.ts:47:220",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\pwa-editors.spec.ts",
+                          "column": 220,
+                          "line": 47
+                        },
+                        "snippet": "  45 |   await page.goto(`${BASE}/organizer/agent/runs/${run}`);await expect(page.getByRole('heading',{name:'PWA run detail read-only test'})).toBeVisible();await page.reload();await expect(page.getByRole('heading',{name:'Change audit'})).toBeVisible();\n  46 |   // Next 16 loading boundaries stream the shell before notFound: 200 + noindex is documented.\n> 47 |   const response=await page.goto(`${BASE}/organizer/agent/runs/00000000-0000-4000-8000-000000000000`);expect([200,404]).toContain(response?.status());await expect(page.locator('meta[name=\"robots\"][content=\"noindex\"]')).toHaveCount(1);await expect(page.getByText('PWA run detail read-only test')).toHaveCount(0);\n     |                                                                                                                                                                                                                            ^\n  48 |  });\n  49 |  test('upcoming event actions work by keyboard without overflowing the mobile card',async({page})=>{\n  50 |   await fixtureSession(page,owner.email);await page.setViewportSize({width:320,height:844});await page.goto(`${BASE}/organizer`);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\pwa-editors.spec.ts",
+                            "column": 220,
+                            "line": 47
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('meta[name=\"robots\"][content=\"noindex\"]')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('meta[name=\"robots\"][content=\"noindex\"]') with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('meta[name=\"robots\"][content=\"noindex\"]')\u001b[22m\n\u001b[2m    62 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n\n\n  45 |   await page.goto(`${BASE}/organizer/agent/runs/${run}`);await expect(page.getByRole('heading',{name:'PWA run detail read-only test'})).toBeVisible();await page.reload();await expect(page.getByRole('heading',{name:'Change audit'})).toBeVisible();\n  46 |   // Next 16 loading boundaries stream the shell before notFound: 200 + noindex is documented.\n> 47 |   const response=await page.goto(`${BASE}/organizer/agent/runs/00000000-0000-4000-8000-000000000000`);expect([200,404]).toContain(response?.status());await expect(page.locator('meta[name=\"robots\"][content=\"noindex\"]')).toHaveCount(1);await expect(page.getByText('PWA run detail read-only test')).toHaveCount(0);\n     |                                                                                                                                                                                                                            ^\n  48 |  });\n  49 |  test('upcoming event actions work by keyboard without overflowing the mobile card',async({page})=>{\n  50 |   await fixtureSession(page,owner.email);await page.setViewportSize({width:320,height:844});await page.goto(`${BASE}/organizer`);\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\pwa-editors.spec.ts:47:220"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:33:47.429Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\maximum-editors\\marketplace-pwa-editors-PW-eac39-refresh-and-inaccessible-ID-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\maximum-editors\\marketplace-pwa-editors-PW-eac39-refresh-and-inaccessible-ID-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\traces\\maximum-editors\\marketplace-pwa-editors-PW-eac39-refresh-and-inaccessible-ID-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\marketplace\\pwa-editors.spec.ts",
+                        "column": 220,
+                        "line": 47
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "41b5f785a1ca973f095c-f00ba987085cfca35cfb",
+              "file": "marketplace/pwa-editors.spec.ts",
+              "line": 26,
+              "column": 6
+            },
+            {
+              "title": "upcoming event actions work by keyboard without overflowing the mobile card",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4662,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:31.820Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41b5f785a1ca973f095c-e24a92fe8021e531e530",
+              "file": "marketplace/pwa-editors.spec.ts",
+              "line": 49,
+              "column": 6
+            },
+            {
+              "title": "Studio keeps an offline draft, restores after reload and saves it on reconnection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5037,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:37.440Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41b5f785a1ca973f095c-49a745eb81b252e28bef",
+              "file": "marketplace/pwa-editors.spec.ts",
+              "line": 59,
+              "column": 6
+            },
+            {
+              "title": "professional ticket setup exposes three canonical stages and preserves nested allocation/review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7380,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:42.499Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41b5f785a1ca973f095c-83bf898b7d4f538bb914",
+              "file": "marketplace/pwa-editors.spec.ts",
+              "line": 76,
+              "column": 6
+            },
+            {
+              "title": "a stale run control cannot retain authority after its creator loses membership",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3099,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:49.897Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41b5f785a1ca973f095c-070bfbad5ef39bc512e7",
+              "file": "marketplace/pwa-editors.spec.ts",
+              "line": 86,
+              "column": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "release\\pwa-resilience.spec.ts",
+      "file": "release/pwa-resilience.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "production PWA lifecycle",
+          "file": "release/pwa-resilience.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "offline navigation reveals only the public fallback; API and identity pages are not cached",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1860,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:53.159Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19d4633a00557a7477f5-c2e8b4af188714ce1ebe",
+              "file": "release/pwa-resilience.spec.ts",
+              "line": 27,
+              "column": 6
+            },
+            {
+              "title": "a worker update preserves form input until the user explicitly reloads",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 63643,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:34:55.058Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19d4633a00557a7477f5-8d872f35ee9eb84efc07",
+              "file": "release/pwa-resilience.spec.ts",
+              "line": 36,
+              "column": 6
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T00:33:45.923Z",
+    "duration": 133183.261,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

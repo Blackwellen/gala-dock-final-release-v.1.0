@@ -132,7 +132,8 @@ export const CONNECT_COPY = {
   payoutsRefused: (country: string) => `Gala Dock can’t set up Stripe payouts for businesses in ${country} yet. Your listings can stay enquiry-only, and free events still work.`,
   paidTicketsRefused: (country: string) => `Paid tickets aren’t available for organisers in ${country} yet, because Stripe can’t set up payouts there for Gala Dock. Free tickets and registrations still work.`,
   listingFallback: "Your business country isn’t supported for Gala Dock payments yet, so this listing is published as enquiry-only. Clients can contact you, but can’t book or pay a deposit through Gala Dock.",
-  checkoutRefused: "This seller can’t take payments through Gala Dock in their country yet. Contact them directly to arrange payment.",
+  // Q74 (D11): enquiry-only carve-out from the 12-month non-circumvention rule; direct payments carry no Gala Dock protection.
+  checkoutRefused: "This seller can’t take payments through Gala Dock in their country yet. You can contact them to arrange payment directly, but that payment isn’t covered by Gala Dock’s payment protection or disputes process.",
 } as const;
 
 /** Sorted list for help/pricing pages. */

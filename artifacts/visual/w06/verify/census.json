@@ -1,0 +1,35 @@
+{
+ "email": "agency.demo@example.com",
+ "checkedLinks": 32,
+ "dead": [],
+ "routes": [
+  {
+   "name": "member",
+   "route": "/provider/team/70402aba-52d5-45fd-a5f5-aa01d352ce27",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/team/70402aba-52d5-45fd-a5f5-aa01d352ce27",
+   "h1": "Grace Lewis",
+   "controls": 46,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 32
+  },
+  {
+   "name": "member",
+   "route": "/provider/team/70402aba-52d5-45fd-a5f5-aa01d352ce27",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/provider/team/70402aba-52d5-45fd-a5f5-aa01d352ce27",
+   "h1": "Grace Lewis",
+   "controls": 35,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 32
+  }
+ ]
+}

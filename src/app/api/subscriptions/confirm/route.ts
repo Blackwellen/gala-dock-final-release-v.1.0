@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { tokenHash } from "@/lib/comms/public";
 import { untyped } from "@/lib/workspace/db";
 
-const page = (title: string, body: string, form = "") => new NextResponse(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title}</title>
+const page = (title: string, body: string, form = "") => new NextResponse(`<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title}</title>
 <style>:root{color-scheme:light dark}body{font-family:system-ui,sans-serif;max-width:520px;margin:12vh auto;padding:0 16px}button{background:#6d4aff;color:#fff;border:0;border-radius:8px;padding:10px 18px;font-size:15px;cursor:pointer}</style></head>
 <body><h1>${title}</h1><p>${body}</p>${form}</body></html>`, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } });
 const valid = (t: string | null): t is string => !!t && /^[A-Za-z0-9_-]{20,64}$/.test(t);

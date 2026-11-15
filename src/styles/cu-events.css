@@ -79,7 +79,7 @@
 /* W02: draft card — the reference stepper stops ~450px in and "Continue Planning" + ⋯ sit to its right; a full-width stepper
    ran under the button (labels "Payments"/"Ready" were covered). */
 @media (min-width: 721px) { .me-steps.sm { max-width: min(450px, calc(100% - 230px)); } }
-@media (max-width: 720px) { .me-draft-acts { margin-top: 12px; } }
+@media (max-width: 720px) { .me-draft-acts { margin-top: 12px; flex-wrap: wrap; justify-content: flex-start; } .me-draft-acts > .k-btn:not(.lg-sq) { flex: 1 1 auto; min-width: 0; } } /* R1: flex-end overflowed off the left edge at 390 */
 @media (max-width:720px){
  .me .me-card.draft { grid-template-columns:minmax(0,1fr); }
  .me .me-steps { display:flex; flex-wrap:wrap; gap:8px; }
@@ -124,3 +124,14 @@
 }
 /* Playbook §3 sweep (2026-11-11): at 320–380px the three filter tabs overflowed by 19px; share the row evenly instead. */
 @media (max-width: 380px) { .me-tabs { display: flex; } .me-tabs a, .me-tabs a[aria-current="page"], .me-tabs a[aria-selected="true"] { flex: 1 1 0; min-width: 0; padding: 0 6px; gap: 6px; justify-content: center; font-size: 13px; } }
+/* R1 very wide screens (owner: full screen): the event list becomes a grid of upright cards — image on top, details below (the same
+   card the phone layout uses, so nothing overlaps) — at least 520px each, so 2048px shows two across and 2560px+ three or more. */
+@media (min-width: 1800px) {
+  .c-root .me-grid > .k-col:first-child:has(> .me-card + .me-card) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); align-items: stretch; }
+  .c-root .me-grid > .k-col:first-child > .me-card { grid-template-columns: minmax(0, 1fr); align-content: start; }
+  .c-root .me-grid > .k-col:first-child > .me-card .me-img { height: 200px; }
+  .c-root .me-grid > .k-col:first-child > .me-card .me-heart { left: auto; right: 22px; }
+  .c-root .me-grid > .k-col:first-child > .me-card .me-foot { grid-template-columns: minmax(0, 1fr); }
+  .c-root .me-grid > .k-col:first-child > .me-card .me-draft-acts { margin-top: 0; }
+  .c-root .me-grid > .k-col:first-child > .me-card .me-kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}

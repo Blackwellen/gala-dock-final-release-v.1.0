@@ -1,6 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { requestSanctioned, sanctionedJurisdiction, sanctionsErrorMessage, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 import { untyped } from "@/lib/workspace/db";
 
 /** Opens a support case for the signed-in partner (partner_contact_support validates partnership + rate limit). */
@@ -32,13 +34,16 @@ export async function applyToPartnerProgramme(data: FormData): Promise<{ ok: tru
     return { ok: false, error: "Fill in your name, business name, type and country." };
   if (s("website") && !/^https?:\/\/\S+$/i.test(s("website"))) return { ok: false, error: "Enter the website as a full address starting with https://" };
   if (data.get("accept_terms") !== "on") return { ok: false, error: "Please accept the partner terms." };
+  // Q74 (D4): sanctioned countries are refused (the database trigger refuses too).
+  const hit = sanctionedJurisdiction(s("country")) ?? requestSanctioned(await headers());
+  if (hit) return { ok: false, error: SANCTIONS_COPY.partner(hit.name) };
   const sb = untyped(await createClient());
   const { error } = await sb.rpc("partner_apply", {
     p_contact_name: s("contact_name").slice(0, 120), p_business_name: s("business_name").slice(0, 160), p_business_type: s("business_type"), p_country: s("country"),
     p_website: s("website") || null, p_audience: s("audience").slice(0, 1000), p_vat_registered: data.get("vat_registered") === "on", p_vat_number: s("vat_number") || null,
     p_terms_version: s("terms_version"), p_self_billing: data.get("accept_self_billing") === "on",
   });
-  if (error) return { ok: false, error: APPLY_ERRORS.find(([re]) => re.test(error.message))?.[1] ?? "Couldn’t send your application — please try again." };
+  if (error) return { ok: false, error: sanctionsErrorMessage(error) ?? APPLY_ERRORS.find(([re]) => re.test(error.message))?.[1] ?? "Couldn’t send your application — please try again." };
   return { ok: true };
 }
 

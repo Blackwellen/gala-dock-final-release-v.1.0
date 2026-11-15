@@ -1,4 +1,6 @@
+import { currencySymbol } from "@/lib/i18n/money";
 import Link from "next/link";
+import { formatDistance, milesToUnit } from "@/lib/i18n/countries";
 import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { Sparkles, Lightbulb, CircleCheck, CircleAlert, Info, ArrowLeft, ArrowRight, Save, House, Monitor, Users, CalendarClock, ShieldCheck, FileText, ShieldAlert, CalendarDays, Clock3,
   Percent, Ban, Boxes, Wrench, Calendar, MessageSquare, Plus, MoreVertical, FileCheck2, Star, MapPin } from "lucide-react";
@@ -46,14 +48,14 @@ const Agent = ({ items, title = "Based on your selection, I suggest:", goal, cta
 const fmtDay = (iso?: string) => iso ? new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "";
 const DELIVERY: Record<string, string> = { onsite: "On-site", remote: "Remote/Online", hybrid: "Hybrid" };
 
-export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: string }) {
+export function SvcStep1({ s, svc, next, unit = "mi" }: { s: Listing | null; svc: Svc; next: string; /** Q72: km outside the UK/US */ unit?: "mi" | "km" }) {
   const cov = svc.coverage ?? {}, base = cov.base ?? s?.city ?? "London", photos = s ? [s.image, ...(s.gallery ?? [])].filter(Boolean) : [];
   const creds = ["Public liability insurance", "PAT testing (equipment)", "DBS check (if required)", "Other certifications"];
   const types = svc.event_types ?? [], category = categoryOf(s?.category ?? "");
   // Every event type, plus any stored wording that matches none of them (so re-saving never drops it).
   const typeOpts = [...EVENT_TYPES, ...types.filter(x => !EVENT_TYPES.some(t => sameType(t, x)))];
   const pl = (svc.credentials ?? []).some(c => c.name.startsWith("Public liability") && (c.reference || c.expires));
-  const covText = (cov.mode ?? "local") === "local" ? `${cov.radius_miles ?? 50} miles from ${base}` : cov.mode === "areas" ? (cov.areas || "Specific areas — none listed yet") : cov.mode === "national" ? "National" : "International";
+  const covText = (cov.mode ?? "local") === "local" ? `${formatDistance(cov.radius_miles ?? 50, unit)} from ${base}` : cov.mode === "areas" ? (cov.areas || "Specific areas — none listed yet") : cov.mode === "national" ? "National" : "International";
   const suggestions: [string, boolean][] = [[`Category: ${s?.category ? labelOf("service_category", s.category) : "choose the most specific one"}`, !!s?.category],
     [types.length ? `Event types: ${types.slice(0, 4).join(", ")}${types.length > 4 ? ` +${types.length - 4}` : ""}` : "Pick 3–6 event types you’re best at", types.length >= 3 && types.length <= 6],
     [`Delivery mode: ${DELIVERY[svc.delivery ?? "onsite"]}`, true], [`Coverage: ${covText}`, (cov.mode ?? "local") !== "areas" || !!cov.areas],
@@ -73,7 +75,7 @@ export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: 
           <div className="svw-covmodes">{([["local", "Local area", "Set a service radius from your base location"], ["areas", "Specific areas", "Choose cities, regions or postcodes"], ["national", "National", "Available across the country"], ["international", "International", "Available worldwide"]] as const).map(([k, l, sub]) =>
             <label key={k}><input type="radio" name="coverage" value={k} defaultChecked={(cov.mode ?? "local") === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
           <label className="svw-areas">Specific areas<input name="areas" defaultValue={cov.areas ?? ""} placeholder="e.g. Surrey, Kent, SE1, Oxford" maxLength={300} /></label></div>
-          <div className="svw-covmap"><div className="svw-radius"><label>Radius (miles)<input name="radius" type="number" min={1} max={500} defaultValue={cov.radius_miles ?? 50} /></label>
+          <div className="svw-covmap"><div className="svw-radius"><label>Radius ({unit === "km" ? "km" : "miles"})<input name="radius" type="number" min={1} max={unit === "km" ? 800 : 500} defaultValue={milesToUnit(cov.radius_miles ?? 50, unit)} /><input type="hidden" name="radius_unit" value={unit} /></label>
             <label>Base<select name="base" className="ws-select" defaultValue={base}>{Object.keys(UK_PLACES).map(p => <option key={p}>{p}</option>)}</select></label></div>
             <CoverageMap base={base} radiusMiles={cov.radius_miles ?? 50} width={206} height={204} /></div></div></section>
       <section className="ws-panel svw-types"><h2>Event types</h2><p>Select the types of events this service is suitable for.</p>
@@ -96,7 +98,8 @@ export function SvcStep1({ s, svc, next }: { s: Listing | null; svc: Svc; next: 
   </div>;
 }
 
-export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc: Svc; pkgs: Pkg[]; back?: string; next: string; label?: string }) {
+export function SvcStep2({ s, svc, pkgs, back, next, label, currency = "GBP" }: { s: Listing; svc: Svc; pkgs: Pkg[]; back?: string; next: string; label?: string ; currency?: string }) {
+  const sym = currencySymbol(currency);   // Q76: the provider's own currency
   const model = svc.pricing?.model ?? (pkgs.length ? "package" : "from"), addons = svc.addons ?? [], qs = svc.questions ?? [{ label: "Event date", type: "date", required: true }, { label: "Event type", type: "dropdown", required: true }, { label: "Guest count (approx.)", type: "number", required: true }, { label: "Special requests", type: "long_text", required: false }];
   const canc = svc.cancellation ?? [{ window: "7+ days", refund: 100 }, { window: "3–7 days", refund: 50 }, { window: "<3 days", refund: 0 }], st = svc.setup ?? {};
   const prices = pkgs.map(p => Number(p.base_price));
@@ -110,13 +113,13 @@ export function SvcStep2({ s, svc, pkgs, back, next, label }: { s: Listing; svc:
       <section className="ws-panel svw-model"><h2>Pricing model</h2><p>Choose how this service is purchased on the marketplace.</p>
         <div className="svw-models">{([["fixed", "Fixed price", "Set a clear price for standard bookings."], ["from", "From price", "Show a starting price range."], ["quote", "Quote only", "No public price; customers request a quote."], ["hourly", "Hourly rate", "Charge by the hour."], ["daily", "Daily rate", "Charge per day."], ["package", "Package based", "Offer multiple packages."]] as const).map(([k, l, sub]) =>
           <label key={k}><input type="radio" name="model" value={k} defaultChecked={model === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
-        <div className="vw-pair"><label>Starting price <i>*</i><span className="vw-money"><em>£</em><input name="price_from" type="number" min={0} defaultValue={s.price_from ?? (prices.length ? Math.min(...prices) : "")} /></span></label>
+        <div className="vw-pair"><label>Starting price <i>*</i><span className="vw-money"><em>{sym}</em><input name="price_from" type="number" min={0} defaultValue={s.price_from ?? (prices.length ? Math.min(...prices) : "")} /></span></label>
           <div className="svw-showprice"><b>Price display on marketplace</b><Toggle name="show_price" label="Show price publicly" sub="You can still require a quote for complex events." on={svc.pricing?.show_price ?? true} /></div></div></section>
       <section className="ws-panel svw-addons"><div className="svw-h"><div><h2>Add-ons <small>(optional)</small></h2><p>Offer extra services or upgrades.</p></div>
           <label className="ws-btn outline sm svw-more"><input type="checkbox" className="sr-only" /><Plus aria-hidden="true" />Add add-on</label></div>
         <ul>{[0, 1, 2, 3].map(i => { const a = addons[i]; return <li key={i} className={i >= Math.max(1, addons.length) ? "extra" : ""}><span className="svw-ao-ic" aria-hidden="true"><Boxes /></span><span className="svw-ao-txt"><input name={`addon_name_${i}`} defaultValue={a?.name ?? ""} placeholder={i === 0 ? "e.g. Uplighting" : "Add-on name"} aria-label={`Add-on ${i + 1} name`} />
           <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Short description" aria-label={`Add-on ${i + 1} description`} /></span>
-          <span className="vw-money"><em>£</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
+          <span className="vw-money"><em>{sym}</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
           <select name={`addon_unit_${i}`} className="ws-select" defaultValue={a?.unit ?? "per event"} aria-label={`Add-on ${i + 1} unit`}><option>per event</option><option>per hour</option><option>per guest</option></select></li>; })}</ul></section>
       <section className="ws-panel svw-qs"><div className="svw-h"><div><h2>Customer questions</h2><p>Collect key information when customers book or request a quote.</p></div>
           <label className="ws-btn outline sm svw-more"><input type="checkbox" className="sr-only" /><Plus aria-hidden="true" />Add question</label></div>

@@ -1,0 +1,113 @@
+{
+ "auth": [],
+ "flows": [],
+ "switching": [
+  {
+   "step": "1-organizer-home",
+   "url": "/organizer",
+   "orgName": true,
+   "provName": false,
+   "orgEvent": true,
+   "provListing": false
+  },
+  {
+   "step": "2-organizer-events",
+   "url": "/organizer/events",
+   "orgName": true,
+   "provName": false,
+   "orgEvent": true,
+   "provListing": false
+  },
+  {
+   "step": "3-provider-after-switch",
+   "url": "/provider",
+   "orgName": false,
+   "provName": true,
+   "orgEvent": false,
+   "provListing": false
+  },
+  {
+   "step": "4-provider-listings",
+   "url": "/provider/listings",
+   "orgName": false,
+   "provName": true,
+   "orgEvent": false,
+   "provListing": true
+  },
+  {
+   "step": "5-provider-back-button-to-organizer-url",
+   "url": "/organizer/events",
+   "orgName": true,
+   "provName": false,
+   "orgEvent": true,
+   "provListing": false
+  },
+  {
+   "step": "6-customer",
+   "url": "/discover",
+   "orgName": false,
+   "provName": false,
+   "orgEvent": false,
+   "provListing": false
+  },
+  {
+   "step": "7-customer-account",
+   "url": "/account",
+   "orgName": false,
+   "provName": false,
+   "orgEvent": false,
+   "provListing": false
+  },
+  {
+   "step": "profile.last_workspace_id",
+   "value": "organizer"
+  },
+  {
+   "step": "8-provider-direct",
+   "url": "/provider",
+   "orgName": false,
+   "provName": true,
+   "orgEvent": false,
+   "provListing": false
+  }
+ ],
+ "billing": [
+  {
+   "name": "billing-organizer",
+   "links": 30,
+   "buttons": 11,
+   "inputs": 2,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Settings",
+   "url": "/organizer/settings?tab=billing"
+  },
+  {
+   "step": "choose monthly",
+   "host": "checkout.stripe.com",
+   "path": "/c/pay/cs_test_a12De"
+  },
+  {
+   "step": "stripe page",
+   "testMode": true
+  },
+  {
+   "name": "billing-provider",
+   "links": 31,
+   "buttons": 8,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 272,
+   "h1": "Settings",
+   "url": "/provider/settings?tab=billing"
+  }
+ ],
+ "onboarding": [],
+ "notes": [
+  "cleanup: 1 disposable users removed"
+ ]
+}

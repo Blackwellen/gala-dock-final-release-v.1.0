@@ -1,0 +1,65 @@
+== k-btn: 31 overrides; values {('height', '40px'): 6, ('height', '36px'): 5, ('height', '38px'): 3, ('font-size', '12px'): 3, ('height', '42px'): 2, ('font-size', '13.5px'): 2, ('font-size', '11.5px'): 2, ('font-size', '12px !important'): 1}
+    styles\org-agent.css | .ag-tools .k-btn | height = 40px
+    styles\org-create-event.css | .ce2-bar .k-btn | height = 42px
+    styles\org-event.css | .eh-hero-actions .k-btn.ghost | height = 36px
+    styles\org-event.css | .eh-tabactions .k-btn | height = 38px
+    styles\org-event.css | .eh-tabactions .k-btn | font-size = 13.5px
+    styles\org-invoice-wizard.css | .iw-ih .k-btn | font-size = 12px !important
+    styles\org-invoice-wizard.css | .iw-bar .k-btn | height = 42px
+    styles\org-market.css | .mk-card .k-btn | height = 38px
+    styles\org-market.css | .mk-card .k-btn | font-size = 11.5px
+    styles\org-money.css | .mn-filters .k-btn | height = 40px
+    styles\org-money.css | .iv-acts .k-btn | height = 38px
+    styles\org-money.css | .iv-acts .k-btn | font-size = 13px
+    styles\org-money.css | .iv-sacts .k-btn | font-size = 12px
+    styles\org-poster.css | .pb-acts .k-btn | height = 36px
+    styles\org-poster.css | .pb-pubb .k-btn | height = 36px
+    styles\org-poster.css | .pb-pubb .k-btn | font-size = 12px
+    styles\org-promotion.css | .pr-head .k-btn | height = 40px
+    styles\org-promotion.css | .pe2-head .k-btn | height = 40px
+    styles\org-promotion.css | :is(.pr-r1, .pr-r2, .pr-r3) .k-btn | height = 31px
+    styles\org-promotion.css | :is(.pr-r1, .pr-r2, .pr-r3) .k-btn | font-size = 11.5px
+    styles\org-promotion.css | .pr-head .k-btn | height = 36px
+    styles\org-settings.css | .st-pl .k-btn | height = 36px
+    styles\org-settings.css | .st-mh .k-btn | height = 30px !important
+    styles\org-team.css | .tm-actions .k-btn, .tp-acts .k-btn | height = 40px
+    styles\org-ticket-pro.css | .tp-foot .k-btn | height = 44px
+    styles\org-ticket-pro.css | .tp-foot .k-btn | font-size = 14px
+    styles\org-tickets.css | .th-split > .k-btn | height = 46px !important
+    styles\organizer.css | .o-create .k-btn | height = 40px
+    styles\organizer.css | .o-create .k-btn | font-size = 13.5px
+    styles\organizer.css | .o-hero .k-btn.ghost | height = 30px
+    styles\organizer.css | .o-hero .k-btn.ghost | font-size = 12px
+== k-card: 4 overrides; values {('padding', '0'): 1, ('padding', '14px 14px'): 1, ('padding', '12px 16px 14px'): 1, ('padding', '12px 12px'): 1}
+    styles\org-composition.css | .k-card .oc-kpis | padding = 0
+    styles\org-event.css | .ov-row1 .k-card | padding = 14px 14px
+    styles\org-event.css | .ov-row2 > .k-card, .ov-row3 > .k-card | padding = 12px 16px 14px
+    styles\org-market.css | .rq-top > .k-card | padding = 12px 12px
+== k-input: 4 overrides; values {('height', '32px'): 2, ('height', '38px'): 2}
+    styles\org-composition.css | .oc .k-table .k-input, .oc .k-table .k-select | height = 32px
+    styles\org-events.css | .ev-search .k-input | height = 38px
+    styles\org-market.css | .mk-search .k-input | height = 38px
+    styles\org-wizard.css | .pr-edit .k-input | height = 32px
+== k-select: 1 overrides; values {('height', '32px'): 1}
+    styles\org-composition.css | .oc .k-table .k-input, .oc .k-table .k-select | height = 32px
+== k-icon-btn: 8 overrides; values {('width', '38px'): 1, ('height', '36px'): 1, ('width', '22px'): 1, ('height', '22px'): 1, ('width', '26px'): 1, ('height', '26px'): 1, ('width', '30px'): 1, ('height', '30px'): 1}
+    styles\org-event.css | .eh-hero-actions .k-icon-btn | width = 38px
+    styles\org-event.css | .eh-hero-actions .k-icon-btn | height = 36px
+    styles\org-event.css | .op-row2 .k-table .k-icon-btn | width = 22px
+    styles\org-event.css | .op-row2 .k-table .k-icon-btn | height = 22px
+    styles\org-event.css | .pl-prog .k-icon-btn | width = 26px
+    styles\org-event.css | .pl-prog .k-icon-btn | height = 26px
+    styles\organizer.css | .o-hero .k-icon-btn | width = 30px
+    styles\organizer.css | .o-hero .k-icon-btn | height = 30px
+== k-chip: 6 overrides; values {('font-size', '9.5px'): 3, ('height', '18px'): 2, ('height', '17px'): 1}
+    styles\org-event.css | .op-row2 .k-table .k-chip, .op-row2 .k-table [class*="chip"] | height = 18px
+    styles\org-event.css | .op-row2 .k-table .k-chip, .op-row2 .k-table [class*="chip"] | font-size = 9.5px
+    styles\org-events.css | .mc-meta .k-chip | height = 17px
+    styles\org-events.css | .mc-meta .k-chip | font-size = 9.5px
+    styles\org-sales.css | .sa-card .k-chip | height = 18px
+    styles\org-sales.css | .sa-card .k-chip | font-size = 9.5px
+== k-btn.sm: 3 overrides; values {('height', '32px'): 1, ('font-size', '12px'): 1, ('font-size', '11.5px'): 1}
+    styles\org-ticket-pro.css | .tp .k-btn.sm | height = 32px
+    styles\org-ticket-pro.css | .tp .k-btn.sm | font-size = 12px
+    styles\org-ticket-pro.css | .tp-ready .k-btn.sm | font-size = 11.5px
+== headings [(('h1', '20px'), 1), (('h1', '22px'), 2), (('h1', '24px'), 7), (('h1', '25px'), 1), (('h1', '26px'), 2), (('h1', '28px'), 12), (('h1', '30px'), 3), (('h1', '32px'), 1), (('h1', '34px'), 2), (('h1', '35px'), 1), (('h2', '10px'), 2), (('h2', '11px'), 1), (('h2', '12px'), 1), (('h2', '13.5px'), 13), (('h2', '13px'), 3), (('h2', '14.5px'), 6), (('h2', '14px'), 12), (('h2', '15.5px'), 2), (('h2', '15px'), 7), (('h2', '16.5px'), 2), (('h2', '16px'), 9), (('h2', '17px'), 1), (('h2', '18px'), 2), (('h2', '20.5px'), 1), (('h2', '20px'), 1), (('h2', '22px!important'), 1), (('h2', '23px'), 1), (('h2', '24px'), 1), (('h2', '38px'), 1)]

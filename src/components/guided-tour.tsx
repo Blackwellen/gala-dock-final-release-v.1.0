@@ -1,17 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { tourFor, type Tour } from "@/lib/tours";
+import { isEditingField } from "@/lib/ui/editing";
 
 type Rect = { top: number; left: number; width: number; height: number };
 const PAD = 6, BUBBLE_W = 320;
+// Device copy of "finished or skipped", so a dismissed tour never auto-opens again even if the per-user save hadn't landed yet.
+const doneKey = (k: string) => `gd-tour-done:${k}`;
+const locallyDone = (k: string) => { try { return localStorage.getItem(doneKey(k)) === "1"; } catch { return false; } };
+const markLocallyDone = (k: string) => { try { localStorage.setItem(doneKey(k), "1"); } catch { /* storage unavailable */ } };
 
 /**
  * Guided tour engine (release spec §86). The Gala Dock mark is the guide: it travels to each anchored element with a spotlight, arrow,
  * progress, Back / Next / Skip / Finish. Progress is saved per user (resume), finished tours don't repeat, and `?tour=1` restarts.
  * Mount once per shell: <GuidedTour />.
+ * Typing is never interrupted: the tour waits while a field has focus, never moves focus out of a field, renders outside the page
+ * tree (so it can't re-mount a form), and once finished or skipped it stays closed (per user, plus a device copy).
  */
 export function GuidedTour() {
   const path = usePathname() ?? "/", params = useSearchParams();
@@ -21,7 +28,7 @@ export function GuidedTour() {
 
   // Decide whether to show the tour for this page (new → start, in progress → resume, finished/skipped → only when forced).
   useEffect(() => {
-    const t = tourFor(path); let live = true;
+    const t = tourFor(path); let live = true, cleanup = () => {};
     queueMicrotask(() => { if (live) { setTour(null); setRect(null); } });
     if (!t) return;
     (async () => {
@@ -29,17 +36,28 @@ export function GuidedTour() {
       const { data } = await sb.from("user_tours" as never).select("step,status").eq("tour_key", t.key).maybeSingle();
       const row = data as { step: number; status: string } | null;
       if (!forced && row && row.status !== "in_progress") return;
+      if (!forced && locallyDone(t.key)) return;
       // Automated browsers (E2E, visual checks) only see tours when asked for explicitly with ?tour=1.
       if (!forced && !row && navigator.webdriver) return;
-      if (live) { setStep(forced ? 0 : Math.min(row?.step ?? 0, t.steps.length - 1)); setTour(t); }
+      const open = () => { if (live) { setStep(forced ? 0 : Math.min(row?.step ?? 0, t.steps.length - 1)); setTour(t); } };
+      // Someone already typing in a field: wait until focus leaves text entry, so the tour never opens over (or steals) a field.
+      if (!isEditingField()) { open(); return; }
+      const later = () => queueMicrotask(() => { if (!live || isEditingField()) return; document.removeEventListener("focusout", later); open(); });
+      document.addEventListener("focusout", later);
+      cleanup = () => document.removeEventListener("focusout", later);
     })();
-    return () => { live = false; };
+    return () => { live = false; cleanup(); };
   }, [path, forced, sb]);
 
   const save = useCallback(async (t: Tour, s: number, status: "in_progress" | "completed" | "skipped") => {
     const { data: { user } } = await sb.auth.getUser(); if (!user) return;
     await sb.from("user_tours" as never).upsert({ user_id: user.id, tour_key: t.key, step: s, status, updated_at: new Date().toISOString() } as never);
   }, [sb]);
+  /** Finished or skipped: saved per user and on this device, and `?tour=1` is dropped so a refresh doesn't start it again. */
+  const close = useCallback((t: Tour, s: number, status: "completed" | "skipped") => {
+    markLocallyDone(t.key); void save(t, s, status); setTour(null);
+    const u = new URL(location.href); if (u.searchParams.get("tour") === "1") { u.searchParams.delete("tour"); history.replaceState(history.state, "", `${u.pathname}${u.search}${u.hash}`); }
+  }, [save]);
 
   // Anchor to the step's target (or centre when there isn't one on screen); follow scroll/resize.
   useLayoutEffect(() => {
@@ -51,22 +69,27 @@ export function GuidedTour() {
       if (visible) { const r = el!.getBoundingClientRect(); setRect({ top: r.top, left: r.left, width: r.width, height: r.height }); } else setRect(null);
     };
     const el = sel ? document.querySelector(sel) as HTMLElement | null : null;
-    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!isEditingField()) el?.scrollIntoView({ block: "nearest", behavior: "smooth" });   // never scroll a field away mid-typing
     const t = setTimeout(measure, 250);
     addEventListener("resize", measure); addEventListener("scroll", measure, true);
     return () => { clearTimeout(t); removeEventListener("resize", measure); removeEventListener("scroll", measure, true); };
   }, [tour, step]);
 
+  // Focus moves to Next when the tour opens, but only if nothing is being typed into (focusing it on mount used to steal the caret mid-word).
+  const nextRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { if (tour && !isEditingField()) nextRef.current?.focus({ preventScroll: true }); }, [tour]);
+
   useEffect(() => {
     if (!tour) return;
-    const k = (e: KeyboardEvent) => { if (e.key === "Escape") { void save(tour, step, "skipped"); setTour(null); } };
+    // Escape inside a field belongs to that field (closing a picker, clearing a search), not to the tour.
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !e.defaultPrevented && !isEditingField(e.target as Element)) close(tour, step, "skipped"); };
     addEventListener("keydown", k); return () => removeEventListener("keydown", k);
-  }, [tour, step, save]);
+  }, [tour, step, close]);
 
   if (!tour) return null;
   const s = tour.steps[step]!, last = step === tour.steps.length - 1;
   const go = (n: number) => { setStep(n); void save(tour, n, "in_progress"); };
-  const end = (status: "completed" | "skipped") => { void save(tour, step, status); setTour(null); };
+  const end = (status: "completed" | "skipped") => close(tour, step, status);
   const vw = typeof window === "undefined" ? 1200 : innerWidth, vh = typeof window === "undefined" ? 800 : innerHeight;
   const place = s.placement ?? "bottom";
   let top = vh / 2 - 90, left = vw / 2 - BUBBLE_W / 2, arrow: "left" | "top" | "right" | "bottom" | null = null;
@@ -89,7 +112,7 @@ export function GuidedTour() {
         <button type="button" className="gd-tour-skip" onClick={() => end("skipped")}>Skip tour</button>
         <span style={{ flex: 1 }} />
         {step > 0 && <button type="button" className="gd-tour-btn" onClick={() => go(step - 1)}>Back</button>}
-        <button type="button" className="gd-tour-btn primary" autoFocus onClick={() => (last ? end("completed") : go(step + 1))}>{last ? "Finish" : "Next"}</button>
+        <button ref={nextRef} type="button" className="gd-tour-btn primary" onClick={() => (last ? end("completed") : go(step + 1))}>{last ? "Finish" : "Next"}</button>
       </div>
     </div>
     <style>{`.gd-tour{position:fixed;inset:0;z-index:90;pointer-events:none;font-family:Inter,system-ui,sans-serif}

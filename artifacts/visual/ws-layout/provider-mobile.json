@@ -1,0 +1,965 @@
+{
+  "report": [
+    {
+      "size": "320x844",
+      "route": "/provider/opportunities",
+      "resolved": "/provider/opportunities",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "resolved": "/provider/opportunities/645201f9-7ef2-4877-a2fa-e94ecf5cc244",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "resolved": "/provider/opportunities/fab3d51f-b381-420d-9322-735c702218f2/quote?step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "resolved": "/provider/quotes/a4c14edf-2bce-46c8-9181-51588cb84375",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "resolved": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2&quote=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/bookings",
+      "resolved": "/provider/bookings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "resolved": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/calendar",
+      "resolved": "/provider/calendar",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/listings",
+      "resolved": "/provider/listings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=spaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a?tab=availability",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=1&space=2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "resolved": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "resolved": "/provider/packages/24253814-6a89-4cb0-a66b-668db9f5c3dc",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/team",
+      "resolved": "/provider/team",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "resolved": "/provider/team/c87f8415-ea25-4dd1-84fe-63830f362f94",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/money?period=30d",
+      "resolved": "/provider/money?period=30d",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/agent",
+      "resolved": "/provider/agent",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/provider/settings",
+      "resolved": "/provider/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/opportunities",
+      "resolved": "/provider/opportunities",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "resolved": "/provider/opportunities/645201f9-7ef2-4877-a2fa-e94ecf5cc244",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "resolved": "/provider/opportunities/fab3d51f-b381-420d-9322-735c702218f2/quote?step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "resolved": "/provider/quotes/a4c14edf-2bce-46c8-9181-51588cb84375",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "resolved": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2&quote=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/bookings",
+      "resolved": "/provider/bookings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "resolved": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/calendar",
+      "resolved": "/provider/calendar",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/listings",
+      "resolved": "/provider/listings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=spaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a?tab=availability",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=1&space=2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "resolved": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "resolved": "/provider/packages/24253814-6a89-4cb0-a66b-668db9f5c3dc",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/team",
+      "resolved": "/provider/team",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "resolved": "/provider/team/c87f8415-ea25-4dd1-84fe-63830f362f94",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/money?period=30d",
+      "resolved": "/provider/money?period=30d",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/agent",
+      "resolved": "/provider/agent",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/provider/settings",
+      "resolved": "/provider/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/opportunities",
+      "resolved": "/provider/opportunities",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "resolved": "/provider/opportunities/645201f9-7ef2-4877-a2fa-e94ecf5cc244",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "resolved": "/provider/opportunities/fab3d51f-b381-420d-9322-735c702218f2/quote?step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "resolved": "/provider/quotes/a4c14edf-2bce-46c8-9181-51588cb84375",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "resolved": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2&quote=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/bookings",
+      "resolved": "/provider/bookings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "resolved": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/calendar",
+      "resolved": "/provider/calendar",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/listings",
+      "resolved": "/provider/listings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=spaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a?tab=availability",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=1&space=2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "resolved": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "resolved": "/provider/packages/24253814-6a89-4cb0-a66b-668db9f5c3dc",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/team",
+      "resolved": "/provider/team",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "resolved": "/provider/team/c87f8415-ea25-4dd1-84fe-63830f362f94",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/money?period=30d",
+      "resolved": "/provider/money?period=30d",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/agent",
+      "resolved": "/provider/agent",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/provider/settings",
+      "resolved": "/provider/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/opportunities",
+      "resolved": "/provider/opportunities",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "resolved": "/provider/opportunities/645201f9-7ef2-4877-a2fa-e94ecf5cc244",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "resolved": "/provider/opportunities/fab3d51f-b381-420d-9322-735c702218f2/quote?step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "resolved": "/provider/quotes/a4c14edf-2bce-46c8-9181-51588cb84375",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "resolved": "/provider/opportunities/7d2d23a2-12cf-4126-ab43-62794ed4a18e/quote?step=2&quote=8a71efed-181c-4a1a-8aed-d5b700f3165f",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/bookings",
+      "resolved": "/provider/bookings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "resolved": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/calendar",
+      "resolved": "/provider/calendar",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/listings",
+      "resolved": "/provider/listings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5?tab=spaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a?tab=availability",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "resolved": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new?step=1&space=2bc82343-c905-43dc-8f6b-f341a369fd7a",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "resolved": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "resolved": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "resolved": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "resolved": "/provider/packages/24253814-6a89-4cb0-a66b-668db9f5c3dc",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=1",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "resolved": "/provider/packages/new?package=24253814-6a89-4cb0-a66b-668db9f5c3dc&step=2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/team",
+      "resolved": "/provider/team",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "resolved": "/provider/team/c87f8415-ea25-4dd1-84fe-63830f362f94",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/money?period=30d",
+      "resolved": "/provider/money?period=30d",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/agent",
+      "resolved": "/provider/agent",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/provider/settings",
+      "resolved": "/provider/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    }
+  ],
+  "errors": []
+}

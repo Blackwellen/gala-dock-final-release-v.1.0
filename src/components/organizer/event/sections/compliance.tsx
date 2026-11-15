@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { todayIn } from "@/lib/i18n/tz";
+import { licencePackCoverage } from "@/lib/i18n/countries";
+import { alcoholNotice } from "@/lib/i18n/rules";
 import { ShieldCheck, FileCheck2, ClipboardList, AlertTriangle, Scale, CircleHelp } from "lucide-react";
 import { Card, Chip, Empty } from "@/components/kit";
 import { createClient } from "@/lib/supabase/server";
@@ -38,12 +41,15 @@ export async function ComplianceSection({ e, role }: SectionProps) {
   const O = ov as Overview; const F = O.facts; const P = (plansRaw ?? []) as Plan[]; const LT = (types ?? []) as { key: string; label: string; category: string; expires: boolean; description: string }[];
   const pr = prof as Record<string, unknown> | null; const uid = me?.user?.id; const isOwner = !!uid && (wsRow as { owner_id?: string } | null)?.owner_id === uid;
   const pack = ((packs ?? []) as { key: string; name: string; country: string; version: number }[]).find(p => O.requirements.some(r => r.pack_key === p.key));
+  // Q72: licence packs are per country; only GB (England & Wales) has one today. Other countries get an explicit "not covered".
+  const coverage = licencePackCoverage(F.country, ((packs ?? []) as { country: string }[]).map(p => p.country));
+  const alcohol = F.alcohol ? alcoholNotice(F.country) : null;
   const req = O.requirements; const required = req.filter(r => r.severity === "required");
   const failing = required.filter(r => ["missing", "expired", "refused"].includes(r.status));
   const kindLabel = (k: string) => PLAN_KINDS.find(x => x[0] === k)?.[1] ?? label(k);
 
   const profileFields: Field[] = [
-    { name: "country", label: "Country (ISO code)", defaultValue: (pr?.country as string) ?? F.country, maxLength: 2, hint: "Picks the rule pack. GB uses England & Wales." },
+    { name: "country", label: "Country (ISO code)", defaultValue: (pr?.country as string) ?? F.country, maxLength: 2, hint: "Picks the rule pack. GB uses England & Wales; other countries have no pack yet (general checks only)." },
     { name: "region", label: "Region (optional)", defaultValue: (pr?.region as string) ?? "" },
     { name: "expected_attendance", label: "Expected attendance at peak", type: "number", min: 0, defaultValue: (pr?.expected_attendance as number | null) ?? "", hint: `Blank = derived (${num(F.attendance)} from capacity / guests).` },
     ...FACTS.map(([k, l]) => ({ name: k, label: l, type: "tri", defaultValue: (pr?.[k] as boolean | null | undefined) ?? null, hint: undefined } as Field)),
@@ -64,6 +70,9 @@ export async function ComplianceSection({ e, role }: SectionProps) {
   return <div className="eo">
     <ViewOnly role={role} what="licensing and safety records" />
     <div className="k-notice amber eo-legal" role="note"><Scale size={16} /><span><b>Guidance, not legal advice.</b> Requirements come from {pack ? `the “${pack.name}” rule pack (v${pack.version})` : "a jurisdiction rule pack"}, which is awaiting legal review. Meeting every check here is not a statement that the event is legally compliant — confirm with the licensing authority.</span></div>
+    {coverage.status !== "complete" && <div className="k-notice amber" role="note" data-q72="licence-pack"><AlertTriangle size={16} /><span><b>{coverage.status === "none" ? "No licensing rule pack for this country yet." : "Rule pack partly reviewed."}</b> {coverage.note}</span></div>}
+    {coverage.status === "complete" && F.country === "GB" && F.region && !/england|wales/i.test(F.region) && <div className="k-notice amber" role="note"><AlertTriangle size={16} /><span>{coverage.note}</span></div>}
+    {alcohol && !alcohol.covered && <div className="k-notice amber" role="note" data-q72="alcohol"><AlertTriangle size={16} /><span>{alcohol.text}</span></div>}
     <div className="eo-stats">
       <Stat icon={ShieldCheck} label="Required checks met" value={`${required.filter(r => ["met", "waived"].includes(r.status)).length}/${required.length}`} sub={failing.length ? <span className="k-red">{failing.length} missing / expired / refused</span> : "None failing"} tone={failing.length ? "red" : "green"} />
       <Stat icon={ClipboardList} label="Pending decisions" value={req.filter(r => r.status === "pending").length} sub="submitted, awaiting authority / approval" tone="blue" />
@@ -76,7 +85,7 @@ export async function ComplianceSection({ e, role }: SectionProps) {
           {req.length ? <div className="eo-scroll"><table className="k-table eo-table"><thead><tr><th>Requirement</th><th>Severity</th><th>Status</th><th>Why / what to do</th><th>Deadline</th></tr></thead><tbody>{req.map(r => <tr key={r.rule_key}>
             <td><b>{r.label}</b><small className="eo-block">{label(r.requirement_kind)}</small></td><td><Chip tone={r.severity === "required" ? "red" : "gray"}>{label(r.severity)}</Chip></td><td><Chip tone={REQ_TONE[r.status] ?? "gray"}>{label(r.status)}</Chip></td>
             <td className="eo-wrap">{r.reason && <span className="eo-block">{r.reason}</span>}{!["met", "waived"].includes(r.status) && <small className="eo-block">Fix: {r.fix}</small>}{r.link && !r.link.endsWith("section=compliance") && <Link className="k-link" href={r.link}>Open</Link>}</td>
-            <td className={r.due_date && r.due_date < new Date().toISOString().slice(0, 10) && !["met", "waived"].includes(r.status) ? "k-red" : ""}>{r.due_date ? dateShort(r.due_date) : "—"}</td></tr>)}</tbody></table></div>
+            <td className={r.due_date && r.due_date < todayIn(e.timezone ?? undefined) && !["met", "waived"].includes(r.status) ? "k-red" : ""}>{r.due_date ? dateShort(r.due_date) : "—"}</td></tr>)}</tbody></table></div>
             : <Empty icon={ShieldCheck} title="No rules apply yet" text={F.in_person ? `No rule in the ${F.country} pack matches these facts. Answer the licensing questions so the right checks run.` : "Online-only events have no in-person licensing rules in this pack."} />}</Card>
 
         <Card><div className="k-between eo-head"><div><h2 className="ov-h">Licences &amp; notices</h2><p className="k-small">Draft → submitted → granted or refused; granted licences expire or can be revoked. Expiry reminders run daily.</p></div>

@@ -1,0 +1,114 @@
+[
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1&step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/book"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=2",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=3",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/settings?tab=billing",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup",
+  "pattern": "/organizer/events/[id]/tickets/setup",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/promotions/new",
+  "pattern": "/organizer/promotions/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/proposals/new",
+  "pattern": "/organizer/proposals/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/new",
+  "pattern": "/provider/venues/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/settings?tab=team",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=billing",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=communications",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ }
+]

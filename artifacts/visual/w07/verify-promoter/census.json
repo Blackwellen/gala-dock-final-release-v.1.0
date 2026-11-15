@@ -1,0 +1,91 @@
+{
+ "email": "promoter.demo@example.com",
+ "checkedLinks": 13,
+ "dead": [],
+ "routes": [
+  {
+   "name": "campaign",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 32,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 9
+  },
+  {
+   "name": "assets",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 40,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 13
+  },
+  {
+   "name": "campaign",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "size": "768x1024",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 30,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 9
+  },
+  {
+   "name": "assets",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "size": "768x1024",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 38,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 13
+  },
+  {
+   "name": "campaign",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 30,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 9
+  },
+  {
+   "name": "assets",
+   "route": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/promoter/af6a41a3-93f2-404f-8b3d-6faf716f382d?view=assets",
+   "h1": "Neon Nights Festival\nActive Campaign",
+   "controls": 38,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 13
+  }
+ ]
+}

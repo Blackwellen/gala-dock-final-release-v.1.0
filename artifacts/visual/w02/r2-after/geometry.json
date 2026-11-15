@@ -1,0 +1,58 @@
+[
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-tickets-setup-step-1-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1110
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1057
+      }
+    },
+    "errors": []
+  }
+]

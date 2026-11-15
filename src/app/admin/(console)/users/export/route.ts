@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAdminPermission } from "@/lib/admin/context";
 import { isUuid } from "@/lib/workspace/db";
+import { londonYmd } from "../../_b/format";   // Q51: London dates, not UTC slices
 
 // Neutralise spreadsheet formulas and quote fields that need it.
 const csv = (v: unknown) => { let s = String(v ?? ""); if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = `'${s}`; return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; };
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
   }
   const head = ["User ID", "Name", "Email", "Type", "Identity verified", "Status", "Workspaces", "Events", "Tickets", "Joined", "Last active"];
-  const body = out.map(u => [u.id, u.full_name ?? "", u.email, u.account_type, u.identity_verified ? "yes" : "no", u.status, u.workspaces, u.events, u.tickets, u.created_at.slice(0, 10), u.last_active_at?.slice(0, 10) ?? ""].map(csv).join(","));
+  const body = out.map(u => [u.id, u.full_name ?? "", u.email, u.account_type, u.identity_verified ? "yes" : "no", u.status, u.workspaces, u.events, u.tickets, londonYmd(u.created_at), u.last_active_at ? londonYmd(u.last_active_at) : ""].map(csv).join(","));
   return new NextResponse([head.join(","), ...body].join("\n"), { headers: { "Content-Type": "text/csv; charset=utf-8",
-    "Content-Disposition": `attachment; filename="users-${new Date().toISOString().slice(0, 10)}.csv"`, "Cache-Control": "private, no-store" } });
+    "Content-Disposition": `attachment; filename="users-${londonYmd()}.csv"`, "Cache-Control": "private, no-store" } });
 }

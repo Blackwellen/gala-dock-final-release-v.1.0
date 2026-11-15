@@ -27,3 +27,22 @@ export function lHealth(l: Pick<Listing, "review_status" | "paused_at" | "respon
 }
 export const modeTone = (m: string) => (m === "instant" ? "green" : m === "request" ? "amber" : "grey");
 export const fmtHours = (h: number | null | undefined) => (h === null || h === undefined ? "—" : `${h < 10 ? h.toFixed(1) : Math.round(h)}h`);
+
+/** Q51: the Marketplace list filter, shared by the page and its CSV export (the export ignored category, city, verification,
+ *  mode, performance and sponsored, and matched `q` on name/city only). `ownerText` = workspace + owner names for search. */
+export function listingMatches(l: Listing, m: LMetric | undefined, tab: string, f: (k: string) => string, ownerText: string) {
+  const q = f("q").trim().toLowerCase().slice(0, 80), h = lHealth(l, m).key;
+  if (tab === "venues" && l.kind !== "venue") return false;
+  if (tab === "services" && l.kind !== "service") return false;
+  if (q && !`${l.name} ${l.id} ${l.city} ${ownerText}`.toLowerCase().includes(q)) return false;
+  if (f("cat") && l.category !== f("cat")) return false;
+  if (f("city") && l.city !== f("city")) return false;
+  if (f("ver") === "verified" && !l.verified) return false;
+  if (f("ver") === "pending" && l.verified) return false;
+  if (f("mode") && l.booking_mode !== f("mode")) return false;
+  if (f("perf") === "healthy" && h !== "healthy") return false;
+  if (f("perf") === "attention" && h === "healthy") return false;
+  if (f("spon") === "sponsored" && !l.sponsored) return false;
+  if (f("spon") === "none" && l.sponsored) return false;
+  return true;
+}

@@ -1,0 +1,35 @@
+{
+  "observedUtc": "2026-10-13T20:39:40.993Z",
+  "route": "/account",
+  "reference": "artifacts/pwa/finish-account-reference.png",
+  "viewport": "357x890 DPR2, inferred and not approved",
+  "metric": "Raw unmasked pixelmatch, threshold 0.12, includeAA false",
+  "mismatchPercent": 11.42,
+  "geometry": {
+    "width": 357,
+    "height": 890,
+    "dpr": 2,
+    "overflow": 0,
+    "heading": {
+      "x": 16,
+      "y": 110,
+      "width": 325,
+      "height": 36.390625,
+      "top": 110,
+      "right": 341,
+      "bottom": 146.390625,
+      "left": 16
+    },
+    "profile": {
+      "x": 16,
+      "y": 286.390625,
+      "width": 325,
+      "height": 572.65625,
+      "top": 286.390625,
+      "right": 341,
+      "bottom": 859.046875,
+      "left": 16
+    }
+  },
+  "certified": false
+}

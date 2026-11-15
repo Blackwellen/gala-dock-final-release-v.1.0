@@ -1,0 +1,581 @@
+{
+  "report": [
+    {
+      "size": "320x844",
+      "route": "/admin/users",
+      "resolved": "/admin/users",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "resolved": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/workspaces",
+      "resolved": "/admin/workspaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "resolved": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/events",
+      "resolved": "/admin/events",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/marketplace",
+      "resolved": "/admin/marketplace",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/marketplace/listings/{listing:Riverside Arena}",
+      "resolved": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/tickets",
+      "resolved": "/admin/tickets",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/commerce",
+      "resolved": "/admin/commerce",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "resolved": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "resolved": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/support",
+      "resolved": "/admin/support",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "resolved": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/partners",
+      "resolved": "/admin/partners",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/agent-integrations",
+      "resolved": "/admin/agent-integrations",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/analytics",
+      "resolved": "/admin/analytics",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/analytics?tab=platform",
+      "resolved": "/admin/analytics?tab=platform",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "320x844",
+      "route": "/admin/settings",
+      "resolved": "/admin/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/users",
+      "resolved": "/admin/users",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "resolved": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/workspaces",
+      "resolved": "/admin/workspaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "resolved": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/events",
+      "resolved": "/admin/events",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/marketplace",
+      "resolved": "/admin/marketplace",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/marketplace/listings/{listing:Riverside Arena}",
+      "resolved": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/tickets",
+      "resolved": "/admin/tickets",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/commerce",
+      "resolved": "/admin/commerce",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "resolved": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "resolved": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/support",
+      "resolved": "/admin/support",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "resolved": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/partners",
+      "resolved": "/admin/partners",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/agent-integrations",
+      "resolved": "/admin/agent-integrations",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/analytics",
+      "resolved": "/admin/analytics",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/analytics?tab=platform",
+      "resolved": "/admin/analytics?tab=platform",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "390x844",
+      "route": "/admin/settings",
+      "resolved": "/admin/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/users",
+      "resolved": "/admin/users",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "resolved": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/workspaces",
+      "resolved": "/admin/workspaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "resolved": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/events",
+      "resolved": "/admin/events",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/marketplace",
+      "resolved": "/admin/marketplace",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/marketplace/listings/{listing:Riverside Arena}",
+      "resolved": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/tickets",
+      "resolved": "/admin/tickets",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/commerce",
+      "resolved": "/admin/commerce",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "resolved": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "resolved": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/support",
+      "resolved": "/admin/support",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "resolved": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/partners",
+      "resolved": "/admin/partners",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/agent-integrations",
+      "resolved": "/admin/agent-integrations",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/analytics",
+      "resolved": "/admin/analytics",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/analytics?tab=platform",
+      "resolved": "/admin/analytics?tab=platform",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "820x360",
+      "route": "/admin/settings",
+      "resolved": "/admin/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/users",
+      "resolved": "/admin/users",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "resolved": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/workspaces",
+      "resolved": "/admin/workspaces",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "resolved": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/events",
+      "resolved": "/admin/events",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/marketplace",
+      "resolved": "/admin/marketplace",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/marketplace/listings/{listing:Riverside Arena}",
+      "resolved": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/tickets",
+      "resolved": "/admin/tickets",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/commerce",
+      "resolved": "/admin/commerce",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "resolved": "/admin/commerce/transactions/b0000000-0000-4000-8000-000000007821",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "resolved": "/admin/trust?case=d0000000-0000-4000-8000-000000008781",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/support",
+      "resolved": "/admin/support",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "resolved": "/admin/support/c0000000-0000-4000-8000-000000004421",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/partners",
+      "resolved": "/admin/partners",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/agent-integrations",
+      "resolved": "/admin/agent-integrations",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/analytics",
+      "resolved": "/admin/analytics",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/analytics?tab=platform",
+      "resolved": "/admin/analytics?tab=platform",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    },
+    {
+      "size": "1180x820",
+      "route": "/admin/settings",
+      "resolved": "/admin/settings",
+      "status": 200,
+      "issues": [],
+      "axe": []
+    }
+  ],
+  "errors": []
+}

@@ -11,7 +11,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows } from "@/lib/workspace/db";
 import { delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, buckets, cumulative, Img } from "../_b/kit";
-import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
+import { ParamSelect, SearchParam, Menu } from "../_b/ui";
 import { stamp, ago, dur } from "../_b/format";
 import { assignCase, setCaseStatus, requestRefund, createSupportCase } from "../_b/actions";
 import { loadCases, updatedAt, typeLabel, TYPE_TONE, sla, roleOf, type Case, type Msg } from "./data";
@@ -96,18 +96,17 @@ export default async function SupportPage(props: PageProps<"/admin/support">) {
     <div className="adsu-grid">
       <div className="adsu-main">
         <section className="adb-kpis adsu-kpis">
-          <Kpi icon={Headset} tone="blue" label="Open cases" value={openN} delta={delta(all.filter(c => c.status === "open" && win(c, now - W, now + 1)).length, all.filter(c => win(c, now - 2 * W, now - W)).length)} suffix="vs last 7 days" invert series={series(all.filter(c => c.status === "open"))} />
+          <Kpi icon={Headset} tone="blue" label="Open cases" value={openN} delta={delta(all.filter(c => win(c, now - W, now + 1)).length, all.filter(c => win(c, now - 2 * W, now - W)).length)} suffix="new cases vs last 7 days" invert series={series(all.filter(c => c.status === "open"))} />
           <Kpi icon={Clock3} tone="green" label="Avg. response time" value={rNow ? dur(rNow) : "—"} delta={rPrev && rNow ? delta(rNow, rPrev) : null} suffix="vs last 7 days" invert series={series(all.filter(c => first.has(c.id)))} />
           <Kpi icon={TriangleAlert} tone="red" label="SLA at risk" value={atRisk.length} note={`${atRisk.filter(c => sla(c, now).overdue).length} overdue`} series={series(atRisk, c => c.sla_due_at ?? c.created_at)} />
           <Kpi icon={ArrowUpFromLine} tone="blue" label="Escalated" value={escN} delta={delta(all.filter(c => c.status === "escalated" && win(c, now - W, now + 1)).length, all.filter(c => c.status === "escalated" && win(c, now - 2 * W, now - W)).length)} invert note="" series={series(all.filter(c => c.status === "escalated"))} />
           <Kpi icon={BadgeCheck} tone="green" label="Resolved (7d)" value={resolved7.length} delta={delta(resolved7.length, resolvedPrev.length)} suffix="vs last 7 days" series={series(resolved7, c => c.resolved_at ?? c.created_at)} />
         </section>
         <div className="adb-table-wrap"><table className="adb-table adsu-table">
-          <colgroup>{[34, 62, 100, 68, 128, 150, 52, 54, 64, 56, 66, 36].map((w, i) => <col key={i} style={{ width: `${(w / 880) * 100}%` }} />)}</colgroup>
-          <thead><tr><th><RowCheck label="Select all" /></th><th>ID</th><th>Subject</th><th>Type</th><th>Related to</th><th>Customer / Workspace</th><th>Priority</th><th>Status</th><th>SLA</th><th>Assigned</th><th>Updated</th><th aria-label="Actions" /></tr></thead>
+          <colgroup>{[62, 100, 68, 128, 150, 52, 54, 64, 56, 66, 36].map((w, i) => <col key={i} style={{ width: `${(w / 846) * 100}%` }} />)}</colgroup>
+          <thead><tr><th>ID</th><th>Subject</th><th>Type</th><th>Related to</th><th>Customer / Workspace</th><th>Priority</th><th>Status</th><th>SLA</th><th>Assigned</th><th>Updated</th><th aria-label="Actions" /></tr></thead>
           <tbody>{list.slice((page - 1) * per, page * per).map(c => { const t = typeLabel(c), x = sla(c, now), ref = c.related?.subject_ref, req = c.related?.requester;
             return <tr key={c.id} className={sel?.id === c.id ? "sel" : ""}>
-              <td><RowCheck label={`Select ${c.reference}`} defaultChecked={sel?.id === c.id} /></td>
               <td className="adsu-muted">{c.reference}</td>
               <td className="adsu-subj"><Link href={`/admin/support/${c.id}`}>{c.subject}</Link></td>
               <td><span className={`adb-tag ${TYPE_TONE[t] ?? "grey"}`}>{t}</span></td>

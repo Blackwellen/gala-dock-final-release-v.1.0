@@ -79,6 +79,8 @@
 .dir-footer a { display: inline-flex; min-height: 28px; align-items: center; font-size: 13px; color: #c9cfe8; } .dir-footer a:hover { color: #fff; }
 .dir-footer-legal { margin: 18px 0 0; padding-top: 12px; border-top: 1px solid #ffffff1f; font-size: 11.5px; color: #98a1c4; }
 @media (max-width: 1279px) { .dir-hero { margin: -18px -20px 0; } }
+/* Q71: 641–720px — .c-main padding is already 16px (customer.css), so the full-bleed hero must pull 16px, not 20px (4px overflow). */
+@media (max-width: 720px) { .dir-hero { margin: -14px -16px 0; } }
 @media (max-width: 1280px) { .dir-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } .dir-grid { grid-template-columns: minmax(0, 1fr) 290px; } .dir-explore ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 1000px) { .dir-grid { grid-template-columns: minmax(0, 1fr); } .dir-side { position: static; display: grid; grid-template-columns: 1fr 1fr; } .dir-host { grid-column: 1 / -1; } .dir-cards, .dir-cards.three { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dir-footer-top { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) {

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { unitToMiles } from "@/lib/i18n/countries";
 import { getProvider } from "@/lib/provider/context";
 import { friendly, type ActionResult } from "@/lib/workspace/rpc";
 import { isUuid } from "@/lib/workspace/db";
@@ -34,8 +35,10 @@ export async function saveServiceBasics(id: string | null, next: string | null, 
   if (name.length < 2) return { ok: false, error: "Enter the service name." };
   if (!category) return { ok: false, error: "Choose a category." };
   if (desc.length < 40) return { ok: false, error: "Write a short description of at least 40 characters." };
-  const radius = n(fd, "radius") ?? 50;
-  if (radius < 1 || radius > 500) return { ok: false, error: "Set a coverage radius between 1 and 500 miles." };
+  // Q72: the radius is typed in the workspace's unit (km outside the UK/US) and stored in miles (coverage.radius_miles).
+  const unit = t(fd, "radius_unit", 2) === "km" ? "km" : "mi";
+  const radius = unitToMiles(n(fd, "radius") ?? (unit === "km" ? 80 : 50), unit);
+  if (radius < 1 || radius > 500) return { ok: false, error: unit === "km" ? "Set a coverage radius between 2 and 800 km." : "Set a coverage radius between 1 and 500 miles." };
   const prev = id ? await current(id) : null; if (id && !prev) return { ok: false, error: "Service not found." };
   const old = svc(prev?.details);
   const creds = ["Public liability insurance", "PAT testing (equipment)", "DBS check (if required)", "Other certifications"].map((name, i) => ({ name, reference: t(fd, `cred_ref_${i}`, 60), expires: t(fd, `cred_exp_${i}`, 10),

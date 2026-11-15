@@ -1,0 +1,9 @@
+/ ok
+/organisers ok
+/providers ok
+/build-an-event ok
+/developers ok
+/about ok
+/pricing ok
+/events ok
+/help ok

@@ -95,7 +95,8 @@ test("organiser notification switches reach delivery; mandatory kinds are locked
   expect(m).toMatch(/billing\|chargeback\|legal\|terms\|policy/);
   expect(m).toMatch(/insert into public\.notifications\(user_id, kind, title, body, link, workspace_id\)/);   // notify_workspace records the workspace
   const ui = src("src/components/organizer/settings-client.tsx");
-  expect(ui).toMatch(/Not available yet/);
+  // Q75 (owner decision: push / SMS off at launch): the disabled "SMS alerts — Not available yet" row is gone rather than shown.
+  expect(ui).not.toMatch(/SMS alerts/);
   expect(ui).toMatch(/Always sent/);
   expect(ui).not.toMatch(/\["sms", "SMS notifications"\]/);
   expect(src("src/lib/data/context.ts").match(/filter\("muted", "eq", false\)/g)?.length).toBe(2);
@@ -149,7 +150,9 @@ test("VAT: automatic tax + customer VAT ids at checkout, plan changes, VAT numbe
   expect(planVatCopy(false)).toMatch(/not added/);
   expect(planVatCopy(false)).not.toMatch(/exclude/);
   expect(src("src/app/api/stripe/webhook/route.ts")).toMatch(/applySubscriptionTaxIds\(str\(object\.subscription\)\)/);
-  expect(src("src/components/site/pricing/pricing-client.tsx")).toMatch(/vatAdded \?/);
+  // Owner 2026-11-15: the public pricing VAT wording follows the switch through the shared helper (src/lib/billing/vat-display.ts).
+  expect(src("src/components/site/pricing/pricing-client.tsx")).toMatch(/<p className="gpr-vat">\{vatNote\(vatAdded\)\}/);
+  expect(planVatCopy(true)).toContain("VAT shown at the UK rate; your invoice uses the rate for your country.");
   const rb = src("docs/release/CLOSE_OUT_RUNBOOK.md");
   expect(rb).toMatch(/BILLING_AUTOMATIC_TAX/);
   expect(rb).toMatch(/GB508480488/);

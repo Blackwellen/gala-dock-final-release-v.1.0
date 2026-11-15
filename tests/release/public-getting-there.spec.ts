@@ -101,8 +101,12 @@ test.describe("public_event_getting_there (202610294081)", () => {
     let g = (await (anon() as unknown as Db).rpc("public_event_getting_there", { p_event: pub })).data as GT;
     expect(g.notes).toEqual({});
     // 202610294083: draft notes are not readable through REST — not in events.settings, and the notes table is closed to anon/outsiders.
+    // 202610294085 (backend-queue 2026-11-11, post-deploy P1): the events base table is closed — anon may not read settings at all and
+    // outsiders see no base row; both read the public projection events_public (settings = allow-listed public_settings, never getting_there).
+    expect((await (anon() as unknown as Db).from("events").select("settings").eq("id", pub).maybeSingle()).error?.code).toBe("42501");
+    expect((await out.from("events").select("settings").eq("id", pub)).data ?? []).toEqual([]);
     for (const client of [anon() as unknown as Db, out]) {
-      const ev = await client.from("events").select("settings").eq("id", pub).single();
+      const ev = await client.from("events_public").select("settings").eq("id", pub).single();
       expect(ev.error).toBeNull();
       expect(JSON.stringify(ev.data)).not.toContain("Elizabeth line");
       expect((ev.data as { settings: Record<string, unknown> | null }).settings ?? {}).not.toHaveProperty("getting_there");

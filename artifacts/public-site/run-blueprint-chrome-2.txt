@@ -1,0 +1,222 @@
+
+Running 112 tests using 1 worker
+
+[1/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /
+[2/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /organisers
+[3/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /providers
+[4/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /build-an-event
+[5/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /developers
+[6/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /about
+[7/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @390 › /pricing
+[8/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /
+  1) [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › / ─────────
+
+    Error: / @768 axe
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast: .gpl-pin:nth-child(3) > b | .gpl-pin:nth-child(4) > b | .gpl-pin:nth-child(5) > b",
+    + ]
+
+      40 |         expect(html).toMatch(/<h1[^>]*>/);
+      41 |         const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+    > 42 |         expect(axe.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).slice(0, 3).join(" | ")}`), `${route} @${width} axe`).toEqual([]);
+         |                                                                                                                                               ^
+      43 |       });
+      44 |     }
+      45 |   });
+        at C:\Users\PC\Documents\Blackwellen\Built\Gala Dock\tests\e2e\public\blueprint-pages.spec.ts:42:143
+
+    Error Context: test-results\e2e-public-blueprint-pages-blueprint-pages-768--desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e2e-public-blueprint-pages-blueprint-pages-768--desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e2e-public-blueprint-pages-blueprint-pages-768--desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[9/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /organisers
+[10/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /providers
+[11/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /build-an-event
+[12/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /developers
+[13/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /about
+[14/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › /pricing
+[15/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /
+  2) [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › / ────────
+
+    Error: / @1280 axe
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast: .gpl-pin:nth-child(3) > b | .gpl-pin:nth-child(4) > b | .gpl-pin:nth-child(5) > b",
+    + ]
+
+      40 |         expect(html).toMatch(/<h1[^>]*>/);
+      41 |         const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+    > 42 |         expect(axe.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).slice(0, 3).join(" | ")}`), `${route} @${width} axe`).toEqual([]);
+         |                                                                                                                                               ^
+      43 |       });
+      44 |     }
+      45 |   });
+        at C:\Users\PC\Documents\Blackwellen\Built\Gala Dock\tests\e2e\public\blueprint-pages.spec.ts:42:143
+
+    Error Context: test-results\e2e-public-blueprint-pages-blueprint-pages-1280--desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e2e-public-blueprint-pages-blueprint-pages-1280--desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e2e-public-blueprint-pages-blueprint-pages-1280--desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[16/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /organisers
+[17/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /providers
+[18/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /build-an-event
+[19/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /developers
+[20/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /about
+[21/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › /pricing
+[22/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /
+  3) [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › / ────────
+
+    Error: / @1536 axe
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast: .gpl-pin:nth-child(3) > b | .gpl-pin:nth-child(4) > b | .gpl-pin:nth-child(5) > b",
+    + ]
+
+      40 |         expect(html).toMatch(/<h1[^>]*>/);
+      41 |         const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+    > 42 |         expect(axe.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).slice(0, 3).join(" | ")}`), `${route} @${width} axe`).toEqual([]);
+         |                                                                                                                                               ^
+      43 |       });
+      44 |     }
+      45 |   });
+        at C:\Users\PC\Documents\Blackwellen\Built\Gala Dock\tests\e2e\public\blueprint-pages.spec.ts:42:143
+
+    Error Context: test-results\e2e-public-blueprint-pages-blueprint-pages-1536--desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e2e-public-blueprint-pages-blueprint-pages-1536--desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e2e-public-blueprint-pages-blueprint-pages-1536--desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[23/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /organisers
+[24/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /providers
+[25/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /build-an-event
+[26/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /developers
+[27/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /about
+[28/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › /pricing
+[29/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:51:7 › navigation and data › header and footer links resolve (no 404 / 5xx)
+[30/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:61:7 › navigation and data › header marks the current page; mobile menu opens, traps focus and closes on Escape
+[31/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:76:7 › navigation and data › /pricing shows live organiser Pro and provider fee from the database
+[32/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:84:7 › navigation and data › no escrow or held-funds claims and no unverifiable labels on any page
+[33/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:92:7 › navigation and data › old anchors and renamed routes redirect
+[34/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:100:7 › navigation and data › sitemap lists all seven routes; robots keeps /providers crawlable
+[35/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:109:7 › phone landscape: every page renders without overflow
+[36/112] [desktop] › tests\e2e\public\blueprint-pages.spec.ts:109:7 › tablet landscape: every page renders without overflow
+[37/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /
+[38/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /organisers
+[39/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /providers
+[40/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /build-an-event
+[41/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /developers
+[42/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /about
+[43/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /pricing
+[44/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events
+[45/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events/in/london
+[46/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events/calendar
+[47/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events/category/music
+[48/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events/neon-nights
+[49/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /events/neon-nights/register
+[50/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /venues/riverside-arena
+[51/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /services/elite-sounds-dj
+[52/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01
+[53/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /p/alex-events-winter-nights
+[54/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /help
+[55/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /help/getting-started-organizers
+[56/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /terms
+[57/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /privacy
+[58/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /cookies
+[59/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /ticket-terms
+[60/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /data-retention
+[61/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /accessibility
+[62/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /this-page-does-not-exist
+[63/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /rsvp/not-a-real-token
+[64/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /checkout/neon-nights
+[65/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /checkout/neon-nights/confirmation
+[66/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /invite/not-a-real-token
+[67/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /pay/not-a-real-token
+[68/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /contract/not-a-real-token
+[69/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /proposal/not-a-real-token
+[70/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /guest/not-a-real-token
+[71/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /ref/NOTACODE
+[72/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /r/NOTACODE/consent
+[73/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /payments/NOTAREF
+[74/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @390 › /maintenance
+[75/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /
+[76/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /organisers
+[77/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /providers
+[78/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /build-an-event
+[79/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /developers
+[80/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /about
+[81/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /pricing
+[82/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events
+[83/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events/in/london
+[84/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events/calendar
+[85/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events/category/music
+[86/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events/neon-nights
+[87/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /events/neon-nights/register
+[88/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /venues/riverside-arena
+[89/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /services/elite-sounds-dj
+[90/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01
+[91/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /p/alex-events-winter-nights
+[92/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /help
+[93/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /help/getting-started-organizers
+[94/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /terms
+[95/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /privacy
+[96/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /cookies
+[97/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /ticket-terms
+[98/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /data-retention
+[99/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /accessibility
+[100/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /this-page-does-not-exist
+[101/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /rsvp/not-a-real-token
+[102/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /checkout/neon-nights
+[103/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /checkout/neon-nights/confirmation
+[104/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /invite/not-a-real-token
+[105/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /pay/not-a-real-token
+[106/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /contract/not-a-real-token
+[107/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /proposal/not-a-real-token
+[108/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /guest/not-a-real-token
+[109/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /ref/NOTACODE
+[110/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /r/NOTACODE/consent
+[111/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /payments/NOTAREF
+[112/112] [desktop] › tests\e2e\public\public-chrome.spec.ts:32:11 › public chrome @1536 › /maintenance
+  3 failed
+    [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @768 › / ──────────
+    [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1280 › / ─────────
+    [desktop] › tests\e2e\public\blueprint-pages.spec.ts:26:11 › blueprint pages @1536 › / ─────────
+  109 passed (7.7m)

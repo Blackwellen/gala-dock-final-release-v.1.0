@@ -4,12 +4,13 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { setProviderCheckin, setProgrammeStatus, reportIncident, resolveIncident } from "@/lib/live/actions";
+import { isTyping } from "@/lib/ui/editing";
 
-/** Keeps the live board fresh: re-reads server state every 20 seconds while the tab is visible. */
+/** Keeps the live board fresh: re-reads server state every 20 seconds while the tab is visible (skipping a tick while someone types). */
 export function LiveRefresh() {
   const router = useRouter();
   useEffect(() => {
-    const t = setInterval(() => { if (document.visibilityState === "visible") router.refresh(); }, 20_000);
+    const t = setInterval(() => { if (document.visibilityState === "visible" && !isTyping()) router.refresh(); }, 20_000);
     return () => clearInterval(t);
   }, [router]);
   return null;

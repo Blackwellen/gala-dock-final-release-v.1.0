@@ -1,7 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
-import { dateShort, money } from "@/lib/format";
+import { dateShort, money, time, zoneAbbr } from "@/lib/format";
 
 type Sb = SupabaseClient<Database>;
 const clip = (s: string | null | undefined, n = 240) => (s ?? "").replace(/\s+/g, " ").slice(0, n);
@@ -12,9 +12,9 @@ const clip = (s: string | null | undefined, n = 240) => (s ?? "").replace(/\s+/g
 export async function buildContext(sb: Sb, userId: string, scope: "customer" | "organizer", eventId?: string, workspaceId?: string): Promise<string | null> {
   const lines: string[] = [];
   if (eventId) {
-    const { data: e } = await sb.from("events").select("id,name,event_type,status,starts_at,venue_name,location,guest_count,capacity,budget_total,currency,description,management").eq("id", eventId).maybeSingle();
+    const { data: e } = await sb.from("events").select("id,name,event_type,status,starts_at,timezone,venue_name,location,guest_count,capacity,budget_total,currency,description,management").eq("id", eventId).maybeSingle();
     if (!e) return null;
-    lines.push(`EVENT ${e.name} (${e.event_type}, status ${e.status}) on ${dateShort(e.starts_at)} at ${e.venue_name || "venue not set"}, ${e.location}. Guests ${e.guest_count}, capacity ${e.capacity ?? "n/a"}, budget ${e.budget_total ? money(e.budget_total) : "not set"}.`);
+    lines.push(`EVENT ${e.name} (${e.event_type}, status ${e.status}) on ${dateShort(e.starts_at, e.timezone)} ${time(e.starts_at, e.timezone)} ${zoneAbbr(e.starts_at, e.timezone)} (${e.timezone}) at ${e.venue_name || "venue not set"}, ${e.location}. Guests ${e.guest_count}, capacity ${e.capacity ?? "n/a"}, budget ${e.budget_total ? money(e.budget_total) : "not set"}.`);
     if (e.description) lines.push(`Description: ${clip(e.description)}`);
     const [{ data: items }, { data: pays }, { data: tasks }, { data: tiers }, { data: readiness }] = await Promise.all([
       sb.from("build_items").select("category,title,package,amount,status,role,response_deadline,hold_expires_at").eq("event_id", eventId).order("sort"),

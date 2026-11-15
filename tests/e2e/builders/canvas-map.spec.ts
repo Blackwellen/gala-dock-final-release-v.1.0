@@ -116,6 +116,11 @@ test.describe.serial("media studio canvas: edit → save → reload → export",
     const props = page.getByRole("button", { name: "Properties" });
     if (await props.isVisible().catch(() => false)) await props.click();
     await page.getByRole("textbox", { name: "Text", exact: true }).fill("Neon headline");
+    // owner rule 2026-11-15: no server auto-save — the edit stays local ("Unsaved") until the explicit Save
+    await expect(page.locator(".st-save")).toHaveText("Unsaved", { timeout: 10_000 });
+    await page.waitForTimeout(2_500);
+    expect((await db.from("designs").select("version").eq("id", id).single()).data?.version).toBe(v0);
+    await page.locator("header.st-top button", { hasText: /^Save$/ }).click();
     await expect.poll(async () => (await db.from("designs").select("version").eq("id", id).single()).data?.version as number, { timeout: 20_000 }).toBeGreaterThan(v0);
     await expect(page.locator(".st-save")).toHaveText("Saved", { timeout: 15_000 });
     await page.reload();

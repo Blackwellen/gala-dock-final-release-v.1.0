@@ -1,4 +1,5 @@
 "use client";
+import { currencySymbol, formatMoney, fromMinorUnits } from "@/lib/i18n/money";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -46,7 +47,7 @@ export function DisputeEntryForm({ disputeId }: { disputeId: string }) {
 }
 
 /** DEC-107 settlement: either party offers a refund; only the other party can accept it. Accepting closes the dispute. */
-export function SettlementPanel({ disputeId, open }: { disputeId: string; open: { id: string; refund_minor: number; party: string; mine: boolean } | null }) {
+export function SettlementPanel({ disputeId, open, currency = "GBP" }: { disputeId: string; open: { id: string; refund_minor: number; party: string; mine: boolean } | null; currency?: string }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [amount, setAmount] = useState("");
@@ -61,9 +62,9 @@ export function SettlementPanel({ disputeId, open }: { disputeId: string; open: 
     if (!r.ok) { setError(r.error); return; } router.refresh();
   });
   return <div className="mk-form">
-    {open && <p className="mk-note">Open offer: refund £{(open.refund_minor / 100).toFixed(2)} ({open.mine ? "your offer, waiting for the other side" : `offered by the ${open.party === "provider" ? "provider" : "organiser"}`}).</p>}
+    {open && <p className="mk-note">Open offer: refund {formatMoney(fromMinorUnits(open.refund_minor, currency), currency, { decimals: true })} ({open.mine ? "your offer, waiting for the other side" : `offered by the ${open.party === "provider" ? "provider" : "organiser"}`}).</p>}
     {open && !open.mine && <button type="button" className="mk-btn primary" disabled={pending} onClick={() => accept(open.id)}>{pending && <Loader2 size={14} className="mk-spin" aria-hidden="true" />}Accept this settlement</button>}
-    <label className="mk-field"><span>Offer a settlement: refund to the organiser (£)</span><input type="number" min={0} step="0.01" value={amount} onChange={e => setAmount(e.target.value)} /></label>
+    <label className="mk-field"><span>Offer a settlement: refund to the organiser ({currencySymbol(currency)})</span><input type="number" min={0} step="0.01" value={amount} onChange={e => setAmount(e.target.value)} /></label>
     <label className="mk-field"><span>Note (optional)</span><input maxLength={500} value={note} onChange={e => setNote(e.target.value)} /></label>
     <button type="button" className="mk-btn ghost" disabled={pending || amount === ""} onClick={offer}>Send offer</button>
     {error && <p className="mk-error" role="alert">{error}</p>}

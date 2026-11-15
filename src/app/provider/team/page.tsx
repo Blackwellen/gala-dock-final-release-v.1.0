@@ -55,7 +55,7 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
   const noTeam = unstaffed.filter(j => !shifts.some(s => s.job_id === j.id));
 
   return <div className="pt">
-    <header className="ws-page-head pt-head">
+    <header className="ws-page-head ptt-head">
       <div><h1>Team</h1><p>Manage your staff and resource availability for seamless event delivery.</p></div>
       {/* Q49: /provider/team/my-shifts (staff check-in, accept/decline, leave) had no link anywhere — staff logins couldn't reach it. */}
       {!manage && <div className="ws-page-actions"><Link href={`${base}/my-shifts`} className="ws-btn primary"><CalendarCheck aria-hidden="true" />My shifts</Link></div>}
@@ -71,8 +71,8 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
     <Tabs base={base} active={tab} tabs={[{ key: "people", label: "People" }, { key: "availability", label: "Availability" }, { key: "assignments", label: "Assignments" }]} />
 
     <div className="pt-body">
-      <div className="pt-main">
-        {tab === "people" && <section className="pt-top">
+      <div className="ptt-main">
+        {tab === "people" && <section className="ptt-top">
           <div className="ws-kpis pt-kpis">
             <Kpi icon={Users} tone="blue" label="Total team members" value={active.length} series={dailySeries(active, c => c.created_at, () => 1, 30, now)} />
             <Kpi icon={CircleCheck} tone="green" label="Available now" value={avail} />
@@ -85,7 +85,7 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
 
         {(tab === "people" || tab === "availability") && <section className="ws-panel pt-week">
           <div className="pt-week-head"><h2><CalendarCheck aria-hidden="true" />Team availability</h2>
-            <nav className="pt-nav"><Link href={`${base}?tab=${tab}&week=${wk(-1)}`} aria-label="Previous week"><ChevronLeft aria-hidden="true" /></Link><Link href={`${base}?tab=${tab}`}>Today</Link><Link href={`${base}?tab=${tab}&week=${wk(1)}`} aria-label="Next week"><ChevronRight aria-hidden="true" /></Link></nav>
+            <nav className="ptt-nav"><Link href={`${base}?tab=${tab}&week=${wk(-1)}`} aria-label="Previous week"><ChevronLeft aria-hidden="true" /></Link><Link href={`${base}?tab=${tab}`}>Today</Link><Link href={`${base}?tab=${tab}&week=${wk(1)}`} aria-label="Next week"><ChevronRight aria-hidden="true" /></Link></nav>
             <nav className="ws-tabs segment pt-views"><Link href={`/provider/calendar?view=day&layers=crew`}>Day</Link><span className="active">Week</span><Link href={`/provider/calendar?view=month&layers=crew`}>Month</Link></nav>
             <Link href={`${base}?tab=availability`} className="ws-btn outline sm"><SlidersHorizontal aria-hidden="true" />Filters</Link></div>
           <p className="pt-range">{day(new Date(days[0] + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })} – {day(new Date(days[6] + 12 * 36e5).toISOString(), { day: "numeric", month: "short", year: "numeric" })}</p>
@@ -101,7 +101,7 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
               <Suspense><ParamSelect param="skill" label="Skills" value={skill} options={opts(active.flatMap(c => c.skills), "Skills")} /></Suspense>
               <Suspense><ParamSelect param="loc" label="Location" value={loc} options={opts(active.map(c => c.location), "Location")} /></Suspense>
               <span className="pt-listicon" aria-hidden="true"><List /></span></div></div>
-          <table className="ws-table pt-table"><thead><tr><th>Name</th><th>Role</th><th>Skills</th><th>Location</th><th>Type</th><th>Availability</th><th>Current assignment</th><th aria-label="Actions" /></tr></thead>
+          <table className="ws-table ptt-table"><thead><tr><th>Name</th><th>Role</th><th>Skills</th><th>Location</th><th>Type</th><th>Availability</th><th>Current assignment</th><th aria-label="Actions" /></tr></thead>
             <tbody>{list.map(c => { const st = STATE[state.get(c.id) ?? "available"], nx = nextShift(c.id), emp = c.details.employment ?? (c.member_type === "member" ? "employee" : "contract");
               return <tr key={c.id}><td><Link href={`${base}/${c.id}`} className="pt-name"><Avatar src={c.avatar} name={c.name} size={30} /><b>{c.name}</b></Link></td><td>{c.role}</td>
                 <td><span className="pt-skills">{c.skills.slice(0, 3).map(s => <i key={s}>{s}</i>)}</span></td><td>{c.location || "—"}</td><td><span className={`pt-type ${emp}`}>{EMP[emp]}</span></td>
@@ -111,7 +111,7 @@ export default async function TeamPage(props: PageProps<"/provider/team">) {
         </section>}
 
         {tab === "assignments" && <section className="ws-panel pt-members"><h2>Upcoming assignments</h2>
-          <table className="ws-table pt-table"><thead><tr><th>Shift</th><th>Role</th><th>Who</th><th>When</th><th>Location</th><th>Status</th></tr></thead>
+          <table className="ws-table ptt-table"><thead><tr><th>Shift</th><th>Role</th><th>Who</th><th>When</th><th>Location</th><th>Status</th></tr></thead>
             <tbody>{shifts.filter(s => new Date(s.ends_at).getTime() > now).slice(0, 40).map(s => { const c = crew.find(x => x.id === s.crew_id); return <tr key={s.id}>
               <td>{s.job_id ? <Link href={`/provider/bookings/${s.job_id}`}><b>{s.title}</b></Link> : <b>{s.title}</b>}</td><td>{s.role}</td><td>{c ? <Link href={`${base}/${c.id}`}>{c.name}</Link> : <span className="pt-st off">Unassigned</span>}</td>
               <td>{day(s.starts_at, { weekday: "short", day: "numeric", month: "short" })}, {time(s.starts_at)} – {time(s.ends_at)}</td><td>{s.location}</td><td><span className={`pt-st ${s.status === "confirmed" ? "ok" : "busy"}`}>{titleCase(s.status)}</span></td></tr>; })}</tbody></table></section>}

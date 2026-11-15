@@ -288,3 +288,5 @@
   .vw-doc-edit,.vw-doc-others>div{grid-template-columns:minmax(0,1fr);padding-left:0}
   .vw-doc-others{padding-left:0}
 }
+/* R1: the media step header wraps its actions under the title on narrow phones instead of running 20px past a 320px screen. */
+.vw-media-head{flex-wrap:wrap}.vw-media-acts{flex-wrap:wrap;min-width:0}

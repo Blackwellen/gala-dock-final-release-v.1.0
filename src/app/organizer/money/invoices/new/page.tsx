@@ -1,3 +1,5 @@
+import { addDaysYmd, todayIn } from "@/lib/i18n/tz";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
@@ -23,7 +25,8 @@ export default async function NewInvoice({ searchParams }: { searchParams: Promi
   // Q70: step 2 needs a saved draft. "?step=2" with no ?from (or a sent / duplicated invoice) showed Schedule & Send with no
   // invoice id, and its Send / Save buttons silently did nothing.
   const step = sp.step === "2" && s && s.status === "draft" && !dup ? 2 : 1;
-  const today = new Date().toISOString().slice(0, 10); const due = new Date(requestTime() + 14 * 864e5).toISOString().slice(0, 10);
+  // Q72: the workspace's calendar date (was the UTC date, so 00:00–01:00 BST issued invoices dated yesterday).
+  const today = todayIn(workspaceLocale(ctx.workspace.settings).timezone, requestTime()); const due = addDaysYmd(today, 14);
   const initial: WizardInvoice = s ? { id: dup || s.status !== "draft" ? null : s.id, client_name: s.client_name, client_email: s.client_email, client_address: (s.client_address ?? "").split(String.fromCharCode(10)).map(x => x.trim()).filter(Boolean).join(", "), contact_name: s.contact_name, event_id: s.event_id, reference: s.reference, currency: s.currency as WizardInvoice["currency"], issue_date: dup ? today : s.issue_date, due_date: dup ? due : s.due_date ?? due, po: "", notes: s.notes ?? "", items: [...(s.invoice_items ?? [])].sort((a, b) => (a as { sort?: number }).sort! - (b as { sort?: number }).sort!).map(i => ({ description: i.description, detail: i.detail, quantity: Number(i.quantity), unit_price: Number(i.unit_price), tax_rate: Number(i.tax_rate) })), instalments: (s.invoice_installments ?? []).map(x => ({ due_date: x.due_date, label: x.label, amount: Number(x.amount) })) }
     : { id: null, client_name: "", client_email: "", client_address: "", contact_name: "", event_id: sp.event ?? null, reference: "", currency: "GBP", issue_date: today, due_date: due, po: "", notes: "Thank you for your business. Please use the payment link for card or bank transfer.", items: [], instalments: [] };
   return <div className="iw">

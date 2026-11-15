@@ -6,6 +6,8 @@ import { rateLimit, sameOrigin } from "@/lib/security";
 import { chat, SAFETY, agentConfigured, dataBlock, AgentBudgetError, AgentSafetyError } from "@/lib/agent/llm";
 import { listWorkspaceAccess } from "@/lib/auth";
 import { buildContext } from "@/lib/agent/context";
+import { localeDirective } from "@/lib/agent/locale";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 
 const Body = z.object({ scope: z.enum(["customer", "organizer"]), eventId: z.string().uuid().optional(), question: z.string().trim().min(2).max(1500),
   /** What the person is looking at (listing, lead, proposal) — page-supplied, treated as data, never as instructions. */
@@ -34,9 +36,17 @@ export async function POST(request: Request) {
   if (!workspaceId || !access.some(w => w.id === workspaceId)) return NextResponse.json({ error: "Gala Agent needs an Organizer workspace." }, { status: 403 });
   const context = await buildContext(supabase, user.id, scope, eventId, workspaceId);   // Q53: only the workspace that pays
   if (eventId && !context) return NextResponse.json({ error: "That event isn't available to you." }, { status: 404 });
+  // Q72: reply in the user's language preference; times in the event's zone (else the workspace's).
+  const [{ data: me }, { data: evTz }, { data: wsRow }] = await Promise.all([
+    supabase.from("profiles").select("language").eq("id", user.id).maybeSingle(),
+    eventId ? supabase.from("events").select("timezone,currency").eq("id", eventId).maybeSingle() : Promise.resolve({ data: null }),
+    supabase.from("workspaces").select("settings").eq("id", workspaceId).maybeSingle(),
+  ]);
+  const wl = workspaceLocale((wsRow as { settings?: unknown } | null)?.settings);
+  const locale = localeDirective({ language: (me as { language?: string } | null)?.language, timezone: (evTz as { timezone?: string } | null)?.timezone ?? wl.timezone, currency: (evTz as { currency?: string } | null)?.currency ?? wl.currency });
   try {
     const { text } = await chat([
-      { role: "system", content: `${SAFETY}\nAudience: a professional event organizer; be operational and precise.\nToday is ${new Date().toISOString().slice(0, 10)}.` },
+      { role: "system", content: `${SAFETY}\nAudience: a professional event organizer; be operational and precise.\n${locale}` },
       { role: "user", content: `${dataBlock(`${focus ? `Currently viewing: ${focus}\n\n` : ""}${context ?? "No records."}`)}\n\nQuestion: ${question}` },
     ], { tier: "standard", maxTokens: 700, meter: { workspaceId, userId: user.id, purpose: "ask_organizer" } });
     return NextResponse.json({ answer: text || "I couldn't find enough information to answer that." });

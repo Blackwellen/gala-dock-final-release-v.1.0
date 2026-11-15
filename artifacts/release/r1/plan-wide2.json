@@ -1,0 +1,128 @@
+[
+ {
+  "route": "/admin/health",
+  "pattern": "/admin/health",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/tickets/d6122963-3531-4587-8969-3e902269640d/resale",
+  "pattern": "/account/tickets/[id]/resale",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/virtual",
+  "pattern": "/organizer/events/[id]/virtual",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/emergency",
+  "pattern": "/organizer/marketplace/emergency",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/emergency/3396b8a3-54f4-46df-a022-fcea2157a671",
+  "pattern": "/organizer/marketplace/emergency/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/venue/095c7874-a84f-4456-80b3-ddb6c0d15aa3",
+  "pattern": "/organizer/marketplace/[type]/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/emergency",
+  "pattern": "/provider/emergency",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+  "pattern": "/provider/menus/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/sales/leads/0147f801-c32e-422c-9563-87fde2790ef8",
+  "pattern": "/organizer/sales/leads/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+  "pattern": "/provider/bookings/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/emergency/3396b8a3-54f4-46df-a022-fcea2157a671",
+  "pattern": "/provider/emergency/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/requests/6c44d895-083e-49e8-bb25-10a01b040d21",
+  "pattern": "/organizer/marketplace/requests/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/bookings/01a2f55f-b71e-4e4c-8bda-f36c9402fb64",
+  "pattern": "/organizer/marketplace/bookings/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/bookings/01a2f55f-b71e-4e4c-8bda-f36c9402fb64/catering",
+  "pattern": "/organizer/marketplace/bookings/[id]/catering",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/23328297-ab77-487a-8045-1b9d1d30d587",
+  "pattern": "/account/events/[id]/bookings/[item]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/23328297-ab77-487a-8045-1b9d1d30d587/catering",
+  "pattern": "/account/events/[id]/bookings/[item]/catering",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/disputes/f85186de-9531-433f-ab86-04d764b30c47",
+  "pattern": "/organizer/disputes/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/disputes/f85186de-9531-433f-ab86-04d764b30c47",
+  "pattern": "/provider/disputes/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ }
+]

@@ -1,0 +1,289 @@
+{
+ "results": [
+  {
+   "route": "/organizer/agent/runs/b1941ab7-76b3-46b3-bf57-4168e11dbceb",
+   "name": "agent-run",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/agent/runs/b1941ab7-76b3-46b3-bf57-4168e11dbceb",
+   "controls": 27,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Agent run · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Venue Compliance Check"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/settings",
+   "name": "org-021",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/settings",
+   "controls": 52,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Settings · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Settings"
+    ]
+   },
+   "docH": 1279
+  },
+  {
+   "route": "/organizer/media",
+   "name": "media",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/media",
+   "controls": 43,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Media Studio · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Media Studio"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/media?tab=library",
+   "name": "media-library",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/media?tab=library",
+   "controls": 37,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Media Studio · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Media Studio"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/media?tab=galleries",
+   "name": "media-galleries",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/media?tab=galleries",
+   "controls": 50,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Media Studio · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Media Studio"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/media?tab=brand",
+   "name": "media-brand",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/media?tab=brand",
+   "controls": 60,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Media Studio · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Media Studio"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/inbox",
+   "name": "inbox",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/inbox",
+   "controls": 25,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Messages · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Messages"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/help",
+   "name": "help",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/help",
+   "controls": 54,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Help Centre · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "How can we help?"
+    ]
+   },
+   "docH": 2447
+  },
+  {
+   "route": "/organizer/help/events",
+   "name": "help-article",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/help/events",
+   "controls": 33,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Creating and managing events · Help · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Creating and managing events"
+    ]
+   },
+   "docH": 1490
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/scan",
+   "name": "scan",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/scan",
+   "controls": 33,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Check-in · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": []
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/live",
+   "name": "live",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/live",
+   "controls": 60,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Live · Gala Dock Organizer",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Live · Neon Nights Festival"
+    ]
+   },
+   "docH": 1047
+  }
+ ],
+ "links": []
+}

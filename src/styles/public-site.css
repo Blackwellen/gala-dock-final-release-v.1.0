@@ -38,7 +38,9 @@
 .gp-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
 /* ── Layout & rhythm ─────────────────────────────────────────────────────────────────────────────────────────────────── */
-.gp-wrap { width: 100%; max-width: calc(var(--gp-max) + 2 * var(--gp-gutter)); margin: 0 auto; padding: 0 var(--gp-gutter); }
+/* Full width at every size (owner 2026-11-14: no content-width cap on large screens); the display scale (density.css) keeps the
+   1536px proportions, sections adapt their own grids and keep text measures readable. --gp-max stays as a token for measures. */
+.gp-wrap { width: 100%; margin: 0 auto; padding: 0 var(--gp-gutter); }
 .gp-sec { position: relative; padding: 128px 0; }
 .gp-sec.is-tint { background: linear-gradient(180deg, #fff 0, var(--gp-porcelain) 120px, var(--gp-porcelain) calc(100% - 120px), #fff 100%); }
 .gp-sec.is-tight { padding: 96px 0; }
@@ -48,8 +50,9 @@
 .gp-hero { padding: 72px 0 104px; }
 
 /* ── Type ────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-.gp-h1 { font-size: 66px; line-height: 1.02; letter-spacing: -.046em; font-weight: 760; color: var(--gp-ink); text-wrap: balance; }
-.gp-h2 { font-size: 50px; line-height: 1.06; letter-spacing: -.04em; font-weight: 750; color: var(--gp-ink); text-wrap: balance; }
+/* Q61: headings wrap like the designs (fill each line, no balancing that pushes words down). */
+.gp-h1 { font-size: 66px; line-height: 1.02; letter-spacing: -.046em; font-weight: 760; color: var(--gp-ink); text-wrap: pretty; }
+.gp-h2 { font-size: 50px; line-height: 1.06; letter-spacing: -.04em; font-weight: 750; color: var(--gp-ink); text-wrap: pretty; }
 .gp-h3 { font-size: 22px; line-height: 1.25; letter-spacing: -.02em; font-weight: 680; color: var(--gp-ink); }
 .gp-blue { color: var(--gp-blue); }
 .gp-lead { margin-top: 22px; font-size: 19px; line-height: 1.6; color: var(--gp-body); max-width: 640px; text-wrap: pretty; }
@@ -59,8 +62,9 @@
 .gp-eyebrow::before { content: ""; width: 34px; height: 1.5px; background: currentColor; border-radius: 2px; flex: none; }
 .gp-eyebrow.is-center { justify-content: center; }
 .gp-head { max-width: 760px; }
-.gp-head.is-center { margin: 0 auto; text-align: center; max-width: 940px; }
-.gp-head.is-center .gp-lead { max-width: 720px; }
+.gp-head.is-center { margin: 0 auto; text-align: center; max-width: 1240px; }
+.gp-head.is-center .gp-lead { max-width: 820px; }
+.gp-head.is-center .gp-h2 { text-wrap: balance; }
 /* The party photo carries an overlay in its top half; show the scene. */
 img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-head.is-center .gp-lead { margin-left: auto; margin-right: auto; }
@@ -68,7 +72,7 @@ img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-mono { font-family: var(--gp-mono); font-size: .92em; letter-spacing: 0; }
 
 /* ── Actions ─────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-.gp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 12px; border: 1px solid transparent; font-size: 16px; font-weight: 620; letter-spacing: -.01em; line-height: 1.2; white-space: nowrap; text-align: center; transition: background-color .2s, border-color .2s, color .2s, box-shadow .2s; }
+.gp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 100%; min-height: 52px; padding: 0 26px; border-radius: 12px; border: 1px solid transparent; font-size: 16px; font-weight: 620; letter-spacing: -.01em; line-height: 1.2; white-space: nowrap; text-align: center; transition: background-color .2s, border-color .2s, color .2s, box-shadow .2s; }
 .gp-btn--primary { background: var(--gp-blue); color: #fff !important; box-shadow: 0 1px 1px rgba(16, 24, 64, .08), 0 12px 24px -12px rgba(36, 87, 230, .6); }
 .gp-btn--primary:hover { background: var(--gp-blue-ink); }
 .gp-btn--ghost { background: #fff; color: var(--gp-ink) !important; border-color: #d8deea; }
@@ -134,8 +138,8 @@ img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-tabs.is-line .gp-tab-ind { inset: auto 12px 0; height: 2.5px; border-radius: 2px; box-shadow: none; }
 .gp-tabs.is-none .gp-tab.is-on { color: var(--gp-blue); }
 [role="tabpanel"]:focus-visible { outline-offset: 6px; }
-.gp-seg { display: inline-flex; gap: 4px; padding: 5px; border-radius: 14px; background: var(--gp-porcelain-2); border: 1px solid var(--gp-line); }
-.gp-seg-btn { position: relative; min-height: 42px; padding: 0 18px; border-radius: 10px; font-size: 15px; font-weight: 620; color: var(--gp-ink-2); white-space: nowrap; }
+.gp-seg { display: inline-flex; max-width: 100%; gap: 4px; padding: 5px; border-radius: 14px; background: var(--gp-porcelain-2); border: 1px solid var(--gp-line); }
+.gp-seg-btn { position: relative; min-width: 0; min-height: 42px; padding: 0 18px; border-radius: 10px; font-size: 15px; font-weight: 620; color: var(--gp-ink-2); white-space: nowrap; }
 .gp-seg-btn.is-on { color: var(--gp-ink); }
 .gp-seg-thumb { position: absolute; inset: 0; border-radius: inherit; background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, .08), 0 6px 14px -8px rgba(15, 23, 42, .25); }
 .gp-seg-label { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; }
@@ -149,7 +153,8 @@ img[src$="preferences-party.webp"] { object-position: 50% 88%; }
 .gp-header.is-scrolled { border-bottom-color: var(--gp-line); background: rgba(255, 255, 255, .96); box-shadow: 0 10px 24px -22px rgba(15, 23, 42, .45); }
 .gp-header-bar { height: var(--gp-header-h); display: flex; align-items: center; gap: 28px; }
 .gp-logo { display: inline-flex; align-items: center; }
-.gp-nav { margin: 0 auto; }
+/* Main nav sits on the right, next to the actions (owner rule: nav right-aligned; the designs' centred nav is superseded). */
+.gp-nav { margin: 0 12px 0 auto; }
 .gp-nav ul { display: flex; align-items: center; gap: clamp(22px, 2.5vw, 40px); }
 .gp-nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15.5px; font-weight: 540; letter-spacing: -.005em; color: #283048; white-space: nowrap; transition: color .2s; }
 .gp-nav a:hover { color: var(--gp-blue); }
@@ -267,6 +272,9 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
   .gp-tab { padding: 0 14px; font-size: 14.5px; }
 }
 @media (max-width: 359px) { .gp-hide-xs { display: none !important; } }
+/* Narrow phones and 400 % zoom (WCAG 1.4.10 reflow at 320 CSS px): long button labels wrap inside the button instead of running
+   past the screen edge. */
+@media (max-width: 420px) { .gp-btn { white-space: normal; padding-block: 10px; } .gp-seg-btn { white-space: normal; padding: 6px 12px; line-height: 1.2; } }
 @media (max-width: 400px) { .gp-h1 { font-size: 36px; } .gp-h2 { font-size: 29px; } }
 /* Landscape phones: short viewport — compact hero, never a full-height block. */
 @media (max-height: 500px) and (orientation: landscape) { .gp-hero { padding: 28px 0 48px; } .gp-sec { padding: 56px 0; } }
@@ -304,4 +312,14 @@ footer.gp-footer.dir-footer a:hover { color: var(--gp-blue); }
   .gp-acct { display: none; }
   .gp-acct-panel { display: block; }
   .gp-acct-open { display: none; }
+}
+
+/* Q71: sticky side rails (event/venue/organiser profiles, directory, help, legal contents, checkout summary) can be taller than a
+   laptop window; then their lower actions ("List your event", the buy box) stayed hidden for the whole scroll. While sticky they
+   now fit the window and scroll on their own. 100dvh is divided by the display scale because the shells are zoomed. */
+@media (min-width: 1001px) {
+  .pub-root :is(.dir-side, .pe-side, .pl-side, .pl3-side, .pe3-tickets, .hc-side, .lg-nav), .co .co-side {
+    max-height: calc(100dvh / var(--k-zoom, 1) - 104px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    padding-bottom: 8px; }
+  .pub-root :is(.dir-side, .pe-side, .pl-side, .pl3-side, .pe3-tickets, .hc-side, .lg-nav) > *, .co .co-side > * { flex-shrink: 0; }
 }

@@ -2,8 +2,12 @@
 -- signed-in user through the table-wide SELECT grant. authenticated now gets the same safe column list as anon (202611147621)
 -- plus response_moderation_reason (the provider reads why their own reply was removed).
 -- The reviewer's own rows (with user_id) come from my_reviews() and enforcement_actions_read uses review_is_mine() (202611149511).
--- APPLY ORDER: only after the build whose account pages read own reviews through my_reviews() is deployed. The previous build
--- filters reviews by user_id as the signed-in user and would get "permission denied" on /account and /account/reviews.
+-- PENDING — apply only AFTER the build whose account pages read own reviews through my_reviews() is deployed (it is not in
+-- supabase/migrations so nothing applies it early). The previous build filters reviews by user_id as the signed-in user and
+-- would get "permission denied" on /account, /account/reviews and the data export.
+-- Apply: copy to supabase/migrations/<next free version>_reviews_column_grants.sql, then scripts/db/migrate.mjs lint → dry-run
+--   --exercise=scripts/db/exercises/q51_reviews_column_grants.pending.sql (rename alongside) → review → apply → verify → db:parity.
+-- Dry run + exercise passed on 2026-11-14 against the live DB (rolled back).
 -- Rollback: grant select on public.reviews to authenticated;
 revoke select on public.reviews from authenticated;
 grant select (id, build_item_id, listing_id, rating, ratings, body, status, created_at, photos, updated_at, provider_response, responded_at,

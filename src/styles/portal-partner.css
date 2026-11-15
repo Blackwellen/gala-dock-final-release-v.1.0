@@ -185,3 +185,5 @@
 .pr-doc-table tr.total th,.pr-doc-table tr.total td{font-weight:700;font-size:14px;border-bottom:2px solid #04055a}
 .pr-doc-note{margin-top:18px;color:#3f4596;font-size:12px}
 @media print{.pr-doc-print{display:none}.pr-doc{padding:0}}
+/* R1: on touch screens the share buttons grow to 44px targets — the row wraps instead of pushing the page to 512px at 390. */
+.pr-share-row{flex-wrap:wrap;gap:8px}.pr-share-row>*{min-width:0}.pr-share{flex-wrap:wrap}.pr-cust-d{max-width:100%}

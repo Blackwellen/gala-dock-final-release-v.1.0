@@ -895,6 +895,118 @@
       }
     },
     {
+      "file": "202611147251_q72_internationalisation.sql",
+      "sha256": "8cd5ee682c8f70c77e3b1d81edda566df545d43c86ca14408c174bea81ba282f",
+      "lane": "i18n",
+      "reviewer": "q72-i18n-lane",
+      "reviewedAt": "2026-11-14T21:24:19.218Z",
+      "exercise": "scripts/db/exercises/202611147251_q72_internationalisation.sql",
+      "waivers": [],
+      "rollback": "re-run checkout_quote from 202610294015; drop triggers i18n_listings_locale_defaults, i18n_events_locale_defaults, i18n_connect_currency_default, checkout_orders_currency_guard; columns/ref rows/helpers inert",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147252_q72_quote_currency.sql",
+      "sha256": "5639b1896af5124f49cfe8320dc4e0377db3d88350f055fa5e93da761ff97869",
+      "lane": "i18n",
+      "reviewer": "q72-i18n-lane",
+      "reviewedAt": "2026-11-14T21:37:09.761Z",
+      "exercise": "scripts/db/exercises/202611147252_q72_quote_currency.sql",
+      "waivers": [],
+      "rollback": "drop trigger i18n_quote_currency on public.provider_quotes",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147401_legal_engineering.sql",
+      "sha256": "1e8349fe3e0a346843d45c0290e010a4881322152c3e4111692f0ab802574cc7",
+      "lane": "legal-engineering",
+      "reviewer": "lane-legal-engineering-opus",
+      "reviewedAt": "2026-11-14T21:23:08.179Z",
+      "exercise": "scripts/db/exercises/202611147401_legal_engineering.sql",
+      "waivers": [],
+      "rollback": "drop triggers sanctions_workspace_country/sanctions_listing_publish/sanctions_event_publish/sanctions_partner_application; re-run trg_checkout_order_vat + trg_payment_order_vat (202610280020), payout_eligible + dec107_payouts_paused (202611146802), workspace_business_country (202611146101), claim_resale_refund(s) (202610294019); unschedule cron platform-reporting-due-diligence; new tables inert",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "bulk_update",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke",
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611147402_legal_engineering_grants.sql",
+      "sha256": "c12270cffab0d3d82654b75abe71bc4ac35b3750e510e69ac539c050c796b52f",
+      "lane": "legal-engineering",
+      "reviewer": "lane-legal-engineering-opus",
+      "reviewedAt": "2026-11-14T21:32:44.650Z",
+      "exercise": "scripts/db/exercises/202611147402_legal_engineering_grants.sql",
+      "waivers": [],
+      "rollback": "grant execute on the listed helpers to authenticated (as 202611147401)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147501_q75_leftovers.sql",
+      "sha256": "3f3846fb58f18b71dc30de98a9844c81f504d66339a9e721a32d87dc58333b24",
+      "lane": "leftovers-q75",
+      "reviewer": "claude-q75",
+      "reviewedAt": "2026-11-14T21:52:26.221Z",
+      "exercise": "scripts/db/exercises/202611147501_q75_leftovers.sql",
+      "waivers": [],
+      "rollback": "create-or-replace event_compliance_facts/admin_request_money/agent_governance_refusal(6)/agent_mission_wait/agent_retention_purge/post_stripe_refund_delta(4)/rank_venues_for_event/design_templates_scrub/retention_apply with their prior bodies (saved in the Q75 lane scratch q75/*.sql); restore compliance_rules applies late_night for premises_or_ten/ten_capacity; alter policies promotion_boosts_read/ad_attributions_read back to is_workspace_member and events_public_read without the demo predicate; cron agent-retention back to '15 4 2 * *'; new columns/functions/triggers can stay (drop triggers agent_runs_wait_clock, ai_usage_events_trace to disable)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "bulk_update",
+          "bulk_update",
+          "bulk_update"
+        ]
+      }
+    },
+    {
+      "file": "202611147502_q75_public_reports.sql",
+      "sha256": "bf34ec4eb068a151298c608a3f372d4dacdf924268cf6953ac6299919af9e493",
+      "lane": "leftovers-q75",
+      "reviewer": "claude-q75",
+      "reviewedAt": "2026-11-14T21:56:19.658Z",
+      "exercise": "scripts/db/exercises/202611147502_q75_public_reports.sql",
+      "waivers": [],
+      "rollback": "revoke/drop function report_content_public; create-or-replace admin_decide_content_report and email_category with their prior bodies (Q75 scratch adcr.sql / ec.sql); reporter_id stays nullable (rows with null reporter must be deleted before re-adding NOT NULL); new columns/index can stay",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147503_q75_commerce_by_currency.sql",
+      "sha256": "d0040bc9d3a3e713d418c67dd3471b3c60818974acaeac87a92c175e87ea3b71",
+      "lane": "leftovers-q75",
+      "reviewer": "claude-q75",
+      "reviewedAt": "2026-11-14T21:57:06.094Z",
+      "exercise": "scripts/db/exercises/202611147503_q75_commerce_by_currency.sql",
+      "waivers": [],
+      "rollback": "create-or-replace admin_commerce_summary with the 202611147501 body (unused by the deployed build)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
       "file": "202611147621_profile_bughunt.sql",
       "sha256": "51479671cbcf646bbcc61598c204a12efa30a4abcf7f3e8b7f02fde7455543ef",
       "lane": "bughunt-profiles",
@@ -906,6 +1018,80 @@
       "lint": {
         "errors": [],
         "warnings": []
+      }
+    },
+    {
+      "file": "202611147651_q76_i18n_money_paths.sql",
+      "sha256": "d1806dbdc929b580deb9e3c06ab265a9d920a608a0e2cc5d628f48d9ad480229",
+      "lane": "i18n-phase2",
+      "reviewer": "claude-q76",
+      "reviewedAt": "2026-11-14T22:14:09.274Z",
+      "exercise": "scripts/db/exercises/202611147651_q76_i18n_money_paths.sql",
+      "waivers": [],
+      "rollback": "run docs/release/i18n/q76-rollback.sql (prior bodies of create_payment_order, checkout_quote, ticket_sales_open_from, dec107_release_sweep, the three resale guards, dec107_release_paid, customer_accept_quote, i18n_quote_currency); ref_fee_catalogue, settlement_currency and the helpers are inert",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
+      }
+    },
+    {
+      "file": "202611147652_q76_i18n_notification_formats.sql",
+      "sha256": "315db86da1a3e4e91a2297ed0a35ff0b2af9a8973b1ee7be4b8f1ab5c4aeb2f5",
+      "lane": "i18n-phase2",
+      "reviewer": "claude-q76",
+      "reviewedAt": "2026-11-14T22:15:11.638Z",
+      "exercise": "scripts/db/exercises/202611147652_q76_i18n_notification_formats.sql",
+      "waivers": [],
+      "rollback": "run docs/release/i18n/q76-rollback.sql (prior bodies of the 19 notification/body functions); fmt_* / local_tz / dispute_currency helpers are inert",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147653_q76_i18n_listings_resale.sql",
+      "sha256": "289e4db8b7623457b25606dc28c05a5a2d6ab49689204acdc3b40a13a34d338b",
+      "lane": "i18n-phase2",
+      "reviewer": "claude-q76",
+      "reviewedAt": "2026-11-14T22:15:24.869Z",
+      "exercise": "scripts/db/exercises/202611147653_q76_i18n_listings_resale.sql",
+      "waivers": [],
+      "rollback": "run docs/release/i18n/q76-rollback.sql (prior bodies of provider_save_listing, public_listing_availability, listing_availability_local, resale_policy_for); retire the seeded IE/BE/IT/FR v1 resale policies (status retired) if needed",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147654_q76_listing_timezone_invoker.sql",
+      "sha256": "e5c3d980e49c94c1daedae27215a38a5000487ba06ec08fe5def00344a5f1fc2",
+      "lane": "i18n-phase2",
+      "reviewer": "claude-q76",
+      "reviewedAt": "2026-11-14T22:54:07.258Z",
+      "exercise": "scripts/db/exercises/202611147654_q76_listing_timezone_invoker.sql",
+      "waivers": [],
+      "rollback": "re-run the 202611147653 listing_timezone definition (security definer)",
+      "lint": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "202611147655_q76_fee_catalogue_server_only.sql",
+      "sha256": "ffab5b26c94de8de5948fe783bc46fc5019a9db983f75ed49e7c749244f98cc7",
+      "lane": "i18n-phase2",
+      "reviewer": "claude-q76",
+      "reviewedAt": "2026-11-14T22:56:03.312Z",
+      "exercise": "scripts/db/exercises/202611147655_q76_fee_catalogue_server_only.sql",
+      "waivers": [],
+      "rollback": "grant select on public.ref_fee_catalogue to anon, authenticated",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke"
+        ]
       }
     },
     {
@@ -968,22 +1154,6 @@
       }
     },
     {
-      "file": "202611149512_reviews_column_grants.sql",
-      "sha256": "3425fe9e7626645c4fca541db21ab0b3c4bc671fb5c4018012d7589ab8dfd0ea",
-      "lane": "bughunt-admin",
-      "reviewer": "claude-q51",
-      "reviewedAt": "2026-11-14T20:55:15.080Z",
-      "exercise": "scripts/db/exercises/202611149512_reviews_column_grants.sql",
-      "waivers": [],
-      "rollback": "grant select on public.reviews to authenticated; (column grants become redundant). APPLY ONLY AFTER the build reading own reviews via my_reviews() is deployed.",
-      "lint": {
-        "errors": [],
-        "warnings": [
-          "revoke"
-        ]
-      }
-    },
-    {
       "file": "202611149551_q55_builders_seat_capacity.sql",
       "sha256": "f4c38222d65659f3a560373ca65b56e62bf7a7aea9d1539a001180960cfbd9c3",
       "lane": "bughunt-builders",
@@ -995,6 +1165,23 @@
       "lint": {
         "errors": [],
         "warnings": []
+      }
+    },
+    {
+      "file": "202611149631_messaging_notifications_bughunt.sql",
+      "sha256": "85e7b873a8157e81a9ef5f6e259a2a9bb7f3bc86812ddda59cf99cd15e93c7d2",
+      "lane": "bughunt-messaging",
+      "reviewer": "claude-q52",
+      "reviewedAt": "2026-11-14T21:14:45.526Z",
+      "exercise": "scripts/db/exercises/202611149631_messaging_notifications_bughunt.sql",
+      "waivers": [],
+      "rollback": "create-or-replace my_conversations/post_message/mark_conversation_read/trg_notification_workspace_prefs/trg_notification_email/email_category with their 202611149631-prior bodies (pg_get_functiondef saved in the lane report); drop triggers legacy_message_guard, legacy_message_notify, gd_notification_txn_dedupe and policies messages_own_update/messages_own_delete; new tables message_blocks/message_reports can stay (unused)",
+      "lint": {
+        "errors": [],
+        "warnings": [
+          "revoke",
+          "revoke"
+        ]
       }
     }
   ],

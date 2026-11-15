@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { UserPlus, ArrowUpFromLine, SquarePen, ClipboardCheck, ChevronDown, MoreHorizontal, ScanLine, CalendarDays, MapPin, Ticket, OctagonX, Layers, Copy, ExternalLink, PenLine,
+import { UserPlus, ArrowUpFromLine, SquarePen, ClipboardCheck, ChevronDown, ScanLine, CalendarDays, MapPin, Ticket, OctagonX, Layers, Copy, ExternalLink, PenLine,
   CalendarCheck2, Receipt, UserRound, Headset, Mail, ArrowRight, BadgeCheck, CalendarClock, Paperclip, Smile, Hash, type LucideIcon, ShieldAlert } from "lucide-react";
 import "@/styles/admin-b.css";
 import "@/styles/admin-b-support.css";
@@ -27,7 +27,7 @@ const EVENT_LABEL: Record<string, string> = { created: "Case created", status: "
 const LINK_TYPES = ["event", "booking", "ticket_order", "payment_order", "transaction", "workspace", "user", "listing", "dispute", "trust_case", "privacy_request", "risk_signal", "support_case"];
 const linkHref = (l: CaseLink) => ({ event: `/admin/events?q=${l.record_id}`, workspace: `/admin/workspaces/${l.record_id}`, user: `/admin/users/${l.record_id}`, listing: `/admin/marketplace/listings/${l.record_id}`,
   transaction: `/admin/commerce/transactions/${l.record_id}`, trust_case: `/admin/trust?case=${l.record_id}`, support_case: `/admin/support/${l.record_id}`, privacy_request: `/admin/support/privacy?id=${l.record_id}`,
-  risk_signal: "/admin/trust/risk", dispute: "/admin/disputes", ticket_order: `/admin/tickets?q=${l.record_id}`, payment_order: `/admin/commerce?q=${l.record_id}`, booking: "/admin/commerce" } as Record<string, string>)[l.record_type] ?? "/admin/support";
+  risk_signal: "/admin/trust/risk", dispute: "/admin/disputes", ticket_order: `/admin/tickets?tab=orders&q=${encodeURIComponent(l.record_id)}`, payment_order: `/admin/commerce?q=${l.record_id}`, booking: "/admin/commerce" } as Record<string, string>)[l.record_type] ?? "/admin/support";
 
 export const metadata: Metadata = { title: "Support case" };
 const ROLE_LABEL: Record<string, string> = { customer: "Customer", support: "Support", provider: "Provider", system: "System" };
@@ -75,13 +75,12 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
       <nav className="adca-seg">{([["all", "All"], ["customer", "Customer"], ["internal", "Internal"], ["provider", "Provider"], ["system", "System"]] as const).map(([k, l]) =>
         <Link key={k} href={`${base}?${new URLSearchParams({ ...(tab !== "case" ? { tab } : {}), ...(k !== "all" ? { f: k } : {}) })}`} scroll={false} className={f === k ? "on" : ""}>{l}{k !== "all" && <b>{roleCount(k)}</b>}</Link>)}</nav>
       <Link className="adb-btn adca-addnote" href={`${base}?compose=internal#reply`}><PenLine aria-hidden="true" />Add note</Link>
-      <Menu label="Conversation actions" entries={[{ kind: "link", label: "Export case (CSV)", href: "/admin/support/export" }, { kind: "link", label: "Back to queue", href: "/admin/support" }]} />
+      <Menu label="Conversation actions" entries={[{ kind: "link", label: "Export all cases (CSV)", href: "/admin/support/export" }, { kind: "link", label: "Back to queue", href: "/admin/support" }]} />
     </div>
     <ol className="adca-msgs">{shown.map(m => { const role = roleOf(m, c), mine = m.author_id === userId;
       return <li key={m.id} className={`${role} ${m.internal ? "internal" : ""}`}>
         {role === "system" ? <Mark text="G" size={34} /> : <Face name={m.author} src={role === "customer" ? req?.avatar : m.author_id === c.assignee_id ? assigneeAvatar : null} size={34} />}
-        <div><header><b>{m.author}</b><span>{role === "support" ? `Support${mine ? " (You)" : ""}` : ROLE_LABEL[role] ?? role}{m.internal ? " · Internal note" : ""}</span><time>{stamp(m.created_at)}</time>
-          <span className="adb-dots" aria-hidden="true"><MoreHorizontal /></span></header>
+        <div><header><b>{m.author}</b><span>{role === "support" ? `Support${mine ? " (You)" : ""}` : ROLE_LABEL[role] ?? role}{m.internal ? " · Internal note" : ""}</span><time>{stamp(m.created_at)}</time></header>
           <p>{m.body}</p></div></li>; })}
       {!shown.length && <li className="empty"><p>No messages in this view.</p></li>}</ol>
   </section>;
@@ -90,7 +89,7 @@ export default async function CasePage(props: PageProps<"/admin/support/[id]">) 
     <Head back={{ href: "/admin/support", label: "Back to Support" }} title={`Case ${c.reference}`} subtitle={c.subject}
       badges={<span className="adca-badges"><Pill status={c.priority} label={`${c.priority[0]!.toUpperCase()}${c.priority.slice(1)} priority`} dot /><Pill status={c.status} dot /></span>}
       actions={<>
-        <ActionButton action={assignCase} args={[id]} variant="outline" className="adca-b"><UserPlus aria-hidden="true" />Assign</ActionButton>
+        <ActionButton action={assignCase} args={[id]} variant="outline" className="adca-b" disabled={resolved || c.assignee_id === userId} title={c.assignee_id === userId ? "Already assigned to you" : undefined}><UserPlus aria-hidden="true" />Assign to me</ActionButton>
         {permissions.has("support.break_glass_conversation.read") && !resolved && <Link className="adb-btn adca-b" href={`/admin/conversations/request?type=support&case=${id}`}><ShieldAlert aria-hidden="true" />Request conversation access</Link>}
         <ActionButton action={setCaseStatus} args={[id, "escalated"]} reason variant="danger" className="adca-b" disabled={c.status === "escalated" || resolved} confirm={{ title: "Escalate case", body: "Moves the case to Tier 2 / the escalated queue.", cta: "Escalate" }}><ArrowUpFromLine aria-hidden="true" />Escalate</ActionButton>
         <Link className="adb-btn blue adca-b" href={`${base}?compose=internal#reply`}><SquarePen aria-hidden="true" />Create internal note</Link>

@@ -1,4 +1,5 @@
 "use client";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition, type ReactNode } from "react";
@@ -7,14 +8,16 @@ import { useToast } from "@/components/ui";
 import { saveQuoteDraft, type QuotePayload } from "./actions";
 import type { Line, Catalog } from "./data";
 
-const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: n % 1 ? 2 : 0 }).format(n);
+// Q72: the quote is in the event's currency (the booking is charged in it; DB trigger i18n_quote_currency stores it).
+const moneyIn = (currency: string) => (n: number) => formatMoney(n, currency, { decimals: n % 1 !== 0 });
 
 export function QuoteBuilder(props: {
   itemId: string; quoteId: string | null; initial: Line[]; catalog: (Catalog[number] & { qty: number })[]; suggested: string[];
   taxBps: number; taxLabel: string; depositPct: number; standbyAvailable: boolean; hours: number; guests: number;
   event: { date: string; start: string; end: string }; hard: boolean; hardReason: string;
-  terms: Record<string, unknown>; message: string; top: ReactNode; rail: ReactNode;
+  terms: Record<string, unknown>; message: string; top: ReactNode; rail: ReactNode; /** Q72 */ currency?: string;
 }) {
+  const cur = (props.currency || "GBP").toUpperCase(), gbp = moneyIn(cur), sym = currencySymbol(cur);
   const router = useRouter(), toast = useToast();
   const base = props.initial.filter(l => !["travel", "setup", "other"].includes(l.kind));
   const extra = (k: string) => props.initial.find(l => l.kind === k)?.unit_price ?? 0;
@@ -78,7 +81,7 @@ export function QuoteBuilder(props: {
           <div className="qb-line-text"><input aria-label="Item name" value={l.label} onChange={e => update(i, { label: e.target.value })} /><small>{l.detail || `${l.unit}`}</small></div>
           <label className="sr-only" htmlFor={`qty-${i}`}>Quantity</label>
           <input id={`qty-${i}`} className="qb-qty" type="number" min={1} step={1} value={l.qty} onChange={e => update(i, { qty: Math.max(1, Number(e.target.value) || 1) })} />
-          <span className="qb-price"><span>£</span><label className="sr-only" htmlFor={`price-${i}`}>Unit price</label><input id={`price-${i}`} type="number" min={0} step="0.01" value={l.unit_price} onChange={e => update(i, { unit_price: Math.max(0, Number(e.target.value) || 0) })} /></span>
+          <span className="qb-price"><span>{sym}</span><label className="sr-only" htmlFor={`price-${i}`}>Unit price</label><input id={`price-${i}`} type="number" min={0} step="0.01" value={l.unit_price} onChange={e => update(i, { unit_price: Math.max(0, Number(e.target.value) || 0) })} /></span>
           <button type="button" className="qb-x" aria-label={`Remove ${l.label}`} onClick={() => setLines(ls => ls.filter((_, j) => j !== i))}><X aria-hidden="true" /></button>
         </li>)}</ul>
         {!lines.length && <p className="qb-empty">No items yet — add a space, package or service.</p>}
@@ -115,12 +118,12 @@ export function QuoteBuilder(props: {
       <section className="ws-panel qb-costs">
         <h2>3. Additional costs</h2><p className="qb-sub">Add travel, setup, or other costs.</p>
         {([["Travel / delivery", travel, setTravel], ["Setup / breakdown", setupCost, setSetupCost], ["Other costs (optional)", other, setOther]] as const).map(([label, value, set]) =>
-          <div className="qb-cost" key={label}><span>{label}</span><span className="qb-money"><span>£</span><input type="number" min={0} step="0.01" aria-label={label} value={value} onChange={e => set(Math.max(0, Number(e.target.value) || 0))} /></span><span className="qb-fixed">Fixed</span></div>)}
+          <div className="qb-cost" key={label}><span>{label}</span><span className="qb-money"><span>{sym}</span><input type="number" min={0} step="0.01" aria-label={label} value={value} onChange={e => set(Math.max(0, Number(e.target.value) || 0))} /></span><span className="qb-fixed">Fixed</span></div>)}
         <label className="qb-notes"><span>Notes on additional costs</span><textarea rows={3} maxLength={500} value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. Includes travel from London and full setup/breakdown." /><small>{notes.length}/500</small></label>
       </section>
       <section className="ws-panel qb-pricing">
         <h2>4. Pricing &amp; payment terms</h2><p className="qb-sub">Set your deposit and optional standby.</p>
-        <div className="qb-cost"><span>Total price (GBP)</span><span className="qb-total">{gbp(total)}</span></div>
+        <div className="qb-cost"><span>Total price ({cur})</span><span className="qb-total">{gbp(total)}</span></div>
         <div className="qb-cost"><span>Deposit required</span><span className="qb-money pct"><input type="number" min={0} max={100} aria-label="Deposit percent" value={depositPct} onChange={e => setDepositPct(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} /><span>%</span></span><span className="qb-dep">{gbp(deposit)}</span></div>
         <label className={`qb-toggle ${props.standbyAvailable ? "" : "off"}`}><input type="checkbox" checked={standby} disabled={!props.standbyAvailable} onChange={e => setStandby(e.target.checked)} /><i />
           <span><b>Offer a standby option</b><small>{props.standbyAvailable ? "Be shown if the primary booking falls through." : "Enable standby in your venue’s commercial settings first."}</small></span></label>
@@ -128,7 +131,7 @@ export function QuoteBuilder(props: {
           <div className="qb-bd-head"><span>Item</span><span>Amount</span></div>
           {allLines.map((l, i) => <div key={i}><span>{l.label}{l.qty > 1 ? ` (${l.qty} ${l.unit})` : ""}</span><span>{gbp(l.qty * l.unit_price)}</span></div>)}
           {props.taxBps > 0 && <div><span>{props.taxLabel}</span><span>{gbp(tax)}</span></div>}
-          <div className="qb-bd-total"><span>Total (GBP)</span><span>{gbp(total)}</span></div>
+          <div className="qb-bd-total"><span>Total ({cur})</span><span>{gbp(total)}</span></div>
         </div>
       </section>
       </div>

@@ -1,0 +1,503 @@
+{
+ "leaf_weighted": 8.1,
+ "leaves": 12,
+ "leaves_passed": 4,
+ "page_line_drift": 30.3,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Gala\u00b7Dock Ticket Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p10/tickets-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 14,
+ "passed": 4,
+ "weighted_drift": 32.4,
+ "worst": [
+  {
+   "design": [
+    48,
+    316,
+    1017,
+    696
+   ],
+   "ours": [
+    49,
+    490,
+    1023,
+    165
+   ],
+   "iou": 0.236,
+   "box_drift": 76.4,
+   "line_drift": 20.1,
+   "drift": 76.4,
+   "dx": 1,
+   "dy": 174,
+   "dw": 6,
+   "dh": -531
+  },
+  {
+   "design": [
+    1090,
+    893,
+    401,
+    96
+   ],
+   "ours": [
+    1090,
+    910,
+    418,
+    100
+   ],
+   "iou": 0.652,
+   "box_drift": 34.8,
+   "line_drift": 44.6,
+   "drift": 34.8,
+   "dx": 0,
+   "dy": 17,
+   "dw": 17,
+   "dh": 4
+  },
+  {
+   "design": [
+    1096,
+    408,
+    390,
+    342
+   ],
+   "ours": [
+    1103,
+    420,
+    392,
+    357
+   ],
+   "iou": 0.86,
+   "box_drift": 14.0,
+   "line_drift": 55.4,
+   "drift": 14.0,
+   "dx": 7,
+   "dy": 12,
+   "dw": 2,
+   "dh": 15
+  },
+  {
+   "design": [
+    46,
+    172,
+    1018,
+    63
+   ],
+   "ours": [
+    49,
+    177,
+    1021,
+    60
+   ],
+   "iou": 0.885,
+   "box_drift": 11.5,
+   "line_drift": 14.5,
+   "drift": 11.5,
+   "dx": 3,
+   "dy": 5,
+   "dw": 3,
+   "dh": -3
+  },
+  {
+   "design": [
+    1082,
+    173,
+    417,
+    180
+   ],
+   "ours": [
+    1091,
+    178,
+    416,
+    182
+   ],
+   "iou": 0.9,
+   "box_drift": 10.0,
+   "line_drift": 97.6,
+   "drift": 10.0,
+   "dx": 9,
+   "dy": 5,
+   "dw": -1,
+   "dh": 2
+  },
+  {
+   "design": [
+    50,
+    320,
+    249,
+    157
+   ],
+   "ours": [
+    51,
+    313,
+    250,
+    159
+   ],
+   "iou": 0.916,
+   "box_drift": 8.4,
+   "line_drift": 42.6,
+   "drift": 8.4,
+   "dx": 1,
+   "dy": -7,
+   "dw": 1,
+   "dh": 2
+  },
+  {
+   "design": [
+    300,
+    318,
+    763,
+    160
+   ],
+   "ours": [
+    301,
+    313,
+    769,
+    159
+   ],
+   "iou": 0.924,
+   "box_drift": 7.6,
+   "line_drift": 34.4,
+   "drift": 7.6,
+   "dx": 1,
+   "dy": -5,
+   "dw": 6,
+   "dh": -1
+  },
+  {
+   "design": [
+    1079,
+    172,
+    423,
+    708
+   ],
+   "ours": [
+    1090,
+    177,
+    418,
+    717
+   ],
+   "iou": 0.936,
+   "box_drift": 6.4,
+   "line_drift": 56.4,
+   "drift": 6.4,
+   "dx": 11,
+   "dy": 5,
+   "dw": -5,
+   "dh": 9
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    46,
+    172,
+    1018,
+    63
+   ],
+   "ours": [
+    49,
+    177,
+    1021,
+    60
+   ],
+   "iou": 0.885,
+   "box_drift": 11.5,
+   "line_drift": 14.5,
+   "drift": 11.5,
+   "dx": 3,
+   "dy": 5,
+   "dw": 3,
+   "dh": -3
+  },
+  {
+   "design": [
+    1079,
+    172,
+    423,
+    708
+   ],
+   "ours": [
+    1090,
+    177,
+    418,
+    717
+   ],
+   "iou": 0.936,
+   "box_drift": 6.4,
+   "line_drift": 56.4,
+   "drift": 6.4,
+   "dx": 11,
+   "dy": 5,
+   "dw": -5,
+   "dh": 9
+  },
+  {
+   "design": [
+    1082,
+    173,
+    417,
+    180
+   ],
+   "ours": [
+    1091,
+    178,
+    416,
+    182
+   ],
+   "iou": 0.9,
+   "box_drift": 10.0,
+   "line_drift": 97.6,
+   "drift": 10.0,
+   "dx": 9,
+   "dy": 5,
+   "dw": -1,
+   "dh": 2
+  },
+  {
+   "design": [
+    48,
+    316,
+    1017,
+    696
+   ],
+   "ours": [
+    49,
+    490,
+    1023,
+    165
+   ],
+   "iou": 0.236,
+   "box_drift": 76.4,
+   "line_drift": 20.1,
+   "drift": 76.4,
+   "dx": 1,
+   "dy": 174,
+   "dw": 6,
+   "dh": -531
+  },
+  {
+   "design": [
+    300,
+    318,
+    763,
+    160
+   ],
+   "ours": [
+    301,
+    313,
+    769,
+    159
+   ],
+   "iou": 0.924,
+   "box_drift": 7.6,
+   "line_drift": 34.4,
+   "drift": 7.6,
+   "dx": 1,
+   "dy": -5,
+   "dw": 6,
+   "dh": -1
+  },
+  {
+   "design": [
+    50,
+    320,
+    249,
+    157
+   ],
+   "ours": [
+    51,
+    313,
+    250,
+    159
+   ],
+   "iou": 0.916,
+   "box_drift": 8.4,
+   "line_drift": 42.6,
+   "drift": 8.4,
+   "dx": 1,
+   "dy": -7,
+   "dw": 1,
+   "dh": 2
+  },
+  {
+   "design": [
+    1096,
+    408,
+    390,
+    342
+   ],
+   "ours": [
+    1103,
+    420,
+    392,
+    357
+   ],
+   "iou": 0.86,
+   "box_drift": 14.0,
+   "line_drift": 55.4,
+   "drift": 14.0,
+   "dx": 7,
+   "dy": 12,
+   "dw": 2,
+   "dh": 15
+  },
+  {
+   "design": [
+    300,
+    495,
+    763,
+    161
+   ],
+   "ours": [
+    301,
+    492,
+    769,
+    159
+   ],
+   "iou": 0.942,
+   "box_drift": 5.8,
+   "line_drift": 18.2,
+   "drift": 5.8,
+   "dx": 1,
+   "dy": -3,
+   "dw": 6,
+   "dh": -2
+  },
+  {
+   "design": [
+    50,
+    496,
+    250,
+    158
+   ],
+   "ours": [
+    51,
+    492,
+    250,
+    159
+   ],
+   "iou": 0.949,
+   "box_drift": 5.1,
+   "line_drift": 9.8,
+   "drift": 5.1,
+   "dx": 1,
+   "dy": -4,
+   "dw": 0,
+   "dh": 1
+  },
+  {
+   "design": [
+    300,
+    672,
+    763,
+    160
+   ],
+   "ours": [
+    301,
+    671,
+    769,
+    159
+   ],
+   "iou": 0.971,
+   "box_drift": 2.9,
+   "line_drift": 11.9,
+   "drift": 2.9,
+   "dx": 1,
+   "dy": -1,
+   "dw": 6,
+   "dh": -1
+  },
+  {
+   "design": [
+    50,
+    673,
+    249,
+    157
+   ],
+   "ours": [
+    51,
+    671,
+    250,
+    159
+   ],
+   "iou": 0.976,
+   "box_drift": 2.4,
+   "line_drift": 11.4,
+   "drift": 2.4,
+   "dx": 1,
+   "dy": -2,
+   "dw": 1,
+   "dh": 2
+  },
+  {
+   "design": [
+    301,
+    848,
+    762,
+    160
+   ],
+   "ours": [
+    301,
+    850,
+    769,
+    159
+   ],
+   "iou": 0.973,
+   "box_drift": 2.7,
+   "line_drift": 14.3,
+   "drift": 2.7,
+   "dx": 0,
+   "dy": 2,
+   "dw": 7,
+   "dh": -1
+  },
+  {
+   "design": [
+    50,
+    850,
+    249,
+    157
+   ],
+   "ours": [
+    50,
+    849,
+    250,
+    159
+   ],
+   "iou": 0.983,
+   "box_drift": 1.7,
+   "line_drift": 18.1,
+   "drift": 1.7,
+   "dx": 0,
+   "dy": -1,
+   "dw": 1,
+   "dh": 2
+  },
+  {
+   "design": [
+    1090,
+    893,
+    401,
+    96
+   ],
+   "ours": [
+    1090,
+    910,
+    418,
+    100
+   ],
+   "iou": 0.652,
+   "box_drift": 34.8,
+   "line_drift": 44.6,
+   "drift": 34.8,
+   "dx": 0,
+   "dy": 17,
+   "dw": 17,
+   "dh": 4
+  }
+ ]
+}

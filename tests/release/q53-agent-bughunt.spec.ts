@@ -111,7 +111,7 @@ test.describe("Q53 llm.ts resilience (stubbed fetch, never Azure)", () => {
     expect((await llm.chat([{ role: "user", content: "hi" }], { meter })).text).toBe("hello");
     expect(calls).toHaveLength(2); expect(calls.every(u => u.includes("/deployments/mini-dep/"))).toBe(true);
     expect(rpcCalls.filter(c => c.name === "ai_provider_attempt")).toHaveLength(2);   // every attempt is counted (6006)
-    expect(rpcCalls.filter(c => c.name === "record_ai_usage")).toHaveLength(1);
+    expect(rpcCalls.filter(c => c.name === "record_ai_usage_traced")).toHaveLength(1);
   });
   test("persistent 503 fails over to the next deployment", async () => {
     script([{ status: 503, retryAfter: "0" }, { status: 503, retryAfter: "0" }, { status: 200, body: okBody("from nano") }]);
@@ -128,7 +128,7 @@ test.describe("Q53 llm.ts resilience (stubbed fetch, never Azure)", () => {
     expect(e1).toBeInstanceOf(llm.AgentSafetyError); expect(e1.message).toBe(llm.SAFETY_REFUSAL); expect(calls).toHaveLength(1);
     script([{ status: 200, body: okBody("", "content_filter") }]);
     expect(await llm.chat([{ role: "user", content: "x" }], { meter }).catch(e => e)).toBeInstanceOf(llm.AgentSafetyError);
-    expect(rpcCalls.filter(c => c.name === "record_ai_usage")).toHaveLength(1);      // filtered completions still cost tokens
+    expect(rpcCalls.filter(c => c.name === "record_ai_usage_traced")).toHaveLength(1);      // filtered completions still cost tokens
     script([{ status: 401 }, { status: 200, body: okBody("never") }]);
     expect((await llm.chat([{ role: "user", content: "x" }]).catch(e => e)).message).toBe("agent_http_401"); expect(calls).toHaveLength(1);
     budgetOk = false; script([{ status: 200, body: okBody("never") }]);
@@ -158,6 +158,7 @@ type Runtime = {
 const runtime = load<Runtime>("src/lib/agent/runtime.ts", {
   "server-only": {}, "node:crypto": nodeCrypto,
   "@/lib/supabase/admin": { createAdminClient: () => admin }, "@/lib/workspace/db": { untyped: (x: unknown) => x },
+  "./locale": { localeDirective: () => "" }, "@/lib/i18n/workspace": { workspaceLocale: () => ({ timezone: "Europe/London", currency: "GBP" }) },   // i18n lane imports (stubs)
   "./llm": { chat: fakeChat, agentConfigured: () => true, SAFETY: "SAFETY", dataBlock: prompt.dataBlock, AgentBudgetError, AgentSafetyError },
   "./resilience": resilience, "@/lib/media/document": { PRESETS: [{ id: "a3", w: 1, h: 1, label: "A3" }], posterFromEvent: () => ({}) },
   "./watch": watch, "./registry": registry, "./minimise": minimiseMod, "./plan": plan, "./skills": skills, "./schedule-db": { routineNextRun: async () => null },
@@ -311,6 +312,17 @@ test.describe("Q53 runtime turn loop (scripted model, fixture workspaces)", () =
     model = { tool_pick: new AgentSafetyError("Gala Agent can’t help with that request.") };
     expect(await runtime.ask(owner.id, wsA, "organizer", "something filtered")).toEqual({ ok: false, error: "Gala Agent can’t help with that request." });
     await db.from("agent_policies").update({ allowed_tools: null }).eq("workspace_id", wsA);
+  });
+
+  test("activity export: runs and governed tool calls as CSV through the person's RLS client, never the arguments", async () => {
+    const exp = load<{ agentActivityCsv: (d: unknown, w: string, days: number) => Promise<string> }>("src/lib/agent/export.ts",
+      { "server-only": {}, "@/lib/provider/csv": { csvCell: (v: unknown) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; } } });
+    const oc = await signedIn(owner.email) as unknown as SupabaseClient;
+    const csv = await exp.agentActivityCsv(oc, wsA, 7);
+    expect(csv.split("\n")[0]).toBe("record,run_id,at,finished_at,mode_or_tool,risk,decision,status,refusal,person,goal,summary,tokens,cost_pence,retries_or_ms");
+    expect(csv).toContain("tool_call,"); expect(csv).toContain("task.create");
+    expect(csv).not.toContain(`Q53 approved ${tag}`);    // the task title was an argument: never exported
+    expect(await exp.agentActivityCsv(oc, wsB, 7)).not.toContain("task.create");
   });
 
   test("Q67 hand-off: agent tool writes run as the human (auth.uid()), so plan-limit triggers apply to agent-created records", async () => {

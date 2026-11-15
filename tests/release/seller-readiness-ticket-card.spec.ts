@@ -8,7 +8,8 @@ import { anon, admin } from "../phase1/helpers";
 test("event page never offers Buy while checkout would refuse the seller", async ({ request }) => {
   const sb = anon() as unknown as { from: (t: string) => any; rpc: (f: string, a: unknown) => any }; // eslint-disable-line @typescript-eslint/no-explicit-any
   const svc = admin as unknown as { from: (t: string) => any }; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const { data: events } = await sb.from("events").select("id,slug,settings").eq("visibility", "public").in("status", ["on_sale", "published", "live"]).not("slug", "is", null).limit(40);
+  // 202610294085 (backend-queue 2026-11-11): anon reads public events through events_public (settings = allow-listed public_settings).
+  const { data: events } = await sb.from("events_public").select("id,slug,settings").eq("visibility", "public").in("status", ["on_sale", "published", "live"]).not("slug", "is", null).limit(40);
   let checked = 0;
   for (const e of (events ?? []) as { id: string; slug: string; settings: Record<string, unknown> | null }[]) {
     const { data: readiness } = await sb.rpc("event_payment_readiness", { p_event: e.id });

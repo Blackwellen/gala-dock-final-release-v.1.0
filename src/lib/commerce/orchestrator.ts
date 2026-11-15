@@ -8,6 +8,8 @@ import { createDirectMerchantCheckout, createPlatformCheckout, refundedForTag, r
 import type { RefundReason } from "@/lib/payments/rules";
 import { refundLegacyPlatformOrder } from "@/lib/commerce/legacy-platform-refunds";
 import { boostCheckoutParams } from "@/lib/ads/checkout";
+import { headers } from "next/headers";
+import { requestSanctioned, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 
 /**
  * Payment orchestration entry points (backend §13.16, cards 123–132).
@@ -35,6 +37,9 @@ export async function startPayment(kind: PayKind, ids: { itemId?: string; standb
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Please sign in again." };
+  // Q74 (D4): no payment from a comprehensively sanctioned country/region (edge geolocation; Stripe screens cards too).
+  const sanctioned = requestSanctioned(await headers());
+  if (sanctioned) return { ok: false, error: SANCTIONS_COPY.checkout(sanctioned.name) };
   // The caller's own client: create_payment_order authorises the payer and prices the order from the database.
   const { data, error } = kind === "platform_boost"
     ? await supabase.rpc("create_boost_payment_order" as never, { p_boost: ids.boostId ?? null } as never)

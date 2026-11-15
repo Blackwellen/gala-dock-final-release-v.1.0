@@ -25,7 +25,7 @@ export default async function VirtualPage({ params }: PageProps<"/organizer/even
     db.from("check_ins").select("id", { count: "exact", head: true }).eq("event_id", id).eq("credential", "virtual"),
   ]);
   const providers = VIRTUAL_PROVIDERS.map(p => ({ key: p.key, label: p.label, status: providerStatus(p) }));
-  return <div className="mk-page" style={{ display: "grid", gap: 16, maxWidth: 860 }}>
+  return <div className="mk-page" style={{ display: "grid", gap: 16 }}>
     <EventSubHeader id={id} name={e.name} tab="plan" page="Online session" canMoney={ctx.canMoney} />
     <PageHead title="Online session" sub={<>For <Link href={`/organizer/events/${id}`} className="mk-link">{e.name}</Link>. Ticket holders get a <b>Join event</b> button that opens only inside the access window.</>} />
     <section className="mk-panel">

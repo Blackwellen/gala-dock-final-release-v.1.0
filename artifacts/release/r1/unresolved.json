@@ -1,0 +1,42 @@
+[
+ {
+  "label": "admin",
+  "pattern": "/admin/conversations/[grant]",
+  "why": "needs a break-glass grant on a real conversation (step-up TOTP; opening it logs and notifies the conversation members) — not created on the live DB; the request page /admin/conversations/request is covered"
+ },
+ {
+  "label": "admin",
+  "pattern": "/admin/login",
+  "why": "sign-in page (signed-out route; covered by the public/auth lane)"
+ },
+ {
+  "label": "customer",
+  "pattern": "/account/disputes/[id]",
+  "why": "the demo customer has no paid marketplace booking to dispute; the same DisputeView (viewer=customer) is covered through /organizer/disputes/[id]"
+ },
+ {
+  "label": "customer",
+  "pattern": "/account/help/[slug]",
+  "why": "redirects to the public /help/[slug] (covered by the public lane)"
+ },
+ {
+  "label": "organizer",
+  "pattern": "/organizer/help/[slug]",
+  "why": "redirects to the public /help/[slug] (covered by the public lane)"
+ },
+ {
+  "label": "provider",
+  "pattern": "/provider/help/[slug]",
+  "why": "redirects to the public /help/[slug] (covered by the public lane)"
+ },
+ {
+  "label": "partner",
+  "pattern": "/partner/statements/[id]",
+  "why": "a self-billing statement only exists after a partner payout run; not created on the live DB (money run)"
+ },
+ {
+  "label": "provider",
+  "pattern": "/provider/emergency/[id]",
+  "why": "the demo provider is not a candidate on any emergency request (the one visible id is the organiser side → provider page 404s); creating one needs an organiser emergency broadcast to live providers"
+ }
+]

@@ -28,7 +28,7 @@ export default async function CustomerBookingPage({ params }: PageProps<"/accoun
     hosp = { itemId, eventId: id, kind, now: requestTime(), booking: hb.ok ? hb.data : null, guests: Number(ev?.guest_count ?? 1) || 1,
       bars: ((bars ?? []) as { id: string; name: string; model: string; description: string; per_person: number | null; price: number | null; licensing: { min_age?: number } | null }[]).map(b => ({ id: b.id, name: b.name, model: b.model, description: b.description, per_person: b.per_person, price: b.price, min_age: b.licensing?.min_age ?? null })) as BarPackage[] };
   }
-  return <div className="k-col" style={{ gap: 14, maxWidth: 760 }}>
+  return <div className="k-col cu-bkd" style={{ gap: 14 }}>
     <Link className="k-link k-row" style={{ gap: 6 }} href={`/account/events/${id}/build`}><ArrowLeft size={14} aria-hidden="true" />Back to {lc.event.name}</Link>
     <header><h1 style={{ fontSize: 24, margin: 0 }}>{lc.item.title}</h1>
       <p className="k-muted" style={{ margin: "4px 0 0" }}>{lc.listing?.name ?? lc.item.category}{lc.item.amount != null ? ` · ${money(lc.item.amount)}` : ""}</p></header>

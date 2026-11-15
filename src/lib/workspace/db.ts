@@ -18,6 +18,15 @@ export async function rows<T>(query: PromiseLike<Result>): Promise<T[]> {
   if (error) throw new Error(error.message);
   return (data as T[] | null) ?? [];
 }
+/** `.in(column, ids)` over many ids, in batches: PostgREST puts the list in the URL, and a few thousand uuids (admin lists over every
+ *  workspace / owner) exceeded the request-line limit, so the fetch itself failed ("TypeError: fetch failed") and the whole admin
+ *  Marketplace and Workspaces pages errored (R1). Order across batches is not preserved; callers map by id. */
+export async function rowsIn<T>(ids: readonly string[], query: (batch: string[]) => PromiseLike<Result>, size = 150): Promise<T[]> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  const out: T[] = [];
+  for (let i = 0; i < unique.length; i += size) out.push(...await rows<T>(query(unique.slice(i, i + size))));
+  return out;
+}
 export async function one<T>(query: PromiseLike<Result>): Promise<T | null> {
   const { data, error } = await query;
   if (error) throw new Error(error.message);

@@ -1,8 +1,9 @@
 import "server-only";
+import { safeTz } from "@/lib/i18n/tz";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type SetupData = {
-  event: { id: string; name: string; slug: string | null; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; cover_image: string; event_type: string; visibility: string; guest_count: number; adults: number | null; children: number | null; description: string; management: string; status: string };
+  event: { id: string; name: string; slug: string | null; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; cover_image: string; event_type: string; visibility: string; guest_count: number; adults: number | null; children: number | null; description: string; management: string; status: string; currency: string; timezone: string };
   model: "general" | "reserved" | "free"; capacity: number; venueCap: number | null; payoutReady: boolean;
   tiers: { id?: string; name: string; description: string; price: number; quantity: number; badge: string | null; color: string; kind: string; sold: number; status: string; sale_start: string | null; sale_end: string | null }[];
   rules: { sale_start: string; sale_end: string | null; countdown: boolean; order_limit: number; transfers: boolean; resale: boolean; refund: "none" | "7days" | "partial" | "custom"; refund_text: string };
@@ -12,7 +13,7 @@ export type SetupData = {
 
 /** Everything the ticket setup wizard needs, read under the caller's RLS. */
 export async function loadTicketSetup(sb: SupabaseClient, eventId: string): Promise<SetupData | null> {
-  const { data: e } = await sb.from("events").select("id,name,slug,starts_at,ends_at,venue_name,location,cover_image,event_type,visibility,guest_count,adults,children,description,management,status,capacity,settings,workspace_id,venue_listing_id").eq("id", eventId).maybeSingle();
+  const { data: e } = await sb.from("events").select("id,name,slug,starts_at,ends_at,venue_name,location,cover_image,event_type,visibility,guest_count,adults,children,description,management,status,capacity,settings,workspace_id,venue_listing_id,currency,timezone").eq("id", eventId).maybeSingle();
   if (!e) return null;
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const [{ data: tiers }, { data: codes }, { data: venue }, { data: ws }] = await Promise.all([
@@ -27,7 +28,8 @@ export async function loadTicketSetup(sb: SupabaseClient, eventId: string): Prom
   const defStart = new Date(Math.max(Date.now() + 864e5, start ? start.getTime() - 47 * 864e5 : Date.now())); defStart.setUTCHours(9, 0, 0, 0);
   const defEnd = start ? new Date(start.getTime() - 864e5) : null; defEnd?.setUTCHours(22, 59, 0, 0);
   return {
-    event: { id: e.id, name: e.name, slug: e.slug, starts_at: e.starts_at, ends_at: e.ends_at, venue_name: e.venue_name, location: e.location, cover_image: e.cover_image, event_type: e.event_type, visibility: e.visibility, guest_count: e.guest_count, adults: e.adults, children: e.children, description: e.description, management: e.management, status: e.status },
+    event: { id: e.id, name: e.name, slug: e.slug, starts_at: e.starts_at, ends_at: e.ends_at, venue_name: e.venue_name, location: e.location, cover_image: e.cover_image, event_type: e.event_type, visibility: e.visibility, guest_count: e.guest_count, adults: e.adults, children: e.children, description: e.description, management: e.management, status: e.status,
+      currency: String(e.currency || "GBP").toUpperCase(), timezone: safeTz(e.timezone) },
     model: (s.ticket_model as SetupData["model"]) ?? (tiers?.length && tiers.every(t => Number(t.price) === 0) ? "free" : "general"),
     capacity: Number(s.ticket_capacity) || (tiers ?? []).reduce((a, t) => a + t.quantity, 0) || Math.min(venueCap ?? e.guest_count ?? 100, Math.max(e.guest_count || 100, 50)),
     venueCap, payoutReady: ws?.payout_status === "active",

@@ -1,0 +1,99 @@
+{
+ "auth": [],
+ "flows": [],
+ "switching": [],
+ "billing": [],
+ "onboarding": [
+  {
+   "step": "after first login",
+   "url": "/onboarding"
+  },
+  {
+   "name": "ONB-001",
+   "links": 7,
+   "buttons": 3,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Whatever you’re planning, we’ve got you covered.",
+   "url": "/onboarding"
+  },
+  {
+   "name": "ONB-CU-01",
+   "links": 7,
+   "buttons": 4,
+   "inputs": 17,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Let’s set upyour experience",
+   "url": "/onboarding/customer?step=1"
+  },
+  {
+   "name": "ONB-ORG-01",
+   "links": 8,
+   "buttons": 7,
+   "inputs": 8,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Create your Organizer workspace",
+   "url": "/onboarding/organizer?step=1"
+  },
+  {
+   "name": "ONB-ORG-02",
+   "links": 8,
+   "buttons": 7,
+   "inputs": 8,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Create your Organizer workspace",
+   "url": "/onboarding/organizer?step=1"
+  },
+  {
+   "name": "ONB-PROV-01",
+   "links": 8,
+   "buttons": 3,
+   "inputs": 11,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Set up your Provider workspace",
+   "url": "/onboarding/provider?step=1"
+  },
+  {
+   "name": "ONB-PROV-02",
+   "links": 8,
+   "buttons": 3,
+   "inputs": 11,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Set up your Provider workspace",
+   "url": "/onboarding/provider?step=1"
+  },
+  {
+   "name": "phone-ONB-001",
+   "links": 6,
+   "buttons": 3,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Whatever you’re planning, we’ve got you covered.",
+   "url": "/onboarding"
+  }
+ ],
+ "notes": [
+  "cleanup: 1 disposable users removed"
+ ]
+}

@@ -1,4 +1,6 @@
 "use client";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
+import { useToday } from "@/components/shared/local-time";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -9,12 +11,14 @@ import { sendRequest } from "@/lib/actions/marketplace";
 import { buildCategoryOf, labelOf } from "@/lib/master-data";
 
 /* ORG-W04 four-step request: 1 Requirement · 2 Specifications · 3 Suppliers · 4 Review & send.
-   The draft (requirement + specifications) and the supplier strategy autosave on this device per workspace/user, so a reload
-   resumes where the organizer left off. Nothing is sent until the explicit "Send request" on step 4. */
+   The draft (requirement + specifications) and the supplier strategy are kept on this device only (localStorage, never sent) per
+   workspace/user, so a reload resumes where the organizer left off. Nothing reaches the server until the explicit "Send request" on
+   step 4 (owner rule 2026-11-15: no server auto-save). The device draft is read once per scope: a re-render with new props never
+   overwrites what the organizer is typing. */
 export type Candidate = { id: string; name: string; image: string; rating: number; reviews: number; category: string; badge: string | null; fit: number; avail: string; availLabel: string; priceGuide: string; priceBasis: string; distance: string; response: number; emergency: boolean; reliability: string; events: number };
 type Draft = { event_id: string; category: string; title: string; scope: string; budget_min: string; budget_max: string; budget_type: string; date: string; time: string; setup: string; location: string; capacity: string; capacity_range: string; credentials: string; deadline: string; respond_by: string; checklist: string[]; checklist_other: string; questions: string; documents: string[]; site_notes: string; attachments?: { path: string; name: string }[] };
 type Strategy = { sel: Record<string, "primary" | "backup">; order: string[]; hours: number; hold: boolean; holdH: number; backups: boolean; emergency: boolean };
-type EventLite = { id: string; name: string; starts_at: string | null; location: string; capacity: number | null; cover_image?: string; guest_count?: number | null };
+type EventLite = { id: string; name: string; starts_at: string | null; location: string; capacity: number | null; cover_image?: string; guest_count?: number | null; currency?: string };
 
 const KEY = "gd-rfq-draft";
 const draftKey = (scope: string) => `${KEY}:${scope}`;
@@ -40,12 +44,13 @@ const CHECKS = [["licensed", "Licensed (alcohol)"], ["liability", "Public liabil
 const DOCS = [["quote", "Itemised quote"], ["insurance", "Insurance certificate"], ["risk", "Risk assessment / method statement"], ["portfolio", "Portfolio or sample menu"], ["availability", "Written availability confirmation"]] as const;
 const label = (list: readonly (readonly [string, string])[], keys: string[]) => keys.map(k => list.find(x => x[0] === k)?.[1] ?? k);
 const fmtDate = (d: string) => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "";
-const gbpN = (v: string) => v ? `£${Number(v).toLocaleString("en-GB")}` : "";
+/** Q76: budgets are in the event's currency (was £). */
+const gbpN = (v: string, c = "GBP") => v ? formatMoney(Number(v), c) : "";
 
-/** Loads the device draft for this workspace/user once, then autosaves every change. */
+/** Loads the device draft for this workspace/user once, then keeps every change on this device (never the server). */
 function useDraft(scope: string, initial: Partial<Draft>, preferInitial = false) {
-  const [d, setD] = useState<Draft>({ ...EMPTY, ...initial }); const [ready, setReady] = useState(false); const loaded = useRef(false);
-  useEffect(() => { queueMicrotask(() => { const saved = store.get<Draft>(draftKey(scope)); if (saved && (!preferInitial || !initial.event_id || saved.event_id === initial.event_id)) setD(x => ({ ...x, ...saved, ...(preferInitial && initial.event_id ? { event_id: initial.event_id } : {}) })); loaded.current = true; setReady(true); }); }, [scope, initial, preferInitial]);
+  const [d, setD] = useState<Draft>({ ...EMPTY, ...initial }); const [ready, setReady] = useState(false); const loaded = useRef(false), readFor = useRef<string | null>(null);
+  useEffect(() => { if (readFor.current === scope) return; readFor.current = scope; queueMicrotask(() => { const saved = store.get<Draft>(draftKey(scope)); if (saved && (!preferInitial || !initial.event_id || saved.event_id === initial.event_id)) setD(x => ({ ...x, ...saved, ...(preferInitial && initial.event_id ? { event_id: initial.event_id } : {}) })); loaded.current = true; setReady(true); }); }, [scope, initial, preferInitial]);
   useEffect(() => { if (loaded.current) store.set(draftKey(scope), d); }, [d, scope]);
   return [d, setD, ready] as const;
 }
@@ -59,6 +64,7 @@ function DraftMissing({ flags }: { flags: URLSearchParams }) {
 /** Step 1 — Requirement (Create Marketplace Request design): linked event, category tiles, brief, when/where, capacity and budget,
  *  plus the additional-requirements checklist, attachments and response deadline. */
 export function RfqRequirement({ events, initial, draftScope, initialListing }: { events: EventLite[]; initial: Partial<Draft>; draftScope: string; initialListing?: string }) {
+  const today = useToday();   // Q72: viewer's calendar date, not the UTC date
   const router = useRouter(); const flags = useSearchParams();
   const [d, setD] = useDraft(draftScope, initial, !!flags.get("event") || !!initialListing);
   const [uploading, setUploading] = useState(false); const [tried, setTried] = useState(false); const [changing, setChanging] = useState(false);
@@ -92,7 +98,7 @@ export function RfqRequirement({ events, initial, draftScope, initialListing }: 
         <div className="k-grid k-g4 rq-g4">
           <label className="k-field"><span>Expected attendance <b>*</b></span><div className="k-input-icon"><Users size={15} /><input className="k-input" inputMode="numeric" value={d.capacity} onChange={e => set("capacity", e.target.value.replace(/[^0-9]/g, ""))} aria-invalid={tried && !d.capacity.trim()} /></div></label>
           <label className="k-field"><span>Capacity range</span><select className="k-select" value={d.capacity_range} onChange={e => set("capacity_range", e.target.value)}>{["Exact capacity", "Up to 10% more", "Up to 25% more", "Flexible"].map(x => <option key={x}>{x}</option>)}</select></label>
-          <label className="k-field"><span>Budget / price range (£)</span><span className="rq-budget"><input className="k-input" type="number" min={0} value={d.budget_min} onChange={e => set("budget_min", e.target.value)} aria-label="Budget min (£)" /><i>to</i><input className="k-input" type="number" min={0} value={d.budget_max} onChange={e => set("budget_max", e.target.value)} aria-label="Budget max (£)" /></span></label>
+          <label className="k-field"><span>Budget / price range ({currencySymbol(ev?.currency ?? "GBP")})</span><span className="rq-budget"><input className="k-input" type="number" min={0} value={d.budget_min} onChange={e => set("budget_min", e.target.value)} aria-label="Budget min (£)" /><i>to</i><input className="k-input" type="number" min={0} value={d.budget_max} onChange={e => set("budget_max", e.target.value)} aria-label="Budget max (£)" /></span></label>
           <label className="k-field"><span>Budget type</span><select className="k-select" value={d.budget_type} onChange={e => set("budget_type", e.target.value)}>{["Total project budget", "Per day", "Per person", "Per hour"].map(x => <option key={x}>{x}</option>)}</select></label>
         </div></section>
       {tried && problems.length > 0 && <div className="k-notice red" role="alert"><Info size={15} /><span className="k-small"><b>Before you continue:</b> {problems.join(" · ")}.</span></div>}
@@ -102,7 +108,7 @@ export function RfqRequirement({ events, initial, draftScope, initialListing }: 
         <div className="rq-checks">{CHECKS.map(([k, l]) => <label key={k} className="k-check"><input type="checkbox" checked={d.checklist.includes(k)} onChange={e => set("checklist", e.target.checked ? [...d.checklist, k] : d.checklist.filter(x => x !== k))} /><span>{l}</span></label>)}</div>
         {d.checklist.includes("other") && <input className="k-input" style={{ marginTop: 8 }} value={d.checklist_other} maxLength={120} onChange={e => set("checklist_other", e.target.value)} placeholder="Other requirement" aria-label="Other requirement" aria-invalid={tried && !d.checklist_other.trim()} />}</section>
       <section className="k-card"><h2 className="wz-h">Attachments (optional)</h2><p className="k-small" style={{ marginBottom: 8 }}>Add documents, images or reference materials.</p><RequestAttachments files={d.attachments ?? []} onChange={files => setD(value => ({ ...value, attachments: files }))} onBusy={setUploading} /></section>
-      <section className="k-card"><h2 className="wz-h">Response deadline</h2><p className="k-small" style={{ marginBottom: 8 }}>When do you need responses by?</p><input className="k-input" type="date" aria-label="Respond by" min={new Date().toISOString().slice(0, 10)} max={d.date || undefined} value={d.respond_by} onChange={e => set("respond_by", e.target.value)} /><small className="k-xs k-muted">Each supplier also gets a response window on the Suppliers step.</small></section>
+      <section className="k-card"><h2 className="wz-h">Response deadline</h2><p className="k-small" style={{ marginBottom: 8 }}>When do you need responses by?</p><input className="k-input" type="date" aria-label="Respond by" min={today} max={d.date || undefined} value={d.respond_by} onChange={e => set("respond_by", e.target.value)} /><small className="k-xs k-muted">Each supplier also gets a response window on the Suppliers step.</small></section>
     </div>
     <div className="wz-foot" style={{ gridColumn: "1 / -1" }}><Link className="k-btn ghost lg" href="/organizer/marketplace">Cancel</Link><button className="k-btn primary lg" disabled={uploading}>Continue to specifications <ArrowRight size={15} /></button></div>
   </form>;
@@ -126,7 +132,7 @@ export function RfqSpecs({ draftScope, events }: { draftScope: string; events: E
     </div>
     <div className="k-col" style={{ gap: 14 }}>
       <section className="k-card"><div className="k-between"><h2 className="wz-h">Your requirement</h2><Link className="k-link k-small" href={stepHref(1, d, flags)}><Pencil size={12} /> Edit</Link></div>
-        <dl className="ov-dl rq-dl">{[["Event", ev?.name ?? "—"], ["Service", catLabel(d.category)], ["Title", d.title], ["Date", `${fmtDate(d.date)}${d.time ? ` · ${d.time}` : ""}`], ["Location", d.location], ["Attendance", d.capacity], ["Budget", d.budget_min || d.budget_max ? `${gbpN(d.budget_min) || "—"} – ${gbpN(d.budget_max) || "—"} (${d.budget_type.toLowerCase()})` : "Not given"], ["Requirements", label(CHECKS, d.checklist.filter(c => c !== "other")).concat(d.checklist.includes("other") ? [d.checklist_other] : []).join(", ") || "None"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || "—"}</dd></div>)}</dl></section>
+        <dl className="ov-dl rq-dl">{[["Event", ev?.name ?? "—"], ["Service", catLabel(d.category)], ["Title", d.title], ["Date", `${fmtDate(d.date)}${d.time ? ` · ${d.time}` : ""}`], ["Location", d.location], ["Attendance", d.capacity], ["Budget", d.budget_min || d.budget_max ? `${gbpN(d.budget_min, ev?.currency) || "—"} – ${gbpN(d.budget_max, ev?.currency) || "—"} (${d.budget_type.toLowerCase()})` : "Not given"], ["Requirements", label(CHECKS, d.checklist.filter(c => c !== "other")).concat(d.checklist.includes("other") ? [d.checklist_other] : []).join(", ") || "None"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || "—"}</dd></div>)}</dl></section>
       <section className="k-card"><h2 className="wz-h" style={{ marginBottom: 8 }}>How it works</h2><ul className="pl-agent-list"><li><Check size={15} className="k-green" />Providers have a fixed response window (server clock)</li><li><Check size={15} className="k-green" />No reply ≠ unavailable — requests expire as &ldquo;no response&rdquo;</li><li><Check size={15} className="k-green" />Quotes are compared side by side before you commit</li><li><Check size={15} className="k-green" />Nothing is booked or paid until you confirm</li></ul></section>
     </div>
     <div className="wz-foot" style={{ gridColumn: "1 / -1" }}><Link className="k-btn ghost lg" href={stepHref(1, d, flags)}><ArrowLeft size={15} />Back</Link><button className="k-btn primary lg">Continue to suppliers <ArrowRight size={15} /></button></div>
@@ -134,10 +140,10 @@ export function RfqSpecs({ draftScope, events }: { draftScope: string; events: E
 }
 
 const DEFAULT_STRATEGY = (preselect: string[], initialHold?: boolean, initialEmergency = false): Strategy => ({ sel: Object.fromEntries(preselect.map((id, i) => [id, i < 2 ? "primary" : "backup"])), order: [], hours: 8, hold: initialHold ?? true, holdH: 24, backups: true, emergency: initialEmergency });
-/** Restores the saved strategy (only for candidates still on offer) and autosaves changes. */
+/** Restores the saved strategy (only for candidates still on offer) once per key, then keeps changes on this device. */
 function useStrategy(key: string, candidates: Candidate[], fallback: Strategy, initialHold?: boolean, initialEmergency = false) {
-  const [st, setSt] = useState<Strategy>(fallback); const loaded = useRef(false);
-  useEffect(() => { queueMicrotask(() => { const s = store.get<Partial<Strategy>>(`${key}:strategy`); if (s) { const ids = new Set(candidates.map(c => c.id)); setSt(x => ({ ...x,
+  const [st, setSt] = useState<Strategy>(fallback); const loaded = useRef(false), readFor = useRef<string | null>(null);
+  useEffect(() => { if (readFor.current === key) return; readFor.current = key; queueMicrotask(() => { const s = store.get<Partial<Strategy>>(`${key}:strategy`); if (s) { const ids = new Set(candidates.map(c => c.id)); setSt(x => ({ ...x,
     ...(s.sel && typeof s.sel === "object" ? { sel: Object.fromEntries(Object.entries(s.sel).filter(([id, role]) => ids.has(id) && (role === "primary" || role === "backup"))) as Strategy["sel"] } : {}),
     ...(Array.isArray(s.order) ? { order: s.order.filter(id => typeof id === "string" && ids.has(id)) } : {}),
     ...([2, 4, 8, 12].includes(Number(s.hours)) ? { hours: Number(s.hours) } : {}), ...([12, 24, 48, 72].includes(Number(s.holdH)) ? { holdH: Number(s.holdH) } : {}),
@@ -199,7 +205,7 @@ export function RfqSuppliers({ candidates, eventId, preselect, eventDate, draftS
 }
 
 /** Step 4 — Review & send: everything from steps 1–3 in one place; "Send request" is the only action that contacts suppliers. */
-export function RfqReview({ candidates, eventId, eventName, eventDate, draftScope, preselect, initialHold, initialEmergency = false }: { candidates: Candidate[]; eventId: string; eventName: string; eventDate: string; draftScope: string; preselect: string[]; initialHold?: boolean; initialEmergency?: boolean }) {
+export function RfqReview({ candidates, eventId, eventName, eventDate, draftScope, preselect, initialHold, initialEmergency = false, currency = "GBP" }: { candidates: Candidate[]; eventId: string; eventName: string; eventDate: string; draftScope: string; preselect: string[]; initialHold?: boolean; initialEmergency?: boolean ; currency?: string }) {
   const { run, pending } = useAction(); const toast = useKitToast(); const flags = useSearchParams();
   // Q48: once sent, keep "Send request" disabled while the redirect to the request page loads — a second click re-sent the RFQ.
   const [sent, setSent] = useState(false);
@@ -224,7 +230,7 @@ export function RfqReview({ candidates, eventId, eventName, eventDate, draftScop
     <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
       <section className="k-card"><div className="k-between"><h2 className="wz-h">Requirement</h2>{edit(1)}</div>
         <h3 className="rq-title">{d.title}</h3><p className="k-small" style={{ whiteSpace: "pre-line" }}>{d.scope}</p>
-        <dl className="ov-dl rq-dl">{[["Event", eventName], ["Service", catLabel(d.category)], ["When", `${fmtDate(d.date)}${d.time ? ` · ${d.time}` : ""}${d.setup ? ` · setup ${d.setup}` : ""}`], ["Where", d.location], ["Attendance", `${d.capacity}${d.capacity_range !== "Exact capacity" ? ` (${d.capacity_range.toLowerCase()})` : ""}`], ["Budget", d.budget_min || d.budget_max ? `${gbpN(d.budget_min) || "—"} – ${gbpN(d.budget_max) || "—"} · ${d.budget_type}` : "Not given"], ["Requirements", reqs.join(", ") || "None"], ["Responses by", d.respond_by ? fmtDate(d.respond_by) : "Response window only"], ["Attachments", (d.attachments ?? []).map(a => a.name).join(", ") || "None"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || "—"}</dd></div>)}</dl></section>
+        <dl className="ov-dl rq-dl">{[["Event", eventName], ["Service", catLabel(d.category)], ["When", `${fmtDate(d.date)}${d.time ? ` · ${d.time}` : ""}${d.setup ? ` · setup ${d.setup}` : ""}`], ["Where", d.location], ["Attendance", `${d.capacity}${d.capacity_range !== "Exact capacity" ? ` (${d.capacity_range.toLowerCase()})` : ""}`], ["Budget", d.budget_min || d.budget_max ? `${gbpN(d.budget_min, currency) || "—"} – ${gbpN(d.budget_max, currency) || "—"} · ${d.budget_type}` : "Not given"], ["Requirements", reqs.join(", ") || "None"], ["Responses by", d.respond_by ? fmtDate(d.respond_by) : "Response window only"], ["Attachments", (d.attachments ?? []).map(a => a.name).join(", ") || "None"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || "—"}</dd></div>)}</dl></section>
       <section className="k-card"><div className="k-between"><h2 className="wz-h">Specifications</h2>{edit(2)}</div>
         <dl className="ov-dl rq-dl">{[["Questions", d.questions || "None"], ["Include with quotes", label(DOCS, d.documents).join(", ") || "Nothing extra"], ["Site & access", d.site_notes || "None"], ["Credentials", d.credentials || "None"]].map(([k, v]) => <div key={k}><dt>{k}</dt><dd style={{ whiteSpace: "pre-line" }}>{v}</dd></div>)}</dl></section>
     </div>

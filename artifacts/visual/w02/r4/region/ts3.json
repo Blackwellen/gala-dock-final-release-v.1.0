@@ -1,0 +1,415 @@
+{
+ "leaf_weighted": 32.2,
+ "leaves": 7,
+ "leaves_passed": 0,
+ "page_line_drift": 59.9,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Gala\u00b7Dock Ticket Setup Review.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p5/ts3-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 10,
+ "passed": 0,
+ "weighted_drift": 33.3,
+ "worst": [
+  {
+   "design": [
+    1137,
+    363,
+    365,
+    89
+   ],
+   "ours": [
+    1143,
+    153,
+    365,
+    459
+   ],
+   "iou": 0.19,
+   "box_drift": 81.0,
+   "line_drift": 62.2,
+   "drift": 81.0,
+   "dx": 6,
+   "dy": -210,
+   "dw": 0,
+   "dh": 370
+  },
+  {
+   "design": [
+    1137,
+    711,
+    365,
+    236
+   ],
+   "ours": [
+    1145,
+    672,
+    363,
+    160
+   ],
+   "iou": 0.428,
+   "box_drift": 57.2,
+   "line_drift": 96.5,
+   "drift": 57.2,
+   "dx": 8,
+   "dy": -39,
+   "dw": -2,
+   "dh": -76
+  },
+  {
+   "design": [
+    286,
+    154,
+    1218,
+    862
+   ],
+   "ours": [
+    289,
+    137,
+    838,
+    800
+   ],
+   "iou": 0.617,
+   "box_drift": 38.3,
+   "line_drift": 66.3,
+   "drift": 38.3,
+   "dx": 3,
+   "dy": -17,
+   "dw": -380,
+   "dh": -62
+  },
+  {
+   "design": [
+    732,
+    857,
+    390,
+    97
+   ],
+   "ours": [
+    715,
+    874,
+    411,
+    62
+   ],
+   "iou": 0.618,
+   "box_drift": 38.2,
+   "line_drift": 87.3,
+   "drift": 38.2,
+   "dx": -17,
+   "dy": 17,
+   "dw": 21,
+   "dh": -35
+  },
+  {
+   "design": [
+    40,
+    434,
+    233,
+    338
+   ],
+   "ours": [
+    39,
+    397,
+    235,
+    308
+   ],
+   "iou": 0.718,
+   "box_drift": 28.2,
+   "line_drift": 62.1,
+   "drift": 28.2,
+   "dx": -1,
+   "dy": -37,
+   "dw": 2,
+   "dh": -30
+  },
+  {
+   "design": [
+    289,
+    707,
+    428,
+    247
+   ],
+   "ours": [
+    290,
+    664,
+    412,
+    272
+   ],
+   "iou": 0.764,
+   "box_drift": 23.6,
+   "line_drift": 69.8,
+   "drift": 23.6,
+   "dx": 1,
+   "dy": -43,
+   "dw": -16,
+   "dh": 25
+  },
+  {
+   "design": [
+    304,
+    202,
+    301,
+    184
+   ],
+   "ours": [
+    305,
+    205,
+    270,
+    159
+   ],
+   "iou": 0.775,
+   "box_drift": 22.5,
+   "line_drift": 49.4,
+   "drift": 22.5,
+   "dx": 1,
+   "dy": 3,
+   "dw": -31,
+   "dh": -25
+  },
+  {
+   "design": [
+    42,
+    435,
+    230,
+    279
+   ],
+   "ours": [
+    39,
+    397,
+    233,
+    306
+   ],
+   "iou": 0.835,
+   "box_drift": 16.5,
+   "line_drift": 53.9,
+   "drift": 16.5,
+   "dx": -3,
+   "dy": -38,
+   "dw": 3,
+   "dh": 27
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    286,
+    154,
+    1218,
+    862
+   ],
+   "ours": [
+    289,
+    137,
+    838,
+    800
+   ],
+   "iou": 0.617,
+   "box_drift": 38.3,
+   "line_drift": 66.3,
+   "drift": 38.3,
+   "dx": 3,
+   "dy": -17,
+   "dw": -380,
+   "dh": -62
+  },
+  {
+   "design": [
+    289,
+    159,
+    832,
+    238
+   ],
+   "ours": [
+    290,
+    155,
+    836,
+    221
+   ],
+   "iou": 0.891,
+   "box_drift": 10.9,
+   "line_drift": 56.1,
+   "drift": 10.9,
+   "dx": 1,
+   "dy": -4,
+   "dw": 4,
+   "dh": -17
+  },
+  {
+   "design": [
+    1152,
+    194,
+    336,
+    170
+   ],
+   "ours": [
+    1156,
+    196,
+    338,
+    171
+   ],
+   "iou": 0.943,
+   "box_drift": 5.7,
+   "line_drift": 11.3,
+   "drift": 5.7,
+   "dx": 4,
+   "dy": 2,
+   "dw": 2,
+   "dh": 1
+  },
+  {
+   "design": [
+    304,
+    202,
+    301,
+    184
+   ],
+   "ours": [
+    305,
+    205,
+    270,
+    159
+   ],
+   "iou": 0.775,
+   "box_drift": 22.5,
+   "line_drift": 49.4,
+   "drift": 22.5,
+   "dx": 1,
+   "dy": 3,
+   "dw": -31,
+   "dh": -25
+  },
+  {
+   "design": [
+    1137,
+    363,
+    365,
+    89
+   ],
+   "ours": [
+    1143,
+    153,
+    365,
+    459
+   ],
+   "iou": 0.19,
+   "box_drift": 81.0,
+   "line_drift": 62.2,
+   "drift": 81.0,
+   "dx": 6,
+   "dy": -210,
+   "dw": 0,
+   "dh": 370
+  },
+  {
+   "design": [
+    40,
+    434,
+    233,
+    338
+   ],
+   "ours": [
+    39,
+    397,
+    235,
+    308
+   ],
+   "iou": 0.718,
+   "box_drift": 28.2,
+   "line_drift": 62.1,
+   "drift": 28.2,
+   "dx": -1,
+   "dy": -37,
+   "dw": 2,
+   "dh": -30
+  },
+  {
+   "design": [
+    42,
+    435,
+    230,
+    279
+   ],
+   "ours": [
+    39,
+    397,
+    233,
+    306
+   ],
+   "iou": 0.835,
+   "box_drift": 16.5,
+   "line_drift": 53.9,
+   "drift": 16.5,
+   "dx": -3,
+   "dy": -38,
+   "dw": 3,
+   "dh": 27
+  },
+  {
+   "design": [
+    289,
+    707,
+    428,
+    247
+   ],
+   "ours": [
+    290,
+    664,
+    412,
+    272
+   ],
+   "iou": 0.764,
+   "box_drift": 23.6,
+   "line_drift": 69.8,
+   "drift": 23.6,
+   "dx": 1,
+   "dy": -43,
+   "dw": -16,
+   "dh": 25
+  },
+  {
+   "design": [
+    1137,
+    711,
+    365,
+    236
+   ],
+   "ours": [
+    1145,
+    672,
+    363,
+    160
+   ],
+   "iou": 0.428,
+   "box_drift": 57.2,
+   "line_drift": 96.5,
+   "drift": 57.2,
+   "dx": 8,
+   "dy": -39,
+   "dw": -2,
+   "dh": -76
+  },
+  {
+   "design": [
+    732,
+    857,
+    390,
+    97
+   ],
+   "ours": [
+    715,
+    874,
+    411,
+    62
+   ],
+   "iou": 0.618,
+   "box_drift": 38.2,
+   "line_drift": 87.3,
+   "drift": 38.2,
+   "dx": -17,
+   "dy": 17,
+   "dw": 21,
+   "dh": -35
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "email": "provider.demo@example.com",
+ "checkedLinks": 24,
+ "dead": [],
+ "routes": [
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "h1": "Arena Street Food",
+   "controls": 101,
+   "unnamed": [
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>",
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>",
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 23
+  },
+  {
+   "name": "menus",
+   "route": "/provider/menus",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/menus",
+   "h1": "Food & drink",
+   "controls": 29,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 22
+  },
+  {
+   "name": "menu",
+   "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+   "h1": "Arena Street Food",
+   "controls": 88,
+   "unnamed": [
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>",
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>",
+    "<button type=\"button\" class=\"mk-btn ghost\">Add variant</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "menus",
+   "route": "/provider/menus",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/provider/menus",
+   "h1": "Food & drink",
+   "controls": 16,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  }
+ ]
+}

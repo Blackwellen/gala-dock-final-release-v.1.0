@@ -1,0 +1,181 @@
+[
+ {
+  "size": "390x844",
+  "route": "/home",
+  "overflowX": false,
+  "scrollWidth": 390,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [
+   "ARTICLE.hm-card@512",
+   "DIV.hm-card-img@511",
+   "IMG.@511",
+   "BUTTON.hm-heart@501",
+   "svg.[object@493"
+  ],
+  "sheet": null
+ },
+ {
+  "size": "390x844",
+  "route": "/account/tickets",
+  "overflowX": false,
+  "scrollWidth": 390,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [
+   "A.@410"
+  ],
+  "sheet": null
+ },
+ {
+  "size": "390x844",
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+  "overflowX": false,
+  "scrollWidth": 390,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [
+   "A.ce-tab@505",
+   "svg.[object@422",
+   "path.[object@416",
+   "path.[object@421"
+  ],
+  "sheet": null
+ },
+ {
+  "size": "390x844",
+  "route": "/account",
+  "overflowX": false,
+  "scrollWidth": 390,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ },
+ {
+  "size": "390x844",
+  "route": "/account/reviews",
+  "overflowX": false,
+  "scrollWidth": 390,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ },
+ {
+  "size": "820x1180",
+  "route": "/home",
+  "overflowX": false,
+  "scrollWidth": 820,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [
+   "ARTICLE.hm-card@1123",
+   "DIV.hm-card-img@1122",
+   "IMG.@1122",
+   "BUTTON.hm-heart@1112",
+   "svg.[object@1105"
+  ],
+  "sheet": null
+ },
+ {
+  "size": "820x1180",
+  "route": "/account/tickets",
+  "overflowX": false,
+  "scrollWidth": 820,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ },
+ {
+  "size": "820x1180",
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+  "overflowX": false,
+  "scrollWidth": 820,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ },
+ {
+  "size": "820x1180",
+  "route": "/account",
+  "overflowX": false,
+  "scrollWidth": 820,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ },
+ {
+  "size": "820x1180",
+  "route": "/account/reviews",
+  "overflowX": false,
+  "scrollWidth": 820,
+  "barClass": "pwa-tabs",
+  "items": [
+   "Discover",
+   "Plan",
+   "My Events",
+   "My Tickets",
+   "Menu"
+  ],
+  "clipped": [],
+  "sheet": null
+ }
+]

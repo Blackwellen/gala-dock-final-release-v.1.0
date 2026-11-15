@@ -18,7 +18,15 @@ test("task circle marks a plan task done; Discard draft archives the draft plan;
   await expect.poll(async () => (await sb.from("tasks").select("status").eq("id", task.id).single()).data?.status).toBe("done");
 
   await page.goto(`/plan?step=2&event=${ev.id}`);
+  // Discard now asks first (danger confirm, commit 8599868). Cancelling keeps the draft; confirming archives it.
   await page.getByRole("button", { name: "Discard draft" }).click();
+  const confirm = page.getByRole("alertdialog", { name: "Discard this draft?" });
+  await expect(confirm).toBeVisible();
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(confirm).toBeHidden();
+  expect((await sb.from("events").select("status").eq("id", ev.id).single()).data?.status).toBe("draft");
+  await page.getByRole("button", { name: "Discard draft" }).click();
+  await confirm.getByRole("button", { name: "Discard draft" }).click();
   await expect(page).toHaveURL(/\/plan/);
   await expect.poll(async () => (await sb.from("events").select("status").eq("id", ev.id).single()).data?.status).toBe("archived");
   await page.goto("/account/events"); await expect(page.getByText("W13 draft party")).toHaveCount(0);

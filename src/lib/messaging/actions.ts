@@ -2,12 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { REPORT_REASONS } from "./safety";
 
 // Cross-portal messaging (user addition, §89). Contact rules, membership and rate limits are enforced in the database.
 type R<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MSG: [RegExp, string][] = [[/not_allowed/, "You can only message people you work with on Gala Dock."], [/not_authorized|42501/, "You don’t have access to this conversation."],
-  [/rate_limited|54000/, "You’re sending messages too quickly — wait a moment."], [/empty_message/, "Write a message first."], [/invalid_attachment/, "Attach PDFs or images you’ve uploaded."]];
+  [/rate_limited|54000/, "You’re sending messages too quickly — wait a moment."], [/empty_message/, "Write a message first."], [/invalid_attachment/, "Attach PDFs or images you’ve uploaded."],
+  [/blocked_by_you/, "You’ve blocked this contact. Unblock them to send a message."], [/blocked/, "You can’t message this contact."]];
 const fail = (m: string): R<never> => ({ ok: false, error: MSG.find(([re]) => re.test(m))?.[1] ?? "Couldn’t send — try again." });
 const INBOXES = ["/organizer/inbox", "/provider/inbox", "/account/inbox"];
 
@@ -30,10 +32,33 @@ export async function sendMessage(conversationId: string, body: string, attachme
   return { ok: true };
 }
 
+/** Marks the conversation read for the caller's seats and clears its bell alert (DB, Q52). */
 export async function markRead(conversationId: string): Promise<void> {
   if (!UUID.test(conversationId)) return;
   const sb = await createClient();
   await sb.rpc("mark_conversation_read" as never, { p_conv: conversationId } as never);
+}
+
+/** Q52 Online Safety Act: report a message (reason code from the moderation catalogue). Optionally blocks the sender too. */
+export async function reportMessage(messageId: string, reason: string, note: string, block: boolean, seat?: string | null): Promise<R> {
+  if (!UUID.test(messageId) || (seat && !UUID.test(seat)) || !REPORT_REASONS.some(([k]) => k === reason)) return { ok: false, error: "Choose a reason." };
+  if (reason === "other_policy" && note.trim().length < 5) return { ok: false, error: "Tell us what’s wrong (a few words is enough)." };
+  const sb = await createClient();
+  const { error } = await sb.rpc("report_message" as never, { p_message: messageId, p_reason_code: reason, p_note: note.slice(0, 1000), p_source: "conversation", p_block: block, p_seat: seat ?? null } as never);
+  if (error) return { ok: false, error: /already_reported|23505/.test(error.message) ? "You’ve already reported this message — our team is looking at it."
+    : /cannot_report_own/.test(error.message) ? "You can’t report your own messages." : /rate_limited/.test(error.message) ? "You’ve sent a lot of reports — try again later." : "Couldn’t send the report — try again." };
+  for (const p of INBOXES) revalidatePath(p, "page");
+  return { ok: true };
+}
+
+/** Blocks (or unblocks) a contact for this seat: neither side can send in your shared conversations while blocked. */
+export async function setBlocked(type: "user" | "workspace", id: string, block: boolean, seat?: string | null): Promise<R> {
+  if (!UUID.test(id) || (seat && !UUID.test(seat)) || (type !== "user" && type !== "workspace")) return { ok: false, error: "Contact not found." };
+  const sb = await createClient();
+  const { error } = await sb.rpc((block ? "block_contact" : "unblock_contact") as never, { p_type: type, p_id: id, p_seat: seat ?? null } as never);
+  if (error) return { ok: false, error: /cannot_block_self/.test(error.message) ? "You can’t block your own account or workspace." : /rate_limited/.test(error.message) ? "Too many changes — try again later." : "Couldn’t update — try again." };
+  for (const p of INBOXES) revalidatePath(p, "page");
+  return { ok: true };
 }
 
 export type ContactProfile = { type: "user" | "workspace"; id: string; name: string; avatar: string | null; about: string; since: string; saved: boolean;

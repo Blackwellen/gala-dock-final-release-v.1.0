@@ -1,0 +1,219 @@
+[
+ {
+  "route": "/admin/health",
+  "pattern": "/admin/health",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/onboarding/customer?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/account/events",
+  "pattern": "/account/events",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/tickets/d6122963-3531-4587-8969-3e902269640d/resale",
+  "pattern": "/account/tickets/[id]/resale",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/onboarding",
+  "pattern": "/onboarding",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/onboarding/customer",
+  "pattern": "/onboarding/[flow]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/virtual",
+  "pattern": "/organizer/events/[id]/virtual",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/emergency",
+  "pattern": "/organizer/marketplace/emergency",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/venue/095c7874-a84f-4456-80b3-ddb6c0d15aa3",
+  "pattern": "/organizer/marketplace/[type]/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/emergency",
+  "pattern": "/provider/emergency",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+  "pattern": "/provider/menus/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/sales/leads/0147f801-c32e-422c-9563-87fde2790ef8",
+  "pattern": "/organizer/sales/leads/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f/print",
+  "pattern": "/provider/quotes/[id]/print",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/disputes/f85186de-9531-433f-ab86-04d764b30c47",
+  "pattern": "/provider/disputes/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ }
+]

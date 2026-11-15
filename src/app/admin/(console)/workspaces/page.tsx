@@ -12,7 +12,7 @@ import { money, day, relative, requestTime, delta, titleCase } from "@/lib/works
 import { AdminMenu, ParamSelect, SearchBox, SelectAll } from "../_a/client";
 import { Pager, PillTabs, Status, DrawerClose, SectionHead, KVRows, MiniStat, TimelineItem } from "../_a/ui";
 import { shortRef, str, pageOf, qs, rpc, planLabel, type SP } from "../_a/lib";
-import { health, loadMetrics, loadOwners, loadPlans, commissionTier, WS_COLS, type Ws, type WsMetric, type Owner, type Plans } from "../_a/workspaces";
+import { health, workspaceMatches, loadMetrics, loadOwners, loadPlans, commissionTier, WS_COLS, type Ws, type WsMetric, type Owner, type Plans } from "../_a/workspaces";
 import { setWorkspaceStatus } from "../_a/actions";
 
 export const metadata: Metadata = { title: "Workspaces" };
@@ -33,7 +33,6 @@ export default async function WorkspacesPage(props: PageProps<"/admin/workspaces
   const { db, permissions } = ctx;
   const now = requestTime();
   const kind = ["organizer", "provider", "suspended"].includes(str(sp, "filter")) ? str(sp, "filter") : "all";
-  const q = str(sp, "q").trim().toLowerCase().slice(0, 80);
   const { per, page, offset } = pageOf(sp);
 
   const [all, metrics, overview, { plans }] = await Promise.all([
@@ -43,18 +42,7 @@ export default async function WorkspacesPage(props: PageProps<"/admin/workspaces
     loadPlans(db),
   ]);
   const owners = await loadOwners(db, all.map(w => w.owner_id), permissions.has("users") || permissions.has("support"));
-  const filtered = all.filter(w => {
-    const m = metrics.get(w.id), h = health(w, m).key, gmv = m?.gmv ?? 0, f = (k: string) => str(sp, k);
-    if (kind === "suspended" ? w.status !== "suspended" : kind !== "all" && w.kind !== kind) return false;
-    if (q && !`${w.name} ${w.settings?.reference ?? ""} ${w.id} ${owners.get(w.owner_id)?.full_name ?? ""}`.toLowerCase().includes(q)) return false;
-    if (f("plan") && w.plan !== f("plan")) return false;
-    if (f("ver") && w.verification_status !== f("ver")) return false;
-    if (f("tier") && !(f("tier") === "low" ? w.commission_bps <= 600 : f("tier") === "mid" ? w.commission_bps > 600 && w.commission_bps <= 700 : w.commission_bps > 700)) return false;
-    if (f("gmv") && !(f("gmv") === "none" ? gmv === 0 : f("gmv") === "s" ? gmv > 0 && gmv < 10000 : f("gmv") === "m" ? gmv >= 10000 && gmv <= 50000 : gmv > 50000)) return false;
-    if (f("health") && h !== f("health")) return false;
-    if (f("created") && new Date(w.created_at).getTime() < now - Number(f("created")) * 864e5) return false;
-    return true;
-  });
+  const filtered = all.filter(w => workspaceMatches(w, metrics.get(w.id), k => str(sp, k), owners.get(w.owner_id)?.full_name, now));
   const list = filtered.slice(offset, offset + per);
   const selId = str(sp, "sel") === "none" ? null : isUuid(str(sp, "sel")) ? str(sp, "sel") : list[0]?.id ?? null;
   const sel = all.find(w => w.id === selId);

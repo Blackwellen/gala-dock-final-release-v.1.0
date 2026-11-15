@@ -1,11 +1,13 @@
 /* One display scale for every workspace. The approved references are drawn at 1536px wide, so on desktop (≥1100px) the shell
-   root is zoomed by --k-zoom to fit that width to the window: 1536 → 1, 1920 → 1.25, 1366 → .9, 1280 → .85 — the layout keeps
+   root is zoomed by --k-zoom to fit that width to the window: 1536 → 1, 1920 → 1.25, 2560 → 1.4, 3840 → 1.9, 1366 → .9, 1280 → .85 — the layout keeps
    the reference proportions instead of shrinking into a zoomed-out page with empty margins. Window height never shrinks it
    (short laptop windows scroll, as the references do). Compact is 10% smaller, Large 10% bigger, Design size is exactly 1.
    Phones and tablets render 1:1. Organizer, Customer, Provider, Admin and the portals all read the same variable and the same
    saved "gd-density" choice, so switching workspace never changes the size of text, navigation or cards. Loaded app-wide. */
 @property --k-zoom { syntax: "<number>"; inherits: true; initial-value: 1; }
 :root { --k-fit: 1; --k-scale: 1; --k-zoom: calc(var(--k-fit) * var(--k-scale)); }
+/* R1 header consistency: one topbar height for every signed-in shell (customer 68, organiser 66, provider/admin 64, partner 67 before). */
+:root { --k-top-h: 66px; }
 @media (min-width: 1100px) { :root { --k-fit: .8; } html[data-density="compact"] { --k-scale: .9; } html[data-density="comfortable"] { --k-scale: 1.1; } }
 @media (min-width: 1280px) { :root { --k-fit: .85; } }
 @media (min-width: 1366px) { :root { --k-fit: .9; } }
@@ -15,6 +17,20 @@
 @media (min-width: 1800px) { :root { --k-fit: 1.15; } }
 @media (min-width: 1920px) { :root { --k-fit: 1.25; } }
 @media (min-width: 2240px) { :root { --k-fit: 1.3; } }
+/* Q71 (owner 2026-11-14: large screens FULL WIDTH, no content cap): above 2240px the scale keeps rising so a 2560–8192px monitor
+   still lays out at roughly 1800–2050 CSS px — full width, layouts keep their columns, type stays readable from a desk — instead
+   of a 3000px-wide page of 12px text. Containers no longer cap their width (public-site.css .gp-wrap, .pub-main, legal, help). */
+@media (min-width: 2560px) { :root { --k-fit: 1.4; } }
+@media (min-width: 3000px) { :root { --k-fit: 1.6; } }
+@media (min-width: 3440px) { :root { --k-fit: 1.75; } }
+@media (min-width: 3840px) { :root { --k-fit: 1.9; } }
+@media (min-width: 4480px) { :root { --k-fit: 2.2; } }
+@media (min-width: 5120px) { :root { --k-fit: 2.5; } }
+@media (min-width: 6400px) { :root { --k-fit: 3.1; } }
+@media (min-width: 7680px) { :root { --k-fit: 3.75; } }
+/* Q71: touch screens between 1100 and 1535px (iPad / Surface landscape, touch laptops) render 1:1 like phones and tablets —
+   the sub-1 fit would shrink every 44px touch target to 35px. */
+@media (pointer: coarse) and (max-width: 1535px) { :root { --k-fit: 1; } }
 html[data-density="reference"] { --k-zoom: 1 !important; }
 
 /* Organizer and Customer (.o-root, .c-root), Provider & Admin workspaces (.ws-app) and client / partner portals (.pt-app).
@@ -39,3 +55,40 @@ html[data-density="reference"] { --k-zoom: 1 !important; }
   --k-card-pad: 16px;
   --k-title-page: 28px; --k-title-admin: 30px; --k-title-card: 15px; --k-title-sub: 13.5px;
 }
+
+/* R1 readable measure in the signed-in shells (Q71 rule, owner: full width but readable lines inside components): page and panel
+   intro copy stops at ~80 characters even when its panel spans a wide screen. Layout widths are untouched. */
+:is(.ws-app, .o-root, .c-root, .pt-app) :is(.ws-page-head p, .k-page-head p.sub, .adb-sub, .adb-head > div > p, [class*="-note"]:is(p), .ws-panel > p, .k-card > p, .ce-card > p, [class*="-box"] > p) { max-width: 80ch; }
+
+/* R1 very wide screens (owner: "full screen or it feels weird"): a detail page's main column of stacked sections (lead record,
+   marketplace venue / supplier profile, ticket resale) flows into as many ≥520px columns as fit, so a 2048–5120px window is used
+   edge to edge instead of one card stretched across it. The first block (page head / hero) keeps the full row. */
+@media (min-width: 1800px) {
+  :is(.ld-grid > .k-col:first-child, .pv-grid > .k-col:first-child, .rs-grid > .rs-main):has(> * + * + *) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 14px; align-items: start; }
+  :is(.ld-grid > .k-col:first-child, .pv-grid > .k-col:first-child, .rs-grid > .rs-main) > :first-child { grid-column: 1 / -1; }
+}
+/* R1 (owner: no per-component zoom): onboarding on wide screens gets a real wide layout instead of a 1130px column centred in
+   the window. Nothing is zoomed. The form column fills the window, the side rail widens, spacing grows with the width, panel
+   fields flow into more columns, and type steps up a size on very large monitors. Below 1700px the setup pages keep their
+   own design-fit (--gd-fit-setup in layout.tsx, which only ever scales down). */
+@media (min-width: 1700px) {
+  .onboarding-page { --ob-rail: clamp(275px, 17vw, 560px); --ob-gap: clamp(22px, 1.4vw, 56px); }
+  .onboarding-page .setup-main { padding: clamp(37px, 2.2vw, 80px) clamp(27px, 2.6vw, 104px) 28px clamp(34px, 2.6vw, 104px); }
+  .onboarding-page .setup-main > * { max-width: none; }
+  .onboarding-page:not(.experience-page) .setup-main > .setup-progress-row { max-width: none; margin-inline: 4px calc(var(--ob-rail) + var(--ob-gap)); }
+  .onboarding-page .setup-progress-row > div { width: 50%; max-width: none; }
+  .onboarding-page .setup-columns { grid-template-columns: minmax(0, 1fr) var(--ob-rail); gap: var(--ob-gap); }
+  .onboarding-page .setup-panel { padding: clamp(18px, 1.1vw, 40px); }
+  .onboarding-page .setup-panel .two-columns { gap: clamp(12px, .8vw, 28px) var(--ob-gap); }
+}
+@media (min-width: 2400px) {
+  .onboarding-page .setup-panel .two-columns { grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); }
+  .onboarding-page .choice-group.with-images { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .onboarding-page :is(.setup-panel .field, .setup-panel .field :is(input, select, textarea)) { font-size: 15px; }
+  .onboarding-page .setup-panel .field :is(input, select, textarea) { min-height: 48px; }
+  .onboarding-page .setup-panel h3 { font-size: 21px; }
+  .onboarding-page .setup-panel p.muted { font-size: 14.5px; }
+  .onboarding-page .setup-progress-row { font-size: 15px; }
+}
+/* admin health / conversations pages on huge monitors: panels two across, page head and footnote full width */
+@media (min-width: 3000px) { .adb.acv:has(> * + * + * + *) { grid-template-columns: repeat(auto-fill, minmax(min(100%, 700px), 1fr)); align-items: start; } .adb.acv > :is(:first-child, :last-child, .acv-kpis) { grid-column: 1 / -1; } }

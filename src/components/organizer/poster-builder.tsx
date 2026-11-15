@@ -144,7 +144,16 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
   useEffect(() => { if (!menu) return; const off = (ev: PointerEvent) => { if (!(ev.target as Element).closest?.(".pb-split")) setMenu(false); }; const esc = (ev: KeyboardEvent) => { if (ev.key === "Escape") setMenu(false); };
     document.addEventListener("pointerdown", off); document.addEventListener("keydown", esc); return () => { document.removeEventListener("pointerdown", off); document.removeEventListener("keydown", esc); }; }, [menu]);
   useEffect(() => { loadImg(e.cover).then(im => { if (im.naturalHeight < 600) setC(x => x.bg === e.cover ? { ...x, bg: STOCK[0]! } : x); }, () => setC(x => ({ ...x, bg: STOCK[0]! }))); }, [e.cover]);
-  const set = (p: Partial<Content>) => { setHist(h => [...h.slice(-30), c]); setFut([]); setC(x => ({ ...x, ...p })); };
+  // Q75: one undo step per editing burst, not per keystroke — typing in the same field(s) within 1 s extends the last step; a change
+  // that leaves every value as it was adds no step at all.
+  const [lastEdit, setLastEdit] = useState<{ keys: string; at: number } | null>(null);
+  const set = (p: Partial<Content>) => {
+    if ((Object.keys(p) as (keyof Content)[]).every(k => Object.is(c[k], p[k]))) return;
+    const keys = Object.keys(p).sort().join(","), now = Date.now(), burst = lastEdit?.keys === keys && now - lastEdit.at < 1000;
+    setLastEdit({ keys, at: now });
+    if (!burst) setHist(h => [...h.slice(-30), c]);
+    setFut([]); setC(x => ({ ...x, ...p }));
+  };
   // Render offscreen and copy only the latest result, so overlapping async renders never interleave on screen.
   const seq = useRef(0);
   useEffect(() => {
@@ -174,7 +183,15 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
     return run(() => saveMediaAsset({ event_id: e.id, url, title: `${e.name} — ${f.label}`, format: f.key, data: { ...c, format: f.key, promo: opts.promo }, gallery: primary && opts.gallery, poster: primary && opts.promo && ["a3", "a4", "portrait"].includes(f.key) }), { refresh: false });
   };
   const save = async () => { setBusy("save"); try { await upload(fmt, true); } catch { toast("Upload failed — check your connection", "error"); } setBusy(null); };
-  const all = async () => { setBusy("all"); let n = 0; try { for (const v of VARIANTS) { await upload(fmtOf(v.key), v.key === fmt.key); n++; } toast(`${n} variants saved to your media library`); } catch { toast(`Saved ${n} of ${VARIANTS.length} variants — try again for the rest`, "error"); } setBusy(null); };
+  // Q75: every variant is attempted; a failed upload or a refused save counts as failed (the old loop counted refused saves as saved
+  // and stopped at the first network error).
+  const all = async () => {
+    setBusy("all"); let n = 0;
+    for (const v of VARIANTS) { try { if ((await upload(fmtOf(v.key), v.key === fmt.key)).ok) n++; } catch { /* counted below */ } }
+    const failed = VARIANTS.length - n;
+    toast(failed ? `Saved ${n} of ${VARIANTS.length} variants — ${failed} failed. Try again for the rest.` : `${n} variants saved to your media library`, failed ? "error" : undefined);
+    setBusy(null);
+  };
   const regenerate = async () => { setBusy("ai"); const r = await suggestPosterCopy({ event_id: e.id }); setBusy(null); if (!r.ok) return toast(r.error, "error"); set({ tagline: r.copy.tagline, strap: r.copy.strap || c.strap }); toast("New copy from Gala Agent — review before exporting"); };
   const addBg = async (file: File) => {
     if (!/^image\/(png|jpe?g|webp)$/.test(file.type) || file.size > 8_000_000) return toast("Use a PNG, JPG or WebP under 8 MB", "error");
@@ -201,7 +218,7 @@ export function PosterBuilder({ site, tab, event: e, workspaceId, workspaceName,
       <section className="k-card pb-c pb-tplc"><h2>1. Choose a template</h2><p className="pb-sub">Create professional event assets for any channel.</p>
         <div className="pb-tpls">{FORMATS.map((f, i) => <button key={f.key} className={i >= 6 ? "sm" : undefined} aria-pressed={fmt.key === f.key} onClick={() => setFmt(f)}><span className="pb-th">{thumbs[f.key] ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={thumbs[f.key]} alt="" /> : <Loader2 size={16} className="k-spin" />}</span><b>{f.label}</b><small>{f.sub}</small></button>)}</div></section>
       <section className="k-card pb-c pb-design"><div className="pb-dh"><div><h2>2. Design your poster</h2><p className="pb-sub">Customise content, style and branding. Fields are auto-filled from your event.</p></div>
-        <span className="k-row" style={{ gap: 6 }}><span className="pb-ur"><button disabled={!hist.length} onClick={() => { setFut(f => [c, ...f]); setC(hist.at(-1)!); setHist(h => h.slice(0, -1)); }} aria-label="Undo"><Undo2 size={15} /></button><button disabled={!fut.length} onClick={() => { setHist(h => [...h, c]); setC(fut[0]!); setFut(f => f.slice(1)); }} aria-label="Redo"><Redo2 size={15} /></button></span>
+        <span className="k-row" style={{ gap: 6 }}><span className="pb-ur"><button disabled={!hist.length} onClick={() => { setLastEdit(null); setFut(f => [c, ...f]); setC(hist.at(-1)!); setHist(h => h.slice(0, -1)); }} aria-label="Undo"><Undo2 size={15} /></button><button disabled={!fut.length} onClick={() => { setHist(h => [...h, c]); setC(fut[0]!); setFut(f => f.slice(1)); }} aria-label="Redo"><Redo2 size={15} /></button></span>
           <span className="pb-zoom"><button onClick={() => setZoom(z => Math.max(40, z - 10))} aria-label="Zoom out"><Minus size={14} /></button><b>{zoom}%</b><button onClick={() => setZoom(z => Math.min(160, z + 10))} aria-label="Zoom in"><Plus size={14} /></button></span><button className="pb-fit" onClick={() => setZoom(100)}><Maximize size={13} />Fit</button></span></div>
         <div className="pb-stage"><div className="pb-tools">{tools.map(([I, l, fn]) => <button key={l} onClick={fn} aria-pressed={l === "QR Code" ? c.showQr : undefined}><I size={17} strokeWidth={1.6} /><span>{l}</span></button>)}</div>
           <div className="pb-canvas"><div className="pb-sel" style={{ height: `${(fmt.h >= fmt.w ? 520 : 300) * zoom / 100}px`, aspectRatio: `${fmt.w} / ${fmt.h}` }}><canvas ref={cv} role="img" aria-label={`${fmt.label} preview of ${c.name || e.name}`} />{["tl", "tm", "tr", "ml", "mr", "bl", "bm", "br"].map(h => <i key={h} className={`h-${h}`} />)}</div></div></div></section>

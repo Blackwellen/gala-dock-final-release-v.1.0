@@ -1,0 +1,852 @@
+{
+ "results": [
+  {
+   "route": "/",
+   "name": "landing",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/",
+   "controls": 47,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Gala Dock — the connected event platform",
+    "canonical": "https://www.galadock.com/",
+    "robots": null,
+    "ogTitle": "Gala Dock — the connected event platform",
+    "ogImage": "https://www.galadock.com/assets/regenerated/home-hero.png",
+    "h1": [
+     "One place to bring every event together."
+    ]
+   },
+   "docH": 6887
+  },
+  {
+   "route": "/events",
+   "name": "events",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events",
+   "controls": 80,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 2181
+  },
+  {
+   "route": "/events?when=weekend",
+   "name": "events-weekend",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?when=weekend",
+   "controls": 77,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 2129
+  },
+  {
+   "route": "/events?q=neon",
+   "name": "events-search",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?q=neon",
+   "controls": 57,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 1881
+  },
+  {
+   "route": "/events?q=zzzz-no-match",
+   "name": "events-empty",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events?q=zzzz-no-match",
+   "controls": 56,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events near you",
+    "canonical": "https://www.galadock.com/events",
+    "robots": null,
+    "ogTitle": "Events on Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Upcoming events"
+    ]
+   },
+   "docH": 1881
+  },
+  {
+   "route": "/events/in/london",
+   "name": "city-london",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/in/london",
+   "controls": 81,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events in London · Gala Dock",
+    "canonical": "https://www.galadock.com/events/in/london",
+    "robots": null,
+    "ogTitle": "Events in London · Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "London Events"
+    ]
+   },
+   "docH": 2181
+  },
+  {
+   "route": "/events/category/nightlife",
+   "name": "category-nightlife",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/category/nightlife",
+   "controls": 81,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Nightlife events · Gala Dock",
+    "canonical": "https://www.galadock.com/events/category/nightlife",
+    "robots": null,
+    "ogTitle": "Nightlife events · Gala Dock",
+    "ogImage": null,
+    "h1": [
+     "Nightlife events"
+    ]
+   },
+   "docH": 2181
+  },
+  {
+   "route": "/events/calendar",
+   "name": "calendar-weekend",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar",
+   "controls": 49,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Weekend of 30 October"
+    ]
+   },
+   "docH": 1688
+  },
+  {
+   "route": "/events/calendar?range=month",
+   "name": "calendar-month",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar?range=month",
+   "controls": 28,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "October 2026"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/calendar?range=today",
+   "name": "calendar-day",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/calendar?range=today",
+   "controls": 28,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Events calendar · Gala Dock",
+    "canonical": "https://www.galadock.com/events/calendar",
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Thursday 29 October"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/series/no-such-series",
+   "name": "series-missing",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/series/no-such-series",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/p/no-such-page",
+   "name": "landing-page-missing",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/p/no-such-page",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/neon-nights",
+   "name": "event-neon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/neon-nights",
+   "controls": 45,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Neon Nights Festival · Gala Dock",
+    "canonical": "https://www.galadock.com/events/neon-nights",
+    "robots": null,
+    "ogTitle": "Neon Nights Festival",
+    "ogImage": "https://www.galadock.com/assets/gd/covers/neon-nights.webp",
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1587
+  },
+  {
+   "route": "/events/summer-rooftop-party",
+   "name": "event-rooftop",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/summer-rooftop-party",
+   "controls": 29,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Summer Rooftop Party · Gala Dock",
+    "canonical": "https://www.galadock.com/events/summer-rooftop-party",
+    "robots": null,
+    "ogTitle": "Summer Rooftop Party",
+    "ogImage": "https://www.galadock.com/assets/gd/type-party.webp",
+    "h1": [
+     "Summer Rooftop Party"
+    ]
+   },
+   "docH": 1165
+  },
+  {
+   "route": "/events/alex-taylor-wedding",
+   "name": "event-private",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/events/alex-taylor-wedding",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/venues/riverside-arena",
+   "name": "venue-riverside",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/venues/riverside-arena",
+   "controls": 37,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Riverside Arena · Gala Dock",
+    "canonical": "https://www.galadock.com/venues/riverside-arena",
+    "robots": null,
+    "ogTitle": "Riverside Arena",
+    "ogImage": "https://www.galadock.com/assets/gd/v-riverside-events-centre.webp",
+    "h1": [
+     "Riverside Arena"
+    ]
+   },
+   "docH": 2552
+  },
+  {
+   "route": "/services/elite-sounds-dj",
+   "name": "service-elite",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/services/elite-sounds-dj",
+   "controls": 36,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Elite Sounds DJ · Gala Dock",
+    "canonical": "https://www.galadock.com/services/elite-sounds-dj",
+    "robots": null,
+    "ogTitle": "Elite Sounds DJ",
+    "ogImage": "https://www.galadock.com/assets/gd/s-elite-sounds.webp",
+    "h1": [
+     "Elite Sounds DJ"
+    ]
+   },
+   "docH": 1597
+  },
+  {
+   "route": "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "name": "organizer-alex",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Alex Events — events · Gala Dock",
+    "canonical": "https://www.galadock.com/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "robots": null,
+    "ogTitle": "Alex Events — events",
+    "ogImage": null,
+    "h1": [
+     "Alex Events"
+    ]
+   },
+   "docH": 1426
+  },
+  {
+   "route": "/help",
+   "name": "help",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/help",
+   "controls": 35,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Help Centre · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "How can we help?"
+    ]
+   },
+   "docH": 1657
+  },
+  {
+   "route": "/help/getting-started-organizers",
+   "name": "help-article",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/help/getting-started-organizers",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Getting started as an organizer · Help",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Getting started as an organizer"
+    ]
+   },
+   "docH": 1526
+  },
+  {
+   "route": "/terms",
+   "name": "terms",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/terms",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Terms of Service · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Terms of Service"
+    ]
+   },
+   "docH": 3535
+  },
+  {
+   "route": "/privacy",
+   "name": "privacy",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/privacy",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Privacy Policy · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Privacy Policy"
+    ]
+   },
+   "docH": 4928
+  },
+  {
+   "route": "/cookies",
+   "name": "cookies",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/cookies",
+   "controls": 13,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Cookie Policy · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Cookie Policy"
+    ]
+   },
+   "docH": 1353
+  },
+  {
+   "route": "/ticket-terms",
+   "name": "ticket-terms",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/ticket-terms",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket Purchase & Resale Terms · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Ticket Purchase & Resale Terms"
+    ]
+   },
+   "docH": 1900
+  },
+  {
+   "route": "/data-retention",
+   "name": "data-retention",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/data-retention",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Data Retention Schedule · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Data Retention Schedule"
+    ]
+   },
+   "docH": 1433
+  },
+  {
+   "route": "/login",
+   "name": "login",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/login",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Log in · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Extraordinaryevents start here."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/register",
+   "name": "register",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/register",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Turn yournext eventinto somethingextraordinary."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/forgot-password",
+   "name": "forgot",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/forgot-password",
+   "controls": 12,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Forgot Password · Gala Dock",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Extraordinaryevents start here."
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/checkout/neon-nights",
+   "name": "checkout-neon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/checkout/neon-nights",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Checkout",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/neon-nights/register",
+   "name": "register-form",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/neon-nights/register",
+   "controls": 10,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, follow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "name": "rsvp-bad",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "controls": 8,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "Your RSVP · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "This RSVP link isn't valid"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/this-page-does-not-exist",
+   "name": "not-found",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/this-page-does-not-exist",
+   "controls": 0,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "404: This page could not be found.",
+    "canonical": null,
+    "robots": "noindex",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "404"
+    ]
+   },
+   "docH": 1024
+  }
+ ],
+ "links": []
+}

@@ -14,9 +14,12 @@ import { WaitingRoom } from "./waiting-room";
 import { StepFocus } from "@/components/kit/wizard-client";
 import { isSellable, resaleBuyable } from "@/lib/public/ticket-cta";
 import { bookingFee, priceWithFees } from "@/lib/public/fees";
-/** Q57: entry restrictions on a resale ticket (tier valid_from / valid_to), in UK time. */
-const entryWindow = (r?: { entry_from?: string | null; entry_to?: string | null }) => {
-  const f = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
+import { formatMoney } from "@/lib/i18n/money";
+import { DEFAULT_TZ, safeTz, tzAbbrev } from "@/lib/i18n/tz";
+import { LocalTimeHint } from "@/components/shared/local-time";
+/** Q57: entry restrictions on a resale ticket (tier valid_from / valid_to), in the event's zone (Q72). */
+const entryWindow = (r?: { entry_from?: string | null; entry_to?: string | null }, tz: string = DEFAULT_TZ) => {
+  const f = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: safeTz(tz) });
   return r?.entry_from && r?.entry_to ? ` · Entry ${f(r.entry_from)} – ${f(r.entry_to)}` : r?.entry_from ? ` · Entry from ${f(r.entry_from)}` : r?.entry_to ? ` · Entry until ${f(r.entry_to)}` : "";
 };
 
@@ -26,12 +29,16 @@ const SeatPicker = dynamic(() => import("@/components/venue-plan/seat-picker").t
 
 type Tier = { id: string; name: string; description: string; price: number; remaining: number; limit: number; seated: boolean; color: string; onSale: boolean; note: string | null; badge: string | null };
 type Seat = { key: string; tier_id: string | null; accessible: boolean; status: "available" | "held" | "sold" | "blocked" };
-const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: Number.isInteger(n) ? 0 : 2 }).format(n);
-const when = (s: string | null, e: string | null) => { if (!s) return "Date to be announced"; const d = new Date(s), f = (o: Intl.DateTimeFormatOptions) => d.toLocaleString("en-GB", { timeZone: "Europe/London", ...o });
-  return `${f({ weekday: "short", day: "numeric", month: "long", year: "numeric" })} · ${f({ hour: "2-digit", minute: "2-digit" })}${e ? ` – ${new Date(e).toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" })}` : ""}`; };
+/** Q72: prices in the event's currency (the order is charged in it); whole amounts without pence, as before. */
+const moneyIn = (currency: string) => (n: number) => formatMoney(n, currency, { decimals: !Number.isInteger(n) });
+/** Q72: the event's own zone, named ("Sat 4 July 2026 · 19:00 – 23:00 CEST"). */
+const when = (s: string | null, e: string | null, tz: string = DEFAULT_TZ) => { if (!s) return "Date to be announced"; const zone = safeTz(tz), d = new Date(s), f = (o: Intl.DateTimeFormatOptions) => d.toLocaleString("en-GB", { timeZone: zone, ...o });
+  return `${f({ weekday: "short", day: "numeric", month: "long", year: "numeric" })} · ${f({ hour: "2-digit", minute: "2-digit" })}${e ? ` – ${new Date(e).toLocaleTimeString("en-GB", { timeZone: zone, hour: "2-digit", minute: "2-digit" })}` : ""} ${tzAbbrev(s, zone)}`.trim(); };
 
-export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale, launch, offerId, mapSlot = null, merchant = null }: {
-  event: { id: string; name: string; slug: string; startsAt: string | null; endsAt: string | null; venue: string; city: string; cover: string };
+export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, preset, existing, cancelled, resale, startResale, launch, offerId, mapSlot = null, merchant = null, notices = null }: {
+  event: { id: string; name: string; slug: string; startsAt: string | null; endsAt: string | null; venue: string; city: string; cover: string; /** Q72 */ timezone?: string; currency?: string };
+  /** Q72: buyer-country notices (currency, tax display, cancellation rights), resolved on the server. */
+  notices?: { currency: string; tax: string; zone?: string; cancellation: { heading: string; text: string } } | null;
   tiers: Tier[]; seats: Seat[]; overlay: MapEl[]; base: MapEl[]; fee: { fixed: number; pct_bps: number }; user: { email: string } | null;
   preset: { tier: string; qty: number } | null; existing: Summary | null; cancelled: boolean;
   resale: { id: string; tier: string; tier_id: string; seat: string | null; price: number; face_value?: number; policy_version?: number; jurisdiction?: string; restrictions?: { min_age?: number; transfer_allowed?: boolean; name_on_ticket?: boolean; terms_url?: string; entry_from?: string | null; entry_to?: string | null }; listing_ref?: string | null; ticket_ref?: string | null }[]; startResale: boolean;
@@ -42,6 +49,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
   // Q57: when new tickets can't be bought (sold out / waitlist) fan resale is the only route, so it opens first.
   const [mode, setMode] = useState<"new" | "resale">((startResale || !isSellable(launch)) && resale.length && resaleBuyable(launch) ? "resale" : "new");
   const [rsel, setRsel] = useState<string[]>([]);
+  const tz = safeTz(event.timezone); const gbp = moneyIn((existing?.currency || event.currency || "GBP").toUpperCase());
   const ga = tiers.filter(t => !t.seated), seated = tiers.filter(t => t.seated), hasMap = seats.length > 0 && overlay.length > 0;
   const [qty, setQty] = useState<Record<string, number>>(() => {
     if (existing) return Object.fromEntries(existing.lines.filter(l => !l.seats.length).map(l => [l.tier_id, l.qty]));
@@ -134,7 +142,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
         <Link href={`/events/${event.slug}`} className="co-back"><ArrowLeft aria-hidden="true" />Back to event</Link>
         <section className="co-event">{/* eslint-disable-next-line @next/next/no-img-element */}
           {event.cover ? <img src={event.cover} alt="" /> : <span className="co-noimg" />}
-          <div><h1>{event.name}</h1><p><CalendarDays aria-hidden="true" />{when(event.startsAt, event.endsAt)}</p><p><MapPin aria-hidden="true" />{[event.venue, event.city].filter(Boolean).join(", ")}</p></div></section>
+          <div><h1>{event.name}</h1><p><CalendarDays aria-hidden="true" />{when(event.startsAt, event.endsAt, tz)}<LocalTimeHint iso={event.startsAt} tz={tz} /></p><p><MapPin aria-hidden="true" />{[event.venue, event.city].filter(Boolean).join(", ")}</p></div></section>
         {err && <p className="co-err" role="alert"><CircleAlert aria-hidden="true" />{err}</p>}
 
         {step === 1 && offerId && <section className="co-card co-offer"><div className="co-h"><h2><Gift aria-hidden="true" />Tickets reserved for you</h2></div>
@@ -146,7 +154,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
           <button type="button" className={mode === "resale" ? "on" : ""} onClick={() => setMode("resale")}><Repeat aria-hidden="true" />Fan resale <em>{resale.length}</em></button></nav>}
         {step === 1 && mode === "resale" && <section className="co-card"><div className="co-h"><h2><Repeat aria-hidden="true" />Fan-to-fan resale</h2><small>Face value or less · fresh ticket issued to you</small></div>
           <p className="co-resale-note">Resale tickets are sold at face value or less{resale[0]?.policy_version ? ` under the ${resale[0].jurisdiction ?? "GB"} resale policy v${resale[0].policy_version}` : ""}. A new ticket is issued in your name and the seller’s is cancelled.{merchant?.name ? ` Sold through official resale by ${merchant.name}, the event organiser, ${merchant.trader ? "acting as a trader" : "who sells as a private individual, not a trader"}; your payment goes to them.` : ""} <Link className="co-link" href={resale[0]?.restrictions?.terms_url ?? "/ticket-terms"}>Ticket terms</Link></p>
-          <ul className="co-tiers co-resale">{resale.map(r => { const on = rsel.includes(r.id), t = tierById.get(r.tier_id); return <li key={r.id} className={on ? "sel" : ""}><i style={{ background: t?.color }} /><div><b>{r.tier}</b><small>{r.seat ?? "General admission (standing)"}{r.face_value != null ? ` · Face value ${gbp(Number(r.face_value))}` : ""}{r.restrictions?.min_age ? ` · ${r.restrictions.min_age}+` : ""}{r.restrictions?.transfer_allowed === false ? " · Not transferable" : ""}{entryWindow(r.restrictions)}{r.ticket_ref ? ` · Ticket ${r.ticket_ref}` : ""}{r.listing_ref ? ` · Listing ${r.listing_ref}` : ""}</small></div><strong>{gbp(priceWithFees(r.price, fee))}{bookingFee(r.price, fee) > 0 && <small className="co-fee">incl. {gbp(bookingFee(r.price, fee))} booking fee</small>}</strong>
+          <ul className="co-tiers co-resale">{resale.map(r => { const on = rsel.includes(r.id), t = tierById.get(r.tier_id); return <li key={r.id} className={on ? "sel" : ""}><i style={{ background: t?.color }} /><div><b>{r.tier}</b><small>{r.seat ?? "General admission (standing)"}{r.face_value != null ? ` · Face value ${gbp(Number(r.face_value))}` : ""}{r.restrictions?.min_age ? ` · ${r.restrictions.min_age}+` : ""}{r.restrictions?.transfer_allowed === false ? " · Not transferable" : ""}{entryWindow(r.restrictions, tz)}{r.ticket_ref ? ` · Ticket ${r.ticket_ref}` : ""}{r.listing_ref ? ` · Listing ${r.listing_ref}` : ""}</small></div><strong>{gbp(priceWithFees(r.price, fee))}{bookingFee(r.price, fee) > 0 && <small className="co-fee">incl. {gbp(bookingFee(r.price, fee))} booking fee</small>}</strong>
             <button type="button" className={`co-pick${on ? " on" : ""}`} aria-pressed={on} onClick={() => setRsel(v => on ? v.filter(x => x !== r.id) : v.length >= 10 ? v : [...v, r.id])}>{on ? <><Check aria-hidden="true" />Selected</> : "Select"}</button></li>; })}</ul></section>}
         {step === 1 && mode === "new" && <>
           {hasMap && <section className="co-card"><div className="co-h"><h2><Armchair aria-hidden="true" />Choose your seats</h2><small>Tap seats to select · up to 10 per order</small></div>
@@ -168,7 +176,8 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
           <ul className="co-lines">{summary.lines.map(l => <li key={l.tier_id}><i style={{ background: tierById.get(l.tier_id)?.color }} /><span><b>{l.qty} × {l.name}</b>{l.seats.length > 0 && <small>{l.seats.join(" · ")}</small>}</span><strong>{gbp(l.unit * l.qty)}</strong></li>)}</ul>
           <div className="co-who">{user ? <p>Tickets will be sent to <b>{user.email}</b> and appear in your Gala Dock account.</p>
             : <p>You’ll sign in or create an account before paying, so your tickets are saved securely to you. <Link href={`/login?next=${encodeURIComponent(`/checkout/${event.slug}`)}`}>Sign in now</Link></p>}</div>
-          <p className="co-terms">By paying you agree to the event’s terms. Tickets can be transferred or resold from your account where the organiser allows it.</p></section>}
+          <p className="co-terms">By paying you agree to the event’s terms. Tickets can be transferred or resold from your account where the organiser allows it.</p>
+          {notices && <div className="co-terms" role="note"><b>{notices.cancellation.heading}.</b> {notices.cancellation.text}</div>}</section>}
       </main>
 
       <aside className="co-side"><section className="co-card co-sum"><h2>Order summary</h2>
@@ -182,6 +191,7 @@ export function CheckoutClient({ event, tiers, seats, overlay, base, fee, user, 
         <dl><div><dt>Subtotal</dt><dd>{gbp(shown.sub)}</dd></div>{discount > 0 && <div className="disc"><dt>Code savings <small style={{ fontWeight: 400, opacity: .75 }}>(included)</small></dt><dd>−{gbp(discount)}</dd></div>}<div><dt>Booking fee <small style={{ fontWeight: 400, opacity: .75 }}>(incl. VAT)</small></dt><dd>{gbp(shown.fee)}</dd></div><div className="tot"><dt>Total</dt><dd>{gbp(shown.total)}</dd></div></dl>
         {step === 1 ? <button type="button" className="co-cta" disabled={pending || est.count === 0 || inQueue || !canReserve} onClick={go}>{pending ? "Reserving…" : est.count ? `Reserve ${est.count} ticket${est.count === 1 ? "" : "s"}` : "Choose tickets"}</button>
           : <>{terms && <CustomerTermsTick version={terms} checked={ticked} onChange={setTicked} />}<button type="button" className="co-cta" disabled={paying || left === 0} onClick={pay}><CreditCard aria-hidden="true" />{paying ? "Opening secure payment…" : shown.total ? `Pay ${gbp(shown.total)}` : "Get tickets"}</button></>}
+        {notices && <p className="co-trust" data-q72="currency">{notices.currency} {notices.tax}{notices.zone ? ` ${notices.zone}` : ""}</p>}
         <p className="co-trust"><ShieldCheck aria-hidden="true" />Payments by Stripe. Gala Dock never sees your card details.</p></section></aside>
     </div>
   </div>;

@@ -6,13 +6,11 @@ import { useAction } from "@/components/kit/client";
 import { activateTickets } from "@/lib/actions/ticket-pro";
 import { TIER_KINDS, SECTION_TYPES, TERMS_TEMPLATES, feeExample } from "@/lib/ticket-pro-model";
 import type { ProSetup } from "@/lib/data/ticket-pro";
-import { Card, gbp, gbp2, num, pct, dt } from "./ui";
+import { Card, num, pct, tpLocale } from "./ui";
 
-const TZ = "Europe/London";
-const day = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "Date TBC";
-const time = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ }) : "";
 
 export function StepReview({ data, base }: { data: ProSetup; base: string }) {
+  const { gbp, gbp2, dt, day, time } = tpLocale(data);
   const { run, pending } = useAction(); const e = data.event; const p = data.pro; const a = p.access;
   const [tab, setTab] = useState<"page" | "tickets" | "flow" | "mobile">("page"); const [agree, setAgree] = useState(false); const [now] = useState(() => Date.now());
   const active = data.tiers.filter(t => !["hidden", "paused"].includes(t.status)); const total = active.reduce((n, t) => n + t.quantity, 0);

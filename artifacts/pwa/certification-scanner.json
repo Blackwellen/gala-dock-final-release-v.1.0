@@ -1,0 +1,37 @@
+{
+  "observedUtc": "2026-11-11T02:07:50.857Z",
+  "scope": "Per gateway (main and standby): clean sample (engine health), harmless EICAR detection and unauthenticated denial",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "authentication_required",
+      "passed": true,
+      "gateway": "main"
+    },
+    {
+      "name": "clean_sample_healthy_engine",
+      "passed": true,
+      "gateway": "main"
+    },
+    {
+      "name": "eicar_detected",
+      "passed": true,
+      "gateway": "main"
+    },
+    {
+      "name": "authentication_required",
+      "passed": true,
+      "gateway": "standby"
+    },
+    {
+      "name": "clean_sample_healthy_engine",
+      "passed": true,
+      "gateway": "standby"
+    },
+    {
+      "name": "eicar_detected",
+      "passed": true,
+      "gateway": "standby"
+    }
+  ]
+}

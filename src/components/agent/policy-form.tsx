@@ -8,7 +8,9 @@ import { savePolicy } from "@/lib/agent/actions";
 type ToolRow = { id: string; title: string; risk: number; description: string };
 type PolicyRow = { mode: string; allowed_tools: string[] | null; auto_tools: string[]; quiet_hours: { from: string; to: string } | null; approval_expiry_hours: number; max_parallel_runs: number;
   max_run_minutes: number; min_confidence: number; daily_spend_cap_minor: number; monthly_spend_cap_minor: number; refund_threshold_minor: number; booking_authority_minor: number;
-  autopilot_rules: { tool: string; max_amount_minor?: number }[] };
+  autopilot_rules: { tool: string; max_amount_minor?: number }[]; retention_days?: number };
+/** Q75: how long Gala Agent keeps conversations (goals, answers, step results) before the nightly cleanup removes them. */
+const RETENTION_CHOICES: [number, string][] = [[30, "30 days"], [90, "90 days"], [180, "6 months"], [365, "12 months (default)"]];
 const MODES: [string, string, string][] = [
   ["always_ask", "Always ask", "Every change, even a draft or internal task, waits for your approval."],
   ["suggest", "Suggest", "Analyses and recommends only."],
@@ -23,14 +25,14 @@ const RISK = ["R0 Read", "R1 Draft", "R2 Internal", "R3 External", "R4 Commitmen
 export function PolicyForm({ workspaceId, tools, policy, canEdit }: { workspaceId: string; tools: ToolRow[]; policy: PolicyRow | null; canEdit: boolean }) {
   const router = useRouter(); const [pending, start] = useTransition(); const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const p: PolicyRow = policy ?? { mode: "execute_with_approval", allowed_tools: null, auto_tools: [], quiet_hours: { from: "21:00", to: "08:00" }, approval_expiry_hours: 72, max_parallel_runs: 3,
-    max_run_minutes: 240, min_confidence: 0.6, daily_spend_cap_minor: 0, monthly_spend_cap_minor: 0, refund_threshold_minor: 0, booking_authority_minor: 0, autopilot_rules: [] };
+    max_run_minutes: 240, min_confidence: 0.6, daily_spend_cap_minor: 0, monthly_spend_cap_minor: 0, refund_threshold_minor: 0, booking_authority_minor: 0, autopilot_rules: [], retention_days: 365 };
   const [mode, setMode] = useState(p.mode);
   const [restrict, setRestrict] = useState(p.allowed_tools !== null);
   const pounds = (m: number) => (m / 100).toString();
   return <form className="mk-form ap-form" aria-label="Agent policy" action={f => start(async () => {
     const n = (k: string) => Number(f.get(k) ?? 0), mm = (k: string) => Math.round(n(k) * 100);
     const r = await savePolicy(workspaceId, { mode, allowedTools: restrict ? f.getAll("allowed").map(String) : null, autoTools: f.getAll("auto").map(String),
-      quietFrom: String(f.get("quiet_from") ?? ""), quietTo: String(f.get("quiet_to") ?? ""), approvalExpiryHours: n("expiry"), maxParallel: n("parallel"), maxRunMinutes: n("minutes"),
+      quietFrom: String(f.get("quiet_from") ?? ""), quietTo: String(f.get("quiet_to") ?? ""), approvalExpiryHours: n("expiry"), maxParallel: n("parallel"), maxRunMinutes: n("minutes"), retentionDays: n("retention"),
       minConfidence: n("confidence") / 100, dailySpendCapMinor: mm("daily"), monthlySpendCapMinor: mm("monthly"), refundThresholdMinor: mm("refund"), bookingAuthorityMinor: mm("booking"),
       autopilotRules: tools.filter(t => t.risk >= 3 && t.risk <= 4 && f.get(`ap_${t.id}`) === "on").map(t => ({ tool: t.id, ...(f.get(`apmax_${t.id}`) ? { max_amount_minor: Math.round(Number(f.get(`apmax_${t.id}`)) * 100) } : {}) })) });
     setMsg(r.ok ? { ok: true, t: "Policy saved." } : { ok: false, t: r.error }); if (r.ok) router.refresh();
@@ -52,7 +54,11 @@ export function PolicyForm({ workspaceId, tools, policy, canEdit }: { workspaceI
       <label className="mk-field"><span>Quiet hours until</span><input name="quiet_to" type="time" defaultValue={p.quiet_hours?.to ?? "08:00"} /></label>
       <label className="mk-field"><span>Approvals expire after (hours)</span><input name="expiry" type="number" min={1} max={720} defaultValue={p.approval_expiry_hours} /></label>
       <label className="mk-field"><span>Max parallel runs</span><input name="parallel" type="number" min={1} max={20} defaultValue={p.max_parallel_runs} /></label>
-      <label className="mk-field"><span>Max run duration (minutes)</span><input name="minutes" type="number" min={5} max={10080} defaultValue={p.max_run_minutes} /></label>
+      <label className="mk-field"><span>Max working time per run (minutes)</span><input name="minutes" type="number" min={5} max={10080} defaultValue={p.max_run_minutes} aria-describedby="ap-minutes-help" />
+        <small id="ap-minutes-help" className="mk-note">Time spent working, not waiting for approvals or replies. Over 4 hours, and runs that wait more than a day, need a plan with long runs.</small></label>
+      <label className="mk-field"><span>Keep conversations for</span><select name="retention" defaultValue={String(RETENTION_CHOICES.some(([d]) => d === p.retention_days) ? p.retention_days : 365)}>
+        {RETENTION_CHOICES.map(([d, l]) => <option key={d} value={d}>{l}</option>)}</select>
+        <small className="mk-note">Older goals, answers and step results are deleted nightly. Approved actions keep a minimal audit record.</small></label>
       <label className="mk-field"><span>Minimum confidence to act (%)</span><input name="confidence" type="number" min={0} max={100} defaultValue={Math.round(p.min_confidence * 100)} /></label>
       <label className="mk-field"><span>Booking authority (£)</span><input name="booking" type="number" min={0} defaultValue={pounds(p.booking_authority_minor)} /></label>
       <label className="mk-field"><span>Refund threshold (£)</span><input name="refund" type="number" min={0} defaultValue={pounds(p.refund_threshold_minor)} /></label>

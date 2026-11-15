@@ -45,7 +45,7 @@ export function emailHtml(p: EmailParts) {
 <td style="background:#f3f6ff;border:1px solid ${b.line};border-radius:12px;padding:16px 26px;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:30px;font-weight:700;letter-spacing:8px;color:${b.ink}">${p.rawUrls ? p.code : escapeHtml(p.code)}</td>
 </tr></table>` : "";
   return `<!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting">
 <meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light">
 <title>${escapeHtml(p.heading)}</title>

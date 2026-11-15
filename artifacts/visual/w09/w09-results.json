@@ -1,0 +1,595 @@
+{
+ "http": [
+  {
+   "path": "/portal/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 130841
+  },
+  {
+   "path": "/portal/short",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 24068
+  },
+  {
+   "path": "/portal/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25823
+  },
+  {
+   "path": "/portal/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25823
+  },
+  {
+   "path": "/portal/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25823
+  },
+  {
+   "path": "/portal/<tok>/documents/<tok>",
+   "status": 404,
+   "cache": "private, no-store, max-age=0",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "",
+   "metaReferrer": "",
+   "location": null,
+   "len": 9
+  },
+  {
+   "path": "/portal/<tok>/documents/<tok>",
+   "status": 200,
+   "cache": "private, no-store, max-age=0",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "",
+   "metaReferrer": "",
+   "location": null,
+   "len": 15
+  },
+  {
+   "path": "/guest/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 30445
+  },
+  {
+   "path": "/guest/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 39173
+  },
+  {
+   "path": "/guest/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25245
+  },
+  {
+   "path": "/proposal/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 34905
+  },
+  {
+   "path": "/proposal/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25926
+  },
+  {
+   "path": "/contract/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 33047
+  },
+  {
+   "path": "/contract/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 25765
+  },
+  {
+   "path": "/pay/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 29313
+  },
+  {
+   "path": "/pay/<tok>",
+   "status": 404,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "",
+   "location": null,
+   "len": 29477
+  },
+  {
+   "path": "/tickets/accept/<tok>",
+   "status": 307,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex, nofollow",
+   "metaReferrer": "no-referrer",
+   "location": "/login?next=%2Ftickets%2Faccept%<tok>",
+   "len": 30076
+  },
+  {
+   "path": "/invite/<tok>",
+   "status": 200,
+   "cache": "no-store",
+   "referrer": "no-referrer",
+   "robots": "noindex, nofollow",
+   "metaRobots": "noindex",
+   "metaReferrer": "no-referrer",
+   "location": null,
+   "len": 36643
+  }
+ ],
+ "pages": [
+  {
+   "name": "portal-A-overview",
+   "status": 200,
+   "links": 44,
+   "buttons": 2,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-A-timeline",
+   "status": 200,
+   "links": 16,
+   "buttons": 0,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-A-approvals",
+   "status": 200,
+   "links": 16,
+   "buttons": 8,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-A-documents",
+   "status": 200,
+   "links": 28,
+   "buttons": 0,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-A-money",
+   "status": 200,
+   "links": 16,
+   "buttons": 0,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-A-messages",
+   "status": 200,
+   "links": 16,
+   "buttons": 1,
+   "inputs": 2,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-B-overview",
+   "status": 200,
+   "links": 27,
+   "buttons": 0,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Comedy NightReady",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-expired",
+   "status": 404,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "404",
+   "consoleErrors": 2,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-revoked",
+   "status": 404,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "404",
+   "consoleErrors": 2,
+   "externalRequests": 0
+  },
+  {
+   "name": "portal-E-approvals",
+   "status": 200,
+   "links": 15,
+   "buttons": 4,
+   "inputs": 1,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "W09 Portal QA GalaIn Planning",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "guest-disposable",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "W09 Portal QA Gala",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "guest-neon-hidden-location",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights Festival",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "proposal-viewed",
+   "status": 200,
+   "links": 0,
+   "buttons": 1,
+   "inputs": 3,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "proposal-accepted",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "contract-signed",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Acme gala services agreement",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "pay-invoice",
+   "status": 404,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "404",
+   "consoleErrors": 2,
+   "externalRequests": 0
+  },
+  {
+   "name": "ticket-accept-signed-out",
+   "status": 200,
+   "links": 10,
+   "buttons": 4,
+   "inputs": 3,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "invite-unknown",
+   "status": 200,
+   "links": 6,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-portal-A",
+   "status": 200,
+   "links": 41,
+   "buttons": 3,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-portal-A-approvals",
+   "status": 200,
+   "links": 13,
+   "buttons": 9,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Neon Nights FestivalOn Sale",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-guest",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "W09 Portal QA Gala",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-proposal",
+   "status": 200,
+   "links": 0,
+   "buttons": 1,
+   "inputs": 3,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-contract",
+   "status": 200,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "Acme gala services agreement",
+   "consoleErrors": 0,
+   "externalRequests": 0
+  },
+  {
+   "name": "phone-pay",
+   "status": 404,
+   "links": 0,
+   "buttons": 0,
+   "inputs": 0,
+   "deadLinks": [],
+   "unnamed": 0,
+   "overflow": 0,
+   "h1": "404",
+   "consoleErrors": 2,
+   "externalRequests": 0
+  }
+ ],
+ "scope": [
+  {
+   "link": "A (Neon Nights / Alex Events)",
+   "showsOwn": true,
+   "showsOther": false
+  },
+  {
+   "link": "B (Comedy Night / City Nights)",
+   "showsOwn": true,
+   "showsOther": false
+  },
+  {
+   "link": "guest GE (disposable)",
+   "showsOwn": true,
+   "showsOther": false
+  },
+  {
+   "link": "guest G (Neon, show_location=false)",
+   "showsOwn": true,
+   "showsOther": false,
+   "venueShown": true
+  }
+ ],
+ "leaks": [],
+ "actions": [
+  {
+   "action": "approve + reject",
+   "rows": [
+    {
+     "title": "W09 stage design",
+     "status": "approved",
+     "decision_note": "",
+     "decided_name": "W09 QA Client"
+    },
+    {
+     "title": "W09 catering package",
+     "status": "rejected",
+     "decision_note": "Please use the v3 stage plan.",
+     "decided_name": "W09 QA Client"
+    }
+   ]
+  },
+  {
+   "action": "message",
+   "rows": [
+    {
+     "body": "Approved: W09 stage design",
+     "from_client": true,
+     "author_name": "W09 QA Client"
+    },
+    {
+     "body": "Rejected: W09 catering package — Please use the v3 stage plan.",
+     "from_client": true,
+     "author_name": "W09 QA Client"
+    },
+    {
+     "body": "W09 QA message from the client.",
+     "from_client": true,
+     "author_name": "W09 QA Client"
+    }
+   ]
+  },
+  {
+   "action": "document download",
+   "status": 200,
+   "type": "application/pdf",
+   "disposition": "attachment; filename=\"W09 Run sheet.pdf\"",
+   "cache": "private, no-store, max-age=0"
+  },
+  {
+   "action": "document via other event's token",
+   "status": 404
+  }
+ ],
+ "notes": [
+  "404 bodies: n=10 len min 9 max 29477",
+  "ticket accept signed-out lands on http://localhost:3107/login?next=%2Ftickets%2Faccept%<tok>",
+  "cleanup: portal_links left 0"
+ ]
+}

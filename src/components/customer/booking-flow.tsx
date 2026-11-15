@@ -8,7 +8,9 @@ import { NumberStepper, SaveHeart, useAction, useKitToast, Menu } from "@/compon
 import { saveBookingDraft, submitBooking, acceptQuote, checkAvailability, type Availability, type BookingRequirements } from "@/lib/actions/booking";
 import type { BookingQuestion } from "@/lib/booking-questions";
 import { RequestAttachments } from "@/components/shared/request-attachments";
-import { bookingAdminFee, gbpPence, BOOKING_ADMIN_FEE } from "@/lib/fees";
+import { bookingAdminFee as adminFeeIn, bookingAdminMinimum, feeMoney, BOOKING_ADMIN_FEE } from "@/lib/fees";
+import { formatMoney } from "@/lib/i18n/money";
+import type { CancellationNotice } from "@/lib/i18n/rules";
 import { labelOf } from "@/lib/master-data";
 
 type QuoteItem = { label?: string; description?: string; name?: string; qty?: number; unit_price?: number };
@@ -24,9 +26,14 @@ export type BookingData = {
   submitted: boolean;
   card: { brand: string; last4: string; exp: string; test: boolean } | null;
   cardUnavailable?:boolean;
+  /** Q76: the currency the booking is charged in (the seller's, booking_charge_currency) and the buyer-country cancellation notice. */
+  currency: string;
+  cancellation: CancellationNotice;
 };
 type Opt = "accept" | "request" | "hold" | "standby";
-const gbp = (n: number | null | undefined) => n == null ? "—" : `£${Math.round(n).toLocaleString("en-GB")}`;
+/** Q76: whole-unit price in the booking currency (was hard-coded £); fee helpers in the same currency. */
+const moneyOf = (c: string) => (n: number | null | undefined) => n == null ? "—" : formatMoney(Math.round(n), c);
+const feesOf = (c: string) => ({ gbp: moneyOf(c), gbpPence: (n: number) => feeMoney(n, c), bookingAdminFee: (n: number) => adminFeeIn(n, c), minFee: formatMoney(bookingAdminMinimum(c), c, { decimals: !Number.isInteger(bookingAdminMinimum(c)) }) });
 const TIMES = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "30" : "00"}`);
 /** Listing category (supplier taxonomy) or, without a listing, the build line category — never the raw key ("catering_full", "food"). */
 const catLabel = (L: BookingData["listing"], buildCat: string) => L?.category ? labelOf("service_category", L.category) : labelOf("build_category", buildCat, "Provider");
@@ -34,9 +41,13 @@ const fmtDate = (d: string) => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString
 
 export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: string; data: BookingData; steps: { title: string; sub?: string }[] }) {
   const router = useRouter(); const toast = useKitToast(); const { run, pending: acting } = useAction();
+  const { gbp, gbpPence, bookingAdminFee } = feesOf(data.currency);
   // Q47: `acting` clears when the action resolves, before the next page (or Stripe Checkout) loads; stay busy until then so a
   // second click can't start a second checkout session or resubmit the request.
   const [leaving, setLeaving] = useState(false); const pending = acting || leaving;
+  // Requirements → Review is the same route (?step=2), so this component stays mounted: clear the latch once the new step renders,
+  // or Submit / Book & pay on step 2 stays disabled for good.
+  const [shownStep, setShownStep] = useState(step); if (shownStep !== step) { setShownStep(step); setLeaving(false); }
   useEffect(() => { const f = (e: PageTransitionEvent) => { if (e.persisted) setLeaving(false); }; addEventListener("pageshow", f); return () => removeEventListener("pageshow", f); }, []); // Back from Stripe (bfcache)
   const [r, setR] = useState<BookingRequirements>(data.saved);const [attachmentUploading,setAttachmentUploading]=useState(false);
   const [errs, setErrs] = useState<Record<string, boolean>>({});
@@ -197,6 +208,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
 
     {step === 2 && <div className="bk-bar">
       <Link className="k-btn outline" href={`${base}&step=1`}><ArrowLeft size={16} />Back to Requirements</Link>
+      {opt === "accept" && <p className="bk-note" role="note"><Info size={14} /><span><b>{data.cancellation.heading}.</b> {data.cancellation.text}</span></p>}
       <label className="bk-check bk-agree"><input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} />I agree to the {kind}&apos;s {L ? <Link href={`${L.href}#terms`} className="k-underline">terms and conditions</Link> : "terms and conditions"}<span className="k-red">*</span></label>
       <button className="k-btn primary bk-submit" onClick={() => void submit()} disabled={pending}>{pending && <Loader2 size={16} className="k-spin" />}{opt === "accept" ? `Book & pay ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))}` : opt === "hold" ? "Request Hold" : opt === "standby" ? "Join Standby List" : data.submitted ? "Update Booking Request" : "Submit Booking Request"}<ArrowRight size={17} /></button>
     </div>}
@@ -206,6 +218,7 @@ export function BookingFlow({ step, base, data, steps }: { step: 1 | 2; base: st
 const depositOf = (d: BookingData) => Math.min(d.item.amount ?? 0, d.item.deposit || Math.round((d.item.amount ?? 0) * Number(d.item.quote.deposit_pct ?? 30)) / 100);
 const estimateOf = (d: BookingData) => d.item.amount ?? d.pkg?.price ?? d.listing?.price_from ?? null;
 function whatHappens(opt: Opt, d: BookingData) {
+  const { gbp, gbpPence, bookingAdminFee } = feesOf(d.currency);
   const who = d.listing?.kind === "venue" ? "venue" : "provider";
   if (opt === "accept") return [`We'll charge your ${gbp(depositOf(d))} deposit plus a ${gbpPence(bookingAdminFee(depositOf(d)))} booking admin fee`, `Your booking with ${d.item.title} confirms after successful payment`, "The balance is scheduled in Money", "You can message the provider any time"];
   if (opt === "hold") return [`We'll ask the ${who} for a conditional hold`, "No card authorization or charge", "The provider must confirm the hold and its deadline", "Review the quote before approving any payment"];
@@ -236,6 +249,7 @@ function ListingTabs({ data }: { data: BookingData }) {
 
 function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }: { data: BookingData; r: BookingRequirements; opt: Opt; setOpt: (o: Opt) => void; quoted: boolean; base: string; isVenue: boolean; agree: boolean; setAgree: (v: boolean) => void }) {
   void agree; void setAgree;
+  const { gbp, gbpPence, bookingAdminFee, minFee } = feesOf(data.currency);
   const L = data.listing; const held = data.item.status === "held";
   const items = (data.item.quote.items ?? []).map(i => ({ label: i.label ?? i.description ?? i.name ?? "Item", total: Number(i.qty ?? 1) * Number(i.unit_price ?? 0) }));
   const est = estimateOf(data);
@@ -270,7 +284,7 @@ function Step2({ data, r, opt, setOpt, quoted, base, isVenue, agree, setAgree }:
       <div className="bk-price">
         <div className="bk-price-est"><small>{quoted ? "Quoted price" : "Estimated price"}</small><b>{gbp(quoted ? data.item.amount : est)}</b><span>{data.pkg?.name ?? data.item.package}</span></div>
         <dl className="bk-price-lines">{lines.slice(0, 5).map(l => <div key={l.label}><dt>{l.label}</dt><dd>{gbp(l.total)}</dd></div>)}{!lines.length && <div><dt>Quote to follow</dt><dd>—</dd></div>}</dl>
-        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Payment on submission"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "No charge"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : 0)}</strong><small>{opt === "accept" ? `Plus a ${gbpPence(bookingAdminFee(depositOf(data)))} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))} today. Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} (plus its admin fee) scheduled before your event.` : opt === "hold" ? "No card authorization or charge. A hold needs provider confirmation." : "Nothing is charged for a request or standby."}</small></div>
+        <div className="bk-price-dep"><div className="k-between"><b>{opt === "accept" ? "Deposit (today)" : "Payment on submission"}</b><span className={`bk-refund ${opt === "accept" ? "blue" : ""}`}>{opt === "accept" ? "Secures booking" : "No charge"}</span></div><strong>{gbp(opt === "accept" ? depositOf(data) : 0)}</strong><small>{opt === "accept" ? `Plus a ${gbpPence(bookingAdminFee(depositOf(data)))} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min ${minFee}): ${gbpPence(depositOf(data) + bookingAdminFee(depositOf(data)))} today. Balance of ${gbp((data.item.amount ?? 0) - depositOf(data))} (plus its admin fee) scheduled before your event.` : opt === "hold" ? "No card authorization or charge. A hold needs provider confirmation." : "Nothing is charged for a request or standby."}</small></div>
       </div>
       <div className="bk-info3">
         <div><Clock size={22} /><span><small>Response deadline</small><b>{data.item.response_deadline && ["sent", "awaiting"].includes(data.item.status) ? new Date(data.item.response_deadline).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) : `${L?.response_hours ?? 48} hours`}</b><em>You&apos;ll be notified by email and in your event.</em></span></div>

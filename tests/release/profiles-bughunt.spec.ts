@@ -120,3 +120,9 @@ test("Q49 add-ons: Published sparkline from listings, my-shifts page-head scale,
   expect(src("src/app/organizer/team/page.tsx")).toMatch(/canExport=\{\["owner", "manager"\]\.includes\(String\(ctx\.role\)\)\}/);
   expect(src("src/lib/tours.ts")).not.toMatch(/Payouts, commission and invoices/);   // providers have no invoices page
 });
+
+test("public listing selects `published` so a published listing is never labelled as a draft preview (Q71 finding)", () => {
+  const s = readFileSync("src/components/customer/public-listing.tsx", "utf8");
+  expect(s).toMatch(/const COLS = "[^"]*\bpublished\b/);
+  expect(s).toMatch(/const q = preview \? base : base\.eq\("published", true\)/);
+});

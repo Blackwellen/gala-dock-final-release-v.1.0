@@ -1,0 +1,30 @@
+{
+  "observedUtc": "2026-10-13T20:03:12.129Z",
+  "base": "http://localhost:3120",
+  "checks": [
+    {
+      "label": "public",
+      "result": "PASS"
+    },
+    {
+      "label": "wrong_bearer",
+      "result": "PASS"
+    },
+    {
+      "label": "authenticated_readiness",
+      "result": "PASS"
+    }
+  ],
+  "integrations": [
+    {
+      "key": "stripe",
+      "critical": true,
+      "status": "blocked_external"
+    },
+    {
+      "key": "av_scanner",
+      "critical": true,
+      "status": "blocked_external"
+    }
+  ]
+}

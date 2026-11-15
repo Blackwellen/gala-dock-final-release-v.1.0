@@ -1,4 +1,5 @@
 import "server-only";
+import { safeTz } from "@/lib/i18n/tz";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import { planAreas, planSeats } from "@/components/venue-plan/inventory";
@@ -6,7 +7,7 @@ import { PRO_DEFAULTS, type ProSettings, type ProSection } from "@/lib/ticket-pr
 
 export type ProTier = { id?: string; name: string; description: string; kind: string; price: number; quantity: number; sold: number; held: number; status: string; sale_start: string | null; sale_end: string | null; release_name: string | null; after_tier: string | null; order_limit: number; image: string | null; badge: string | null; color: string; allocation: string | null; valid_from: string | null; valid_to: string | null };
 export type ProSetup = {
-  event: { id: string; name: string; slug: string | null; status: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; cover: string; description: string; visibility: string; event_type: string; budget: number | null };
+  event: { id: string; name: string; slug: string | null; status: string; currency: string; timezone: string; starts_at: string | null; ends_at: string | null; venue_name: string; location: string; cover: string; description: string; visibility: string; event_type: string; budget: number | null };
   venueCap: number | null; venueName: string | null; hasVenueMap: boolean; mapSections: ProSection[];
   tiers: ProTier[]; promos: { id?: string; code: string; kind: "percent" | "amount"; amount: number; valid_from: string | null; valid_until: string | null; max_uses: number | null; used: number; status: string }[];
   promoters: { id: string; name: string; code: string; status: string; ticket_allocation: number | null; tickets_sold: number }[];
@@ -17,7 +18,7 @@ const PALETTE = ["#2563eb", "#7c3aed", "#e0398b", "#e08a00", "#16a46c", "#64748b
 
 /** Everything the professional ticket setup needs, read under the caller's RLS. */
 export async function loadProSetup(sb: SupabaseClient, eventId: string, workspaceId: string): Promise<ProSetup | null> {
-  const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,cover_image,description,visibility,event_type,capacity,settings,venue_listing_id,management,budget_total").eq("id", eventId).eq("workspace_id", workspaceId).maybeSingle();
+  const { data: e } = await sb.from("events").select("id,name,slug,status,starts_at,ends_at,venue_name,location,cover_image,description,visibility,event_type,capacity,settings,venue_listing_id,management,budget_total,currency,timezone").eq("id", eventId).eq("workspace_id", workspaceId).maybeSingle();
   if (!e || e.management !== "professional") return null;
   const s = (e.settings ?? {}) as Record<string, unknown>;
   const [{ data: tiers }, { data: codes }, { data: promoters }, { data: venue }, { data: ws }, { data: vmap }] = await Promise.all([
@@ -49,7 +50,7 @@ export async function loadProSetup(sb: SupabaseClient, eventId: string, workspac
   const wsSettings = (ws?.settings ?? {}) as Record<string, unknown>;
   const bank = wsSettings.payout_account as { bank?: string; last4?: string } | undefined;
   return {
-    event: { id: e.id, name: e.name, slug: e.slug, status: e.status, starts_at: e.starts_at, ends_at: e.ends_at, venue_name: e.venue_name, location: e.location, cover: (s.hero_image as string) || e.cover_image || "/assets/gd/builder/poster/bg-event-hero.webp", description: e.description, visibility: e.visibility, event_type: e.event_type, budget: e.budget_total == null ? null : Number(e.budget_total) },
+    event: { id: e.id, name: e.name, slug: e.slug, status: e.status, currency: String((e as { currency?: string | null }).currency || "GBP").toUpperCase(), timezone: safeTz((e as { timezone?: string | null }).timezone), starts_at: e.starts_at, ends_at: e.ends_at, venue_name: e.venue_name, location: e.location, cover: (s.hero_image as string) || e.cover_image || "/assets/gd/builder/poster/bg-event-hero.webp", description: e.description, visibility: e.visibility, event_type: e.event_type, budget: e.budget_total == null ? null : Number(e.budget_total) },
     venueCap, venueName: venue?.name ?? (e.venue_name || null), hasVenueMap: overlay.length > 0, mapSections,
     tiers: (tiers ?? []).map((t, i) => ({ id: t.id, name: t.name, description: t.description, kind: t.kind, price: Number(t.price), quantity: t.quantity, sold: t.sold, held: t.held, status: t.status, sale_start: t.sale_start, sale_end: t.sale_end, release_name: t.release_name || null, after_tier: t.after_tier, order_limit: t.order_limit ?? pro.sales.order_limit, image: t.image, badge: t.badge, color: t.color || PALETTE[i % PALETTE.length]!, allocation: t.allocation || null, valid_from: t.valid_from, valid_to: t.valid_to })),
     promos: (codes ?? []).map(c => ({ id: c.id, code: c.code, kind: c.kind as "percent" | "amount", amount: Number(c.amount), valid_from: c.valid_from, valid_until: c.valid_until, max_uses: c.max_uses, used: c.used, status: c.status })),

@@ -8,6 +8,9 @@ import { money, dateShort, time } from "@/lib/format";
 import { PAYMENT_STATE } from "@/lib/commerce/orchestrator";
 import { venueBlocks } from "@/components/venue/venue-blocks";
 import { Countdown, PayButton, ActButton, HoldRequestForm, HoldRespondForm, StandbyRequestForm, StandbyOfferForm, CancelForm, DisputeOpenForm } from "./lifecycle-client";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
+import { fromMinorUnits, isCheckoutCurrency } from "@/lib/i18n/money";
 import "@/styles/marketplace.css";
 
 type Viewer = "organizer" | "provider" | "customer";
@@ -28,6 +31,10 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
   const lc = await loadLifecycle(supabase, itemId);
   if (!lc) return null;
   const { item, holds, standby, cancellations, disputes, siblings, event, payments } = lc;
+  // Q76: the booking is charged in the seller's currency (booking_charge_currency, the rule create_payment_order applies). The
+  // viewer can already read this item (loadLifecycle runs under their RLS), so the service role only resolves its currency.
+  const { data: bcur } = await untyped(createAdminClient() as never).rpc("booking_charge_currency", { p_item: item.id });
+  const cur = isCheckoutCurrency(bcur) ? String(bcur).toUpperCase() : "GBP";
   const isEvent = viewer !== "provider";
   const openHold = holds.find(h => h.status === "requested" || h.status === "held");
   const openSb = standby.find(s => ["requested", "offered", "accepted"].includes(s.status));
@@ -61,11 +68,11 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
 
     {(payments.length > 0 || (isEvent && (payable || balanceDue > 0 || openSb?.fee_status === "due"))) && <div className="mk-block" id="payments">
       <h3><CreditCard size={15} aria-hidden="true" />Payments</h3>
-      {payments.map(p => { const [l, t] = PAYMENT_STATE[p.status] ?? [p.status, "grey"]; return <p key={p.id} className="mk-line"><Tag tone={t}>{l}</Tag><span>{p.description} · {money(p.amount_minor / 100)}{p.refunded_minor ? ` (refunded ${money(p.refunded_minor / 100)})` : ""} · {p.reference}</span></p>; })}
-      {isEvent && payable && <PayButton kind={emergency ? "emergency_service" : "deposit"} itemId={item.id} returnPath={back} label={emergency ? `Pay ${money(item.amount)} and confirm` : "Pay deposit and confirm"} amount={emergency && item.amount != null ? Number(item.amount) : undefined}
+      {payments.map(p => { const [l, t] = PAYMENT_STATE[p.status] ?? [p.status, "grey"]; return <p key={p.id} className="mk-line"><Tag tone={t}>{l}</Tag><span>{p.description} · {money(fromMinorUnits(p.amount_minor, p.currency || cur), p.currency || cur, { decimals: true })}{p.refunded_minor ? ` (refunded ${money(fromMinorUnits(p.refunded_minor, p.currency || cur), p.currency || cur, { decimals: true })})` : ""} · {p.reference}</span></p>; })}
+      {isEvent && payable && <PayButton currency={cur} kind={emergency ? "emergency_service" : "deposit"} itemId={item.id} returnPath={back} label={emergency ? `Pay ${money(item.amount, cur)} and confirm` : "Pay deposit and confirm"} amount={emergency && item.amount != null ? Number(item.amount) : undefined}
         note={emergency ? "Emergency bookings are paid in full, directly to the provider through Stripe. Gala Dock’s booking terms cover cancellations and problems." : "Your deposit confirms the booking and is paid to the provider through Stripe. Cancellations and refunds follow the booking’s agreed terms."} />}
-      {isEvent && balanceDue > 0 && <PayButton kind="balance_payment" itemId={item.id} returnPath={back} label={`Pay balance ${money(balanceDue / 100)}`} amount={balanceDue / 100} />}
-      {isEvent && openSb?.status === "accepted" && openSb.fee_status === "due" && <PayButton kind="standby_fee" standbyId={openSb.id} returnPath={back} label={`Pay standby fee ${money(openSb.standby_fee)}`} amount={Number(openSb.standby_fee)} />}
+      {isEvent && balanceDue > 0 && <PayButton currency={cur} kind="balance_payment" itemId={item.id} returnPath={back} label={`Pay balance ${money(balanceDue / 100, cur)}`} amount={balanceDue / 100} />}
+      {isEvent && openSb?.status === "accepted" && openSb.fee_status === "due" && <PayButton currency={cur} kind="standby_fee" standbyId={openSb.id} returnPath={back} label={`Pay standby fee ${money(openSb.standby_fee, cur)}`} amount={Number(openSb.standby_fee)} />}
       {viewer === "provider" && payments.some(p => p.status === "protected_pending_delivery") && <p className="mk-note">Payment received in your Stripe account. It is paid out to your bank once the booking is complete (the customer confirms, or 24 hours after the event with no issue raised).</p>}
     </div>}
 
@@ -91,15 +98,15 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       {openSb ? <>
         <p className="mk-line"><Tag tone="purple">{SB_LABEL[openSb.status]}</Tag><span>Window {when(openSb.window_start)} – {when(openSb.window_end)}</span></p>
         {openSb.primary_item_id && <p className="mk-note">Covering {siblings.find(s => s.id === openSb.primary_item_id)?.title ?? "a primary booking"}.</p>}
-        {openSb.status !== "requested" && <dl className="mk-dl"><div><dt>Standby fee</dt><dd>{money(openSb.standby_fee)}</dd></div><div><dt>Activation price</dt><dd>{money(openSb.activation_price)}</dd></div>
+        {openSb.status !== "requested" && <dl className="mk-dl"><div><dt>Standby fee</dt><dd>{money(openSb.standby_fee, cur)}</dd></div><div><dt>Activation price</dt><dd>{money(openSb.activation_price, cur)}</dd></div>
           {openSb.status === "accepted" && <div><dt>Fee</dt><dd>{openSb.fee_status === "due" ? "Due" : openSb.fee_status === "paid" ? "Paid" : "Not required"}</dd></div>}</dl>}
         {openSb.cancellation_terms && openSb.status !== "requested" && <p className="mk-note">Terms: {openSb.cancellation_terms}</p>}
         {openSb.status === "offered" && openSb.expires_at && <p className="mk-note">Offer valid until {when(openSb.expires_at)}.</p>}
         <div className="mk-row">
-          {viewer === "provider" && openSb.status === "requested" && <StandbyOfferForm standbyId={openSb.id} />}
-          {isEvent && openSb.status === "offered" && <ActButton label="Accept standby offer" action="acceptStandby" args={openSb.id} tone="primary" confirm={`Accepting commits you to the ${money(openSb.standby_fee)} standby fee under the provider’s terms.`} />}
+          {viewer === "provider" && openSb.status === "requested" && <StandbyOfferForm standbyId={openSb.id} currency={cur} />}
+          {isEvent && openSb.status === "offered" && <ActButton label="Accept standby offer" action="acceptStandby" args={openSb.id} tone="primary" confirm={`Accepting commits you to the ${money(openSb.standby_fee, cur)} standby fee under the provider’s terms.`} />}
           {isEvent && openSb.status === "accepted" && openSb.fee_status !== "due" && Date.parse(openSb.window_end) > now &&
-            <ActButton label="Activate standby" action="activateStandby" args={openSb.id} tone="primary" reason="Why are you activating?" confirm={`This books the provider at ${money(openSb.activation_price)}.`} />}
+            <ActButton label="Activate standby" action="activateStandby" args={openSb.id} tone="primary" reason="Why are you activating?" confirm={`This books the provider at ${money(openSb.activation_price, cur)}.`} />}
           {isEvent && openSb.status === "accepted" && openSb.fee_status === "due" && <p className="mk-note warn">Pay the standby fee to make the commitment active. The provider is notified when it’s paid.</p>}
           {isEvent && <ActButton label={openSb.status === "accepted" ? "Release standby" : "Withdraw request"} action="releaseStandby" args={openSb.id} confirm={openSb.status === "accepted" ? "The provider’s standby terms apply to the fee." : undefined} />}
         </div>
@@ -113,13 +120,13 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
         <p className="mk-line"><Tag tone="orange">{openCancel.status === "manual_review" ? "With Gala Dock review" : "Awaiting response"}</Tag>
           <span>{openCancel.party === "provider" ? "Provider" : openCancel.party === "customer" ? "Organiser" : "Mutual"} · {openCancel.kind.replace("_", " ")} · {when(openCancel.created_at)}</span></p>
         <p className="mk-note">“{openCancel.reason}”</p>
-        <dl className="mk-dl"><div><dt>Paid</dt><dd>{money(openCancel.calculation.paid)}</dd></div><div><dt>Refund</dt><dd>{openCancel.calculation.refund_amount == null ? "On review" : money(openCancel.calculation.refund_amount)}</dd></div></dl>
+        <dl className="mk-dl"><div><dt>Paid</dt><dd>{money(openCancel.calculation.paid, cur)}</dd></div><div><dt>Refund</dt><dd>{openCancel.calculation.refund_amount == null ? "On review" : money(openCancel.calculation.refund_amount, cur)}</dd></div></dl>
         {openCancel.status === "requested" && ((viewer === "provider") !== (openCancel.party === "provider")) && <div className="mk-row">
           <ActButton label="Agree" action="acceptCancellation" args={openCancel.id} tone="primary" reason="Note (optional)" />
           <ActButton label="Decline" action="rejectCancellation" args={openCancel.id} reason="Why not?" />
         </div>}
-      </> : cancellable ? <CancelForm itemId={item.id} party={viewer === "provider" ? "provider" : "customer"} /> : null}
-      {cancellations.filter(c => c !== openCancel).slice(0, 2).map(c => <p key={c.id} className="mk-history">{c.party} {c.kind.replace("_", " ")} · {c.status.replace("_", " ")}{c.calculation.refund_amount != null ? ` · refund ${money(c.calculation.refund_amount)}` : ""}</p>)}
+      </> : cancellable ? <CancelForm itemId={item.id} party={viewer === "provider" ? "provider" : "customer"} currency={cur} /> : null}
+      {cancellations.filter(c => c !== openCancel).slice(0, 2).map(c => <p key={c.id} className="mk-history">{c.party} {c.kind.replace("_", " ")} · {c.status.replace("_", " ")}{c.calculation.refund_amount != null ? ` · refund ${money(c.calculation.refund_amount, cur)}` : ""}</p>)}
     </div>}
 
     {eventDay && <div className="mk-block"><h3><MapPin size={15} aria-hidden="true" />Event day</h3><ProviderSelfCheckin itemId={item.id} status={(checkin as { status: string } | null)?.status ?? null} /></div>}
@@ -129,7 +136,7 @@ export async function LifecyclePanel({ itemId, viewer, quiet = viewer === "provi
       <h3><ShieldAlert size={15} aria-hidden="true" />Disputes</h3>
       {disputes.map(d => <p key={d.id} className="mk-line"><Tag tone={d.status === "resolved" ? "green" : "red"}>{DISPUTE_STATUS[d.status] ?? d.status}</Tag>
         <Link href={`${DISPUTE_BASE[viewer]}/${d.id}`} className="mk-link">{d.reference} · {DISPUTE_REASONS.find(([k]) => k === d.reason)?.[1]}</Link></p>)}
-      {!openDispute && disputable && <DisputeOpenForm itemId={item.id} reasons={DISPUTE_REASONS} base={DISPUTE_BASE[viewer]} />}
+      {!openDispute && disputable && <DisputeOpenForm itemId={item.id} reasons={DISPUTE_REASONS} base={DISPUTE_BASE[viewer]} currency={cur} />}
     </div>}
   </section>;
 }

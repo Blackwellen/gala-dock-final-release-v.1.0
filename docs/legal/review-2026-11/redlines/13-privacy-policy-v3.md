@@ -7,7 +7,7 @@ This policy explains how Blackwellen Limited, trading as Gala Dock ("we"), colle
 ## 1. Who we are
 Blackwellen Limited (company 16482166), 61 Bridge Street, Kington, Herefordshire, HR5 3DJ (VAT GB508480488), is the controller of the personal data described here, except where §3 says otherwise. ICO registration ZC160806. Our Data Protection Officer is Jamahl Thomas [counsel CQ-27]: legal@galadock.com.
 
-1A. [If EU users are accepted: our representative in the EU under Article 27 EU GDPR is [name, address, email].]
+1A. **International users.** Gala Dock is available in the UK, the EU and other supported countries (not in sanctioned places). We are established in the UK; where the EU GDPR applies to you, you have the rights it gives you, and you can contact us or your local data protection authority. *[Q74 2026-11-14: owner decision D2]*
 
 ## 2. The data we collect
 - **Account and profile:** name, email, phone, password (only as a secure hash), photo, home area, language, interests, notification and marketing preferences, two-step verification settings.

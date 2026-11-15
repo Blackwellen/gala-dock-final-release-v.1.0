@@ -1,14 +1,94 @@
 {
- "generatedAt": "2026-10-30T02:29:06.758Z",
+ "generatedAt": "2026-11-15T15:51:47.284Z",
  "summary": {
-  "functions": 139,
-  "aalRefused": 70,
-  "otherError": 51,
-  "succeeded": 18,
+  "functions": 173,
+  "aalRefused": 88,
+  "otherError": 65,
+  "succeeded": 20,
   "succeededWithData": 4,
   "succeededWithWrites": 1
  },
  "rows": [
+  {
+   "name": "adm_ad_placement_set",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_boost_pause",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_covered_liability_absorb",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_dispute_award_check",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_dispute_award_enter",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_payout_pause",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_payout_unpause",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
+   "name": "adm_set_demo_public_visible",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
   {
    "name": "admin_actor_name",
    "ok": true,
@@ -150,6 +230,16 @@
    "adminNamed": true
   },
   {
+   "name": "admin_create_partner",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
    "name": "admin_create_support_case",
    "ok": false,
    "state": "42501",
@@ -197,6 +287,26 @@
    "res": null,
    "writes": null,
    "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_decide_content_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_decide_message_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
    "adminNamed": true
   },
   {
@@ -320,6 +430,16 @@
    "adminNamed": true
   },
   {
+   "name": "admin_global_search",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
    "name": "admin_grant_conversations",
    "ok": false,
    "state": "42501",
@@ -417,6 +537,16 @@
    "res": null,
    "writes": null,
    "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_moderation_queue",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
    "adminNamed": true
   },
   {
@@ -530,6 +660,26 @@
    "adminNamed": true
   },
   {
+   "name": "admin_partner_application_decide",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_invite",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
    "name": "admin_partner_statement_paid",
    "ok": false,
    "state": "42501",
@@ -537,6 +687,86 @@
    "res": null,
    "writes": null,
    "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_payout",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_prepare",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_recovered",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_recovery_prepare",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_transfer_failed",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_partner_statement_transferred",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_platform_reporting_export_logged",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_platform_reporting_report",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
    "adminNamed": true
   },
   {
@@ -630,6 +860,16 @@
    "adminNamed": true
   },
   {
+   "name": "admin_review_compliance_signal",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
    "name": "admin_review_counts",
    "ok": false,
    "state": "42501",
@@ -677,6 +917,16 @@
    "res": null,
    "writes": null,
    "aalRefused": true,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_sanctions_override_set",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
    "adminNamed": true
   },
   {
@@ -876,6 +1126,16 @@
    "msg": null,
    "res": "void",
    "writes": {},
+   "aalRefused": false,
+   "adminNamed": true
+  },
+  {
+   "name": "admin_transaction_stripe_target",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
    "aalRefused": false,
    "adminNamed": true
   },
@@ -1156,12 +1416,42 @@
    "adminNamed": false
   },
   {
+   "name": "demo_hidden_for_viewer",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
    "name": "design_access",
    "ok": true,
    "state": null,
    "msg": null,
    "res": "null",
    "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "dispute_case_pack",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "dispute_route",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
    "aalRefused": false,
    "adminNamed": false
   },
@@ -1210,7 +1500,7 @@
    "ok": true,
    "state": null,
    "msg": null,
-   "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-10-30T02:29:06.126964+00:00\", \"identity_verified\": true}",
+   "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T15:51:45.104152+00:00\", \"identity_verified\": true, \"insurance_v",
    "writes": {},
    "aalRefused": false,
    "adminNamed": false
@@ -1236,6 +1526,16 @@
    "adminNamed": false
   },
   {
+   "name": "moderate_review_response",
+   "ok": false,
+   "state": "42501",
+   "msg": "step_up_required",
+   "res": null,
+   "writes": null,
+   "aalRefused": true,
+   "adminNamed": false
+  },
+  {
    "name": "moderate_template",
    "ok": false,
    "state": "42501",
@@ -1247,6 +1547,16 @@
   },
   {
    "name": "ops_can_read",
+   "ok": true,
+   "state": null,
+   "msg": null,
+   "res": "false",
+   "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "payment_terms_accepted",
    "ok": true,
    "state": null,
    "msg": null,
@@ -1302,6 +1612,36 @@
    "msg": null,
    "res": "null",
    "writes": {},
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "report_content",
+   "ok": false,
+   "state": "22023",
+   "msg": "invalid_subject",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "report_message",
+   "ok": false,
+   "state": "22023",
+   "msg": "invalid_source",
+   "res": null,
+   "writes": null,
+   "aalRefused": false,
+   "adminNamed": false
+  },
+  {
+   "name": "seller_tax_profile_status",
+   "ok": false,
+   "state": "42501",
+   "msg": "not_authorized",
+   "res": null,
+   "writes": null,
    "aalRefused": false,
    "adminNamed": false
   },

@@ -1,4 +1,5 @@
 "use client";
+import { useToday } from "@/components/shared/local-time";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Plus, Trash2, Link2, Building2, Calendar, MapPin, Users, ArrowRight, ArrowLeft, Send, Info, Copy, X, ExternalLink, Monitor, Smartphone, CheckCircle2 } from "lucide-react";
@@ -89,7 +90,7 @@ export function ProposalServicesForm({ id, initial, taxRate }: { id: string; ini
 export function ProposalTermsForm({ id, initial, totals, taxRate }: { id: string; initial: { deposit_pct: number; valid_until: string; terms: Record<string, string> }; totals: { subtotal: number; tax: number; total: number }; taxRate: number }) {
   const { run, pending } = useAction();
   const [dep, setDep] = useState(initial.deposit_pct); const [valid, setValid] = useState(initial.valid_until); const [terms, setTerms] = useState(initial.terms);
-  const today = new Date().toISOString().slice(0, 10); const bad = !valid || valid < today || dep < 0 || dep > 100;
+  const today = useToday(); const bad = !valid || valid < today || dep < 0 || dep > 100;
   return <form className="wz-grid" onSubmit={async e => { e.preventDefault(); await run(() => saveProposalTerms(id, { deposit_pct: dep, valid_until: valid, terms })); }}>
     <div className="k-col" style={{ gap: 14, minWidth: 0 }}>
       <section className="k-card"><h2 className="wz-h" style={{ marginBottom: 10 }}>Payment terms</h2><div className="k-grid k-g2">

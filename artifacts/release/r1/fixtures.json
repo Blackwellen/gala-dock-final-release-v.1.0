@@ -1,0 +1,73 @@
+{
+ "rounds": [
+  {
+   "purpose": "partner/promoter sessions, test purchase, ticket transfer, report + review fixtures",
+   "users": [
+    "9ab8edf1-5b9f-4e6e-8dfd-631d87742463",
+    "39e7ba3b-2e5d-4479-ab88-a8ba7444c9f8"
+   ],
+   "partners": [
+    "ffa3e24b-77c1-48c6-933f-334185a95627"
+   ],
+   "promoters": [
+    "687dac07-cfe8-485e-95ed-dbc49299a28e"
+   ],
+   "event": {
+    "id": "216ba5a2-4f43-4c83-a468-6e53652ac429",
+    "slug": "r1-qa-ec8346",
+    "tier": "d2fe55b9-438d-457d-9c69-77f8d705bf5c",
+    "workspace": "e2722ab1-045d-408e-93d6-a24cf7c54ce6",
+    "account": "acct_1Uae2iAa8GuEVEY9"
+   },
+   "purchase": {
+    "order": "GD-5A81871AC6",
+    "confirmation": "/checkout/r1-qa-ec8346/confirmation?order=GD-5A81871AC6",
+    "card": "4242 (Stripe test)",
+    "event": "r1-qa-ec8346",
+    "ticket": "dc95e416-a19c-4d84-8679-840b0de4022a"
+   },
+   "transfer": {
+    "id": "93ae202d-9caa-42a8-8a3e-405b177acaa0",
+    "accept": "/tickets/accept/lpPENpkzy6FyGmnbhmFv3YUcXNwFNJKw",
+    "to": "disposable promoter identity"
+   },
+   "promoterCode": "R1M5D38A5",
+   "cleaned_at": "2026-11-15T11:17:45.334Z",
+   "social": {
+    "user": "52d0ec0f-195d-4e66-b10b-724282a9d870",
+    "review": "4510b9da-d536-4b4c-b99f-ecd903821859",
+    "listing": "327451a6-0693-47f6-bbec-a480fe805db5",
+    "workspace": "960fab34-54fc-40a0-85ab-cc4ea6197701",
+    "conversation": "4abc7d03-2582-49d3-8ce0-2e2ba6060dae",
+    "message": "26c1b8c0-3406-4805-9bb5-5a59d3889922",
+    "since": "2026-11-15T11:09:42.424Z",
+    "cleaned": "2026-11-15T11:17:44.954Z"
+   }
+  },
+  {
+   "purpose": "partner/promoter sessions for the final 10-size sweep",
+   "users": [
+    "8ec22512-08eb-4299-a04d-8a3c5c104b21",
+    "194af046-02c2-4b20-9d4f-b1eefdb9d077"
+   ],
+   "partners": [
+    "0dcea84c-03d8-4740-9874-6e10bb9a6866"
+   ],
+   "promoters": [
+    "2098b352-8116-4b18-aaab-1df93ea906bc"
+   ],
+   "cleaned_at": "2026-11-15T13:39:25.040Z"
+  }
+ ],
+ "social": {
+  "user": "03cee93d-6fc6-4252-bc9c-3f05116a91e4",
+  "review": "e1bf77f7-8dcc-4397-aae8-e58b3e18e02e",
+  "listing": "327451a6-0693-47f6-bbec-a480fe805db5",
+  "workspace": "960fab34-54fc-40a0-85ab-cc4ea6197701",
+  "conversation": "c5020236-cc5f-4ee1-88d8-3f6408b69eaf",
+  "message": "0b65e88e-8c0e-45f0-8f08-faf760cee5c0",
+  "since": "2026-11-15T14:28:34.737Z",
+  "cleaned": "2026-11-15T14:34:54.008Z"
+ },
+ "cleaned_at": "2026-11-15T14:34:54.009Z"
+}

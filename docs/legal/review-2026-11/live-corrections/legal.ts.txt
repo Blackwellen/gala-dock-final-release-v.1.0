@@ -1,0 +1,38 @@
+/** Single source for the legal documents (/privacy, /terms, /ticket-terms, /cookies, /data-retention). Version matches profiles.terms_version. */
+// DRAFT (Q74, 2026-11-14) — full replacement for src/lib/legal.ts. NOT PUBLISHED. Needs owner + counsel sign-off.
+// Changes: version + effective date bumped (set the real effective date at publication, giving P2B notice to business users);
+// insurance minimums added (D10); sanctions help path added (D4). Everything else unchanged.
+export const LEGAL = {
+  version: "2026-12",
+  effective: "[DATE OF PUBLICATION — at least 15 days after notice to business users]",
+  service: "Gala Dock",
+  site: "galadock.com",
+  /** Operator, per Companies House (company 16482166, registered in England and Wales). Gala Dock is a trading name. */
+  entity: { name: "Blackwellen Limited", number: "16482166", address: "61 Bridge Street, Kington, Herefordshire, HR5 3DJ, United Kingdom", ico: "ZC160806", vat: "GB508480488" },
+  dpo: { name: "Jamahl Thomas", role: "Data Protection Officer" },
+  contact: { privacy: "legal@galadock.com", support: "support@galadock.com", legal: "legal@galadock.com" },
+  ico: { name: "Information Commissioner’s Office", url: "https://ico.org.uk/make-a-complaint/", phone: "0303 123 1113" },
+  law: "the laws of England and Wales",
+  /** Platform-usage fee schedule (mirrors the published commerce settings, migration 202610280005). */
+  fees: {
+    ticketBuyer: "£1.00 per paid ticket (including VAT)", ticketSeller: "5% of the face value of each ticket sold, plus VAT where it applies",
+    supplier: "8% on Starter, 7% on Pro and 6% on Business or Enterprise plans, plus VAT where it applies", bookingAdmin: "2.5% of each booking payment (minimum £1), including VAT",
+  },
+  /** Gala Dock fees carry UK VAT at 20% for UK businesses (non-UK businesses: reverse charge); consumer fees VAT-inclusive. */
+  vatRate: "20%",
+  /** Business users' liability floor (D13: greater of £1,000 or 12 months' fees; payment instructions outside the cap). */
+  liabilityFloor: "£1,000",
+  /** D10: public liability insurance minimums for suppliers and venues. */
+  insurance: { standard: "£1,000,000", higherRisk: "£2,000,000" },
+  /** D4: where Gala Dock is available (sanctions list). */
+  availabilityHelp: "/help/where-gala-dock-is-available",
+} as const;
+
+export const LEGAL_DOCS = [
+  { href: "/terms", title: "Terms of Service" },
+  { href: "/privacy", title: "Privacy Policy" },
+  { href: "/ticket-terms", title: "Ticket Purchase & Resale Terms" },
+  { href: "/cookies", title: "Cookie Policy" },
+  { href: "/data-retention", title: "Data Retention Schedule" },
+  { href: "/accessibility", title: "Accessibility Statement" },
+] as const;

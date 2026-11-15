@@ -1,6 +1,7 @@
 // Shared onboarding definitions and validation. Imported by client forms and the server route,
 // so both sides enforce the same rules. The server is authoritative.
 import * as md from "@/lib/master-data";
+import { checkPostcode, countryProfile } from "@/lib/i18n/countries";
 
 export type Flow = "customer" | "organizer" | "provider";
 export type Values = Record<string, unknown>;
@@ -76,7 +77,7 @@ export function teamMembers(v: unknown) {
 }
 
 /** Validates one step and returns the normalised values that may be stored. */
-export function validateStep(flow: Flow, step: string, values: Values, context: { capabilities?: string[]; ownerEmail?: string } = {}) {
+export function validateStep(flow: Flow, step: string, values: Values, context: { capabilities?: string[]; ownerEmail?: string; /** Q76: business country (ISO-2) for address rules. */ country?: string | null } = {}) {
   const errors: Errors = {};
   let clean: Values = {};
   if (flow === "customer") {
@@ -134,7 +135,10 @@ export function validateStep(flow: Flow, step: string, values: Values, context: 
       if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100000) errors.capacity = "Enter an indicative capacity between 1 and 100,000.";
       const min = values.min_capacity === "" || values.min_capacity == null ? null : Number(values.min_capacity);
       if (min !== null && (!Number.isInteger(min) || min < 1 || (Number.isInteger(capacity) && min > capacity))) errors.min_capacity = "Minimum capacity must be between 1 and the maximum.";
-      Object.assign(clean, { venue_type: oneOf(values.venue_type, venueTypes, venueTypes[0]), capacity: Number.isFinite(capacity) ? capacity : null, min_capacity: min, address: text(values.address, 200), amenities: list(values.amenities, amenities) });
+      // Q76 (L05/L06): the venue postcode follows the business country's format (blank allowed; countries without postcodes skip it).
+      let postcode = text(values.postcode, 12);
+      if (postcode && context.country && countryProfile(context.country)?.postcode) { const pc = checkPostcode(postcode, context.country); if (pc.ok) postcode = pc.value; else errors.postcode = pc.error; }
+      Object.assign(clean, { venue_type: oneOf(values.venue_type, venueTypes, venueTypes[0]), capacity: Number.isFinite(capacity) ? capacity : null, min_capacity: min, address: text(values.address, 200), postcode, ...(context.country ? { country_code: context.country } : {}), amenities: list(values.amenities, amenities) });
     } else {
       const category = oneOf(values.category, serviceCategories, "");
       if (!category) errors.category = "Choose a service category.";

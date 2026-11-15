@@ -10,7 +10,7 @@ import { Head, Kpi, TabBar, Pill, Pager, Bars, Delta, dayBuckets, buckets } from
 import { ParamSelect, SearchParam, Menu } from "../_b/ui";
 import { retryPayout, cancelMoneyRequest } from "../_b/actions";
 import { shortDay, stamp } from "../_b/format";
-import { loadLedger, PERIODS, periodOf, gmv, platformRevenue, bySource, typeOf, statusOf, net, isSale, type Tx } from "./data";
+import { loadLedger, PERIODS, periodOf, typeOf, statusOf, net, isSale, LEDGER_ROWS, type Tx, type PeriodTotals, type MoneyKey } from "./data";
 
 const TYPE_ICON: Record<string, [LucideIcon, string]> = {
   "Ticket Sale": [Ticket, "blue"], "Venue Booking": [Store, "purple"], "Supplier Service": [Wrench, "purple"], Subscription: [Layers, "purple"], Refund: [RotateCcw, "red"],
@@ -31,17 +31,22 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
   const s = (k: string) => (typeof sp[k] === "string" ? sp[k] as string : "");
   const tab = forced ?? (["marketplace", "ticketing", "subscriptions", "exceptions"].includes(s("tab")) ? s("tab") : "marketplace");
   const period = periodOf(s("period")), days = PERIODS[period]!.days;
-  const { cur, prev, requests, now } = await loadLedger(db, days);
+  const { cur, requests, now, totals: T, truncated } = await loadLedger(db, days);
   const base = (t: string) => t === "payouts" ? `/admin/commerce/payouts?period=${period}` : `/admin/commerce?period=${period}${t === "marketplace" ? "" : `&tab=${t}`}`;
-  const series = (fn: (t: Tx) => number, keep: (t: Tx) => boolean) => buckets(cur.filter(keep), t => t.occurred_at, fn, days, 10, now);
+  const series = (fn: (t: Tx) => number, keep: (t: Tx) => boolean) => buckets(curMain.filter(keep), t => t.occurred_at, fn, days, 10, now);
   const sale = (src?: string) => (t: Tx) => isSale(t) && (!src || (t.kind === "income" && t.source === src));
 
-  const G = gmv(cur), P = platformRevenue(cur), TK = bySource(cur, "ticketing"), MK = bySource(cur, "marketplace");
+  // Q75: headline figures come from the SQL aggregate (T), not from the capped row list.
+  const G = T.cur.gmv, TK = T.cur.ticketing;
+  // Q75 (i18n C12): one figure per currency, never a mixed total; a delta only when there is one currency to compare.
+  const md = (k: MoneyKey) => (T.multi ? null : delta(T.cur[k], T.prev[k]));
+  const inMain = (rows: Tx[]) => rows.filter(t => (t.currency ?? "GBP").toUpperCase() === T.main);   // charts plot the main currency only
+  const curMain = inMain(cur);
   const kpis = <section className="adb-kpis adc-kpis">
-    <Kpi icon={ShoppingCart} tone="green" label={`Total GMV (${period})`} value={money(G)} delta={delta(G, gmv(prev))} suffix={`vs last ${days} days`} series={series(t => t.amount, sale())} />
-    <Kpi icon={Layers} tone="purple" label={`Platform Revenue (${period})`} value={money(P)} delta={delta(P, platformRevenue(prev))} suffix={`vs last ${days} days`} series={series(t => t.source === "subscription" ? t.amount : t.fee_amount, sale())} />
-    <Kpi icon={Ticket} tone="blue" label={`Ticket Revenue (${period})`} value={money(TK)} delta={delta(TK, bySource(prev, "ticketing"))} suffix={`vs last ${days} days`} series={series(t => t.amount, sale("ticketing"))} />
-    <Kpi icon={ShoppingCart} tone="orange" label={`Marketplace Revenue (${period})`} value={money(MK)} delta={delta(MK, bySource(prev, "marketplace"))} suffix={`vs last ${days} days`} series={series(t => t.amount, sale("marketplace"))} />
+    <Kpi icon={ShoppingCart} tone="green" label={`Total GMV (${period})`} value={T.money("gmv")} delta={md("gmv")} suffix={`vs last ${days} days`} series={series(t => t.amount, sale())} />
+    <Kpi icon={Layers} tone="purple" label={`Platform Revenue (${period})`} value={T.money("platform")} delta={md("platform")} suffix={`vs last ${days} days`} series={series(t => t.source === "subscription" ? t.amount : t.fee_amount, sale())} />
+    <Kpi icon={Ticket} tone="blue" label={`Ticket Revenue (${period})`} value={T.money("ticketing")} delta={md("ticketing")} suffix={`vs last ${days} days`} series={series(t => t.amount, sale("ticketing"))} />
+    <Kpi icon={ShoppingCart} tone="orange" label={`Marketplace Revenue (${period})`} value={T.money("marketplace")} delta={md("marketplace")} suffix={`vs last ${days} days`} series={series(t => t.amount, sale("marketplace"))} />
   </section>;
 
   const head = <Head title="Commerce" subtitle="Operate marketplace payments, commission, payouts, subscriptions and ticket fees."
@@ -62,39 +67,37 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
   const refunds = (l: Tx[]) => l.filter(t => t.kind === "refund");
   const disputes = (l: Tx[]) => l.filter(t => t.details.disputed);
   const subIssues = (l: Tx[]) => l.filter(t => t.source === "subscription" && t.status === "failed");
-  const payoutFails = (l: Tx[]) => l.filter(t => t.kind === "payout" && t.status !== "completed");
+  const payoutFails = (l: Tx[]) => l.filter(t => t.kind === "payout" && t.status === "failed");   // Q75: scheduled/pending payouts are not failures
   const pendingRefundReqs = requests.filter(r => r.kind === "refund" && r.status === "pending");
   const queues: [LucideIcon, Tone, string, number, number, string, string][] = [
-    [TriangleAlert, "red", "Failed Payments", failed(cur).length, failed(prev).length, "Requires action", "failed"],
-    [Hourglass, "orange", "Held Funds", held(cur).length, held(prev).length, "Under review", "held"],
-    [RotateCcw, "purple", "Refund Requests", refunds(cur).length + pendingRefundReqs.length, refunds(prev).length, "Awaiting review", "refund"],
-    [MessageSquareWarning, "blue", "Disputes", disputes(cur).length, disputes(prev).length, "Needs response", "dispute"],
-    [CalendarX, "red", "Subscription Issues", subIssues(cur).length, subIssues(prev).length, "Payment failures", "subscription"],
-    [BadgeAlert, "orange", "Payout Failures", payoutFails(cur).length, payoutFails(prev).length, "Retry / investigate", "payout"],
+    [TriangleAlert, "red", "Failed Payments", T.cur.failed, T.prev.failed, "Requires action", "failed"],
+    [Hourglass, "orange", "Held Funds", T.cur.held, T.prev.held, "Under review", "held"],
+    [RotateCcw, "purple", "Refund Requests", T.cur.refunds + pendingRefundReqs.length, T.prev.refunds, "Awaiting review", "refund"],
+    [MessageSquareWarning, "blue", "Disputes", T.cur.disputes, T.prev.disputes, "Needs response", "dispute"],
+    [CalendarX, "red", "Subscription Issues", T.cur.sub_issues, T.prev.sub_issues, "Payment failures", "subscription"],
+    [BadgeAlert, "orange", "Payout Failures", T.cur.payout_fails, T.prev.payout_fails, "Retry / investigate", "payout"],
   ];
 
-  if (tab === "payouts") return <div className="adb adc">{head}{tabs}<PayoutsView cur={cur} prev={prev} requests={requests} period={period} days={days} /></div>;
+  if (tab === "payouts") return <div className="adb adc">{head}{tabs}<PayoutsView cur={cur} totals={T} requests={requests} period={period} days={days} /></div>;
 
   // ── Charts ──
   const chartDays = Math.min(days, 30);
-  const bucket = (keep: (t: Tx) => boolean, val: (t: Tx) => number) => dayBuckets(cur.filter(keep), t => t.occurred_at, val, chartDays, now);
+  const bucket = (keep: (t: Tx) => boolean, val: (t: Tx) => number) => dayBuckets(curMain.filter(keep), t => t.occurred_at, val, chartDays, now);
   const tkB = bucket(sale("ticketing"), t => t.amount), mkB = bucket(sale("marketplace"), t => t.amount), pfB = bucket(t => isSale(t) && t.source !== "subscription", t => t.fee_amount), subB = bucket(sale("subscription"), t => t.amount);
   const labels = Array.from({ length: chartDays }, (_, i) => shortDay(now - (chartDays - 1 - i) * 864e5));
-  const cats: [string, number, Tone][] = [["Ticket sales", TK, "blue"], ["Venue bookings", cur.filter(t => isSale(t) && t.category === "Venue Booking").reduce((a, t) => a + t.amount, 0), "purple"],
-    ["Supplier services", cur.filter(t => isSale(t) && t.category === "Supplier Service").reduce((a, t) => a + t.amount, 0), "teal"], ["Subscriptions", bySource(cur, "subscription"), "orange"],
-    ["Other fees", cur.filter(t => isSale(t) && t.kind === "fee").reduce((a, t) => a + t.amount, 0), "grey"]];
+  const cats: [string, number, Tone][] = [["Ticket sales", TK, "blue"], ["Venue bookings", T.cur.venue, "purple"],
+    ["Supplier services", T.cur.supplier, "teal"], ["Subscriptions", T.cur.subscription, "orange"],
+    ["Other fees", T.cur.other_fees, "grey"]];
   const health: [LucideIcon, string, string, number][] = [
-    [CircleCheck, "green", "Successful", cur.filter(t => ["income", "payment"].includes(t.kind) && t.status === "completed" && !t.details.held && !t.details.disputed).length],
-    [Clock3, "amber", "Pending/Processing", cur.filter(t => t.status === "pending" && !t.details.held).length],
-    [CircleX, "red", "Failed", cur.filter(t => t.status === "failed").length],
-    [RotateCcw, "purple", "Refunded", refunds(cur).length],
-    [Disc3, "blue", "Disputed", disputes(cur).length],
-    [Hourglass, "grey", "Held (review)", held(cur).length],
+    [CircleCheck, "green", "Successful", T.cur.ok],
+    [Clock3, "amber", "Pending/Processing", T.cur.pending],
+    [CircleX, "red", "Failed", T.cur.failed_all],
+    [RotateCcw, "purple", "Refunded", T.cur.refunds],
+    [Disc3, "blue", "Disputed", T.cur.disputes],
+    [Hourglass, "grey", "Held (review)", T.cur.held],
   ];
   const hTotal = health.reduce((a, h) => a + h[3], 0) || 1;
-  const subsCur = cur.filter(t => t.source === "subscription" && t.kind === "income" && t.status !== "failed"), subsPrev = prev.filter(t => t.source === "subscription" && t.kind === "income" && t.status !== "failed");
-  const subCount = (l: Tx[]) => l.reduce((a, t) => a + Number(t.details.subscriptions ?? 1), 0), cancelled = (l: Tx[]) => l.reduce((a, t) => a + Number(t.details.cancelled ?? 0), 0);
-  const mrr = (l: Tx[]) => l.reduce((a, t) => a + t.amount, 0);
+  const subsCur = curMain.filter(t => t.source === "subscription" && t.kind === "income" && t.status !== "failed");
 
   // ── Ledger table ──
   const f = FILTERS.some(([k]) => k === s("f")) ? s("f") : tab === "ticketing" ? "ticketing" : tab === "subscriptions" ? "subscription" : "all";
@@ -128,8 +131,8 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
       <section className="adb-panel adc-break">
         <h2>Revenue Breakdown <small>({period})</small></h2>
         <div className="adc-break-b">
-          <Donut size={156} thickness={22} parts={cats.map(([label, value, tone]) => ({ label, value, tone }))} center={<><b>{money(G)}</b><small>Total GMV</small></>} />
-          <ul className="adb-legend">{cats.map(([l, v, tone]) => <li key={l}><i className={`adc-dot ${tone}`} /><span>{l}</span><em>{G ? Math.round((100 * v) / G) : 0}%</em><b>{money(v)}</b></li>)}</ul>
+          <Donut size={156} thickness={22} parts={cats.map(([label, value, tone]) => ({ label, value, tone }))} center={<><b>{money(G, T.main)}</b><small>Total GMV{T.multi ? ` (${T.main})` : ""}</small></>} />
+          <ul className="adb-legend">{cats.map(([l, v, tone]) => <li key={l}><i className={`adc-dot ${tone}`} /><span>{l}</span><em>{G ? Math.round((100 * v) / G) : 0}%</em><b>{money(v, T.main)}</b></li>)}</ul>
         </div>
       </section>
       <section className="adb-panel adc-health">
@@ -146,11 +149,11 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
       <section className="adb-panel adc-subs">
         <div className="adb-sec-h"><h2>Subscription Overview</h2><Link className="adb-link" href={base("subscriptions")}>View all <ArrowRight aria-hidden="true" /></Link></div>
         <div className="adc-subs-g">
-          <div><b>{subCount(subsCur).toLocaleString("en-GB")}</b><small>Active subscriptions</small><Delta value={delta(subCount(subsCur), subCount(subsPrev))} /></div>
-          <div><b>{money(mrr(subsCur))}</b><small>MRR ({period})</small><Delta value={delta(mrr(subsCur), mrr(subsPrev))} /></div>
+          <div><b>{T.cur.sub_count.toLocaleString("en-GB")}</b><small>Active subscriptions</small><Delta value={delta(T.cur.sub_count, T.prev.sub_count)} /></div>
+          <div><b>{T.money("mrr")}</b><small>MRR ({period})</small><Delta value={md("mrr")} /></div>
           <span className="adc-subs-spark"><Sparkline values={buckets(subsCur, t => t.occurred_at, t => t.amount, days, 10, now).map((v, i, a) => a.slice(0, i + 1).reduce((x, y) => x + y, 0))} width={96} height={42} /></span>
-          <div><b>{subIssues(cur).length}</b><small>Past due</small><Delta value={delta(subIssues(cur).length, subIssues(prev).length)} invert /></div>
-          <div><b>{cancelled(subsCur)}</b><small>Cancelled ({period})</small><Delta value={delta(cancelled(subsCur), cancelled(subsPrev))} invert /></div>
+          <div><b>{T.cur.sub_issues}</b><small>Past due</small><Delta value={delta(T.cur.sub_issues, T.prev.sub_issues)} invert /></div>
+          <div><b>{T.cur.sub_cancelled}</b><small>Cancelled ({period})</small><Delta value={delta(T.cur.sub_cancelled, T.prev.sub_cancelled)} invert /></div>
         </div>
       </section>
     </div>
@@ -174,9 +177,9 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
             <td><span className="adc-type"><Icon aria-hidden="true" className={tone} />{ty}</span></td>
             <td><Link className="adc-desc" href={`/admin/commerce/transactions/${t.id}`}>{t.description}</Link></td>
             <td className="adc-who">{t.counterparty}</td>
-            <td className="r">{money(t.amount, "GBP", { cents: true })}</td>
-            <td className="r">{money(t.fee_amount, "GBP", { cents: true })}</td>
-            <td className="r">{nt === null ? "—" : money(nt, "GBP", { cents: true })}</td>
+            <td className="r">{money(t.amount, t.currency ?? "GBP", { cents: true })}</td>
+            <td className="r">{money(t.fee_amount, t.currency ?? "GBP", { cents: true })}</td>
+            <td className="r">{nt === null ? "—" : money(nt, t.currency ?? "GBP", { cents: true })}</td>
             <td><Pill status={st.key} label={st.label} dot /></td>
             <td><span className="adc-prov"><i className={connect ? "c" : ""}>{connect ? "◎" : "S"}</i>{t.details.provider ?? "Stripe"}</span></td>
             <td className="r"><Menu label={`Actions for ${t.description}`} entries={[{ kind: "link", label: "Open transaction", href: `/admin/commerce/transactions/${t.id}` },
@@ -185,21 +188,22 @@ export async function CommerceView({ sp, tab: forced }: { sp: Record<string, str
           </tr>; })}</tbody>
       </table></div>
       {!list.length && <p className="adb-none">No transactions match these filters.</p>}
+      {truncated && <p className="adc-honest">This table shows the latest {LEDGER_ROWS.toLocaleString("en-GB")} ledger lines; the totals above cover every line in the period. Use Export for the full ledger.</p>}
       {list.length > per && <Pager total={list.length} page={page} per={per} href={p => lp({ page: p })} />}
     </section>
   </div>;
 }
 
-function PayoutsView({ cur, prev, requests, period, days }: { cur: Tx[]; prev: Tx[]; requests: Awaited<ReturnType<typeof loadLedger>>["requests"]; period: string; days: number }) {
-  const payouts = cur.filter(t => t.kind === "payout"), prevP = prev.filter(t => t.kind === "payout");
-  const sum = (l: Tx[]) => l.reduce((a, t) => a + Math.abs(t.amount), 0);
-  const paid = payouts.filter(t => t.status === "completed"), pending = payouts.filter(t => t.status === "pending" || t.status === "scheduled"), failedP = payouts.filter(t => t.status === "failed");
+function PayoutsView({ cur, totals: T, requests, period, days }: { cur: Tx[]; totals: PeriodTotals; requests: Awaited<ReturnType<typeof loadLedger>>["requests"]; period: string; days: number }) {
+  const payouts = cur.filter(t => t.kind === "payout");
   const open = requests.filter(r => r.status === "pending");
+  // Q75: Retry only for a payout Stripe reported as failed; pending/scheduled payouts are still in flight (the RPC refuses them too).
+  const retryable = (t: Tx) => t.status === "failed" && !requests.some(r => r.transaction_id === t.id && r.kind === "payout_retry" && r.status === "pending");
   return <>
     <section className="adb-kpis adc-kpis">
-      <Kpi icon={Landmark} tone="green" label={`Paid out (${period})`} value={money(sum(paid))} delta={delta(sum(paid), sum(prevP.filter(t => t.status === "completed")))} suffix={`vs last ${days} days`} />
-      <Kpi icon={Clock3} tone="blue" label="Processing" value={money(sum(pending))} note={`${pending.length} payout${pending.length === 1 ? "" : "s"} in flight`} />
-      <Kpi icon={TriangleAlert} tone="red" label="Failed payouts" value={String(failedP.length)} note={failedP.length ? "Retry or investigate" : "None"} />
+      <Kpi icon={Landmark} tone="green" label={`Paid out (${period})`} value={T.money("payouts_paid")} delta={T.multi ? null : delta(T.cur.payouts_paid, T.prev.payouts_paid)} suffix={`vs last ${days} days`} />
+      <Kpi icon={Clock3} tone="blue" label="Processing" value={T.money("payouts_pending")} note={`${T.cur.payouts_pending_n} payout${T.cur.payouts_pending_n === 1 ? "" : "s"} in flight`} />
+      <Kpi icon={TriangleAlert} tone="red" label="Failed payouts" value={String(T.cur.payouts_failed_n)} note={T.cur.payouts_failed_n ? "Retry or investigate" : "None"} />
       <Kpi icon={RotateCcw} tone="purple" label="Open money requests" value={String(open.length)} note="Refunds, retries and partner payouts awaiting the processor" />
     </section>
     <section className="adb-panel adc-tx">
@@ -208,10 +212,10 @@ function PayoutsView({ cur, prev, requests, period, days }: { cur: Tx[]; prev: T
         <thead><tr><th>Date</th><th>Payee</th><th>Description</th><th className="r">Amount</th><th>Status</th><th>Reference</th><th className="r">Actions</th></tr></thead>
         <tbody>{payouts.map(t => { const st = statusOf(t); return <tr key={t.id}>
           <td className="adc-date">{day(t.occurred_at, { day: "numeric", month: "short", year: "numeric" })}</td><td>{t.counterparty}</td>
-          <td><Link className="adc-desc" href={`/admin/commerce/transactions/${t.id}`}>{t.description}</Link></td><td className="r">{money(Math.abs(t.amount), "GBP", { cents: true })}</td>
+          <td><Link className="adc-desc" href={`/admin/commerce/transactions/${t.id}`}>{t.description}</Link></td><td className="r">{money(Math.abs(t.amount), t.currency ?? "GBP", { cents: true })}</td>
           <td><Pill status={t.status === "failed" ? "failed" : st.key} label={t.status === "failed" ? "Failed" : st.label} dot /></td><td className="adc-who">{t.stripe_ref ?? "—"}</td>
-          <td className="r">{t.status !== "completed" ? <ActionButton action={retryPayout} args={[t.id, Math.abs(t.amount)]} reason variant="outline" className="sm"
-            confirm={{ title: "Request payout retry", body: `Record a retry request for ${money(Math.abs(t.amount), "GBP", { cents: true })} to ${t.counterparty}. Stripe Connect executes payouts; nothing is sent from here.`, cta: "Record request" }}>Retry</ActionButton> : <span className="adc-who">—</span>}</td>
+          <td className="r">{retryable(t) ? <ActionButton action={retryPayout} args={[t.id, Math.abs(t.amount)]} reason variant="outline" className="sm"
+            confirm={{ title: "Request payout retry", body: `Record a retry request for ${money(Math.abs(t.amount), t.currency ?? "GBP", { cents: true })} to ${t.counterparty}. Stripe Connect executes payouts; nothing is sent from here.`, cta: "Record request" }}>Retry</ActionButton> : <span className="adc-who">—</span>}</td>
         </tr>; })}</tbody></table></div>
       {!payouts.length && <p className="adb-none">No payouts in this period.</p>}
     </section>

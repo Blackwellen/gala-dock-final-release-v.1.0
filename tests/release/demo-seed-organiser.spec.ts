@@ -89,7 +89,10 @@ test.describe("Depth seed pass 3 (organiser)", () => {
   test("marketplace detail pages have seeded ids: an emergency request with candidates and an open dispute (no money)", async () => {
     const [m] = await SQL(`select
       (select count(*) from emergency_requests r where r.event_id = '${NEON}' and r.failure_reason like 'Demo:%' and exists (select 1 from emergency_candidates c where c.request_id = r.id))::int emergencies,
-      (select count(*) from booking_disputes d join events e on e.id = d.event_id where e.workspace_id = '${WS}' and d.status = 'opened' and d.amount_claimed is null)::int disputes,
+      -- The seeded dispute by its item (scripts/seed-depth/organiser.mjs DISPUTE_ITEM). It is opened by the seed; once its response
+      -- window passes the scheduled job escalates it to 'review', so any unresolved state counts. No money claimed either way.
+      (select count(*) from booking_disputes d join events e on e.id = d.event_id where e.workspace_id = '${WS}' and d.build_item_id = '0019f750-8c14-4ac8-9ba1-b58bc323a728'
+        and d.status in ('opened','evidence_collection','provider_response','review') and d.amount_claimed is null)::int disputes,
       (select count(*) from booking_dispute_entries x join booking_disputes d on d.id = x.dispute_id join events e on e.id = d.event_id where e.workspace_id = '${WS}')::int entries`);
     expect(m).toMatchObject({ emergencies: 1, disputes: 1 });
     expect(Number(m.entries)).toBeGreaterThanOrEqual(1);

@@ -1,0 +1,46 @@
+{
+  "mode": "local production, Chrome lab, 390x844 DPR3, 4x CPU, 1.6Mbps/150ms",
+  "limits": "Single sample per route; automation menu duration is not INP; no field or physical-device certification.",
+  "report": [
+    {
+      "role": "customer",
+      "route": "/account",
+      "lcp": 3132,
+      "cls": 0.12164324940074375,
+      "longTasks": 6,
+      "ttfb": 853,
+      "bytes": 549891,
+      "automationMenuMs": 681
+    },
+    {
+      "role": "customer",
+      "route": "/discover",
+      "lcp": 3832,
+      "cls": 0.00019311462568226233,
+      "longTasks": 5,
+      "ttfb": 1091.300000011921,
+      "bytes": 896460,
+      "automationMenuMs": 609
+    },
+    {
+      "role": "organizer",
+      "route": "/organizer",
+      "lcp": 3292,
+      "cls": 0.007023103950440558,
+      "longTasks": 4,
+      "ttfb": 1514.3999999761581,
+      "bytes": 793512,
+      "automationMenuMs": 620
+    },
+    {
+      "role": "provider",
+      "route": "/provider",
+      "lcp": 2952,
+      "cls": 0.0038104137258188155,
+      "longTasks": 5,
+      "ttfb": 1701.699999988079,
+      "bytes": 462658,
+      "automationMenuMs": 741
+    }
+  ]
+}

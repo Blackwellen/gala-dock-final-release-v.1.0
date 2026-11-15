@@ -21,6 +21,9 @@ export function boostCheckoutParams(o: { po: { reference: string; amount_minor: 
     expires_at: String(o.nowSec + 3600), ...lines,
     "invoice_creation[enabled]": "true", "invoice_creation[invoice_data][description]": `Gala Dock promotion · ${o.po.reference}`.slice(0, 300),
     "invoice_creation[invoice_data][metadata][payment_order]": o.po.reference, ...taxIds,
+    // Q74 (D2): Gala Dock is the merchant — business buyers can add their VAT / tax ID (printed on the invoice). Stripe needs a Customer
+    // to keep it, so one is created for the guest session (never linked to billing_customers, so never mistaken for a plan invoice).
+    "tax_id_collection[enabled]": "true", customer_creation: "always",
     "metadata[payment_order]": o.po.reference, "metadata[purpose]": "platform_boost", "payment_intent_data[metadata][payment_order]": o.po.reference,
     "payment_intent_data[description]": `${o.po.reference} · ${o.po.description}`.slice(0, 300),
   };

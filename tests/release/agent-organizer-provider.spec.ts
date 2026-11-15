@@ -96,7 +96,7 @@ test.describe("Q42/Q43 governed missions in the database", () => {
     B2 = id(await db.from("build_items").insert({ event_id: E2, category: "venue", title: "Q42 venue 2", amount: 500, status: "sent", role: "primary", listing_id: L }).select("id").single());
     await db.from("provider_jobs").insert({ reference: `Q43-${tag}`, workspace_id: PW, listing_id: L, event_name: "Existing booking", client_name: "Someone",
       starts_at: new Date(Date.now() + 40 * 864e5).toISOString(), ends_at: new Date(Date.now() + 40 * 864e5 + 6 * 36e5).toISOString(), status: "confirmed", role: "primary" });
-    const run = (w: string, u: string, surface: string, mission: string | null) => db.from("agent_runs").insert({ workspace_id: w, user_id: u, surface, mode: "do", goal: `Q42/Q43 ${tag} ${surface}`, status: "running", plan: [], mission }).select("id").single();
+    const run = (w: string, u: string, surface: string, mission: string | null) => db.from("agent_runs").insert({ workspace_id: w, user_id: u, surface, mode: "do", lease_until: new Date(Date.now() + 36e5).toISOString(), goal: `Q42/Q43 ${tag} ${surface}`, status: "running", plan: [], mission }).select("id").single();
     RO = id(await run(W, O.id, "organizer", "org.source_venue")); RP = id(await run(PW, P.id, "provider", "pro.draft_quote")); RS = id(await run(SW, S.id, "organizer", null));
   });
   test.afterAll(async () => {
@@ -159,7 +159,7 @@ test.describe("Q42/Q43 governed missions in the database", () => {
   test("Q42 tools stay inside the human's permission and the run's workspace", async () => {
     expect((await exec({ p_run: RO, p_actor: O.id, p_tool: "compliance.overview", p_args: { event_id: XE } })).error).toBe("run_completed");
     await db.from("agent_runs").update({ status: "running" }).eq("id", RS);
-    const RO2 = id(await db.from("agent_runs").insert({ workspace_id: W, user_id: O.id, surface: "organizer", mode: "do", goal: `Q42 ${tag} scope`, status: "running", plan: [] }).select("id").single());
+    const RO2 = id(await db.from("agent_runs").insert({ workspace_id: W, user_id: O.id, surface: "organizer", mode: "do", goal: `Q42 ${tag} scope`, status: "running", plan: [], lease_until: new Date(Date.now() + 36e5).toISOString() }).select("id").single());
     for (const t of ["compliance.overview", "hospitality.summary", "logistics.overview", "partners.overview", "event.conflicts"])
       expect((await exec({ p_run: RO2, p_actor: O.id, p_tool: t, p_args: { event_id: XE } })).error, t).toContain("not_found");
     expect((await exec({ p_run: RO2, p_actor: O.id, p_tool: "sales.client", p_args: { client_id: crypto.randomUUID() } })).error).toContain("not_found");

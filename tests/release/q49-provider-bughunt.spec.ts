@@ -23,10 +23,11 @@ test.describe("Q49 · London months on Money statements", () => {
     expect(londonMonthLabel("2026-07")).toBe("July 2026");
   });
   test("statement, Money page and export use the London helpers", () => {
-    expect(src("src/app/provider/money/statement/page.tsx")).toMatch(/londonMonthRange\(m\)/);
+    // Q76: the helpers take the workspace zone (London by default).
+    expect(src("src/app/provider/money/statement/page.tsx")).toMatch(/londonMonthRange\(m(, tz)?\)/);
     expect(src("src/app/provider/money/statement/page.tsx")).not.toMatch(/T00:00:00Z/);
-    expect(src("src/app/provider/money/page.tsx")).toMatch(/londonMonthKey\(t\.occurred_at\)/);
-    expect(src("src/app/provider/money/export/route.ts")).toMatch(/londonDateKey\(t\.occurred_at\)/);
+    expect(src("src/app/provider/money/page.tsx")).toMatch(/londonMonthKey\(t\.occurred_at(, tz)?\)/);
+    expect(src("src/app/provider/money/export/route.ts")).toMatch(/londonDateKey\(t\.occurred_at(, tz)?\)/);
   });
 });
 

@@ -1,0 +1,94 @@
+[
+{
+"name": "ad-001",
+"path": "/admin"
+},
+{
+"name": "ad-002",
+"path": "/admin/users"
+},
+{
+"name": "ad-004",
+"path": "/admin/workspaces"
+},
+{
+"name": "ad-006",
+"path": "/admin/events"
+},
+{
+"name": "ad-007",
+"path": "/admin/marketplace"
+},
+{
+"name": "ad-009",
+"path": "/admin/tickets"
+},
+{
+"name": "ad-010",
+"path": "/admin/commerce"
+},
+{
+"name": "ad-010p",
+"path": "/admin/commerce/payouts"
+},
+{
+"name": "recon",
+"path": "/admin/commerce/reconciliation"
+},
+{
+"name": "vat",
+"path": "/admin/commerce/vat"
+},
+{
+"name": "ad-012",
+"path": "/admin/trust"
+},
+{
+"name": "ad-013",
+"path": "/admin/support"
+},
+{
+"name": "ad-015",
+"path": "/admin/partners"
+},
+{
+"name": "ad-016",
+"path": "/admin/agent-integrations"
+},
+{
+"name": "ad-017",
+"path": "/admin/analytics"
+},
+{
+"name": "ad-018",
+"path": "/admin/settings"
+},
+{
+"name": "health",
+"path": "/admin/health"
+},
+{
+"name": "jobs",
+"path": "/admin/health/jobs"
+},
+{
+"name": "maint",
+"path": "/admin/maintenance"
+},
+{
+"name": "ad-003",
+"path": "/admin/users/6ccdd863-b4d5-4be2-ab6a-92e39870cb35"
+},
+{
+"name": "ad-005",
+"path": "/admin/workspaces/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+},
+{
+"name": "ad-014",
+"path": "/admin/support/c0000000-0000-4000-8000-000000004421"
+},
+{
+"name": "ad-008",
+"path": "/admin/marketplace/listings/2710142c-a28a-4fc3-a2f3-aa9bc1a462e7"
+}
+]

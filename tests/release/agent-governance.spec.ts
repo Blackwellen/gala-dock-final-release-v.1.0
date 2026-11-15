@@ -83,7 +83,9 @@ test.describe("Q41 governed execution in the database", () => {
     const mk = async (w: string, o: string) => ((await db.from("events").insert({ owner_id: o, workspace_id: w, management: "professional", name: `Q41 ${tag}`, status: "planning", event_type: "gala", starts_at: new Date(Date.now() + 30 * 864e5).toISOString() }).select("id").single()).data as { id: string }).id;
     ev = await mk(ws, owner.id); foreign = await mk(other, outsider.id);
     await db.from("ai_budgets").upsert({ workspace_id: ws, monthly_allowance: 1000, hard_cap: true, allow_overage: false, overage_limit: 0 });
-    run = ((await db.from("agent_runs").insert({ workspace_id: ws, user_id: owner.id, surface: "organizer", mode: "do", goal: `Q41 governance ${tag}`, status: "queued", plan: [], idempotency_key: `q41-${tag}` }).select("id").single()).data as { id: string }).id;
+    run = ((await db.from("agent_runs").insert({ workspace_id: ws, user_id: owner.id, surface: "organizer", mode: "do", goal: `Q41 governance ${tag}`, status: "queued", plan: [], idempotency_key: `q41-${tag}`,
+      // Q53: lease held so the live worker (pg_cron → production) never claims and plans this fixture with the real model.
+      lease_until: new Date(Date.now() + 36e5).toISOString() }).select("id").single()).data as { id: string }).id;
   });
   test.afterAll(async () => {
     await db.from("agent_runs").delete().eq("workspace_id", ws);

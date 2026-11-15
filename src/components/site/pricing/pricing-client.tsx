@@ -7,8 +7,10 @@ import { HREF } from "@/lib/public/site";
 import { TLink } from "../tracked-link";
 import { Count } from "../motion";
 import { Pressed } from "../controls";
-import { cx, gbp } from "../ui";
+import { cx } from "../ui";
 import { trackPublic } from "../track";
+import { PLATFORM_FEE_VAT_ADDED, vatIncText, vatMoney, vatNote, vatPercent, vatSuffix } from "@/lib/billing/vat-display";
+import { VatPrice } from "@/components/billing/vat-price";
 
 const S = "pricing";
 const START: Record<Kind, string> = { organizer: HREF.startOrganising, provider: HREF.joinProvider };
@@ -19,7 +21,7 @@ const BEST: Record<Kind, Record<string, string>> = {
 const ROWS: [string, (p: PricingPlan) => string | boolean, Kind | "both"][] = [
   ["Active events", p => p.caps.events === null ? "Unlimited" : p.caps.events.toLocaleString("en-GB"), "organizer"],
   ["Listings", p => p.caps.listings === null ? "Unlimited" : p.caps.listings.toLocaleString("en-GB"), "provider"],
-  ["Platform fee on bookings", p => `${((p.caps.commissionBps ?? 0) / 100).toLocaleString("en-GB")}% + VAT`, "provider"],
+  ["Platform fee on bookings", p => vatPercent(p.caps.commissionBps ?? 0, PLATFORM_FEE_VAT_ADDED), "provider"],
   ["Team members", p => p.caps.team === null ? "Unlimited" : p.caps.team.toLocaleString("en-GB"), "both"],
   ["Storage", p => `${p.caps.storage.toLocaleString("en-GB")} GB`, "both"],
   ["Gala Agent credits a month", p => p.caps.credits.toLocaleString("en-GB"), "both"],
@@ -30,11 +32,14 @@ const ROWS: [string, (p: PricingPlan) => string | boolean, Kind | "both"][] = [
 ];
 
 function Price({ p, yearly, vat = true }: { p: PricingPlan; yearly: boolean; vat?: boolean }) {
-  const price = yearly && p.year !== null ? p.year : p.month; const plus = vat ? " + VAT" : "";
+  const price = yearly && p.year !== null ? p.year : p.month; const plus = vatSuffix(vat);
+  // Owner 2026-11-15: with VAT added, the VAT-inclusive price (UK rate) shows under the ex-VAT one.
+  const inc = p.contact ? (p.month ? vatIncText(p.month, vat, "From ") : null) : p.month === 0 ? null : vatIncText(price ?? 0, vat);
   return <p className="lp-plan-price">
-    {p.contact ? <><b>{p.month ? `From ${gbp(p.month)}` : "Custom"}</b>{p.month ? <small>a month{plus}</small> : null}</>
+    {p.contact ? <><b>{p.month ? `From ${vatMoney(p.month)}` : "Custom"}</b>{p.month ? <small>a month{plus}</small> : null}</>
       : p.month === 0 ? <><b>Free</b><small>to start</small></>
-      : <><b>{gbp(price ?? 0)}</b><small>{yearly && p.year !== null ? "a year" : "a month"}{plus}</small></>}
+      : <><b>{vatMoney(price ?? 0)}</b><small>{yearly && p.year !== null ? "a year" : "a month"}{plus}</small></>}
+    {inc && <span className="lp-plan-inc">{inc}</span>}
   </p>;
 }
 
@@ -83,13 +88,13 @@ export function PlanExplorer({ plans, vatAdded = true }: { plans: PricingPlan[];
           </table>
         </div>
       </motion.div>}</AnimatePresence>
-      <p className="gpr-vat">{vatAdded ? "Prices exclude VAT, which is added at checkout." : "Plan prices are what you pay; VAT isn’t added to plan invoices at the moment."} Annual prices are billed once a year. Upgrades take effect straight away (prorated); downgrades take effect at the end of the billing period.</p>
+      <p className="gpr-vat">{vatNote(vatAdded)} Annual prices are billed once a year. Upgrades take effect straight away (prorated); downgrades take effect at the end of the billing period.</p>
     </div></section>
   </>;
 }
 
 /** 8.3 TransactionExample + UpgradePath. Fee rates come from plan_entitlements (commission.rate_bps); VAT rate from LEGAL. */
-export function ProviderEconomics({ plans, vatPct, bookingAdmin }: { plans: PricingPlan[]; vatPct: number; bookingAdmin: string }) {
+export function ProviderEconomics({ plans, vatPct, bookingAdmin, vatAdded = true }: { plans: PricingPlan[]; vatPct: number; bookingAdmin: string; vatAdded?: boolean }) {
   const tiers = plans.filter(p => p.kind === "provider" && !p.contact && p.caps.commissionBps !== null);
   const [i, setI] = useState(0);
   const t = tiers[i];
@@ -112,7 +117,7 @@ export function ProviderEconomics({ plans, vatPct, bookingAdmin }: { plans: Pric
     </div>
     <div className="gpr-stairs" role="group" aria-label="Provider plan">
       {tiers.map((p, n) => <button key={p.plan} type="button" aria-pressed={i === n} onClick={() => { setI(n); trackPublic("section_interaction", S, `econ_${p.plan}`); }} className={cx("gpr-step", i === n && "is-on")} style={{ marginTop: `${(tiers.length - 1 - n) * 22}px` }}>
-        <b>{p.name}</b><span>{p.month ? `${gbp(p.month)} a month + VAT` : "Free"}</span><em>{((p.caps.commissionBps ?? 0) / 100).toLocaleString("en-GB")}% platform fee</em>
+        <b>{p.name}</b><span>{p.month ? <VatPrice minor={p.month} vatAdded={vatAdded} per="a month" /> : "Free"}</span><em>{((p.caps.commissionBps ?? 0) / 100).toLocaleString("en-GB")}% platform fee</em>
         <small>{n === 0 ? "List free, pay only on bookings" : p.caps.agentDeep ? "Lowest fee, bigger teams, deep Agent analysis" : "Lower fee, team tools, API and integrations"}</small>
       </button>)}
     </div>
@@ -126,7 +131,7 @@ const POLICY: [string, string, typeof Bell, string][] = [
   ["stop", "Stop at the limit", OctagonX, "A hard cap: Gala Agent pauses when the month’s credits are used, until credits are added."],
   ["overage", "Approved overage", ShieldCheck, "An owner approves extra usage up to a limit they set."],
 ];
-export function Credits({ plans, packs }: { plans: PricingPlan[]; packs: CreditPack[] }) {
+export function Credits({ plans, packs, vatAdded = true }: { plans: PricingPlan[]; packs: CreditPack[]; vatAdded?: boolean }) {
   const org = plans.filter(p => p.kind === "organizer");
   const [pi, setPi] = useState(Math.min(1, org.length - 1));
   const [ef, setEf] = useState(1);
@@ -151,7 +156,7 @@ export function Credits({ plans, packs }: { plans: PricingPlan[]; packs: CreditP
         onKeyDown={e => { const n = POLICY.findIndex(x => x[0] === pol); if (["ArrowDown", "ArrowRight"].includes(e.key)) { e.preventDefault(); setPol(POLICY[(n + 1) % 3]![0]); } if (["ArrowUp", "ArrowLeft"].includes(e.key)) { e.preventDefault(); setPol(POLICY[(n + 2) % 3]![0]); } }}
         className={cx("gpr-pol", pol === k && "is-on")}><I size={17} aria-hidden="true" />{l}</button>)}</div>
       <p className="gpr-policy-d" aria-live="polite">{POLICY.find(x => x[0] === pol)![3]}</p>
-      {packs.length > 0 && <><p className="gpr-policy-h">Credit packs</p><ul className="gpr-packs">{packs.map(k => <li key={k.name}><span>{k.credits.toLocaleString("en-GB")} credits</span><b>{gbp(k.priceMinor)} + VAT</b></li>)}</ul></>}
+      {packs.length > 0 && <><p className="gpr-policy-h">Credit packs</p><ul className="gpr-packs">{packs.map(k => <li key={k.name}><span>{k.credits.toLocaleString("en-GB")} credits</span><b><VatPrice minor={k.priceMinor} vatAdded={vatAdded} /></b></li>)}</ul></>}
     </div>
   </div>;
 }

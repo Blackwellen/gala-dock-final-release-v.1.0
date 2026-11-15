@@ -54,3 +54,5 @@
 .adm-check{display:flex;gap:6px;align-items:center;font-size:12.5px}
 .adm-err{color:#c4142b;font-size:12.5px}
 .adm-ok{color:#0f8a4e;font-size:12.5px}
+/* R1: on very wide monitors the maintenance checklist uses two columns instead of one 2,500px+ line per item. */
+@media (min-width:2400px){.adm-page>section>ul:has(>li+li+li+li){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}}

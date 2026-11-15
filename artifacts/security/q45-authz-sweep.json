@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-30T03:27:04.587Z",
- "outsider": "361ce9c0-991c-41e0-9db9-d764c7ce77a9",
+ "generatedAt": "2026-11-15T15:51:01.014Z",
+ "outsider": "dcd37ec7-7781-4be7-81a4-26864d940790",
  "targets": {
   "ALEX": "75e6c471-8d5e-4b9f-b076-ff10cf209f01",
   "RIVERSIDE": "960fab34-54fc-40a0-85ab-cc4ea6197701",
@@ -20,24 +20,24 @@
   "build_items": "01a2f55f-b71e-4e4c-8bda-f36c9402fb64",
   "campaign_links": "a7d19930-6f76-4398-b029-d380e7f69fbe",
   "clients": "f30742d8-d2ed-45d9-966a-ba7db0dc69c9",
-  "conditional_holds": "195570e7-62a0-4783-ab21-1ffbee276147",
+  "conditional_holds": "a30b2224-3241-4d01-99dd-f4e975245e61",
   "contingency_plans": "7f952f0b-46ce-4493-8ee1-f3d89d1a3d67",
-  "contract_approvals": "b3bd09f8-d505-41d7-8104-30fbbe52a5d3",
-  "contract_parties": "9658dcee-50dc-42fb-8d33-ca91da0ae1c6",
+  "contract_approvals": "5de282a9-c25e-4c3c-b3f3-b8877c677577",
+  "contract_parties": "c62f4f03-016b-404c-96f5-260ebda8cd53",
   "contract_signatures": "47fd0829-7720-45e7-b163-058a086c31ad",
   "contracts": "3b00186d-0216-401a-ad99-7cf32c33ce49",
-  "conversation_messages": "dd037921-c37f-4e7c-8230-66c23bd0abe6",
-  "conversations": "d4e28a55-4b81-49ef-89bb-d3762f28370e",
+  "conversation_messages": "e1b0b12b-6129-4868-a449-7da24b694997",
+  "conversations": "56dc03cb-e703-44e7-be21-11220b5d8cc7",
   "crew_members": "c88f76af-f9aa-45af-b26e-ed645cb4660f",
   "design_templates": "d27d8cfc-55d4-4137-a63c-64f5824f80e4",
   "designs": "e5139ad8-067a-40b8-b225-c3610f639447",
-  "email_outbox": "9c1b00af-7b10-44f2-beb9-b15485e576a4",
+  "email_outbox": "4c94fe36-1b0e-49d3-8161-b2a61cc6937d",
   "emergency_candidates": "e88d168e-2e86-42c0-a9a7-8baaa791584e",
   "emergency_requests": "3396b8a3-54f4-46df-a022-fcea2157a671",
   "enforcement_actions": "b470944e-cfc6-40f6-a1bf-dc732fbcbed3",
   "event_dependencies": "5646781d-8d56-4f13-93c8-43116c046507",
   "event_forms": "e4b299fc-d875-4989-825d-87d8a2bf97a2",
-  "event_guest_links": "7e50485d-bf10-4d4b-94ce-88515f82697d",
+  "event_guest_links": "3731a06c-a632-4555-b1cb-f6fdeea364ca",
   "event_licences": "0af75f89-6bde-44db-b6f3-6df7a3670691",
   "event_parties": "4fe6d388-f7bd-487f-a167-d31591666f75",
   "event_party_deliverables": "e601869a-7b24-4ffb-9900-43e4a5414b22",
@@ -58,14 +58,14 @@
   "ledger_transactions": "2726ad5f-5ab9-4674-be8d-058b24440803",
   "listings": "327451a6-0693-47f6-bbec-a480fe805db5",
   "logistics_windows": "4b809c25-a5b0-4f2e-8b64-fa3af95d420a",
-  "lost_claims": "d08a1478-9299-4e82-9787-4a555e889c7a",
+  "lost_claims": "9ea1616c-fe0e-4299-98fe-0a9f05cc1974",
   "lost_reports": "d7af54f7-b1e8-48c8-a96b-9ca952a7bce6",
   "media_assets": "1ca8e0ba-caa3-4491-b130-3742ae4e15c7",
   "media_galleries": "994d586b-76dd-4d44-a40b-fe9a9bb64781",
   "menu_items": "00680ce1-690f-4fd8-9e6d-f819af8e58c0",
   "menus": "12490843-3694-4bb3-be91-2b1998c8824d",
   "merch_items": "1e0a756a-06fa-482d-a780-8ac3756ba78f",
-  "ops_alerts": "a95ee2fa-5891-466e-ab00-b59a5bd7f624",
+  "ops_alerts": "905e52cd-fb0a-48c5-911a-9a621a5f0270",
   "packages": "b1c9e54c-b689-4e1a-a73e-576072001aaa",
   "parking_areas": "8cc7cf01-bfa8-4328-a314-9266160881da",
   "parking_permits": "9b116a9e-1ebd-4cca-9283-e9c5b1ca126c",
@@ -75,8 +75,8 @@
   "portal_approvals": "2612ec22-d75b-475e-a40b-3886935b5e7d",
   "portal_documents": "594fe013-0586-41f1-a40c-f4488cfe0b8f",
   "portal_links": "876edd40-5fe6-4bb2-8fb1-45ada95c45de",
-  "privacy_requests": "e9429f1a-b9e6-47a6-b7c5-009ac0572d0b",
-  "profiles": "8c8fc2af-36b2-4b5a-aee0-19b6b9fa8cf8",
+  "privacy_requests": "e9b361e3-f1b6-4789-a443-a0cb67e40bb4",
+  "profiles": "a92558dc-d156-42b8-b51a-15d81b5004e1",
   "promo_landing_pages": "2a02119b-8d4b-4002-96a5-11dae87e5384",
   "promoter_assets": "6a2cceb3-386f-4fdb-8df2-65b7e43c9b3a",
   "promoter_payouts": "bce0075a-eac1-4e2c-acb6-f4a942f917c0",
@@ -92,13 +92,13 @@
   "provider_requests": "6c44d895-083e-49e8-bb25-10a01b040d21",
   "registration_forms": "2df843af-e7b0-4c9f-a4dd-11ffead1e360",
   "registrations": "f2e37253-5d6c-49f4-93a1-2ddcd8f87249",
-  "resale_payouts": "4eaf2417-bc5f-4cc3-a373-d2adfa567963",
+  "resale_payouts": "a6263d53-5850-4e94-b81d-6da9562e7eb3",
   "review_reports": "09d52782-203f-477c-ac6a-db17432a7519",
-  "reviews": "c0c16002-2a70-4151-af5b-46c20e075840",
+  "reviews": "de43b402-4915-4e34-a2dd-5a78e5ed5f7f",
   "risk_holds": "d1a8df8b-39ca-404b-aacb-428dabfc36e0",
   "risk_signals": "2e1c0f9b-a946-4dda-b6ab-61a324737dc2",
   "safety_plans": "8b2e9bf8-7159-4fa0-bbb7-123b28ad6321",
-  "scan_snapshots": "7d942eb2-f22b-4914-9f02-e3311126895e",
+  "scan_snapshots": "9c0970f4-67fb-413f-9d47-387ae7acb31e",
   "shifts": "9de0f419-6f9e-4a03-ae16-78e38c83bf3c",
   "spaces": "2bc82343-c905-43dc-8f6b-f341a369fd7a",
   "stock_items": "b30f0e61-2082-4e3c-9dd9-f4986344cc7b",
@@ -111,7 +111,7 @@
   "ticket_allocations": "a8f46610-70bd-41c4-872c-8851d3cb4a70",
   "ticket_risk_flags": "4229c17f-0696-4abc-baf0-c49232cc4ddd",
   "ticket_tiers": "55da2c75-11fe-40bb-9896-430c3e5af0a7",
-  "ticket_transfers": "5e0c789c-18d7-48c3-b725-088f313fd8ce",
+  "ticket_transfers": "c8c7c521-a51a-445a-b970-cac72926f627",
   "tickets": "95047efe-91b0-42ee-b406-d0a4063ad92d",
   "trust_cases": "54633062-01ab-4b2a-9df3-0777a518ecc7",
   "verification_checks": "b8af2069-6dfb-497f-941d-3bcfe274ad50",
@@ -119,18 +119,19 @@
   "virtual_recordings": "86ff44af-c82c-4438-85a7-562da9d1778b",
   "virtual_sessions": "c919ded7-25e8-4dc3-af3c-24d652579bd6",
   "waiver_templates": "3ff765b9-bea9-490e-a4db-5dc7f6285c97",
-  "weather_alerts": "04082a25-841b-4e7e-8a05-6fc5b74ed54e",
-  "weather_watches": "1359f11a-32d9-449b-a0ee-4298dac173f4",
+  "weather_alerts": "9683262c-51fe-4ac5-8ab0-148b539a989e",
+  "weather_watches": "bd7ec3cf-d28b-4638-90fc-cd006e5c6ea9",
+  "webhook_deliveries": "cf8c3ee9-8349-404e-a098-8eba10dea2ae",
   "webhook_endpoints": "9a83e5a7-0b9b-44f8-b04e-c199b8d99273",
   "workspace_invites": "838d23f3-c37f-43c4-98f4-0c192669769e",
   "workspaces": "75e6c471-8d5e-4b9f-b076-ff10cf209f01"
  },
  "summary": {
-  "REFUSED": 506,
-  "INPUT_REJECTED": 21,
-  "NOT_FOUND_BOTH": 17,
-  "EMPTY": 108,
-  "DATA": 29,
+  "REFUSED": 550,
+  "INPUT_REJECTED": 27,
+  "NOT_FOUND_BOTH": 19,
+  "EMPTY": 132,
+  "DATA": 41,
   "REFUSED_UNIFORM_404": 5,
   "WROTE": 7
  },
@@ -169,11 +170,25 @@
   "catering_price": "Q45-S04 (P3): prices any menu by id incl. drafts; numbers only, no names",
   "venue_quote": "Q45-S04 (P3): prices any space by id incl. drafts; numbers only",
   "partner_attribute_signup": "refusal as data (unknown_code)",
+  "partner_attribute_signup_at": "refusal as data (invalid_click / existing_account); otherwise delegates to partner_attribute_signup for the caller's own account (Q65, 202611146401)",
   "respond_to_invite": "refusal as data (unavailable)",
   "virtual_issue_join_token": "refusal as data",
   "virtual_join": "refusal as data (not_your_ticket)",
   "virtual_redeem_join_token": "refusal as data (invalid_token)",
-  "virtual_replay_access": "refusal as data (not_available)"
+  "virtual_replay_access": "refusal as data (not_available)",
+  "dec107_funding_lead_days": "public policy setting (days)",
+  "dec107_public_rules": "public DEC-107 reserve/hold rules shown in Payment Terms",
+  "demo_public_visible": "public platform flag",
+  "partner_terms_version": "public terms version string",
+  "payment_terms_customer_required": "public terms version + required flag",
+  "portal_invite_accept": "refusal as data (unavailable) without the caller's own matching invite token (Q68)",
+  "public_organizer_profile": "public organiser description/website/accent of a public organiser; no contact PII (Q62)",
+  "seller_trader_status": "trader/non-trader status disclosed at checkout by law (CCRs/DMCC)",
+  "ticket_sales_open_from": "public sale-open date shown on event pages",
+  "workspace_business_country": "seller country shown on public pages; ISO code only",
+  "workspace_payments_country_ok": "boolean derived from the public seller country (Q46)",
+  "is_sanctioned_jurisdiction": "boolean from the public sanctions list (sanctioned_jurisdictions is anon-readable); no tenant data",
+  "report_content": "self: files the CALLER's own report on content the caller can already see (published listing / public event / published review / active business profile; not_found otherwise); rate-limited; the reported party never sees the reporter"
  },
  "flagged": [],
  "register": [
@@ -198,6 +213,26 @@
    "call": "select left(coalesce(to_jsonb(public.accept_dispute_resolution('f85186de-9531-433f-ab86-04d764b30c47'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "accept_dispute_rules",
+   "ident": "p_version text, p_source text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "INPUT_REJECTED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "terms_version_changed",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "terms_version_changed"
+   },
+   "call": "select coalesce(nullif(public.accept_dispute_rules('Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
    "name": "accept_emergency_candidate",
    "ident": "p_candidate uuid",
    "anon": false,
@@ -216,6 +251,26 @@
     "msg": "not_quoted"
    },
    "call": "select left(coalesce(to_jsonb(public.accept_emergency_candidate('e88d168e-2e86-42c0-a9a7-8baaa791584e'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "accept_payment_terms",
+   "ident": "p_role text, p_version text, p_source text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_role",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_role"
+   },
+   "call": "select coalesce(nullif(public.accept_payment_terms('member'::text, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "accept_proposal",
@@ -476,6 +531,166 @@
     "msg": "null value in column \"series_overrides\" of relation \"events\" violates not-null constraint"
    },
    "call": "select left(coalesce(to_jsonb(public.add_tour_date('26b99cf4-c415-4d3c-b523-9a62f7efe9c5'::uuid, (now() + interval '30 days')::timestamp, 1::integer, '{}'::jsonb))::text, 'null'), 3000)"
+  },
+  {
+   "name": "adm_ad_placement_set",
+   "ident": "p_key text, p_active boolean, p_reason text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.adm_ad_placement_set('Q45 sweep'::text, false, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "adm_boost_pause",
+   "ident": "p_boost uuid, p_pause boolean, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.adm_boost_pause(null::uuid, false, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "adm_covered_liability_absorb",
+   "ident": "p_id uuid, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.adm_covered_liability_absorb(null::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "adm_dispute_award_check",
+   "ident": "p_award uuid, p_confirm boolean, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.adm_dispute_award_check(null::uuid, false, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "adm_dispute_award_enter",
+   "ident": "p_dispute uuid, p_refund numeric, p_provider text, p_reference text, p_document_sha256 text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.adm_dispute_award_enter('f85186de-9531-433f-ab86-04d764b30c47'::uuid, 1::numeric, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "adm_payout_pause",
+   "ident": "p_workspace uuid, p_basis text, p_reference text, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.adm_payout_pause('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "adm_payout_unpause",
+   "ident": "p_pause uuid, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.adm_payout_unpause(null::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "adm_set_demo_public_visible",
+   "ident": "p_visible boolean, p_note text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.adm_set_demo_public_visible(false, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "admin_actor_name",
@@ -758,6 +973,26 @@
    "call": "select coalesce(nullif(public.admin_close_break_glass(null::uuid, false, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
+   "name": "admin_create_partner",
+   "ident": "p_name text, p_email text, p_kind text, p_commission_bps integer, p_country text, p_reason text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_create_partner('Q45 sweep'::text, 'q45-sweep@gala-dock.test'::text, 'venue'::text, 1::integer, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "admin_create_support_case",
    "ident": "p_subject text, p_category text, p_priority text, p_requester text, p_body text, p_related jsonb",
    "anon": false,
@@ -856,6 +1091,46 @@
     "msg": "forbidden"
    },
    "call": "select coalesce(nullif(public.admin_decide_break_glass(null::uuid, false, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_decide_content_report",
+   "ident": "p_report uuid, p_decision text, p_note text, p_remove boolean",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_decide_content_report('d7af54f7-b1e8-48c8-a96b-9ca952a7bce6'::uuid, 'approve'::text, 'Q45 sweep'::text, false)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_decide_message_report",
+   "ident": "p_report uuid, p_decision text, p_note text, p_remove boolean",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_decide_message_report('d7af54f7-b1e8-48c8-a96b-9ca952a7bce6'::uuid, 'approve'::text, 'Q45 sweep'::text, false)::text, ''), 'void')"
   },
   {
    "name": "admin_decide_trust",
@@ -1098,6 +1373,26 @@
    "call": "select left(coalesce(to_jsonb(public.admin_experiments_overview())::text, 'null'), 3000)"
   },
   {
+   "name": "admin_global_search",
+   "ident": "p_q text, p_limit integer",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.admin_global_search('Q45 sweep'::text, 1::integer) limit 50) x"
+  },
+  {
    "name": "admin_grant_conversations",
    "ident": "p_grant uuid",
    "anon": false,
@@ -1298,6 +1593,26 @@
    "call": "select coalesce(nullif(public.admin_mfa_required()::text, ''), 'void')"
   },
   {
+   "name": "admin_moderation_queue",
+   "ident": "p_status text, p_limit integer",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_moderation_queue('approved'::text, 1::integer))::text, 'null'), 3000)"
+  },
+  {
    "name": "admin_open_conversation",
    "ident": "p_grant uuid, p_conv uuid",
    "anon": false,
@@ -1315,7 +1630,7 @@
     "state": "42501",
     "msg": "forbidden"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_open_conversation(null::uuid, 'd4e28a55-4b81-49ef-89bb-d3762f28370e'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_open_conversation(null::uuid, '56dc03cb-e703-44e7-be21-11220b5d8cc7'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "admin_open_email",
@@ -1335,7 +1650,7 @@
     "state": "42501",
     "msg": "forbidden"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_open_email(null::uuid, '9c1b00af-7b10-44f2-beb9-b15485e576a4'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_open_email(null::uuid, '4c94fe36-1b0e-49d3-8161-b2a61cc6937d'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "admin_ops_alert_ack",
@@ -1355,7 +1670,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_ops_alert_ack('a95ee2fa-5891-466e-ab00-b59a5bd7f624'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_ops_alert_ack('905e52cd-fb0a-48c5-911a-9a621a5f0270'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "admin_ops_incident_detail",
@@ -1395,7 +1710,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_ops_incident_open('Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'a95ee2fa-5891-466e-ab00-b59a5bd7f624'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_ops_incident_open('Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, '905e52cd-fb0a-48c5-911a-9a621a5f0270'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "admin_ops_incident_update",
@@ -1518,6 +1833,46 @@
    "call": "select left(coalesce(to_jsonb(public.admin_overview(1::integer))::text, 'null'), 3000)"
   },
   {
+   "name": "admin_partner_application_decide",
+   "ident": "p_application uuid, p_approve boolean, p_kind text, p_commission_bps integer, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_partner_application_decide(null::uuid, false, 'venue'::text, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "admin_partner_invite",
+   "ident": "p_partner uuid, p_email text, p_token_hash text, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_partner_invite('0e2c830f-27f1-4cc4-8cea-199b612470e4'::uuid, 'q45-sweep@gala-dock.test'::text, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "admin_partner_statement_paid",
    "ident": "p_statement uuid, p_reference text, p_reason text",
    "anon": false,
@@ -1536,6 +1891,166 @@
     "msg": "not_authorized"
    },
    "call": "select coalesce(nullif(public.admin_partner_statement_paid('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_partner_statement_payout",
+   "ident": "p_statement uuid, p_payout text, p_status text, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_partner_statement_payout('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'Q45 sweep'::text, 'approved'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_partner_statement_prepare",
+   "ident": "p_statement uuid, p_livemode boolean, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_partner_statement_prepare('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, false, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "admin_partner_statement_recovered",
+   "ident": "p_statement uuid, p_source uuid, p_reversal text, p_amount_minor bigint, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_partner_statement_recovered('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, 'Q45 sweep'::text, 1::bigint, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_partner_statement_recovery_prepare",
+   "ident": "p_statement uuid, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_partner_statement_recovery_prepare('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "admin_partner_statement_transfer_failed",
+   "ident": "p_statement uuid, p_error text, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_partner_statement_transfer_failed('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_partner_statement_transferred",
+   "ident": "p_statement uuid, p_transfer text, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_partner_statement_transferred('65d28fbe-4f37-4c0e-b01a-2f90b0f1219d'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_platform_reporting_export_logged",
+   "ident": "p_year integer, p_format text, p_rows integer",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_platform_reporting_export_logged(1::integer, 'Q45 sweep'::text, 1::integer)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_platform_reporting_report",
+   "ident": "p_year integer",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.admin_platform_reporting_report(1::integer) limit 50) x"
   },
   {
    "name": "admin_publish_setting",
@@ -1655,7 +2170,7 @@
     "state": "42501",
     "msg": "forbidden"
    },
-   "call": "select left(coalesce(to_jsonb(public.admin_request_break_glass('Q45 sweep'::text, 'c0000000-0000-4000-8000-000000004421'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, array['d4e28a55-4b81-49ef-89bb-d3762f28370e']::uuid[], 1::integer))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.admin_request_break_glass('Q45 sweep'::text, 'c0000000-0000-4000-8000-000000004421'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, array['56dc03cb-e703-44e7-be21-11220b5d8cc7']::uuid[], 1::integer))::text, 'null'), 3000)"
   },
   {
    "name": "admin_request_money",
@@ -1716,6 +2231,26 @@
     "msg": "not_authorized"
    },
    "call": "select coalesce(nullif(public.admin_require('Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_review_compliance_signal",
+   "ident": "p_id uuid, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.admin_review_compliance_signal(null::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "admin_review_counts",
@@ -1816,6 +2351,26 @@
     "msg": "not_authorized"
    },
    "call": "select left(coalesce(to_jsonb(public.admin_rollback_setting('flags'::text, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "admin_sanctions_override_set",
+   "ident": "p_type text, p_id uuid, p_active boolean, p_reason text, p_expires timestamp with time zone",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_sanctions_override_set('wedding'::text, null::uuid, false, 'Q45 sweep'::text, (now() + interval '30 days')))::text, 'null'), 3000)"
   },
   {
    "name": "admin_save_setting_draft",
@@ -2216,6 +2771,26 @@
     "msg": null
    },
    "call": "select coalesce(nullif(public.admin_touch_conversation(null::uuid, false)::text, ''), 'void')"
+  },
+  {
+   "name": "admin_transaction_stripe_target",
+   "ident": "p_tx uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.admin_transaction_stripe_target(null::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "admin_unlink_case_record",
@@ -3018,6 +3593,46 @@
    "call": "select left(coalesce(to_jsonb(public.audience_consent_summary('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "billing_details_save",
+   "ident": "p_workspace uuid, p_business_name text, p_vat_number text, p_country text, p_confirm boolean",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "confirmation_required"
+   },
+   "call": "select coalesce(nullif(public.billing_details_save('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, false)::text, ''), 'void')"
+  },
+  {
+   "name": "block_contact",
+   "ident": "p_type text, p_id uuid, p_seat uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "NOT_FOUND_BOTH",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_target",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_target"
+   },
+   "call": "select coalesce(nullif(public.block_contact('wedding'::text, null::uuid, null::uuid)::text, ''), 'void')"
+  },
+  {
    "name": "boost_report",
    "ident": "p_boost uuid",
    "anon": false,
@@ -3333,9 +3948,9 @@
    "control": {
     "ok": false,
     "state": "22023",
-    "msg": "message_not_editable"
+    "msg": "outside_campaign_dates"
    },
-   "call": "select left(coalesce(to_jsonb(public.campaign_message_save('f5ee6309-eb62-470d-aa94-8b865c9fe777'::uuid, 'dd037921-c37f-4e7c-8230-66c23bd0abe6'::uuid, 'email'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 1::integer))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.campaign_message_save('f5ee6309-eb62-470d-aa94-8b865c9fe777'::uuid, 'e1b0b12b-6129-4868-a449-7da24b694997'::uuid, 'email'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 1::integer))::text, 'null'), 3000)"
   },
   {
    "name": "campaign_report",
@@ -3415,7 +4030,7 @@
     "state": null,
     "msg": null
    },
-   "call": "select left(coalesce(to_jsonb(public.can_access_conversation('d4e28a55-4b81-49ef-89bb-d3762f28370e'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.can_access_conversation('56dc03cb-e703-44e7-be21-11220b5d8cc7'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "can_access_emergency_request",
@@ -3738,6 +4353,26 @@
    "call": "select coalesce(nullif(public.cancel_leave('6c44d895-083e-49e8-bb25-10a01b040d21'::uuid)::text, ''), 'void')"
   },
   {
+   "name": "cancel_ownership_transfer",
+   "ident": "p_transfer uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.cancel_ownership_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid)::text, ''), 'void')"
+  },
+  {
    "name": "cancel_ticket_transfer",
    "ident": "p_transfer uuid",
    "anon": false,
@@ -3755,7 +4390,7 @@
     "state": "P0002",
     "msg": "not_found"
    },
-   "call": "select coalesce(nullif(public.cancel_ticket_transfer('5e0c789c-18d7-48c3-b725-088f313fd8ce'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.cancel_ticket_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid)::text, ''), 'void')"
   },
   {
    "name": "cancellation_quote",
@@ -3898,6 +4533,26 @@
    "call": "select left(coalesce(to_jsonb(public.checkout_holds('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, 'q45q45q45q45q45q45q45q45q45q45q45q45q45q45q45q45'::text))::text, 'null'), 3000)"
   },
   {
+   "name": "checkout_unlocked_tiers",
+   "ident": "p_event uuid, p_token text",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "[]",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.checkout_unlocked_tiers('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, 'q45q45q45q45q45q45q45q45q45q45q45q45q45q45q45q45'::text) limit 50) x"
+  },
+  {
    "name": "claim_found_item",
    "ident": "p_report uuid, p_item uuid, p_evidence jsonb",
    "anon": false,
@@ -4018,6 +4673,26 @@
     "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.compliance_profile_save('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '{}'::jsonb))::text, 'null'), 3000)"
+  },
+  {
+   "name": "connect_country_supported",
+   "ident": "p_code text",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.connect_country_supported('Q45SWEEP'::text))::text, 'null'), 3000)"
   },
   {
    "name": "contact_profile",
@@ -4143,7 +4818,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.contract_decide_approval('b3bd09f8-d505-41d7-8104-30fbbe52a5d3'::uuid, false, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.contract_decide_approval('5de282a9-c25e-4c3c-b3f3-b8877c677577'::uuid, false, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "contract_renew",
@@ -4303,7 +4978,7 @@
     "state": "42501",
     "msg": "not_your_party"
    },
-   "call": "select left(coalesce(to_jsonb(public.contract_sign_internal('3b00186d-0216-401a-ad99-7cf32c33ce49'::uuid, '9658dcee-50dc-42fb-8d33-ca91da0ae1c6'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.contract_sign_internal('3b00186d-0216-401a-ad99-7cf32c33ce49'::uuid, 'c62f4f03-016b-404c-96f5-260ebda8cd53'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "contract_void",
@@ -4746,6 +5421,66 @@
    "call": "select left(coalesce(to_jsonb(public.data_retention_rule_set('Q45 sweep'::text, false, 1::integer, 'Q45 sweep'::text, false))::text, 'null'), 3000)"
   },
   {
+   "name": "dec107_funding_lead_days",
+   "ident": "p_review_hours integer",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "58",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dec107_funding_lead_days(1::integer))::text, 'null'), 3000)"
+  },
+  {
+   "name": "dec107_payouts_paused",
+   "ident": "p_workspace uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dec107_payouts_paused('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "dec107_public_rules",
+   "ident": "",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "{\"reserves\": {\"enabled\": true, \"risk_pct\": 50.0000000000000000, \"risk_days\": 60, \"standard_pct\": 10.0000000000000000, \"standard_days\": 30, \"new_seller_days\": 90, \"risk_refund_pct\": 10.0000000000000000, \"risk_window_days\": 90, \"risk_min_payments\": 5, \"risk_chargeback_pct\": 0.75000000000000000000, \"ne",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dec107_public_rules())::text, 'null'), 3000)"
+  },
+  {
    "name": "decide_agent_approval",
    "ident": "p_approval uuid, p_approve boolean, p_edited jsonb",
    "anon": false,
@@ -4863,7 +5598,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.decide_lost_claim('d08a1478-9299-4e82-9787-4a555e889c7a'::uuid, 'approve'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.decide_lost_claim('9ea1616c-fe0e-4299-98fe-0a9f05cc1974'::uuid, 'approve'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "decide_registration",
@@ -4904,6 +5639,26 @@
     "msg": "not_authorized"
    },
    "call": "select coalesce(nullif(public.decide_venue_alternative(null::uuid, false)::text, ''), 'void')"
+  },
+  {
+   "name": "declare_trader_status",
+   "ident": "p_workspace uuid, p_status text, p_business_form text, p_version text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "terms_version_changed"
+   },
+   "call": "select coalesce(nullif(public.declare_trader_status('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'approved'::text, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "delete_demo_workspace",
@@ -4963,7 +5718,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.delete_my_review('c0c16002-2a70-4151-af5b-46c20e075840'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.delete_my_review('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid)::text, ''), 'void')"
   },
   {
    "name": "delete_promotion_blackout",
@@ -5061,9 +5816,49 @@
    "control": {
     "ok": false,
     "state": "22023",
-    "msg": "illegal party_deliverable transition in_progress -> Q45 sweep"
+    "msg": "illegal party_deliverable transition pending -> Q45 sweep"
    },
    "call": "select left(coalesce(to_jsonb(public.deliverable_transition('e601869a-7b24-4ffb-9900-43e4a5414b22'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "demo_hidden_for_viewer",
+   "ident": "p_workspace uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.demo_hidden_for_viewer('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "demo_public_visible",
+   "ident": "",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "true",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.demo_public_visible())::text, 'null'), 3000)"
   },
   {
    "name": "design_access",
@@ -5186,6 +5981,126 @@
    "call": "select left(coalesce(to_jsonb(public.dispose_found_item('0415e885-af68-4cd6-a3d4-bb3a7c6a5412'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
+   "name": "dispute_accept_settlement",
+   "ident": "p_settlement uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "INPUT_REJECTED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "not_open",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "not_open"
+   },
+   "call": "select left(coalesce(to_jsonb(public.dispute_accept_settlement(null::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "dispute_case_pack",
+   "ident": "p_dispute uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dispute_case_pack('f85186de-9531-433f-ab86-04d764b30c47'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "dispute_offer_settlement",
+   "ident": "p_dispute uuid, p_refund numeric, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dispute_offer_settlement('f85186de-9531-433f-ab86-04d764b30c47'::uuid, 1::numeric, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "dispute_record_filing",
+   "ident": "p_dispute uuid, p_provider text, p_reference text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "40P01",
+    "msg": "deadlock detected"
+   },
+   "call": "select coalesce(nullif(public.dispute_record_filing('f85186de-9531-433f-ab86-04d764b30c47'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "dispute_request_independent",
+   "ident": "p_dispute uuid, p_route text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "route_not_available"
+   },
+   "call": "select coalesce(nullif(public.dispute_request_independent('f85186de-9531-433f-ab86-04d764b30c47'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "dispute_route",
+   "ident": "p_dispute uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.dispute_route('f85186de-9531-433f-ab86-04d764b30c47'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "duplicate_event",
    "ident": "p_source uuid, p_starts_local timestamp without time zone, p_timezone text, p_confirm boolean, p_name text, p_request_id text",
    "anon": false,
@@ -5239,9 +6154,9 @@
     "writes": null
    },
    "control": {
-    "ok": false,
-    "state": "22023",
-    "msg": "not_payable"
+    "ok": true,
+    "state": null,
+    "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.ensure_invoice_token('9bd94ce8-24ce-4d98-b735-d845d3068293'::uuid))::text, 'null'), 3000)"
   },
@@ -5966,6 +6881,26 @@
    "call": "select left(coalesce(to_jsonb(public.event_planning_guidance('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "event_public_status_page",
+   "ident": "p_key text",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "null",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.event_public_status_page('Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "event_readiness",
    "ident": "p_event uuid",
    "anon": false,
@@ -6044,6 +6979,26 @@
     "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.event_scanners_list('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "event_seller_non_trader",
+   "ident": "p_event uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.event_seller_non_trader('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "event_set_ticketing",
@@ -6846,6 +7801,26 @@
    "call": "select left(coalesce(to_jsonb(public.is_provider_for_event('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "is_sanctioned_jurisdiction",
+   "ident": "p_country text, p_region text",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.is_sanctioned_jurisdiction('Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "is_workspace_member",
    "ident": "target uuid",
    "anon": true,
@@ -7023,7 +7998,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.legal_hold_release('195570e7-62a0-4783-ab21-1ffbee276147'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.legal_hold_release('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "legal_terms_version",
@@ -7064,6 +8039,26 @@
     "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.licence_clear_expiry('0af75f89-6bde-44db-b6f3-6df7a3670691'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "licence_document_access",
+   "ident": "p_licence uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "NOT_FOUND_BOTH",
+   "outsider": {
+    "ok": false,
+    "state": "P0002",
+    "msg": "not_found",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "P0002",
+    "msg": "not_found"
+   },
+   "call": "select left(coalesce(to_jsonb(public.licence_document_access('0af75f89-6bde-44db-b6f3-6df7a3670691'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "licence_save",
@@ -7166,16 +8161,36 @@
    "call": "select left(coalesce(to_jsonb(public.listing_readiness('327451a6-0693-47f6-bbec-a480fe805db5'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "listing_seller_non_trader",
+   "ident": "p_listing uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.listing_seller_non_trader('327451a6-0693-47f6-bbec-a480fe805db5'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "listing_trust",
    "ident": "p_listing uuid",
-   "anon": false,
+   "anon": true,
    "tenantArgs": true,
    "verdict": "DATA",
    "outsider": {
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-10-30T03:26:44.15725+00:00\", \"identity_verified\": true}",
+    "res": "{\"badge\": true, \"listing_id\": \"327451a6-0693-47f6-bbec-a480fe805db5\", \"computed_at\": \"2026-11-15T15:50:33.499645+00:00\", \"identity_verified\": true, \"insurance_verified\": true}",
     "writes": {}
    },
    "control": {
@@ -7403,7 +8418,7 @@
     "state": null,
     "msg": null
    },
-   "call": "select coalesce(nullif(public.mark_conversation_read('d4e28a55-4b81-49ef-89bb-d3762f28370e'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.mark_conversation_read('56dc03cb-e703-44e7-be21-11220b5d8cc7'::uuid)::text, ''), 'void')"
   },
   {
    "name": "mark_proposal_converted",
@@ -7424,6 +8439,26 @@
     "msg": null
    },
    "call": "select coalesce(nullif(public.mark_proposal_converted('6672249d-38f1-4f11-a24f-30987b9e4bf1'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid)::text, ''), 'void')"
+  },
+  {
+   "name": "mark_thread_read",
+   "ident": "p_thread uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "0",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.mark_thread_read('b2f4381d-4b22-4003-8ac4-96fc1ff1633d'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "marketplace_match",
@@ -7723,7 +8758,27 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.moderate_review('c0c16002-2a70-4151-af5b-46c20e075840'::uuid, 'approved'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.moderate_review('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid, 'approved'::text, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "moderate_review_response",
+   "ident": "p_review uuid, p_hide boolean, p_reason text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.moderate_review_response('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid, false, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "moderate_template",
@@ -7926,6 +8981,26 @@
    "call": "select left(coalesce(to_jsonb(public.my_recovery_code_count())::text, 'null'), 3000)"
   },
   {
+   "name": "my_reviews",
+   "ident": "",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "[]",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.my_reviews() limit 50) x"
+  },
+  {
    "name": "my_risk_holds",
    "ident": "",
    "anon": false,
@@ -7955,7 +9030,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "[{\"id\": \"c8d609de-18ee-4f2c-ba20-bbcc9b6063d4\", \"ip\": \"82.13.3.250\", \"aal\": \"aal1\", \"current\": true, \"created_at\": \"2026-10-30T03:26:40.029911+00:00\", \"user_agent\": \"node\", \"last_active\": \"2026-10-30T03:26:40.029911+00:00\"}]",
+    "res": "[{\"id\": \"84b97351-6ed6-4444-a819-2c4db7324296\", \"ip\": \"82.13.3.250\", \"aal\": \"aal1\", \"current\": true, \"created_at\": \"2026-11-15T15:50:24.807772+00:00\", \"user_agent\": \"node\", \"last_active\": \"2026-11-15T15:50:24.807772+00:00\"}]",
     "writes": {}
    },
    "control": {
@@ -8026,6 +9101,26 @@
    "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.my_workspace_access() limit 50) x"
   },
   {
+   "name": "notification_provider_workspace",
+   "ident": "p_user uuid, p_link text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "null",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.notification_provider_workspace('6ccdd863-b4d5-4be2-ab6a-92e39870cb35'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "offer_ticket_transfer",
    "ident": "p_ticket uuid, p_email text, p_name text, p_token_hash text",
    "anon": false,
@@ -8060,8 +9155,8 @@
    },
    "control": {
     "ok": false,
-    "state": "40P01",
-    "msg": "deadlock detected"
+    "state": "22023",
+    "msg": "not_disputable:awaiting"
    },
    "call": "select left(coalesce(to_jsonb(public.open_booking_dispute('01a2f55f-b71e-4e4c-8bda-f36c9402fb64'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, 1::numeric))::text, 'null'), 3000)"
   },
@@ -8186,6 +9281,26 @@
    "call": "select left(coalesce(to_jsonb(public.organizer_save_event_plan('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, false))::text, 'null'), 3000)"
   },
   {
+   "name": "ownership_transfer_blockers",
+   "ident": "p_ws uuid, p_to uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.ownership_transfer_blockers('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid) limit 50) x"
+  },
+  {
    "name": "owns_partner",
    "ident": "p_partner uuid",
    "anon": false,
@@ -8306,6 +9421,26 @@
    "call": "select coalesce(nullif(public.parking_revoke_permit('9b116a9e-1ebd-4cca-9283-e9c5b1ca126c'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
+   "name": "partner_apply",
+   "ident": "p_contact_name text, p_business_name text, p_business_type text, p_country text, p_website text, p_audience text, p_vat_registered boolean, p_vat_number text, p_terms_version text, p_self_billing boolean",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "INPUT_REJECTED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "terms_changed",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "terms_changed"
+   },
+   "call": "select left(coalesce(to_jsonb(public.partner_apply('Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, false, 'Q45 sweep'::text, 'Q45 sweep'::text, false))::text, 'null'), 3000)"
+  },
+  {
    "name": "partner_attribute_signup",
    "ident": "p_code text, p_channel text, p_visitor text",
    "anon": false,
@@ -8326,6 +9461,26 @@
    "call": "select left(coalesce(to_jsonb(public.partner_attribute_signup('Q45SWEEP'::text, 'email'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
+   "name": "partner_attribute_signup_at",
+   "ident": "p_code text, p_channel text, p_visitor text, p_clicked_at timestamp with time zone",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "{\"reason\": \"invalid_click\", \"attributed\": false}",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.partner_attribute_signup_at('Q45SWEEP'::text, 'email'::text, 'Q45 sweep'::text, (now() + interval '30 days')))::text, 'null'), 3000)"
+  },
+  {
    "name": "partner_contact_support",
    "ident": "p_subject text, p_body text",
    "anon": false,
@@ -8344,6 +9499,66 @@
     "msg": "not_allowed"
    },
    "call": "select left(coalesce(to_jsonb(public.partner_contact_support('Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "partner_portal_referrals",
+   "ident": "",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "[]",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.partner_portal_referrals() limit 50) x"
+  },
+  {
+   "name": "partner_set_tax_details",
+   "ident": "p_vat_registered boolean, p_vat_number text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select coalesce(nullif(public.partner_set_tax_details(false, 'Q45 sweep'::text)::text, ''), 'void')"
+  },
+  {
+   "name": "partner_terms_version",
+   "ident": "",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "\"2026-10\"",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.partner_terms_version())::text, 'null'), 3000)"
   },
   {
    "name": "partner_track_click",
@@ -8383,7 +9598,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.party_create_contract('9658dcee-50dc-42fb-8d33-ca91da0ae1c6'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.party_create_contract('c62f4f03-016b-404c-96f5-260ebda8cd53'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "party_issue_passes",
@@ -8423,7 +9638,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.party_link_contract('9658dcee-50dc-42fb-8d33-ca91da0ae1c6'::uuid, '3b00186d-0216-401a-ad99-7cf32c33ce49'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.party_link_contract('c62f4f03-016b-404c-96f5-260ebda8cd53'::uuid, '3b00186d-0216-401a-ad99-7cf32c33ce49'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "party_link_money",
@@ -8606,6 +9821,46 @@
    "call": "select left(coalesce(to_jsonb(public.pass_request_save('4fe6d388-f7bd-487f-a167-d31591666f75'::uuid, '{}'::jsonb))::text, 'null'), 3000)"
   },
   {
+   "name": "payment_terms_accepted",
+   "ident": "p_role text, p_user uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.payment_terms_accepted('member'::text, '6ccdd863-b4d5-4be2-ab6a-92e39870cb35'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "payment_terms_customer_required",
+   "ident": "",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "{\"version\": \"gd-pt-1.0-2026-11-11\", \"required\": false}",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.payment_terms_customer_required())::text, 'null'), 3000)"
+  },
+  {
    "name": "plan_catalog",
    "ident": "",
    "anon": false,
@@ -8624,6 +9879,46 @@
     "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.plan_catalog())::text, 'null'), 3000)"
+  },
+  {
+   "name": "plan_limit_status",
+   "ident": "p_ws uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.plan_limit_status('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "portal_brand",
+   "ident": "p_token_hash text",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "null",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.portal_brand('Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "portal_comment",
@@ -8684,6 +9979,46 @@
     "msg": null
    },
    "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.portal_document('Q45 sweep'::text, '594fe013-0586-41f1-a40c-f4488cfe0b8f'::uuid) limit 50) x"
+  },
+  {
+   "name": "portal_invite_accept",
+   "ident": "p_token_hash text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "{\"result\": \"unavailable\"}",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.portal_invite_accept('Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "portal_invite_preview",
+   "ident": "p_token_hash text",
+   "anon": true,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "[]",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.portal_invite_preview('Q45 sweep'::text) limit 50) x"
   },
   {
    "name": "portal_issue_link",
@@ -8750,20 +10085,20 @@
    "ident": "p_conv uuid, p_body text, p_attachments jsonb, p_as_workspace uuid",
    "anon": false,
    "tenantArgs": true,
-   "verdict": "REFUSED",
+   "verdict": "INPUT_REJECTED",
    "outsider": {
     "ok": false,
-    "state": "42501",
-    "msg": "not_authorized",
+    "state": "22023",
+    "msg": "cannot get array length of a non-array",
     "res": null,
     "writes": null
    },
    "control": {
     "ok": false,
-    "state": "42501",
-    "msg": "not_authorized"
+    "state": "22023",
+    "msg": "cannot get array length of a non-array"
    },
-   "call": "select left(coalesce(to_jsonb(public.post_message('d4e28a55-4b81-49ef-89bb-d3762f28370e'::uuid, 'Q45 sweep'::text, '{}'::jsonb, '75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.post_message('56dc03cb-e703-44e7-be21-11220b5d8cc7'::uuid, 'Q45 sweep'::text, '{}'::jsonb, '75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "poster_data",
@@ -8926,6 +10261,26 @@
    "call": "select left(coalesce(to_jsonb(public.promoter_create_payout('af6a41a3-93f2-404f-8b3d-6faf716f382d'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
+   "name": "promoter_invite",
+   "ident": "p_promoter uuid, p_email text, p_token_hash text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_token"
+   },
+   "call": "select left(coalesce(to_jsonb(public.promoter_invite('af6a41a3-93f2-404f-8b3d-6faf716f382d'::uuid, 'q45-sweep@gala-dock.test'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "promoter_leaderboard",
    "ident": "p_promoter uuid",
    "anon": false,
@@ -8944,6 +10299,26 @@
     "msg": null
    },
    "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.promoter_leaderboard('af6a41a3-93f2-404f-8b3d-6faf716f382d'::uuid) limit 50) x"
+  },
+  {
+   "name": "promoter_money_role",
+   "ident": "p_promoter uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.promoter_money_role('af6a41a3-93f2-404f-8b3d-6faf716f382d'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "promoter_payout_transition",
@@ -9483,7 +10858,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.provider_respond_hold('195570e7-62a0-4783-ab21-1ffbee276147'::uuid, false, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.provider_respond_hold('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, false, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "provider_save_crew",
@@ -9826,6 +11201,26 @@
    "call": "select coalesce(nullif(public.provider_withdraw_quote('2204d78f-7b93-4932-b9ae-533b2161b7dc'::uuid)::text, ''), 'void')"
   },
   {
+   "name": "public_event_brand",
+   "ident": "p_event uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "null",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.public_event_brand('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "public_event_extras",
    "ident": "p_event uuid",
    "anon": true,
@@ -9895,7 +11290,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "{\"to\": \"2026-11-30\", \"days\": [{\"date\": \"2026-11-29\", \"status\": \"free\"}, {\"date\": \"2026-11-30\", \"status\": \"booked\"}], \"from\": \"2026-11-29\", \"spaces\": [], \"timezone\": \"Europe/London\"}",
+    "res": "{\"to\": \"2026-12-16\", \"days\": [{\"date\": \"2026-12-15\", \"status\": \"free\"}, {\"date\": \"2026-12-16\", \"status\": \"free\"}], \"from\": \"2026-12-15\", \"spaces\": [], \"timezone\": \"Europe/London\"}",
     "writes": {}
    },
    "control": {
@@ -9926,6 +11321,26 @@
    "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.public_organizer('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid) limit 50) x"
   },
   {
+   "name": "public_organizer_profile",
+   "ident": "p_workspace uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "[{\"id\": \"75e6c471-8d5e-4b9f-b076-ff10cf209f01\", \"name\": \"Alex Events\", \"website\": \"alexevents.galadock.com\", \"upcoming\": 10, \"verified\": false, \"created_at\": \"2026-10-10T22:44:23.383078+00:00\", \"brand_color\": null, \"cover_image\": \"\", \"description\": \"Professional event management and production acros",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.public_organizer_profile('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid) limit 50) x"
+  },
+  {
    "name": "public_workspace",
    "ident": "p_workspace uuid",
    "anon": true,
@@ -9935,7 +11350,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "[{\"id\": \"75e6c471-8d5e-4b9f-b076-ff10cf209f01\", \"name\": \"Alex Events\", \"upcoming\": 11, \"verified\": false, \"created_at\": \"2026-10-10T22:44:23.383078+00:00\", \"cover_image\": \"\", \"events_count\": 14}]",
+    "res": "[{\"id\": \"75e6c471-8d5e-4b9f-b076-ff10cf209f01\", \"name\": \"Alex Events\", \"upcoming\": 10, \"verified\": false, \"created_at\": \"2026-10-10T22:44:23.383078+00:00\", \"cover_image\": \"\", \"events_count\": 14}]",
     "writes": {}
    },
    "control": {
@@ -10445,7 +11860,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.release_conditional_hold('195570e7-62a0-4783-ab21-1ffbee276147'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.release_conditional_hold('a30b2224-3241-4d01-99dd-f4e975245e61'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "release_resale_holds",
@@ -10605,7 +12020,27 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.replay_webhook_delivery(null::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.replay_webhook_delivery('cf8c3ee9-8349-404e-a098-8eba10dea2ae'::uuid)::text, ''), 'void')"
+  },
+  {
+   "name": "report_content",
+   "ident": "p_subject_type text, p_subject_id uuid, p_reason_code text, p_note text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "INPUT_REJECTED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_subject",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_subject"
+   },
+   "call": "select left(coalesce(to_jsonb(public.report_content('Q45 sweep'::text, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "report_lost_item",
@@ -10628,6 +12063,26 @@
    "call": "select left(coalesce(to_jsonb(public.report_lost_item('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '{}'::jsonb))::text, 'null'), 3000)"
   },
   {
+   "name": "report_message",
+   "ident": "p_message uuid, p_reason_code text, p_note text, p_source text, p_block boolean, p_seat uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "INPUT_REJECTED",
+   "outsider": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_source",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_source"
+   },
+   "call": "select left(coalesce(to_jsonb(public.report_message('e1b0b12b-6129-4868-a449-7da24b694997'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, false, null::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "report_review",
    "ident": "p_review uuid, p_reason_code text, p_note text",
    "anon": false,
@@ -10645,7 +12100,7 @@
     "state": "22023",
     "msg": "invalid_reason_code"
    },
-   "call": "select left(coalesce(to_jsonb(public.report_review('c0c16002-2a70-4151-af5b-46c20e075840'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.report_review('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "report_template",
@@ -10788,6 +12243,26 @@
     "msg": "not_authorized"
    },
    "call": "select left(coalesce(to_jsonb(public.request_leave('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, (now() + interval '30 days'), (now() + interval '31 days'), 'venue'::text, 'Q45 sweep'::text, 'c88f76af-f9aa-45af-b26e-ed645cb4660f'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "request_ownership_transfer",
+   "ident": "p_ws uuid, p_to uuid, p_confirm text",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "confirm_mismatch"
+   },
+   "call": "select left(coalesce(to_jsonb(public.request_ownership_transfer('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "request_standby",
@@ -10950,6 +12425,26 @@
    "call": "select coalesce(nullif(public.resolve_design_comment(null::uuid, false)::text, ''), 'void')"
   },
   {
+   "name": "respond_ownership_transfer",
+   "ident": "p_transfer uuid, p_accept boolean",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized"
+   },
+   "call": "select left(coalesce(to_jsonb(public.respond_ownership_transfer('c8c7c521-a51a-445a-b970-cac72926f627'::uuid, false))::text, 'null'), 3000)"
+  },
+  {
    "name": "respond_to_invite",
    "ident": "p_token_hash text, p_invite_id uuid, p_accept boolean",
    "anon": false,
@@ -10987,7 +12482,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.respond_to_review('c0c16002-2a70-4151-af5b-46c20e075840'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.respond_to_review('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
    "name": "restore_design_version",
@@ -11028,6 +12523,26 @@
     "msg": "waiver_not_draft"
    },
    "call": "select left(coalesce(to_jsonb(public.retire_waiver_draft('3ff765b9-bea9-490e-a4db-5dc7f6285c97'::uuid, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "review_is_mine",
+   "ident": "p_review uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.review_is_mine('de43b402-4915-4e34-a2dd-5a78e5ed5f7f'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "review_provider_document",
@@ -11127,7 +12642,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.revoke_event_guest_link('7e50485d-bf10-4d4b-94ce-88515f82697d'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.revoke_event_guest_link('3731a06c-a632-4555-b1cb-f6fdeea364ca'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "revoke_event_scanner",
@@ -11481,7 +12996,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "\"86af43c648ac6312a71faca69c3f4aaf637f1602afe28c52\"",
+    "res": "\"0e36cb10ab13ab16871e3b7394f275b46bfe07881e65a0a6\"",
     "writes": {
      "profiles": 1
     }
@@ -11747,9 +13262,9 @@
     "writes": null
    },
    "control": {
-    "ok": true,
-    "state": null,
-    "msg": null
+    "ok": false,
+    "state": "P0001",
+    "msg": "version_conflict:7"
    },
    "call": "select left(coalesce(to_jsonb(public.save_design('e5139ad8-067a-40b8-b225-c3610f639447'::uuid, '{}'::jsonb, 1::integer, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
@@ -12031,7 +13546,7 @@
     "state": "22023",
     "msg": "invalid_offline_time"
    },
-   "call": "select left(coalesce(to_jsonb(public.scan_admission('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '5150a702-9db0-48f8-b5df-652283654ece'::uuid, '95047efe-91b0-42ee-b406-d0a4063ad92d'::uuid, 'cdadc34b-bbdb-4260-ac2b-80bdf9d5dec3'::uuid, 'Q45SWEEP'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 'Q45 sweep'::text, 'Q45 sweep'::text, '7d942eb2-f22b-4914-9f02-e3311126895e'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.scan_admission('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '5150a702-9db0-48f8-b5df-652283654ece'::uuid, '95047efe-91b0-42ee-b406-d0a4063ad92d'::uuid, 'cdadc34b-bbdb-4260-ac2b-80bdf9d5dec3'::uuid, 'Q45SWEEP'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 'Q45 sweep'::text, 'Q45 sweep'::text, '9c0970f4-67fb-413f-9d47-387ae7acb31e'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "scan_lookup",
@@ -12091,7 +13606,7 @@
     "state": null,
     "msg": null
    },
-   "call": "select left(coalesce(to_jsonb(public.scan_snapshot_valid('7d942eb2-f22b-4914-9f02-e3311126895e'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.scan_snapshot_valid('9c0970f4-67fb-413f-9d47-387ae7acb31e'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "scan_ticket",
@@ -12112,6 +13627,66 @@
     "msg": "invalid_offline_time"
    },
    "call": "select left(coalesce(to_jsonb(public.scan_ticket('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '95047efe-91b0-42ee-b406-d0a4063ad92d'::uuid, 'Q45SWEEP'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, 'Q45 sweep'::text, (now() + interval '30 days'), 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
+   "name": "seller_tax_profile_save",
+   "ident": "p_workspace uuid, p jsonb",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": false,
+    "state": "22023",
+    "msg": "invalid_country"
+   },
+   "call": "select left(coalesce(to_jsonb(public.seller_tax_profile_save('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, '{}'::jsonb))::text, 'null'), 3000)"
+  },
+  {
+   "name": "seller_tax_profile_status",
+   "ident": "p_workspace uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.seller_tax_profile_status('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "seller_trader_status",
+   "ident": "p_workspace uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "\"business\"",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.seller_trader_status('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
   },
   {
    "name": "send_context_message",
@@ -12272,6 +13847,26 @@
     "msg": null
    },
    "call": "select coalesce(nullif(public.set_api_key_limits('f330c43e-557c-4d7f-8472-4818d882a276'::uuid, 1::integer, (now() + interval '30 days'))::text, ''), 'void')"
+  },
+  {
+   "name": "set_build_item_hidden",
+   "ident": "p_item uuid, p_hidden boolean",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "REFUSED",
+   "outsider": {
+    "ok": false,
+    "state": "42501",
+    "msg": "not_authorized",
+    "res": null,
+    "writes": null
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.set_build_item_hidden('01a2f55f-b71e-4e4c-8bda-f36c9402fb64'::uuid, false))::text, 'null'), 3000)"
   },
   {
    "name": "set_composition_binding",
@@ -12774,6 +14369,26 @@
    "call": "select left(coalesce(to_jsonb(public.stock_report('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid, 'ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
   },
   {
+   "name": "storage_object_locked",
+   "ident": "p_bucket text, p_name text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.storage_object_locked('Q45 sweep'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
+  },
+  {
    "name": "storage_usage",
    "ident": "p_workspace uuid, p_user uuid",
    "anon": false,
@@ -12863,7 +14478,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "\"PR-113BFF87\"",
+    "res": "\"PR-52B35624\"",
     "writes": {
      "audit_events": 1,
      "email_outbox": 1,
@@ -13119,6 +14734,26 @@
    "call": "select left(coalesce(to_jsonb(public.ticket_risk_review('4229c17f-0696-4abc-baf0-c49232cc4ddd'::uuid, 'approved'::text, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
+   "name": "ticket_sales_open_from",
+   "ident": "p_event uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "\"2027-05-04T22:00:00+00:00\"",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.ticket_sales_open_from('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "ticket_sales_series",
    "ident": "p_event uuid, p_days integer",
    "anon": false,
@@ -13156,7 +14791,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select left(coalesce(to_jsonb(public.transfer_stock('c88f76af-f9aa-45af-b26e-ed645cb4660f'::uuid, '8c8fc2af-36b2-4b5a-aee0-19b6b9fa8cf8'::uuid, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
+   "call": "select left(coalesce(to_jsonb(public.transfer_stock('c88f76af-f9aa-45af-b26e-ed645cb4660f'::uuid, 'a92558dc-d156-42b8-b51a-15d81b5004e1'::uuid, 1::integer, 'Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "transfer_ticket",
@@ -13299,6 +14934,26 @@
    "call": "select coalesce(nullif(public.trust_lift_enforcement('b470944e-cfc6-40f6-a1bf-dc732fbcbed3'::uuid, 'Q45 sweep'::text, 'Q45 sweep'::text)::text, ''), 'void')"
   },
   {
+   "name": "trust_listing_held",
+   "ident": "p_listing uuid",
+   "anon": true,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.trust_listing_held('327451a6-0693-47f6-bbec-a480fe805db5'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "trust_review_document",
    "ident": "p_document uuid, p_status text, p_reason_code text, p_reason text, p_expires_on date, p_cover_amount_minor bigint",
    "anon": false,
@@ -13368,7 +15023,7 @@
     "ok": true,
     "state": null,
     "msg": null,
-    "res": "{\"badge\": false, \"scope\": \"Verified means Gala Dock or Stripe checked the business identity and Gala Dock reviewed the required, current compliance documents. It does not guarantee service quality.\", \"computed_at\": \"2026-10-30T03:26:48.841984+00:00\", \"identity_verified\": false, \"required_credentials",
+    "res": "{\"badge\": false, \"scope\": \"Verified means Gala Dock or Stripe checked the business identity and Gala Dock reviewed the required, current compliance documents. It does not guarantee service quality.\", \"computed_at\": \"2026-11-15T15:50:39.939133+00:00\", \"identity_verified\": false, \"required_credentials",
     "writes": {}
    },
    "control": {
@@ -13377,6 +15032,26 @@
     "msg": null
    },
    "call": "select left(coalesce(to_jsonb(public.trust_summary('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "unblock_contact",
+   "ident": "p_type text, p_id uuid, p_seat uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "void",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select coalesce(nullif(public.unblock_contact('wedding'::text, null::uuid, null::uuid)::text, ''), 'void')"
   },
   {
    "name": "unfollow_subject",
@@ -13501,6 +15176,26 @@
    "call": "select coalesce(nullif(public.upgrade_event_to_professional('ff613e51-fde5-4424-bdb2-6200da239e40'::uuid, '75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid)::text, ''), 'void')"
   },
   {
+   "name": "user_identity_verified",
+   "ident": "p_user uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.user_identity_verified('6ccdd863-b4d5-4be2-ab6a-92e39870cb35'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "venue_offer_alternative",
    "ident": "p_item uuid, p_kind text, p_space uuid, p_starts timestamp with time zone, p_ends timestamp with time zone, p_price numeric, p_note text",
    "anon": false,
@@ -13579,6 +15274,28 @@
     "msg": "not_authorized"
    },
    "call": "select left(coalesce(to_jsonb(public.venue_structure_save('327451a6-0693-47f6-bbec-a480fe805db5'::uuid, '{}'::jsonb, false, 1::integer, '{}'::jsonb))::text, 'null'), 3000)"
+  },
+  {
+   "name": "verify_my_password",
+   "ident": "p_password text",
+   "anon": false,
+   "tenantArgs": false,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "false",
+    "writes": {
+     "rate_limits": 1
+    }
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.verify_my_password('Q45 sweep'::text))::text, 'null'), 3000)"
   },
   {
    "name": "virtual_attendance_summary",
@@ -13998,7 +15715,7 @@
     "state": "42501",
     "msg": "not_authorized"
    },
-   "call": "select coalesce(nullif(public.weather_alert_acknowledge('04082a25-841b-4e7e-8a05-6fc5b74ed54e'::uuid)::text, ''), 'void')"
+   "call": "select coalesce(nullif(public.weather_alert_acknowledge('9683262c-51fe-4ac5-8ab0-148b539a989e'::uuid)::text, ''), 'void')"
   },
   {
    "name": "weather_watch_save",
@@ -14041,6 +15758,46 @@
    "call": "select coalesce(nullif(public.withdraw_proposal('6672249d-38f1-4f11-a24f-30987b9e4bf1'::uuid)::text, ''), 'void')"
   },
   {
+   "name": "workspace_brand_color",
+   "ident": "p_ws uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "EMPTY",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "null",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.workspace_brand_color('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
+   "name": "workspace_business_country",
+   "ident": "p_workspace uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "\"GB\"",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.workspace_business_country('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
+  },
+  {
    "name": "workspace_credential_status",
    "ident": "p_workspace uuid",
    "anon": false,
@@ -14059,6 +15816,26 @@
     "msg": null
    },
    "call": "select left(coalesce(jsonb_agg(to_jsonb(x))::text, '[]'), 3000) from (select * from public.workspace_credential_status('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid) limit 50) x"
+  },
+  {
+   "name": "workspace_payments_country_ok",
+   "ident": "p_workspace uuid",
+   "anon": false,
+   "tenantArgs": true,
+   "verdict": "DATA",
+   "outsider": {
+    "ok": true,
+    "state": null,
+    "msg": null,
+    "res": "true",
+    "writes": {}
+   },
+   "control": {
+    "ok": true,
+    "state": null,
+    "msg": null
+   },
+   "call": "select left(coalesce(to_jsonb(public.workspace_payments_country_ok('75e6c471-8d5e-4b9f-b076-ff10cf209f01'::uuid))::text, 'null'), 3000)"
   }
  ]
 }

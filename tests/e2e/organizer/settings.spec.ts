@@ -14,9 +14,9 @@ test("edit workspace contact details", async ({ page }) => {
   await dlg.getByLabel("Contact phone").fill("+44 20 7946 0001");
   await dlg.getByRole("button", { name: /^Save$/ }).click();
   await expect(dlg).toBeHidden({ timeout: 20_000 });
-  await expect.poll(async () => ((await admin().from("workspaces").select("settings").eq("id", ws).single()).data!.settings as Record<string, unknown>).contact_phone, { timeout: 20_000 }).toBe("+44 20 7946 0001");
+  await expect.poll(async () => ((await admin().from("workspaces").select("settings").eq("id", ws).single()).data!.settings as Record<string, unknown>).contact_phone, { timeout: 20_000 }).toBe("+442079460001");   // Q76 (L07): stored as E.164
   // Typing into a later field must not leak into the first one (dialog focus regression).
   expect((await admin().from("workspaces").select("name").eq("id", ws).single()).data!.name).toBe("Alex Events");
   await page.reload({ waitUntil: "networkidle" });
-  await expect(page.getByText("+44 20 7946 0001").first()).toBeVisible();
+  await expect(page.getByText("+442079460001").first()).toBeVisible();
 });

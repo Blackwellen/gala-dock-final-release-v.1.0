@@ -73,7 +73,7 @@ export default async function QuoteWizard(props: PageProps<"/provider/opportunit
     const words = (e?.event_type ?? "").split("_");
     const suggested = [q.space ? `space:${q.space.id}` : "", ...q.catalog.filter(c => c.kind === "package" && words.some(w => w && c.label.toLowerCase().includes(w))).map(c => c.key)].filter(Boolean);
     return <div className="qw-page">{header}
-      <QuoteBuilder itemId={id} quoteId={q.draft?.id ?? null} initial={q.starting} catalog={q.catalog.map(c => ({ ...c, qty: q.qtyFor(c) }))} suggested={suggested}
+      <QuoteBuilder currency={e?.currency ?? "GBP"} itemId={id} quoteId={q.draft?.id ?? null} initial={q.starting} catalog={q.catalog.map(c => ({ ...c, qty: q.qtyFor(c) }))} suggested={suggested}
         taxBps={q.taxBps} taxLabel={q.taxLabel} depositPct={q.depositPct} standbyAvailable={q.standbyFee !== null} hours={q.hours} guests={q.guests}
         event={{ date: day(e?.starts_at, { day: "numeric", month: "short", year: "numeric" }), start: fmtTime(e?.starts_at), end: fmtTime(e?.ends_at) }}
         hard={q.fit.hard} hardReason={q.fit.checks.find(c => c.state === "fail")?.detail ?? ""}

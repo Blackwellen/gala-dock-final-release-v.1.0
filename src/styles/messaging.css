@@ -103,3 +103,26 @@ button.ms-who{cursor:pointer}button.ms-who:hover{background:#f3f5fb}button.ms-wh
 .ms-dialog{--ms-ink:#0b1033;--ms-muted:#5b6283;--ms-faint:#8a90ad;--ms-line:#e8ecf5;--ms-blue:#0038fd;--ms-soft:#f3f5fb;display:grid;gap:12px;color:var(--ms-ink)}
 .ms-dialog-subj{display:flex;gap:8px;align-items:baseline;margin:0;font-size:13px;color:var(--ms-ink)}.ms-dialog-subj span{font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;color:var(--ms-muted)}
 .ms-dialog .ms-box textarea{min-height:120px}
+/* Q52: search, history paging, report/block, safety note, mobile thread view */
+.ms-search{display:flex;align-items:center;gap:8px;margin:10px 14px 0;padding:0 10px;height:38px;border:1px solid var(--ms-line);border-radius:10px;background:#fff;color:var(--ms-muted)}
+.ms-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:14px;color:var(--ms-ink)}
+.ms-search:focus-within{border-color:var(--ms-blue);box-shadow:0 0 0 3px rgba(0,56,253,.12)}
+.ms .ms-search-x{font-size:12px;color:var(--ms-blue);text-decoration:none}
+.ms-older{margin:10px 0 0;text-align:center;font-size:13px}.ms .ms-older a{color:var(--ms-blue)}
+.ms-report{justify-self:end;display:inline-grid;place-items:center;width:22px;height:22px;margin:-2px -4px -4px 0;border:0;border-radius:6px;background:transparent;color:var(--ms-faint);cursor:pointer;opacity:.55}
+.ms-bubble:hover .ms-report,.ms-report:focus-visible{opacity:1}.ms-report:hover{background:var(--ms-soft);color:#b42318}
+@media(hover:none){.ms-report{opacity:1}}
+.ms .ms-thread-head .ms-block{margin-left:8px}
+.ms-blocked{display:flex;align-items:center;gap:8px;margin:12px;padding:12px 14px;border-radius:12px;background:#fff4f2;color:#7a271a;font-size:14px}
+.ms-safety,.ms-dialog .ms-safety{display:flex;gap:8px;align-items:flex-start;margin:8px 0 0;padding:9px 12px;border-radius:10px;background:#fff8e6;color:#6b4a00;font-size:12.5px;line-height:1.45}
+.ms-safety svg{flex:none;margin-top:1px}
+.ms-report-form fieldset{display:grid;gap:8px;margin:0;padding:0;border:0}.ms-report-form legend{font-weight:650;margin-bottom:6px}
+.ms-radio{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}.ms-radio input{width:16px;height:16px;flex:none}
+.ms-help{margin:0;font-size:12.5px;color:var(--ms-muted)}
+.ms-back{display:none}
+@media(max-width:860px){
+  .ms.ms-open .ms-list{display:none}
+  .ms.ms-open .ms-back{display:inline-flex;align-items:center;gap:4px;margin:10px 12px 0;font-size:13px;color:var(--ms-blue);text-decoration:none}
+  .ms .ms-thread-head{flex-wrap:wrap}
+  .ms-bubble{max-width:86%}
+}

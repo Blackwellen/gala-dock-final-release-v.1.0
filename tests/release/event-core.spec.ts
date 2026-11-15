@@ -303,14 +303,16 @@ test.describe("Q14 event core", () => {
     expect((await customerC.from("events").select("id").eq("id", ev)).data).toEqual([]);
     expect((await rpc<{ ok: boolean }>(ownerC, "event_transition", { p_event: ev, p_to: "published" })).data).toMatchObject({ ok: true });
     const org = (await ownerC.from("events").select("id,name,starts_at,status,budget_total,settings").eq("id", ev).single()).data as Record<string, unknown>;
-    const cust = (await customerC.from("events").select("id,name,starts_at,status").eq("id", ev).single()).data as Record<string, unknown>;
-    const pub = (await (anon() as unknown as Db).from("events").select("id,name,starts_at,status").eq("id", ev).single()).data as Record<string, unknown>;
+    // 202610294085 (backend-queue 2026-11-11): outsiders and anon read the public projection events_public, not the base table.
+    const cust = (await customerC.from("events_public").select("id,name,starts_at,status").eq("id", ev).single()).data as Record<string, unknown>;
+    const pub = (await (anon() as unknown as Db).from("events_public").select("id,name,starts_at,status").eq("id", ev).single()).data as Record<string, unknown>;
+    expect((await customerC.from("events").select("id").eq("id", ev)).data).toEqual([]); // base row stays members-only
     expect(cust).toEqual({ id: ev, name: org.name, starts_at: org.starts_at, status: "published" });
     expect(pub).toEqual(cust);
     expect(org.budget_total).toBe(12000); // the organiser's experience includes private planning fields on the same row
     // Edits made by the organiser are what the customer sees next (one record, no copies).
     await ownerC.from("events").update({ name: "Q14 Canonical Night II" }).eq("id", ev);
-    expect(((await customerC.from("events").select("name").eq("id", ev).single()).data as { name: string }).name).toBe("Q14 Canonical Night II");
+    expect(((await customerC.from("events_public").select("name").eq("id", ev).single()).data as { name: string }).name).toBe("Q14 Canonical Night II");
     // The customer cannot change it.
     await customerC.from("events").update({ name: "hijack" }).eq("id", ev);
     expect(((await db.from("events").select("name").eq("id", ev).single()).data as { name: string }).name).toBe("Q14 Canonical Night II");

@@ -8,12 +8,12 @@ import "@/styles/admin-a-marketplace.css";
 import { Kpi, Avatar, Thumb, Restricted } from "@/components/workspace/kit";
 import { ActionButton } from "@/components/workspace/actions";
 import { requireAdminPermission } from "@/lib/admin/context";
-import { rows, count, isUuid } from "@/lib/workspace/db";
+import { rows, rowsIn, count, isUuid } from "@/lib/workspace/db";
 import { money, day, relative, requestTime, delta, titleCase } from "@/lib/workspace/format";
 import { AdminMenu, ParamSelect, SearchBox, SelectAll } from "../_a/client";
 import { Pager, LineTabs, Status, DrawerClose, SectionHead, KVRows, MiniStat, TimelineItem } from "../_a/ui";
 import { shortRef, str, pageOf, qs, type SP } from "../_a/lib";
-import { L_COLS, loadListingMetrics, lHealth, cancelRate, responseRate, modeTone, fmtHours, type Listing, type LMetric } from "../_a/listings";
+import { L_COLS, loadListingMetrics, listingMatches, lHealth, cancelRate, responseRate, modeTone, fmtHours, type Listing, type LMetric } from "../_a/listings";
 import { reviewListing } from "../_a/actions";
 
 export const metadata: Metadata = { title: "Marketplace" };
@@ -26,7 +26,7 @@ export default async function MarketplacePage(props: PageProps<"/admin/marketpla
   const { db, permissions } = ctx;
   const now = requestTime(), since = new Date(now - 30 * 864e5).toISOString(), prevSince = new Date(now - 60 * 864e5).toISOString();
   const tab = ["services", "requests", "reliability"].includes(str(sp, "tab")) ? str(sp, "tab") : "venues";
-  const q = str(sp, "q").trim().toLowerCase().slice(0, 80), f = (k: string) => str(sp, k);
+  const f = (k: string) => str(sp, k);
   const { per, page, offset } = pageOf(sp);
 
   const [all, metrics, workspaces, expired, sent, expiredPrev, sentPrev] = await Promise.all([
@@ -40,7 +40,7 @@ export default async function MarketplacePage(props: PageProps<"/admin/marketpla
   ]);
   const wsMap = new Map(workspaces.map(w => [w.id, w]));
   const owners = (permissions.has("users") || permissions.has("support"))
-    ? new Map((await rows<{ id: string; full_name: string; avatar_url: string }>(db.from("profiles").select("id,full_name,avatar_url").in("id", [...new Set(workspaces.map(w => w.owner_id))]))).map(p => [p.id, p])) : new Map<string, { id: string; full_name: string; avatar_url: string }>();
+    ? new Map((await rowsIn<{ id: string; full_name: string; avatar_url: string }>(workspaces.map(w => w.owner_id), batch => db.from("profiles").select("id,full_name,avatar_url").in("id", batch))).map(p => [p.id, p])) : new Map<string, { id: string; full_name: string; avatar_url: string }>();
   const ownerOf = (l: Listing) => { const w = wsMap.get(l.workspace_id); return { ws: w, person: w ? owners.get(w.owner_id) : undefined }; };
   const live = all.filter(l => l.published);
   const avgResp = live.length ? live.reduce((a, l) => a + (l.response_hours ?? 0), 0) / live.length : 0;
@@ -48,22 +48,7 @@ export default async function MarketplacePage(props: PageProps<"/admin/marketpla
   const created30 = all.filter(l => l.created_at >= since).length;
   const cities = [...new Set(all.map(l => l.city).filter(Boolean))].sort(), cats = [...new Set(all.map(l => l.category).filter(Boolean))].sort();
 
-  const filtered = all.filter(l => {
-    const m = metrics.get(l.id), h = lHealth(l, m).key;
-    if (tab === "venues" && l.kind !== "venue") return false;
-    if (tab === "services" && l.kind !== "service") return false;
-    if (q && !`${l.name} ${l.id} ${l.city} ${ownerOf(l).ws?.name ?? ""} ${ownerOf(l).person?.full_name ?? ""}`.toLowerCase().includes(q)) return false;
-    if (f("cat") && l.category !== f("cat")) return false;
-    if (f("city") && l.city !== f("city")) return false;
-    if (f("ver") === "verified" && !l.verified) return false;
-    if (f("ver") === "pending" && l.verified) return false;
-    if (f("mode") && l.booking_mode !== f("mode")) return false;
-    if (f("perf") === "healthy" && h !== "healthy") return false;
-    if (f("perf") === "attention" && h === "healthy") return false;
-    if (f("spon") === "sponsored" && !l.sponsored) return false;
-    if (f("spon") === "none" && l.sponsored) return false;
-    return true;
-  }).sort(tab === "reliability" ? (a, b) => cancelRate(metrics.get(b.id)) - cancelRate(metrics.get(a.id)) || (b.response_hours ?? 0) - (a.response_hours ?? 0)
+  const filtered = all.filter(l => listingMatches(l, metrics.get(l.id), tab, f, `${ownerOf(l).ws?.name ?? ""} ${ownerOf(l).person?.full_name ?? ""}`)).sort(tab === "reliability" ? (a, b) => cancelRate(metrics.get(b.id)) - cancelRate(metrics.get(a.id)) || (b.response_hours ?? 0) - (a.response_hours ?? 0)
     : (a, b) => (metrics.get(b.id)?.requests ?? 0) - (metrics.get(a.id)?.requests ?? 0) || b.review_count - a.review_count);
 
   const items = tab === "requests" ? await (async () => {

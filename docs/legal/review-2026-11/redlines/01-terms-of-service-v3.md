@@ -45,7 +45,9 @@ If you are a consumer, nothing in these terms affects your statutory rights.
 
 2.1 You must be **18 or over**, able to form a binding contract, and give accurate information. We may ask you to confirm your age or identity.
 
-2.2 **Who can't use Gala Dock.** You must not use Gala Dock if you are, or act for, a person subject to UK, UN, EU or US sanctions, or if you are ordinarily resident or established in [a comprehensively sanctioned territory listed at galadock.com/legal/countries]. We may refuse, restrict or close an account to comply with sanctions law.
+2.2 **Who can't use Gala Dock.** You must not use Gala Dock if you are, or act for, a person subject to UK, UN, EU or US sanctions, or if you are ordinarily resident or established in a comprehensively sanctioned country or region. Today these are **Cuba, Iran, North Korea, Syria, Russia, Belarus, Crimea, Sevastopol and the non-government-controlled areas of the Donetsk and Luhansk regions of Ukraine**; the current list is at galadock.com/help/where-gala-dock-is-available. We may refuse sign-up, publishing, payout set-up, partner applications or payments, and may restrict or close an account, to comply with sanctions law. If we refuse you by mistake (for example because of your location while travelling), contact support; any exception is reviewed by a person and recorded. *[Q74 2026-11-14: owner decision D4]*
+
+2.2A **Where Gala Dock is available.** Buyers and sellers in the UK, the EU and the other countries we support can use Gala Dock, consumers included, except in the places listed in §2.2. Where sellers can take payments is set out in §4A. *[Q74 2026-11-14: owner decision D2]*
 
 2.3 Keep your password and two-step verification secure. You are responsible for activity on your account until you tell us it has been compromised and we have had a reasonable time to act.
 
@@ -85,7 +87,7 @@ If you are a consumer, nothing in these terms affects your statutory rights.
 
 4.7 **If an organiser cancels an event** after tickets have sold, buyers are always refunded in full, including the booking fee. What the organiser owes us is in the Organiser Terms.
 
-4.8 **Keeping bookings on Gala Dock.** If you are a business user, you must not arrange to pay or be paid outside Gala Dock to avoid our fees for an engagement that started on Gala Dock, for 12 months after your first real contact through Gala Dock (a message, request, quote or booking) [owner: 12 or 24 months]. This doesn't apply to consumers, to sellers whose listings are **enquiry-only** under §4A, or to work you can show you arranged with the other party before that contact. The Organiser and Supplier Terms set out the consequences.
+4.8 **Keeping bookings on Gala Dock.** If you are a business user, you must not arrange to pay or be paid outside Gala Dock to avoid our fees for an engagement that started on Gala Dock, for **12 months** after your first real contact through Gala Dock (a message, request, quote or booking). *[Q74 2026-11-14: owner decision D11]* This doesn't apply to consumers, to sellers whose listings are **enquiry-only** under §4A (agreeing payment directly with them is allowed, but it isn't covered by Gala Dock's payment rules, disputes process or refunds — see §4A.3), or to work you can show you arranged with the other party before that contact. The Organiser and Supplier Terms set out the consequences.
 
 ## 4A. Where sellers can be paid
 
@@ -179,7 +181,7 @@ If you are a consumer, nothing in these terms affects your statutory rights.
 
 12.5 **Business users: exclusions.** Subject to §12.1 and §12.4, we are not liable to a business user, in contract, tort (including negligence), breach of statutory duty or otherwise, for: (a) loss of profit, revenue, business, contracts, goodwill or anticipated savings; (b) loss or corruption of data, except where we failed to apply reasonable backup and security measures; (c) indirect or consequential loss; or (d) loss caused by another user's acts or omissions, by the performance or non-performance of a booking or event, by Stripe or another third-party service, or by events outside our reasonable control.
 
-12.6 **Business users: cap.** Subject to §12.1 and §12.4, our total liability to a business user under all the Legal Documents in each 12-month period from when you first accepted these Terms is limited to the greater of (a) £1,000 [owner/counsel: confirm figure] and (b) the fees you paid us in the 12 months before the event giving rise to the claim (including seller fees deducted from your payments). This is one aggregate cap for all Legal Documents.
+12.6 **Business users: cap.** Subject to §12.1 and §12.4, our total liability to a business user under all the Legal Documents in each 12-month period from when you first accepted these Terms is limited to the greater of (a) **£1,000** and (b) the fees you paid us in the 12 months before the event giving rise to the claim (including seller fees deducted from your payments). This is one aggregate cap for all Legal Documents. Our liability for payment instructions under §12.4 (including a misdirected or missed instruction) is **outside** this cap. *[Q74 2026-11-14: owner decision D13]*
 
 12.7 **Time limit.** A business user must start any claim against us within 12 months after it knew or ought reasonably to have known the facts giving rise to it. This doesn't apply to consumers, to §12.1 or to §12.4.
 
@@ -231,7 +233,7 @@ If you are a consumer, nothing in these terms affects your statutory rights.
 
 15.3 **Consumers:** you may bring proceedings in the courts of the part of the UK, or the country, where you live, and we may bring proceedings against you only there. If you live in Scotland or Northern Ireland, or outside the UK, nothing in these Terms removes the protection of the mandatory consumer law of the place where you live.
 
-15.4 [If EU users are accepted: our EU representative under the Digital Services Act and the EU GDPR is [name, address, email].] [Owner decision D2.]
+15.4 **Users outside the UK.** If you are a consumer living outside the UK (including in the EU), you keep the protection of any mandatory consumer law of the country where you live, and you may bring proceedings in your local courts where that law allows. *[Q74 2026-11-14: owner decision D2: no representative clause; deferred to the roadmap with bring-forward triggers]*
 
 Contact: legal@galadock.com · support@galadock.com.
 

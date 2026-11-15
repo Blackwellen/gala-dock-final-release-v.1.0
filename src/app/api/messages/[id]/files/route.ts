@@ -16,7 +16,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
-  const { data: entries } = await supabase.from("conversation_messages" as never).select("attachments").eq("conversation_id", id).filter("attachments", "cs", JSON.stringify([{ path }])).limit(1);
+  const { data: entries } = await supabase.from("conversation_messages" as never).select("attachments").eq("conversation_id", id).is("deleted_at", null).filter("attachments", "cs", JSON.stringify([{ path }])).limit(1);   // Q52: a removed message's files go with it
   const file = ((entries ?? []) as { attachments: { path: string; name: string }[] }[])[0]?.attachments.find(f => f.path === path);
   if (!file) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const blocked = await gate(createAdminClient(), "workspace-files", path); if (blocked) return blocked;   // Q04 quarantine gate

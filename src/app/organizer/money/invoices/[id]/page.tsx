@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { todayIn } from "@/lib/i18n/tz";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { notFound } from "next/navigation";
 import { Mail, CalendarDays, MapPin, Receipt, CircleDollarSign, FileWarning, CheckCircle2, Circle, FileText, Send, Bell, FileCheck2 } from "lucide-react";
 import { getOrganizer } from "@/lib/data/context";
@@ -24,7 +26,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
     sb.from("invoices").select("id,number").eq("workspace_id", ctx.workspace.id).order("number"),
   ]);
   const tab = ["schedule", "activity"].includes(sp.tab ?? "") ? sp.tab! : "invoice";
-  const due = Number(i.total) - Number(i.amount_paid); const overdue = !["paid", "draft", "cancelled", "credited"].includes(i.status) && i.due_date && i.due_date < new Date().toISOString().slice(0, 10);
+  const due = Number(i.total) - Number(i.amount_paid); const overdue = !["paid", "draft", "cancelled", "credited"].includes(i.status) && i.due_date && i.due_date < todayIn(workspaceLocale(ctx.workspace.settings).timezone);   // Q72: workspace calendar date, not UTC
   const [sl, tone] = IST[overdue ? "overdue" : i.status] ?? [i.status, "gray"];
   const fmtD = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "—";
   const fmtDT = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: TZ });

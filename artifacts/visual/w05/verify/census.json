@@ -1,0 +1,91 @@
+{
+ "email": "solo.supplier.demo@example.com",
+ "checkedLinks": 37,
+ "dead": [],
+ "routes": [
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 26
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 46,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 34,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 26
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 35,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 34,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 26
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "390x844",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 35,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  }
+ ]
+}

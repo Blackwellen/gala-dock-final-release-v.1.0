@@ -29,9 +29,10 @@ test.describe("Q02 canonical master data", () => {
     for (const [list, taxonomy] of [[organizerEventTypes, "event_type"], [listingEventTypes, "event_type"], [serviceCategories, "service_category"], [venueTypes, "venue_type"]] as const)
       expect(new Set(list.map(v => resolveTerm(taxonomy, v))).size, taxonomy).toBe(TAXONOMIES[taxonomy].terms.length);
     expect(amenities).toEqual(["Step-free access", "On-site parking", "In-house catering", "AV equipment", "Outdoor space", "Licensed bar", "Accommodation", "Wi-Fi"]);
-    expect(countries.map(c => c.code)).toEqual(["GB", "IE", "US", "CA", "DE", "FR", "AE", "ZA", "AU"]);
-    expect(countries.find(c => c.code === "US")!.timezones.map(z => z.value)).toEqual(["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles"]);
-    expect(currencies).toEqual([{ value: "GBP", label: "GBP (£) – British Pound" }, { value: "EUR", label: "EUR (€) – Euro" }, { value: "USD", label: "USD ($) – US Dollar" },
+    // Q72: the designed lead order is kept; every Stripe Connect seller country follows it.
+    expect(countries.map(c => c.code).slice(0, 9)).toEqual(["GB", "IE", "US", "CA", "DE", "FR", "AE", "ZA", "AU"]);
+    expect(countries.find(c => c.code === "US")!.timezones.map(z => z.value).slice(0, 4)).toEqual(["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles"]);
+    expect(currencies.slice(0, 7)).toEqual([{ value: "GBP", label: "GBP (£) – British Pound" }, { value: "EUR", label: "EUR (€) – Euro" }, { value: "USD", label: "USD ($) – US Dollar" },
       { value: "CAD", label: "CAD ($) – Canadian Dollar" }, { value: "AED", label: "AED – UAE Dirham" }, { value: "ZAR", label: "ZAR (R) – South African Rand" }, { value: "AUD", label: "AUD ($) – Australian Dollar" }]);
     expect(OCCASIONS.map(o => [o.key, o.label, o.img])).toEqual([["wedding", "Wedding", "type-wedding"], ["birthday", "Birthday", "type-birthday"], ["corporate", "Corporate", "type-corporate"],
       ["party", "Party", "type-party"], ["festival", "Festival", "type-festival"], ["nightlife", "Nightclub", "type-nightclub"], ["private_dinner", "Private Dinner", "type-private_dinner"], ["childrens_party", "Children's Party", "type-childrens_party"]]);

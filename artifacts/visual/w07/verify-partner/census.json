@@ -1,0 +1,35 @@
+{
+ "email": "partner.demo@example.com",
+ "checkedLinks": 22,
+ "dead": [],
+ "routes": [
+  {
+   "name": "overview",
+   "route": "/partner",
+   "size": "768x1024",
+   "status": 200,
+   "finalPath": "/partner",
+   "h1": "Good morning, Jordan",
+   "controls": 36,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "resources",
+   "route": "/partner?view=resources",
+   "size": "768x1024",
+   "status": 200,
+   "finalPath": "/partner?view=resources",
+   "h1": "Good morning, Jordan",
+   "controls": 32,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  }
+ ]
+}

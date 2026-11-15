@@ -1,0 +1,15 @@
+{
+ "/organizer/agent/routines": "/organizer/agent?tab=routines",
+ "/organizer/agent/approvals": "/organizer/agent?tab=approvals",
+ "/organizer/agent/history": "/organizer/agent?tab=history",
+ "/provider/agent/routines": "/provider/agent?tab=routines",
+ "/provider/agent/approvals": "/provider/agent?tab=approvals",
+ "/provider/agent/history": "/provider/agent?tab=history",
+ "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion/new": null,
+ "/account/help": null,
+ "/organizer/help": null,
+ "/provider/help": null,
+ "/organizer/tickets-promotion": null,
+ "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/book": null,
+ "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/tickets/setup": null
+}

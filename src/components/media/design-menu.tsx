@@ -9,7 +9,7 @@ import { ShareToCommunity } from "./share-community";
 
 /** Duplicate / delete for a design, from a library card or the editor top bar. Delete asks first; the library then offers Undo. */
 export function DesignMenu({ id, title, library, inEditor = false, canEdit = true, flush }: { id: string; title: string; library: string; inEditor?: boolean; canEdit?: boolean;
-  /** Editor only: saves pending edits so Duplicate / Share use what's on screen, not the last autosave. */ flush?: () => Promise<void> }) {
+  /** Editor only: saves pending edits so Duplicate / Share use what's on screen, not the last save. */ flush?: () => Promise<void> }) {
   const router = useRouter(); const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false), [sharing, setSharing] = useState(false), [confirm, setConfirm] = useState(false), [busy, setBusy] = useState<"" | "copy" | "delete">(""), [err, setErr] = useState("");
   useEffect(() => {

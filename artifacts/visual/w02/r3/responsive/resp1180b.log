@@ -1,0 +1,22 @@
+1180x820 account st=200 -> /account ctl=41 unnamed=0 dead=0 over=false err=0
+1180x820 wiz1 st=200 -> /plan?step=1 ctl=34 unnamed=0 dead=0 over=false err=0
+1180x820 wiz2 st=200 -> /plan?step=2&event=c43ed800-c85f-49d2-a98f-8ea34b187b10 ctl=79 unnamed=0 dead=0 over=false err=0
+1180x820 wiz3 st=200 -> /plan?step=3&event=c43ed800-c85f-49d2-a98f-8ea34b187b10 ctl=39 unnamed=0 dead=0 over=false err=0
+1180x820 wiz4 st=200 -> /plan?step=4&event=c43ed800-c85f-49d2-a98f-8ea34b187b10 ctl=34 unnamed=0 dead=0 over=false err=0
+1180x820 wiz5 st=200 -> /plan?step=5&event=c43ed800-c85f-49d2-a98f-8ea34b187b10 ctl=33 unnamed=0 dead=0 over=false err=0
+1180x820 wiz6 st=200 -> /plan?step=6&event=c43ed800-c85f-49d2-a98f-8ea34b187b10 ctl=34 unnamed=0 dead=0 over=false err=0
+1180x820 book1 st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1 ctl=58 unnamed=0 dead=0 over=false err=0
+1180x820 book2 st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2 ctl=38 unnamed=0 dead=0 over=false err=0
+1180x820 ts1 st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1 ctl=69 unnamed=0 dead=0 over=false err=0
+1180x820 ts2 st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2 ctl=36 unnamed=0 dead=0 over=false err=0
+1180x820 ts3 st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3 ctl=26 unnamed=0 dead=0 over=false err=0
+1180x820 resale st=200 -> /account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale ctl=17 unnamed=0 dead=0 over=false err=0
+1180x820 resale2 st=200 -> /account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale?step=2 ctl=17 unnamed=0 dead=0 over=false err=0
+1180x820 checkout st=200 -> /checkout/neon-nights ctl=17 unnamed=0 dead=0 over=false err=0
+1180x820 wed-tickets st=200 -> /account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?tab=tickets ctl=40 unnamed=0 dead=0 over=true err=0
+1180x820 bday-tickets-off st=200 -> /account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets?tab=tickets ctl=33 unnamed=0 dead=0 over=true err=0
+1180x820 kids-tickets-off st=200 -> /account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets?tab=tickets ctl=33 unnamed=0 dead=0 over=true err=0
+1180x820 kids-event st=200 -> /account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe ctl=34 unnamed=0 dead=0 over=false err=0
+1180x820 webinar-register st=200 -> /events/future-of-live-events-webinar/register ctl=17 unnamed=0 dead=0 over=false err=0
+1180x820 checkout-sunset st=200 -> /checkout/sunset-sessions ctl=13 unnamed=0 dead=0 over=false err=0
+1180x820 rsvp-bad st=404 -> /rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ctl=10 unnamed=0 dead=0 over=false err=2 Failed to load resource: the server responded with a status of 404 (Not Found)

@@ -49,7 +49,7 @@ test.describe("Q57 · fan resale is reachable when new tickets are sold out", ()
     expect(c).not.toMatch(/inQueue \|\| !buyable\} onClick=\{go\}/);
     const p = src("src/app/checkout/[event]/page.tsx");
     expect(p).toContain('resale={readiness !== "ready" ? []');
-    expect(p).toContain('timeZone: "Europe/London" })}`');
+    expect(p).toContain('timeZone: tz })}`');   // Q72: the event's own zone (London for pre-Q72 events)
   });
 });
 
@@ -184,7 +184,7 @@ test.describe("Q57 follow-ups · pages and routes", () => {
     const r = src("src/app/(customer)/account/tickets/[id]/resale/page.tsx");
     expect(r).toContain("Number(t.face_value ?? tier?.price ?? 0)"); expect(r).toContain("restr.entry_from || restr.entry_to");
     const c = src("src/app/checkout/[event]/client.tsx");
-    expect(c).toContain("entryWindow(r.restrictions)"); expect(c).toContain("r.ticket_ref"); expect(c).toContain("r.listing_ref");
+    expect(c).toContain("entryWindow(r.restrictions, tz)");   /* Q72: event zone */ expect(c).toContain("r.ticket_ref"); expect(c).toContain("r.listing_ref");
     expect(c).toContain("Sold through official resale by ${merchant.name}");
     expect(src("src/app/checkout/[event]/page.tsx")).toContain('"checkout_unlocked_tiers"');
   });

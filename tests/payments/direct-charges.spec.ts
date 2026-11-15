@@ -365,7 +365,10 @@ test.describe("no platform-collection pattern in core seller flows (123.B.7, 128
   const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : /\.(ts|tsx)$/.test(e.name) ? [path.join(d, e.name)] : []);
   // Allowed: the adapter's own forbidden-parameter list, the legacy refund/reversal path for pre-switch orders, and the read-only
   // transfer scan that detects anomalies.
-  const ALLOW = new Set(["src/lib/payments/stripe-client.ts", "src/lib/commerce/legacy-platform-refunds.ts", "src/lib/payments/reconcile-job.ts"].map(p => path.join(ROOT, p)));
+  const ALLOW = new Set(["src/lib/payments/stripe-client.ts", "src/lib/commerce/legacy-platform-refunds.ts", "src/lib/payments/reconcile-job.ts",
+    // Q68 (owner 2026-11-14): partner commission is paid from Gala Dock's OWN platform balance by Transfer to the partner's
+    // connected account — not a seller charge flow, so DEC-107 direct charges are unaffected.
+    "src/lib/partners/payouts.ts"].map(p => path.join(ROOT, p)));
   const PATTERNS: [string, RegExp][] = [["transfers.create", /transfers\.create/], ["Stripe transfers endpoint", /(stripe\w*(<[^>]*>)?\(\s*|path:\s*)["'`]transfers/], ["transfer_data", /transfer_data/],
     ["transfer_group", /transfer_group/], ["source_transaction", /source_transaction/], ["destination param", /\bdestination\s*:\s*acct|\[destination\]|["']destination["']\s*:/]];
   test("src/ has no transfers.create / transfer_data / destination charges outside the allowlist", () => {

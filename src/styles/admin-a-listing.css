@@ -91,3 +91,5 @@
 .al-spaces .al-tags{flex-wrap:nowrap;overflow:hidden}
 .al-spaces li{grid-template-columns:50px 104px minmax(0,1fr) auto}
 .al-details .al-desc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* R1: space tags wrap instead of being cut off ("Banquet Cabaret Theatre" at 1200px). */
+.al-spaces .al-tags{flex-wrap:wrap;overflow:visible}

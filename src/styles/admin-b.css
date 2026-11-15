@@ -92,6 +92,8 @@
 
 /* Menu */
 .adb-menu{position:relative;display:inline-block}
+/* R1: a row menu must not be clipped by a cell that hides its text overflow (support / any adb table). */
+.adb-table td:has(.adb-menu){overflow:visible}
 .adb-menu-panel{position:absolute;top:calc(100% + 6px);min-width:200px;background:#fff;border:1px solid var(--ws-border);border-radius:10px;box-shadow:0 18px 50px #18205a22;padding:5px;z-index:60;display:grid}
 .adb-menu-panel.right{right:0}.adb-menu-panel.left{left:0}
 .adb-menu-panel a,.adb-menu-panel button{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:12px;color:#0d0d63;text-align:left;width:100%;background:none;border:0;cursor:pointer}

@@ -15,7 +15,7 @@
 .ads-filters-row .adb-select{height:34px;width:100%;font-size:12px}
 .ads-table th{background:transparent;padding:10px 6px;font-size:10.5px}
 .ads-table td{padding:4px 6px;height:45px;font-size:11px}
-.ads-table th:first-child,.ads-table td:first-child{width:28px;padding-left:10px}
+.ads-table th:first-child,.ads-table td:first-child{padding-left:10px}
 .ads-ref{color:#3f4596}
 .ads-title{max-width:130px}
 .ads-title a{color:#3f4596;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5}
@@ -23,7 +23,7 @@
 .ads-table .adb-cell b{font-size:10.5px;max-width:100px}
 .ads-table .adb-cell img{width:32px;height:30px}
 .ads-table .adb-pill{min-width:58px;justify-content:center;height:22px}
-.ads-table td:nth-child(8) .adb-pill{min-width:78px}
+.ads-table td:nth-child(7) .adb-pill{min-width:78px}
 .ads-table .adb-dots{width:30px;height:28px;margin-left:auto}
 .ads-table .adb-menu{display:block}
 .ads-main .adb-pager{padding-top:18px}

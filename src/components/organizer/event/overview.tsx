@@ -3,7 +3,7 @@ import { RangeLinks } from "./range-links";
 import { Ticket, BarChart3, Truck, Users, ArrowRight, ChevronRight, User, CalendarDays, Clock, MapPin, Gauge, Building2, ClipboardList, Sparkles, Wand2, Search, CheckCircle2, PenSquare } from "lucide-react";
 import { Card, Ring, Bar, Chip, Avatars, Avatar, Beta, LineChart, BarChart } from "@/components/kit";
 import { AgentAsk } from "@/components/kit/client";
-import { money, num, dateLong, timeRange, eventTypeLabel, relative, dateBadge } from "@/lib/format";
+import { money, num, eventTypeLabel, relative, dateBadge, whenInZone } from "@/lib/format";
 import type { ProEvent, EventData } from "@/lib/data/event";
 import { ReadinessPanel } from "@/components/ops/readiness-panel";
 import { activityLabel } from "@/lib/activity-labels";
@@ -48,7 +48,7 @@ export function Overview({ e, d, me, canMoney }: { e: ProEvent; d: EventData; me
 
     <div className="ov-row2">
       <Card><div className="k-between"><h3 className="ov-h">Event details</h3><Link className="k-link" href={`/organizer/events/${e.id}?tab=plan&section=brief`}>Edit</Link></div>
-        <dl className="ov-dl">{([[User, "Client", e.client_name || "—"], [ClipboardList, "Event type", eventTypeLabel(e.event_type)], [CalendarDays, "Date & time", `${dateLong(e.starts_at)} ${timeRange(e.starts_at, e.ends_at)}`], [MapPin, "Venue", [e.venue_name, e.city].filter(Boolean).join(", ") || "TBC"], [Users, "Capacity", e.capacity ? num(e.capacity) : "—"], [Ticket, "Ticketed", d.tiers.length ? "Yes" : "No"]] as const).map(([I, k, v]) => <div key={k}><dt><I size={15} />{k}</dt><dd>{v}</dd></div>)}
+        <dl className="ov-dl">{([[User, "Client", e.client_name || "—"], [ClipboardList, "Event type", eventTypeLabel(e.event_type)], [CalendarDays, "Date & time", whenInZone(e.starts_at, e.ends_at, e.timezone)], [MapPin, "Venue", [e.venue_name, e.city].filter(Boolean).join(", ") || "TBC"], [Users, "Capacity", e.capacity ? num(e.capacity) : "—"], [Ticket, "Ticketed", d.tiers.length ? "Yes" : "No"]] as const).map(([I, k, v]) => <div key={k}><dt><I size={15} />{k}</dt><dd>{v}</dd></div>)}
           <div><dt><Gauge size={15} />Owner</dt><dd className="k-row" style={{ gap: 8 }}><Avatar src="/assets/gd/av-alex-organizer.webp" name={me.name} size="sm" />You ({me.name.split(" ")[0]})</dd></div>
           <div><dt><Building2 size={15} />Internal team</dt><dd><Avatars people={crew} max={4} /></dd></div></dl></Card>
       <Card><div className="k-between"><h3 className="ov-h">Ticket sales pace</h3><Link className="k-link" href={`/organizer/events/${e.id}/promotion?tab=performance`}>View sales <ArrowRight size={12} /></Link></div>

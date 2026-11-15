@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { useToast } from "@/components/ui";
+import { useEscape } from "@/components/shared/use-escape";
 
 export type ActionResult = { ok: true; message?: string; redirect?: string } | { ok: false; error: string };
 
@@ -53,6 +54,7 @@ export function ActionButton({ action, args = [], children, variant = "outline",
   }
 
   const needsDialog = !!(confirm || reason || outcome);
+  useEscape(open && !pending, () => setOpen(false));
   return <>
     <button type="button" className={`ws-btn ${variant} ${className}`} disabled={disabled || pending} aria-busy={pending} title={title}
       onClick={() => needsDialog ? setOpen(true) : run()}>{children}</button>

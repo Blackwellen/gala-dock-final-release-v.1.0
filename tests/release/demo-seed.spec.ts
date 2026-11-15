@@ -91,7 +91,9 @@ test.describe("Q38 depth seed (pass 1)", () => {
   test("seeded domains are present with the expected depth", async () => {
     const [c] = await DEPTH_SQL(`select
       (select count(*) from events where slug in ('little-explorers-6th','future-of-live-events-webinar','hope-starts-here-charity-ball','warehouse-sessions-bassline','soho-late-lounge-fridays','halloween-rave-2025'))::int new_events,
-      (select count(*) from events where slug in ('future-of-live-events-webinar','hope-starts-here-charity-ball','warehouse-sessions-bassline','soho-late-lounge-fridays') and status = 'on_sale')::int on_sale,
+      -- Seeded on sale; once a seeded date passes, the event lifecycle moves it on (live / completed), which is not seed drift.
+      (select count(*) from events where slug in ('future-of-live-events-webinar','hope-starts-here-charity-ball','warehouse-sessions-bassline','soho-late-lounge-fridays') and (status::text = 'on_sale' or (starts_at < now() and status::text in ('live','completed'))))::int on_sale,
+      (select count(*) from events where slug in ('future-of-live-events-webinar','hope-starts-here-charity-ball','warehouse-sessions-bassline','soho-late-lounge-fridays') and starts_at > now() and status::text <> 'on_sale')::int upcoming_not_on_sale,
       (select count(distinct event_id) from event_licences where status = 'granted')::int licensed_events,
       (select count(*) from safety_plans s join events e on e.id = s.event_id where s.status = 'approved' and e.workspace_id = (select id from workspaces where name = 'Alex Events' limit 1))::int approved_plans,
       (select count(*) from contingency_plans where status = 'approved')::int contingency, (select count(*) from weather_watches where status = 'active')::int watches,
@@ -109,7 +111,8 @@ test.describe("Q38 depth seed (pass 1)", () => {
       (select count(*) from access_zones z join events e on e.id = z.event_id where e.slug = 'neon-nights')::int zones,
       (select count(*) from access_passes p join events e on e.id = p.event_id where e.slug = 'neon-nights')::int passes,
       (select count(*) from event_scanners s join events e on e.id = s.event_id where e.slug = 'neon-nights')::int scanners,
-      (select count(*) from event_guest_links l join events e on e.id = l.event_id where e.slug in ('alex-taylor-wedding','little-explorers-6th') and l.revoked_at is null)::int guest_links,
+      -- Per seeded link (other lanes share these events and add their own links, e.g. "Shared from event page").
+      (select count(*) from event_guest_links l join events e on e.id = l.event_id where l.revoked_at is null and ((e.slug = 'alex-taylor-wedding' and l.label = 'Wedding guests') or (e.slug = 'little-explorers-6th' and l.label = 'Class invite (Year 1)')))::int guest_links,
       (select count(*) from guests g join events e on e.id = g.event_id where e.slug in ('alex-taylor-wedding','alex-jamie-wedding') and g.rsvp_token_hash is not null)::int rsvp_links,
       (select count(*) from registrations r join registration_forms f on f.id = r.form_id join events e on e.id = f.event_id where e.slug = 'future-of-live-events-webinar')::int registrations,
       (select count(*) from ticket_tiers t join events e on e.id = t.event_id where e.slug = 'sunset-sessions' and t.release_kind in ('presale','final'))::int releases,
@@ -120,7 +123,7 @@ test.describe("Q38 depth seed (pass 1)", () => {
       (select count(*) from event_templates where scope = 'platform' and status = 'active')::int platform_templates,
       (select count(*) from contracts c where c.title = 'Neon Nights 2026 — production services agreement' and c.status = 'sent' and c.share_token_hash is not null)::int unsigned_contracts,
       (select count(*) from workspaces w where w.name in ('Mia Rossi Photography','Northern Crew Agency'))::int new_provider_workspaces`);
-    expect(c).toMatchObject({ new_events: 6, on_sale: 4, parties: 11, booths: 7, riders: 8, transport: 2, permits: 2, rooms: 2, windows: 3, captioned_sessions: 3, roles: 6,
+    expect(c).toMatchObject({ new_events: 6, on_sale: 4, upcoming_not_on_sale: 0, parties: 11, booths: 7, riders: 8, transport: 2, permits: 2, rooms: 2, windows: 3, captioned_sessions: 3, roles: 6,
       disabled_webhooks: 1, zones: 5, passes: 3, scanners: 2, guest_links: 2, rsvp_links: 36, registrations: 6, releases: 2, codes: 3, open_flags: 1, briefs: 2,
       dependencies: 4, unsigned_contracts: 1, new_provider_workspaces: 2 });
     for (const k of ["licensed_events", "approved_plans", "contingency", "watches", "recordings", "platform_templates"]) expect(Number(c[k]), k).toBeGreaterThan(0);

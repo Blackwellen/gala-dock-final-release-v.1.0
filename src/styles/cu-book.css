@@ -238,3 +238,10 @@
 }
 /* W12 wizard sweep (≤1279): the sticky booking bar sat at bottom:0 under the fixed .pwa-tabs bar — park it above the tabs. */
 @media (max-width: 1279px) { .k-root.c-root .bk-bar { bottom: var(--pwa-bottom, 70px); } }
+/* R1: on phones / short screens the wrapped action bar (three 44px actions) covered ~half the screen while sticky; it now sits at the
+   end of the step instead (the public lane's short-height rule). */
+@media (max-width: 600px), (max-height: 620px) { .k-root.c-root .bk-bar { position: static; gap: 8px; } }
+/* R1: at 1024px on touch the action bar's buttons were squeezed below their labels (44px touch targets) and the submit icon spilled
+   24px past the window. Buttons keep their natural width and the bar / summary rows wrap instead. */
+.k-root.c-root .bk-bar { flex-wrap: wrap; row-gap: 8px; } .k-root.c-root .bk-bar > :is(.k-btn, a, button) { flex-shrink: 0; }
+.k-root.c-root .bk-sum .k-between { flex-wrap: wrap; row-gap: 6px; } .k-root.c-root .bk-sum .k-between > .k-btn { flex-shrink: 0; }

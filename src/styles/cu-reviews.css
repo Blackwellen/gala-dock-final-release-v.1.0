@@ -85,3 +85,6 @@
   .c-root .rv-row .rv-acts { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; }
   .c-root .rv-row .rv-write { height: 32px; font-size: 12px; padding: 0 12px; }
 }
+/* R1 touch phones: rating rows stack one per line so each star can be a full 44px target (WCAG 2.5.5 / owner touch standard). */
+@media (pointer: coarse) and (max-width: 600px) { .c-root .rv-form-top { grid-template-columns: minmax(0, 1fr); } .c-root .rv-dim { border-left: 0; padding: 0; } .c-root .rv-dim .rv-rate { gap: 2px; } .c-root .rv-dim .rv-rate button[role="radio"] { width: 44px; height: 44px; } }
+@media (pointer: coarse) { .c-root .rv-form-top { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } .c-root .rv-dim .rv-rate button[role="radio"] { width: 44px; height: 44px; } }

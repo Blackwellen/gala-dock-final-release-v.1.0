@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { X } from "lucide-react";
 import { useToast } from "@/components/ui";
+import { useEscape } from "@/components/shared/use-escape";
 import { setAvailability } from "./actions";
 import { wallToIso } from "@/lib/events/wall-time";
 
@@ -19,10 +20,11 @@ export function AvailabilityDialog({ targets }: { targets: Target[] }) {
   const action = sp.get("action");
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
+  const close = () => { const n = new URLSearchParams(sp.toString()); for (const k of ["action", "target", "date"]) n.delete(k); router.replace(`${pathname}${n.toString() ? `?${n}` : ""}`, { scroll: false }); };
+  useEscape(!!action && ["block", "open", "emergency", "maintenance"].includes(action), close);
   if (!action || !["block", "open", "emergency", "maintenance"].includes(action)) return null;
   const kind = action === "block" ? "blocked" : action === "emergency" ? "emergency_window" : action;
   const date = sp.get("date") ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London" }).format(new Date());
-  const close = () => { const n = new URLSearchParams(sp.toString()); for (const k of ["action", "target", "date"]) n.delete(k); router.replace(`${pathname}${n.toString() ? `?${n}` : ""}`, { scroll: false }); };
   return <div className="ws-dialog-backdrop" onClick={close}><form className="ws-dialog" role="dialog" aria-modal="true" aria-label="Update availability" onClick={e => e.stopPropagation()}
     onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); setError("");
       // Q49: datetime-local values are London wall-clock times (the calendar shows Europe/London), not the browser's zone — a

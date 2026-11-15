@@ -6,7 +6,8 @@ import { stripeLive } from "@/lib/stripe";
 import { paymentDeps } from "@/lib/payments/server";
 import { connectedMerchantStripe, platformFeeStripe } from "@/lib/payments/stripe-client";
 import { refundedForTag, refundKey, refundMerchantCharge } from "@/lib/payments/service";
-import { capGroupToAvailable, disputedMinor, planReleaseGroups, type DueRelease, type ChargeNet } from "@/lib/payments/releases-core";
+import { capGroupToAvailable, disputedMinor, planReleaseGroups, settlementNet, type DueRelease, type ChargeNet } from "@/lib/payments/releases-core";
+import { formatMoney, fromMinorUnits } from "@/lib/i18n/money";
 import type { Order } from "@/lib/commerce/orchestrator";
 
 /**
@@ -51,7 +52,10 @@ export async function processReleases(limit = 100) {
       // Q58: counting only open disputes paid a lost chargeback's amount out again from the seller's other money.
       const { data: disputed } = await db.from("stripe_disputes").select("amount_minor,outcome").eq("payment_intent_id", r.payment_intent);
       const open = disputedMinor((disputed ?? []) as { amount_minor: number; outcome: string | null }[]);
-      nets.set(r.payment_intent, { netMinor: Math.max(0, c.amount - c.amount_refunded - feeKept - open) });
+      // Q76 (C13): pay out in the currency the charge SETTLED in (a EUR charge on a GBP-settling account is GBP in the balance).
+      const bt = c.balance_transaction && typeof c.balance_transaction === "object" ? c.balance_transaction : null;
+      const s = settlementNet({ amount: c.amount, refunded: c.amount_refunded, feeKept, disputed: open, currency: c.currency, bt });
+      nets.set(r.payment_intent, { netMinor: s.netMinor, currency: s.currency });
     } catch (e) { nets.set(r.payment_intent, { netMinor: 0, error: (e as Error).message }); }
   }
   const reserves = new Map<string, { kind: string; bps: number; days: number } | null>();
@@ -89,14 +93,13 @@ export async function processReleases(limit = 100) {
         if (shortfall > 0) {
           // Owner 2026-11-11: the seller carries chargebacks; what its balance, reserve and later releases can't cover falls to Gala
           // Dock (platform-managed fallback). Recorded once, after the reduced payout was actually made (Q58: not before, and not per tick).
-          const cur = g.currency === "GBP" ? "£" : `${g.currency} `;
           const { error: le } = await db.from("dec107_covered_liabilities").insert({ workspace_id: g.workspaceId, stripe_account_id: g.account, event_id: g.eventId, amount_minor: shortfall,
             recovered_minor: shortfall, status: "recovered", reason: "recovered_from_release", resolved_at: new Date().toISOString(), livemode: live });
           if (le) out.errors.push(`${g.key}: covered liability not recorded: ${le.message}`);
           await db.from("audit_events").insert({ actor_type: "system", workspace_id: g.workspaceId, event: "payout.covered_liability",
             metadata: { account: g.account, event_id: g.eventId, due_minor: g.payoutMinor, paid_minor: pay.payoutMinor, available_minor: avail, shortfall_minor: shortfall, payout: p.id } });
           await db.rpc("notify_workspace", { p_ws: g.workspaceId, p_roles: ["owner", "manager", "finance"], p_kind: "payout_shortfall", p_title: "Payout reduced by a chargeback or refund",
-            p_body: `${cur}${(shortfall / 100).toFixed(2)} of this release was used to cover a chargeback or refund already taken from your Stripe balance. If you win the chargeback, the money comes back to your Stripe balance.`, p_link: "/provider/money" });
+            p_body: `${formatMoney(fromMinorUnits(shortfall, g.currency), g.currency, { decimals: true })} of this release was used to cover a chargeback or refund already taken from your Stripe balance. If you win the chargeback, the money comes back to your Stripe balance.`, p_link: "/provider/money" });
         }
       }
       // Nothing left to pay (fully refunded, or all of it held as reserve): the releases close with amount 0 and no payout id.

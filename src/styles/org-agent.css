@@ -42,3 +42,5 @@
   .ag > .ag-r1 > section:first-child .ag-box textarea { flex: 1; min-height: 160px; }
   .ag-usage { min-width: 0; }
 }
+/* R1 wide screens: a full-page approvals / routines / history list runs two columns of rows instead of one ~1,300px+ row each. */
+@media (min-width: 1600px) { .ag-solo :is(.ag-aps, .ag-rts, .ag-hist):has(> li + li + li) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; } }

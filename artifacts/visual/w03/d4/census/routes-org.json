@@ -1,0 +1,338 @@
+[
+{
+"name": "org-001",
+"path": "/organizer"
+},
+{
+"name": "org-002",
+"path": "/organizer/events"
+},
+{
+"name": "org-002-templates",
+"path": "/organizer/events?tab=templates"
+},
+{
+"name": "org-003",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228"
+},
+{
+"name": "org-003-plan",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan"
+},
+{
+"name": "org-003s",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell"
+},
+{
+"name": "org-003o",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations"
+},
+{
+"name": "org-003m",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=money"
+},
+{
+"name": "org-012",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/page"
+},
+{
+"name": "org-013",
+"path": "/organizer/events/b52e0eae-5de4-46f7-8ba2-2e8861aa8555/map"
+},
+{
+"name": "org-014",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion"
+},
+{
+"name": "org-015",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/media"
+},
+{
+"name": "orgw07-1",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template"
+},
+{
+"name": "orgw03-1",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup"
+},
+{
+"name": "orgw01-1",
+"path": "/organizer/events/new"
+},
+{
+"name": "org-004",
+"path": "/organizer/calendar"
+},
+{
+"name": "org-004m",
+"path": "/organizer/calendar?view=month"
+},
+{
+"name": "org-005",
+"path": "/organizer/sales"
+},
+{
+"name": "org-007",
+"path": "/organizer/sales/proposals/884a2d74-46a1-443e-a1df-410b4490c967"
+},
+{
+"name": "sales-clients",
+"path": "/organizer/sales/clients"
+},
+{
+"name": "sales-client",
+"path": "/organizer/sales/clients/b6c38cd2-edd0-4715-bcee-08aaa2298446"
+},
+{
+"name": "sales-contracts",
+"path": "/organizer/sales/contracts"
+},
+{
+"name": "sales-contract",
+"path": "/organizer/sales/contracts/3b00186d-0216-401a-ad99-7cf32c33ce49"
+},
+{
+"name": "sales-lead",
+"path": "/organizer/sales/leads/0147f801-c32e-422c-9563-87fde2790ef8"
+},
+{
+"name": "org-008",
+"path": "/organizer/marketplace"
+},
+{
+"name": "orgw04-1",
+"path": "/organizer/marketplace/requests/new"
+},
+{
+"name": "org-010",
+"path": "/organizer/marketplace/requests/6c44d895-083e-49e8-bb25-10a01b040d21"
+},
+{
+"name": "mk-venue",
+"path": "/organizer/marketplace/venue/2710142c-a28a-4fc3-a2f3-aa9bc1a462e7"
+},
+{
+"name": "mk-booking",
+"path": "/organizer/marketplace/bookings/02ebd23a-c287-4694-b781-a97141ea2c6b"
+},
+{
+"name": "mk-booking-catering",
+"path": "/organizer/marketplace/bookings/02ebd23a-c287-4694-b781-a97141ea2c6b/catering"
+},
+{
+"name": "mk-emergency",
+"path": "/organizer/marketplace/emergency"
+},
+{
+"name": "org-011",
+"path": "/organizer/tickets"
+},
+{
+"name": "orgw05-1",
+"path": "/organizer/promotions/new"
+},
+{
+"name": "orgw02-1",
+"path": "/organizer/proposals/new"
+},
+{
+"name": "org-016",
+"path": "/organizer/team"
+},
+{
+"name": "team-leave",
+"path": "/organizer/team?tab=leave"
+},
+{
+"name": "org-017",
+"path": "/organizer/team/37390853-e3a7-4166-b3c9-f5d6b39f6f50"
+},
+{
+"name": "my-shifts",
+"path": "/organizer/team/my-shifts"
+},
+{
+"name": "org-018",
+"path": "/organizer/money"
+},
+{
+"name": "org-019",
+"path": "/organizer/money/invoices/916eec0d-3b93-46e0-8be3-f6c5033cb7b9"
+},
+{
+"name": "orgw06-1",
+"path": "/organizer/money/invoices/new"
+},
+{
+"name": "org-020",
+"path": "/organizer/agent"
+},
+{
+"name": "agent-policy",
+"path": "/organizer/agent/policy"
+},
+{
+"name": "agent-run",
+"path": "/organizer/agent/runs/b1941ab7-76b3-46b3-bf57-4168e11dbceb"
+},
+{
+"name": "org-021",
+"path": "/organizer/settings"
+},
+{
+"name": "media",
+"path": "/organizer/media"
+},
+{
+"name": "media-library",
+"path": "/organizer/media?tab=library"
+},
+{
+"name": "media-galleries",
+"path": "/organizer/media?tab=galleries"
+},
+{
+"name": "media-brand",
+"path": "/organizer/media?tab=brand"
+},
+{
+"name": "inbox",
+"path": "/organizer/inbox"
+},
+{
+"name": "help",
+"path": "/organizer/help"
+},
+{
+"name": "help-article",
+"path": "/organizer/help/events"
+},
+{
+"name": "scan",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/scan"
+},
+{
+"name": "live",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/live"
+},
+{
+"name": "virtual",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7/virtual"
+},
+{
+"name": "s-dependencies",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan&section=dependencies"
+},
+{
+"name": "s-brief",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan"
+},
+{
+"name": "s-partners",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=partners"
+},
+{
+"name": "s-compliance",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=compliance"
+},
+{
+"name": "s-accessibility",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=accessibility"
+},
+{
+"name": "s-online",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan&section=online"
+},
+{
+"name": "s-structure",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=structure"
+},
+{
+"name": "s-structure-series",
+"path": "/organizer/events/82b6d7d5-bb79-47ab-8ea0-6253f83f73d1?tab=plan&section=structure"
+},
+{
+"name": "s-forms",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=forms"
+},
+{
+"name": "s-logistics",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=logistics"
+},
+{
+"name": "s-weather",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=weather"
+},
+{
+"name": "s-access",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=access"
+},
+{
+"name": "s-merch",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=merch"
+},
+{
+"name": "s-lost",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=lost"
+},
+{
+"name": "s-sustainability",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=sustainability"
+},
+{
+"name": "s-inventory",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell&section=inventory"
+},
+{
+"name": "s-resale",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell&section=resale"
+},
+{
+"name": "s-registration",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=sell&section=registration"
+},
+{
+"name": "s-campaigns",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell&section=campaigns"
+},
+{
+"name": "s-checkin",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=operations&section=checkin"
+},
+{
+"name": "draft-overview",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7"
+},
+{
+"name": "emergency-detail",
+"path": "/organizer/marketplace/emergency/3396b8a3-54f4-46df-a022-fcea2157a671"
+},
+{
+"name": "dispute",
+"path": "/organizer/disputes/f85186de-9531-433f-ab86-04d764b30c47"
+},
+{
+"name": "door",
+"path": "/door/392fdf17-4e5c-4473-987c-251dc0a97228"
+},
+{
+"name": "s-launch",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=sell&section=resale"
+},
+{
+"name": "s-partners-comedy",
+"path": "/organizer/events/b52e0eae-5de4-46f7-8ba2-2e8861aa8555?tab=plan&section=partners"
+},
+{
+"name": "s-logistics-comedy",
+"path": "/organizer/events/b52e0eae-5de4-46f7-8ba2-2e8861aa8555?tab=operations&section=logistics"
+},
+{
+"name": "s-dependencies-neon",
+"path": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228?tab=plan&section=dependencies"
+},
+{
+"name": "s-structure-gt",
+"path": "/organizer/events/69a0c90c-1b4d-42f1-ab0a-4bdcbba71ca7?tab=plan&section=structure"
+}
+]

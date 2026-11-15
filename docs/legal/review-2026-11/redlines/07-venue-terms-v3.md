@@ -14,6 +14,9 @@
 2.3 Share relevant safety information with organisers: fire risk assessment constraints, evacuation routes, stewarding ratios, and conditions on special effects, pyrotechnics or naked flames.
 2.4 Where the Terrorism (Protection of Premises) Act 2025 applies to your premises or an event [verify commencement], you are responsible for its duties and must tell organisers what they need to do.
 
+## 2A. Insurance
+2A.1 You must hold public liability insurance of at least **£1,000,000** per occurrence for the venue (and employers' liability insurance where the law requires it), keep it in force while your listing is live, and upload a current certificate in Settings → Trust & credentials. Gala Dock checks the amount and expiry date and won't show the listing as bookable until it meets the minimum. The higher minimums in the Supplier Terms §4.3 apply to any security, staging/rigging, special-effects or temporary-structure services you supply yourself. *[Q74 2026-11-14: owner decision D10]*
+
 ## 3. Rate cards, holds and conflicts
 3.1 Prices come from your rate cards (day parts, minimum spend, deposits, seasonal and day-of-week rules, add-ons). An accepted quote is binding.
 3.2 Holds reserve a space for the stated period. Gala Dock detects calendar conflicts across linked and combinable spaces and won't let you double-confirm. You must block bookings you take outside Gala Dock in your calendar.

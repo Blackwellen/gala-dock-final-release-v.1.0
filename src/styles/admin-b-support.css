@@ -119,3 +119,5 @@
 .adsu-tl li small{font-size:10px;color:#3f4596}
 @media (max-width:1360px){.adsu-grid{grid-template-columns:1fr}.adsu-bar{grid-template-columns:1fr 1fr}.adsu-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.adsu-bar,.adsu-bottom,.adsu-kpis{grid-template-columns:1fr}.adsu-table{min-width:900px}}
+/* R1: quick-action labels ("Process refund (via Commerce)") wrap onto two lines instead of being clipped at 1366–1440px. */
+.adsu-qa-g2 .ws-btn,.adsu-qa-g2 .adb-btn{height:auto;min-height:30px;white-space:normal;line-height:1.15;text-align:center;overflow:visible}

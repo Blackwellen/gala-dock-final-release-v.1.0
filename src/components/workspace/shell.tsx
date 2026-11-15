@@ -13,7 +13,7 @@ import {
   House, Trophy, CalendarCheck, Calendar, Store, Users, Wallet, Sparkles, Settings, Bell, MessageSquareText, Plus,
   ChevronDown, CircleHelp, Mail, SquareCheckBig, PanelsTopLeft, Ticket, Landmark, Headset, Shield, Headphones, Network,
   ChartColumn, ArrowRight, Building2, LayoutGrid, Wrench, Package, Menu, X, LogOut, Check, type LucideIcon,
-  Palette, Star,
+  Palette, Star, Flag, Scale,
 } from "lucide-react";
 import { Suspense } from "react";
 import { DesignScale, DensityPicker } from "./design-scale";
@@ -265,6 +265,9 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
     // Q51: the same permissions /admin/disputes accepts (trust-only admins reach chargeback cases under Trust & Safety → Disputes).
     { href: "/admin/disputes", label: "Disputes", icon: Headset, perm: ["support", "marketplace", "commerce"], match: /^\/admin\/(disputes|trust\/disputes)(\/|$)/ },
     { href: "/admin/trust", label: "Trust & Safety", icon: Shield, perm: "trust" },
+    // Q75: the legal-engineering pages, gated like the pages themselves (moderation: trust; compliance: commerce or trust).
+    { href: "/admin/moderation", label: "Moderation", icon: Flag, perm: "trust" },
+    { href: "/admin/compliance", label: "Compliance", icon: Scale, perm: ["commerce", "trust"] },
     { href: "/admin/support", label: "Support", icon: Headphones, perm: "support", match: /^\/admin\/(support|conversations)(\/|$)/ },
     { href: "/admin/partners", label: "Partners", icon: Mail, perm: "partners" },
     { href: "/admin/agent-integrations", label: "Agent & Integrations", icon: Network, perm: "agent_ops" },
@@ -288,14 +291,14 @@ export function AdminShell({ children, user, permissions, counts, alerts, suppor
           <div className="ws-pop-head"><b>Platform alerts</b></div>
           <NoticeList items={alerts} empty="No open platform alerts." footer={{ href: "/admin/trust", label: "Open Trust & Safety" }} />
         </Popover>
-        <Popover label={`Support inbox, ${counts.support} open`} className="ws-icon-pop" trigger={<Mail aria-hidden="true" />}>
+        <Popover label={`Support inbox, ${counts.support} open`} className="ws-icon-pop" trigger={<><Mail aria-hidden="true" />{counts.support > 0 && <b className="ws-count">{counts.support}</b>}</>}>
           <div className="ws-pop-head"><b>Support inbox</b><small>{counts.support} open</small></div>
           <NoticeList items={support} empty="No open support cases." footer={{ href: "/admin/support", label: "Open Support" }} />
         </Popover>
         <Link href="/admin/events?view=calendar" className="ws-icon-link" aria-label="Platform calendar"><Calendar aria-hidden="true" /></Link>
         <Link href="/admin/agent-integrations?tab=approvals" className="ws-icon-link" aria-label="Approvals and tasks"><SquareCheckBig aria-hidden="true" /></Link>
         <Link href="/help" className="ws-icon-link" aria-label="Help"><CircleHelp aria-hidden="true" /></Link>
-        <AccountMenu name="Admin" subtitle={user.title} avatar={user.avatar} showLabel links={[{ href: "/admin/settings", label: "Platform settings" }]} />
+        <AccountMenu name={user.name || "Admin"} subtitle={user.title} avatar={user.avatar} showLabel links={[{ href: "/admin/settings", label: "Platform settings" }]} />
       </div>
     </header>
     <nav className="ws-sidebar pwa-hide-desktop-nav" aria-label="Platform Admin">

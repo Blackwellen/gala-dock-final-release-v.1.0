@@ -1,0 +1,15 @@
+{
+  "source": "Designs/PWA/Modern Event App Account Dashboard.png",
+  "original": {
+    "width": 794,
+    "height": 1981
+  },
+  "crop": {
+    "x": 40,
+    "y": 108,
+    "width": 714,
+    "height": 1780
+  },
+  "reason": "Visually inspected rectangular app region excludes outer bezel, OS status/notch and home indicator. No app content masks. Mandatory five-item shell supersedes the reference six-item navigation.",
+  "candidate": "357x890 CSS pixels, DPR2; source CSS viewport is inferred and not approved as a fidelity gate."
+}

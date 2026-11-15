@@ -87,3 +87,5 @@
 .awd-tickets .aa-mtable th{padding:6px 5px}
 @media (max-width:1180px){.awd-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.awd-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.awd-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.awd-caps ul{grid-template-columns:repeat(2,1fr)}}
+/* R1: plan name + status wrap inside their cell at 1200px instead of running 19px past the window. */
+.awd-plan-now,dd:has(>.awd-plan-now){min-width:0}.awd-plan-now>*{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}

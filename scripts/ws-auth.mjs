@@ -1,18 +1,21 @@
 // Signs in through the real UI (password → MFA where required) and saves Playwright storage states.
 // Usage: node --env-file=.env --env-file=.env.local scripts/ws-auth.mjs [provider|admin|support|organizer]...
-// Output: artifacts/auth/<who>.json (git-ignored artifacts). BASE_URL defaults to http://localhost:3107.
+// Output: artifacts/auth/<prefix><who>.json (git-ignored artifacts; --prefix=r1- for the R1 signed-in lane). BASE_URL defaults to http://localhost:3107.
 import { chromium } from "@playwright/test";
 import fs from "node:fs/promises";
 import { totp } from "./totp.mjs";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3107";
 const WHO = {
+  customer: { email: "alex.thompson@example.com", pass: process.env.DEMO_CUSTOMER_PASSWORD, land: "/account" },
   organizer: { email: "alex.events@example.com", pass: process.env.DEMO_ORGANIZER_PASSWORD, land: "/organizer" },
   provider: { email: "provider.demo@example.com", pass: process.env.DEMO_PROVIDER_PASSWORD, land: "/provider", workspace: "Riverside Arena" },
   admin: { email: "admin.demo@example.com", pass: process.env.DEMO_ADMIN_PASSWORD, secret: process.env.DEMO_ADMIN_TOTP_SECRET, land: "/admin", login: "/admin/login" },
   support: { email: "support.demo@example.com", pass: process.env.DEMO_SUPPORT_ADMIN_PASSWORD, secret: process.env.DEMO_SUPPORT_ADMIN_TOTP_SECRET, land: "/admin", login: "/admin/login" },
 };
-const targets = process.argv.slice(2).length ? process.argv.slice(2) : ["provider", "admin"];
+const PREFIX = process.argv.find(a => a.startsWith("--prefix="))?.slice(9) ?? "";
+const named = process.argv.slice(2).filter(a => !a.startsWith("--"));
+const targets = named.length ? named : ["provider", "admin"];
 await fs.mkdir("artifacts/auth", { recursive: true });
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: true });
 try {
@@ -20,6 +23,8 @@ try {
     const u = WHO[who];
     if (!u?.pass) { console.error(`${who}: missing password env`); process.exitCode = 1; continue; }
     const ctx = await browser.newContext();
+    // Dev-only HMR socket proxied minus full-reload messages: a stale dev client otherwise reload-loops ("HMR hash mismatch").
+    await ctx.routeWebSocket(/_next\/(webpack-)?hmr|turbopack-hmr/, ws => { const server = ws.connectToServer(); server.onMessage(m => { if (typeof m === "string" && /"reloadPage"|"type":"restart"/.test(m)) return; ws.send(m); }); });
     const page = await ctx.newPage();
     await page.goto(`${BASE}${u.login ?? `/login?next=${encodeURIComponent(u.land)}`}`, { waitUntil: "domcontentloaded", timeout: 120000 });
     await page.waitForSelector('input[name="email"]', { timeout: 120000 });
@@ -40,7 +45,7 @@ try {
     await page.waitForURL(url => new URL(url).pathname.startsWith(u.land), { timeout: 90000 });
     if (u.workspace) {
       // Select the design's workspace through the real switcher (server-validated cookie).
-      await page.locator('button[aria-label="Switch workspace"]').click();
+      await page.locator('button.ws-pop-trigger[aria-label="Switch workspace"]').click();
       const option = page.getByRole("menuitemradio", { name: u.workspace });
       if (await option.getAttribute("aria-checked") !== "true") {
         await Promise.all([page.waitForURL(/\/provider/, { timeout: 90000 }), option.click()]);
@@ -48,7 +53,7 @@ try {
       }
       await page.locator(".ws-switcher b", { hasText: u.workspace }).waitFor({ timeout: 90000 });
     }
-    await ctx.storageState({ path: `artifacts/auth/${who}.json` });
+    await ctx.storageState({ path: `artifacts/auth/${PREFIX}${who}.json` });
     console.log(`${who}: signed in → ${new URL(page.url()).pathname}`);
     await ctx.close();
   }

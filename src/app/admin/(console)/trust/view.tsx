@@ -8,7 +8,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows } from "@/lib/workspace/db";
 import { delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, Face, Mark, Gauge, buckets, cumulative, Img } from "../_b/kit";
-import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
+import { ParamSelect, SearchParam, Menu } from "../_b/ui";
 import { stamp, ago } from "../_b/format";
 import { assignTrust, requestEvidence, decideTrust, createTrustCase, addNote, restrictCase } from "../_b/actions";
 
@@ -53,7 +53,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
   const type = s("type") || tab, status = s("status"), risk = s("risk"), who = s("who"), q = s("q").toLowerCase();
   const list = all.filter(c => (!disputes || isDispute(c)) && (!type || c.queue === type) && (!status || stageOf(c)[0] === status || (status === "open_all" && open(c)))
     && (!risk || riskOf(c.risk_score)[0] === risk) && (!who || (who === "me" ? c.assignee_id === userId : who === "unassigned" ? !c.assignee_name : c.assignee_name === who))
-    && (!s("range") || new Date(c.updated_at).getTime() >= now - days * 864e5)
+    && (s("range") === "all" || new Date(c.updated_at).getTime() >= now - days * 864e5)   // Q75: the default "Last 30 days" (no param) filters too
     && (!q || `${c.reference} ${c.subject_name} ${c.category} ${c.related?.subject_ref ?? ""}`.toLowerCase().includes(q)));
   const per = 10, page = Math.max(1, Number(s("page")) || 1);
   const qp = (extra: Record<string, string | number>) => { const u = new URLSearchParams(Object.entries(sp).filter(([, v]) => typeof v === "string") as [string, string][]); for (const [key, v] of Object.entries(extra)) { if (v === "") u.delete(key); else u.set(key, String(v)); } const str = u.toString(); return `${disputes ? "/admin/trust/disputes" : "/admin/trust"}${str ? `?${str}` : ""}`; };
@@ -63,7 +63,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
   return <div className="adb ads">
     <Head title={disputes ? "Disputes" : "Trust & Safety"} subtitle={disputes ? "Chargebacks and payment disputes under Trust & Safety review." : "Operate identity, provider reliability, listing and ticket abuse, and cancellation enforcement."}
       actions={<>
-        <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="range" label="Date range" value={s("range") || "30d"} options={[{ value: "30d", label: "Last 30 days" }, { value: "7d", label: "Last 7 days" }, { value: "90d", label: "Last 90 days" }]} /></Suspense></span>
+        <span className="adb-psel"><CalendarDays aria-hidden="true" /><Suspense><ParamSelect param="range" label="Date range" value={s("range") || "30d"} options={[{ value: "30d", label: "Last 30 days" }, { value: "7d", label: "Last 7 days" }, { value: "90d", label: "Last 90 days" }, { value: "all", label: "Any time" }]} /></Suspense></span>
         <Link className="adb-btn" href="/admin/trust/export"><Upload aria-hidden="true" />Export</Link>
         <details className="adb-pop"><summary className="adb-btn primary"><Plus aria-hidden="true" />New case<ChevronDown aria-hidden="true" /></summary>
           <div className="adb-pop-body"><h3>Open a Trust &amp; Safety case</h3>
@@ -78,7 +78,7 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
             </ActionForm></div></details>
       </>} />
     <TabBar active={tab} tabs={[...Object.entries(QUEUES).map(([key, [label]]) => ({ key, label: label === "Fraud/Abuse" ? "Fraud / Abuse" : label, href: tab === key ? "/admin/trust" : `/admin/trust?tab=${key}` })),
-      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [{ key: "evidence", label: "Evidence review", href: "/admin/trust/verification" }, { key: "risk", label: "Risk signals", href: "/admin/trust/risk" }, { key: "replies", label: "Review replies", href: "/admin/trust/review-replies" }])]} />
+      ...(disputes ? [{ key: "disputes", label: "Disputes", href: "/admin/trust/disputes" }] : [{ key: "evidence", label: "Evidence review", href: "/admin/trust/verification" }, { key: "risk", label: "Risk signals", href: "/admin/trust/risk" }, { key: "replies", label: "Review replies", href: "/admin/trust/review-replies" }, { key: "messages", label: "Message reports", href: "/admin/trust/message-reports" }])]} />
     <section className="adb-kpis ads-kpis">
       <Kpi icon={BookmarkCheck} tone="blue" label="Verification queue" value={kv.n} delta={kv.d} series={kv.series} invert />
       <Kpi icon={ShieldCheck} tone="green" label="Active investigations" value={ki.n} delta={ki.d} series={ki.series} invert />
@@ -94,14 +94,13 @@ export async function TrustView({ sp, disputes = false }: { sp: Record<string, s
           <label className="adb-filter">Status<Suspense><ParamSelect param="status" label="Status" value={status} options={[{ value: "", label: "All statuses" }, { value: "open_all", label: "Open & in review" }, { value: "open", label: "Open" }, { value: "under_review", label: "Under review" }, { value: "investigating", label: "Investigating" }, { value: "info_requested", label: "Info requested" }, { value: "awaiting_info", label: "Awaiting info" }, { value: "monitoring", label: "Monitoring" }, { value: "resolved", label: "Resolved" }, { value: "approved", label: "Approved" }, { value: "dismissed", label: "Dismissed" }]} /></Suspense></label>
           <label className="adb-filter">Risk level<Suspense><ParamSelect param="risk" label="Risk level" value={risk} options={[{ value: "", label: "All levels" }, { value: "high", label: "High" }, { value: "medium", label: "Medium" }, { value: "low", label: "Low" }]} /></Suspense></label>
           <label className="adb-filter">Assigned to<Suspense><ParamSelect param="who" label="Assigned to" value={who} options={[{ value: "", label: "All admins" }, { value: "me", label: "Me" }, { value: "unassigned", label: "Unassigned" }, ...assignees.map(a => ({ value: a, label: a }))]} /></Suspense></label>
-          <label className="adb-filter">Date range<Suspense><ParamSelect param="range" label="Updated within" value={s("range") || "30d"} options={[{ value: "30d", label: "Last 30 days" }, { value: "7d", label: "Last 7 days" }, { value: "90d", label: "Last 90 days" }]} /></Suspense></label>
+          <label className="adb-filter">Date range<Suspense><ParamSelect param="range" label="Updated within" value={s("range") || "30d"} options={[{ value: "30d", label: "Last 30 days" }, { value: "7d", label: "Last 7 days" }, { value: "90d", label: "Last 90 days" }, { value: "all", label: "Any time" }]} /></Suspense></label>
         </div>
         <div className="adb-table-wrap"><table className="adb-table ads-table">
-          <colgroup>{[33, 62, 82, 130, 65, 148, 60, 96, 84, 85, 45].map((w, i) => <col key={i} style={{ width: `${(w / 890) * 100}%` }} />)}</colgroup>
-          <thead><tr><th><RowCheck label="Select all" /></th><th>ID</th><th>Type</th><th>Title / Subject</th><th>Related to</th><th>User / Provider</th><th>Risk</th><th>Status</th><th>Updated</th><th>Assigned</th><th className="r">Actions</th></tr></thead>
+          <colgroup>{[62, 82, 130, 65, 148, 60, 96, 84, 85, 45].map((w, i) => <col key={i} style={{ width: `${(w / 857) * 100}%` }} />)}</colgroup>
+          <thead><tr><th>ID</th><th>Type</th><th>Title / Subject</th><th>Related to</th><th>User / Provider</th><th>Risk</th><th>Status</th><th>Updated</th><th>Assigned</th><th className="r">Actions</th></tr></thead>
           <tbody>{list.slice((page - 1) * per, page * per).map(c => { const [ql, qt] = QUEUES[c.queue] ?? ["Other", "grey"], [sk, sl] = stageOf(c), [rk, rl] = riskOf(c.risk_score);
             return <tr key={c.id} className={sel?.id === c.id ? "sel" : ""}>
-              <td><RowCheck label={`Select ${c.reference}`} /></td>
               <td><Link href={qp({ case: c.id })} scroll={false} className="ads-ref">{c.reference}</Link></td>
               <td><span className={`adb-tag ${qt}`}>{ql}</span></td>
               <td className="ads-title"><Link href={qp({ case: c.id })} scroll={false} title={c.category || c.reason}>{c.category || c.reason}</Link></td>

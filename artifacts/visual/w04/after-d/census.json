@@ -1,0 +1,21 @@
+{
+ "email": "provider.demo@example.com",
+ "checkedLinks": 124,
+ "dead": [],
+ "routes": [
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 152,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 124
+  }
+ ]
+}

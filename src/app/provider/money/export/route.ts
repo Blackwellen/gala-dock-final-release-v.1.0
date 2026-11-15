@@ -1,3 +1,4 @@
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { NextResponse, type NextRequest } from "next/server";
 import { loadMoney, periodRange, inRange, net } from "../data";
 import { londonDateKey } from "@/lib/provider/london-month";
@@ -8,11 +9,12 @@ const csv = (v: unknown) => { let s = String(v ?? ""); if (/^[=+\-@\t\r]/.test(s
 /** CSV of the workspace's transactions for a period. RLS-scoped; no card or bank details are included. */
 export async function GET(request: NextRequest) {
   const { ctx, txs } = await loadMoney();
+  const tz = workspaceLocale(ctx.workspace.settings).timezone;   // Q76: the workspace's months, London by default
   if (!ctx.can.finance) return NextResponse.json({ error: "Only owners, managers and finance can export money." }, { status: 403 });
   const sp = request.nextUrl.searchParams, r = periodRange(sp.get("period") ?? "month"), type = sp.get("type") ?? "";
   const pick = txs.filter(t => inRange(t, r.from, r.to) && (!type || t.kind === type));
   const head = ["Date", "Description", "Type", "Category", "Counterparty", "Reference", "Gross", "Fees", "Net", "Currency", "Status"];
-  const body = pick.map(t => [londonDateKey(t.occurred_at), t.description, t.kind, t.category, t.counterparty, t.stripe_ref ?? "", t.amount.toFixed(2), (-t.fee_amount).toFixed(2), net(t).toFixed(2), t.currency || "GBP", t.status].map(csv).join(","));
+  const body = pick.map(t => [londonDateKey(t.occurred_at, tz), t.description, t.kind, t.category, t.counterparty, t.stripe_ref ?? "", t.amount.toFixed(2), (-t.fee_amount).toFixed(2), net(t).toFixed(2), t.currency || "GBP", t.status].map(csv).join(","));
   return new NextResponse([head.join(","), ...body].join("\n"), { headers: { "Content-Type": "text/csv; charset=utf-8",
     "Content-Disposition": `attachment; filename="transactions-${r.key}-${new Date().toISOString().slice(0, 10)}.csv"`, "Cache-Control": "private, no-store" } });
 }

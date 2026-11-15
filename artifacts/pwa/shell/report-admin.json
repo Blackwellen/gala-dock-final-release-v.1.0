@@ -1,0 +1,2366 @@
+{
+  "date": "2026-10-12T20:15:53.185Z",
+  "commit": "5d0b75d3e9c14e453d6ea7be5ee4f981e2d3e328",
+  "results": [
+    {
+      "role": "admin",
+      "width": 320,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 320,
+        "height": 70,
+        "top": 774,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 60,
+        "top": 0,
+        "right": 320,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 320,
+        "height": 2899.671875,
+        "top": 60,
+        "right": 320,
+        "bottom": 2959.671875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 320,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 320,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "90.6562px 90.6719px 90.6562px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 320,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 320,
+        "height": 70,
+        "top": 290,
+        "right": 320,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 48,
+        "top": 0,
+        "right": 320,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 320,
+        "height": 2899.671875,
+        "top": 48,
+        "right": 320,
+        "bottom": 2947.671875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 320,
+          "height": 352,
+          "top": 8,
+          "right": 320,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "90.6562px 90.6719px 90.6562px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 344,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 344,
+        "height": 70,
+        "top": 774,
+        "right": 344,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 344,
+        "height": 60,
+        "top": 0,
+        "right": 344,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 344,
+        "height": 2883.171875,
+        "top": 60,
+        "right": 344,
+        "bottom": 2943.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 344,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 344,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "98.6562px 98.6719px 98.6562px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 344,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 344,
+        "height": 70,
+        "top": 290,
+        "right": 344,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 344,
+        "height": 48,
+        "top": 0,
+        "right": 344,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 344,
+        "height": 2883.171875,
+        "top": 48,
+        "right": 344,
+        "bottom": 2931.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 344,
+          "height": 352,
+          "top": 8,
+          "right": 344,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "98.6562px 98.6719px 98.6562px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 360,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 360,
+        "height": 70,
+        "top": 774,
+        "right": 360,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 60,
+        "top": 0,
+        "right": 360,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 360,
+        "height": 2876.078125,
+        "top": 60,
+        "right": 360,
+        "bottom": 2936.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 360,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 360,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "104px 104px 104px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 360,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 360,
+        "height": 70,
+        "top": 290,
+        "right": 360,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 48,
+        "top": 0,
+        "right": 360,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 360,
+        "height": 2876.078125,
+        "top": 48,
+        "right": 360,
+        "bottom": 2924.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 360,
+          "height": 352,
+          "top": 8,
+          "right": 360,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "104px 104px 104px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 375,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 375,
+        "height": 70,
+        "top": 774,
+        "right": 375,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 60,
+        "top": 0,
+        "right": 375,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 375,
+        "height": 2882.328125,
+        "top": 60,
+        "right": 375,
+        "bottom": 2942.328125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 375,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 375,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "109px 109px 109px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 375,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 375,
+        "height": 70,
+        "top": 290,
+        "right": 375,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 48,
+        "top": 0,
+        "right": 375,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 375,
+        "height": 2882.328125,
+        "top": 48,
+        "right": 375,
+        "bottom": 2930.328125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 375,
+          "height": 352,
+          "top": 8,
+          "right": 375,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "109px 109px 109px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 390,
+        "height": 70,
+        "top": 774,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 60,
+        "top": 0,
+        "right": 390,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 390,
+        "height": 2888.578125,
+        "top": 60,
+        "right": 390,
+        "bottom": 2948.578125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 390,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 390,
+        "height": 70,
+        "top": 290,
+        "right": 390,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 48,
+        "top": 0,
+        "right": 390,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 390,
+        "height": 2888.578125,
+        "top": 48,
+        "right": 390,
+        "bottom": 2936.578125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 390,
+          "height": 352,
+          "top": 8,
+          "right": 390,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "114px 114px 114px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 393,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 393,
+        "height": 70,
+        "top": 774,
+        "right": 393,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 60,
+        "top": 0,
+        "right": 393,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 393,
+        "height": 2889.828125,
+        "top": 60,
+        "right": 393,
+        "bottom": 2949.828125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 204.40625,
+          "width": 393,
+          "height": 639.59375,
+          "top": 204.40625,
+          "right": 393,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "115px 115px 115px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 393,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 393,
+        "height": 70,
+        "top": 290,
+        "right": 393,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 48,
+        "top": 0,
+        "right": 393,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 393,
+        "height": 2889.828125,
+        "top": 48,
+        "right": 393,
+        "bottom": 2937.828125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 393,
+          "height": 352,
+          "top": 8,
+          "right": 393,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "115px 115px 115px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 412,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 412,
+        "height": 70,
+        "top": 774,
+        "right": 412,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 60,
+        "top": 0,
+        "right": 412,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 412,
+        "height": 2897.75,
+        "top": 60,
+        "right": 412,
+        "bottom": 2957.75,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 412,
+          "height": 626,
+          "top": 218,
+          "right": 412,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "121.328px 121.328px 121.344px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 412,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 412,
+        "height": 70,
+        "top": 290,
+        "right": 412,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 48,
+        "top": 0,
+        "right": 412,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 412,
+        "height": 2897.75,
+        "top": 48,
+        "right": 412,
+        "bottom": 2945.75,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 412,
+          "height": 352,
+          "top": 8,
+          "right": 412,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "121.328px 121.328px 121.344px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 430,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 430,
+        "height": 70,
+        "top": 774,
+        "right": 430,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 60,
+        "top": 0,
+        "right": 430,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 430,
+        "height": 2905.25,
+        "top": 60,
+        "right": 430,
+        "bottom": 2965.25,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 430,
+          "height": 626,
+          "top": 218,
+          "right": 430,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "127.328px 127.328px 127.344px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 430,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 430,
+        "height": 70,
+        "top": 290,
+        "right": 430,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 48,
+        "top": 0,
+        "right": 430,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 430,
+        "height": 2905.25,
+        "top": 48,
+        "right": 430,
+        "bottom": 2953.25,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 430,
+          "height": 352,
+          "top": 8,
+          "right": 430,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "127.328px 127.328px 127.344px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 480,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 480,
+        "height": 70,
+        "top": 774,
+        "right": 480,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 480,
+        "height": 60,
+        "top": 0,
+        "right": 480,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 480,
+        "height": 2926.078125,
+        "top": 60,
+        "right": 480,
+        "bottom": 2986.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 480,
+          "height": 626,
+          "top": 218,
+          "right": 480,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "144px 144px 144px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 480,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 480,
+        "height": 70,
+        "top": 290,
+        "right": 480,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 480,
+        "height": 48,
+        "top": 0,
+        "right": 480,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 480,
+        "height": 2926.078125,
+        "top": 48,
+        "right": 480,
+        "bottom": 2974.078125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 480,
+          "height": 352,
+          "top": 8,
+          "right": 480,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "144px 144px 144px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 600,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 600,
+        "height": 70,
+        "top": 774,
+        "right": 600,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 600,
+        "height": 60,
+        "top": 0,
+        "right": 600,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 600,
+        "height": 2846.734375,
+        "top": 60,
+        "right": 600,
+        "bottom": 2906.734375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 600,
+          "height": 626,
+          "top": 218,
+          "right": 600,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "184px 184px 184px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 600,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 600,
+        "height": 70,
+        "top": 290,
+        "right": 600,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 600,
+        "height": 48,
+        "top": 0,
+        "right": 600,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 600,
+        "height": 2846.734375,
+        "top": 48,
+        "right": 600,
+        "bottom": 2894.734375,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 600,
+          "height": 352,
+          "top": 8,
+          "right": 600,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "184px 184px 184px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 640,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 640,
+        "height": 70,
+        "top": 774,
+        "right": 640,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 640,
+        "height": 60,
+        "top": 0,
+        "right": 640,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 640,
+        "height": 2651.390625,
+        "top": 60,
+        "right": 640,
+        "bottom": 2711.390625,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 640,
+          "height": 626,
+          "top": 218,
+          "right": 640,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "197.328px 197.328px 197.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 640,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 640,
+        "height": 70,
+        "top": 290,
+        "right": 640,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 640,
+        "height": 48,
+        "top": 0,
+        "right": 640,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 640,
+        "height": 2651.390625,
+        "top": 48,
+        "right": 640,
+        "bottom": 2699.390625,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 640,
+          "height": 352,
+          "top": 8,
+          "right": 640,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "197.328px 197.328px 197.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 744,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 744,
+        "height": 70,
+        "top": 774,
+        "right": 744,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 744,
+        "height": 60,
+        "top": 0,
+        "right": 744,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 744,
+        "height": 2124,
+        "top": 60,
+        "right": 744,
+        "bottom": 2184,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 218,
+          "width": 744,
+          "height": 626,
+          "top": 218,
+          "right": 744,
+          "bottom": 844,
+          "left": 0
+        },
+        "columns": "232px 232px 232px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 744,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 744,
+        "height": 70,
+        "top": 290,
+        "right": 744,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 744,
+        "height": 48,
+        "top": 0,
+        "right": 744,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 744,
+        "height": 2124,
+        "top": 48,
+        "right": 744,
+        "bottom": 2172,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 0,
+          "y": 8,
+          "width": 744,
+          "height": 352,
+          "top": 8,
+          "right": 744,
+          "bottom": 360,
+          "left": 0
+        },
+        "columns": "232px 232px 232px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 768,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 768,
+        "height": 70,
+        "top": 774,
+        "right": 768,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 60,
+        "top": 0,
+        "right": 768,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 768,
+        "height": 2134,
+        "top": 60,
+        "right": 768,
+        "bottom": 2194,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 4,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 764,
+          "bottom": 844,
+          "left": 4
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 768,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 768,
+        "height": 70,
+        "top": 290,
+        "right": 768,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 48,
+        "top": 0,
+        "right": 768,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 768,
+        "height": 2134,
+        "top": 48,
+        "right": 768,
+        "bottom": 2182,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 4,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 764,
+          "bottom": 360,
+          "left": 4
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 800,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 800,
+        "height": 70,
+        "top": 774,
+        "right": 800,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 800,
+        "height": 60,
+        "top": 0,
+        "right": 800,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 800,
+        "height": 2147.328125,
+        "top": 60,
+        "right": 800,
+        "bottom": 2207.328125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 20,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 780,
+          "bottom": 844,
+          "left": 20
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 800,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 800,
+        "height": 70,
+        "top": 290,
+        "right": 800,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 800,
+        "height": 48,
+        "top": 0,
+        "right": 800,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 800,
+        "height": 2147.328125,
+        "top": 48,
+        "right": 800,
+        "bottom": 2195.328125,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 20,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 780,
+          "bottom": 360,
+          "left": 20
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 820,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 820,
+        "height": 70,
+        "top": 774,
+        "right": 820,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 60,
+        "top": 0,
+        "right": 820,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 820,
+        "height": 2130.171875,
+        "top": 60,
+        "right": 820,
+        "bottom": 2190.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 790,
+          "bottom": 844,
+          "left": 30
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 820,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 820,
+        "height": 70,
+        "top": 290,
+        "right": 820,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 820,
+        "height": 48,
+        "top": 0,
+        "right": 820,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 820,
+        "height": 2130.171875,
+        "top": 48,
+        "right": 820,
+        "bottom": 2178.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 30,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 790,
+          "bottom": 360,
+          "left": 30
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 834,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 834,
+        "height": 70,
+        "top": 774,
+        "right": 834,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 834,
+        "height": 60,
+        "top": 0,
+        "right": 834,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 834,
+        "height": 2136,
+        "top": 60,
+        "right": 834,
+        "bottom": 2196,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 37,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 797,
+          "bottom": 844,
+          "left": 37
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 834,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 834,
+        "height": 70,
+        "top": 290,
+        "right": 834,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 834,
+        "height": 48,
+        "top": 0,
+        "right": 834,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 834,
+        "height": 2136,
+        "top": 48,
+        "right": 834,
+        "bottom": 2184,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 37,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 797,
+          "bottom": 360,
+          "left": 37
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 900,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 900,
+        "height": 70,
+        "top": 774,
+        "right": 900,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 60,
+        "top": 0,
+        "right": 900,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 900,
+        "height": 2163.5,
+        "top": 60,
+        "right": 900,
+        "bottom": 2223.5,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 70,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 830,
+          "bottom": 844,
+          "left": 70
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 900,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 900,
+        "height": 70,
+        "top": 290,
+        "right": 900,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 48,
+        "top": 0,
+        "right": 900,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 900,
+        "height": 2163.5,
+        "top": 48,
+        "right": 900,
+        "bottom": 2211.5,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 70,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 830,
+          "bottom": 360,
+          "left": 70
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 1024,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 1024,
+        "height": 70,
+        "top": 774,
+        "right": 1024,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 60,
+        "top": 0,
+        "right": 1024,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 1024,
+        "height": 2215.171875,
+        "top": 60,
+        "right": 1024,
+        "bottom": 2275.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 132,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 892,
+          "bottom": 844,
+          "left": 132
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 1024,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 1024,
+        "height": 70,
+        "top": 290,
+        "right": 1024,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 48,
+        "top": 0,
+        "right": 1024,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 1024,
+        "height": 2215.171875,
+        "top": 48,
+        "right": 1024,
+        "bottom": 2263.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 132,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 892,
+          "bottom": 360,
+          "left": 132
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 1180,
+      "height": 844,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 774,
+        "width": 1180,
+        "height": 70,
+        "top": 774,
+        "right": 1180,
+        "bottom": 844,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 60,
+        "top": 0,
+        "right": 1180,
+        "bottom": 60,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 60,
+        "width": 1180,
+        "height": 2280.171875,
+        "top": 60,
+        "right": 1180,
+        "bottom": 2340.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 218,
+          "width": 760,
+          "height": 626,
+          "top": 218,
+          "right": 970,
+          "bottom": 844,
+          "left": 210
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      }
+    },
+    {
+      "role": "admin",
+      "width": 1180,
+      "height": 360,
+      "labels": [
+        "Overview",
+        "Users",
+        "Workspaces",
+        "Events",
+        "Menu"
+      ],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 290,
+        "width": 1180,
+        "height": 70,
+        "top": 290,
+        "right": 1180,
+        "bottom": 360,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 48,
+        "top": 0,
+        "right": 1180,
+        "bottom": 48,
+        "left": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 48,
+        "width": 1180,
+        "height": 2280.171875,
+        "top": 48,
+        "right": 1180,
+        "bottom": 2328.171875,
+        "left": 0
+      },
+      "issues": [],
+      "sheet": {
+        "box": {
+          "x": 210,
+          "y": 8,
+          "width": 760,
+          "height": 352,
+          "top": 8,
+          "right": 970,
+          "bottom": 360,
+          "left": 210
+        },
+        "columns": "237.328px 237.328px 237.328px",
+        "overflow": "hidden",
+        "focusInside": true
+      },
+      "axe": [],
+      "menuAxe": []
+    },
+    {
+      "role": "admin",
+      "width": 1280,
+      "height": 900,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 180.796875,
+        "y": 51.1875,
+        "width": 1099.203125,
+        "height": 848.8125,
+        "top": 51.1875,
+        "right": 1280,
+        "bottom": 900,
+        "left": 180.796875
+      },
+      "issues": []
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "height": 900,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 180.796875,
+        "y": 51.1875,
+        "width": 1259.203125,
+        "height": 871.171875,
+        "top": 51.1875,
+        "right": 1440,
+        "bottom": 922.359375,
+        "left": 180.796875
+      },
+      "issues": []
+    },
+    {
+      "role": "admin",
+      "width": 1600,
+      "height": 900,
+      "labels": [],
+      "overflow": 0,
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "top": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "main": {
+        "x": 180.796875,
+        "y": 51.1875,
+        "width": 1419.203125,
+        "height": 937.828125,
+        "top": 51.1875,
+        "right": 1600,
+        "bottom": 989.015625,
+        "left": 180.796875
+      },
+      "issues": []
+    }
+  ]
+}

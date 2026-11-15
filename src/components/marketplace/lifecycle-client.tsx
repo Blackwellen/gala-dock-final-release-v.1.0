@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 import * as A from "@/lib/marketplace/actions";
 import type { ActionResult, CancellationQuote } from "@/lib/marketplace/actions";
-import { bookingAdminFee, gbpPence, BOOKING_ADMIN_FEE } from "@/lib/fees";
+import { bookingAdminFee, bookingAdminMinimum, feeMoney, BOOKING_ADMIN_FEE } from "@/lib/fees";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
 
-const gbp = (n: number | null | undefined) => n == null ? "—" : new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(n));
+/** Q76: amounts in the booking's charge currency (was hard-coded GBP). */
+const amountIn = (n: number | null | undefined, c = "GBP") => n == null ? "—" : formatMoney(Number(n), c, { decimals: true });
 
 /** Live response countdown (§34). Ticks every 30s; tone escalates as the deadline nears. */
 export function Countdown({ deadline, sentAt, status, serverNow }: { deadline: string | null; sentAt: string | null; status: string | null; serverNow: number }) {
@@ -116,11 +118,11 @@ export function StandbyRequestForm({ itemId, siblings, eventStart }: { itemId: s
 }
 
 /** Provider: price a standby request. */
-export function StandbyOfferForm({ standbyId }: { standbyId: string }) {
+export function StandbyOfferForm({ standbyId, currency = "GBP" }: { standbyId: string; currency?: string }) {
   const { pending, error, run } = useAct();
   return <form className="mk-form" action={f => run(() => A.offerStandby(standbyId, Number(f.get("fee")), Number(f.get("activation")), Number(f.get("valid")), String(f.get("terms") ?? "")))}>
-    <label className="mk-field"><span>Standby fee (£)</span><input name="fee" type="number" min={0} step="0.01" required inputMode="decimal" /></label>
-    <label className="mk-field"><span>Activation price (£)</span><input name="activation" type="number" min={1} step="0.01" required inputMode="decimal" /></label>
+    <label className="mk-field"><span>Standby fee ({currencySymbol(currency)})</span><input name="fee" type="number" min={0} step="0.01" required inputMode="decimal" /></label>
+    <label className="mk-field"><span>Activation price ({currencySymbol(currency)})</span><input name="activation" type="number" min={1} step="0.01" required inputMode="decimal" /></label>
     <label className="mk-field"><span>Offer valid for</span><select name="valid" defaultValue="48">{[[24, "24 hours"], [48, "48 hours"], [72, "3 days"], [168, "7 days"]].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
     <label className="mk-field wide"><span>Standby terms</span><textarea name="terms" rows={3} minLength={10} maxLength={2000} required placeholder="e.g. Standby fee is non-refundable once accepted. Activation within the window confirms the booking at the activation price." /></label>
     <div className="mk-row wide"><ActButton label="Decline" action="declineStandby" args={standbyId} reason="Reason (optional, shared with the organiser)" /><Btn pending={pending}>Send offer</Btn></div>
@@ -129,7 +131,8 @@ export function StandbyOfferForm({ standbyId }: { standbyId: string }) {
 }
 
 /** Cancellation with a live, policy-driven preview before anything is committed (§45). */
-export function CancelForm({ itemId, party }: { itemId: string; party: "customer" | "provider" }) {
+export function CancelForm({ itemId, party, currency = "GBP" }: { itemId: string; party: "customer" | "provider"; currency?: string }) {
+  const gbp = (n: number | null | undefined) => amountIn(n, currency);
   const { pending, error, run } = useAct();
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState("full");
@@ -166,14 +169,14 @@ export function CancelForm({ itemId, party }: { itemId: string; party: "customer
 }
 
 /** Open a Gala Dock booking dispute (§44). Card chargebacks are handled separately through Stripe. */
-export function DisputeOpenForm({ itemId, reasons, base }: { itemId: string; reasons: [string, string][]; base: string }) {
+export function DisputeOpenForm({ itemId, reasons, base, currency = "GBP" }: { itemId: string; reasons: [string, string][]; base: string; currency?: string }) {
   const router = useRouter();
   const { pending, error, run } = useAct();
   const [open, setOpen] = useState(false);
   if (!open) return <Btn tone="ghost" type="button" onClick={() => setOpen(true)}>Report a problem</Btn>;
   return <form className="mk-form" action={f => run(() => A.openDispute(itemId, String(f.get("reason")), String(f.get("summary") ?? ""), Number(f.get("amount")) || null), r => { if (r.ok && r.data) router.push(`${base}/${r.data}`); })}>
     <label className="mk-field"><span>What went wrong?</span><select name="reason" required defaultValue="">{[["", "Choose…"], ...reasons].map(([v, l]) => <option key={v} value={v} disabled={!v}>{l}</option>)}</select></label>
-    <label className="mk-field"><span>Amount in question (£, optional)</span><input name="amount" type="number" min={0} step="0.01" inputMode="decimal" /></label>
+    <label className="mk-field"><span>Amount in question ({currencySymbol(currency)}, optional)</span><input name="amount" type="number" min={0} step="0.01" inputMode="decimal" /></label>
     <label className="mk-field wide"><span>Describe what happened</span><textarea name="summary" rows={3} minLength={10} maxLength={4000} required /></label>
     <p className="mk-note wide">Both sides can add evidence. If you can’t agree, Gala Dock reviews the booking terms, messages and payment history and proposes a resolution.</p>
     <div className="mk-row wide"><Btn tone="ghost" type="button" onClick={() => setOpen(false)}>Cancel</Btn><Btn pending={pending}>Open dispute</Btn></div>
@@ -183,7 +186,7 @@ export function DisputeOpenForm({ itemId, reasons, base }: { itemId: string; rea
 
 /** Starts an orchestrated payment (payment order → Stripe Checkout). Money is only marked paid when Stripe confirms. */
 /** `amount` (pounds, before the admin fee) lets the button show the exact booking admin fee; otherwise the rate is shown. */
-export function PayButton({ kind, itemId, standbyId, label, returnPath, note, amount }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string; amount?: number }) {
+export function PayButton({ kind, itemId, standbyId, label, returnPath, note, amount, currency = "GBP" }: { kind: "deposit" | "balance_payment" | "standby_fee" | "emergency_service"; itemId?: string; standbyId?: string; label: string; returnPath: string; note?: string; amount?: number; currency?: string }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
   const [terms, setTerms] = useState<string | null>(null);
@@ -196,7 +199,8 @@ export function PayButton({ kind, itemId, standbyId, label, returnPath, note, am
     if (!r.ok && r.error.startsWith("TERMS_REQUIRED:")) { setTerms(r.error.slice("TERMS_REQUIRED:".length)); setTicked(false); return; }
     if (!r.ok) setError(r.error); else if (r.data) window.location.assign(r.data);
   });
-  const fee = amount != null ? bookingAdminFee(amount) : null;
+  const fee = amount != null ? bookingAdminFee(amount, currency) : null;
+  const gbpPence = (n: number) => feeMoney(n, currency); const min = bookingAdminMinimum(currency); const minFee = formatMoney(min, currency, { decimals: !Number.isInteger(min) });
   return <div className="mk-pay">{note && <p className="mk-note">{note}</p>}
-    <p className="mk-note">{fee != null ? `Plus a ${gbpPence(fee)} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min £${BOOKING_ADMIN_FEE.minimum}): ${gbpPence((amount ?? 0) + fee)} in total.` : `Plus a Gala Dock booking admin fee of ${BOOKING_ADMIN_FEE.pct}% (min £${BOOKING_ADMIN_FEE.minimum}), shown before you pay.`}</p>{terms && <CustomerTermsTick version={terms} checked={ticked} onChange={setTicked} />}<Btn tone="primary" type="button" pending={pending} onClick={go}>{terms ? `Accept and ${label.toLowerCase()}` : label}</Btn><Err e={error} /></div>;
+    <p className="mk-note">{fee != null ? `Plus a ${gbpPence(fee)} Gala Dock booking admin fee (${BOOKING_ADMIN_FEE.pct}%, min ${minFee}): ${gbpPence((amount ?? 0) + fee)} in total.` : `Plus a Gala Dock booking admin fee of ${BOOKING_ADMIN_FEE.pct}% (min ${minFee}), shown before you pay.`}</p>{terms && <CustomerTermsTick version={terms} checked={ticked} onChange={setTicked} />}<Btn tone="primary" type="button" pending={pending} onClick={go}>{terms ? `Accept and ${label.toLowerCase()}` : label}</Btn><Err e={error} /></div>;
 }

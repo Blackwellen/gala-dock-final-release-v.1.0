@@ -1,0 +1,198 @@
+[
+  {
+    "role": "provider",
+    "route": "/provider/team",
+    "width": 390,
+    "height": 844,
+    "name": "provider-team-390x844",
+    "geometry": {
+      "url": "/provider/team",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": {
+        "x": 16,
+        "y": 372,
+        "w": 358,
+        "h": 404
+      },
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 2602
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 2496
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "provider",
+    "route": "/provider/team?tab=availability",
+    "width": 390,
+    "height": 844,
+    "name": "provider-team-tab-availability-390x844",
+    "geometry": {
+      "url": "/provider/team?tab=availability",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": null,
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 1484
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 1378
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "provider",
+    "route": "/provider/team?tab=assignments",
+    "width": 390,
+    "height": 844,
+    "name": "provider-team-tab-assignments-390x844",
+    "geometry": {
+      "url": "/provider/team?tab=assignments",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": null,
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 3873
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 3767
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "provider",
+    "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+    "width": 390,
+    "height": 844,
+    "name": "provider-team-afc2c7ae-88e2-4cdb-ac8a-552b52a75f98-390x844",
+    "geometry": {
+      "url": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": null,
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 2949
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 2843
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "provider",
+    "route": "/provider/settings?tab=team",
+    "width": 390,
+    "height": 844,
+    "name": "provider-settings-tab-team-390x844",
+    "geometry": {
+      "url": "/provider/settings?tab=team",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": null,
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 706
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 600
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "provider",
+    "route": "/provider/team?action=add",
+    "width": 390,
+    "height": 844,
+    "name": "provider-team-action-add-390x844",
+    "geometry": {
+      "url": "/provider/team?action=add",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 390,
+      "top": {
+        "x": 16,
+        "y": 372,
+        "w": 358,
+        "h": 404
+      },
+      "logo": null,
+      "search": null,
+      "nav": null,
+      "icons": null,
+      "main": {
+        "x": 0,
+        "y": 104,
+        "w": 390,
+        "h": 2602
+      },
+      "firstChild": {
+        "x": 16,
+        "y": 116,
+        "w": 358,
+        "h": 2496
+      }
+    },
+    "errors": []
+  }
+]

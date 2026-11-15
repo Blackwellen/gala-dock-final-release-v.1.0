@@ -1,0 +1,59 @@
+/* Q71 touch targets — loaded app-wide from the root layout (src/app/layout.tsx) because the auth, checkout and token pages do not
+   load public-site.css. Scoped to the public surfaces only (signed-out website, public directory/profiles/help/legal, auth,
+   checkout, token portals); signed-in workspaces are out of this lane and keep their own density. */
+/* ── Q71 touch targets (owner standard: ≥44 × 44px on touch input) — public website, public directory/profile/help/legal shells,
+   auth, checkout and token pages. Only coarse pointers: desktop density is unchanged. !important because it is an accessibility floor that must beat
+   the dense component heights (kit/customer rules up to 0,3,0 specificity); it only ever raises a minimum. Text links that stand alone (lists, footers,
+   card titles, "back" and helper links) become 44px tall rows, so neighbouring hit areas never overlap; links inside running
+   sentences are exempt (WCAG 2.5.8). ─────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
+    :is(button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"]), .k-btn, .gp-btn, .gp-pill, .gp-seg-btn, .gp-tab, .k-icon-btn, a.button) { min-height: 44px !important; }
+  :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
+    :is(button, .k-icon-btn):not(:has(> :not(svg, i, img, span:empty))) { min-width: 44px !important; }
+  /* display only at zero specificity (:where), so any component rule that hides or lays out these links still wins */
+  :where(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
+    :where(li > a, dd > a, h2 > a, h3 > a, h4 > a, nav > a, footer a, .gp-link, .k-link, .co-back, .gf-back, .auth-field a, .auth-help a, .auth-security a, .dir-chips > a, p.gp-small > a, .hc-jump a, .pe3-tabs a) {
+    display: inline-flex; align-items: center; }
+  :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
+    :is(li > a, dd > a, h2 > a, h3 > a, h4 > a, nav > a, footer a, a[class]:not(p a, .gp-sr, .k-sr), [class*="-acts"] > a, .gp-link, .k-link, .co-back, .gf-back, .auth-field a, .auth-help a, .auth-security a, .dir-chips > a, p.gp-small > a, .hc-jump a, .pe3-tabs a) {
+    min-height: 44px !important; min-width: 44px !important; }
+  :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
+    :is(.gp-logo, .co-logo, .gd-brandbar-logo, .gp-footer-logo) { min-height: 44px !important; min-width: 44px !important; align-items: center; }
+  :is(.gp-root, .pub-root, .auth-page, .co, .c-root:has(> .gd-brandbar)) label:has(> input:is([type="checkbox"], [type="radio"])) { min-height: 44px !important; align-items: center; }
+  footer.gp-footer.dir-footer ul { gap: 0; }
+  footer.gp-footer.dir-footer a { min-height: 44px !important; min-width: 44px !important; }
+  .gp-nav a { min-height: 44px !important; }
+  .pub-root :is(.dir-day, .la-btn) { min-height: 44px !important; }
+}
+
+/* ── R1 signed-in workspaces (customer .c-root, organiser .o-root, provider/admin .ws-app, partner/promoter .pt-app, door scanner .sc, onboarding .onboarding-page) on touch input:
+   the same ≥44px floor for form controls, buttons and icon buttons. Canvas surfaces (studio stage .st-stage, venue-map canvas .mb-canvas, seat picker .sp, poster stage) keep their own
+   handles, and table/calendar cells are untouched; only the controls a finger has to hit grow, and only on coarse pointers. ── */
+@media (pointer: coarse) {
+  :is(.c-root, .o-root, .ws-app, .pt-app, .pwa-sheet, .sc, .onboarding-page, .st)
+    :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"]), select, textarea, .k-btn, .ws-btn, .adb-btn, .mk-btn, .pt-btn, .k-icon-btn, .ws-icon-pop > button, .ws-icon-link, .adb-dots, .c-icon, .pwa-icon, summary):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-height: 44px !important; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .pwa-sheet, .sc, .onboarding-page, .st)
+    :is(.k-icon-btn, .ws-icon-pop > button, .ws-icon-link, .adb-dots, .c-icon, .pwa-icon):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-width: 44px !important; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) label:has(> input:is([type="checkbox"], [type="radio"])) { min-height: 44px; align-items: center; }
+  /* every button-styled control (…-btn / …-pill / pill strips / row links in tables) and icon-only buttons (min width too) */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is(:is(a, button)[class*="-btn"], :is(a, button)[class*="-pill"], [class*="-pills"] > :is(a, button), td > :is(a, button), dd > button):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-height: 44px !important; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is(.pt-soc, .pt-act, .pt-logo, .pt-copy):not(.pr-share-row *, .pp-share *, .pr-share *) { min-width: 44px !important; min-height: 44px !important; }
+  :is(.pr-share, .pp-share) .pt-soc { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) button[aria-label]:not(:has(> :not(svg, i, img, span:empty))):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"], [class*="-rate"], [role="radiogroup"]) *) { min-width: 44px !important; min-height: 44px !important; }
+  /* every remaining button, icon-only link and heading / definition link (the same floor the public site has) */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is(button, [role="button"], h1 > a, h2 > a, h3 > a, h4 > a, h > a, dt > a, dd > a):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"], [class*="-rate"], [role="radiogroup"], .pwa-tabs) *) { min-height: 44px !important; min-width: 44px; }
+  :where(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :where(h1 > a, h2 > a, h3 > a, h4 > a, h > a, dt > a, dd > a) { display: inline-flex; align-items: center; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) a[aria-label]:not(:has(> :not(svg, i, img, span:empty))):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-width: 44px !important; min-height: 44px !important; display: inline-grid; place-items: center; }
+  /* the venue-map editor's own toolbar and zoom buttons (its canvas handles stay as designed) */
+  .mb :is(.mb-bar, .mb-zoom) button { min-width: 44px !important; min-height: 44px !important; }
+  /* checkboxes that are not inside a label (table row selection, distribution lists) get a 44px box of their own */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .st) :is(td, th, li) > input:is([type="checkbox"], [type="radio"]) { min-width: 44px; min-height: 44px; margin: 0; }
+  /* switches */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) .k-toggle { min-width: 44px !important; min-height: 44px !important; }
+  /* compound inputs with a fixed height (price / quantity steppers) grow with their now-44px parts instead of clipping them */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is(.ts-step, [class*="stepper"], .k-input-icon) { height: auto !important; min-height: 44px; }
+  /* standalone links: tab strips, "View all" / section links, back controls — rows a finger can hit (links in sentences exempt) */
+  :where(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :where([class*="tabs"] > a, [class*="tablist"] > a, [class*="crumbs"] a, td a, [class*="-seg"] > a, [role="tablist"] > a, a[class*="-link"], .k-link, [class*="-sec-h"] > a, [class*="-ph"] > a, .pwa-back, td small > a, li > a, li > div > a, [class*="-foot"] > a, [class*="-meta"] > a, article > a, main > a, header > a, [class*="-row"] > a, li b > a, li span > a, [class*="filters"] > a, [class*="-body"] > a, [class*="card"] .k-between > a, nav > a, span > b > a, dd a, [class*="-map"] > a, [class*="-map"] p > a, [class*="-tags"] > a) { display: inline-flex; align-items: center; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is([class*="tabs"] > a, [class*="tablist"] > a, [class*="crumbs"] a, a[class]:not(p a, .k-sr, .sr-only, .gp-sr, .pwa-tabs a), [class*="-seg"] > :is(a, button), [role="tablist"] > :is(a, button), a[class*="-link"], .k-link, [class*="-sec-h"] > a, [class*="-ph"] > a, .pwa-back, section > a, td a, li > a, li > div > a, [class*="-foot"] > a, [class*="-meta"] > a, article > a, main > a, header > a, [class*="-row"] > a, li b > a, li span > a, [class*="filters"] > a, [class*="-body"] > a, [class*="card"] a:not(p a), nav > a, span > b > a, dd a, [class*="-map"] > a, [class*="-map"] p > a, [class*="-tags"] > a):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-height: 44px !important; min-width: 44px; }
+}

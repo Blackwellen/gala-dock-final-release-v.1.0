@@ -46,3 +46,23 @@ const TYPE_TONE: Record<string, string> = { corporate: "", conference: "", festi
   comedy: "", gala: "pink", party: "purple", birthday: "amber", food_drink: "amber", awards: "pink", production: "grey", private_dinner: "grey" };
 export const typeTone = (t: string) => TYPE_TONE[t] ?? "grey";
 export const typeLabel = (t: string) => ({ food_drink: "Food & Drink", private_dinner: "Private dinner" } as Record<string, string>)[t] ?? t.replaceAll("_", " ").replace(/^\w/, c => c.toUpperCase());
+
+/** Ticketing risk band for the Tickets register (moved here so the CSV export filters the same way). */
+export function ticketRisk(e: Ev, m?: EvMetric) {
+  const refundRate = m && m.sold + m.refunded ? m.refunded / (m.sold + m.refunded) : 0;
+  if ((m?.max_risk ?? 0) >= 70 || e.status === "suspended" || (e.status === "cancelled" && (m?.sold ?? 0) > 0)) return { key: "high", label: "High" };
+  if ((m?.flags ?? 0) > 0 || refundRate > 0.02 || (m?.scan_anomalies ?? 0) > 0 || e.status === "cancelled") return { key: "medium", label: "Medium" };
+  return { key: "low", label: "Low" };
+}
+/** Q51: the Tickets › Events filter, shared by the page and its CSV export (the export ignored search and every filter). */
+export function ticketEventMatches(e: Ev, m: EvMetric | undefined, f: (k: string) => string, now: number) {
+  const q = f("q").trim().toLowerCase().slice(0, 80);
+  if (q && !`${e.name} ${e.settings?.reference ?? ""} ${e.venue_name} ${e.city} ${e.id}`.toLowerCase().includes(q)) return false;
+  if (f("type") && e.event_type !== f("type")) return false;
+  if (f("estatus") && evStatus(e, now).key !== f("estatus")) return false;
+  if (f("tstatus") && (m?.tier_status ?? "draft") !== f("tstatus")) return false;
+  if (f("vis") && e.visibility !== f("vis")) return false;
+  if (f("risk") && ticketRisk(e, m).key !== f("risk")) return false;
+  if (f("city") && e.city !== f("city")) return false;
+  return true;
+}

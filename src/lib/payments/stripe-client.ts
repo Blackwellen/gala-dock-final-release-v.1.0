@@ -55,7 +55,9 @@ export type CheckoutSession = { id: string; url: string | null; status: string; 
   payment_intent: null | string | { id: string; status: string; amount_received: number; latest_charge: string | null; application_fee_amount?: number | null; metadata?: Record<string, string> } };
 export type Refund = { id: string; status: string; amount: number; currency: string; payment_intent: string; metadata?: Record<string, string> };
 export type StripeCharge = { id: string; amount: number; amount_refunded: number; currency: string; disputed?: boolean; paid?: boolean;
-  application_fee: string | null | { id: string }; application_fee_amount: number | null };
+  application_fee: string | null | { id: string }; application_fee_amount: number | null;
+  /** Q76 (C13): expanded by merchant.charge(): what the charge credited to the seller's balance, in the SETTLEMENT currency. */
+  balance_transaction?: string | null | { id: string; amount: number; net: number; fee: number; currency: string; exchange_rate: number | null } };
 export type ApplicationFee = { id: string; amount: number; amount_refunded: number; currency: string; account: string };
 
 /**
@@ -112,9 +114,9 @@ export function connectedMerchantStripe(client: StripeClient) {
       if (/^(transfers|payouts\/[^/]+\/cancel)/.test(path)) throw new PaymentRouteError("forbidden_path");
       return client.request<T>({ method: "GET", path, stripeAccount: ctx(account) });
     },
-    /** The charge behind a payment, read in the seller's context (amounts, refunds and the platform application fee id). */
+    /** The charge behind a payment, read in the seller's context (amounts, refunds, the platform application fee id and, Q76, its balance transaction). */
     charge(account: string, paymentIntent: string) {
-      return client.request<{ id: string; latest_charge: StripeCharge | null }>({ method: "GET", path: `payment_intents/${encodeURIComponent(paymentIntent)}?expand[]=latest_charge`, stripeAccount: ctx(account) })
+      return client.request<{ id: string; latest_charge: StripeCharge | null }>({ method: "GET", path: `payment_intents/${encodeURIComponent(paymentIntent)}?expand[]=latest_charge&expand[]=latest_charge.balance_transaction`, stripeAccount: ctx(account) })
         .then(pi => pi.latest_charge);
     },
     /** The seller's own Stripe balance (DEC-107: money stays here until a release trigger). */
@@ -213,6 +215,12 @@ export function platformBillingStripe(client: StripeClient) {
     updateCustomer(id: string, params: Record<string, string>, idempotencyKey: string) {
       if (!/^cus_[A-Za-z0-9]+$/.test(id)) throw new PaymentRouteError("customer_required");
       return client.request<StripeCustomer>({ method: "POST", path: `customers/${id}`, params: guard(params), idempotencyKey });
+    },
+    /** Q74 (D15): the business customer's VAT number on its Gala Dock billing customer (Stripe Tax reverse-charges valid EU/UK ids). */
+    createCustomerTaxId(id: string, params: { type: "gb_vat" | "eu_vat"; value: string }, idempotencyKey: string) {
+      if (!/^cus_[A-Za-z0-9]+$/.test(id)) throw new PaymentRouteError("customer_required");
+      if (!/^[A-Z]{2}[A-Z0-9]{2,13}$/.test(params.value)) throw new PaymentRouteError("invalid_tax_id");
+      return client.request<{ id: string }>({ method: "POST", path: `customers/${id}/tax_ids`, params: guard({ type: params.type, value: params.value }), idempotencyKey });
     },
     /** Q67: customer portal (cards, invoices, cancel) for Gala Dock plans. */
     listPortalConfigurations() {

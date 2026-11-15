@@ -1,4 +1,5 @@
 "use client";
+import { currencySymbol } from "@/lib/i18n/money";
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -30,7 +31,7 @@ export function EmergencyRequestForm({ events, defaults }: { events: { id: strin
     <label className="mk-field"><span>What do you need?</span><select name="category" required defaultValue={cat}><option value="" disabled>Choose…</option>{EMERGENCY_CATEGORIES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
     <label className="mk-field"><span>Severity</span><select name="severity" defaultValue="high"><option value="critical">Critical — event at risk</option><option value="high">High — needed today</option><option value="standard">Standard — needed soon</option></select></label>
     <label className="mk-field"><span>Needed on site by</span><input name="arrival" type="datetime-local" required defaultValue={localIn(3)} /></label>
-    <label className="mk-field"><span>Budget up to (£, optional)</span><input name="budget" type="number" min={0} step="1" inputMode="numeric" /></label>
+    <label className="mk-field"><span>Budget up to (in the event’s currency, optional)</span><input name="budget" type="number" min={0} step="1" inputMode="numeric" /></label>
     <label className="mk-field wide"><span>Location (defaults to the event venue)</span><input name="location" maxLength={300} /></label>
     <label className="mk-field wide"><span>Scope</span><textarea name="scope" rows={2} maxLength={2000} placeholder="e.g. 4-hour DJ set 20:00–00:00, own decks, 150 guests" required /></label>
     <label className="mk-field wide"><span>What happened? (optional)</span><input name="failure" maxLength={1000} placeholder="e.g. Booked DJ cancelled with illness" /></label>
@@ -53,7 +54,7 @@ export function EmergencyDecision({ candidateId, requestId, kind }: { candidateI
 }
 
 /** Provider: marks the invitation as seen once, then lets them quote, show interest or decline. */
-export function EmergencyRespond({ candidateId, status, seen }: { candidateId: string; status: string; seen: boolean }) {
+export function EmergencyRespond({ candidateId, status, seen, currency = "GBP" }: { candidateId: string; status: string; seen: boolean; currency?: string }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
@@ -66,7 +67,7 @@ export function EmergencyRespond({ candidateId, status, seen }: { candidateId: s
   });
   if (!["delivered", "opened", "interested", "quoted"].includes(status)) return null;
   return <form className="mk-form" action={f => act("quote", f)} aria-label="Respond to emergency request">
-    <label className="mk-field"><span>Your price (£)</span><input name="quote" type="number" min={1} step="1" required inputMode="numeric" /></label>
+    <label className="mk-field"><span>Your price ({currencySymbol(currency)})</span><input name="quote" type="number" min={1} step="1" required inputMode="numeric" /></label>
     <label className="mk-field"><span>Arrival in (minutes)</span><input name="eta" type="number" min={0} max={2880} step="5" inputMode="numeric" /></label>
     <label className="mk-field wide"><span>Note</span><input name="note" maxLength={1000} placeholder="Kit, crew, anything the organiser should know" /></label>
     <div className="mk-row wide">

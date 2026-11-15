@@ -1,0 +1,33 @@
+{
+  "observedUtc": "2026-10-13T20:39:35.591Z",
+  "scope": "Linked production HTTPS health; GET only",
+  "checks": [
+    {
+      "endpoint": "https://www.galadock.com/api/health",
+      "http": 200,
+      "health": "ok",
+      "privateReadiness": true,
+      "payment": {
+        "status": "ready",
+        "checksActualConnectVariable": false,
+        "reportedMode": "live"
+      },
+      "scanner": {
+        "status": "blocked_external",
+        "critical": false
+      }
+    },
+    {
+      "endpoint": "https://galadock.com/api/health",
+      "http": 308,
+      "health": "not_reported",
+      "privateReadiness": false,
+      "payment": {
+        "status": "unverified"
+      },
+      "scanner": {
+        "status": "unverified"
+      }
+    }
+  ]
+}

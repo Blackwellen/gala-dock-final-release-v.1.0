@@ -24,6 +24,8 @@
 .lp-plan-price b { font-size: 36px; letter-spacing: -.04em; font-weight: 760; color: var(--gp-ink); }
 .lp-plan.is-ent .lp-plan-price b { font-size: 28px; }
 .lp-plan-price small { font-size: 14px; color: var(--gp-muted); }
+/* Owner 2026-11-15: VAT-inclusive price (UK rate) on its own line under the ex-VAT price (src/lib/billing/vat-display.ts). */
+.lp-plan-inc { flex-basis: 100%; font-size: 14px; font-weight: 600; color: var(--gp-body); }
 .lp-plan-save { margin-top: -6px; font-size: 13.5px; font-weight: 650; color: var(--gp-teal); }
 .gpr-best { font-size: 14px; line-height: 1.5; color: var(--gp-body); min-height: 42px; }
 .gpr-keys { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--gp-line-2); flex: 1; }
@@ -94,6 +96,7 @@
 .gpr-policy-d { font-size: 14px; line-height: 1.5; color: var(--gp-body); min-height: 42px; }
 .gpr-packs { display: grid; gap: 6px; }
 .gpr-packs li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--gp-porcelain); font-size: 14px; }
+.gpr-packs .vat-price { justify-items: end; text-align: right; } .gpr-packs .vat-inc { font-weight: 500; color: var(--gp-body); }
 
 /* 8.5 */
 .gpr-tx-sec .gp-head { margin-bottom: 36px; }

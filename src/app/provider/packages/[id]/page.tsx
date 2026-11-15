@@ -1,3 +1,5 @@
+import { workspaceLocale } from "@/lib/i18n/workspace";
+import { getProvider } from "@/lib/provider/context";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -69,7 +71,7 @@ export default async function PackageProfile(props: PageProps<"/provider/package
     </header>
     <Tabs base={`/provider/packages/${p.id}`} active={tab} tabs={[{ key: "package", label: "Package" }, { key: "availability", label: "Availability / Rules" }, { key: "performance", label: "Performance" }]} />
 
-    {tab === "availability" && <><PkgStep2 p={p} parent={parent} days={days} next={`/provider/packages/${p.id}?tab=availability`} label="Save changes" />
+    {tab === "availability" && <><PkgStep2 currency={workspaceLocale((await getProvider()).workspace.settings).currency} p={p} parent={parent} days={days} next={`/provider/packages/${p.id}?tab=availability`} label="Save changes" />
       <PkgStep3 p={p} days={days} next={`/provider/packages/${p.id}?tab=availability`} label="Save dates" /></>}
     {tab === "performance" && <section className="ws-kpis pv-kpis" aria-label="Performance">
       {([[CalendarCheck, "Bookings", String(bookings.length)], [PoundSterling, "Revenue", money(revenue)], [TrendingUp, "Average value", money(avg)], [MessageSquare, "Requests naming this package", String(items.length)]] as const).map(([I, l, v]) =>

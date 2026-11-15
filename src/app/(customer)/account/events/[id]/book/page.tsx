@@ -9,6 +9,11 @@ import { VSteps } from "@/components/kit";
 import { BookingFlow, type BookingData } from "@/components/customer/booking-flow";
 import { money, dateLong } from "@/lib/format";
 import { listingHref } from "@/lib/links";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { untyped } from "@/lib/workspace/db";
+import { cancellationNotice } from "@/lib/i18n/rules";
+import { safeTz } from "@/lib/i18n/tz";
+import { isCheckoutCurrency } from "@/lib/i18n/money";
 
 export const metadata = { title: "Booking request" };
 const OPEN = ["suggested", "draft", "sent", "awaiting", "clarification", "available", "quoted", "held", "expired", "declined", "unavailable", "standby", "quote_received", "quote_revised", "customer_reviewing"];
@@ -18,6 +23,13 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const it = d.items.find(i => i.id === sp.item) ?? (sp.item ? null : d.items.find(i => i.category === "venue" && OPEN.includes(i.status)) ?? d.items.find(i => OPEN.includes(i.status)));
   if (!it) redirect(`/account/events/${e.id}/build`);
   const step = Math.min(3, Math.max(1, Math.trunc(Number(sp.step)) || 1));
+  // Q76: the event zone, the currency the booking is CHARGED in (seller currency, booking_charge_currency — the same rule
+  // create_payment_order applies; the item is the signed-in customer's own, checked by getMyEvent) and the buyer-country notice.
+  const tz = safeTz(e.timezone);
+  const { data: bcur } = await untyped(createAdminClient() as never).rpc("booking_charge_currency", { p_item: it.id });
+  const currency = isCheckoutCurrency(bcur) ? String(bcur).toUpperCase() : (e.currency || "GBP").toUpperCase();
+  const { data: prof } = await ctx.supabase.from("profiles").select("country").eq("id", ctx.user.id).maybeSingle();
+  const cancellation = cancellationNotice({ buyerCountry: ((prof as { country?: string | null } | null)?.country ?? "GB").toUpperCase(), kind: "booking" });
   const base = `/account/events/${e.id}/book?item=${it.id}${sp.option === "hold" ? "&option=hold" : ""}`;
   const [{ data: l }, { data: pkg }, { data: pr }, { data: revs }] = await Promise.all([
     it.listing_id ? ctx.supabase.from("listings").select("id,name,kind,category,location,city,image,gallery,rating,review_count,capacity_max,price_from,price_unit,response_hours,description,details,tags,instant_book,slug").eq("id", it.listing_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -42,7 +54,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
     const next = done ? [["Deposit paid", "Your receipt is in Money."], ["Balance scheduled", "We'll remind you before it's due."], ["Provider preparing", "They'll confirm final details in Messages."]]
       : processing ? [["Payment received by Stripe", "We're confirming it now. This usually takes a few seconds."], ["Booking confirms", "Refresh this page or check Money for your receipt."], ["Provider notified", "They'll confirm final details in Messages."]]
       : it.status === "standby" ? [["Standby registered", "The provider knows you're interested."], ["We'll alert you", "If the date opens up, you'll hear first."], ["No commitment", "Nothing is booked or charged."]]
-      : [["Provider reviews your request", deadline ? `They have until ${deadline.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })} to respond.` : "They have 48 hours to respond."], ["You receive a formal quote", "Compare it in your build before deciding."], ["You choose to book", "No payment is taken unless you approve a quote."]];
+      : [["Provider reviews your request", deadline ? `They have until ${deadline.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: tz, timeZoneName: tz === "Europe/London" ? undefined : "short" })} to respond.` : "They have 48 hours to respond."], ["You receive a formal quote", "Compare it in your build before deciding."], ["You choose to book", "No payment is taken unless you approve a quote."]];
     return <div className="bk">
       <div className="bk-head">{crumbs}</div>
       <div className="bk-grid">
@@ -51,7 +63,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
           <span className="bk-done-ic"><CheckCircle2 size={34} /></span>
           <h1>{head}</h1>
           <p className="ce-sub">{done ? "Your booking is confirmed and the provider has been notified." : processing ? "If you completed payment, your booking confirms as soon as the payment clears. If you didn't, nothing has been charged." : "We've shared your requirements with the provider and added this to your build."}</p>
-          <div className="bk-done-card">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={it.image || l?.image || "/assets/gd/oe-neon.webp"} alt="" /><div className="k-grow"><b>{it.title}</b><small><CalendarDays size={13} />{dateLong(e.starts_at)}</small><small><Users size={13} />{e.guest_count} guests</small></div><div className="bk-done-amt"><b>{it.amount != null ? money(it.amount) : "Quote pending"}</b><small>{done ? "Confirmed" : it.status === "standby" ? "Standby" : "Estimate"}</small></div></div>
+          <div className="bk-done-card">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={it.image || l?.image || "/assets/gd/oe-neon.webp"} alt="" /><div className="k-grow"><b>{it.title}</b><small><CalendarDays size={13} />{dateLong(e.starts_at, tz)}</small><small><Users size={13} />{e.guest_count} guests</small></div><div className="bk-done-amt"><b>{it.amount != null ? money(it.amount, currency) : "Quote pending"}</b><small>{done ? "Confirmed" : it.status === "standby" ? "Standby" : "Estimate"}</small></div></div>
           <ol className="bk-next">{next.map(([t, s], i) => <li key={t}><span>{i + 1}</span><div><b>{t}</b><small>{s}</small></div></li>)}</ol>
           <div className="k-row k-wrap" style={{ gap: 10, justifyContent: "center" }}>
             <Link className="k-btn primary" href={`/account/events/${e.id}/build`}>Back to your build</Link>
@@ -67,9 +79,9 @@ export default async function BookPage({ params, searchParams }: { params: Promi
 
   const req = (pr?.requirements ?? {}) as Partial<BookingData["saved"]>;
   const start = e.starts_at ? new Date(e.starts_at) : null; const end = e.ends_at ? new Date(e.ends_at) : null;
-  // Event times are shown and edited in the event's local time (UK).
-  const hhmm = (dt: Date | null, f: string) => dt ? dt.toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false }) : f;
-  const ymd = (dt: Date | null) => dt ? dt.toLocaleDateString("en-CA", { timeZone: "Europe/London" }) : "";
+  // Event times are shown and edited in the event's local time (Q76: its own zone, London for UK events).
+  const hhmm = (dt: Date | null, f: string) => dt ? dt.toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }) : f;
+  const ymd = (dt: Date | null) => dt ? dt.toLocaleDateString("en-CA", { timeZone: tz }) : "";
   const paymentMethods = await savedCards(ctx); const def = paymentMethods.cards.find(c => c.isDefault);
   const data: BookingData = {
     event: { id: e.id, name: e.name, date: ymd(start), start: hhmm(start, "18:00"), end: hhmm(end, "23:00"), guests: e.guest_count, adults: e.adults, children: e.children, location: e.location },
@@ -83,6 +95,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
     submitted: pr?.status === "sent",
     card: def ? { brand: def.brand, last4: def.last4, exp: def.exp, test: false } : null,
     cardUnavailable:paymentMethods.unavailable,
+    currency, cancellation,
   };
   return <div className="bk" data-step={step}>
     <div className="bk-head">{crumbs}<div className="bk-title"><h1>Booking Request</h1><p className="ce-sub">{step === 2 && sp.payment === "cancelled" ? "Payment was cancelled and nothing has been charged. You can try again or choose another option." : step === 1 ? "Tell the provider what you need. This will be sent as a request for availability and a quote." : "Choose how you'd like to proceed, review the terms and add a payment method. No payment is taken unless you approve a quote."}</p></div></div>

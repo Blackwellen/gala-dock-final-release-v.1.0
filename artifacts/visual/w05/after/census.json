@@ -1,0 +1,1563 @@
+{
+ "email": "solo.supplier.demo@example.com",
+ "checkedLinks": 156,
+ "dead": [
+  {
+   "href": "/provider",
+   "status": 0
+  },
+  {
+   "href": "/provider/inbox",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings",
+   "status": 0
+  },
+  {
+   "href": "/account?tab=security#sessions",
+   "status": 0
+  },
+  {
+   "href": "/provider/help",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities",
+   "status": 0
+  },
+  {
+   "href": "/provider/media",
+   "status": 0
+  },
+  {
+   "href": "/provider/team",
+   "status": 0
+  },
+  {
+   "href": "/provider/money",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=today",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=upcoming",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=overdue",
+   "status": 0
+  },
+  {
+   "href": "/provider?view=attention",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=day",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=block",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?tab=payouts",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Draft%20responses%20to%20my%200%20pending%20enquiries",
+   "status": 0
+  },
+  {
+   "href": "/provider/packages/new?step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Send%20review%20requests%20for%20bookings%20completed%20in%20the%20last%2030%20days",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=booking-rules",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=quotes",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=holds",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?tab=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/opportunities?view=map",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Prepare%20responses%20for%20my%200%20open%20requests%20based%20on%20availability%20and%20packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=active",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=past",
+   "status": 0
+  },
+  {
+   "href": "/provider/bookings?tab=cancelled",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=week",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=integrations",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=month",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=agenda",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=bookings",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=holds",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=standby",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=team",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=resources",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?layers=emergency",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-19",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-02",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open&target=listing%3Ac4e970e9-c951-465b-9811-76b6be22a797&date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-09-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-02",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-03",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-04",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-05",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-06",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-07",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-08",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-09",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-10",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-11",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-12",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-13",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-14",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-15",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-16",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-17",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-18",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-20",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-21",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-22",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-23",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-24",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-25",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-26",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-27",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-28",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-29",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-30",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-10-31",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-01",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-03",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-04",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-05",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-06",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-07",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?date=2026-11-08",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?action=open",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/services",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=published",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=draft",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings?status=paused",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Improve%20the%20quality%20of%20my%20Mia%20Rossi%20Photography%20listing",
+   "status": 0
+  },
+  {
+   "href": "/services/mia-rossi-photography",
+   "status": 0
+  },
+  {
+   "href": "/services/mia-rossi-photography?preview=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797?tab=pricing",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797?tab=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797?tab=media",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/new?service=c4e970e9-c951-465b-9811-76b6be22a797&step=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/packages/new?step=1&listing=c4e970e9-c951-465b-9811-76b6be22a797",
+   "status": 0
+  },
+  {
+   "href": "/provider/services/new?service=c4e970e9-c951-465b-9811-76b6be22a797&step=5",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Improve%20Mia%20Rossi%20Photography",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Help%20me%20set%20up%20my%20new%20service",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?goal=Help%20me%20build%20a%20new%20package",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=team",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?action=request",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?tab=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?tab=assignments",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?tab=people&week=2026-10-19",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?tab=people",
+   "status": 0
+  },
+  {
+   "href": "/provider/team?tab=people&week=2026-11-02",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=day&layers=crew",
+   "status": 0
+  },
+  {
+   "href": "/provider/calendar?view=month&layers=crew",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?period=month",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?period=month&tab=earnings",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?period=month&tab=payouts",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?period=month&tab=fees",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?period=month&tab=statements",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=billing",
+   "status": 0
+  },
+  {
+   "href": "/provider/money/statement?month=2026-10",
+   "status": 0
+  },
+  {
+   "href": "/provider/help?q=payments",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tab=approvals",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tab=routines",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tab=history",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=availability",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=spaces",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=packages",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=quotes",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=bookings",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=team",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=holds",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=money",
+   "status": 0
+  },
+  {
+   "href": "/provider/agent?tool=reliability",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=capabilities",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=booking",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=communications",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=agent",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=notifications",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=security",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=developers",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=demo",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?tab=workspace&edit=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/settings?edit=1",
+   "status": 0
+  },
+  {
+   "href": "/provider/listings/venues",
+   "status": 0
+  },
+  {
+   "href": "/provider/money?tab=statements",
+   "status": 0
+  },
+  {
+   "href": "/onboarding/provider?step=4",
+   "status": 0
+  },
+  {
+   "href": "/help?topic=billing",
+   "status": 0
+  }
+ ],
+ "routes": [
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [
+    "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src"
+   ],
+   "linkCount": 26
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/opportunities",
+   "h1": "Opportunities",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/bookings",
+   "h1": "Bookings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 20
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 107,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 78
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/listings",
+   "h1": "Listings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 22
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 55,
+   "unnamed": [
+    "<input name=\"service_type\" value=\"\">",
+    "<input name=\"durations\" value=\"\">",
+    "<input name=\"team\" value=\"\">",
+    "<input name=\"equipment\" value=\"\">",
+    "<input name=\"travel\" value=\"\">",
+    "<input name=\"docs\" value=\"\">",
+    "<textarea name=\"included\" rows=\"4\"></textarea>",
+    "<textarea name=\"excluded\" rows=\"3\"></textarea>",
+    "<button type=\"submit\" class=\"ws-btn primary\">Save details</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/services/new",
+   "h1": "Add Service",
+   "controls": 63,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/packages/new",
+   "h1": "Create Package",
+   "controls": 65,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/team",
+   "h1": "Team",
+   "controls": 41,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/money",
+   "h1": "Money",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/agent",
+   "h1": "Gala Agent",
+   "controls": 61,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/settings",
+   "h1": "Settings",
+   "controls": 74,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1536x1024",
+   "status": 200,
+   "finalPath": "/provider/settings?tab=billing",
+   "h1": "Settings",
+   "controls": 46,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 29
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [
+    "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src"
+   ],
+   "linkCount": 26
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/opportunities",
+   "h1": "Opportunities",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/bookings",
+   "h1": "Bookings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 20
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 107,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 78
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/listings",
+   "h1": "Listings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 22
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 55,
+   "unnamed": [
+    "<input name=\"service_type\" value=\"\">",
+    "<input name=\"durations\" value=\"\">",
+    "<input name=\"team\" value=\"\">",
+    "<input name=\"equipment\" value=\"\">",
+    "<input name=\"travel\" value=\"\">",
+    "<input name=\"docs\" value=\"\">",
+    "<textarea name=\"included\" rows=\"4\"></textarea>",
+    "<textarea name=\"excluded\" rows=\"3\"></textarea>",
+    "<button type=\"submit\" class=\"ws-btn primary\">Save details</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/services/new",
+   "h1": "Add Service",
+   "controls": 63,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/packages/new",
+   "h1": "Create Package",
+   "controls": 65,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/team",
+   "h1": "Team",
+   "controls": 41,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/money",
+   "h1": "Money",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/agent",
+   "h1": "Gala Agent",
+   "controls": 61,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/settings",
+   "h1": "Settings",
+   "controls": 74,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1448x1086",
+   "status": 200,
+   "finalPath": "/provider/settings?tab=billing",
+   "h1": "Settings",
+   "controls": 46,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 29
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [
+    "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src"
+   ],
+   "linkCount": 26
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/opportunities",
+   "h1": "Opportunities",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/bookings",
+   "h1": "Bookings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 20
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 107,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 78
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/listings",
+   "h1": "Listings",
+   "controls": 43,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 22
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 55,
+   "unnamed": [
+    "<input name=\"service_type\" value=\"\">",
+    "<input name=\"durations\" value=\"\">",
+    "<input name=\"team\" value=\"\">",
+    "<input name=\"equipment\" value=\"\">",
+    "<input name=\"travel\" value=\"\">",
+    "<input name=\"docs\" value=\"\">",
+    "<textarea name=\"included\" rows=\"4\"></textarea>",
+    "<textarea name=\"excluded\" rows=\"3\"></textarea>",
+    "<button type=\"submit\" class=\"ws-btn primary\">Save details</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/services/new",
+   "h1": "Add Service",
+   "controls": 63,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/packages/new",
+   "h1": "Create Package",
+   "controls": 65,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/team",
+   "h1": "Team",
+   "controls": 41,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/money",
+   "h1": "Money",
+   "controls": 44,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/agent",
+   "h1": "Gala Agent",
+   "controls": 61,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/settings",
+   "h1": "Settings",
+   "controls": 74,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 30
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1280x800",
+   "status": 200,
+   "finalPath": "/provider/settings?tab=billing",
+   "h1": "Settings",
+   "controls": 46,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 29
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider",
+   "h1": "Good morning, Mia",
+   "controls": 34,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [
+    "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src",
+    "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src"
+   ],
+   "linkCount": 26
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/opportunities",
+   "h1": "Opportunities",
+   "controls": 34,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 21
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/bookings",
+   "h1": "Bookings",
+   "controls": 34,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 20
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/calendar",
+   "h1": "Calendar",
+   "controls": 98,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 78
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/listings",
+   "h1": "Listings",
+   "controls": 32,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 22
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "h1": "Mia Rossi Photography",
+   "controls": 44,
+   "unnamed": [
+    "<input name=\"service_type\" value=\"\">",
+    "<input name=\"durations\" value=\"\">",
+    "<input name=\"team\" value=\"\">",
+    "<input name=\"equipment\" value=\"\">",
+    "<input name=\"travel\" value=\"\">",
+    "<input name=\"docs\" value=\"\">",
+    "<textarea name=\"included\" rows=\"4\"></textarea>",
+    "<textarea name=\"excluded\" rows=\"3\"></textarea>",
+    "<button type=\"submit\" class=\"ws-btn primary\">Save details</button>"
+   ],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 25
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/services/new",
+   "h1": "Add Service",
+   "controls": 52,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/packages/new",
+   "h1": "Create Package",
+   "controls": 54,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 16
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "1024x768",
+   "status": 200,
+   "finalPath": "/provider/team",
+   "h1": "Team",
+   "controls": 30,
+   "unnamed": [],
+   "overflow": 0,
+   "wide": [],
+   "console": [],
+   "linkCount": 24
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "1024x768",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/c4e970e9-c951-465b-9811-76b6be22a797\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/c4e970e9",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "768x1024",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  },
+  {
+   "name": "home",
+   "route": "/provider",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "opps",
+   "route": "/provider/opportunities",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/opportunities\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/opportunities\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "bookings",
+   "route": "/provider/bookings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/bookings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/bookings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "calendar",
+   "route": "/provider/calendar",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/calendar\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/calendar\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "listings",
+   "route": "/provider/listings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/listings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/listings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "service",
+   "route": "/provider/services/c4e970e9-c951-465b-9811-76b6be22a797",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/c4e970e9-c951-465b-9811-76b6be22a797\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/c4e970e9",
+   "linkCount": 0
+  },
+  {
+   "name": "servicenew",
+   "route": "/provider/services/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/services/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/services/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "packagenew",
+   "route": "/provider/packages/new",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/packages/new\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/packages/new\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "team",
+   "route": "/provider/team",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/team\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/team\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "money",
+   "route": "/provider/money",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/money\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/money\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "agent",
+   "route": "/provider/agent",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/agent\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/agent\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "settings",
+   "route": "/provider/settings",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings\", waiting until \"load\"\u001b[22m\n",
+   "linkCount": 0
+  },
+  {
+   "name": "billing",
+   "route": "/provider/settings?tab=billing",
+   "size": "390x844",
+   "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3107/provider/settings?tab=billing\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3107/provider/settings?tab=billing\", waiting until \"load",
+   "linkCount": 0
+  }
+ ]
+}

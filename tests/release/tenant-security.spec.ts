@@ -38,11 +38,17 @@ const ANON_DEFINER_ALLOWLIST = new Set([
   // public_event_brand / portal_brand (6901) return a clamped accent colour for public pages / token portals; trust_listing_held (6801)
   // is a boolean used by the publish guard — held listings are never public, so it discloses nothing beyond public state.
   "checkout_unlocked_tiers", "event_public_status_page", "public_event_brand", "portal_brand", "trust_listing_held",
+  // Q62 (202611147621): listing_trust returns only public badge fields to non-insiders; public_organizer_profile returns public
+  // description, validated website and brand accent of a public organiser (never contact email/phone).
+  "listing_trust", "public_organizer_profile",
   // Q27: partner referral click counter for signed-out visitors (mirrors promoter_track_click; rate-limited, visitor hash only); approved 2026-10-29 under owner delegation.
   "partner_track_click",
   // Playbook lane 2026-11-11 (reviewed): consumer-law non-trader flag for an event/listing (boolean only, migration 202611116008) and the
   // demo-visibility switch + per-workspace policy helper used by events_public / listings RLS (booleans only, 202611116009).
   "event_seller_non_trader", "listing_seller_non_trader", "demo_public_visible", "demo_hidden_for_viewer",
+  // Q74 (202611147401, reviewed 2026-11-14 by lane legal-engineering): boolean "is this ISO country/region on the public sanctions list"
+  // (public.sanctioned_jurisdictions, readable by anon; shown in Help). No tenant data. The other 7401 helpers were revoked in 7402.
+  "is_sanctioned_jurisdiction",
 ]);
 // Internal/worker functions that take a workspace/user id or move money/state and must never be callable by a client role.
 const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_release_paid", "dec107_release_failed", "dec107_reserve_for", "dec107_dispute_deadlines", "dec107_retry_failed_payouts", "ai_provider_attempt", "payout_eligible", "service_backfill_provider_job", "entitlement", "has_capability", "hit_rate_limit", "space_conflicts_internal", "security_catalog_audit",
@@ -56,6 +62,10 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   "serve_ad_slots", "record_ad_view", "record_ad_click", "ad_candidates", "ad_viewer_key", "ad_settle_boosts", "ad_impression_goal",
   // Q56 (202611148761, reviewed by lane bughunt-ads): undelivered-spend refund worker + self-impression check — service-only.
   "ad_credit_refunds_due", "ad_credit_refund_result", "ad_is_advertiser",
+  // Q75 (202611147501/7502, reviewed 2026-11-14 by lane leftovers-q75): agent run clock check (runtime + agent_execute_tool), traced AI
+  // metering (llm.ts), the platform-refund ledger posting with the VAT split (webhook) and the no-account report (server action after
+  // Turnstile + IP rate limit) — all service-role only.
+  "agent_run_time_check", "record_ai_usage_traced", "post_stripe_refund_delta", "report_content_public",
   "billing_apply_subscription", "billing_record_invoice", "billing_credit_pack_paid", "billing_link_customer", "billing_overage_due",
   "billing_mark_overage_invoiced", "workspace_has_paid_subscription", "job_billing_sweep", "job_ai_profitability_alert", "ai_credit_balance", "billing_credit_pack_refunded", "partner_refund_invoice", "billing_record_payment_fingerprint",   // Q60 (202611146501/6502)
   // Q04 files / Q05 communications / Q06 search workers (lane A, 2026-10-28)
@@ -147,7 +157,7 @@ const SERVICE_ONLY = ["dec107_release_sweep", "dec107_releases_due", "dec107_rel
   "experiment_guardrail_sweep", "job_experiment_guardrails", "experiments_forget_user",
   // Q37 push sender internals (lane C, 2026-10-29)
   "push_enqueue", "push_claim", "push_mark"];
-const SERVICE_ONLY_TABLES = ["calendar_connections", "calendar_sync_links", "checkout_resale_allocations", "launch_queue", "mfa_recovery_codes",
+const SERVICE_ONLY_TABLES = ["seller_tax_profiles", "seller_tax_requests", "calendar_connections", "calendar_sync_links", "checkout_resale_allocations", "launch_queue", "mfa_recovery_codes",
   "rate_limits", "resale_holds", "state_machines", "state_transitions", "state_violations", "storage_attribution", "storage_backups",
   "stripe_refund_totals", "ticket_holds", "webhook_events",
   "domain_event_types", "domain_outbox", "job_kinds", "event_subscriptions", "job_queue", "consumer_inbox", "idempotency_keys",

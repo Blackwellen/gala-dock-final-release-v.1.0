@@ -1,0 +1,121 @@
+[
+ {
+  "route": "/account/tickets",
+  "pattern": "/account/tickets",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events",
+  "pattern": "/account/events",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan",
+  "pattern": "/account/events/[id]/plan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/mfa",
+  "pattern": "/mfa",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent?tab=routines",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent?tab=approvals",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent?tab=history",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/settings?tab=team",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/agent",
+  "pattern": "/organizer/agent",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup",
+  "pattern": "/organizer/events/[id]/tickets/setup",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/media",
+  "pattern": "/organizer/media",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/inbox",
+  "pattern": "/provider/inbox",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+  "pattern": "/provider/venues/[id]/spaces/[spaceId]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f/print",
+  "pattern": "/provider/quotes/[id]/print",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/agent",
+  "pattern": "/provider/agent",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/calendar",
+  "pattern": "/provider/calendar",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ }
+]

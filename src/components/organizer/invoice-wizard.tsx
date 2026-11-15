@@ -1,4 +1,5 @@
 "use client";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +13,6 @@ export type WizardInvoice = { id: string | null; client_name: string; client_ema
 type Ev = { id: string; name: string; starts_at: string | null; ends_at: string | null; venue: string; image: string; client: string; tags: string[]; status: string };
 type Client = { name: string; email: string; address: string; contact: string };
 type Prop = { id: string; label: string; client: string; total: number; event_id: string | null; lines: { name?: string; description?: string; qty?: number; price?: number }[] };
-const CUR = { GBP: "£", EUR: "€", USD: "$" } as const;
 const TYPICAL: Item[] = [{ description: "Venue Hire", detail: "Main hall hire (full day)", quantity: 1, unit_price: 2000, tax_rate: 20 }, { description: "Production", detail: "Lighting, sound and staging", quantity: 1, unit_price: 1200, tax_rate: 20 }, { description: "Staffing", detail: "Crew and technical staff", quantity: 1, unit_price: 800, tax_rate: 20 }, { description: "Event Management", detail: "Planning and on-site management", quantity: 1, unit_price: 800, tax_rate: 20 }];
 const fmtD = (d: string | null) => d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
 const addDays = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
@@ -20,7 +20,7 @@ const addDays = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) 
 export function InvoiceWizard({ step, initial, events, clients, proposals, workspace }: { step: 1 | 2; initial: WizardInvoice; events: Ev[]; clients: Client[]; proposals: Prop[]; workspace: string }) {
   const router = useRouter(); const toast = useKitToast(); const { run, pending } = useAction();
   const [v, setV] = useState(initial); const set = <K extends keyof WizardInvoice>(k: K, x: WizardInvoice[K]) => setV(p => ({ ...p, [k]: x }));
-  const sym = CUR[v.currency];
+  const sym = currencySymbol(v.currency);   // Q76: Intl symbol ("US$", not "$")
   const money = (n: number) => `${sym}${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const sub = v.items.reduce((s, i) => s + i.quantity * i.unit_price, 0), tax = v.items.reduce((s, i) => s + i.quantity * i.unit_price * i.tax_rate / 100, 0), total = sub + tax;
   const ev = events.find(e => e.id === v.event_id);
@@ -62,7 +62,7 @@ export function InvoiceWizard({ step, initial, events, clients, proposals, works
           </section>
           <section className="k-card iw-sec"><div className="k-between iw-ih"><div><h2>2. Invoice items</h2><p className="iw-sub">Add the products or services you want to invoice. You can import from a proposal, event milestone or create manually.</p></div>
             <div className="k-row" style={{ gap: 8 }}>
-              <Menu label="Import from proposal" width={300} trigger={({ toggle, open, id }) => <button className="k-btn outline sm" onClick={toggle} aria-expanded={open} aria-controls={id}><FileInput size={14} />Import from proposal</button>}>{close => <>{proposals.map(p => <button key={p.id} role="menuitem" className="k-menu-item" onClick={() => { close(); const lines = p.lines.length ? p.lines.map(l => ({ description: l.name ?? l.description ?? "Item", detail: l.description ?? "", quantity: Number(l.qty ?? 1), unit_price: Number(l.price ?? 0), tax_rate: 20 })) : [{ description: p.label, detail: "As per accepted proposal", quantity: 1, unit_price: p.total, tax_rate: 20 }]; setV(x => ({ ...x, items: [...x.items, ...lines], client_name: x.client_name || p.client, event_id: x.event_id ?? p.event_id })); toast(`Imported ${lines.length} item${lines.length > 1 ? "s" : ""}`); }}>{p.label}<small style={{ marginLeft: "auto" }}>£{p.total.toLocaleString("en-GB")}</small></button>)}{!proposals.length && <span className="k-menu-item">No accepted proposals</span>}</>}</Menu>
+              <Menu label="Import from proposal" width={300} trigger={({ toggle, open, id }) => <button className="k-btn outline sm" onClick={toggle} aria-expanded={open} aria-controls={id}><FileInput size={14} />Import from proposal</button>}>{close => <>{proposals.map(p => <button key={p.id} role="menuitem" className="k-menu-item" onClick={() => { close(); const lines = p.lines.length ? p.lines.map(l => ({ description: l.name ?? l.description ?? "Item", detail: l.description ?? "", quantity: Number(l.qty ?? 1), unit_price: Number(l.price ?? 0), tax_rate: 20 })) : [{ description: p.label, detail: "As per accepted proposal", quantity: 1, unit_price: p.total, tax_rate: 20 }]; setV(x => ({ ...x, items: [...x.items, ...lines], client_name: x.client_name || p.client, event_id: x.event_id ?? p.event_id })); toast(`Imported ${lines.length} item${lines.length > 1 ? "s" : ""}`); }}>{p.label}<small style={{ marginLeft: "auto" }}>{formatMoney(p.total, v.currency)}</small></button>)}{!proposals.length && <span className="k-menu-item">No accepted proposals</span>}</>}</Menu>
               <button className="k-btn outline sm" disabled={!ev} title={!ev ? "Choose an event first" : undefined} onClick={() => { setV(x => ({ ...x, items: [...x.items, { description: "Deposit", detail: `Event deposit — ${ev?.name}`, quantity: 1, unit_price: 0, tax_rate: 20 }] })); }}><Milestone size={14} />Import event milestone</button>
               <button className="k-btn outline sm" onClick={() => setV(x => ({ ...x, items: [...x.items, ...TYPICAL] }))}><LayoutTemplate size={14} />Add from template</button></div></div>
             <table className="iw-t"><thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit price</th><th>Tax</th><th>Total</th><th /></tr></thead>

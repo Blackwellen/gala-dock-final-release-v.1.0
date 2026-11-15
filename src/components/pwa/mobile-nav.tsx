@@ -10,7 +10,8 @@ import "@/styles/pwa-nav.css";
 
 /** `titleOnly` (optional): names the page in the top bar when active but is not repeated in the menu grid (e.g. an entry the shared account section already links). */
 export type NavEntry = { href: string; label: string; icon: LucideIcon; badge?: string | number | null; match?: string | RegExp; exact?: boolean; titleOnly?: boolean };
-export type MobileNotice = { id: string; title: string; body?: string; link?: string; read_at?: string | null };
+/** `unread` (provider shell) or `read_at` (organiser/customer shells) marks what is new since the sheet was last opened. */
+export type MobileNotice = { id: string; title: string; body?: string; link?: string; read_at?: string | null; unread?: boolean };
 type Props = {
   menu: NavEntry[]; tabs: NavEntry[]; title?: string; right?: ReactNode; home?: string;
   search?: { seat?: string | null; placeholder?: string };
@@ -39,6 +40,9 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
   const [panel, setPanel] = useState<"menu" | "notifications" | null>(null), [finding, setFinding] = useState(false);
   const searchRow = useRef<HTMLDivElement>(null), sheet = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null), drag = useRef<number | null>(null);
+  // Q64: which notices were unread when the sheet opened — opening marks them read, and the refresh must not wipe the "new" marks.
+  const [fresh, setFresh] = useState<Set<string> | null>(null);
+  const showNotices = () => { setFresh(new Set(notifications.filter(n => n.unread ?? !n.read_at).map(n => n.id))); onReadNotifications?.(); };
   const active = (e: NavEntry) => e.match ? new RegExp(e.match).test(pathname) : e.exact ? pathname === e.href : pathname === e.href.split("?")[0] || pathname.startsWith(`${e.href.split("?")[0]}/`);
   const current = [...menu, ...tabs].filter(active).sort((a, b) => b.href.length - a.href.length)[0];
   const primary = tabs.slice(0, 4);
@@ -79,7 +83,7 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
   }, [panel]);
   const openPanel = (next: "menu" | "notifications", trigger: HTMLElement) => {
     opener.current = trigger; setPanel(next); setFinding(false);
-    if (next === "notifications") onReadNotifications?.();
+    if (next === "notifications") showNotices();
   };
 
   return <>
@@ -107,14 +111,15 @@ export function MobileNav({ menu, tabs, title, right, home = "/", search, create
       <div className="pwa-grip" onTouchStart={e => { drag.current = e.touches[0]?.clientY ?? null; }} onTouchEnd={e => { if (drag.current !== null && (e.changedTouches[0]?.clientY ?? 0) - drag.current > 80) setPanel(null); drag.current = null; }}><div className="pwa-handle" aria-hidden="true" /></div>
       <div className="pwa-sheet-head"><h2 id="pwa-sheet-title">{panel === "notifications" ? "Notifications" : "Menu"}</h2><button type="button" autoFocus className="pwa-icon" aria-label={`Close ${panel ?? "menu"}`} onClick={() => setPanel(null)}><X size={20} /></button></div>
       {panel === "menu" ? <>
-        <nav aria-label="App menu"><ul className="pwa-grid"><li><button type="button" onClick={() => { setPanel("notifications"); onReadNotifications?.(); }}><span className="pwa-ico"><Bell size={22} aria-hidden="true" /></span><span className="pwa-lbl">Notifications</span></button></li>{remaining.map(m => <li key={m.href}><Link href={m.href} onClick={() => setPanel(null)} className={active(m) ? "on" : ""} aria-current={active(m) ? "page" : undefined}>
+        <nav aria-label="App menu"><ul className="pwa-grid"><li><button type="button" onClick={() => { setPanel("notifications"); showNotices(); }}><span className="pwa-ico"><Bell size={22} aria-hidden="true" /></span><span className="pwa-lbl">Notifications</span></button></li>{remaining.map(m => <li key={m.href}><Link href={m.href} onClick={() => setPanel(null)} className={active(m) ? "on" : ""} aria-current={active(m) ? "page" : undefined}>
           <span className="pwa-ico"><m.icon size={22} aria-hidden="true" /></span><span className="pwa-lbl">{m.label}</span>{m.badge ? <i className="pwa-badge">{m.badge}</i> : null}</Link></li>)}</ul></nav>
         {create.length > 0 && <section className="pwa-section" aria-label="Create"><h3>Create</h3><div className="pwa-create">{create.map(c => { const Icon = c.icon ?? Plus; return <Link key={c.href} href={c.href} onClick={() => setPanel(null)}><Icon size={20} aria-hidden="true" /><span>{c.label}</span></Link>; })}</div></section>}
         {workspaceSwitcher && <section className="pwa-section" id="pwa-ws" style={{ scrollMarginTop: 12 }}><h3>Switch workspace</h3>{workspaceSwitcher}</section>}
         <section className="pwa-section pwa-account">{/* W12/W13: skip when the role menu already lists them (Help appeared twice; Account and My account both) */}
           {!listed.some(m => m.href === "/account" || /^(my )?account$/i.test(m.label)) && <Link href="/account" onClick={() => setPanel(null)}><User size={19} aria-hidden="true" />My account</Link>}
           {!listed.some(m => /^help$/i.test(m.label)) && <Link href="/help" onClick={() => setPanel(null)}>Help</Link>}<form action="/auth/signout" method="post"><button type="submit"><LogOut size={19} aria-hidden="true" />Sign out</button></form></section>
-      </> : <div className="pwa-notices">{notifications.length ? notifications.map(n => <Link key={n.id} href={n.link || home} onClick={() => setPanel(null)}><b>{n.title}</b>{n.body && <span>{n.body}</span>}</Link>) : <p>You’re all caught up.</p>}</div>}
+      </> : <div className="pwa-notices">{notifications.length ? notifications.map(n => { const isNew = fresh ? fresh.has(n.id) : n.unread ?? !n.read_at;
+        return <Link key={n.id} href={n.link || home} onClick={() => setPanel(null)} className={isNew ? "new" : undefined}><b>{isNew && <i className="pwa-new" aria-label="New" />}{n.title}</b>{n.body && <span>{n.body}</span>}</Link>; }) : <p>You’re all caught up.</p>}</div>}
     </dialog>
   </>;
 }

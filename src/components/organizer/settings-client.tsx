@@ -32,7 +32,7 @@ export function NotifToggles({ can, prefs }: { can: boolean; prefs: Record<strin
   const flip = (k: string, x: boolean) => { const n = { ...v, [k]: x }; setV(n); void run(() => saveWorkspaceSettings({ notifications: n }), { refresh: false }).then(r => { if (!r.ok) setV(p => ({ ...p, [k]: !x })); }); };
   return <div className="st-notif-wrap">
     <ul className="st-notif">{ORG_NOTIFICATION_SWITCHES.map(({ key, label, detail }) => <li key={key}><span><b>{label}</b><small className="k-small k-muted" style={{ display: "block" }}>{detail}</small></span><Toggle checked={v[key] !== false} disabled={!can} onChange={x => flip(key, x)} label={label} /></li>)}
-      <li><span><b>SMS alerts</b><small className="k-small k-muted" style={{ display: "block" }}>Not available yet — nothing is sent by text message.</small></span><Toggle checked={false} disabled onChange={() => undefined} label="SMS alerts (not available)" /></li>
+      {/* Q75 (owner decision): no SMS / push at launch — no switch for them (a dead toggle implied they might work). */}
       <li><span><b>Product news</b><small className="k-small k-muted" style={{ display: "block" }}>A personal choice for each person. <Link href="/account?tab=notifications">Manage in your account</Link>.</small></span></li></ul>
     <div className="st-locked" role="note" aria-label="Notifications that can't be turned off"><b><Lock size={13} aria-hidden /> Always sent</b>
       <small className="k-small k-muted" style={{ display: "block" }}>These go to the people they concern by in-app alert and email, whatever the switches above say, because they affect money, security or your legal position.</small>

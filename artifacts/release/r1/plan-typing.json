@@ -1,0 +1,667 @@
+[
+ {
+  "route": "/plan?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/plan?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/plan?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/plan?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/plan?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/plan?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/plan"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1&step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/book"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1&step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/book"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=665763cf-9f61-4e74-955f-8e6b19e229a1&step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/book"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account/events/[id]/tickets/setup"
+ },
+ {
+  "route": "/onboarding/customer?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/customer?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/organizer?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=1",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=2",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=3",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=4",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=5",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/onboarding/provider?step=6",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/onboarding/[flow]"
+ },
+ {
+  "route": "/account?tab=profile",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account"
+ },
+ {
+  "route": "/account?tab=security",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account"
+ },
+ {
+  "route": "/account?tab=notifications",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account"
+ },
+ {
+  "route": "/account?tab=payments",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced",
+  "pattern": "/account"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan",
+  "pattern": "/account/events/[id]/plan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/plan",
+  "pattern": "/plan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/onboarding",
+  "pattern": "/onboarding",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/onboarding/customer",
+  "pattern": "/onboarding/[flow]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/new",
+  "pattern": "/organizer/events/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=1",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=2",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=3",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/events/new?event=e9041473-4e54-4ebf-ac5a-8f581f9e8728&step=4",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/events/new"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new?step=1&category=dj&event=392fdf17-4e5c-4473-987c-251dc0a97228",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/marketplace/requests/new"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new?step=2&category=dj&event=392fdf17-4e5c-4473-987c-251dc0a97228",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/marketplace/requests/new"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new?step=3&category=dj&event=392fdf17-4e5c-4473-987c-251dc0a97228",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/marketplace/requests/new"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new?step=4&category=dj&event=392fdf17-4e5c-4473-987c-251dc0a97228",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/marketplace/requests/new"
+ },
+ {
+  "route": "/organizer/settings?tab=workspace",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=team",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=brand",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=billing",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=notifications",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=security",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=integrations",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=developers",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=agent",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/settings?tab=demo",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced",
+  "pattern": "/organizer/settings"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup",
+  "pattern": "/organizer/events/[id]/tickets/setup",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new",
+  "pattern": "/organizer/marketplace/requests/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/money/invoices/new",
+  "pattern": "/organizer/money/invoices/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/promotions/new",
+  "pattern": "/organizer/promotions/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/proposals/new",
+  "pattern": "/organizer/proposals/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/new",
+  "pattern": "/provider/venues/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/bookings/new?step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/bookings/new"
+ },
+ {
+  "route": "/provider/bookings/new?step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/bookings/new"
+ },
+ {
+  "route": "/provider/bookings/new?step=3",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/bookings/new"
+ },
+ {
+  "route": "/provider/bookings/new?step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/bookings/new"
+ },
+ {
+  "route": "/provider/settings?tab=workspace",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=capabilities",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=booking",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=team",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=billing",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=communications",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=notifications",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=security",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=integrations",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=developers",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=agent",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/settings?tab=demo",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/settings"
+ },
+ {
+  "route": "/provider/bookings/new",
+  "pattern": "/provider/bookings/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/packages/new",
+  "pattern": "/provider/packages/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/services/new",
+  "pattern": "/provider/services/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+  "pattern": "/provider/venues/[id]/spaces/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=3",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=5",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/venues/new?venue=327451a6-0693-47f6-bbec-a480fe805db5&step=6",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/venues/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=1",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=2",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=3",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=4",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/services/new?service=7319d6b6-7d4f-41b2-b638-d2d6171ca7d1&step=5",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/services/new"
+ },
+ {
+  "route": "/provider/packages/new?package=bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced",
+  "pattern": "/provider/packages/new"
+ }
+]

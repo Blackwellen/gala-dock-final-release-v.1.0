@@ -1,4 +1,7 @@
 "use server";
+import { optionalPhone } from "@/lib/i18n/countries";
+import { workspaceLocale } from "@/lib/i18n/workspace";
+import { isValidTimeZone } from "@/lib/i18n/tz";
 
 import { revalidatePath } from "next/cache";
 import { getProvider } from "@/lib/provider/context";
@@ -22,8 +25,12 @@ async function save(p: Record<string, unknown>, message: string): Promise<Action
 }
 
 export async function saveProfile(fd: FormData): Promise<ActionResult> {
-  return save({ name: t(fd, "trading_name", 80), section: "profile", value: { legal_name: t(fd, "legal_name", 120), address: t(fd, "address", 200), phone: t(fd, "phone", 40), email: t(fd, "email", 120),
-    website: t(fd, "website", 120).replace(/^https?:\/\//, ""), language: t(fd, "language", 20) || "English (UK)", timezone: "Europe/London", tagline: t(fd, "tagline", 160) } }, "Workspace profile saved");
+  // Q76: the contact phone in E.164 and the workspace's own zone (was always Europe/London).
+  const { workspace } = await getProvider(); const loc = workspaceLocale(workspace.settings);
+  const ph = optionalPhone(t(fd, "phone", 40), loc.country ?? "GB"); if (!ph.ok) return { ok: false, error: ph.error };
+  const tzIn = t(fd, "timezone", 64);
+  return save({ name: t(fd, "trading_name", 80), section: "profile", value: { legal_name: t(fd, "legal_name", 120), address: t(fd, "address", 200), phone: ph.e164, email: t(fd, "email", 120),
+    website: t(fd, "website", 120).replace(/^https?:\/\//, ""), language: t(fd, "language", 20) || "English (UK)", timezone: isValidTimeZone(tzIn) ? tzIn : loc.timezone, tagline: t(fd, "tagline", 160) } }, "Workspace profile saved");
 }
 
 /**
@@ -50,7 +57,7 @@ export async function saveComms(fd: FormData): Promise<ActionResult> {
   return save({ section: "communications", value: { from_name: t(fd, "from_name", 80), email: t(fd, "email", 120), reply_to: t(fd, "reply_to", 120), customer_notifications: on(fd, "customer_notifications") } }, "Communication settings saved");
 }
 export async function saveNotifications(fd: FormData): Promise<ActionResult> {
-  const v = Object.fromEntries(["enquiries", "bookings", "agent", "mentions"].map(k => [k, { email: on(fd, `${k}_email`), in_app: on(fd, `${k}_app`), sms: on(fd, `${k}_sms`) }]));
+  const v = Object.fromEntries(["enquiries", "bookings", "agent", "mentions"].map(k => [k, { email: on(fd, `${k}_email`), in_app: on(fd, `${k}_app`) }]));
   return save({ section: "notifications", value: v }, "Notification preferences saved");
 }
 export async function saveAgent(fd: FormData): Promise<ActionResult> {

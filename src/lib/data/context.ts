@@ -35,8 +35,9 @@ export const getOrganizer = cache(async (next = "/organizer") => {
   if (profile?.last_workspace_id !== ws.id) await supabase.rpc("remember_workspace", { p_workspace: ws.id });
   const [{ data: workspace }, { count: unread }, { data: notes }] = await Promise.all([
     supabase.from("workspaces").select("id,name,settings,verification_status,payout_status,stripe_account_id,cover_image").eq("id", ws.id).single(),
-    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
-    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).filter("muted", "eq", false).order("created_at", { ascending: false }).limit(8),   // Q67: muted = workspace in-app alerts switched off
+    // Q64: this workspace's alerts and untagged ones — another workspace's (organiser or provider) stay in that workspace's bell.
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null).or(`workspace_id.is.null,workspace_id.eq.${ws.id}`),
+    supabase.from("notifications").select("id,title,body,link,read_at,created_at,kind").eq("user_id", user.id).filter("muted", "eq", false).or(`workspace_id.is.null,workspace_id.eq.${ws.id}`).order("created_at", { ascending: false }).limit(8),   // Q67: muted = workspace in-app alerts switched off
   ]);
   enforceWorkspaceMfa({ settings: workspace?.settings, role: ws.role, aal, workspaceName: ws.name, next });
   const name = profile?.full_name || user.email?.split("@")[0] || "Organizer";

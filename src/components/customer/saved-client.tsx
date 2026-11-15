@@ -1,4 +1,5 @@
 "use client";
+import { useToday } from "@/components/shared/local-time";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -32,6 +33,7 @@ export function SavedEventActions({ event: e }: { event: { id: string; name: str
 
 type Ev = { id: string; name: string };
 export function SavedListingActions({ listing: l, events }: { listing: { id: string; name: string; kind: string; href: string; category: string }; events: Ev[] }) {
+  const today = useToday();   // Q72
   const { run, pending } = useAction(); const toast = useKitToast();
   const [avail, setAvail] = useState(false); const [date, setDate] = useState(""); const [res, setRes] = useState<Availability | null>(null); const [busy, setBusy] = useState(false);
   const pickEvent = (mode: "add" | "quote") => function PickEventTrigger({ toggle, open, id }: { toggle: () => void; open: boolean; id: string }) { return <button className={`sv-btn ${mode === "add" ? "drop" : "soft"}`} onClick={toggle} aria-expanded={open} aria-controls={id} disabled={pending}>{mode === "add" ? <>Add to event <ChevronDown size={15} /></> : <><FileText size={15} />Get a quote</>}</button>; };
@@ -43,7 +45,7 @@ export function SavedListingActions({ listing: l, events }: { listing: { id: str
     <Menu label={`Add ${l.name} to an event`} width={240} trigger={pickEvent("add")}>{menu("add")}</Menu>
     <Dialog open={avail} onClose={() => { setAvail(false); setRes(null); }} title={`Check ${l.name}`} sub="See if your date is free. The venue confirms final availability when you request a booking.">
       <form className="k-col" style={{ gap: 12 }} onSubmit={async e => { e.preventDefault(); if (!date) return; setBusy(true); const r = await checkAvailability(l.id, date, "18:00", "23:00"); setBusy(false); if (r.ok) setRes(r.data ?? "unknown"); else toast(r.error ?? "Couldn't check", "error"); }}>
-        <label className="k-field"><span>Event date</span><input className="k-input" type="date" required min={new Date().toISOString().slice(0, 10)} value={date} onChange={e => { setDate(e.target.value); setRes(null); }} /></label>
+        <label className="k-field"><span>Event date</span><input className="k-input" type="date" required min={today} value={date} onChange={e => { setDate(e.target.value); setRes(null); }} /></label>
         {res && <div className={`k-notice ${res === "available" ? "green" : res === "unavailable" ? "red" : "amber"}`}>{res === "available" ? "Looks available that evening." : res === "limited" ? "Limited — another booking is provisionally held." : res === "unavailable" ? "Not available that evening. Try another date." : "The venue will confirm availability when you ask."}</div>}
         <div className="k-row" style={{ justifyContent: "flex-end" }}>{res && res !== "unavailable" && events.length > 0 && <button type="button" className="k-btn outline" onClick={() => void run(() => addAndRequest(events[0]!.id, l.id, l.category, "quote"))}>Request booking for {events[0]!.name}</button>}<button className="k-btn primary" disabled={busy || !date}>{busy && <Loader2 size={15} className="k-spin" />}Check date</button></div>
       </form>

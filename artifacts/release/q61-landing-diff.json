@@ -1,0 +1,259 @@
+{
+ "after": {
+  "at": "2026-11-14T23:57:10.489Z",
+  "rows": [
+   {
+    "tag": "after",
+    "section": "2.1-hero",
+    "width": 1536,
+    "liveH": 816,
+    "designH": 864,
+    "heightRatio": 0.94,
+    "diffPct": 15.4
+   },
+   {
+    "tag": "after",
+    "section": "2.2-ways",
+    "width": 1536,
+    "liveH": 1193,
+    "designH": 614,
+    "heightRatio": 1.94,
+    "diffPct": 9
+   },
+   {
+    "tag": "after",
+    "section": "2.3-whole",
+    "width": 1536,
+    "liveH": 974,
+    "designH": 575,
+    "heightRatio": 1.69,
+    "diffPct": 10.6
+   },
+   {
+    "tag": "after",
+    "section": "2.4-lifecycle",
+    "width": 1536,
+    "liveH": 1183,
+    "designH": 651,
+    "heightRatio": 1.82,
+    "diffPct": 12.4
+   },
+   {
+    "tag": "after",
+    "section": "2.5-market",
+    "width": 1536,
+    "liveH": 1271,
+    "designH": 647,
+    "heightRatio": 1.96,
+    "diffPct": 9.5
+   },
+   {
+    "tag": "after",
+    "section": "2.6-record",
+    "width": 1536,
+    "liveH": 993,
+    "designH": 695,
+    "heightRatio": 1.43,
+    "diffPct": 10.6
+   },
+   {
+    "tag": "after",
+    "section": "2.7-close-footer",
+    "width": 1536,
+    "liveH": 1045,
+    "designH": 513,
+    "heightRatio": 2.04,
+    "diffPct": 4.7
+   },
+   {
+    "tag": "after",
+    "section": "2.1-hero",
+    "width": 1280,
+    "liveH": 690,
+    "designH": 720,
+    "heightRatio": 0.96,
+    "diffPct": 16.5
+   },
+   {
+    "tag": "after",
+    "section": "2.2-ways",
+    "width": 1280,
+    "liveH": 1015,
+    "designH": 512,
+    "heightRatio": 1.98,
+    "diffPct": 9.3
+   },
+   {
+    "tag": "after",
+    "section": "2.3-whole",
+    "width": 1280,
+    "liveH": 1100,
+    "designH": 479,
+    "heightRatio": 2.3,
+    "diffPct": 7.6
+   },
+   {
+    "tag": "after",
+    "section": "2.4-lifecycle",
+    "width": 1280,
+    "liveH": 1006,
+    "designH": 543,
+    "heightRatio": 1.85,
+    "diffPct": 12.5
+   },
+   {
+    "tag": "after",
+    "section": "2.5-market",
+    "width": 1280,
+    "liveH": 1082,
+    "designH": 539,
+    "heightRatio": 2.01,
+    "diffPct": 9.7
+   },
+   {
+    "tag": "after",
+    "section": "2.6-record",
+    "width": 1280,
+    "liveH": 844,
+    "designH": 579,
+    "heightRatio": 1.46,
+    "diffPct": 10.8
+   },
+   {
+    "tag": "after",
+    "section": "2.7-close-footer",
+    "width": 1280,
+    "liveH": 889,
+    "designH": 428,
+    "heightRatio": 2.08,
+    "diffPct": 4.8
+   },
+   {
+    "tag": "after",
+    "section": "2.1-hero",
+    "width": 768,
+    "liveH": 1200,
+    "designH": 432,
+    "heightRatio": 2.78,
+    "diffPct": 13.8
+   },
+   {
+    "tag": "after",
+    "section": "2.2-ways",
+    "width": 768,
+    "liveH": 1193,
+    "designH": 307,
+    "heightRatio": 3.89,
+    "diffPct": 8.1
+   },
+   {
+    "tag": "after",
+    "section": "2.3-whole",
+    "width": 768,
+    "liveH": 1778,
+    "designH": 288,
+    "heightRatio": 6.17,
+    "diffPct": 7.8
+   },
+   {
+    "tag": "after",
+    "section": "2.4-lifecycle",
+    "width": 768,
+    "liveH": 1597,
+    "designH": 326,
+    "heightRatio": 4.9,
+    "diffPct": 12
+   },
+   {
+    "tag": "after",
+    "section": "2.5-market",
+    "width": 768,
+    "liveH": 1748,
+    "designH": 324,
+    "heightRatio": 5.4,
+    "diffPct": 8.3
+   },
+   {
+    "tag": "after",
+    "section": "2.6-record",
+    "width": 768,
+    "liveH": 1970,
+    "designH": 348,
+    "heightRatio": 5.66,
+    "diffPct": 6.1
+   },
+   {
+    "tag": "after",
+    "section": "2.7-close-footer",
+    "width": 768,
+    "liveH": 1605,
+    "designH": 257,
+    "heightRatio": 6.25,
+    "diffPct": 3.5
+   },
+   {
+    "tag": "after",
+    "section": "2.1-hero",
+    "width": 390,
+    "liveH": 1307,
+    "designH": 219,
+    "heightRatio": 5.97,
+    "diffPct": 10.8
+   },
+   {
+    "tag": "after",
+    "section": "2.2-ways",
+    "width": 390,
+    "liveH": 1333,
+    "designH": 156,
+    "heightRatio": 8.54,
+    "diffPct": 8.8
+   },
+   {
+    "tag": "after",
+    "section": "2.3-whole",
+    "width": 390,
+    "liveH": 2040,
+    "designH": 146,
+    "heightRatio": 13.97,
+    "diffPct": 10.1
+   },
+   {
+    "tag": "after",
+    "section": "2.4-lifecycle",
+    "width": 390,
+    "liveH": 1795,
+    "designH": 165,
+    "heightRatio": 10.88,
+    "diffPct": 9.7
+   },
+   {
+    "tag": "after",
+    "section": "2.5-market",
+    "width": 390,
+    "liveH": 2034,
+    "designH": 164,
+    "heightRatio": 12.4,
+    "diffPct": 8.5
+   },
+   {
+    "tag": "after",
+    "section": "2.6-record",
+    "width": 390,
+    "liveH": 2101,
+    "designH": 177,
+    "heightRatio": 11.87,
+    "diffPct": 7.2
+   },
+   {
+    "tag": "after",
+    "section": "2.7-close-footer",
+    "width": 390,
+    "liveH": 1970,
+    "designH": 130,
+    "heightRatio": 15.15,
+    "diffPct": 3.4
+   }
+  ]
+ }
+}

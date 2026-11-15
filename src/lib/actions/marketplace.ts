@@ -59,7 +59,7 @@ export async function sendRequest(input: unknown): Promise<ActionResult> {
   try {
     const admin = createAdminClient();
     const { data: owners } = await admin.from("workspaces").select("id,owner_id").in("id", [...new Set((listings ?? []).map(l => l.workspace_id))]);
-    if (owners?.length) await admin.from("notifications").insert(owners.map(o => ({ user_id: o.owner_id, kind: d.emergency ? "emergency_request" : "request_received", title: `${d.emergency ? "Emergency request" : "New request"}: ${d.title}`.slice(0, 160), body: `${ev.name} · respond within ${d.response_hours}h`, link: "/provider" })));
+    if (owners?.length) await admin.from("notifications").insert(owners.map(o => ({ user_id: o.owner_id, workspace_id: o.id, kind: d.emergency ? "emergency_request" : "request_received", title: `${d.emergency ? "Emergency request" : "New request"}: ${d.title}`.slice(0, 160), body: `${ev.name} · respond within ${d.response_hours}h`, link: "/provider" })) as never);   // notifications.workspace_id: generated types predate the column
   } catch { /* notification delivery is best-effort; the request itself is recorded */ }
   await writeAudit(ctx.user.id, ctx.workspace.id, "request.sent", { event_id: ev.id, request_id: req.id, recipients: ids.length, emergency: d.emergency, text: `Request ${reference} sent to ${ids.length} provider${ids.length === 1 ? "" : "s"}` });
   revalidatePath("/organizer/marketplace"); revalidatePath(`/organizer/events/${ev.id}`);

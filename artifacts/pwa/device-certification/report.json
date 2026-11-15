@@ -1,0 +1,5053 @@
+{
+  "observedUtc": "2026-10-13T20:49:30.626Z",
+  "base": "http://localhost:3120",
+  "scope": "144 browser-emulated route/device/orientation cases; Safari behavior approximated by WebKit, not physical iOS; Firefox is a responsive desktop viewport",
+  "axeExclusion": "Incidental noninteractive .ml-thumb[aria-hidden=true] artwork only; library controls remain included",
+  "results": [
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [
+        "Page overflow 7px"
+      ],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 7,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 375,
+        "height": 629,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 559,
+          "width": 375,
+          "height": 70,
+          "top": 559,
+          "right": 375,
+          "bottom": 629,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "targets": [
+            [
+              "section:nth-child(4) > .adb-table"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 629
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13 Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 327,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 257,
+          "width": 712,
+          "height": 70,
+          "top": 257,
+          "right": 712,
+          "bottom": 327,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 327
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 45.5,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 45.5,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 45.5,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [
+        "Page overflow 2px"
+      ],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 2,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 24.40625,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 24.40625,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 390,
+        "height": 664,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 594,
+          "width": 390,
+          "height": 70,
+          "top": 594,
+          "right": 390,
+          "bottom": 664,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "targets": [
+            [
+              "section:nth-child(4) > .adb-table"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 24.40625,
+        "bottom": 664
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPhone 13",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 750,
+        "height": 342,
+        "dpr": 3,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 272,
+          "width": 750,
+          "height": 70,
+          "top": 272,
+          "right": 750,
+          "bottom": 342,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 342
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 405.5,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 405.5,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 405.5,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 149.5,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 149.5,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 149.5,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 398,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 398,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 768,
+        "height": 1024,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 954,
+          "width": 768,
+          "height": 70,
+          "top": 954,
+          "right": 768,
+          "bottom": 1024,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 398,
+        "bottom": 1024
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 142,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 142,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "iPad Mini",
+      "engine": "webkit",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 1024,
+        "height": 768,
+        "dpr": 2,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 698,
+          "width": 1024,
+          "height": 70,
+          "top": 698,
+          "right": 1024,
+          "bottom": 768,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 142,
+        "bottom": 768
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 108.5,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 108.5,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 108.5,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 87.40625,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 87.40625,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 393,
+        "height": 727,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 657,
+          "width": 393,
+          "height": 70,
+          "top": 657,
+          "right": 393,
+          "bottom": 727,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 87.40625,
+        "bottom": 727
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Pixel 5",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 802,
+        "height": 293,
+        "dpr": 2.75,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 223,
+          "width": 802,
+          "height": 70,
+          "top": 223,
+          "right": 802,
+          "bottom": 293,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 293
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 519.5,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 519.5,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 519.5,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 93.5,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 93.5,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 93.5,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 127,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 719,
+        "height": 1150,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1080,
+          "width": 719,
+          "height": 70,
+          "top": 1080,
+          "right": 719,
+          "bottom": 1150,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 139,
+        "bottom": 1150
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 127,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 512,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 512,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 712,
+        "height": 1138,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 1068,
+          "width": 712,
+          "height": 70,
+          "top": 1068,
+          "right": 712,
+          "bottom": 1138,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 512,
+        "bottom": 1138
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 86,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 86,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Galaxy Tab S4",
+      "engine": "chromium",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 1138,
+        "height": 712,
+        "dpr": 2.25,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 642,
+          "width": 1138,
+          "height": 70,
+          "top": 642,
+          "right": 1138,
+          "bottom": 712,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 86,
+        "bottom": 712
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 225.5,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 225.5,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 225.5,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account?tab=security",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "customer",
+      "route": "/account/tickets",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/events",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "organizer",
+      "route": "/organizer/media",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 16,
+        "bottom": 844
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/bookings",
+      "issues": [
+        "Page axe violations"
+      ],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "targets": [
+            [
+              "tr:nth-child(1) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              ".amber"
+            ],
+            [
+              "tr:nth-child(3) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(4) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(5) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(6) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(7) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ],
+            [
+              "tr:nth-child(8) > td:nth-child(4) > .ws-cell-text > .pb-pay.green"
+            ]
+          ]
+        }
+      ],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/money",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "provider",
+      "route": "/provider/settings",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 204.39999389648438,
+        "bottom": 843.9999694824219
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 204.39999389648438,
+        "bottom": 843.9999694824219
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "portrait",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 774,
+          "width": 390,
+          "height": 70,
+          "top": 774,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 204.39999389648438,
+        "bottom": 843.9999694824219
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/users",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/workspaces",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "Firefox responsive viewport",
+      "engine": "firefox",
+      "orientation": "landscape",
+      "role": "admin",
+      "route": "/admin/health",
+      "issues": [],
+      "geometry": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "overflow": 0,
+        "nav": {
+          "x": 0,
+          "y": 320,
+          "width": 844,
+          "height": 70,
+          "top": 320,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        }
+      },
+      "axe": [],
+      "menu": {
+        "columns": 3,
+        "focusInside": true,
+        "top": 8,
+        "bottom": 390
+      },
+      "menuAxe": [],
+      "pageErrors": []
+    }
+  ],
+  "resumedFromUtc": "2026-10-13T20:43:02.986Z"
+}

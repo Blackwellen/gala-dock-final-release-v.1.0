@@ -1,0 +1,503 @@
+{
+ "leaf_weighted": 26.9,
+ "leaves": 13,
+ "leaves_passed": 2,
+ "page_line_drift": 57.2,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/GalaDock Wedding Event Planner Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p13/build-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 14,
+ "passed": 2,
+ "weighted_drift": 21.1,
+ "worst": [
+  {
+   "design": [
+    1199,
+    649,
+    308,
+    78
+   ],
+   "ours": [
+    1206,
+    532,
+    300,
+    213
+   ],
+   "iou": 0.363,
+   "box_drift": 63.7,
+   "line_drift": 75.6,
+   "drift": 63.7,
+   "dx": 7,
+   "dy": -117,
+   "dw": -8,
+   "dh": 135
+  },
+  {
+   "design": [
+    673,
+    817,
+    502,
+    97
+   ],
+   "ours": [
+    524,
+    848,
+    639,
+    106
+   ],
+   "iou": 0.385,
+   "box_drift": 61.5,
+   "line_drift": 76.0,
+   "drift": 61.5,
+   "dx": -149,
+   "dy": 31,
+   "dw": 137,
+   "dh": 9
+  },
+  {
+   "design": [
+    516,
+    471,
+    156,
+    89
+   ],
+   "ours": [
+    533,
+    503,
+    158,
+    92
+   ],
+   "iou": 0.387,
+   "box_drift": 61.3,
+   "line_drift": 91.6,
+   "drift": 61.3,
+   "dx": 17,
+   "dy": 32,
+   "dw": 2,
+   "dh": 3
+  },
+  {
+   "design": [
+    516,
+    708,
+    156,
+    90
+   ],
+   "ours": [
+    533,
+    739,
+    158,
+    92
+   ],
+   "iou": 0.403,
+   "box_drift": 59.7,
+   "line_drift": 90.5,
+   "drift": 59.7,
+   "dx": 17,
+   "dy": 31,
+   "dw": 2,
+   "dh": 2
+  },
+  {
+   "design": [
+    1199,
+    479,
+    308,
+    162
+   ],
+   "ours": [
+    1204,
+    530,
+    302,
+    215
+   ],
+   "iou": 0.412,
+   "box_drift": 58.8,
+   "line_drift": 81.1,
+   "drift": 58.8,
+   "dx": 5,
+   "dy": 51,
+   "dw": -6,
+   "dh": 53
+  },
+  {
+   "design": [
+    673,
+    703,
+    502,
+    103
+   ],
+   "ours": [
+    692,
+    734,
+    471,
+    104
+   ],
+   "iou": 0.508,
+   "box_drift": 49.2,
+   "line_drift": 73.2,
+   "drift": 49.2,
+   "dx": 19,
+   "dy": 31,
+   "dw": -31,
+   "dh": 1
+  },
+  {
+   "design": [
+    672,
+    588,
+    503,
+    104
+   ],
+   "ours": [
+    692,
+    618,
+    471,
+    104
+   ],
+   "iou": 0.525,
+   "box_drift": 47.5,
+   "line_drift": 84.0,
+   "drift": 47.5,
+   "dx": 20,
+   "dy": 30,
+   "dw": -32,
+   "dh": 0
+  },
+  {
+   "design": [
+    342,
+    924,
+    832,
+    78
+   ],
+   "ours": [
+    346,
+    887,
+    821,
+    107
+   ],
+   "iou": 0.603,
+   "box_drift": 39.7,
+   "line_drift": 87.7,
+   "drift": 39.7,
+   "dx": 4,
+   "dy": -37,
+   "dw": -11,
+   "dh": 29
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    32,
+    71,
+    1475,
+    149
+   ],
+   "ours": [
+    32,
+    74,
+    1476,
+    143
+   ],
+   "iou": 0.959,
+   "box_drift": 4.1,
+   "line_drift": 27.8,
+   "drift": 4.1,
+   "dx": 0,
+   "dy": 3,
+   "dw": 1,
+   "dh": -6
+  },
+  {
+   "design": [
+    328,
+    283,
+    861,
+    644
+   ],
+   "ours": [
+    331,
+    282,
+    851,
+    727
+   ],
+   "iou": 0.877,
+   "box_drift": 12.3,
+   "line_drift": 74.4,
+   "drift": 12.3,
+   "dx": 3,
+   "dy": -1,
+   "dw": -10,
+   "dh": 83
+  },
+  {
+   "design": [
+    1199,
+    283,
+    309,
+    185
+   ],
+   "ours": [
+    1206,
+    282,
+    300,
+    236
+   ],
+   "iou": 0.766,
+   "box_drift": 23.4,
+   "line_drift": 46.2,
+   "drift": 23.4,
+   "dx": 7,
+   "dy": -1,
+   "dw": -9,
+   "dh": 51
+  },
+  {
+   "design": [
+    673,
+    357,
+    502,
+    101
+   ],
+   "ours": [
+    692,
+    378,
+    471,
+    104
+   ],
+   "iou": 0.608,
+   "box_drift": 39.2,
+   "line_drift": 72.0,
+   "drift": 39.2,
+   "dx": 19,
+   "dy": 21,
+   "dw": -31,
+   "dh": 3
+  },
+  {
+   "design": [
+    33,
+    419,
+    285,
+    589
+   ],
+   "ours": [
+    34,
+    440,
+    283,
+    569
+   ],
+   "iou": 0.956,
+   "box_drift": 4.4,
+   "line_drift": 13.4,
+   "drift": 4.4,
+   "dx": 1,
+   "dy": 21,
+   "dw": -2,
+   "dh": -20
+  },
+  {
+   "design": [
+    516,
+    471,
+    156,
+    89
+   ],
+   "ours": [
+    533,
+    503,
+    158,
+    92
+   ],
+   "iou": 0.387,
+   "box_drift": 61.3,
+   "line_drift": 91.6,
+   "drift": 61.3,
+   "dx": 17,
+   "dy": 32,
+   "dw": 2,
+   "dh": 3
+  },
+  {
+   "design": [
+    1199,
+    479,
+    308,
+    162
+   ],
+   "ours": [
+    1204,
+    530,
+    302,
+    215
+   ],
+   "iou": 0.412,
+   "box_drift": 58.8,
+   "line_drift": 81.1,
+   "drift": 58.8,
+   "dx": 5,
+   "dy": 51,
+   "dw": -6,
+   "dh": 53
+  },
+  {
+   "design": [
+    672,
+    588,
+    503,
+    104
+   ],
+   "ours": [
+    692,
+    618,
+    471,
+    104
+   ],
+   "iou": 0.525,
+   "box_drift": 47.5,
+   "line_drift": 84.0,
+   "drift": 47.5,
+   "dx": 20,
+   "dy": 30,
+   "dw": -32,
+   "dh": 0
+  },
+  {
+   "design": [
+    1199,
+    649,
+    308,
+    78
+   ],
+   "ours": [
+    1206,
+    532,
+    300,
+    213
+   ],
+   "iou": 0.363,
+   "box_drift": 63.7,
+   "line_drift": 75.6,
+   "drift": 63.7,
+   "dx": 7,
+   "dy": -117,
+   "dw": -8,
+   "dh": 135
+  },
+  {
+   "design": [
+    673,
+    703,
+    502,
+    103
+   ],
+   "ours": [
+    692,
+    734,
+    471,
+    104
+   ],
+   "iou": 0.508,
+   "box_drift": 49.2,
+   "line_drift": 73.2,
+   "drift": 49.2,
+   "dx": 19,
+   "dy": 31,
+   "dw": -31,
+   "dh": 1
+  },
+  {
+   "design": [
+    516,
+    708,
+    156,
+    90
+   ],
+   "ours": [
+    533,
+    739,
+    158,
+    92
+   ],
+   "iou": 0.403,
+   "box_drift": 59.7,
+   "line_drift": 90.5,
+   "drift": 59.7,
+   "dx": 17,
+   "dy": 31,
+   "dw": 2,
+   "dh": 2
+  },
+  {
+   "design": [
+    1199,
+    787,
+    308,
+    73
+   ],
+   "ours": [
+    1206,
+    759,
+    300,
+    115
+   ],
+   "iou": 0.624,
+   "box_drift": 37.6,
+   "line_drift": 80.5,
+   "drift": 37.6,
+   "dx": 7,
+   "dy": -28,
+   "dw": -8,
+   "dh": 42
+  },
+  {
+   "design": [
+    673,
+    817,
+    502,
+    97
+   ],
+   "ours": [
+    524,
+    848,
+    639,
+    106
+   ],
+   "iou": 0.385,
+   "box_drift": 61.5,
+   "line_drift": 76.0,
+   "drift": 61.5,
+   "dx": -149,
+   "dy": 31,
+   "dw": 137,
+   "dh": 9
+  },
+  {
+   "design": [
+    342,
+    924,
+    832,
+    78
+   ],
+   "ours": [
+    346,
+    887,
+    821,
+    107
+   ],
+   "iou": 0.603,
+   "box_drift": 39.7,
+   "line_drift": 87.7,
+   "drift": 39.7,
+   "dx": 4,
+   "dy": -37,
+   "dw": -11,
+   "dh": 29
+  }
+ ]
+}

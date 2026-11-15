@@ -38,3 +38,16 @@ export function londonStamp(v: string | number | Date) {
     .formatToParts(new Date(v)).map(x => [x.type, x.value]));
   return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}`;
 }
+/** Q75: Stripe dashboard deep link for a ledger reference. Platform charges (subscriptions, boosts) live on the platform account and
+ *  use search; DEC-107 direct charges and payouts live on the seller's connected account, which the platform's search never finds, so
+ *  they need the account-scoped URL (dashboard.stripe.com/<acct>/[test/]payments/<id>). Unknown connected account → null (hide the button). */
+export function stripeDashboardUrl(ref: string | null | undefined, target: { platform: boolean; account: string | null }, livemode: boolean) {
+  if (!ref) return null;
+  const mode = livemode ? "" : "test/";
+  if (target.platform) return `https://dashboard.stripe.com/${mode}search?query=${encodeURIComponent(ref)}`;
+  if (!target.account || !/^acct_[A-Za-z0-9]+$/.test(target.account)) return null;
+  const id = encodeURIComponent(ref), acct = target.account;
+  if (/^po_/.test(ref)) return `https://dashboard.stripe.com/${acct}/${mode}payouts/${id}`;
+  if (/^(pi_|ch_|py_)/.test(ref)) return `https://dashboard.stripe.com/${acct}/${mode}payments/${id}`;
+  return `https://dashboard.stripe.com/${acct}/${mode}search?query=${id}`;
+}

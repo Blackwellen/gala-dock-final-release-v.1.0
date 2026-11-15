@@ -24,9 +24,11 @@ test.describe('official resale policy and reservation integrity',()=>{
   expect((await out.rpc('list_ticket_for_resale',{p_ticket:ticket,p_cancel:false})).error?.message).toMatch(/not_authorized/);
   expect((await seller.rpc('list_ticket_for_resale',{p_ticket:ticket,p_cancel:false})).error?.message).toMatch(/resale_disabled/);
   await db.from('events').update({settings:{resale:true}}).eq('id',event);
-  await db.from('ticket_tiers').update({price:0}).eq('id',tier);
+  // 202611146702 (backend-queue 2026-11-14, Q57 follow-up): the cap is on tickets.face_value — the list price when bought (CRA 2015 s.90) —
+  // not the tier's current price, so a later tier price cut no longer moves it. Lower the ticket's own face value to exceed the cap.
+  await db.from('tickets').update({face_value:10}).eq('id',ticket);
   expect((await seller.rpc('list_ticket_for_resale',{p_ticket:ticket,p_cancel:false})).error?.message).toMatch(/price_cap_exceeded/);
-  await db.from('ticket_tiers').update({price:20}).eq('id',tier);
+  await db.from('tickets').update({face_value:20}).eq('id',ticket);
   await db.from('tickets').update({checked_in_at:new Date().toISOString()}).eq('id',ticket);
   expect((await seller.rpc('list_ticket_for_resale',{p_ticket:ticket,p_cancel:false})).error?.message).toMatch(/not_resellable/);
   await db.from('tickets').update({checked_in_at:null}).eq('id',ticket);

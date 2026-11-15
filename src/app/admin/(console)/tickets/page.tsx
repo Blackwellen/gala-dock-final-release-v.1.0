@@ -13,7 +13,7 @@ import { money, day, relative, requestTime, delta, titleCase } from "@/lib/works
 import { AdminMenu, ParamSelect, SearchBox, SelectAll } from "../_a/client";
 import { Pager, LineTabs, Status, DrawerClose, SectionHead, MiniStat } from "../_a/ui";
 import { shortRef, str, pageOf, qs, rpc, hmRange, periodOf, PERIODS, type SP } from "../_a/lib";
-import { EV_COLS, loadEventMetrics, loadWorkspaceNames, evStatus, typeLabel, type Ev, type EvMetric } from "../_a/events";
+import { EV_COLS, loadEventMetrics, loadWorkspaceNames, typeLabel, ticketRisk, ticketEventMatches, type Ev, type EvMetric } from "../_a/events";
 import { setTicketSales } from "../_a/actions";
 
 export const metadata: Metadata = { title: "Tickets" };
@@ -21,12 +21,7 @@ type Daily = { day: string; sold: number; revenue: number; refunded: number; sca
 type Tk = { id: string; code: string; order_ref: string; attendee_name: string; attendee_email: string; status: string; price_paid: number; created_at: string; event_id: string; event: { name: string } | null };
 
 const tierLabel: Record<string, string> = { on_sale: "On sale", sold_out: "Sold out", paused: "Paused", draft: "Draft", scheduled: "Scheduled" };
-function risk(e: Ev, m?: EvMetric) {
-  const refundRate = m && m.sold + m.refunded ? m.refunded / (m.sold + m.refunded) : 0;
-  if ((m?.max_risk ?? 0) >= 70 || e.status === "suspended" || (e.status === "cancelled" && (m?.sold ?? 0) > 0)) return { key: "high", label: "High" };
-  if ((m?.flags ?? 0) > 0 || refundRate > 0.02 || (m?.scan_anomalies ?? 0) > 0 || e.status === "cancelled") return { key: "medium", label: "Medium" };
-  return { key: "low", label: "Low" };
-}
+const risk = ticketRisk;
 const sumK = (d: Daily[], k: keyof Daily) => d.reduce((a, x) => a + Number(x[k]), 0);
 
 export default async function TicketsPage(props: PageProps<"/admin/tickets">) {
@@ -52,17 +47,7 @@ export default async function TicketsPage(props: PageProps<"/admin/tickets">) {
   const cities = [...new Set(ticketed.map(e => e.city).filter(Boolean))].sort(), types = [...new Set(ticketed.map(e => e.event_type))].sort();
   const base = "/admin/tickets";
 
-  const filtered = ticketed.filter(e => {
-    const m = metrics.get(e.id);
-    if (q && !`${e.name} ${e.settings?.reference ?? ""} ${e.venue_name} ${e.city} ${e.id}`.toLowerCase().includes(q)) return false;
-    if (f("type") && e.event_type !== f("type")) return false;
-    if (f("estatus") && evStatus(e, now).key !== f("estatus")) return false;
-    if (f("tstatus") && (m?.tier_status ?? "draft") !== f("tstatus")) return false;
-    if (f("vis") && e.visibility !== f("vis")) return false;
-    if (f("risk") && risk(e, m).key !== f("risk")) return false;
-    if (f("city") && e.city !== f("city")) return false;
-    return true;
-  }).sort((a, b) => Number(!!b.settings?.featured) - Number(!!a.settings?.featured) || (metrics.get(b.id)?.gross ?? 0) - (metrics.get(a.id)?.gross ?? 0));
+  const filtered = ticketed.filter(e => ticketEventMatches(e, metrics.get(e.id), f, now)).sort((a, b) => Number(!!b.settings?.featured) - Number(!!a.settings?.featured) || (metrics.get(b.id)?.gross ?? 0) - (metrics.get(a.id)?.gross ?? 0));
   const list = filtered.slice(offset, offset + per);
   const selId = f("sel") === "none" ? null : isUuid(f("sel")) ? f("sel") : tab === "events" ? list[0]?.id ?? null : null;
   const sel = all.find(e => e.id === selId);

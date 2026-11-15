@@ -1,0 +1,55 @@
+{
+  "report": [
+    {
+      "size": "1440x900",
+      "route": "/portal/jhd2omL3RaDSCI2jA22ZJLvDQAFtUrQaO4DunQia_wE",
+      "status": 200,
+      "issues": [
+        "ol.pc-tl clips 24px of its content",
+        "span.pc-tl-text sticks out of section.pt-panel.pc-timeline by 7px"
+      ]
+    },
+    {
+      "size": "1440x900",
+      "route": "/promoter",
+      "status": 200,
+      "issues": [
+        "redirected to /login"
+      ]
+    },
+    {
+      "size": "1440x900",
+      "route": "/partner",
+      "status": 200,
+      "issues": [
+        "redirected to /login"
+      ]
+    },
+    {
+      "size": "1280x800",
+      "route": "/portal/jhd2omL3RaDSCI2jA22ZJLvDQAFtUrQaO4DunQia_wE",
+      "status": 200,
+      "issues": [
+        "ol.pc-tl clips 24px of its content",
+        "span.pc-tl-text sticks out of section.pt-panel.pc-timeline by 7px"
+      ]
+    },
+    {
+      "size": "1280x800",
+      "route": "/promoter",
+      "status": 200,
+      "issues": [
+        "redirected to /login"
+      ]
+    },
+    {
+      "size": "1280x800",
+      "route": "/partner",
+      "status": 200,
+      "issues": [
+        "redirected to /login"
+      ]
+    }
+  ],
+  "errors": []
+}

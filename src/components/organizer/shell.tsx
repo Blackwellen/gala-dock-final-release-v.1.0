@@ -71,7 +71,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
       tabs={ORG_NAV.filter(n => ["Home", "Events", "Calendar", "Marketplace"].includes(n.label))}
       menu={[...navFor(workspace.role), { href: "/organizer/inbox", label: "Messages", icon: MessageCircle }, { href: "/help?from=organizer", label: "Help", icon: CircleHelp }]}
       create={[...creates, ...(["owner","manager","member"].includes(workspace.role) ? [{ href: "/organizer/media?create=1", label: "New design", icon: Palette }] : []), ...(["owner","manager","member","finance"].includes(workspace.role) ? [{ href: "/organizer/agent#compose", label: "Agent run", icon: Sparkles }] : [])]}
-      messagesHref="/organizer/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead()); }}
+      messagesHref="/organizer/inbox" unreadMessages={threads.some(t => t.unread)} notifications={notifications} unread={unread} onReadNotifications={() => { if (unread) void run(() => markNotificationsRead(workspace.id)); }}
       workspaceSwitcher={<>{workspaces.map(w => <button key={w.id} type="button" disabled={w.id === workspace.id} onClick={async () => { await run(() => switchWorkspace(w.id)); }}><Building2 size={18} aria-hidden /><span>{w.name} · {w.kind} · {w.role}</span>{w.id === workspace.id && <Check size={16} aria-hidden />}</button>)}<Link href="/discover">Customer app</Link></>} />
     <header className="o-top pwa-hide-desktop-nav">
       <div className="o-top-l">
@@ -98,7 +98,7 @@ export function OrganizerShell({ children, user, workspace, workspaces, unread, 
           <RecentMessages items={threads} inbox="/organizer/inbox" onPick={close} empty="No conversations yet. Message suppliers, clients and your team from the inbox." />
         </>}
       </Menu>
-      <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="o-top-btn" aria-label="Notifications" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead(), { refresh: true }); }} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><Bell size={20} aria-hidden />{unread > 0 && <i className="o-dot" aria-label={`${unread} unread`} />}</span><span className="o-top-lbl">Notifications</span></button>}>
+      <Menu label="Notifications" width={340} trigger={({ open, toggle, id }) => <button className="o-top-btn" aria-label="Notifications" onClick={() => { toggle(); if (!open && unread) void run(() => markNotificationsRead(workspace.id), { refresh: true }); }} aria-expanded={open} aria-controls={id}><span className="o-badge-wrap"><Bell size={20} aria-hidden />{unread > 0 && <i className="o-dot" aria-label={`${unread} unread`} />}</span><span className="o-top-lbl">Notifications</span></button>}>
         {close => <><div style={{ padding: "6px 10px" }}><b>Notifications</b></div>
           {notifications.length ? notifications.map(n => <Link key={n.id} role="menuitem" href={n.link} className="k-menu-item" onClick={close}><Bell size={15} aria-hidden className={n.read_at ? "k-muted" : "k-blue"} /><span className="k-grow"><span style={{ fontWeight: n.read_at ? 500 : 650 }}>{n.title}</span><small>{n.body} · {relative(n.created_at)}</small></span></Link>) : <p className="k-small" style={{ padding: 10 }}>You&apos;re all caught up.</p>}
         </>}

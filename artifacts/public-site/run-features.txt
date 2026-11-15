@@ -1,0 +1,62 @@
+
+Running 20 tests using 1 worker
+
+[1/20] [desktop] › tests\e2e\public\help-signed-in.spec.ts:18:7 › customer @390
+[2/20] [desktop] › tests\e2e\public\help-signed-in.spec.ts:27:7 › organiser via /organizer/help @390
+[3/20] [desktop] › tests\e2e\public\help-signed-in.spec.ts:18:7 › customer @1536
+[4/20] [desktop] › tests\e2e\public\help-signed-in.spec.ts:27:7 › organiser via /organizer/help @1536
+[5/20] [desktop] › tests\e2e\public\w13-public-controls.spec.ts:17:5 › signed out: Save, Follow and Buy send the visitor to sign in and back
+[6/20] [desktop] › tests\e2e\public\w13-public-controls.spec.ts:29:5 › directory search, date windows and category strip navigate with the right results heading
+[7/20] [desktop] › tests\e2e\public\w13-public-controls.spec.ts:46:5 › signed in (disposable): save/unsave, follow/unfollow organiser and city, registration refusal, checkout up to payment
+[8/20] [desktop] › tests\e2e\public\w13-public-controls.spec.ts:98:5 › cookie banner: anonymous choice sets gd_consent; signed-in choice appends a consent record; reopen from Cookies page
+[9/20] [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @390 › /events/neon-nights shows what the organiser built
+[10/20] [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @390 › /events/comedy-central-live shows what the organiser built
+[11/20] [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @1536 › /events/neon-nights shows what the organiser built
+  1) [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @1536 › /events/neon-nights shows what the organiser built 
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator:  locator('section#event-map').getByRole('button', { name: 'Fit map to width' })
+    Expected: enabled
+    Received: disabled
+    Timeout:  30000ms
+
+    Call log:
+      - Expect "toBeEnabled" locator('section#event-map').getByRole('button', { name: 'Fit map to width' }) with timeout 30000ms
+      - waiting for locator('section#event-map').getByRole('button', { name: 'Fit map to width' })
+        62 × locator resolved to <button disabled type="button" aria-label="Fit map to width">…</button>
+           - unexpected value "disabled"
+
+
+      57 |           await expect(map.getByRole("toolbar", { name: "Map zoom" })).toBeVisible();
+      58 |           await map.getByRole("button", { name: "Zoom in" }).click();
+    > 59 |           await expect(map.getByRole("button", { name: "Fit map to width" })).toBeEnabled();
+         |                                                                               ^
+      60 |           await expect(page.locator(".pe3-tabs a[href='#event-map']")).toBeVisible();
+      61 |         } else await expect(map).toHaveCount(0);
+      62 |
+        at C:\Users\PC\Documents\Blackwellen\Built\Gala Dock\tests\e2e\public-event-features.spec.ts:59:79
+
+    Error Context: test-results\e2e-public-event-features--89260-ws-what-the-organiser-built-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e2e-public-event-features--89260-ws-what-the-organiser-built-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e2e-public-event-features--89260-ws-what-the-organiser-built-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[12/20] [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @1536 › /events/comedy-central-live shows what the organiser built
+[13/20] [desktop] › tests\e2e\public-event-features.spec.ts:107:40 › saved page-editor settings are honoured › custom order, hidden blocks, CTA labels and overlay @390
+[14/20] [desktop] › tests\e2e\public-event-features.spec.ts:107:40 › saved page-editor settings are honoured › custom order, hidden blocks, CTA labels and overlay @1536
+[15/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @390 › /venues/riverside-arena shows what the provider published
+[16/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @390 › /services/elite-sounds-dj shows what the provider published
+[17/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @390 › /services/gala-bites-catering shows what the provider published
+[18/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @1536 › /venues/riverside-arena shows what the provider published
+[19/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @1536 › /services/elite-sounds-dj shows what the provider published
+[20/20] [desktop] › tests\e2e\public-listing-features.spec.ts:37:11 › public listing features @1536 › /services/gala-bites-catering shows what the provider published
+  1 failed
+    [desktop] › tests\e2e\public-event-features.spec.ts:46:11 › public event features @1536 › /events/neon-nights shows what the organiser built 
+  19 passed (5.0m)

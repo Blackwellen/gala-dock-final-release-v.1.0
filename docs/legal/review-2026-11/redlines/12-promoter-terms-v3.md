@@ -11,6 +11,7 @@ These terms apply to people and businesses who promote events on Gala Dock using
 
 ## 2. Payment
 2.1 **The organiser owes your commission**, not Gala Dock. The organiser approves attributed sales and runs payouts in Gala Dock, after the event has taken place and refund risk has passed. Gala Dock records attribution and the organiser's payout runs; it isn't liable if the organiser doesn't pay.
+2.1A **Security reviews.** If a security review of your Gala Dock account is open (for example after signs that someone else has accessed it), Gala Dock may stop a promoter payout being marked payable or paid until a person completes the review, and tells you and the organiser why. The organiser still owes approved commission. *[Q74 2026-11-14: owner decision D5]*
 2.2 You are responsible for your own tax and, if VAT-registered, for invoicing the organiser.
 
 ## 3. Rules

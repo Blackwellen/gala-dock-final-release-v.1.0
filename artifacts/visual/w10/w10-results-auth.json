@@ -1,0 +1,204 @@
+{
+ "auth": [
+  {
+   "name": "AUTH-001-login",
+   "links": 11,
+   "buttons": 4,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/login"
+  },
+  {
+   "name": "AUTH-002-register",
+   "links": 9,
+   "buttons": 3,
+   "inputs": 5,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Turn yournext eventinto somethingextraordinary.",
+   "url": "/register"
+  },
+  {
+   "name": "AUTH-003-verify-email",
+   "links": 10,
+   "buttons": 2,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/verify-email"
+  },
+  {
+   "name": "AUTH-004-forgot",
+   "links": 10,
+   "buttons": 1,
+   "inputs": 1,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/forgot-password"
+  },
+  {
+   "name": "AUTH-005-reset",
+   "links": 8,
+   "buttons": 0,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/reset-password"
+  },
+  {
+   "name": "AUTH-006-mfa-signed-out",
+   "links": 11,
+   "buttons": 4,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/login"
+  },
+  {
+   "name": "AUTH-007-invite-unknown",
+   "links": 7,
+   "buttons": 0,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/invite/<tok>"
+  },
+  {
+   "name": "AUTH-008-access-signed-out",
+   "links": 11,
+   "buttons": 1,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/access"
+  },
+  {
+   "name": "login-intent-checkout",
+   "links": 12,
+   "buttons": 4,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/login?next=/checkout/comedy-central-live",
+   "banner": "Returning to checkout / Complete your ticket purchase"
+  },
+  {
+   "name": "login-intent-plan",
+   "links": 12,
+   "buttons": 4,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/login?next=/onboarding/customer",
+   "banner": "You started from Plan an Event"
+  },
+  {
+   "name": "phone-login",
+   "links": 9,
+   "buttons": 4,
+   "inputs": 3,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/login"
+  },
+  {
+   "name": "phone-register",
+   "links": 8,
+   "buttons": 3,
+   "inputs": 5,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Turn yournext eventinto somethingextraordinary.",
+   "url": "/register"
+  },
+  {
+   "name": "AUTH-006-mfa-challenge",
+   "links": 9,
+   "buttons": 5,
+   "inputs": 6,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/mfa?next=%2Faccount"
+  }
+ ],
+ "flows": [
+  {
+   "flow": "signed-out deep link",
+   "path": "/account/events",
+   "status": 307,
+   "location": "/login?next=%2Faccount%2Fevents"
+  },
+  {
+   "flow": "signed-out deep link",
+   "path": "/tickets/accept/<tok>",
+   "status": 307,
+   "location": "/login?next=%2Ftickets%2Faccept%2F<tok>"
+  },
+  {
+   "flow": "signed-out deep link",
+   "path": "/organizer/events",
+   "status": 307,
+   "location": "/login?next=%2Forganizer%2Fevents"
+  },
+  {
+   "flow": "signed-out deep link",
+   "path": "/provider/settings?tab=team",
+   "status": 307,
+   "location": "/login?next=%2Fprovider%2Fsettings%3Ftab%3Dteam"
+  },
+  {
+   "flow": "login with unconfirmed email",
+   "landed": "/verify-email",
+   "message": "Verify your email"
+  },
+  {
+   "flow": "MFA challenge",
+   "mfaUrl": "/mfa?next=%2Faccount",
+   "after": "/account"
+  }
+ ],
+ "switching": [],
+ "billing": [],
+ "onboarding": [],
+ "notes": [
+  "cleanup: 2 disposable users removed"
+ ]
+}

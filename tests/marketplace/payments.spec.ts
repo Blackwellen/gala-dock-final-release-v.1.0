@@ -89,7 +89,10 @@ test.describe("payment orchestration", () => {
 
   test("§70 build budget keeps committed, paid and due separate from estimates", async () => {
     await db.from("events").update({ budget_total: 5000 }).eq("id", event);
-    await db.from("build_items").insert({ event_id: event, listing_id: listing, category: "styling", title: "Estimate only", status: "suggested", amount: 700 });
+    // 202611116011 (backend-queue 2026-11-11): one OPEN line per event + listing, so the estimate is a different (styling) listing;
+    // reusing the catering listing hit build_items_event_listing_open_uidx and silently inserted nothing (estimated 0).
+    const styling = ((await db.from("listings").insert({ workspace_id: provWs, name: "Pay Test Styling", kind: "service", category: "styling", published: false }).select("id").single()).data as { id: string }).id;
+    expect((await db.from("build_items").insert({ event_id: event, listing_id: styling, category: "styling", title: "Estimate only", status: "suggested", amount: 700 })).error).toBeNull();
     const { data, error } = await orgC.rpc("event_build_budget", { p_event: event });
     expect(error).toBeNull();
     expect(data).toMatchObject({ target: 5000, estimated: 700, confirmed: 2000, paid: 500, due: 1500, remaining: 3000 });

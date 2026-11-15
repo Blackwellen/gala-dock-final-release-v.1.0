@@ -5,6 +5,7 @@ import { rateLimit, sameOrigin } from "@/lib/security";
 import { CONTACT_TOPICS, EMAIL_RE, normaliseEmail } from "@/lib/email/rules";
 import { ipHash, turnstileOk } from "@/lib/comms/public";
 import { untyped } from "@/lib/workspace/db";
+import { scheduleTwentyLead } from "@/lib/crm/twenty-intake-schedule";
 
 const json = (b: unknown, s = 200) => NextResponse.json(b, { status: s, headers: { "Cache-Control": "no-store" } });
 
@@ -27,5 +28,16 @@ export async function POST(request: Request) {
   const { data: { user } } = await (await createClient()).auth.getUser();
   const { data, error } = await untyped(createAdminClient() as never).rpc("contact_submit", { p_name: name, p_email: email, p_topic: topic, p_message: message, p_ip_hash: ip, p_user: user?.id ?? null });
   if (error) { const limited = /rate_limited/.test(error.message); return json({ error: limited ? "You’ve sent several messages recently. Please try again later." : "Couldn’t send your message. Please email support@galadock.com." }, limited ? 429 : 500); }
+  // Copy sales, partnership and general enquiries into the owner's Twenty CRM (after the response; never blocks the form; off by
+  // default). Support, privacy and press never go. No consent block: this form has no optional marketing box.
+  if (topic === "sales" || topic === "partnerships" || topic === "general") {
+    const partner = topic === "partnerships";
+    const [firstName, ...rest] = name.split(/\s+/);
+    scheduleTwentyLead({
+      brand: "gala_dock", formType: partner ? "partner" : "contact", roles: [partner ? "gd_c_partner" : "gd_a_organiser"],
+      side: partner ? "c_partner" : "a_customer", email, firstName, lastName: rest.join(" "), message, landingPath: "/contact",
+      opportunity: topic === "general" ? undefined : { name: `${name} (Gala Dock ${partner ? "partner" : "sales enquiry"})`, partner },
+    });
+  }
   return json({ ok: true, reference: data });
 }

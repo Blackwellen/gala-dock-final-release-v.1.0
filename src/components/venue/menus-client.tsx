@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { createContext, useContext, useState, useTransition, type ReactNode } from "react";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2 } from "lucide-react";
 import { DIETARY, ALLERGENS, COURSES } from "./menu-constants";
 import { saveMenu, saveMenuSection, saveMenuItem, deleteMenuRow, saveBarPackage, saveMenuVariant, deleteMenuVariant } from "@/lib/venue/actions";
+
+/** Q76: menu and bar prices are in the provider's own currency (workspace/listing), set once by the page. */
+const CurCtx = createContext("GBP");
+export function MenuCurrency({ currency, children }: { currency: string; children: ReactNode }) { return <CurCtx.Provider value={currency}>{children}</CurCtx.Provider>; }
+const useSym = () => currencySymbol(useContext(CurCtx));
 
 const STYLES: [string, string][] = [["plated", "Plated"], ["buffet", "Buffet"], ["sharing", "Sharing"], ["canapes", "Canapés"], ["bowl_food", "Bowl food"], ["street_food", "Street food"], ["family_style", "Family style"], ["drinks_reception", "Drinks reception"], ["self_service", "Self service"]];
 const BAR: [string, string][] = [["cash_bar", "Cash bar"], ["hosted_bar", "Hosted bar"], ["open_bar", "Open bar"], ["drink_tokens", "Drink tokens"], ["prepaid_package", "Prepaid package"], ["minimum_spend", "Minimum spend"],
@@ -21,6 +27,7 @@ const v = (x: unknown) => (x == null ? "" : String(x));
 export type Menu = { id: string; listing_id: string | null; name: string; kind: string; description: string; serving_style: string | null; pricing: string; price: number | null; min_guests: number | null;
   max_guests: number | null; service_window_minutes: number | null; prep_requirements: string; final_numbers_days: number; status: string };
 export function MenuForm({ workspaceId, listings, menu, onDone }: { workspaceId: string; listings: { id: string; name: string }[]; menu?: Menu; onDone?: (id: string) => void }) {
+  const sym = useSym();
   const { pending, error, run } = useSave();
   return <form className="mk-form" aria-label={menu ? `Edit ${menu.name}` : "New menu"} action={f => { const g = (k: string) => String(f.get(k) ?? ""); run(() => saveMenu({ id: menu?.id, workspaceId, listingId: g("listing"), name: g("name"), kind: g("kind"),
     description: g("description"), servingStyle: g("style"), pricing: g("pricing"), price: g("price"), minGuests: g("min"), maxGuests: g("max"), serviceWindow: g("window"), prep: g("prep"), finalDays: g("final"), status: g("status") }), d => onDone?.(String(d))); }}>
@@ -29,7 +36,7 @@ export function MenuForm({ workspaceId, listings, menu, onDone }: { workspaceId:
     <label className="mk-field"><span>Type</span><select name="kind" defaultValue={menu?.kind ?? "food"}><option value="food">Food</option><option value="drink">Drink</option><option value="mixed">Food &amp; drink</option></select></label>
     <label className="mk-field"><span>Serving style</span><select name="style" defaultValue={menu?.serving_style ?? ""}><option value="">—</option>{STYLES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
     <label className="mk-field"><span>Pricing</span><select name="pricing" defaultValue={menu?.pricing ?? "per_person"}><option value="per_person">Per person</option><option value="fixed">Fixed package</option><option value="quantity">By quantity</option></select></label>
-    <label className="mk-field"><span>Price (£)</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(menu?.price)} /></label>
+    <label className="mk-field"><span>Price ({sym})</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(menu?.price)} /></label>
     <label className="mk-field"><span>Minimum guests</span><input name="min" type="number" min={1} defaultValue={v(menu?.min_guests)} /></label>
     <label className="mk-field"><span>Maximum guests</span><input name="max" type="number" min={1} defaultValue={v(menu?.max_guests)} /></label>
     <label className="mk-field"><span>Service window (minutes)</span><input name="window" type="number" min={0} max={1440} defaultValue={v(menu?.service_window_minutes)} /></label>
@@ -55,13 +62,14 @@ export type MenuItem = { id: string; section_id: string | null; name: string; de
 export type MenuVariant = { id: string; menu_item_id: string; name: string; price_delta_minor: number; dietary: string[]; allergens: string[]; may_contain: string[]; available: boolean };
 const cap = (a: string) => a[0]!.toUpperCase() + a.slice(1);
 export function ItemForm({ menuId, sections, item, onDone }: { menuId: string; sections: { id: string; name: string }[]; item?: MenuItem; onDone?: () => void }) {
+  const sym = useSym();
   const { pending, error, run } = useSave();
   return <form className="mk-form" aria-label={item ? `Edit ${item.name}` : "New item"} action={f => { const g = (k: string) => String(f.get(k) ?? ""); run(() => saveMenuItem({ id: item?.id, menuId, sectionId: g("section"), name: g("name"),
     description: g("description"), price: g("price"), unit: g("unit"), dietary: f.getAll("dietary").map(String), allergens: f.getAll("allergens").map(String), allergenNote: g("note"), available: f.get("available") === "on",
     mayContain: f.getAll("may_contain").map(String), declared: f.get("declared") === "on", course: g("course") }), () => onDone?.()); }}>
     <label className="mk-field"><span>Item</span><input name="name" required maxLength={120} defaultValue={item?.name} /></label>
     <label className="mk-field"><span>Section</span><select name="section" defaultValue={item?.section_id ?? sections[0]?.id ?? ""}><option value="">No section</option>{sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
-    <label className="mk-field"><span>Price or supplement (£, optional)</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(item?.price)} /></label>
+    <label className="mk-field"><span>Price or supplement ({sym}, optional)</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(item?.price)} /></label>
     <label className="mk-field"><span>Unit</span><input name="unit" maxLength={20} defaultValue={item?.unit ?? "portion"} /></label>
     <label className="mk-field"><span>Course</span><select name="course" defaultValue={item?.course ?? ""}><option value="">Not set</option>{COURSES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
     <label className="mk-field wide"><span>Description</span><input name="description" maxLength={600} defaultValue={item?.description} /></label>
@@ -90,6 +98,7 @@ export type BarPackage = { id: string; listing_id: string | null; name: string; 
   corkage_per_bottle: number | null; glassware: boolean; hours_from: string | null; hours_to: string | null; staffing: string; setup_minutes: number; deposit_pct: number;
   licensing: { provided_by?: string; licence_ref?: string; jurisdiction_rule_id?: string; min_age?: number }; status: string };
 export function BarPackageForm({ workspaceId, listings, rules, pkg, onDone }: { workspaceId: string; listings: { id: string; name: string }[]; rules: { id: string; label: string; min_age: number }[]; pkg?: BarPackage; onDone?: () => void }) {
+  const sym = useSym();
   const { pending, error, run } = useSave(); const l = pkg?.licensing ?? {};
   return <form className="mk-form" aria-label={pkg ? `Edit ${pkg.name}` : "New bar package"} action={f => { const g = (k: string) => String(f.get(k) ?? ""); run(() => saveBarPackage({ id: pkg?.id, workspaceId, listingId: g("listing"), name: g("name"), model: g("model"),
     description: g("description"), price: g("price"), perPerson: g("per_person"), tokenPrice: g("token"), minSpend: g("min_spend"), corkage: g("corkage"), glassware: f.get("glassware") === "on", hoursFrom: g("from"), hoursTo: g("to"),
@@ -97,11 +106,11 @@ export function BarPackageForm({ workspaceId, listings, rules, pkg, onDone }: { 
     <label className="mk-field"><span>Package name</span><input name="name" required minLength={2} maxLength={100} defaultValue={pkg?.name} /></label>
     <label className="mk-field"><span>Bar model</span><select name="model" defaultValue={pkg?.model ?? "cash_bar"}>{BAR.map(([k, n]) => <option key={k} value={k}>{n}</option>)}</select></label>
     <label className="mk-field"><span>Listing</span><select name="listing" defaultValue={pkg?.listing_id ?? listings[0]?.id ?? ""}><option value="">All listings</option>{listings.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
-    <label className="mk-field"><span>Package price (£)</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(pkg?.price)} /></label>
-    <label className="mk-field"><span>Per person (£)</span><input name="per_person" type="number" min={0} step="0.01" defaultValue={v(pkg?.per_person)} /></label>
-    <label className="mk-field"><span>Drink token price (£)</span><input name="token" type="number" min={0} step="0.01" defaultValue={v(pkg?.token_price)} /></label>
-    <label className="mk-field"><span>Minimum spend (£)</span><input name="min_spend" type="number" min={0} step="1" defaultValue={v(pkg?.min_spend)} /></label>
-    <label className="mk-field"><span>Corkage per bottle (£)</span><input name="corkage" type="number" min={0} step="0.01" defaultValue={v(pkg?.corkage_per_bottle)} /></label>
+    <label className="mk-field"><span>Package price ({sym})</span><input name="price" type="number" min={0} step="0.01" defaultValue={v(pkg?.price)} /></label>
+    <label className="mk-field"><span>Per person ({sym})</span><input name="per_person" type="number" min={0} step="0.01" defaultValue={v(pkg?.per_person)} /></label>
+    <label className="mk-field"><span>Drink token price ({sym})</span><input name="token" type="number" min={0} step="0.01" defaultValue={v(pkg?.token_price)} /></label>
+    <label className="mk-field"><span>Minimum spend ({sym})</span><input name="min_spend" type="number" min={0} step="1" defaultValue={v(pkg?.min_spend)} /></label>
+    <label className="mk-field"><span>Corkage per bottle ({sym})</span><input name="corkage" type="number" min={0} step="0.01" defaultValue={v(pkg?.corkage_per_bottle)} /></label>
     <label className="mk-field"><span>Bar opens</span><input name="from" type="time" defaultValue={pkg?.hours_from?.slice(0, 5) ?? ""} /></label>
     <label className="mk-field"><span>Last orders</span><input name="to" type="time" defaultValue={pkg?.hours_to?.slice(0, 5) ?? ""} /></label>
     <label className="mk-field"><span>Setup (minutes)</span><input name="setup" type="number" min={0} max={600} defaultValue={v(pkg?.setup_minutes ?? 60)} /></label>
@@ -133,12 +142,13 @@ export function NewBar(props: { workspaceId: string; listings: { id: string; nam
 
 /** Item variants (Q13 menu_item_variants): name, price difference and the variant's own dietary/allergen declaration. */
 export function VariantEditor({ menuId, itemId, variants, canManage }: { menuId: string; itemId: string; variants: MenuVariant[]; canManage: boolean }) {
+  const sym = useSym(); const cur = useContext(CurCtx);
   const { pending, error, run } = useSave();
   const [open, setOpen] = useState<string | null>(null);
   const form = (x?: MenuVariant) => <form className="mk-form" aria-label={x ? `Edit variant ${x.name}` : "New variant"} action={f => { const g = (k: string) => String(f.get(k) ?? "");
     run(() => saveMenuVariant({ id: x?.id, menuId, itemId, name: g("name"), priceDelta: g("delta"), dietary: f.getAll("dietary").map(String), allergens: f.getAll("allergens").map(String), mayContain: f.getAll("may_contain").map(String), available: f.get("available") === "on" }), () => setOpen(null)); }}>
     <label className="mk-field"><span>Variant</span><input name="name" required maxLength={80} defaultValue={x?.name} placeholder="e.g. Vegan, Large, Gluten-free bun" /></label>
-    <label className="mk-field"><span>Price difference (£)</span><input name="delta" type="number" step="0.01" defaultValue={x ? (x.price_delta_minor / 100).toFixed(2) : "0.00"} /></label>
+    <label className="mk-field"><span>Price difference ({sym})</span><input name="delta" type="number" step="0.01" defaultValue={x ? (x.price_delta_minor / 100).toFixed(2) : "0.00"} /></label>
     <fieldset className="mk-field wide" style={{ border: 0, padding: 0 }}><legend>Dietary</legend><div className="mk-cats">{DIETARY.map(([k, l]) => <label key={k}><input type="checkbox" name="dietary" value={k} defaultChecked={x?.dietary.includes(k)} />{l}</label>)}</div></fieldset>
     <fieldset className="mk-field wide" style={{ border: 0, padding: 0 }}><legend>Contains</legend><div className="mk-cats">{ALLERGENS.map(a => <label key={a}><input type="checkbox" name="allergens" value={a} defaultChecked={x?.allergens.includes(a)} />{cap(a)}</label>)}</div></fieldset>
     <fieldset className="mk-field wide" style={{ border: 0, padding: 0 }}><legend>May contain</legend><div className="mk-cats">{ALLERGENS.map(a => <label key={a}><input type="checkbox" name="may_contain" value={a} defaultChecked={x?.may_contain.includes(a)} />{cap(a)}</label>)}</div></fieldset>
@@ -147,7 +157,7 @@ export function VariantEditor({ menuId, itemId, variants, canManage }: { menuId:
     {error && <p className="mk-error" role="alert">{error}</p>}</form>;
   return <div className="mk-variants">
     {variants.length > 0 && <ul className="mk-list">{variants.map(x => <li key={x.id}>{open === x.id ? form(x) : <>
-      <div className="mk-main"><b>{x.name}{!x.available && " (unavailable)"} · {x.price_delta_minor === 0 ? "same price" : `${x.price_delta_minor > 0 ? "+" : "−"}£${(Math.abs(x.price_delta_minor) / 100).toFixed(2)}`}</b>
+      <div className="mk-main"><b>{x.name}{!x.available && " (unavailable)"} · {x.price_delta_minor === 0 ? "same price" : `${x.price_delta_minor > 0 ? "+" : "−"}${formatMoney(Math.abs(x.price_delta_minor) / 100, cur, { decimals: true })}`}</b>
         <small>{x.dietary.map(d => DIETARY.find(([k]) => k === d)?.[1] ?? d).join(" · ") || "No dietary tags"}{x.allergens.length ? ` · Contains: ${x.allergens.join(", ")}` : ""}{x.may_contain.length ? ` · May contain: ${x.may_contain.join(", ")}` : ""}</small></div>
       {canManage && <span className="mk-row"><button type="button" className="mk-btn ghost" onClick={() => setOpen(x.id)}>Edit</button>
         <button type="button" className="mk-btn danger" aria-label={`Delete variant ${x.name}`} disabled={pending} onClick={() => run(() => deleteMenuVariant(x.id))}><Trash2 size={14} aria-hidden="true" /></button></span>}</>}</li>)}</ul>}

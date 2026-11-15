@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Braces, CalendarDays, ExternalLink, FileText, Loader2, MapPin, MessageSquare, Paperclip, Send, Smile, Star, UserPlus, X } from "lucide-react";
+import { BadgeCheck, Ban, Braces, CalendarDays, ExternalLink, FileText, Flag, Loader2, MapPin, MessageSquare, Paperclip, Send, ShieldAlert, Smile, Star, UserPlus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { isTyping } from "@/lib/ui/editing";
 import { Dialog } from "@/components/kit/client";
-import { sendMessage, startConversation, markRead, contactProfile, setSavedContact, type ContactProfile } from "@/lib/messaging/actions";
+import { sendMessage, startConversation, markRead, contactProfile, setSavedContact, reportMessage, setBlocked, type ContactProfile } from "@/lib/messaging/actions";
+import { REPORT_REASONS, offPlatformHint } from "@/lib/messaging/safety";
 import { personalise, hasTokens, TOKENS, type TokenValues } from "@/lib/messaging/tokens";
 import { loadEmoji, type EmojiMeta } from "@/lib/design-kit/assets";
 import { listingHref } from "@/lib/links";
@@ -17,13 +19,18 @@ import "@/styles/messaging.css";
 export function LiveThread({ conversationId }: { conversationId: string }) {
   const router = useRouter();
   useEffect(() => {
+    let pending = false;   // Q52: a message that arrives while the tab is hidden stays unread (and alerted) until the person looks
+    const read = () => { pending = false; void markRead(conversationId).then(() => router.refresh(), () => router.refresh()); };
     // Refresh after the read is recorded so the list's unread dot and header badges clear now, not at the next 30s poll (Q47).
-    void markRead(conversationId).then(() => router.refresh(), () => {});
+    if (document.visibilityState === "visible") read(); else pending = true;
     const sb = createClient();
     const ch = sb.channel(`conv:${conversationId}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "conversation_messages", filter: `conversation_id=eq.${conversationId}` },
-      () => { void markRead(conversationId).then(() => router.refresh(), () => router.refresh()); }).subscribe();
-    const t = setInterval(() => { if (document.visibilityState === "visible") router.refresh(); }, 30_000);
-    return () => { void sb.removeChannel(ch); clearInterval(t); };
+      () => { if (document.visibilityState === "visible") read(); else { pending = true; router.refresh(); } }).subscribe();
+    const shown = () => { if (document.visibilityState === "visible") { if (pending) read(); else router.refresh(); } };
+    document.addEventListener("visibilitychange", shown);
+    // The slow fallback poll skips a tick while someone is typing (Realtime still shows new messages at once).
+    const t = setInterval(() => { if (document.visibilityState === "visible" && !isTyping()) router.refresh(); }, 30_000);
+    return () => { void sb.removeChannel(ch); clearInterval(t); document.removeEventListener("visibilitychange", shown); };
   }, [conversationId, router]);
   return null;
 }
@@ -122,11 +129,24 @@ function FileChips({ files, remove }: { files: Att[]; remove: (p: string) => voi
     <button type="button" aria-label={`Remove ${f.name}`} onClick={() => remove(f.path)}><X size={12} /></button></li>)}</ul> : null;
 }
 
-export function Composer({ conversationId, asWorkspace, values }: { conversationId: string; asWorkspace?: string | null; values: TokenValues }) {
+const draftKey = (id: string) => `gd-draft:${id}`;
+const readDraft = (id: string) => { try { return sessionStorage.getItem(draftKey(id)) ?? ""; } catch { return ""; } };
+const writeDraft = (id: string, v: string) => { try { if (v) sessionStorage.setItem(draftKey(id), v); else sessionStorage.removeItem(draftKey(id)); } catch { /* private mode */ } };
+
+/** Non-circumvention reminder under a draft that shares contact details or suggests paying outside Gala Dock (advisory). */
+function OffPlatformNote({ text }: { text: string }) {
+  return offPlatformHint(text) ? <p className="ms-safety" role="note"><ShieldAlert size={14} aria-hidden="true" />Keep bookings and payments on Gala Dock: paying or arranging them outside isn’t covered by our booking protection, and our terms don’t allow it.</p> : null;
+}
+
+export function Composer({ conversationId, asWorkspace, values, blocked }: { conversationId: string; asWorkspace?: string | null; values: TokenValues; blocked?: string | null }) {
   const router = useRouter(); const [pending, start] = useTransition(); const ta = useRef<HTMLTextAreaElement>(null);
-  const [body, setBody] = useState(""), [error, setError] = useState(""), [drag, setDrag] = useState(false);
+  // Q52: the draft survives switching threads and reloads (per conversation, this tab only).
+  const [body, setBodyState] = useState(""), [error, setError] = useState(""), [drag, setDrag] = useState(false);
+  useEffect(() => { const d = readDraft(conversationId); if (d) queueMicrotask(() => setBodyState(d)); }, [conversationId]);
+  const setBody = (v: string) => { setBodyState(v); writeDraft(conversationId, v); };
   const { files, setFiles, up, add } = useAttachments(setError);
   const send = () => start(async () => { setError(""); const r = await sendMessage(conversationId, personalise(body, values), files, asWorkspace); if (!r.ok) setError(r.error); else { setBody(""); setFiles([]); router.refresh(); } });
+  if (blocked) return <p className="ms-blocked" role="status"><Ban size={15} aria-hidden="true" />{blocked}</p>;
   const can = !pending && !up && (body.trim() || files.length);
   return <form className={`ms-compose ${drag ? "drag" : ""}`} onSubmit={e => { e.preventDefault(); if (can) send(); }}
     onDragOver={e => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setDrag(true); } }} onDragLeave={() => setDrag(false)}
@@ -147,6 +167,7 @@ export function Composer({ conversationId, asWorkspace, values }: { conversation
       </div>
     </div>
     {hasTokens(body) && <p className="ms-preview"><b>They’ll see:</b> {personalise(body, values)}</p>}
+    <OffPlatformNote text={body} />
     {drag && <div className="ms-dropzone">Drop files to attach</div>}
     {error && <p className="mk-error" role="alert">{error}</p>}
   </form>;
@@ -189,6 +210,7 @@ export function NewConversation({ contacts, asWorkspace, base, me }: { contacts:
           <PersonaliseButton values={values} onPick={t => insertAt(bodyRef.current, body, t, setBody)} />
           {up && <span className="ms-up"><Loader2 size={14} className="mk-spin" />Uploading…</span>}</div></div></div>
     <FileChips files={files} remove={p => setFiles(x => x.filter(y => y.path !== p))} />
+    <OffPlatformNote text={body} />
     {to && (hasTokens(subject) || hasTokens(body)) && <p className="ms-preview wide"><b>They’ll see:</b> {personalise(subject, values) && <>“{personalise(subject, values)}” — </>}{personalise(body, values)}</p>}
     <div className="mk-row wide"><button type="button" className="mk-btn ghost" onClick={() => setOpen(false)}>Cancel</button><button className="mk-btn primary" disabled={pending || up || !to || (!body.trim() && !files.length)}>Send</button></div>
     {error && <p className="mk-error" role="alert">{error}</p>}
@@ -248,10 +270,50 @@ export function MessageButton({ toType, to, label = "Message", subject = "", kin
         {subject && <p className="ms-dialog-subj"><span>Subject</span>{personalise(subject, v)}</p>}
         <div className="ms-box"><textarea ref={ta} rows={5} value={body} onChange={e => setBody(e.target.value)} maxLength={8000} autoFocus aria-label="Message" placeholder="Hi, we’re planning… could you let us know about availability and pricing?" />
           <div className="ms-tools"><EmojiButton onPick={e => insertAt(ta.current, body, e, setBody)} /><PersonaliseButton values={v} onPick={t => insertAt(ta.current, body, t, setBody)} /></div></div>
+        <OffPlatformNote text={body} />
         {error && <p className="k-error" role="alert">{error}</p>}
         <div className="k-row" style={{ justifyContent: "flex-end", gap: 8 }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button>
           <button className="k-btn primary" disabled={pending || !body.trim()}>{pending ? <Loader2 size={15} className="mk-spin" /> : <Send size={15} />}Send message</button></div>
       </form>
+    </Dialog>
+  </>;
+}
+
+/** Q52 Online Safety Act: "Report" on someone else's message — reason, optional note, optionally block them too. */
+export function ReportMessageButton({ messageId, seat, from }: { messageId: string; seat?: string | null; from: string }) {
+  const router = useRouter(); const [open, setOpen] = useState(false), [reason, setReason] = useState(""), [note, setNote] = useState(""), [block, setBlock] = useState(false);
+  const [pending, start] = useTransition(), [error, setError] = useState(""), [done, setDone] = useState(false);
+  const submit = () => start(async () => { setError(""); const r = await reportMessage(messageId, reason, note, block, seat); if (!r.ok) setError(r.error); else { setDone(true); router.refresh(); } });
+  return <>
+    <button type="button" className="ms-report" onClick={() => { setOpen(true); setDone(false); }} aria-label={`Report this message from ${from}`} title="Report message"><Flag size={12} aria-hidden="true" /></button>
+    <Dialog open={open} onClose={() => setOpen(false)} title="Report this message" sub="Our Trust & Safety team reviews every report. The sender isn’t told who reported them.">
+      {done ? <div className="ms-dialog"><p role="status">Thanks — we’ve received your report and will tell you the outcome in your notifications.{block ? " You’ve also blocked this contact." : ""}</p>
+        <div className="k-row" style={{ justifyContent: "flex-end" }}><button type="button" className="k-btn primary" onClick={() => setOpen(false)}>Close</button></div></div>
+      : <form className="ms-dialog ms-report-form" onSubmit={e => { e.preventDefault(); if (reason) submit(); }}>
+        <fieldset><legend>What’s wrong with it?</legend>{REPORT_REASONS.map(([k, l]) => <label key={k} className="ms-radio"><input type="radio" name="reason" value={k} checked={reason === k} onChange={() => setReason(k)} />{l}</label>)}</fieldset>
+        <label className="mk-field wide"><span>Anything else we should know? {reason === "other_policy" ? "(required)" : "(optional)"}</span>
+          <textarea rows={3} maxLength={1000} value={note} onChange={e => setNote(e.target.value)} /></label>
+        <label className="ms-radio"><input type="checkbox" checked={block} onChange={e => setBlock(e.target.checked)} />Also block {from} (neither of you can send messages in your conversations)</label>
+        <p className="ms-help">If someone is in immediate danger, call 999. Report illegal content to the police as well.</p>
+        {error && <p className="k-error" role="alert">{error}</p>}
+        <div className="k-row" style={{ justifyContent: "flex-end", gap: 8 }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button>
+          <button className="k-btn primary" disabled={pending || !reason}>{pending ? <Loader2 size={15} className="mk-spin" /> : <Flag size={15} />}Send report</button></div>
+      </form>}
+    </Dialog>
+  </>;
+}
+
+/** Block / unblock the person or business on the other side of this conversation (for this inbox seat). */
+export function BlockButton({ type, id, name, blocked, seat }: { type: "user" | "workspace"; id: string; name: string; blocked: boolean; seat?: string | null }) {
+  const router = useRouter(); const [open, setOpen] = useState(false), [pending, start] = useTransition(), [error, setError] = useState("");
+  const go = () => start(async () => { setError(""); const r = await setBlocked(type, id, !blocked, seat); if (!r.ok) setError(r.error); else { setOpen(false); router.refresh(); } });
+  if (blocked) return <button type="button" className="mk-btn ghost ms-block" disabled={pending} onClick={go}><Ban size={14} aria-hidden="true" />{pending ? "Unblocking…" : "Unblock"}</button>;
+  return <>
+    <button type="button" className="mk-btn ghost ms-block" onClick={() => setOpen(true)}><Ban size={14} aria-hidden="true" />Block</button>
+    <Dialog open={open} onClose={() => setOpen(false)} title={`Block ${name}?`} sub="Neither of you can send messages in your conversations until you unblock. They aren’t told, and existing bookings aren’t affected.">
+      <div className="ms-dialog">{error && <p className="k-error" role="alert">{error}</p>}
+        <div className="k-row" style={{ justifyContent: "flex-end", gap: 8 }}><button type="button" className="k-btn ghost" onClick={() => setOpen(false)}>Cancel</button>
+          <button type="button" className="k-btn primary" disabled={pending} onClick={go}>{pending ? <Loader2 size={15} className="mk-spin" /> : <Ban size={15} />}Block</button></div></div>
     </Dialog>
   </>;
 }

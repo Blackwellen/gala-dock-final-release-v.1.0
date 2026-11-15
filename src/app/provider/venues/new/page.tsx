@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { untyped } from "@/lib/workspace/db";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, CircleCheck, CircleAlert } from "lucide-react";
 import "@/styles/provider-wizard.css";
@@ -39,6 +41,9 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
   const step = venue ? parseStep(typeof sp.step === "string" ? sp.step : undefined, 6) : 1;
   const url = (n: number) => `/provider/venues/new?venue=${venue?.id ?? ""}&step=${n}`;
   const editing = !!venue?.published;
+  // Q76: listings.currency is newer than the generated types (gap D03).
+  const { data: vc } = venue ? await untyped(ctx.db as never).from("listings").select("currency").eq("id", venue.id).maybeSingle() : { data: null };
+  const venueCurrency = String((vc as { currency?: string | null } | null)?.currency || workspaceLocale(ctx.workspace.settings).currency).toUpperCase();
   const fixHref = (l: string) => l.startsWith("Payout") ? "/provider/money" : url(l.startsWith("Venue") ? 1 : l.includes("space") ? 2 : l.startsWith("Pricing") ? 3 : l.startsWith("Photos") ? 5 : 4);
 
   const [spaces, structure, latestStructure, readinessRaw] = venue ? await Promise.all([
@@ -76,7 +81,7 @@ export default async function AddVenue(props: PageProps<"/provider/venues/new">)
         area_sqm: s.area_sqm, layouts: s.layouts ?? {}, amenities: s.amenities ?? [], turnaround_minutes: s.turnaround_minutes, min_hours: Number(s.min_hours), description: String(s.details?.description ?? "") }))}
       footer={<div className="vw-foot se-foot"><Link href={url(1)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 2 of 6</span>
         <Link href={url(3)} className="ws-btn primary">Next: Commercial &amp; Booking Rules<ArrowRight aria-hidden="true" /></Link></div>} />}
-    {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
+    {step === 3 && venue && <StepCommercial venue={venue} back={url(2)} next={url(4)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} currency={venueCurrency} />}
     {step === 4 && venue && <StepOperations venue={venue} back={url(3)} next={url(5)} photosHref={url(5)} readiness={readiness} photos={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)}
       spaces={spaces.length} standing={spaces.reduce((n, x) => n + (x.capacity_standing ?? 0), 0)} />}
     {step === 5 && venue && <div className="vw vw-s5"><PhotoManager venueId={venue.id} initial={[venue.image, ...(venue.gallery ?? [])].filter(Boolean)} initialAlts={(d.photo_alt ?? undefined) as Record<string, string> | undefined} />

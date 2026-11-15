@@ -185,18 +185,34 @@ export type SurfaceName = keyof typeof SURFACES;
 // ── Locations, currencies, timezones ─────────────────────────────────────────────────────────────────────────────
 
 export type Currency = { code: string; name: string; symbol: string; minor: number; /** Can be charged, invoiced and stored on events/workspaces. */ transactional: boolean };
+// Q72: every two-decimal Connect-country default currency is transactional (charged, invoiced, stored on events/listings).
+// JPY (zero-decimal) and HUF (Stripe special case) are listed for display only until the checkout quote handles their minor units
+// (src/lib/i18n/money.ts CHECKOUT_CURRENCIES must equal the transactional set — tests/release/q72-i18n.spec.ts).
 export const CURRENCIES: readonly Currency[] = [
   { code: "GBP", name: "British Pound", symbol: "£", minor: 2, transactional: true },
   { code: "EUR", name: "Euro", symbol: "€", minor: 2, transactional: true },
   { code: "USD", name: "US Dollar", symbol: "$", minor: 2, transactional: true },
-  { code: "CAD", name: "Canadian Dollar", symbol: "$", minor: 2, transactional: false },
+  { code: "CAD", name: "Canadian Dollar", symbol: "$", minor: 2, transactional: true },
   { code: "AED", name: "UAE Dirham", symbol: "AED", minor: 2, transactional: false },
   { code: "ZAR", name: "South African Rand", symbol: "R", minor: 2, transactional: false },
-  { code: "AUD", name: "Australian Dollar", symbol: "$", minor: 2, transactional: false },
+  { code: "AUD", name: "Australian Dollar", symbol: "$", minor: 2, transactional: true },
+  { code: "NZD", name: "New Zealand Dollar", symbol: "$", minor: 2, transactional: true },
+  { code: "CHF", name: "Swiss Franc", symbol: "CHF", minor: 2, transactional: true },
+  { code: "CZK", name: "Czech Koruna", symbol: "Kč", minor: 2, transactional: true },
+  { code: "DKK", name: "Danish Krone", symbol: "kr", minor: 2, transactional: true },
+  { code: "HKD", name: "Hong Kong Dollar", symbol: "$", minor: 2, transactional: true },
+  { code: "NOK", name: "Norwegian Krone", symbol: "kr", minor: 2, transactional: true },
+  { code: "PLN", name: "Polish Zloty", symbol: "zł", minor: 2, transactional: true },
+  { code: "RON", name: "Romanian Leu", symbol: "lei", minor: 2, transactional: true },
+  { code: "SEK", name: "Swedish Krona", symbol: "kr", minor: 2, transactional: true },
+  { code: "SGD", name: "Singapore Dollar", symbol: "$", minor: 2, transactional: true },
+  { code: "HUF", name: "Hungarian Forint", symbol: "Ft", minor: 2, transactional: false },
+  { code: "JPY", name: "Japanese Yen", symbol: "¥", minor: 0, transactional: false },
 ];
 
 export type Timezone = { tz: string; label: string; country: string };
-export type Country = { code: string; name: string; region: "uk" | "eu" | "na" | "mea" | "apac"; currency: string; tax: readonly string[]; /** Offered for business onboarding (locale, tax, payouts). */ business: boolean };
+export type Country = { code: string; name: string; region: "uk" | "eu" | "europe" | "na" | "mea" | "apac"; currency: string; tax: readonly string[]; /** Offered for business onboarding (locale, tax, payouts). */ business: boolean };
+const eu = (code: string, name: string, currency = "EUR", tax: readonly string[] = ["VAT registered", "Not VAT registered"]): Country => ({ code, name, region: "eu", currency, business: true, tax });
 export const COUNTRIES: readonly Country[] = [
   { code: "GB", name: "United Kingdom", region: "uk", currency: "GBP", business: true, tax: ["UK VAT 20% (standard rate)", "UK VAT 5% (reduced rate)", "Not VAT registered"] },
   { code: "IE", name: "Ireland", region: "eu", currency: "EUR", business: true, tax: ["Irish VAT 23%", "Irish VAT 13.5%", "Not VAT registered"] },
@@ -207,11 +223,19 @@ export const COUNTRIES: readonly Country[] = [
   { code: "AE", name: "United Arab Emirates", region: "mea", currency: "AED", business: true, tax: ["UAE VAT 5%", "Not VAT registered"] },
   { code: "ZA", name: "South Africa", region: "mea", currency: "ZAR", business: true, tax: ["South African VAT 15%", "Not VAT registered"] },
   { code: "AU", name: "Australia", region: "apac", currency: "AUD", business: true, tax: ["GST 10%", "Not GST registered"] },
-  // Customer home countries (profile only; not yet offered for business onboarding).
-  { code: "ES", name: "Spain", region: "eu", currency: "EUR", business: false, tax: [] },
-  { code: "IT", name: "Italy", region: "eu", currency: "EUR", business: false, tax: [] },
-  { code: "NL", name: "Netherlands", region: "eu", currency: "EUR", business: false, tax: [] },
-  { code: "PT", name: "Portugal", region: "eu", currency: "EUR", business: false, tax: [] },
+  // Q72: the remaining Stripe Connect seller countries (connect-countries.ts) are business countries too (owner D2: sellers in all
+  // supported countries). Spain, Italy, the Netherlands and Portugal were customer-only before.
+  eu("ES", "Spain", "EUR", ["IVA 21%", "Not VAT registered"]), eu("IT", "Italy", "EUR", ["IVA 22%", "Not VAT registered"]),
+  eu("NL", "Netherlands", "EUR", ["BTW 21%", "Kleineondernemersregeling (no VAT charged)"]), eu("PT", "Portugal", "EUR", ["IVA 23%", "Not VAT registered"]),
+  eu("AT", "Austria"), eu("BE", "Belgium"), eu("BG", "Bulgaria"), eu("CY", "Cyprus"), eu("CZ", "Czech Republic", "CZK"), eu("DK", "Denmark", "DKK"),
+  eu("EE", "Estonia"), eu("FI", "Finland"), eu("GR", "Greece"), eu("HU", "Hungary", "HUF"), eu("LT", "Lithuania"), eu("LU", "Luxembourg"), eu("LV", "Latvia"),
+  eu("MT", "Malta"), eu("PL", "Poland", "PLN"), eu("RO", "Romania", "RON"), eu("SE", "Sweden", "SEK"), eu("SI", "Slovenia"), eu("SK", "Slovakia"),
+  { code: "CH", name: "Switzerland", region: "europe", currency: "CHF", business: true, tax: ["Swiss VAT (MWST) registered", "Not VAT registered"] },
+  { code: "NO", name: "Norway", region: "europe", currency: "NOK", business: true, tax: ["MVA registered", "Not VAT registered"] },
+  { code: "NZ", name: "New Zealand", region: "apac", currency: "NZD", business: true, tax: ["GST 15%", "Not GST registered"] },
+  { code: "JP", name: "Japan", region: "apac", currency: "JPY", business: true, tax: ["Consumption tax registered (qualified invoice issuer)", "Not registered"] },
+  { code: "SG", name: "Singapore", region: "apac", currency: "SGD", business: true, tax: ["GST registered", "Not GST registered"] },
+  { code: "HK", name: "Hong Kong", region: "apac", currency: "HKD", business: true, tax: ["No VAT/GST"] },
 ];
 /** IANA zones offered in pickers, in country order. Labels show the standard/daylight offsets. */
 export const TIMEZONES: readonly Timezone[] = [
@@ -233,7 +257,45 @@ export const TIMEZONES: readonly Timezone[] = [
   { tz: "Europe/Rome", label: "(GMT+1/+2) Rome", country: "IT" },
   { tz: "Europe/Amsterdam", label: "(GMT+1/+2) Amsterdam", country: "NL" },
   { tz: "Europe/Lisbon", label: "(GMT+0/+1) Lisbon", country: "PT" },
+  // Q72: one zone per added seller country, plus the other main zones of multi-zone countries.
+  { tz: "America/Phoenix", label: "(GMT−7) Phoenix", country: "US" },
+  { tz: "America/Anchorage", label: "(GMT−9/−8) Anchorage", country: "US" },
+  { tz: "Pacific/Honolulu", label: "(GMT−10) Honolulu", country: "US" },
+  { tz: "America/Halifax", label: "(GMT−4/−3) Halifax", country: "CA" },
+  { tz: "America/Winnipeg", label: "(GMT−6/−5) Winnipeg", country: "CA" },
+  { tz: "America/Edmonton", label: "(GMT−7/−6) Edmonton", country: "CA" },
+  { tz: "Australia/Melbourne", label: "(GMT+10/+11) Melbourne", country: "AU" },
+  { tz: "Australia/Brisbane", label: "(GMT+10) Brisbane", country: "AU" },
+  { tz: "Australia/Adelaide", label: "(GMT+9:30/+10:30) Adelaide", country: "AU" },
+  { tz: "Atlantic/Canary", label: "(GMT+0/+1) Canary Islands", country: "ES" },
+  { tz: "Atlantic/Azores", label: "(GMT−1/+0) Azores", country: "PT" },
+  { tz: "Europe/Vienna", label: "(GMT+1/+2) Vienna", country: "AT" },
+  { tz: "Europe/Brussels", label: "(GMT+1/+2) Brussels", country: "BE" },
+  { tz: "Europe/Sofia", label: "(GMT+2/+3) Sofia", country: "BG" },
+  { tz: "Asia/Nicosia", label: "(GMT+2/+3) Nicosia", country: "CY" },
+  { tz: "Europe/Prague", label: "(GMT+1/+2) Prague", country: "CZ" },
+  { tz: "Europe/Copenhagen", label: "(GMT+1/+2) Copenhagen", country: "DK" },
+  { tz: "Europe/Tallinn", label: "(GMT+2/+3) Tallinn", country: "EE" },
+  { tz: "Europe/Helsinki", label: "(GMT+2/+3) Helsinki", country: "FI" },
+  { tz: "Europe/Athens", label: "(GMT+2/+3) Athens", country: "GR" },
+  { tz: "Europe/Budapest", label: "(GMT+1/+2) Budapest", country: "HU" },
+  { tz: "Europe/Vilnius", label: "(GMT+2/+3) Vilnius", country: "LT" },
+  { tz: "Europe/Luxembourg", label: "(GMT+1/+2) Luxembourg", country: "LU" },
+  { tz: "Europe/Riga", label: "(GMT+2/+3) Riga", country: "LV" },
+  { tz: "Europe/Malta", label: "(GMT+1/+2) Malta", country: "MT" },
+  { tz: "Europe/Warsaw", label: "(GMT+1/+2) Warsaw", country: "PL" },
+  { tz: "Europe/Bucharest", label: "(GMT+2/+3) Bucharest", country: "RO" },
+  { tz: "Europe/Stockholm", label: "(GMT+1/+2) Stockholm", country: "SE" },
+  { tz: "Europe/Ljubljana", label: "(GMT+1/+2) Ljubljana", country: "SI" },
+  { tz: "Europe/Bratislava", label: "(GMT+1/+2) Bratislava", country: "SK" },
+  { tz: "Europe/Zurich", label: "(GMT+1/+2) Zurich", country: "CH" },
+  { tz: "Europe/Oslo", label: "(GMT+1/+2) Oslo", country: "NO" },
+  { tz: "Pacific/Auckland", label: "(GMT+12/+13) Auckland", country: "NZ" },
+  { tz: "Asia/Tokyo", label: "(GMT+9) Tokyo", country: "JP" },
+  { tz: "Asia/Singapore", label: "(GMT+8) Singapore", country: "SG" },
+  { tz: "Asia/Hong_Kong", label: "(GMT+8) Hong Kong", country: "HK" },
 ];
+
 
 // ── Resolution (shared by the TS accessor and the SQL generator) ─────────────────────────────────────────────────
 

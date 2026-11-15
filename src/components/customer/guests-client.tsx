@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Send, UserPlus, MoreHorizontal, Plus, ScanLine, UserCheck, Paperclip, Image as ImageIcon, FileText, Smile, SendHorizontal, Check, CheckCheck } from "lucide-react";
+import { Download, Send, UserPlus, MoreHorizontal, Plus, ScanLine, UserCheck, FileText, Smile, SendHorizontal, Check, CheckCheck } from "lucide-react";
 import { Menu, Dialog, useAction, useKitToast } from "@/components/kit/client";
 import { addGuest, importGuests, sendInvites, setGuestStatus, setGuestsStatus, removeGuest, createTier } from "@/lib/actions/guests";
 import { sendMessage, markThreadRead } from "@/lib/actions/messages";
@@ -105,7 +105,7 @@ export function Conversation({ threadId, title, messages, myName, avatar }: { th
       : <div key={m.id} className="cm-out"><span className="cm-time">{fmt(m.created_at)}</span><div className="cm-bub me">{m.body}<span className="cm-tick">{m.read_at ? <CheckCheck size={14} /> : <Check size={14} />}</span></div>{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/assets/gd/av-james-carter.webp" alt="" className="cm-av" /></div>)}<div ref={end} /></div>
     <div className="cm-compose"><div className="cm-ctabs"><button type="button" aria-pressed={tab === "msg"} onClick={() => setTab("msg")}>Message</button><button type="button" aria-pressed={tab === "tpl"} onClick={() => setTab("tpl")}>Templates</button></div>
       {tab === "tpl" ? <div className="cm-tpls">{tpls.map(x => <button key={x} onClick={() => { setT(x); setTab("msg"); }}>{x}</button>)}</div> : <textarea ref={box} value={t} onChange={e => setT(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} placeholder={`Type a message to ${title}...`} aria-label="Message" maxLength={5000} />}
-      <div className="k-between"><div className="k-row" style={{ gap: 14 }}><button type="button" className="k-icon-btn plain" disabled aria-label="Attach file" title="Attachments aren't available in messages yet"><Paperclip size={18} /></button><button type="button" className="k-icon-btn plain" disabled aria-label="Attach image" title="Attachments aren't available in messages yet"><ImageIcon size={18} /></button><button type="button" className="k-icon-btn plain" disabled aria-label="Attach document" title="Attachments aren't available in messages yet"><FileText size={18} /></button><span className="cm-ref">Booking reference</span></div><div className="k-row" style={{ gap: 12 }}><Smile size={20} className="k-muted" /><button className="k-btn primary cm-send" disabled={pending} onClick={() => void send()}><SendHorizontal size={16} />Send</button></div></div></div>
+      <div className="k-between"><div className="k-row" style={{ gap: 14 }}>{/* Q75: this legacy event thread has no scanned attachment flow, so no (dead) attach buttons — files go through the inbox. */}<span className="k-small k-muted">To share files, use your <Link href="/account/inbox">inbox</Link> (files are virus-scanned).</span><span className="cm-ref">Booking reference</span></div><div className="k-row" style={{ gap: 12 }}><Smile size={20} className="k-muted" /><button className="k-btn primary cm-send" disabled={pending} onClick={() => void send()}><SendHorizontal size={16} />Send</button></div></div></div>
   </>;
 }
 

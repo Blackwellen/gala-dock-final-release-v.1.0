@@ -20,7 +20,8 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
   const [{ data: items }, { data: mine }] = await Promise.all([
     ctx.supabase.from("build_items").select("id,title,category,image,status,listing_id,event:events!inner(id,name,starts_at,ends_at,location,city,owner_id)").eq("event.owner_id", ctx.user.id).in("status", REVIEWABLE).lt("event.starts_at", now),
     // Q51: reviews.user_id is not column-granted to signed-in users; own reviews come from the self-scoped my_reviews().
-    untyped(ctx.supabase).rpc("my_reviews").select("id,rating,ratings,body,created_at,photos,build_item_id,listing_id,provider_response,build_items(title,category,image)").order("created_at", { ascending: false }),
+    (untyped(ctx.supabase).rpc("my_reviews").select("id,rating,ratings,body,created_at,photos,build_item_id,listing_id,provider_response,build_items(title,category,image)").order("created_at", { ascending: false })
+      ) as unknown as PromiseLike<{ data: { id: string; rating: number; ratings: Record<string, number>; body: string; created_at: string; photos: string[]; build_item_id: string; listing_id: string | null; provider_response: string | null; build_items: { title: string; category: string; image: string } | null }[] | null }>,
   ]);
   const reviewed = new Set((mine ?? []).map(r => r.build_item_id));
   const all = ((items ?? []) as unknown as Item[]).filter(i => (i.event.ends_at ?? i.event.starts_at ?? now) < now);

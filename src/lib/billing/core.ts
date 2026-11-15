@@ -2,6 +2,8 @@
  * Subscription billing rules (Q28, cards 176–180). Pure: no I/O, so unit tests import it directly.
  * Gala Dock's plans, AI credit packs and overage are platform own-sales on the Gala Dock Stripe account (never Connect).
  */
+import { VAT_RATE_NOTE } from "./vat-display";
+
 export type PlanPrice = { kind: "organizer" | "provider"; plan: "pro" | "business" | "enterprise"; billing_interval: "month" | "year"; price_minor: number; currency: string;
   self_serve: boolean; active: boolean; stripe_price_test: string | null; stripe_price_live: string | null };
 
@@ -56,6 +58,22 @@ export function taxParams(enabled: boolean): Record<string, string> {
 }
 
 /**
+ * Q74 (owner decisions D2 + D15): wherever Gala Dock is the merchant (plans, credit packs, promotion boosts) the buyer can enter a
+ * VAT / tax ID at checkout, whether or not automatic tax is on — business customers outside the UK are reverse-charged by Stripe Tax
+ * and the ID is printed on the invoice. With an existing customer Stripe requires customer_update[name]=auto alongside it.
+ */
+export function businessTaxIdParams(existingCustomer: boolean): Record<string, string> {
+  return { "tax_id_collection[enabled]": "true", ...(existingCustomer ? { "customer_update[name]": "auto" } : {}) };
+}
+
+/** Q74 (D15): plans and credit packs are sold to businesses only — the business details Gala Dock invoices. */
+export type BillingDetails = { business_name: string; vat_number: string | null; country: string | null };
+export const BUSINESS_ONLY_COPY = {
+  required: "Gala Dock plans and credit packs are for businesses. Add your business name (and VAT number, if you have one) in Billing details before you buy.",
+  explainer: "Plans and credit packs are sold to businesses only. Your business name and VAT number (optional) appear on Gala Dock’s VAT invoices. Business customers outside the UK with a valid VAT or tax number are charged without UK VAT (reverse charge).",
+} as const;
+
+/**
  * Gala Dock's own VAT number (account tax id, gb_vat) on invoices Gala Dock issues AS THE MERCHANT — platform own-sales only (plans,
  * AI credit packs, overage). Never used for direct charges on connected accounts: those are the seller's sales (seller's VAT).
  * `key` is the Stripe param prefix, e.g. "invoice_settings" or "invoice_creation[invoice_data]". Invalid ids are dropped.
@@ -67,7 +85,7 @@ export function accountTaxIdParams(key: string, ids: readonly string[] | undefin
 /** Checkout Session params for a plan subscription (mode=subscription). Prices come from the server catalogue only. */
 export function planCheckoutParams(o: { customer: string; price: string; workspaceId: string; plan: string; interval: string; successUrl: string; cancelUrl: string; automaticTax?: boolean }) {
   return {
-    ...taxParams(!!o.automaticTax),
+    ...taxParams(!!o.automaticTax), ...businessTaxIdParams(true),
     mode: "subscription", customer: o.customer, client_reference_id: o.workspaceId,
     "line_items[0][price]": o.price, "line_items[0][quantity]": "1",
     success_url: o.successUrl, cancel_url: o.cancelUrl, allow_promotion_codes: "false",
@@ -80,7 +98,7 @@ export function planCheckoutParams(o: { customer: string; price: string; workspa
 export function packCheckoutParams(o: { customer: string; price: string; workspaceId: string; packId: string; successUrl: string; cancelUrl: string; automaticTax?: boolean; accountTaxIds?: readonly string[] }) {
   const vat = accountTaxIdParams("invoice_creation[invoice_data]", o.accountTaxIds);
   return {
-    ...taxParams(!!o.automaticTax),
+    ...taxParams(!!o.automaticTax), ...businessTaxIdParams(true),
     // A one-off payment only gets an invoice (VAT receipt) when invoice_creation is on; it then carries Gala Dock's VAT number.
     ...(Object.keys(vat).length ? { "invoice_creation[enabled]": "true", ...vat } : {}),
     mode: "payment", customer: o.customer, client_reference_id: o.workspaceId,
@@ -150,7 +168,7 @@ export function subscriptionTaxIdParams(ids: readonly string[] | undefined): Rec
 /** Truthful VAT line for the plan picker, whichever way BILLING_AUTOMATIC_TAX is set. */
 export function planVatCopy(automaticTax: boolean): string {
   return automaticTax
-    ? "Prices exclude VAT. UK VAT (or your country's tax where it applies) is calculated by Stripe from your billing address and added at checkout; invoices show Gala Dock's VAT number GB508480488."
+    ? `Prices exclude VAT. UK VAT (or your country's tax where it applies) is calculated by Stripe from your billing address and added at checkout; invoices show Gala Dock's VAT number GB508480488. ${VAT_RATE_NOTE}`
     : "Prices shown are what you pay: VAT is not added to Gala Dock plan invoices at the moment.";
 }
 

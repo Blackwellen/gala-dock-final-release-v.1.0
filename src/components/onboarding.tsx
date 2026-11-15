@@ -1,6 +1,8 @@
 "use client";
 
 import { PaymentTermsTick, TraderQuestion, type TraderValue } from "@/components/payments/payment-terms-tick";
+import { countryProfile } from "@/lib/i18n/countries";
+import { TaxDetailsForm } from "@/components/payments/tax-details-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
@@ -176,6 +178,7 @@ function PayoutPanel({ kind, status, preview, step, country }: { kind: "organize
   const [ticked, setTicked] = useState(false);
   const [traderVersion, setTraderVersion] = useState<string | null>(null);
   const [trader, setTrader] = useState<TraderValue>({ status: "business", form: "company" });
+  const [tax, setTax] = useState<{ workspaceId: string; country: string } | null>(null);   // Q74 (D7): tax details step
   async function connect() {
     if (preview) { setError("Preview only — sign in to connect payouts."); return; }
     if (terms && !ticked) { setError("Tick the box to accept the Payment Terms."); return; }
@@ -191,12 +194,14 @@ function PayoutPanel({ kind, status, preview, step, country }: { kind: "organize
         if (data.traderRequired && traderVersion) setError(data.error ?? "Couldn’t save your seller status.");
         setBusy(false); return;
       }
+      if (response.status === 409 && data.taxDetailsRequired) { setTax({ workspaceId: data.workspaceId, country: data.country ?? "GB" }); setBusy(false); return; }
       if (!response.ok) { setError(data.error); setBusy(false); return; }
       window.location.assign(data.url);
     } catch { setError("Couldn’t reach Stripe. Please try again."); setBusy(false); }
   }
   // Unsupported business country: no Stripe button (the server refuses too); the seller carries on enquiry-only / with free events.
   if (country && !isConnectCountrySupported(country.code) && status !== "active") return <CountryPaymentsNotice country={country} />;
+  if (tax) return <div className="stripe-panel"><div><b>Tax details for HMRC reporting</b><TaxDetailsForm workspaceId={tax.workspaceId} defaultCountry={tax.country} compact onSaved={() => { setTax(null); void connect(); }} /></div></div>;
   if (kind === "provider") return <div className="stripe-panel stripe-brand">
     <strong className="stripe-word" aria-label="Stripe">stripe</strong>
     <CheckList items={["Secure and regulated payments", "Paid out to your bank when each booking is complete", "Support for multiple currencies", "Full transaction history"]} />
@@ -483,7 +488,9 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
               <TextField label="Location" required value={str("location")} onChange={v => set("location", v)} error={errors.location} icon={<MapPin size={18} aria-hidden="true" />} autoComplete="address-level2" />
               {str("kind") === "service" ? <div className="two-columns"><SelectField label="Delivery mode" value={str("delivery_mode")} onChange={v => set("delivery_mode", v)} options={["On-site at the event", "Remote / digital", "Both"]} />
                 <SelectField label="Coverage / travel" value={str("coverage")} onChange={v => set("coverage", v)} options={["Within 25 miles", "Within 50 miles", "Within 100 miles", "Nationwide", "International"]} /></div>
-                : <TextField label="Address" optional value={str("address")} onChange={v => set("address", v)} autoComplete="street-address" />}
+                : <div className="two-columns"><TextField label="Address" optional value={str("address")} onChange={v => set("address", v)} autoComplete="street-address" />
+                  {/* Q76: postcode labelled and validated for the business country; hidden where the country has none (HK, AE). */}
+                  {countryProfile(country.code)?.postcode !== null && <TextField label={countryProfile(country.code)?.postcodeLabel ?? "Postcode"} optional value={str("postcode")} onChange={v => set("postcode", v.slice(0, 12))} error={errors.postcode} autoComplete="postal-code" />}</div>}
               <ChoiceGroup legend="Event types (select all that apply)" variant="chips" maxVisible={6} moreLabel="More event types" name="event_types" items={listingEventTypes} multi value={arr("event_types")} onChange={v => set("event_types", v)} />
               {str("kind") !== "service" && <ChoiceGroup legend="Key features" variant="chips" maxVisible={5} moreLabel="Add feature" name="amenities" items={amenities} multi value={arr("amenities")} onChange={v => set("amenities", v)} />}
             </div>
@@ -511,7 +518,7 @@ export function OnboardingPage({ flow, step, preview = false, initial, next, use
             <Toggle label="Standby availability" description="Let organisers request you as a standby option." checked={bool("standby")} onChange={v => set("standby", v)} />
             <Toggle label="Emergency availability" description="Short-notice requests. Eligibility is confirmed by Gala Dock after verification." checked={bool("emergency")} onChange={v => set("emergency", v)} error={errors.emergency} /></div>
           <hr /><div className="two-columns">
-            <fieldset className="checkbox-row"><legend>Response notifications</legend>{([["email", "Email"], ["push", "Push (installed app)"]] as const).map(([value, label]) => <label key={value} className="check-row"><input type="checkbox" checked={arr("response_notifications").includes(value)} onChange={e => set("response_notifications", e.target.checked ? [...arr("response_notifications"), value] : arr("response_notifications").filter(n => n !== value))} /><span>{label}</span></label>)}</fieldset>
+            <fieldset className="checkbox-row"><legend>Response notifications</legend>{/* Q75 (owner decision): push is off at launch, so onboarding only offers email. */}{([["email", "Email"]] as const).map(([value, label]) => <label key={value} className="check-row"><input type="checkbox" checked={arr("response_notifications").includes(value)} onChange={e => set("response_notifications", e.target.checked ? [...arr("response_notifications"), value] : arr("response_notifications").filter(n => n !== value))} /><span>{label}</span></label>)}</fieldset>
             <SelectField label="Payout currency" value={str("payout_currency")} onChange={v => set("payout_currency", v)} options={currencies} /></div>
           <div className="policy-summary"><h4>Booking policy summary</h4><p>{str("booking_mode")} · responds {str("response_time").toLowerCase()} · {str("lead_time").toLowerCase()} notice · {str("cancellation_policy").split(" –")[0]} cancellation{bool("conditional_holds") ? ` · ${str("hold_duration")} holds` : ""}{bool("standby") ? " · standby" : ""}{bool("emergency") ? " · emergency requests (pending eligibility)" : ""}.</p></div>
         </section>}

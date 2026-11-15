@@ -16,8 +16,14 @@ export async function switchWorkspace(workspaceId: string): Promise<ActionResult
   return { ok: true, message: `Switched to ${ws.name}`, redirect: ws.kind === "organizer" ? "/organizer" : `/${ws.kind}` };
 }
 
-export async function markNotificationsRead(): Promise<ActionResult> {
+/** Marks the bell read. With a workspace (organiser shell, Q64) only that workspace's and untagged alerts, which are the ones the
+ *  bell shows — another workspace's alerts stay unread for when the user switches there. */
+export async function markNotificationsRead(workspaceId?: string): Promise<ActionResult> {
   const { supabase, user } = await requireUser();
-  const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+  const ws = workspaceId ? z.string().uuid().safeParse(workspaceId) : null;
+  if (ws && !ws.success) return { ok: false, error: "Invalid workspace." };
+  let q = supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+  if (ws?.success) q = q.or(`workspace_id.is.null,workspace_id.eq.${ws.data}`);
+  const { error } = await q;
   return error ? { ok: false, error: "Could not update notifications." } : { ok: true };
 }

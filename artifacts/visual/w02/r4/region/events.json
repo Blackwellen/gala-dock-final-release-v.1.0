@@ -1,0 +1,459 @@
+{
+ "leaf_weighted": 31.5,
+ "leaves": 10,
+ "leaves_passed": 0,
+ "page_line_drift": 39.4,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Modern My Events Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p11/events-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 12,
+ "passed": 1,
+ "weighted_drift": 24.7,
+ "worst": [
+  {
+   "design": [
+    370,
+    810,
+    727,
+    61
+   ],
+   "ours": [
+    371,
+    810,
+    400,
+    36
+   ],
+   "iou": 0.325,
+   "box_drift": 67.5,
+   "line_drift": 24.9,
+   "drift": 67.5,
+   "dx": 1,
+   "dy": 0,
+   "dw": -327,
+   "dh": -25
+  },
+  {
+   "design": [
+    369,
+    884,
+    728,
+    127
+   ],
+   "ours": [
+    32,
+    870,
+    1071,
+    248
+   ],
+   "iou": 0.348,
+   "box_drift": 65.2,
+   "line_drift": 56.8,
+   "drift": 65.2,
+   "dx": -337,
+   "dy": -14,
+   "dw": 343,
+   "dh": 121
+  },
+  {
+   "design": [
+    368,
+    542,
+    439,
+    70
+   ],
+   "ours": [
+    371,
+    552,
+    400,
+    36
+   ],
+   "iou": 0.469,
+   "box_drift": 53.1,
+   "line_drift": 14.7,
+   "drift": 53.1,
+   "dx": 3,
+   "dy": 10,
+   "dw": -39,
+   "dh": -34
+  },
+  {
+   "design": [
+    46,
+    888,
+    322,
+    114
+   ],
+   "ours": [
+    45,
+    882,
+    311,
+    221
+   ],
+   "iou": 0.504,
+   "box_drift": 49.6,
+   "line_drift": 94.4,
+   "drift": 49.6,
+   "dx": -1,
+   "dy": -6,
+   "dw": -11,
+   "dh": 107
+  },
+  {
+   "design": [
+    1114,
+    743,
+    396,
+    270
+   ],
+   "ours": [
+    1119,
+    755,
+    389,
+    147
+   ],
+   "iou": 0.535,
+   "box_drift": 46.5,
+   "line_drift": 58.4,
+   "drift": 46.5,
+   "dx": 5,
+   "dy": 12,
+   "dw": -7,
+   "dh": -123
+  },
+  {
+   "design": [
+    1116,
+    744,
+    392,
+    128
+   ],
+   "ours": [
+    1117,
+    754,
+    391,
+    146
+   ],
+   "iou": 0.755,
+   "box_drift": 24.5,
+   "line_drift": 51.7,
+   "drift": 24.5,
+   "dx": 1,
+   "dy": 10,
+   "dw": -1,
+   "dh": 18
+  },
+  {
+   "design": [
+    46,
+    371,
+    322,
+    175
+   ],
+   "ours": [
+    46,
+    366,
+    311,
+    221
+   ],
+   "iou": 0.77,
+   "box_drift": 23.0,
+   "line_drift": 83.3,
+   "drift": 23.0,
+   "dx": 0,
+   "dy": -5,
+   "dw": -11,
+   "dh": 46
+  },
+  {
+   "design": [
+    46,
+    635,
+    322,
+    172
+   ],
+   "ours": [
+    46,
+    625,
+    311,
+    168
+   ],
+   "iou": 0.84,
+   "box_drift": 16.0,
+   "line_drift": 88.8,
+   "drift": 16.0,
+   "dx": 0,
+   "dy": -10,
+   "dw": -11,
+   "dh": -4
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    32,
+    80,
+    1476,
+    201
+   ],
+   "ours": [
+    33,
+    80,
+    1476,
+    193
+   ],
+   "iou": 0.959,
+   "box_drift": 4.1,
+   "line_drift": 37.7,
+   "drift": 4.1,
+   "dx": 1,
+   "dy": 0,
+   "dw": 0,
+   "dh": -8
+  },
+  {
+   "design": [
+    1147,
+    97,
+    343,
+    168
+   ],
+   "ours": [
+    1161,
+    94,
+    334,
+    165
+   ],
+   "iou": 0.897,
+   "box_drift": 10.3,
+   "line_drift": 56.1,
+   "drift": 10.3,
+   "dx": 14,
+   "dy": -3,
+   "dw": -9,
+   "dh": -3
+  },
+  {
+   "design": [
+    1116,
+    361,
+    392,
+    118
+   ],
+   "ours": [
+    1119,
+    354,
+    390,
+    122
+   ],
+   "iou": 0.911,
+   "box_drift": 8.9,
+   "line_drift": 39.2,
+   "drift": 8.9,
+   "dx": 3,
+   "dy": -7,
+   "dw": -2,
+   "dh": 4
+  },
+  {
+   "design": [
+    46,
+    371,
+    322,
+    175
+   ],
+   "ours": [
+    46,
+    366,
+    311,
+    221
+   ],
+   "iou": 0.77,
+   "box_drift": 23.0,
+   "line_drift": 83.3,
+   "drift": 23.0,
+   "dx": 0,
+   "dy": -5,
+   "dw": -11,
+   "dh": 46
+  },
+  {
+   "design": [
+    1116,
+    491,
+    391,
+    237
+   ],
+   "ours": [
+    1119,
+    486,
+    389,
+    257
+   ],
+   "iou": 0.913,
+   "box_drift": 8.7,
+   "line_drift": 49.7,
+   "drift": 8.7,
+   "dx": 3,
+   "dy": -5,
+   "dw": -2,
+   "dh": 20
+  },
+  {
+   "design": [
+    368,
+    542,
+    439,
+    70
+   ],
+   "ours": [
+    371,
+    552,
+    400,
+    36
+   ],
+   "iou": 0.469,
+   "box_drift": 53.1,
+   "line_drift": 14.7,
+   "drift": 53.1,
+   "dx": 3,
+   "dy": 10,
+   "dw": -39,
+   "dh": -34
+  },
+  {
+   "design": [
+    46,
+    635,
+    322,
+    172
+   ],
+   "ours": [
+    46,
+    625,
+    311,
+    168
+   ],
+   "iou": 0.84,
+   "box_drift": 16.0,
+   "line_drift": 88.8,
+   "drift": 16.0,
+   "dx": 0,
+   "dy": -10,
+   "dw": -11,
+   "dh": -4
+  },
+  {
+   "design": [
+    1114,
+    743,
+    396,
+    270
+   ],
+   "ours": [
+    1119,
+    755,
+    389,
+    147
+   ],
+   "iou": 0.535,
+   "box_drift": 46.5,
+   "line_drift": 58.4,
+   "drift": 46.5,
+   "dx": 5,
+   "dy": 12,
+   "dw": -7,
+   "dh": -123
+  },
+  {
+   "design": [
+    1116,
+    744,
+    392,
+    128
+   ],
+   "ours": [
+    1117,
+    754,
+    391,
+    146
+   ],
+   "iou": 0.755,
+   "box_drift": 24.5,
+   "line_drift": 51.7,
+   "drift": 24.5,
+   "dx": 1,
+   "dy": 10,
+   "dw": -1,
+   "dh": 18
+  },
+  {
+   "design": [
+    370,
+    810,
+    727,
+    61
+   ],
+   "ours": [
+    371,
+    810,
+    400,
+    36
+   ],
+   "iou": 0.325,
+   "box_drift": 67.5,
+   "line_drift": 24.9,
+   "drift": 67.5,
+   "dx": 1,
+   "dy": 0,
+   "dw": -327,
+   "dh": -25
+  },
+  {
+   "design": [
+    369,
+    884,
+    728,
+    127
+   ],
+   "ours": [
+    32,
+    870,
+    1071,
+    248
+   ],
+   "iou": 0.348,
+   "box_drift": 65.2,
+   "line_drift": 56.8,
+   "drift": 65.2,
+   "dx": -337,
+   "dy": -14,
+   "dw": 343,
+   "dh": 121
+  },
+  {
+   "design": [
+    46,
+    888,
+    322,
+    114
+   ],
+   "ours": [
+    45,
+    882,
+    311,
+    221
+   ],
+   "iou": 0.504,
+   "box_drift": 49.6,
+   "line_drift": 94.4,
+   "drift": 49.6,
+   "dx": -1,
+   "dy": -6,
+   "dw": -11,
+   "dh": 107
+  }
+ ]
+}

@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, type ReactNode } from "react";
 import { MessageSquare, FilePenLine, MoreHorizontal, ChevronDown, CircleCheck, Users, Upload, CircleAlert, X, Zap } from "lucide-react";
 import { useToast } from "@/components/ui";
+import { useEscape } from "@/components/shared/use-escape";
 import type { ActionResult } from "@/components/workspace/actions";
 import { transitionBooking, requestChange, raiseIssue } from "../actions";
 import { recordBookingFile } from "./actions";
 
 function Dialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  useEscape(true, onClose);
   return <div className="ws-dialog-backdrop" onClick={onClose}><div className="ws-dialog" role="dialog" aria-modal="true" aria-label={title} onClick={e => e.stopPropagation()}>
     <div className="ws-dialog-head"><h2>{title}</h2><button type="button" aria-label="Close" onClick={onClose}><X aria-hidden="true" /></button></div>{children}</div></div>;
 }

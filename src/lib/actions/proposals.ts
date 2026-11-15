@@ -1,5 +1,7 @@
 "use server";
 import { z } from "zod";
+import { addDaysYmd, todayIn } from "@/lib/i18n/tz";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
 import { writeAudit } from "@/lib/audit";
@@ -39,7 +41,7 @@ export async function saveProposalClient(id: string | null, input: unknown): Pro
   }
   const { data: nums } = await ctx.supabase.from("proposals").select("number").eq("workspace_id", ctx.workspace.id);
   const number = nextNumber("PR", (nums ?? []).map(n => n.number));
-  const valid = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  const valid = addDaysYmd(todayIn(workspaceLocale(ctx.workspace.settings).timezone), 30);   // Q72: workspace calendar date
   const { data, error } = await ctx.supabase.from("proposals").insert({ workspace_id: ctx.workspace.id, number, title: p.data.title, client_name: p.data.client_name, lead_id: p.data.lead_id || null, status: "draft", valid_until: valid, content: { ...content, wizard_step: 1, line_items: [], options: [], terms: { validity: "30 days", payment: "30% deposit on acceptance, balance 14 days before the event", cancellation: "Deposit non-refundable after signature" } } }).select("id").single();
   if (error || !data) return { ok: false, error: "Could not create the proposal." };
   if (p.data.lead_id) { await ctx.supabase.from("leads").update({ stage: "proposal", probability: 60 }).eq("id", p.data.lead_id).in("stage", ["new", "qualified"]); await ctx.supabase.from("lead_activities").insert({ lead_id: p.data.lead_id, kind: "proposal", title: `Proposal ${number} drafted`, actor_name: ctx.name, actor_id: ctx.user.id }); }
@@ -78,7 +80,7 @@ const Terms = z.object({ deposit_pct: z.coerce.number().int().min(0).max(100), t
 export async function saveProposalTerms(id: string, input: unknown): Promise<ActionResult> {
   const e = await editable(id); if ("error" in e) return { ok: false, error: e.error }; const { d } = e;
   const p = Terms.safeParse(input); if (!p.success) return { ok: false, error: "Check the deposit, validity date and terms." };
-  if (p.data.valid_until < new Date().toISOString().slice(0, 10)) return { ok: false, error: "The validity date must be in the future." };
+  if (p.data.valid_until < todayIn(workspaceLocale(d.ctx.workspace.settings).timezone)) return { ok: false, error: "The validity date must be in the future." };
   const { error } = await d.ctx.supabase.from("proposals").update({ deposit_pct: p.data.deposit_pct, valid_until: p.data.valid_until, content: { ...(d.p.content as object), terms: p.data.terms, wizard_step: stepDone(d.p.content, 3) } }).eq("id", id);
   if (error) return { ok: false, error: "Could not save pricing and terms." };
   return { ok: true, redirect: `/organizer/proposals/new?step=4&id=${id}` };

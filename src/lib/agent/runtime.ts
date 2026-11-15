@@ -1,5 +1,7 @@
 import "server-only";
-import { createHash } from "node:crypto";
+import { localeDirective } from "./locale";
+import { workspaceLocale } from "@/lib/i18n/workspace";
+import { createHash, randomUUID } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 import { chat, agentConfigured, SAFETY, dataBlock, AgentBudgetError, AgentSafetyError } from "./llm";
@@ -107,7 +109,7 @@ async function governedCall(run: Run, step: Step, tool: Tool, input: Record<stri
 
 // ───────────────────────── planning ─────────────────────────
 const PLANNER = (surface: string, catalog: unknown, now: string) => `${SAFETY}
-You are planning a Gala Agent run for the ${surface} workspace. Today is ${now}.
+You are planning a Gala Agent run for the ${surface} workspace. ${now}
 Return JSON only: {"interpretation":{"summary":string,"scope":string[]},"confidence":0-1,"steps":[{"tool":string,"input":object,"why":string}]}
 Rules:
 - Use only these tools, with inputs matching their schema exactly (ids are UUIDs you got from earlier read steps or the goal; never invent ids): ${JSON.stringify(catalog)}
@@ -133,7 +135,13 @@ export async function planRun(db: Db, run: Run) {
   const tier = routeTier(usable, { deepAllowed: deep === true, lowCredit: available < 5, routine: Boolean(run.routine_id), requested: run.quality === "deep" ? "deep" : null });
   const missionHint = usable?.mission.length ? `
 Mission template for "${usable.title}" (follow this order, skip steps that don't apply; use mission.wait_for {item_id} after asking a provider so the run pauses for their answer): ${usable.mission.join(" → ")}` : "";
-  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, new Date().toISOString().slice(0, 10)) + missionHint }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
+  // Q72: today's date, time zone, reply language and currency come from the workspace (and the run owner's language preference).
+  const [{ data: wsLoc }, { data: owner }] = await Promise.all([
+    db.from("workspaces").select("settings").eq("id", run.workspace_id).maybeSingle(),
+    db.from("profiles").select("language").eq("id", run.user_id).maybeSingle(),
+  ]);
+  const wl = workspaceLocale((wsLoc as { settings?: unknown } | null)?.settings);
+  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, localeDirective({ language: (owner as { language?: string } | null)?.language, timezone: wl.timezone, currency: wl.currency })) + missionHint }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
     { json: true, maxTokens: 1600, tier, meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
   // The plan is untrusted model output: parsePlan keeps only catalogue tools with schema-valid inputs and backward references (Q41).
   const parsed = parsePlan(r.text, catalog);
@@ -186,6 +194,18 @@ export async function executeRun(db: Db, run: Run) {
   const outputs = new Map(S.filter(s => s.status === "succeeded").map(s => [s.seq, s.output]));
   const confidence = Number(interp.confidence ?? 1);
   if (run.status !== "running") await setStatus(db, run, "running");
+  // Q75: max_run_minutes (working time; waits don't count) and the agent.long_runs lifetime. agent_execute_tool refuses past them
+  // too; stopping here ends the run with a plain reason instead of failing its remaining steps one by one.
+  const { data: lim } = await db.rpc("agent_run_time_check" as never, { p_run: run.id } as never);
+  const over = (lim as { exceeded?: string | null; max_minutes?: number; max_lifetime_hours?: number; long_runs?: boolean } | null);
+  if (over?.exceeded) {
+    const summary = over.exceeded === "run_time_limit"
+      ? `Stopped: this task used its ${over.max_minutes}-minute working-time limit. Raise “Max working time per run” in Agent policy${over.long_runs ? "" : " (over 4 hours needs a plan with long runs)"}, then start it again.`
+      : `Stopped: this task was open longer than ${over.max_lifetime_hours} hours${over.long_runs ? "" : ". Tasks that wait more than a day need a plan with long runs"}.`;
+    await setStatus(db, run, "failed", { summary, result: summary, finished_at: new Date().toISOString(), lease_until: null, waiting_reason: "" });
+    await audit(db, run, "agent.time_limit", { reason: over.exceeded, ...over });
+    return;
+  }
   for (const step of S) {
     const stale = step.status === "running" && (!step.started_at || Date.now() - Date.parse(step.started_at) > STALE_STEP_MS);
     if (!["pending", "deferred"].includes(step.status) && !stale) continue;
@@ -346,18 +366,19 @@ export async function ask(userId: string, workspaceId: string, surface: "organiz
   }
 }
 async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
+  const traceId = randomUUID();   // Q75: one id for this Ask's model calls (ai_usage_events.trace_id) and its tool-call audit rows
   // Q53: the workspace's Agent policy allow-list applies to Ask too (it used the default policy, so a blocked tool still answered).
   const policy = await loadPolicy(svc(), workspaceId);
   const catalog = catalogFor(surface, policy).filter(c => c.risk === "R0" && c.id !== "mission.wait_for");
   const pick = await chat([{ role: "system", content: `${SAFETY}\nChoose up to 3 read-only tools to answer the question. Return JSON {"calls":[{"tool":string,"input":object}]}. Tools: ${JSON.stringify(catalog)}` },
-    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick" } });
+    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick", traceId } });
   let calls: { tool: string; input: Record<string, unknown> }[] = [];
   try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
   const results = [];
   for (const c of calls) {
     const input = c.input && typeof c.input === "object" && !Array.isArray(c.input) ? c.input : {};
-    try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, input, { agent: true }) }); await auditAsk(userId, workspaceId, surface, c.tool, input, null); }
-    catch (e) { const m = (e as Error).message.slice(0, 200); results.push({ tool: c.tool, error: m }); await auditAsk(userId, workspaceId, surface, c.tool, input, m); }
+    try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, input, { agent: true }) }); await auditAsk(userId, workspaceId, surface, c.tool, input, null, "ask", traceId); }
+    catch (e) { const m = (e as Error).message.slice(0, 200); results.push({ tool: c.tool, error: m }); await auditAsk(userId, workspaceId, surface, c.tool, input, m, "ask", traceId); }
   }
   // Conversation layer (playbook §7, Gigvora root cause 3): the last few exchanges with this person in this workspace.
   const { data: prior } = await svc().from("agent_runs").select("goal,result,summary").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "completed")
@@ -365,7 +386,7 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
   const history = ((prior ?? []) as { goal: string; result: string | null; summary: string | null }[]).reverse()
     .flatMap(h => [{ role: "user" as const, content: h.goal.slice(0, 600) }, { role: "assistant" as const, content: String(h.result ?? h.summary ?? "").slice(0, 800) }]);
   const answer = await chat([{ role: "system", content: `${SAFETY}\nYou are Gala Agent, a helpful assistant inside Gala Dock. Reply conversationally and briefly to greetings and how-to questions. If the person wants something done, say you can propose a run they confirm. Answer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
-    ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer" } });
+    ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer", traceId } });
   return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
 }
 
@@ -373,9 +394,9 @@ async function askInner(userId: string, workspaceId: string, surface: "organizer
  * Q53 audit for tool calls outside a run (Ask and watches go straight to agent_invoke, so agent_tool_calls never saw them).
  * Who, which tool, which argument names and a hash of the values — never the values themselves (PII stays out of the log).
  */
-async function auditAsk(userId: string, workspaceId: string, surface: string, toolId: string, input: Record<string, unknown>, error: string | null, via = "ask") {
+async function auditAsk(userId: string, workspaceId: string, surface: string, toolId: string, input: Record<string, unknown>, error: string | null, via = "ask", traceId: string | null = null) {
   const { error: e } = await svc().from("audit_events").insert({ actor_id: userId, actor_type: "agent", workspace_id: workspaceId, event: error ? "agent.tool_failed" : "agent.tool_called",
-    metadata: { tool: toolId, risk: TOOL.get(toolId)?.risk ?? null, via, surface, arg_keys: Object.keys(input).sort(), args_hash: createHash("md5").update(JSON.stringify(input)).digest("hex"),
+    metadata: { tool: toolId, risk: TOOL.get(toolId)?.risk ?? null, via, surface, ...(traceId ? { trace_id: traceId } : {}), arg_keys: Object.keys(input).sort(), args_hash: createHash("md5").update(JSON.stringify(input)).digest("hex"),
       ...(error ? { error: error.replace(/[^\w :.,'’-]/g, "").slice(0, 120) } : {}) } });
   if (e) console.error("agent_audit_failed", e.message);
 }

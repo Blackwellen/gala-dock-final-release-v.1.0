@@ -1,5 +1,5 @@
 /* Help Centre (release spec §84–85). */
-.hc{--hc-ink:#090a52;--hc-sub:#4a50a6;--hc-blue:#0038fd;--hc-border:#e6ecf8;max-width:1180px;margin:0 auto;padding:32px 16px 48px;color:var(--hc-ink);font-family:Inter,system-ui,sans-serif;display:grid;gap:22px}
+.hc{--hc-ink:#090a52;--hc-sub:#4a50a6;--hc-blue:#0038fd;--hc-border:#e6ecf8;margin:0 auto;padding:32px clamp(16px,3.05vw,47px) 48px;min-width:0;color:var(--hc-ink);font-family:Inter,system-ui,sans-serif;display:grid;gap:22px}
 .hc h1{margin:0;font-size:30px;letter-spacing:-.01em}.hc h2{margin:0 0 10px;font-size:18px}
 .hc-eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hc-blue)}
 .hc-head{display:grid;gap:12px}
@@ -11,7 +11,7 @@
 .hc-empty,.hc-foot{color:var(--hc-sub)}.hc-foot a,.hc-related a,.hc-crumbs a{color:var(--hc-blue)}
 .hc-crumbs{font-size:13px;color:var(--hc-sub)}.hc-lead{margin:0;font-size:16.5px;line-height:1.6;color:var(--hc-sub)}
 .hc-callout{background:#f4f7fd;border-radius:12px;padding:14px 16px}.hc-callout ul{margin:0;padding-left:20px;line-height:1.7}
-.hc-steps{margin:0;padding-left:22px;line-height:1.75}.hc-faq{margin:0;display:grid;gap:10px}.hc-faq dt{font-weight:700}.hc-faq dd{margin:2px 0 0;color:var(--hc-sub);line-height:1.6}
+.hc-steps{margin:0;padding-left:22px;line-height:1.75}.hc-faq{margin:0;display:grid;gap:10px}.hc-faq dt{font-weight:700}.hc-faq dd{margin:2px 0 0;color:var(--hc-sub);line-height:1.6;max-width:80ch}
 .hc-related{margin:0;padding-left:20px;line-height:1.8}
 .hc-shot{margin:0;display:grid;gap:10px}
 .hc-shot-frame{position:relative;width:100%;border:1px solid var(--hc-border);border-radius:12px;overflow:hidden;box-shadow:0 14px 34px -18px rgba(9,10,46,.35)}
@@ -21,7 +21,7 @@
 .hc-shot figcaption ol{margin:0;padding-left:22px;line-height:1.7}.hc-shot figcaption small{color:var(--hc-sub)}
 /* Two columns: guides + contact panel (stacks under 960px). */
 .hc-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
-.hc-guides{display:grid;gap:22px;min-width:0}.hc-article .hc-guides>h1{margin-bottom:-8px}
+.hc-guides{display:grid;gap:22px;min-width:0}.hc-guides :is(p,li,dd,dt){max-width:80ch}.hc-article .hc-guides>h1{margin-bottom:-8px}
 .hc-side{display:grid;gap:14px;position:sticky;top:84px}
 .hc-card{border:1px solid var(--hc-border);border-radius:14px;background:#fff;padding:16px;display:grid;gap:10px}
 .hc-card h2{margin:0;font-size:16px}.hc-card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--hc-sub)}.hc-card a{color:var(--hc-blue)}

@@ -2,6 +2,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { controlRun, confirmPlan } from "@/lib/agent/actions";
+import { isTyping } from "@/lib/ui/editing";
 
 /**
  * Q53: live run log. While the worker is planning or executing, the run page re-fetches itself every few seconds (visible tab
@@ -13,7 +14,7 @@ export function RunLiveRefresh({ status }: { status: string }) {
   useEffect(() => {
     if (!LIVE.includes(status)) return;
     let delay = 4000, t: ReturnType<typeof setTimeout>;
-    const tick = () => { if (document.visibilityState === "visible" && navigator.onLine) router.refresh(); delay = Math.min(delay * 1.5, 30_000); t = setTimeout(tick, delay); };
+    const tick = () => { if (document.visibilityState === "visible" && navigator.onLine && !isTyping()) router.refresh(); delay = Math.min(delay * 1.5, 30_000); t = setTimeout(tick, delay); };
     t = setTimeout(tick, delay);
     return () => clearTimeout(t);
   }, [status, router]);

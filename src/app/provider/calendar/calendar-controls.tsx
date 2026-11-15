@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { SlidersHorizontal, Settings2, X } from "lucide-react";
 import { useToast } from "@/components/ui";
+import { useEscape } from "@/components/shared/use-escape";
 
 import { PREFS_COOKIE, DEFAULT_PREFS, type CalendarPrefs } from "./prefs";
 
@@ -16,6 +17,7 @@ const STATUSES = ["Confirmed", "Held", "Hold", "Standby", "In progress", "Comple
 export function MoreFilters({ layers, spaces, crew, active }: { layers: Opt[]; spaces: Opt[]; crew: Opt[]; active: number }) {
   const sp = useSearchParams(), router = useRouter(), pathname = usePathname();
   const [open, setOpen] = useState(false);
+  useEscape(open, () => setOpen(false));
   const cur = (k: string) => sp.get(k) ?? "";
   const chosen = new Set((cur("layers") || layers.map(l => l.value).join(",")).split(",").filter(Boolean));
   const statuses = new Set(cur("status").split(",").filter(Boolean));
@@ -50,6 +52,7 @@ export function MoreFilters({ layers, spaces, crew, active }: { layers: Opt[]; s
 export function ViewSettings({ prefs }: { prefs: CalendarPrefs }) {
   const router = useRouter(), toast = useToast();
   const [open, setOpen] = useState(false), [p, setP] = useState(prefs);
+  useEscape(open, () => setOpen(false));
   const save = () => {
     document.cookie = `${PREFS_COOKIE}=${encodeURIComponent(JSON.stringify(p))}; path=/provider; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     setOpen(false); toast("Calendar view saved"); router.refresh();

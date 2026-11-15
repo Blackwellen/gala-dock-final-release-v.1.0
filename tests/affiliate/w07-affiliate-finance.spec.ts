@@ -233,7 +233,9 @@ test.describe("W07 affiliate / promoter", () => {
     const run2 = (await orgC.rpc("promoter_create_payout", { p_promoter: p1, p_note: "W07 run 2" })).data as { gross: number; clawback: number; amount: number };
     expect([Number(run2.gross), Number(run2.clawback), Number(run2.amount)]).toEqual([5, 5, 0]);
     const st = (await promC.rpc("promoter_statement", { p_promoter: p1 })).data as Record<string, number | string>;
-    expect(Number(st.paid)).toBe(10); expect(Number(st.held)).toBe(5); expect(Number(st.clawback_outstanding)).toBe(0); expect(st.settles).toBe("off_platform_by_organiser");
+    // Q58 follow-up 202611146204 (backend-queue 2026-11-14, Q58 money row: "promoter partial-refund reversal … DONE"): statement.paid no
+    // longer counts clawed-back commission — run 1 paid 10.00 but 5.00 of it was clawed back (netted in run 2), so paid = 5.00.
+    expect(Number(st.paid)).toBe(5); expect(Number(st.held)).toBe(5); expect(Number(st.clawback_outstanding)).toBe(0); expect(st.settles).toBe("off_platform_by_organiser");
     // Ledger: the promoter's payable = accrued − reversed − settled, and promoter postings never touch Gala Dock cash or fee accounts.
     const { data: ent } = await db.from("ledger_entries").select("account,amount_minor,transaction_id").eq("party_type", "promoter").eq("party_id", p1);
     const payable = (ent ?? []).filter(e => e.account === "promoter_payable").reduce((a, e) => a + Number(e.amount_minor), 0);
@@ -321,7 +323,12 @@ test.describe("W07 affiliate / promoter", () => {
     const ws = await seedWorkspace(fresh.id, "organizer", `W07 Referred Org ${tag}`); extraWs.push(ws);
     const ref = (await db.from("partner_referrals").select("id,status,kind").eq("workspace_id", ws).single()).data as { id: string; status: string; kind: string };
     expect([ref.status, ref.kind]).toEqual(["pending", "organiser"]);
-    expect(((await partnerC.from("partner_referrals").select("id").eq("id", ref.id)).data ?? []).length).toBe(1);
+    // Q68 (202611146951, backend-queue 2026-11-14 partner decisions; Partner Terms §6): the base table is admin-only; the partner sees
+    // the referral anonymised through partner_portal_referrals() ("Referral #n" — kind/status/dates, no workspace identity).
+    expect(((await partnerC.from("partner_referrals").select("id").eq("id", ref.id)).data ?? []).length).toBe(0);
+    const portal = ((await partnerC.rpc("partner_portal_referrals")).data ?? []) as Record<string, unknown>[];
+    expect(portal.filter(r => r.kind === "organiser" && r.status === "pending").length).toBeGreaterThanOrEqual(1);
+    expect(Object.keys(portal[0] ?? {}).sort()).toEqual(["activated_at", "kind", "ref_no", "signed_up_at", "status"]);
     // A paid subscription invoice qualifies it: one earning at the partner's rule version, a memo in the affiliate family.
     const inv = `in_w07${tag}${Date.now()}`; invoices.push(inv);
     await db.from("subscription_invoices").insert({ stripe_invoice_id: inv, workspace_id: ws, status: "paid", amount_due: 2900, amount_paid: 2900, currency: "GBP" });

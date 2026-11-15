@@ -1,0 +1,956 @@
+[
+  {
+    "role": "customer",
+    "route": "/home",
+    "width": 1536,
+    "height": 1024,
+    "name": "home-1536x1024",
+    "geometry": {
+      "url": "/home",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 564,
+        "h": 42
+      },
+      "nav": {
+        "x": 853,
+        "y": 0,
+        "w": 397,
+        "h": 67
+      },
+      "icons": {
+        "x": 1273,
+        "y": 12,
+        "w": 223,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1106
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1053
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/discover",
+    "width": 1536,
+    "height": 1024,
+    "name": "discover-1536x1024",
+    "geometry": {
+      "url": "/discover",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 398,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1024
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 971
+      }
+    },
+    "errors": [
+      "An empty string (\"\") was passed to the %s attribute. This may cause the browser to download the whole page again over the network. To fix this, either do not render the element at all or pass null to %s instead of an empty string. src src"
+    ]
+  },
+  {
+    "role": "customer",
+    "route": "/account/events",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-1536x1024",
+    "geometry": {
+      "url": "/account/events",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1021
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 968
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1004
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 951
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-build-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1609
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1556
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-plan-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 2172
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 2119
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-guests-tickets-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1542
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1489
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-money-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1152
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1099
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-messages-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 968
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 915
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/tickets",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-tickets-1536x1024",
+    "geometry": {
+      "url": "/account/tickets",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1042
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 989
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-tickets-15651ef4-f685-4727-a242-966aea0a6f1f-1536x1024",
+    "geometry": {
+      "url": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1470
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1417
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/saved",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-saved-1536x1024",
+    "geometry": {
+      "url": "/account/saved",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 853,
+        "y": 0,
+        "w": 398,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 3287
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 3234
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/reviews",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-reviews-1536x1024",
+    "geometry": {
+      "url": "/account/reviews",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 564,
+        "h": 42
+      },
+      "nav": {
+        "x": 853,
+        "y": 0,
+        "w": 397,
+        "h": 67
+      },
+      "icons": {
+        "x": 1273,
+        "y": 12,
+        "w": 223,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1077
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1024
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-1536x1024",
+    "geometry": {
+      "url": "/account",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 564,
+        "h": 42
+      },
+      "nav": {
+        "x": 853,
+        "y": 0,
+        "w": 397,
+        "h": 67
+      },
+      "icons": {
+        "x": 1273,
+        "y": 12,
+        "w": 223,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1122
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1069
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/plan?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "plan-step-1-1536x1024",
+    "geometry": {
+      "url": "/plan?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 398,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1017
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 964
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-book-step-1-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1327
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1274
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+    "width": 1536,
+    "height": 1024,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-tickets-setup-step-1-1536x1024",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 178,
+        "h": 44
+      },
+      "search": {
+        "x": 258,
+        "y": 13,
+        "w": 563,
+        "h": 42
+      },
+      "nav": {
+        "x": 852,
+        "y": 0,
+        "w": 399,
+        "h": 67
+      },
+      "icons": {
+        "x": 1274,
+        "y": 12,
+        "w": 222,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1214
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 85,
+        "w": 1452,
+        "h": 1161
+      }
+    },
+    "errors": []
+  }
+]

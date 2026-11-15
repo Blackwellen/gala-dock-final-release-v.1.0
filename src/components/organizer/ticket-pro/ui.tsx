@@ -6,6 +6,8 @@ import { Toggle } from "@/components/kit/client";
 import type { ProSection } from "@/lib/ticket-pro-model";
 import { isoToWall, wallToIso } from "@/lib/events/wall-time";
 import { StepFocus } from "@/components/kit/wizard-client";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
+import { tzAbbrev } from "@/lib/i18n/tz";
 
 export const gbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
 export const gbp2 = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -18,6 +20,25 @@ export const dt = (iso: string | null) => iso ? new Date(iso).toLocaleString("en
 export const toLocal = (iso: string | null) => isoToWall(iso);
 export const fromLocal = (v: string) => wallToIso(v);
 export const uid = () => Math.random().toString(36).slice(2, 10);
+
+/**
+ * Q76: the event's own currency and zone for every ticket-pro step (the exports above stay GBP/London for older callers).
+ * Prices format in the event currency; datetime-local inputs and summaries read and write wall time in the event's zone.
+ */
+export function tpLocale(data: { event: { currency?: string | null; timezone?: string | null } }) {
+  const cur = (data.event.currency || "GBP").toUpperCase(), tz = data.event.timezone || TZ;
+  const label = (iso: string) => tz === TZ ? "" : ` ${tzAbbrev(iso, tz)}`;
+  return {
+    cur, tz, sym: currencySymbol(cur),
+    gbp: (n: number) => formatMoney(n, cur, { decimals: n % 1 !== 0 }),
+    gbp2: (n: number) => formatMoney(n, cur, { decimals: true }),
+    dt: (iso: string | null) => iso ? new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: tz }).replace(" at ", ", ") + label(iso) : "—",
+    day: (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: tz }) : "",
+    time: (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz }) + label(iso) : "",
+    toLocal: (iso: string | null) => isoToWall(iso, tz),
+    fromLocal: (v: string) => wallToIso(v, tz),
+  };
+}
 
 export const STEPS = [
   { title: "Model & Capacity", sub: "Ticket model and inventory" }, { title: "Tiers, Releases & Pricing", sub: "Pricing and options" },

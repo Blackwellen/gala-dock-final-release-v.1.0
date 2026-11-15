@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-29T10:11:23.888Z",
+  "commit": "5d81a0609cffe5043f46ae1aa7c1fa279865d675",
+  "browser": "chromium",
+  "dpr": 1,
+  "results": [
+    {
+      "role": "customer",
+      "blocked": "authentication redirected to /login",
+      "status": 200
+    },
+    {
+      "role": "organizer",
+      "blocked": "authentication redirected to /login",
+      "status": 200
+    },
+    {
+      "role": "provider",
+      "blocked": "authentication redirected to /login",
+      "status": 200
+    }
+  ]
+}

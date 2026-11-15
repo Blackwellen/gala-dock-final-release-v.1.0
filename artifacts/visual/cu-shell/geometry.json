@@ -1,0 +1,508 @@
+[
+  {
+    "role": "customer",
+    "route": "/account",
+    "width": 1536,
+    "height": 730,
+    "name": "account-1536x730",
+    "geometry": {
+      "url": "/account",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 44,
+        "h": 44
+      },
+      "search": {
+        "x": 124,
+        "y": 13,
+        "w": 570,
+        "h": 42
+      },
+      "nav": {
+        "x": 827,
+        "y": 0,
+        "w": 421,
+        "h": 67
+      },
+      "icons": {
+        "x": 1271,
+        "y": 12,
+        "w": 225,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1161
+      },
+      "firstChild": {
+        "x": 61,
+        "y": 90,
+        "w": 1435,
+        "h": 1103
+      }
+    },
+    "errors": [
+      "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client branch `if (typeof window !== 'undefined')`.\n- Variable input such as `Date.now()` or `Math.random()` wh"
+    ]
+  },
+  {
+    "role": "customer",
+    "route": "/discover",
+    "width": 1536,
+    "height": 730,
+    "name": "discover-1536x730",
+    "geometry": {
+      "url": "/discover",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 44,
+        "h": 44
+      },
+      "search": {
+        "x": 124,
+        "y": 13,
+        "w": 570,
+        "h": 42
+      },
+      "nav": {
+        "x": 826,
+        "y": 0,
+        "w": 422,
+        "h": 67
+      },
+      "icons": {
+        "x": 1271,
+        "y": 12,
+        "w": 225,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1029
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 90,
+        "w": 1452,
+        "h": 971
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events",
+    "width": 1536,
+    "height": 730,
+    "name": "account-events-1536x730",
+    "geometry": {
+      "url": "/account/events",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1536,
+        "h": 68
+      },
+      "logo": {
+        "x": 34,
+        "y": 12,
+        "w": 44,
+        "h": 44
+      },
+      "search": {
+        "x": 124,
+        "y": 13,
+        "w": 570,
+        "h": 42
+      },
+      "nav": {
+        "x": 826,
+        "y": 0,
+        "w": 422,
+        "h": 67
+      },
+      "icons": {
+        "x": 1271,
+        "y": 12,
+        "w": 225,
+        "h": 44
+      },
+      "main": {
+        "x": 0,
+        "y": 68,
+        "w": 1536,
+        "h": 1026
+      },
+      "firstChild": {
+        "x": 44,
+        "y": 90,
+        "w": 1452,
+        "h": 968
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account",
+    "width": 1920,
+    "height": 960,
+    "name": "account-1920x960",
+    "geometry": {
+      "url": "/account",
+      "zoom": "1.25",
+      "overflowX": false,
+      "scrollWidth": 1920,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 85
+      },
+      "logo": {
+        "x": 43,
+        "y": 15,
+        "w": 55,
+        "h": 55
+      },
+      "search": {
+        "x": 155,
+        "y": 16,
+        "w": 713,
+        "h": 53
+      },
+      "nav": {
+        "x": 1034,
+        "y": 0,
+        "w": 526,
+        "h": 84
+      },
+      "icons": {
+        "x": 1589,
+        "y": 15,
+        "w": 281,
+        "h": 55
+      },
+      "main": {
+        "x": 0,
+        "y": 85,
+        "w": 1920,
+        "h": 1446
+      },
+      "firstChild": {
+        "x": 76,
+        "y": 113,
+        "w": 1794,
+        "h": 1374
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/discover",
+    "width": 1920,
+    "height": 960,
+    "name": "discover-1920x960",
+    "geometry": {
+      "url": "/discover",
+      "zoom": "1.25",
+      "overflowX": false,
+      "scrollWidth": 1920,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 85
+      },
+      "logo": {
+        "x": 43,
+        "y": 15,
+        "w": 55,
+        "h": 55
+      },
+      "search": {
+        "x": 155,
+        "y": 16,
+        "w": 713,
+        "h": 53
+      },
+      "nav": {
+        "x": 1033,
+        "y": 0,
+        "w": 527,
+        "h": 84
+      },
+      "icons": {
+        "x": 1589,
+        "y": 15,
+        "w": 281,
+        "h": 55
+      },
+      "main": {
+        "x": 0,
+        "y": 85,
+        "w": 1920,
+        "h": 1284
+      },
+      "firstChild": {
+        "x": 55,
+        "y": 113,
+        "w": 1815,
+        "h": 1211
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events",
+    "width": 1920,
+    "height": 960,
+    "name": "account-events-1920x960",
+    "geometry": {
+      "url": "/account/events",
+      "zoom": "1.25",
+      "overflowX": false,
+      "scrollWidth": 1920,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 85
+      },
+      "logo": {
+        "x": 43,
+        "y": 15,
+        "w": 55,
+        "h": 55
+      },
+      "search": {
+        "x": 155,
+        "y": 16,
+        "w": 713,
+        "h": 53
+      },
+      "nav": {
+        "x": 1033,
+        "y": 0,
+        "w": 527,
+        "h": 84
+      },
+      "icons": {
+        "x": 1589,
+        "y": 15,
+        "w": 281,
+        "h": 55
+      },
+      "main": {
+        "x": 0,
+        "y": 85,
+        "w": 1920,
+        "h": 1280
+      },
+      "firstChild": {
+        "x": 55,
+        "y": 113,
+        "w": 1815,
+        "h": 1208
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account",
+    "width": 1366,
+    "height": 700,
+    "name": "account-1366x700",
+    "geometry": {
+      "url": "/account",
+      "zoom": "0.9",
+      "overflowX": false,
+      "scrollWidth": 1366,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1366,
+        "h": 61
+      },
+      "logo": {
+        "x": 31,
+        "y": 10,
+        "w": 40,
+        "h": 40
+      },
+      "search": {
+        "x": 112,
+        "y": 11,
+        "w": 513,
+        "h": 38
+      },
+      "nav": {
+        "x": 728,
+        "y": 0,
+        "w": 379,
+        "h": 60
+      },
+      "icons": {
+        "x": 1128,
+        "y": 10,
+        "w": 202,
+        "h": 40
+      },
+      "main": {
+        "x": 0,
+        "y": 61,
+        "w": 1366,
+        "h": 1762
+      },
+      "firstChild": {
+        "x": 55,
+        "y": 81,
+        "w": 1275,
+        "h": 1710
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/discover",
+    "width": 1366,
+    "height": 700,
+    "name": "discover-1366x700",
+    "geometry": {
+      "url": "/discover",
+      "zoom": "0.9",
+      "overflowX": false,
+      "scrollWidth": 1366,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1366,
+        "h": 61
+      },
+      "logo": {
+        "x": 31,
+        "y": 10,
+        "w": 40,
+        "h": 40
+      },
+      "search": {
+        "x": 112,
+        "y": 11,
+        "w": 513,
+        "h": 38
+      },
+      "nav": {
+        "x": 727,
+        "y": 0,
+        "w": 380,
+        "h": 60
+      },
+      "icons": {
+        "x": 1128,
+        "y": 10,
+        "w": 202,
+        "h": 40
+      },
+      "main": {
+        "x": 0,
+        "y": 61,
+        "w": 1366,
+        "h": 927
+      },
+      "firstChild": {
+        "x": 40,
+        "y": 81,
+        "w": 1290,
+        "h": 874
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events",
+    "width": 1366,
+    "height": 700,
+    "name": "account-events-1366x700",
+    "geometry": {
+      "url": "/account/events",
+      "zoom": "0.9",
+      "overflowX": false,
+      "scrollWidth": 1366,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1366,
+        "h": 61
+      },
+      "logo": {
+        "x": 31,
+        "y": 10,
+        "w": 40,
+        "h": 40
+      },
+      "search": {
+        "x": 112,
+        "y": 11,
+        "w": 513,
+        "h": 38
+      },
+      "nav": {
+        "x": 727,
+        "y": 0,
+        "w": 380,
+        "h": 60
+      },
+      "icons": {
+        "x": 1128,
+        "y": 10,
+        "w": 202,
+        "h": 40
+      },
+      "main": {
+        "x": 0,
+        "y": 61,
+        "w": 1366,
+        "h": 924
+      },
+      "firstChild": {
+        "x": 40,
+        "y": 81,
+        "w": 1290,
+        "h": 872
+      }
+    },
+    "errors": []
+  }
+]

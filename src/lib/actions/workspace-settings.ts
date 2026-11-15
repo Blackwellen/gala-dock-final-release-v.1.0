@@ -6,6 +6,8 @@ import type { ActionResult } from "./shell";
 import type { Json } from "@/types/database";
 import { memberRoleError, removeMemberError, workspacePatchProblem, workspaceSettingsError } from "@/lib/settings/rules";
 import { workspaceCoverUrlOk } from "@/lib/profiles/rules";
+import { optionalPhone } from "@/lib/i18n/countries";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 
 const Patch = z.record(z.string().max(40), z.unknown());
 export async function saveWorkspaceSettings(patch: unknown): Promise<ActionResult> {
@@ -15,6 +17,12 @@ export async function saveWorkspaceSettings(patch: unknown): Promise<ActionResul
   // Q62: the cover is uploaded (saveWorkspaceCover) so it is scanned; a typed URL hot-linked unscanned third-party images.
   if ("cover_image" in p.data) return { ok: false, error: "Upload the cover image with Change photo." };
   const ctx = await getOrganizer();
+  // Q76 (L07): the contact phone is stored in E.164 (national numbers read in the workspace's country).
+  if (typeof p.data.contact_phone === "string") {
+    const ph = optionalPhone(p.data.contact_phone, workspaceLocale(ctx.workspace.settings).country ?? "GB");
+    if (!ph.ok) return { ok: false, error: ph.error };
+    p.data.contact_phone = ph.e164;
+  }
   const { error } = await ctx.supabase.rpc("update_workspace_settings", { p_ws: ctx.workspace.id, p: p.data as Json });
   if (error) return { ok: false, error: workspaceSettingsError(error.message) };
   revalidatePath("/organizer/settings"); revalidatePath("/organizer", "layout"); return { ok: true, message: "Settings saved." };

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, Clock, MapPin, Play, LayoutDashboard, ListChecks, Megaphone, Settings2, Wallet, Video, MoreHorizontal, ChevronDown } from "lucide-react";
 import { Crumbs } from "@/components/kit";
-import { dateLong, timeRange, eventTypeLabel } from "@/lib/format";
+import { dateLong, timeRange, eventTypeLabel, zoneAbbr } from "@/lib/format";
 import type { ProEvent } from "@/lib/data/event";
 import { StatusMenu, HeroActions, TabActions } from "./controls";
 
@@ -26,7 +26,7 @@ export function EventHeader({ e, tab, canMoney }: { e: ProEvent; tab: EventTab |
       <div className="eh-hero-text">
         <span className="eh-type">{eventTypeLabel(e.event_type).toUpperCase()}</span>
         <h1>{e.name}</h1>
-        <div className="eh-meta"><span><CalendarDays size={16} />{dateLong(e.starts_at, e.timezone)}</span><span><Clock size={16} />{timeRange(e.starts_at, e.ends_at, e.timezone)}</span><span><MapPin size={16} />{[e.venue_name, e.city].filter(Boolean).join(", ") || "Venue to be confirmed"}</span></div>
+        <div className="eh-meta"><span><CalendarDays size={16} />{dateLong(e.starts_at, e.timezone)}</span><span><Clock size={16} />{timeRange(e.starts_at, e.ends_at, e.timezone)} {zoneAbbr(e.starts_at, e.timezone)}</span><span><MapPin size={16} />{[e.venue_name, e.city].filter(Boolean).join(", ") || "Venue to be confirmed"}</span></div>
       </div>
       {hero && <span className="eh-play" aria-hidden><Play size={18} fill="currentColor" /></span>}
       <div className="eh-hero-actions">{(["virtual_event", "live_audio", "podcast_recording", "hybrid", "remote_conference"].includes(e.event_type) || ((e.settings ?? {}) as { virtual?: boolean }).virtual === true) && <Link className="k-btn outline eh-online" href={`/organizer/events/${e.id}/virtual`}><Video size={15} />Online session</Link>}<StatusMenu id={e.id} status={e.status} /><HeroActions id={e.id} name={e.name} slug={e.slug} isPublic={isPublic} /></div>

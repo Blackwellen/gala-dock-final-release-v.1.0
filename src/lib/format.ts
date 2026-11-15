@@ -1,20 +1,20 @@
 // Display formatting shared by Customer and Organizer surfaces. All dates render in the event/workspace timezone.
 import { resolveTerm, term } from "@/lib/master-data";
-const TZ = "Europe/London";
+import { formatMoney } from "@/lib/i18n/money";
+import { DEFAULT_TZ, safeTz, tzAbbrev } from "@/lib/i18n/tz";
+// Q72: London is only the DEFAULT. Pass the event's own zone (events.timezone) wherever an event time is shown.
+const TZ = DEFAULT_TZ;
 
-export function money(value: number | string | null | undefined, currency = "GBP", opts: { decimals?: boolean; compact?: boolean } = {}) {
-  const n = Number(value ?? 0);
-  if (opts.compact && Math.abs(n) >= 1000) {
-    return new Intl.NumberFormat("en-GB", { style: "currency", currency, notation: "compact", maximumFractionDigits: 1 }).format(n);
-  }
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency, minimumFractionDigits: opts.decimals ? 2 : 0, maximumFractionDigits: opts.decimals ? 2 : 0 }).format(n);
+/** Q72: Intl by currency (src/lib/i18n/money.ts). JPY etc. get their own decimals; unknown codes render as "CODE 12". */
+export function money(value: number | string | null | undefined, currency: string | null = "GBP", opts: { decimals?: boolean; compact?: boolean } = {}) {
+  return formatMoney(value, currency || "GBP", { decimals: opts.decimals, compact: opts.compact });
 }
 export const num = (n: number | null | undefined) => new Intl.NumberFormat("en-GB").format(Number(n ?? 0));
 export const pct = (part: number, whole: number) => (whole > 0 ? Math.round((100 * part) / whole) : 0);
 
 function parts(iso: string, tz = TZ) {
   const d = new Date(iso);
-  const f = new Intl.DateTimeFormat("en-GB", { timeZone: tz, weekday: "short", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+  const f = new Intl.DateTimeFormat("en-GB", { timeZone: safeTz(tz), weekday: "short", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
   return Object.fromEntries(f.formatToParts(d).map(p => [p.type, p.value])) as Record<string, string>;
 }
 /** "Sat, 14 Jun 2027" */
@@ -28,6 +28,10 @@ export const time = (iso?: string | null, tz = TZ) => { if (!iso) return ""; con
 /** "4:00 PM" */
 export const time12 = (iso?: string | null, tz = TZ) => iso ? new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : "";
 export const timeRange = (a?: string | null, b?: string | null, tz = TZ) => (a ? `${time(a, tz)}${b ? ` – ${time(b, tz)}` : ""}` : "Time to be confirmed");
+/** Q72: "BST", "CEST", "EDT" — the event zone's abbreviation at that instant. */
+export const zoneAbbr = (iso?: string | null, tz = TZ) => (iso ? tzAbbrev(iso, safeTz(tz)) : "");
+/** Q72: "Sat, 14 Jun 2027 · 19:00 – 23:00 CEST" — an event time with its zone named. */
+export const whenInZone = (a?: string | null, b?: string | null, tz = TZ) => (a ? `${dateLong(a, tz)} · ${timeRange(a, b, tz)} ${zoneAbbr(a, tz)}`.trim() : "Date to be confirmed");
 export const timeRange12 = (a?: string | null, b?: string | null, tz = TZ) => (a ? `${time12(a, tz)}${b ? ` – ${time12(b, tz)}` : ""}` : "Time to be confirmed");
 /** { mon: "APR", day: "26" } date badge */
 export const dateBadge = (iso?: string | null, tz = TZ) => { if (!iso) return { mon: "TBC", day: "–" }; const p = parts(iso, tz); return { mon: p.month.toUpperCase(), day: String(Number(p.day)) }; };

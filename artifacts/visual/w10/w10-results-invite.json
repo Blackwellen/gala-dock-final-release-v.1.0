@@ -1,0 +1,65 @@
+{
+ "auth": [
+  {
+   "name": "AUTH-007-invite-signed-out",
+   "links": 9,
+   "buttons": 2,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/invite/<tok>"
+  },
+  {
+   "name": "AUTH-007-invite-signed-in",
+   "links": 8,
+   "buttons": 3,
+   "inputs": 0,
+   "unlabeled": 0,
+   "unnamed": 0,
+   "dead": 0,
+   "overflow": 0,
+   "h1": "Extraordinaryevents start here.",
+   "url": "/invite/<tok>"
+  }
+ ],
+ "flows": [
+  {
+   "flow": "invite via provider settings UI",
+   "linkShown": true,
+   "invites": [
+    {
+     "role": "member",
+     "accepted": false,
+     "revoked": false
+    },
+    {
+     "role": "manager",
+     "accepted": false,
+     "revoked": true
+    }
+   ],
+   "landedAfterAccept": "/provider",
+   "membership": [
+    {
+     "role": "member",
+     "status": "active"
+    }
+   ],
+   "audit": [
+    "invite.accepted",
+    "invite.revoked",
+    "invite.created",
+    "invite.created"
+   ]
+  }
+ ],
+ "switching": [],
+ "billing": [],
+ "onboarding": [],
+ "notes": [
+  "cleanup: 3 disposable users removed"
+ ]
+}

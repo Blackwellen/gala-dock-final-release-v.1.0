@@ -190,11 +190,11 @@ test.describe("Q08 trust & verification", () => {
     expect((await sc.rpc("trust_submit_verification", { p_workspace: PW, p_kind: "business", p_details: { legal_name: "Hijack Ltd" } })).error?.message).toMatch(/not_authorized/);
     expect((await sc.from("verification_checks").select("id").eq("id", check)).data).toEqual([]);
     expect((await pc.rpc("trust_review_verification", { p_check: check, p_to: "verified", p_reason_code: null, p_reason: "self verify" })).error?.message).toMatch(/not_authorized/);
-    // submitted → verified skips review: illegal (command and direct write both refused).
-    expect((await ac.rpc("trust_review_verification", { p_check: check, p_to: "verified", p_reason_code: null, p_reason: "skip review" })).error?.message).toMatch(/illegal verification transition submitted -> verified/);
+    // The machine still has no submitted → verified / suspended edge: direct writes and raw transitions are refused.
     expect((await db.from("verification_checks").update({ status: "verified" }).eq("id", check)).error?.message).toMatch(/illegal verification transition/);
     expect((await db.rpc("transition_state", { p_machine: "verification", p_id: check, p_to: "suspended" })).error?.message).toMatch(/illegal/);
-    expect((await ac.rpc("trust_review_verification", { p_check: check, p_to: "pending_review", p_reason_code: null, p_reason: "picked up" })).error).toBeNull();
+    // Q59 (202611146801, backend-queue 2026-11-14 "submitted→verified illegal transition"): the admin command no longer errors on a
+    // submitted check — it records the review step itself (submitted → pending_review → verified), so review is never skipped in history.
     expect((await ac.rpc("trust_review_verification", { p_check: check, p_to: "verified", p_reason_code: null, p_reason: "Companies House match" })).error).toBeNull();
     const hist = (await pc.from("verification_records").select("status,from_status").eq("check_id", check).order("created_at")).data as { status: string; from_status: string }[];
     expect(hist.map(h => `${h.from_status}->${h.status}`)).toEqual(["unverified->submitted", "submitted->pending_review", "pending_review->verified"]);

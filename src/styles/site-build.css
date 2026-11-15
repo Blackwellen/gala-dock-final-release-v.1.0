@@ -230,6 +230,9 @@
   .gpb-dep-grid, .gpb-pay-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .gpb-emg { grid-template-columns: minmax(0, 1fr); }
   .gpb-bk-link { display: none; }
+  /* Q71: tablets (900–1099) — the 3fr summary rail was narrower than its own figures; blueprint 2.3: tablet moves the summary below the canvas. */
+  .gpb-canvas-wrap { grid-template-columns: minmax(0, 1fr); }
+  .gpb-rail { position: static; }
 }
 @media (max-width: 899px) {
   .gpb-canvas-wrap { grid-template-columns: minmax(0, 1fr); }
@@ -263,7 +266,8 @@
   .gpb-canvas { min-height: 0; padding: 14px; }
   .gpb-plan { grid-template-columns: minmax(0, 1fr); padding: 0; background: none; }
   .gpb-drop { display: none; }
-  .gpb-rail { position: sticky; bottom: 8px; top: auto; z-index: 5; grid-template-columns: auto 1fr; gap: 10px; padding: 12px; }
+  .gpb-rail { position: sticky; bottom: 8px; top: auto; z-index: 5; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 12px; }
+  .gpb-rail-ready { min-width: 0; }
   .gpb-rail dl div:not(.is-total), .gpb-reset, .gpb-rail .gp-btn { display: none; }
   .gpb-rail dl { gap: 0; } .gpb-rail .is-total { padding: 8px 12px; }
   .gpb-rail-ready .gp-ring { --s: 56px !important; } .gpb-rail-ready .gp-ring b { font-size: 14px; }
@@ -278,3 +282,7 @@
   .gpb-pay-copy .gp-h2 { font-size: 32px; }
   .gpb-m-build { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Q71: on short screens (landscape phones, 400 % zoom) the sticky summary strip would cover the plan it summarises. */
+@media (max-height: 520px) { .gpb-rail { position: static !important; } }
+@media (max-height: 720px) and (min-width: 761px) { .gpb-chain, .gpb-rail { position: static; } }

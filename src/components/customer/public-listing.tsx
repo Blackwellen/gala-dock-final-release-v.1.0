@@ -9,13 +9,17 @@ import { ListingAvailability } from "@/components/public/listing-availability";
 import { PublicPlan, planHasContent } from "@/components/venue-plan/public-plan";
 import type { MapEl } from "@/app/provider/venues/_components/venue-map";
 import { untyped } from "@/lib/workspace/db";
+import { formatMoney } from "@/lib/i18n/money";
 import { publicReply } from "@/lib/profiles/rules";
 import { photoAlt } from "@/lib/media/photo-alt";
+import { ReportContentButton } from "@/components/safety/report-content";
+import { NON_CIRCUMVENTION_COPY } from "@/lib/legal/non-circumvention";
 import { SpaceCard, ListingMenus, ListingBars, type PublicBar, ListingGalleries, ListingBanner, VenueGoodToKnow, ServiceDetailsSection, venueFacts, coverageLine, type PublicSpace, type PublicMenu, type PublicMenuSection, type PublicMenuItem, type PublicGallery, type ServiceDetails } from "./public-listing-extras";
 
 type Kind = "venue" | "service";
-const money = (n: number | null | undefined) => n == null ? "On request" : `£${Number(n).toLocaleString("en-GB")}`;
-const COLS = "id,name,slug,kind,category,description,location,city,image,gallery,price_from,price_unit,capacity_min,capacity_max,rating,review_count,response_hours,verified,instant_book,booking_mode,badge,tags,lat,lng,details,workspace_id";
+/** Q76: prices in the listing's own currency (listings.currency; was £). */
+const money = (n: number | null | undefined, c: string = "GBP") => n == null ? "On request" : formatMoney(Number(n), c);
+const COLS = "id,name,slug,kind,published,category,description,location,city,image,gallery,price_from,price_unit,capacity_min,capacity_max,rating,review_count,response_hours,verified,instant_book,booking_mode,badge,tags,lat,lng,details,workspace_id";
 
 /**
  * Q62: `preview` (the editor's "Preview" button, ?preview=1) also loads an unpublished listing — listings_public_read only returns
@@ -35,6 +39,9 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
   if (!l) notFound();
   const draft = !(l as { published?: boolean }).published;
   const d = (l.details ?? {}) as Record<string, unknown>;
+  // Q76: listings.currency is newer than the generated types (gap D03), so it is read untyped.
+  const { data: lcur } = await untyped(supabase as never).from("listings").select("currency").eq("id", l.id).maybeSingle();
+  const cur = String((lcur as { currency?: string | null } | null)?.currency || "GBP").toUpperCase();
   const [{ data: spaces }, { data: pkgs }, { data: revs }, { data: { user } }, { data: similar }] = await Promise.all([
     kind === "venue" ? supabase.from("spaces").select("id,name,indoor,capacity_seated,capacity_standing,image,details,area_sqm,layouts,amenities").eq("venue_id", l.id).eq("status", "published").order("capacity_seated", { ascending: false }) : Promise.resolve({ data: [] }),
     supabase.from("packages").select("id,name,description,base_price,price_basis,min_guests,max_guests,image,inclusions,details,booking_mode").eq("listing_id", l.id).eq("status", "published").order("base_price"),
@@ -115,9 +122,11 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
     pick(d.team, svc.team) ? [Users, pick(d.team, svc.team)!, "Event team"] : null,
     [Clock, `< ${l.response_hours ?? 24} hours`, "Response commitment"],
   ].filter(Boolean) as unknown as Fact[]) : [];
-  const ld = { "@context": "https://schema.org", "@type": kind === "venue" ? "EventVenue" : "LocalBusiness", name: l.name, description: l.description, image: photos.slice(0, 3), address: l.location, aggregateRating: l.review_count ? { "@type": "AggregateRating", ratingValue: Number(l.rating), reviewCount: l.review_count } : undefined, priceRange: l.price_from ? `From £${l.price_from}` : undefined };
+  const ld = { "@context": "https://schema.org", "@type": kind === "venue" ? "EventVenue" : "LocalBusiness", name: l.name, description: l.description, image: photos.slice(0, 3), address: l.location, aggregateRating: l.review_count ? { "@type": "AggregateRating", ratingValue: Number(l.rating), reviewCount: l.review_count } : undefined, priceRange: l.price_from ? `From ${money(l.price_from, cur)}` : undefined, currenciesAccepted: cur };
   const HL = [Award, Leaf, Scaling, Salad, Package2];
 
+  // Q74 (D11): enquiry-only seller (payments country unsupported) — warn buyers that direct payments carry no Gala Dock protection.
+  const offPlatformSeller = !draft && wsId && l.booking_mode === "enquiry" ? (await supabase.rpc("workspace_payments_country_ok" as never, { p_workspace: wsId } as never)).data === false : false;
   const { data: upcoming } = kind === "venue" ? await supabase.from("events_public").select("id,name,slug,starts_at,cover_image,event_type").eq("venue_listing_id", l.id).eq("visibility", "public").in("status", ["published", "on_sale", "live"]).gte("starts_at", new Date().toISOString()).order("starts_at").limit(4) : { data: [] };
   const chips = (l.tags ?? []).slice(0, 5) as string[];
   const shownFacts = kind === "venue" ? facts.slice(0, 5) : stats;
@@ -131,7 +140,7 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
       <ListingActions listingId={l.id} name={l.name} saved={!!savedRow} signedIn={!!user} kind={kind} />
       <div className="pl3-hero-copy">{l.verified || verifiedBadge ? <span className="pl3-type"><BadgeCheck size={13} />{kind === "venue" ? "Verified venue" : `Verified · ${l.category}`}</span> : <span className="pl3-type">{l.category}</span>}
         <h1 id="pl-title">{l.name}</h1><p>{String(d.tagline ?? "") || l.description?.split(". ")[0]}</p>
-        <div className="pl3-meta"><span><MapPin size={16} />{l.location}</span>{l.review_count > 0 && <span><Star size={16} fill="#f59e0b" color="#f59e0b" />{Number(l.rating).toFixed(1)} ({l.review_count} reviews)</span>}{kind === "venue" ? (l.capacity_max ? <span><Users size={16} />{l.capacity_max.toLocaleString("en-GB")} capacity</span> : null) : cover ? <span><Compass size={16} />{cover}</span> : null}{showPrice && l.price_from ? <span><Tag size={16} />From {money(l.price_from)}{l.price_unit ? ` ${l.price_unit}` : ""}</span> : <span><Tag size={16} />Price on request</span>}</div>
+        <div className="pl3-meta"><span><MapPin size={16} />{l.location}</span>{l.review_count > 0 && <span><Star size={16} fill="#f59e0b" color="#f59e0b" />{Number(l.rating).toFixed(1)} ({l.review_count} reviews)</span>}{kind === "venue" ? (l.capacity_max ? <span><Users size={16} />{l.capacity_max.toLocaleString("en-GB")} capacity</span> : null) : cover ? <span><Compass size={16} />{cover}</span> : null}{showPrice && l.price_from ? <span><Tag size={16} />From {money(l.price_from, cur)}{l.price_unit ? ` ${l.price_unit}` : ""}</span> : <span><Tag size={16} />Price on request</span>}</div>
         {chips.length > 0 && <div className="pl3-chips">{chips.map(c => <span key={c}>{c}</span>)}</div>}</div>
       {photos.length > 1 && <div className="pl3-mosaic">{photos.slice(1, 4).map((p, i) => <a key={p + i} href="#photos" className={`pl3-m${i}`} aria-label={`View photo ${i + 2}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" /></a>)}
         <a href="#photos" className="pl3-m3" aria-label={`View all ${photos.length} photos`}><Camera size={16} /><b>{photos.length}</b><small>View all photos</small></a></div>}
@@ -149,9 +158,11 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
       <aside className="pl3-side">
         <section id="book" className="ce-card pl-book pl3-book"><div className="k-between"><h2>{kind === "venue" ? "Check availability" : "Book or request a quote"}</h2><span className="pe-sale"><CheckCircle2 size={13} />Responds within {l.response_hours ?? 24}h</span></div>
           <PlanWithListing listing={{ id: l.id, name: l.name, category: cat, kind, capacity: l.capacity_max, workspaceId: (l as { workspace_id?: string }).workspace_id ?? null }} events={(myEvents ?? []).map(e => ({ id: e.id, name: e.name, guests: e.guest_count }))} signedIn={!!user} next={href} />
-          <ul className="pl3-trust"><li><CheckCircle2 size={14} />Free enquiry — no payment at this stage</li><li><CheckCircle2 size={14} />Typically responds in {l.response_hours ?? 24} hours</li><li><CheckCircle2 size={14} />{l.instant_book ? "Instant book or custom quote" : "Custom quote for your event"}</li></ul></section>
-        {kind === "service" && showPrice && tiers.length > 0 && <section className="ce-card pl-est"><div className="k-between"><h2>Price estimate</h2><span><small>From </small><b>{money(tiers[0]!.p)}</b><small> per guest</small></span></div>
-          <div className="pl-tiers">{tiers.map((t, i) => <span key={t.l} className={i === 0 ? "on" : ""}><i /><b>{money(t.p)}{i === tiers.length - 1 ? "+" : ""}</b><small>{t.l}</small></span>)}</div></section>}
+          <ul className="pl3-trust"><li><CheckCircle2 size={14} />Free enquiry — no payment at this stage</li><li><CheckCircle2 size={14} />Typically responds in {l.response_hours ?? 24} hours</li><li><CheckCircle2 size={14} />{l.instant_book ? "Instant book or custom quote" : "Custom quote for your event"}</li></ul>
+          {offPlatformSeller && <p className="k-notice amber" role="note" style={{ margin: "8px 0 0", fontSize: 12.5 }}>{NON_CIRCUMVENTION_COPY.enquiryOnlyBuyer}</p>}
+          {!draft && <div style={{ marginTop: 8 }}><ReportContentButton subject="listing" id={l.id} name={l.name} signedIn={!!user} next={href} /></div>}</section>
+        {kind === "service" && showPrice && tiers.length > 0 && <section className="ce-card pl-est"><div className="k-between"><h2>Price estimate</h2><span><small>From </small><b>{money(tiers[0]!.p, cur)}</b><small> per guest</small></span></div>
+          <div className="pl-tiers">{tiers.map((t, i) => <span key={t.l} className={i === 0 ? "on" : ""}><i /><b>{money(t.p, cur)}{i === tiers.length - 1 ? "+" : ""}</b><small>{t.l}</small></span>)}</div></section>}
         <section className="ce-card pl-agent"><div className="k-row" style={{ gap: 8 }}><Compass size={20} className="pw-spark" /><b>Plan with this {kind === "venue" ? "venue" : "supplier"}</b></div>
           {[[`Is ${l.name} available for my dates?`, user ? (myEvents?.length ? "#book" : "/plan") : `/login?next=${href}`], [`Compare with similar ${kind === "venue" ? "venues" : "suppliers"}`, (similar ?? []).length > 0 ? "#similar" : `/discover?tab=${kind === "venue" ? "venues" : "services"}&results=1`], ["Plan an event around it", "/plan"]].map(([t, h]) => <Link key={t} href={h} className="pl-ask">{t}<ArrowRight size={14} /></Link>)}</section>
       </aside>
@@ -165,7 +176,7 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
       <div className="pl3-g3">{(pkgs ?? []).slice(0, 3).map(p => { const badge = (p.details as { badge?: string } | null)?.badge; const unit = p.price_basis === "per_person" ? (kind === "venue" ? "person" : "guest") : p.price_basis === "hourly" ? "hour" : "day";
         return <article key={p.id} className={`ce-card pl3-pk ${kind}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p.image || photos[(pkgs ?? []).indexOf(p) + 1] || photos[0]} alt="" />{badge && <i className="pl3-pk-tag">{badge}</i>}
           <div><b>{p.name}</b><p>{p.description}</p>{Array.isArray(p.inclusions) && <ul>{(p.inclusions as string[]).slice(0, 4).map(x => <li key={x}><CheckCircle2 size={13} />{x}</li>)}</ul>}
-            {showPrice ? <strong>From {money(Number(p.base_price))} <small>/ {unit}</small></strong> : <strong>Price on request</strong>}
+            {showPrice ? <strong>From {money(Number(p.base_price), cur)} <small>/ {unit}</small></strong> : <strong>Price on request</strong>}
             {kind === "service" && <div className="pl-pk-acts"><PlanWithListing compact listing={{ id: l.id, name: l.name, category: cat, kind }} events={(myEvents ?? []).map(e => ({ id: e.id, name: e.name }))} signedIn={!!user} next={href} /></div>}</div></article>; })}</div></section>
       {kind === "service" && highlights.length > 0 && <aside className="ce-card pl3-why"><h2>Why choose us?</h2><ul>{highlights.map((h, i) => { const I = HL[i % HL.length]!; return <li key={h.t}><span className={`pl-hi c${i % 5}`}><I size={17} /></span><span><b>{h.t}</b><small>{h.d}</small></span></li>; })}</ul></aside>}</div>}
     <ListingMenus menus={menus} sections={(secRows ?? []) as PublicMenuSection[]} items={((itemRows ?? []) as PublicMenuItem[]).map(x => ({ ...x, price: x.price == null ? null : Number(x.price) }))} own={l.name} />
@@ -177,12 +188,12 @@ export async function PublicListing({ kind, slug, preview = false }: { kind: Kin
       <div className="pe3-photos-g">{photos.slice(0, 6).map((p, i) => <span key={p + i}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt={photoAlt(d, p, `${l.name} photo ${i + 1}`)} loading="lazy" />{i === 5 && photos.length > 6 && <b>+{photos.length - 6}<small>More photos</small></b>}</span>)}</div></section>
     <ListingGalleries galleries={galleries} />
     <section id="reviews" className="pl3-row"><div className="k-between"><h2>Reviews <span className="pl-rate"><Star size={16} fill="#f59e0b" color="#f59e0b" /><b>{Number(l.rating).toFixed(1)}</b><small>· {l.review_count} reviews</small></span></h2></div>
-      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p>{publicReply(r) && <blockquote className="pl3-reply" style={{ margin: "8px 0", padding: "8px 10px", borderLeft: "3px solid var(--org-accent, #c7d2fe)", background: "#f8fafc", borderRadius: 6 }}><b style={{ fontSize: 12 }}>Reply from {l.name}</b><p style={{ margin: "4px 0 0", whiteSpace: "pre-line", fontSize: 13 }}>{publicReply(r)}</p></blockquote>}<small>{/* Q57: only reviews tied to a booking on Gala Dock are "Verified booking" (8 live reviews have none) */}{r.build_item_id ? "Verified booking · " : ""}{new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small></li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
+      <ul className="pl3-g3 pl3-revs">{(revs ?? []).slice(0, 3).map(r => <li key={r.id} className="ce-card"><span className="pl-stars">{"★".repeat(r.rating)}<span>{"★".repeat(5 - r.rating)}</span></span><p>{r.body}</p>{publicReply(r) && <blockquote className="pl3-reply" style={{ margin: "8px 0", padding: "8px 10px", borderLeft: "3px solid var(--org-accent, #c7d2fe)", background: "#f8fafc", borderRadius: 6 }}><b style={{ fontSize: 12 }}>Reply from {l.name}</b><p style={{ margin: "4px 0 0", whiteSpace: "pre-line", fontSize: 13 }}>{publicReply(r)}</p></blockquote>}<small>{/* Q57: only reviews tied to a booking on Gala Dock are "Verified booking" (8 live reviews have none) */}{r.build_item_id ? "Verified booking · " : ""}{new Date(r.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</small>{!draft && <ReportContentButton compact subject="review" id={r.id} name={`review of ${l.name}`} signedIn={!!user} next={`${href}#reviews`} />}</li>)}{!(revs ?? []).length && <li className="ce-card k-small">No written reviews yet.</li>}</ul></section>
     <div id="location" className="pl3-two">
       <section className="ce-card pl-loc"><div className="k-between"><h2>{kind === "venue" ? "Location & getting here" : "Service areas"}</h2><a className="k-link" href={maps} target="_blank" rel="noopener noreferrer">View on Google Maps <ChevronRight size={13} /></a></div>
         {pins.length ? <MapView pins={pins} center={pins[0]} zoom={13} height={220} ariaLabel={`Map of ${l.name}`} /> : <div className="pe-nomap">{l.location}</div>}<p className="pl-addr"><MapPin size={14} />{l.location}{kind === "service" && d.coverage ? ` · ${String(d.coverage)}` : ""}</p></section>
       <section className="ce-card pl-quick"><h2>{kind === "venue" ? "Venue details" : "Response & availability"}</h2>
-        <dl><div><dt><Tag size={15} />Price from</dt><dd><b>{money(l.price_from)}</b> {l.price_unit}</dd></div><div><dt><Clock size={15} />Response time</dt><dd>Typically {l.response_hours ?? 24} hours</dd></div><div><dt><Calendar size={15} />Booking mode</dt><dd>{l.instant_book ? "Instant book or quote" : l.booking_mode === "enquiry" ? "Enquiry first" : "Request a quote"}</dd></div>
+        <dl><div><dt><Tag size={15} />Price from</dt><dd><b>{money(l.price_from, cur)}</b> {l.price_unit}</dd></div><div><dt><Clock size={15} />Response time</dt><dd>Typically {l.response_hours ?? 24} hours</dd></div><div><dt><Calendar size={15} />Booking mode</dt><dd>{l.instant_book ? "Instant book or quote" : l.booking_mode === "enquiry" ? "Enquiry first" : "Request a quote"}</dd></div>
           {Object.entries(policies).slice(0, 3).map(([k, v]) => <div key={k}><dt><ShieldCheck size={15} />{k[0]!.toUpperCase() + k.slice(1)}</dt><dd>{v}</dd></div>)}</dl>
         {kind === "venue" && amenities.length > 0 && <div className="pl3-amen">{amenities.slice(0, 8).map(a => <span key={a}><CheckCircle2 size={13} />{a}</span>)}</div>}</section>
     </div>

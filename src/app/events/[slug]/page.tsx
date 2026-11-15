@@ -28,12 +28,15 @@ import { EventGettingThere } from "@/components/public/event-getting-there";
 import { loadGettingThere } from "@/lib/public/getting-there";
 import { untyped } from "@/lib/workspace/db";
 import { accentVars } from "@/lib/brand/accent";
+import { safeTz, tzAbbrev } from "@/lib/i18n/tz";
+import { LocalTimeHint } from "@/components/shared/local-time";
+import { ReportContentButton } from "@/components/safety/report-content";
 
 // The plan renders on the server (no map code in the browser); dynamic() splits its small pan/zoom client frame and preloads its CSS.
 const PublicPlan = dynamic(() => import("@/components/venue-plan/public-plan").then(m => m.PublicPlan));
 
-const TZ = "Europe/London";
-const COLS = "id,name,slug,description,event_type,starts_at,ends_at,venue_name,location,city,cover_image,tags,settings,status,workspace_id,venue_listing_id,capacity,series_id,parent_event_id";
+// Q72: dates render in the event's own zone (events.timezone; London for pre-Q72 rows) and prices in its currency.
+const COLS = "id,name,slug,description,event_type,starts_at,ends_at,timezone,currency,venue_name,location,city,cover_image,tags,settings,status,workspace_id,venue_listing_id,capacity,series_id,parent_event_id";
 /** Public read; `preview` lets signed-in workspace members see an unpublished page (RLS still decides what they can read). */
 async function load(slug: string, preview = false) {
   const supabase = await createClient();
@@ -100,6 +103,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   // Q67: the organiser's brand colour as an accent (clamped to WCAG AA in accentVars); a workspace member previewing a draft reads it directly.
   const { data: brandHex } = await untyped(supabase as never).rpc(preview ? "workspace_brand_color" : "public_event_brand", preview ? { p_ws: e.workspace_id } : { p_event: e.id });
   const brandVars = accentVars(brandHex);
+  const TZ = safeTz((e as { timezone?: string | null }).timezone), CUR = String((e as { currency?: string | null }).currency || "GBP").toUpperCase();
   const d = e.starts_at ? new Date(e.starts_at) : null;
   const dayStr = d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: TZ }) : "Date TBC";
   const t = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ }) : "";
@@ -127,7 +131,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.venue_name, e.location].filter(Boolean).join(", "))}`;
   const gt = await gettingThere;
   const mode = x.virtual?.format === "hybrid" ? "MixedEventAttendanceMode" : x.virtual?.sessions.length ? "OnlineEventAttendanceMode" : "OfflineEventAttendanceMode";
-  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, ...schemaEventStatus(e.status, e.settings as Record<string, unknown> | null), eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: priceWithFees(x.price, fee), priceCurrency: "GBP", availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
+  const ld = { "@context": "https://schema.org", "@type": "Event", name: e.name, startDate: e.starts_at, endDate: e.ends_at, ...schemaEventStatus(e.status, e.settings as Record<string, unknown> | null), eventAttendanceMode: `https://schema.org/${mode}`, location: { "@type": "Place", name: e.venue_name, address: e.location }, image: photos.slice(0, 3), description: e.description, offers: tk.map(x => ({ "@type": "Offer", name: x.name, price: priceWithFees(x.price, fee), priceCurrency: CUR, availability: x.left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut" })), organizer: o ? { "@type": "Organization", name: o.name } : undefined };
 
   // §50 launch state (server-computed): drives the badge and whether checkout is offered.
   const { data: launchRaw } = e ? await supabase.rpc("event_launch_state" as never, { p_event: e.id } as never) : { data: null };
@@ -166,7 +170,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
     programme: (showSchedule || x.virtual?.sessions.length) && <>{showSchedule && <section id="schedule" className="ce-card pe3-sched"><h2>Programme</h2>
       {progDays.map(dk => <div key={dk} className="pe3-sched-day">{progDays.length > 1 && <h3>{dayLabel.get(dk) ? `${dayLabel.get(dk)} · ${dk}` : dk}</h3>}
         <ol className="pe-sched-l">{(lineup ?? []).filter(l => dayKey(l.starts_at) === dk).map(l => <li key={l.id}><time>{t(l.starts_at)}</time><span className="k-grow"><b>{l.title}</b>{l.detail ? <small>{l.detail}</small> : null}</span>{l.area && <em>{l.area}</em>}</li>)}</ol></div>)}</section>}
-      <OnlineSection virtual={x.virtual} /></>,
+      <OnlineSection virtual={x.virtual} tz={TZ} /></>,
     venue: <section id="venue" className="pe3-venue"><h2>Venue</h2>
       <div className="ce-card pe3-venue-g">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={venue?.image || e.cover_image || "/assets/gd/hero-neon.webp"} alt="" />
         <div className="pe3-venue-info"><h3>{venue?.name ?? e.venue_name}</h3><small>{venue?.location ?? e.location}</small>{venue?.description ? <p>{String(venue.description).slice(0, 180)}</p> : null}
@@ -204,9 +208,9 @@ export default async function PublicEventPage({ params, searchParams }: { params
           {features.length > 0 && <ul className="pe3-minis">{features.slice(0, 4).map((f, i) => { const I = FEAT[f] ?? Sparkles; return <li key={f}><span><I size={20} aria-hidden /></span><p><b>{f}</b>{highlights[i] ? <small>{highlights[i]}</small> : null}</p></li>; })}</ul>}
           {photos[1] && on("gallery") && <a className="pe3-banner" href="#photos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[1]} alt="" /><span><b>Event highlights</b><small>{photos.length} photos from the organiser</small></span></a>}</section>}
         {showTickets && <aside id="tickets" className="ce-card pe3-tickets"><div className="k-between"><h2>Get your tickets</h2><span className={`pe-sale ${sale[1]}`}><CheckCircle2 size={13} />{sale[0]}</span></div>
-          <TicketPicker slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} resale={resaleCount} fee={fee} /></aside>}
+          <TicketPicker currency={CUR} slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} resale={resaleCount} fee={fee} /></aside>}
       </div>);
-      const dates = <DatesSection key="dates" extras={x.extras} series={x.series} parent={x.parent} />; rows.push(dates);
+      const dates = <DatesSection key="dates" extras={x.extras} series={x.series} parent={x.parent} tz={TZ} />; rows.push(dates);
       if (x.series || x.parent || x.extras.passes.length || x.extras.sub_events.length || x.extras.days.length > 1) tabs.push(["dates", "Dates"]);
       rows.push(<MerchSection key="merch" merch={x.merch} url={safeMerchUrl(s.merch_url)} />);
       continue;
@@ -250,7 +254,7 @@ export default async function PublicEventPage({ params, searchParams }: { params
       <EventActions eventId={e.id} name={e.name} saved={!!savedRow} signedIn={!!user} />
       <div className="pe3-hero-copy"><span className="pe3-type">{eventTypeLabel(e.event_type)}</span>
         <h1 id="pe-title">{(s.hero_title as string) || e.name}</h1>{(s.subtitle as string) ? <p>{String(s.subtitle)}</p> : null}
-        <dl className="pe3-facts"><div><dt><CalendarDays size={22} aria-label="Date" /></dt><dd><b>{dateLine}</b><small>{d ? d.toLocaleDateString("en-GB", { weekday: "short", timeZone: TZ }) : ""} {t(e.starts_at)} – {t(e.ends_at)}</small></dd></div>
+        <dl className="pe3-facts"><div><dt><CalendarDays size={22} aria-label="Date" /></dt><dd><b>{dateLine}</b><small>{d ? d.toLocaleDateString("en-GB", { weekday: "short", timeZone: TZ }) : ""} {t(e.starts_at)} – {t(e.ends_at)} {e.starts_at ? tzAbbrev(e.starts_at, TZ) : ""}<LocalTimeHint iso={e.starts_at} tz={TZ} /></small></dd></div>
           <div><dt><MapPin size={22} aria-label="Venue" /></dt><dd><b>{e.venue_name || e.city}</b><small>{e.city ? `${e.city}, UK` : e.location}</small></dd></div>
           {(Number(s.attendance) || e.capacity || 0) > 0 && <div><dt><Users size={22} aria-label="Attendance" /></dt><dd><b>{(Number(s.attendance) || e.capacity || 0).toLocaleString("en-GB")}+</b><small>Expected attendees</small></dd></div>}</dl>
         {(primary || secondaryHref || video) && <div className="pe3-ctas" data-testid="hero-ctas">
@@ -262,6 +266,8 @@ export default async function PublicEventPage({ params, searchParams }: { params
     <nav className="pe3-tabs" aria-label="Sections">{tabs.map(([id, l], i) => <a key={id} href={`#${id}`} className={i === 0 ? "on" : ""}>{l}</a>)}</nav>
     <BannerStrip banners={x.banners} />
     {rows}
+    {/* Q74 (D8, Online Safety Act s.20): report this event page. */}
+    {!preview && <div style={{ maxWidth: 1180, margin: "8px auto 24px", padding: "0 16px" }}><ReportContentButton subject="event" id={e.id} name={e.name} signedIn={!!user} next={`/events/${slugOrId}`} /></div>}
     {relatedAds.length > 0 && <SponsoredRow items={relatedAds} title="Sponsored events" />}
   </div>;
 }

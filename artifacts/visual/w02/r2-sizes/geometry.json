@@ -1,0 +1,450 @@
+[
+  {
+    "role": "customer",
+    "route": "/home",
+    "width": 1920,
+    "height": 1080,
+    "name": "home-1920x1080",
+    "geometry": {
+      "url": "/home",
+      "zoom": "1.25",
+      "overflowX": false,
+      "scrollWidth": 1920,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 85
+      },
+      "logo": {
+        "x": 43,
+        "y": 15,
+        "w": 223,
+        "h": 55
+      },
+      "search": {
+        "x": 323,
+        "y": 16,
+        "w": 705,
+        "h": 53
+      },
+      "nav": {
+        "x": 1067,
+        "y": 0,
+        "w": 497,
+        "h": 84
+      },
+      "icons": {
+        "x": 1592,
+        "y": 15,
+        "w": 278,
+        "h": 55
+      },
+      "main": {
+        "x": 0,
+        "y": 85,
+        "w": 1920,
+        "h": 1380
+      },
+      "firstChild": {
+        "x": 55,
+        "y": 106,
+        "w": 1815,
+        "h": 1314
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1920,
+    "height": 1080,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1920x1080",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "1.25",
+      "overflowX": false,
+      "scrollWidth": 1920,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 85
+      },
+      "logo": {
+        "x": 43,
+        "y": 15,
+        "w": 223,
+        "h": 55
+      },
+      "search": {
+        "x": 323,
+        "y": 16,
+        "w": 700,
+        "h": 53
+      },
+      "nav": {
+        "x": 1062,
+        "y": 0,
+        "w": 498,
+        "h": 84
+      },
+      "icons": {
+        "x": 1589,
+        "y": 15,
+        "w": 281,
+        "h": 55
+      },
+      "main": {
+        "x": 0,
+        "y": 85,
+        "w": 1920,
+        "h": 1254
+      },
+      "firstChild": {
+        "x": 55,
+        "y": 106,
+        "w": 1815,
+        "h": 1188
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/home",
+    "width": 1448,
+    "height": 1086,
+    "name": "home-1448x1086",
+    "geometry": {
+      "url": "/home",
+      "zoom": "0.95",
+      "overflowX": false,
+      "scrollWidth": 1448,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1448,
+        "h": 65
+      },
+      "logo": {
+        "x": 32,
+        "y": 11,
+        "w": 170,
+        "h": 42
+      },
+      "search": {
+        "x": 245,
+        "y": 12,
+        "w": 528,
+        "h": 40
+      },
+      "nav": {
+        "x": 803,
+        "y": 0,
+        "w": 377,
+        "h": 64
+      },
+      "icons": {
+        "x": 1202,
+        "y": 11,
+        "w": 208,
+        "h": 42
+      },
+      "main": {
+        "x": 0,
+        "y": 65,
+        "w": 1448,
+        "h": 1050
+      },
+      "firstChild": {
+        "x": 42,
+        "y": 81,
+        "w": 1368,
+        "h": 1000
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1448,
+    "height": 1086,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1448x1086",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "0.95",
+      "overflowX": false,
+      "scrollWidth": 1448,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1448,
+        "h": 65
+      },
+      "logo": {
+        "x": 32,
+        "y": 11,
+        "w": 170,
+        "h": 42
+      },
+      "search": {
+        "x": 245,
+        "y": 12,
+        "w": 527,
+        "h": 40
+      },
+      "nav": {
+        "x": 802,
+        "y": 0,
+        "w": 378,
+        "h": 64
+      },
+      "icons": {
+        "x": 1202,
+        "y": 11,
+        "w": 208,
+        "h": 42
+      },
+      "main": {
+        "x": 0,
+        "y": 65,
+        "w": 1448,
+        "h": 954
+      },
+      "firstChild": {
+        "x": 42,
+        "y": 81,
+        "w": 1368,
+        "h": 904
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/home",
+    "width": 1280,
+    "height": 800,
+    "name": "home-1280x800",
+    "geometry": {
+      "url": "/home",
+      "zoom": "0.85",
+      "overflowX": false,
+      "scrollWidth": 1280,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 58
+      },
+      "logo": {
+        "x": 29,
+        "y": 10,
+        "w": 152,
+        "h": 37
+      },
+      "search": {
+        "x": 220,
+        "y": 11,
+        "w": 461,
+        "h": 36
+      },
+      "nav": {
+        "x": 707,
+        "y": 0,
+        "w": 338,
+        "h": 57
+      },
+      "icons": {
+        "x": 1064,
+        "y": 10,
+        "w": 182,
+        "h": 37
+      },
+      "main": {
+        "x": 0,
+        "y": 58,
+        "w": 1280,
+        "h": 906
+      },
+      "firstChild": {
+        "x": 37,
+        "y": 72,
+        "w": 1209,
+        "h": 861
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1280,
+    "height": 800,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1280x800",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "0.85",
+      "overflowX": false,
+      "scrollWidth": 1280,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 58
+      },
+      "logo": {
+        "x": 29,
+        "y": 10,
+        "w": 152,
+        "h": 37
+      },
+      "search": {
+        "x": 220,
+        "y": 11,
+        "w": 460,
+        "h": 36
+      },
+      "nav": {
+        "x": 706,
+        "y": 0,
+        "w": 339,
+        "h": 57
+      },
+      "icons": {
+        "x": 1064,
+        "y": 10,
+        "w": 182,
+        "h": 37
+      },
+      "main": {
+        "x": 0,
+        "y": 58,
+        "w": 1280,
+        "h": 902
+      },
+      "firstChild": {
+        "x": 37,
+        "y": 72,
+        "w": 1209,
+        "h": 857
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/home",
+    "width": 1024,
+    "height": 768,
+    "name": "home-1024x768",
+    "geometry": {
+      "url": "/home",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1024,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "logo": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "search": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "icons": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 90,
+        "w": 1024,
+        "h": 1559
+      },
+      "firstChild": {
+        "x": 20,
+        "y": 108,
+        "w": 984,
+        "h": 1447
+      }
+    },
+    "errors": []
+  },
+  {
+    "role": "customer",
+    "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+    "width": 1024,
+    "height": 768,
+    "name": "account-events-efd4d0af-9437-4b0b-99cf-af7816fa2a62-1024x768",
+    "geometry": {
+      "url": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+      "zoom": "1",
+      "overflowX": false,
+      "scrollWidth": 1024,
+      "top": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "logo": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "search": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "icons": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "main": {
+        "x": 0,
+        "y": 90,
+        "w": 1024,
+        "h": 1815
+      },
+      "firstChild": {
+        "x": 20,
+        "y": 108,
+        "w": 984,
+        "h": 1703
+      }
+    },
+    "errors": []
+  }
+]

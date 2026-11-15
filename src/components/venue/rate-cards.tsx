@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { createContext, useContext, useState, useTransition } from "react";
+import { currencySymbol, formatMoney } from "@/lib/i18n/money";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { saveRateCard, deleteRateCard, quoteVenue } from "@/lib/venue/actions";
@@ -12,10 +13,16 @@ export type RateCard = { id: string; space_id: string | null; name: string; mode
 const MODELS: [string, string][] = [["hourly", "Hourly"], ["half_day", "Half day"], ["full_day", "Full day"], ["evening", "Evening"], ["flat", "Flat event fee"], ["per_person", "Per person"],
   ["package", "Package price"], ["min_spend", "Minimum spend"], ["hybrid", "Hybrid (hire + minimums)"]];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const gbp = (n: unknown) => n == null || n === "" ? "—" : new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(n));
+/** Q76: rate cards are in the venue listing's currency (bookings charge in the seller's currency). */
+const CurCtx = createContext("GBP");
+const useMoney = () => { const c = useContext(CurCtx); return { sym: currencySymbol(c), gbp: (n: unknown) => n == null || n === "" ? "—" : formatMoney(Number(n), c, { decimals: true }) }; };
 
 /** Venue commercial engine (§60): any mix of pricing models per venue or space, with a live quote + conflict check against real bookings. */
-export function RateCards({ workspaceId, venueId, spaces, cards, canManage }: { workspaceId: string; venueId: string; spaces: { id: string; name: string }[]; cards: RateCard[]; canManage: boolean }) {
+export function RateCards({ workspaceId, venueId, spaces, cards, canManage, currency = "GBP" }: { workspaceId: string; venueId: string; spaces: { id: string; name: string }[]; cards: RateCard[]; canManage: boolean; currency?: string }) {
+  return <CurCtx.Provider value={currency}><RateCardsInner workspaceId={workspaceId} venueId={venueId} spaces={spaces} cards={cards} canManage={canManage} /></CurCtx.Provider>;
+}
+function RateCardsInner({ workspaceId, venueId, spaces, cards, canManage }: { workspaceId: string; venueId: string; spaces: { id: string; name: string }[]; cards: RateCard[]; canManage: boolean }) {
+  const { gbp } = useMoney();
   const [editing, setEditing] = useState<RateCard | "new" | null>(null);
   return <div className="mk-page" style={{ maxWidth: "none" }}>
     <section className="mk-card" aria-labelledby="rc-h">
@@ -41,6 +48,7 @@ function DeleteCard({ id }: { id: string }) {
 }
 
 function CardForm({ card, workspaceId, venueId, spaces, onDone }: { card: RateCard | null; workspaceId: string; venueId: string; spaces: { id: string; name: string }[]; onDone: () => void }) {
+  const { sym } = useMoney();
   const router = useRouter(); const [pending, start] = useTransition(); const [error, setError] = useState("");
   const f = card?.fees ?? {}, s = (v: unknown) => (v == null ? "" : String(v));
   return <form className="mk-form" aria-label={card ? `Edit ${card.name}` : "New rate card"} action={fd => start(async () => {
@@ -54,22 +62,22 @@ function CardForm({ card, workspaceId, venueId, spaces, onDone }: { card: RateCa
     <label className="mk-field"><span>Name</span><input name="name" required minLength={2} maxLength={80} defaultValue={card?.name} placeholder="e.g. Saturday evening" /></label>
     <label className="mk-field"><span>Applies to</span><select name="space" defaultValue={card?.space_id ?? ""}><option value="">All spaces</option>{spaces.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
     <label className="mk-field"><span>Pricing model</span><select name="model" defaultValue={card?.model ?? "hourly"}>{MODELS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
-    <label className="mk-field"><span>Hire amount (£)</span><input name="amount" type="number" min={0} step="0.01" defaultValue={s(card?.amount)} /></label>
-    <label className="mk-field"><span>Per person (£)</span><input name="per_person" type="number" min={0} step="0.01" defaultValue={s(card?.per_person)} /></label>
+    <label className="mk-field"><span>Hire amount ({sym})</span><input name="amount" type="number" min={0} step="0.01" defaultValue={s(card?.amount)} /></label>
+    <label className="mk-field"><span>Per person ({sym})</span><input name="per_person" type="number" min={0} step="0.01" defaultValue={s(card?.per_person)} /></label>
     <label className="mk-field"><span>Minimum hours</span><input name="min_hours" type="number" min={0} step="0.5" defaultValue={s(card?.min_hours)} /></label>
-    <label className="mk-field"><span>Minimum spend (£)</span><input name="min_spend" type="number" min={0} step="1" defaultValue={s(card?.min_spend)} /></label>
-    <label className="mk-field"><span>Bar minimum (£)</span><input name="bar_min" type="number" min={0} step="1" defaultValue={s(card?.bar_min)} /></label>
-    <label className="mk-field"><span>Catering minimum (£)</span><input name="catering_min" type="number" min={0} step="1" defaultValue={s(card?.catering_min)} /></label>
+    <label className="mk-field"><span>Minimum spend ({sym})</span><input name="min_spend" type="number" min={0} step="1" defaultValue={s(card?.min_spend)} /></label>
+    <label className="mk-field"><span>Bar minimum ({sym})</span><input name="bar_min" type="number" min={0} step="1" defaultValue={s(card?.bar_min)} /></label>
+    <label className="mk-field"><span>Catering minimum ({sym})</span><input name="catering_min" type="number" min={0} step="1" defaultValue={s(card?.catering_min)} /></label>
     <fieldset className="mk-field wide" style={{ border: 0, padding: 0 }}><legend>Days</legend><div className="mk-cats">{DAYS.map((d, i) => <label key={d}><input type="checkbox" name="days" value={i} defaultChecked={card ? card.days_of_week.includes(i) : true} />{d}</label>)}</div></fieldset>
     <label className="mk-field"><span>Starts from (time)</span><input name="time_from" type="time" defaultValue={card?.time_from?.slice(0, 5) ?? ""} /></label>
     <label className="mk-field"><span>Until (time)</span><input name="time_to" type="time" defaultValue={card?.time_to?.slice(0, 5) ?? ""} /></label>
     <label className="mk-field"><span>Season from (MM-DD)</span><input name="season_from" pattern="\d{2}-\d{2}" placeholder="06-01" defaultValue={card?.season_from ?? ""} /></label>
     <label className="mk-field"><span>Season to (MM-DD)</span><input name="season_to" pattern="\d{2}-\d{2}" placeholder="09-30" defaultValue={card?.season_to ?? ""} /></label>
-    <label className="mk-field"><span>Setup fee (£)</span><input name="setup" type="number" min={0} step="1" defaultValue={s(f.setup)} /></label>
-    <label className="mk-field"><span>Cleanup fee (£)</span><input name="cleanup" type="number" min={0} step="1" defaultValue={s(f.cleanup)} /></label>
-    <label className="mk-field"><span>Overtime per hour (£)</span><input name="overtime" type="number" min={0} step="1" defaultValue={s(f.overtime_hourly)} /></label>
-    <label className="mk-field"><span>Security fee (£)</span><input name="security_fee" type="number" min={0} step="1" defaultValue={s(f.security_fee)} /></label>
-    <label className="mk-field"><span>Damage deposit (£)</span><input name="damage_deposit" type="number" min={0} step="1" defaultValue={s(f.damage_deposit)} /></label>
+    <label className="mk-field"><span>Setup fee ({sym})</span><input name="setup" type="number" min={0} step="1" defaultValue={s(f.setup)} /></label>
+    <label className="mk-field"><span>Cleanup fee ({sym})</span><input name="cleanup" type="number" min={0} step="1" defaultValue={s(f.cleanup)} /></label>
+    <label className="mk-field"><span>Overtime per hour ({sym})</span><input name="overtime" type="number" min={0} step="1" defaultValue={s(f.overtime_hourly)} /></label>
+    <label className="mk-field"><span>Security fee ({sym})</span><input name="security_fee" type="number" min={0} step="1" defaultValue={s(f.security_fee)} /></label>
+    <label className="mk-field"><span>Damage deposit ({sym})</span><input name="damage_deposit" type="number" min={0} step="1" defaultValue={s(f.damage_deposit)} /></label>
     <label className="mk-field"><span>Booking deposit (%)</span><input name="deposit_pct" type="number" min={0} max={100} step="1" defaultValue={s(f.booking_deposit_pct ?? 30)} /></label>
     <label className="mk-switch"><input type="checkbox" name="security_required" defaultChecked={!!f.security_required} />Security required</label>
     <label className="mk-switch"><input type="checkbox" name="peak" defaultChecked={card?.peak ?? false} />Peak rate</label>
@@ -81,6 +89,7 @@ function CardForm({ card, workspaceId, venueId, spaces, onDone }: { card: RateCa
 
 /** Live quote for a slot using the same server pricing customers receive, plus the conflict engine's verdict. */
 function QuotePreview({ spaces }: { spaces: { id: string; name: string }[] }) {
+  const { gbp } = useMoney();
   const [pending, start] = useTransition();
   const [res, setRes] = useState<{ quote: Record<string, unknown>; conflicts: { level: string; reason: string }[] } | null>(null);
   const [error, setError] = useState("");

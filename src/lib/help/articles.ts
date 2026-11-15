@@ -4,6 +4,7 @@
  * personas), annotated with numbered markers anchored to live elements; the manifest records version + UI signature for staleness.
  */
 import { CONNECT_COUNTRIES_CHECKED_ON, supportedCountryNames } from "@/lib/payments/connect-countries";
+import { SANCTIONED_COUNTRIES, SANCTIONED_REGIONS, SANCTIONS_CHECKED_ON } from "@/lib/legal/sanctions";
 
 export type Annotation = { selector: string; caption: string };
 export type Article = {
@@ -58,7 +59,7 @@ export const ARTICLES: Article[] = [
   { slug: "media-studio", title: "Media Studio", audience: "Everyone", summary: "Design posters, social posts and screens.",
     purpose: "Create on-brand artwork with event details and ticket QR codes that stay in sync with your event.",
     prerequisites: ["An organizer or provider workspace"],
-    steps: ["Open Media Studio and choose New design — or start from your event poster.", "Add text, shapes, images, QR codes and icons; drag to arrange.", "Changes save automatically; name versions you want to keep.", "Export as PNG, JPEG, WebP or a print-ready PDF.", "Save good designs as templates for your team or the community."],
+    steps: ["Open Media Studio and choose New design — or start from your event poster.", "Add text, shapes, images, QR codes and icons; drag to arrange.", "Press Save (or Ctrl/⌘+S) to save your changes; until then they’re kept on this device and marked Unsaved. Name versions you want to keep.", "Export as PNG, JPEG, WebP or a print-ready PDF.", "Save good designs as templates for your team or the community."],
     troubleshooting: [{ q: "“Changed in another tab”", a: "Someone saved a newer version. Reload to get it — your unsaved changes are kept on this device." }, { q: "My QR code won’t scan", a: "Use a dark code on a light background and print it at least 2 cm wide. The editor warns about low contrast." }],
     related: ["events", "tickets"],
     shot: { route: "/organizer/media", persona: "organizer", annotations: [{ selector: 'nav[aria-label="Library"]', caption: "Designs, templates, community" }] } },
@@ -82,6 +83,19 @@ export const ARTICLES: Article[] = [
     steps: ["Set your business country during onboarding (or in workspace settings).", "If your country is supported, set up payouts in Money: accept the Gala Dock Payment Terms, then complete Stripe’s form.", "If it isn’t supported yet, you can still create your profile and publish enquiry-only listings. Clients contact you and you agree payment with them yourself; Gala Dock can’t take bookings, deposits or paid tickets for you, and Gala Dock’s payment protection doesn’t cover payments made outside Gala Dock.", "Organisers outside the supported countries can still run free events and registrations."],
     troubleshooting: [{ q: "My country isn’t on the list", a: "Stripe doesn’t yet let a UK platform like Gala Dock take card payments for sellers there (for example, it isn’t self-serve, needs a separate Stripe review, or Stripe doesn’t operate there). We add countries when Stripe makes them available." }, { q: "Can I use a business address in another country?", a: "No. Stripe verifies the country where your business is legally based, and it can’t be changed after your payout account is created." }],
     related: ["money-payouts", "provider-getting-started", "tickets"] },
+  // Q74 (owner decisions D4, D7): sanctions availability and HMRC platform reporting.
+  { slug: "where-gala-dock-is-available", title: "Where Gala Dock is available", aliases: ["sanctions", "restricted-countries"], audience: "Everyone", summary: "Countries and regions where sanctions prevent Gala Dock from operating.",
+    purpose: `Gala Dock is a UK service and follows UK, EU, UN and US sanctions. We can’t create accounts, publish listings or events, set up payouts, accept partner applications or take payments for people or businesses in: ${[...Object.values(SANCTIONED_COUNTRIES), ...Object.values(SANCTIONED_REGIONS)].join(", ")}. List checked on ${SANCTIONS_CHECKED_ON}; we review it whenever the sanctions rules change.`,
+    prerequisites: ["Nothing to set up: the check runs automatically"],
+    steps: ["Set your business country truthfully during onboarding. A sanctioned country can’t be chosen.", "If you’re refused by mistake (for example while travelling, or because of a VPN), contact support. A member of our Trust & Safety team reviews it; any exception is recorded."],
+    troubleshooting: [{ q: "I live in Ukraine outside the occupied areas", a: "Ukraine is supported. Only Crimea, Sevastopol and the occupied areas of Donetsk and Luhansk are blocked. Contact support if you’re refused." }],
+    related: ["where-you-can-get-paid", "money-payouts"] },
+  { slug: "tax-details-for-hmrc", title: "Tax details for HMRC reporting", aliases: ["platform-reporting", "porr", "dac7"], audience: "Providers", summary: "Why we ask venues and suppliers for tax details, and what happens if they’re missing.",
+    purpose: "UK law (the Platform Operators (Due Diligence and Reporting Requirements) Regulations 2023) requires Gala Dock to collect details from venues and suppliers who earn through the platform and to report their earnings to HMRC once a year. HMRC may share the report with other tax authorities. We give you a copy of what we report by 31 January.",
+    prerequisites: ["Owner or finance role in the provider workspace", "Your legal name, address, tax reference (UK: UTR or National Insurance number), and date of birth (individuals) or company number (companies)"],
+    steps: ["Go to Money → Tax details (you’re also asked when you set up payouts).", "Choose individual or company, then add your legal name, address and tax reference. Add your VAT number if you have one.", "Confirm the details are correct and save. Only the last three characters of your tax reference are shown again.", "If details are missing we send a request and two reminders. If they’re still missing 60 days after the first request, we must hold your payouts until you add them — adding them releases the hold straight away."],
+    troubleshooting: [{ q: "My country doesn’t issue tax numbers", a: "Tick “My country doesn’t issue a tax number”. You still need your address and date of birth or company number." }, { q: "Do organisers selling tickets need this?", a: "Not at the moment: ticket sales are not treated as reportable. We’ll tell you if a tax adviser’s review changes that." }],
+    related: ["money-payouts", "where-you-can-get-paid"] },
   { slug: "team", title: "Team, crew and shifts", aliases: ["staffing", "roles"], audience: "Organizers", summary: "Invite people, set roles, check availability and fill shifts.",
     purpose: "Team brings your staff, freelancers and crew together: who can do what in the workspace, who’s available, and who’s working which shift.",
     prerequisites: ["An organizer workspace", "Owner or manager role to invite people and change roles"],

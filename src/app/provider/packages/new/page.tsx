@@ -1,3 +1,4 @@
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -44,8 +45,8 @@ export default async function CreatePackage(props: PageProps<"/provider/packages
     <header className="wz-head"><h1>{p?.status === "published" ? `Edit ${p.name}` : "Create Package"}</h1><p>{SUB[step - 1]}</p></header>
     <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
       {p && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
-    {step === 1 && <PkgStep1 p={p} parent={parent} listings={listings} options={options} presetListing={preset} next={p ? url(2) : "/provider/packages/new?package={package}&step=2"} />}
-    {step === 2 && p && <PkgStep2 p={p} parent={parent} days={days} back={url(1)} next={url(3)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
+    {step === 1 && <PkgStep1 currency={workspaceLocale(ctx.workspace.settings).currency} p={p} parent={parent} listings={listings} options={options} presetListing={preset} next={p ? url(2) : "/provider/packages/new?package={package}&step=2"} />}
+    {step === 2 && p && <PkgStep2 currency={workspaceLocale(ctx.workspace.settings).currency} p={p} parent={parent} days={days} back={url(1)} next={url(3)} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 3 && p && <PkgStep3 p={p} days={days} back={url(2)} next={url(4)} />}
     {step === 4 && p && <div className="vw vw-s5"><PhotoManager venueId={p.id} initial={photos} save={savePackagePhotos.bind(null, p.id)} />
       <div className="vw-foot"><Link href={url(3)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 4 of 5</span>

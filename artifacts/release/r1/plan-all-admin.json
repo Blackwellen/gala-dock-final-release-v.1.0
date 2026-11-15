@@ -1,0 +1,268 @@
+[
+ {
+  "route": "/admin/agent-integrations/credits",
+  "pattern": "/admin/agent-integrations/credits",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/agent-integrations",
+  "pattern": "/admin/agent-integrations",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/analytics",
+  "pattern": "/admin/analytics",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/advertising",
+  "pattern": "/admin/commerce/advertising",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/payout-pauses",
+  "pattern": "/admin/commerce/payout-pauses",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/payouts",
+  "pattern": "/admin/commerce/payouts",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/reconciliation",
+  "pattern": "/admin/commerce/reconciliation",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/transactions/98c2f9cd-d9c8-4bd8-b651-247b6b4d77fb",
+  "pattern": "/admin/commerce/transactions/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/vat",
+  "pattern": "/admin/commerce/vat",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/compliance",
+  "pattern": "/admin/compliance",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/conversations",
+  "pattern": "/admin/conversations",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/conversations/request",
+  "pattern": "/admin/conversations/request",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/disputes",
+  "pattern": "/admin/disputes",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/events",
+  "pattern": "/admin/events",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/health/jobs",
+  "pattern": "/admin/health/jobs",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/health",
+  "pattern": "/admin/health",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/maintenance",
+  "pattern": "/admin/maintenance",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/marketplace",
+  "pattern": "/admin/marketplace",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/moderation",
+  "pattern": "/admin/moderation",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/partners",
+  "pattern": "/admin/partners",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/support/macros",
+  "pattern": "/admin/support/macros",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/support",
+  "pattern": "/admin/support",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/support/privacy",
+  "pattern": "/admin/support/privacy",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/support/1f50bf1f-652c-4ba2-9609-57191a5df26e",
+  "pattern": "/admin/support/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/tickets/force-majeure",
+  "pattern": "/admin/tickets/force-majeure",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/tickets",
+  "pattern": "/admin/tickets",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/disputes",
+  "pattern": "/admin/trust/disputes",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/message-reports",
+  "pattern": "/admin/trust/message-reports",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust",
+  "pattern": "/admin/trust",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/review-replies",
+  "pattern": "/admin/trust/review-replies",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/risk",
+  "pattern": "/admin/trust/risk",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/verification",
+  "pattern": "/admin/trust/verification",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/trust/6e3ce9a7-b8c2-47bc-88ef-2d5e88fb1ce0",
+  "pattern": "/admin/trust/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/users",
+  "pattern": "/admin/users",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+  "pattern": "/admin/users/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/workspaces",
+  "pattern": "/admin/workspaces",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+  "pattern": "/admin/workspaces/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+  "pattern": "/admin/marketplace/listings/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ }
+]

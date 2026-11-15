@@ -1,4 +1,6 @@
 "use server";
+import { optionalPhone } from "@/lib/i18n/countries";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getOrganizer } from "@/lib/data/context";
@@ -23,6 +25,8 @@ const Person = z.object({ name: z.string().trim().min(2).max(80), role: z.string
 export async function savePerson(id: string | null, input: unknown): Promise<ActionResult<{ id: string }>> {
   const { ctx, can } = await ctxManage(); if (!can) return { ok: false, error: "Only workspace managers can edit the team." };
   const p = (id ? Person.partial() : Person).safeParse(input) as ReturnType<typeof Person.safeParse>; if (!p.success) return { ok: false, error: p.error.issues[0]?.path[0] === "email" ? "Enter a valid email." : "Check the name and details." };
+  // Q76 (L07): team phones in E.164 (national numbers read in the workspace's country).
+  if (typeof p.data.phone === "string") { const ph = optionalPhone(p.data.phone, workspaceLocale(ctx.workspace.settings).country ?? "GB"); if (!ph.ok) return { ok: false, error: ph.error }; p.data.phone = ph.e164; }
   if (id) {
     if (!Id.safeParse(id).success) return { ok: false, error: "Person not found." };
     const { data: saved, error } = await ctx.supabase.from("crew_members").update(p.data).eq("id", id).eq("workspace_id", ctx.workspace.id).select("id").maybeSingle();

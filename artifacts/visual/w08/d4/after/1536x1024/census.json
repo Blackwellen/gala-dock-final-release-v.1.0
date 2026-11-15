@@ -1,0 +1,83 @@
+{
+ "results": [
+  {
+   "route": "/admin",
+   "name": "ad-001",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/admin",
+   "controls": 56,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Overview",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Welcome back, Alex"
+    ]
+   },
+   "docH": 1034
+  },
+  {
+   "route": "/admin/commerce/reconciliation",
+   "name": "recon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/admin/commerce/reconciliation",
+   "controls": 31,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Reconciliation · Gala Dock Admin",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Payment reconciliation"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/admin/workspaces/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "name": "ad-005",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/admin/workspaces/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+   "controls": 53,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Workspace · Gala Dock Admin",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex Events Active"
+    ]
+   },
+   "docH": 1108
+  }
+ ],
+ "links": []
+}

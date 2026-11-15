@@ -7,6 +7,7 @@ import { PublicHeader } from "@/components/customer/public-header";
 import { SiteFooter } from "@/components/public/site-footer";
 import "@/styles/pub-directory.css";
 import { LEGAL, LEGAL_DOCS } from "@/lib/legal";
+import { LegalToc } from "@/components/legal/legal-toc";
 import "@/styles/legal.css";
 
 /** Shared shell for the legal documents: the public header (same wrapper as the public event pages), a document index and a readable column. */
@@ -18,6 +19,7 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
         <ul>{LEGAL_DOCS.map(d => <li key={d.href}><Link href={d.href}>{d.title}</Link></li>)}</ul>
         <p>Version {LEGAL.version} · effective {LEGAL.effective}</p></nav>
       <main className="lg-doc" id="main">{children}</main>
+      <LegalToc />
     </div>
     <SiteFooter />
   </div></KitProviders>;

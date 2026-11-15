@@ -16,7 +16,7 @@ const s = (v: unknown) => (typeof v === "string" ? v : "");
 export default async function NewRequest({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams; const ctx = await getOrganizer(); const sb = ctx.supabase;
   const step = parseStep(s(sp.step), 4);   // Q70: integer steps only
-  const { data: evs } = await sb.from("events").select("id,name,starts_at,ends_at,city,location,capacity,guest_count,budget_total,cover_image,event_type").eq("workspace_id", ctx.workspace.id).not("status", "in", "(completed,closed,cancelled,archived)").order("starts_at");
+  const { data: evs } = await sb.from("events").select("id,name,starts_at,ends_at,city,location,capacity,guest_count,budget_total,cover_image,event_type,currency").eq("workspace_id", ctx.workspace.id).not("status", "in", "(completed,closed,cancelled,archived)").order("starts_at");
   const events = (evs ?? []) as EventCtx[];
   const eventId = s(sp.event) || events[0]?.id || ""; const ev = events.find(e => e.id === eventId) ?? null;
   const category = s(sp.category) || "production";
@@ -24,7 +24,7 @@ export default async function NewRequest({ searchParams }: { searchParams: Promi
   if (step >= 3 && !ev) redirect("/organizer/marketplace/requests/new?step=1");
   const keep = (n: number) => { const p = new URLSearchParams({ step: String(n), event: eventId, category }); for (const k of ["listing", "hold", "emergency"]) if (s(sp[k])) p.set(k, s(sp[k])); return `/organizer/marketplace/requests/new?${p}`; };
   const frame = (children: React.ReactNode) => <WizardFrame crumbs={[{ label: "Organizer", href: "/organizer" }, { label: "Marketplace", href: "/organizer/marketplace" }, { label: "Requests", href: "/organizer/marketplace?section=requests" }, { label: "New Request" }]} title="Create Marketplace Request" sub={INTRO[step - 1]!} steps={STEPS} step={step} hrefFor={keep}>{children}</WizardFrame>;
-  const lite = events.map(e => ({ id: e.id, name: e.name, starts_at: e.starts_at, location: e.location, capacity: e.capacity, guest_count: e.guest_count, cover_image: e.cover_image ?? undefined }));
+  const lite = events.map(e => ({ id: e.id, name: e.name, starts_at: e.starts_at, location: e.location, capacity: e.capacity, guest_count: e.guest_count, cover_image: e.cover_image ?? undefined, currency: (e as { currency?: string | null }).currency ?? "GBP" }));
   if (step === 2) return frame(<RfqSpecs draftScope={`${ctx.workspace.id}:${ctx.user.id}`} events={lite} />);
   if (step === 1) {
     const listing = pickedIds[0];
@@ -45,6 +45,6 @@ export default async function NewRequest({ searchParams }: { searchParams: Promi
   }).filter(c => c.avail !== "pending").sort((a,b)=>Number(pickedIds.includes(b.id))-Number(pickedIds.includes(a.id))||b.fit-a.fit).slice(0, Math.max(8,pickedIds.length));
   const pre = pickedIds.length ? pickedIds : cands.slice(0, 2).map(c => c.id);
   const shared = { draftScope: `${ctx.workspace.id}:${ctx.user.id}`, candidates: cands, eventId, preselect: pre, eventDate: ev?.starts_at ? dateShort(ev.starts_at) : "event date", initialHold: s(sp.hold) === "1" ? true : s(sp.listing) ? false : undefined, initialEmergency: s(sp.emergency) === "1" };
-  return frame(step === 4 ? <RfqReview {...shared} eventName={ev?.name ?? "Event"} /> : <RfqSuppliers {...shared} />);
+  return frame(step === 4 ? <RfqReview {...shared} eventName={ev?.name ?? "Event"} currency={(ev as { currency?: string | null } | null)?.currency ?? "GBP"} /> : <RfqSuppliers {...shared} />);
 }
 

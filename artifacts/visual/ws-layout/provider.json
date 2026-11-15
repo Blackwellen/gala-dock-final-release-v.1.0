@@ -1,0 +1,380 @@
+{
+  "report": [
+    {
+      "size": "1440x900",
+      "route": "/provider/opportunities",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/bookings",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/calendar",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/listings",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/team",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/money?period=30d",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/agent",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1440x900",
+      "route": "/provider/settings",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/opportunities",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/opportunities/{item:Summer Wedding Reception}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/opportunities/{item:Product Launch Event}/quote?step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/quotes/{quote:Charity Gala Dinner}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/opportunities/{item:Engagement Party}/quote?step=2&quote={quote-draft:Engagement Party}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/bookings",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/bookings/{job:Summer Wedding Reception}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/calendar",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/listings",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/{listing:Riverside Arena}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/{listing:Riverside Arena}?tab=spaces",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/{space:Main Hall}?tab=availability",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/{listing:Riverside Arena}/spaces/new?step=1&space={space:Main Hall}",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=1",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=2",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=3",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/venues/new?venue={listing:Riverside Arena}&step=4",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/services/{listing:DJ & Sound}",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=1",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=2",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/services/new?service={listing:DJ & Sound}&step=3",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/packages/{package:Wedding Package}",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=1",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/packages/new?package={package:Wedding Package}&step=2",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/team",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/team/{crew:Priya Shah}",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/money?period=30d",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/agent",
+      "status": 500,
+      "issues": []
+    },
+    {
+      "size": "1280x800",
+      "route": "/provider/settings",
+      "status": 500,
+      "issues": []
+    }
+  ],
+  "errors": [
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 ",
+    "./src/components/customer/add-provider.tsx:10:1\nError: Module not found: Can't resolve '@/styles/add-provider.css'\n   8 "
+  ]
+}

@@ -7,5 +7,6 @@ export const metadata = { title: "Messages" };
 export default async function OrganizerInboxPage({ searchParams }: PageProps<"/organizer/inbox">) {
   const sp = await searchParams;
   const ctx = await getOrganizer("/organizer/inbox");
-  return <Inbox seat={ctx.workspace.id} base="/organizer/inbox" selected={typeof sp.c === "string" ? sp.c : undefined} />;
+  return <Inbox seat={ctx.workspace.id} base="/organizer/inbox" selected={typeof sp.c === "string" ? sp.c : undefined}
+    q={typeof sp.q === "string" ? sp.q : undefined} pages={typeof sp.pages === "string" ? sp.pages : undefined} />;
 }

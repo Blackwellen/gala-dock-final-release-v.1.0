@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney } from "@/lib/i18n/money";
 import { useAction } from "@/components/kit/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -28,9 +29,11 @@ export function EventActions({ eventId, name, saved: initial, signedIn }: { even
 
 type Tier = { id: string; name: string; sub: string; price: number; left: number; qty: number; status: string; badge: string | null; /** Q57 tierOffer() */ buyable?: boolean; offerLabel?: string | null; soldOut?: boolean };
 /** £12.50, £40 — pence always shown when present (toLocaleString printed "£37.5"). */
-const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n);
+// Q72: in the event's currency (checkout charges in it).
+const moneyIn = (currency: string) => (n: number) => formatMoney(n, currency, { decimals: !Number.isInteger(n) });
 /** Choose a ticket type and quantity, then continue to checkout (/checkout/[event]). */
-export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false, launch = null, sellerReady = true, resale = 0, fee = NO_FEE }: { slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean; launch?: string | null; sellerReady?: boolean; /** Q57: live fan resale listings */ resale?: number; /** Q57 / DMCC: booking fee config, so prices include it */ fee?: FeeConfig }) {
+export function TicketPicker({ slug, tiers, signedIn, eventId, waitlist = false, launch = null, sellerReady = true, resale = 0, fee = NO_FEE, currency = "GBP" }: { /** Q72 */ currency?: string; slug: string; tiers: Tier[]; signedIn: boolean; eventId?: string; waitlist?: boolean; launch?: string | null; sellerReady?: boolean; /** Q57: live fan resale listings */ resale?: number; /** Q57 / DMCC: booking fee config, so prices include it */ fee?: FeeConfig }) {
+  const gbp = moneyIn(currency);
   // Checkout only reserves in these launch states (§50); otherwise the CTA explains why tickets aren't available.
   // Shared with the hero CTA (src/lib/public/ticket-cta.ts) so the two never disagree.
   const sellable = isSellable(launch);

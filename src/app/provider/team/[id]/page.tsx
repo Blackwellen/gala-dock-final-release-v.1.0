@@ -78,7 +78,7 @@ export default async function TeamMember(props: PageProps<"/provider/team/[id]">
     <Tabs base={base} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "availability", label: "Availability" }, { key: "assignments", label: "Assignments" }, { key: "activity", label: "Activity" }]} />
 
     <div className="pt-body">
-      <div className="pt-main">
+      <div className="ptt-main">
         {tab === "overview" && <>
           <section className="ws-kpis ptm-kpis">
             <Kpi icon={CalendarCheck} tone="blue" label="Assigned bookings" value={new Set(mine.map(s => s.job_id).filter(Boolean)).size} series={dailySeries(mine, s => s.starts_at, () => 1, 30, now)} />
@@ -115,7 +115,7 @@ export default async function TeamMember(props: PageProps<"/provider/team/[id]">
 
         {(tab === "overview" || tab === "availability") && !editing && <section className="ws-panel ptm-week">
           <div className="pt-week-head"><h2><CalendarDays aria-hidden="true" />Availability</h2>
-            <nav className="pt-nav"><Link href={`${base}?tab=${tab}&week=${wk(-1)}`} aria-label="Previous week"><ChevronLeft aria-hidden="true" /></Link><Link href={`${base}?tab=${tab}`}>Today</Link><Link href={`${base}?tab=${tab}&week=${wk(1)}`} aria-label="Next week"><ChevronRight aria-hidden="true" /></Link></nav>
+            <nav className="ptt-nav"><Link href={`${base}?tab=${tab}&week=${wk(-1)}`} aria-label="Previous week"><ChevronLeft aria-hidden="true" /></Link><Link href={`${base}?tab=${tab}`}>Today</Link><Link href={`${base}?tab=${tab}&week=${wk(1)}`} aria-label="Next week"><ChevronRight aria-hidden="true" /></Link></nav>
             {manage && <Link href={`${base}?tab=availability&add=1`} className="ws-btn outline sm"><CalendarPlus aria-hidden="true" />Manage availability</Link>}</div>
           <p className="pt-range">{day(new Date(week[0] + 12 * 36e5).toISOString(), { day: "numeric", month: "short" })} – {day(new Date(week[6] + 12 * 36e5).toISOString(), { day: "numeric", month: "short", year: "numeric" })}</p>
           <div className="ptm-cal" style={{ ["--hpx" as string]: `${hourPx}px` }}>
@@ -133,7 +133,7 @@ export default async function TeamMember(props: PageProps<"/provider/team/[id]">
 
         {(tab === "overview" || tab === "assignments") && !editing && <section className="ws-panel ptm-asg"><div className="ptm-asg-head"><h2>Assignments ({mine.length})</h2>
           <nav className="ws-tabs segment">{([["all", `All`], ["upcoming", `Upcoming (${upcoming.length})`], ["past", `Past (${done.length})`]] as const).map(([k, l]) => <Link key={k} href={`${base}?tab=${tab}&f=${k}`} className={asgFilter === k ? "active" : ""}>{l}</Link>)}</nav></div>
-          <table className="ws-table pt-table"><thead><tr><th>Event</th><th>Role</th><th>Venue</th><th>Date &amp; time</th><th>Status</th><th>Notes</th><th aria-label="Open" /></tr></thead>
+          <table className="ws-table ptt-table"><thead><tr><th>Event</th><th>Role</th><th>Venue</th><th>Date &amp; time</th><th>Status</th><th>Notes</th><th aria-label="Open" /></tr></thead>
             <tbody>{asgList.slice(0, tab === "overview" ? 3 : 50).map(s => { const j = job(s.job_id); return <tr key={s.id}><td><span className="pt-name"><Thumb src={j?.image} w={36} h={28} /><b>{j?.event_name ?? s.title}</b></span></td><td>{s.role}</td><td>{s.location}</td>
               <td><span className="pt-asg"><b>{day(s.starts_at, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}</b><small>{time(s.starts_at)} – {time(s.ends_at)}</small></span></td>
               <td><span className={`pt-st ${s.status === "confirmed" ? "ok" : s.status === "pending" ? "busy" : ""}`}>{titleCase(s.status)}</span></td><td>{s.title}</td>

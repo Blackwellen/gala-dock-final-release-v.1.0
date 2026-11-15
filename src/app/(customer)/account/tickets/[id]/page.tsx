@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeTz } from "@/lib/i18n/tz";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, MapPin, CalendarDays, Ticket, Info, Clock, IdCard, ShieldCheck, Tag, ChevronRight, CircleHelp, FileText, Navigation, Map as MapIcon, BookOpen, Printer, Download, Video } from "lucide-react";
 import { getCustomer } from "@/lib/data/context";
@@ -60,19 +61,20 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
     loadGettingThere(ctx.supabase, e.id),   // lane D: same public getting-there info as the event page (202610294081)
   ]);
   const myTier = (t.tier as { id?: string } | null)?.id ?? null;
-  const tm = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Europe/London" }) : "";
+  const EVTZ = safeTz(e.timezone);   // Q72: the event's own zone (London for pre-Q72 rows)
+  const tm = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: EVTZ }) : "";
   // No invented entry details: the gate is the organiser's settings.entry_gate, else the plan's only entrance; doors are the
   // programme's "doors" item. Either is left out when the organiser hasn't set it.
   const entrances = [...x.plan.base, ...x.plan.overlay].filter(el => el.type === "entrance" && !el.hidden && el.label?.trim()).map(el => el.label.trim());
   const gate = (typeof s.entry_gate === "string" && s.entry_gate.trim()) || (new Set(entrances).size === 1 ? entrances[0]! : null);
   const doorsAt = (prog ?? []).find(p => (p as { segment?: string | null }).segment === "doors")?.starts_at ?? null;
-  const doors = doorsAt ? new Date(doorsAt).toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Europe/London" }).toUpperCase() : null;
+  const doors = doorsAt ? new Date(doorsAt).toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: EVTZ }).toUpperCase() : null;
   const history = [["Ticket issued", t.created_at, true], ...(scans ?? []).map(c => [c.result === "admitted" ? "Scanned at entry" : `Scan ${c.result}`, c.created_at, true] as [string, string, boolean])] as [string, string, boolean][];
 
   return <div className="td">
     <Link className="td-back" href="/account/tickets"><ArrowLeft size={15} />Back to My Tickets</Link>
     <section className="td-hero">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.cover_image || "/assets/gd/oe-neon.webp"} alt="" />
-      <div className="td-hero-in">{d && <span className="tk-date lg"><small>{d.toLocaleDateString("en-GB", { month: "short", timeZone: "Europe/London" }).toUpperCase()}</small><b>{d.toLocaleDateString("en-GB", { day: "numeric", timeZone: "Europe/London" })}</b></span>}
+      <div className="td-hero-in">{d && <span className="tk-date lg"><small>{d.toLocaleDateString("en-GB", { month: "short", timeZone: EVTZ }).toUpperCase()}</small><b>{d.toLocaleDateString("en-GB", { day: "numeric", timeZone: EVTZ })}</b></span>}
         <h1>{e.name}</h1><p><MapPin size={16} />{[e.venue_name, e.city].filter(Boolean).join(", ") || e.location}</p><p><CalendarDays size={16} />{whenLine(e)}</p>
         <div className="td-tags">{[...new Map([eventTypeLabel(e.event_type), ...(e.tags ?? []).slice(0, 2), t.tier?.name].filter((x): x is string => !!x).map(x => [x.toLowerCase(), x])).values()].slice(0, 3).map((x, i) => <span key={`${x}${i}`} className={i === 0 ? "p" : i === 1 ? "b" : ""}>{x}</span>)}</div></div>
       {e.slug && <Link className="k-btn td-page" href={`/events/${e.slug}`}>View event page <ArrowRight size={15} /></Link>}
@@ -83,7 +85,7 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
           <div className="k-between" style={{ alignItems: "flex-start" }}><div className="k-row" style={{ gap: 16, alignItems: "flex-start" }}><Ticket size={30} className="td-ticon" /><div><h2>{t.tier?.name ?? "Admission"}</h2><p>{t.seat ? `Seat ${t.seat}` : t.tier?.kind === "vip" ? "VIP Entry" : "Standard Entry"}</p>{t.tier?.description && <p className="k-muted">{t.tier.description}</p>}</div></div><span className="td-n">Ticket {idx + 1} of {sib.length || 1}</span></div>
           {/* Valid tickets show a signed, 30-second rotating code (screenshots expire; transfer/resale kills it). */}
           {t.status === "valid" ? <div className="td-cred"><TicketCredential defaultMode={(["qr", "visual", "barcode"].includes(String(s.ticket_display)) ? s.ticket_display : "qr") as "qr" | "visual" | "barcode"} allowSwitch={s.ticket_display_switch !== false} compact
-              ticket={{ id: t.id, code: t.code, status: t.status, event: e.name, date: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" }) : "Date TBC", time: whenLine(e).split("•").pop()?.trim() ?? "", venue: [e.venue_name, e.city].filter(Boolean).join(", ") || e.location, holder: t.attendee_name || ctx.name, tier: t.tier?.name ?? "General Admission", seat: t.seat, orderRef: t.order_ref ?? "", artwork: e.cover_image, rules: [gate && `Entry via ${gate}.`, doors && `Doors ${doors}.`].filter(Boolean).join(" "), transfer: s.transfers !== false ? "Transferable in Gala Dock" : "Non-transferable" }} /></div>
+              ticket={{ id: t.id, code: t.code, status: t.status, event: e.name, date: d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: EVTZ }) : "Date TBC", time: whenLine(e).split("•").pop()?.trim() ?? "", venue: [e.venue_name, e.city].filter(Boolean).join(", ") || e.location, holder: t.attendee_name || ctx.name, tier: t.tier?.name ?? "General Admission", seat: t.seat, orderRef: t.order_ref ?? "", artwork: e.cover_image, rules: [gate && `Entry via ${gate}.`, doors && `Doors ${doors}.`].filter(Boolean).join(" "), transfer: s.transfers !== false ? "Transferable in Gala Dock" : "Non-transferable" }} /></div>
             : <div className="tk-qr td-qr dim">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={qr} alt={`QR code for ticket ${t.code}`} /><span className="tk-qr-void">{t.status === "resale_listed" ? "Paused while listed" : sl}</span></div>}
           {t.status === "on_hold" && <div className="k-notice amber td-join-note" role="status">{HOLD_MESSAGE}</div>}
           {sp.join && <div className="k-notice amber td-join-note" role="status">{sp.join.slice(0, 200)}</div>}

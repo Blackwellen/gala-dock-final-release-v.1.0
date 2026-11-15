@@ -116,7 +116,7 @@ export const ORG_NOTIFICATION_SWITCHES = [
   { key: "email", label: "Email alerts", detail: "A copy of workspace alerts by email. Each person can also mute categories in their own account." },
   { key: "agent", label: "Gala Agent updates", detail: "Watch alerts and paused-task notices. Approval requests always arrive." },
 ] as const;
-export const MANDATORY_NOTIFICATIONS = ["Security and sign-in", "Payments, payouts, refunds and invoices", "Disputes and chargebacks", "Legal and policy changes"] as const;
+export const MANDATORY_NOTIFICATIONS = ["Security and sign-in", "Payments, payouts (including paused payouts), refunds, invoices and tax-details requests", "Disputes and chargebacks", "Legal and policy changes"] as const;
 
 /** Q55 · Customer profile: which field failed validation (an invalid bio, country or language used to show only "Check your details"). */
 export function profileFieldError(field: string): string {

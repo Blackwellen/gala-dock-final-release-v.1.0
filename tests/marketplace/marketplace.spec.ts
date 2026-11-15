@@ -12,10 +12,14 @@ test.describe.configure({ mode: "serial" });
 test.describe("marketplace lifecycle", () => {
   let org: { id: string; email: string }, prov: { id: string; email: string }, prov2: { id: string; email: string }, out: { id: string; email: string }, adm: { id: string; email: string };
   let orgC: SupabaseClient, provC: SupabaseClient, prov2C: SupabaseClient, outC: SupabaseClient, admC: SupabaseClient;
-  let provWs: string, prov2Ws: string, listing: string, venueListing: string, farListing: string, event: string;
+  let provWs: string, prov2Ws: string, venueListing: string, farListing: string, event: string;
 
+  // 202611116011 (backend-queue 2026-11-11, canvas + map builder): one OPEN build line per event + listing
+  // (build_items_event_listing_open_uidx), so each test line books its own DJ listing from the same provider (same 4 h response window).
+  let lineNo = 0;
   const item = async (status: string, extra: Record<string, unknown> = {}) => {
-    const { data, error } = await db.from("build_items").insert({ event_id: event, listing_id: listing, category: "dj", title: "Test DJ", status, amount: 1000, ...extra }).select("id").single();
+    const own = ((await db.from("listings").insert({ workspace_id: provWs, name: `Test DJ line ${++lineNo}`, kind: "service", category: "dj", published: false, response_hours: 4, lat: 51.5, lng: -0.12 }).select("id").single()).data as Id).id;
+    const { data, error } = await db.from("build_items").insert({ event_id: event, listing_id: own, category: "dj", title: "Test DJ", status, amount: 1000, ...extra }).select("id").single();
     if (error) throw error;
     return (data as Id).id;
   };
@@ -25,7 +29,7 @@ test.describe("marketplace lifecycle", () => {
     provWs = await seedWorkspace(prov.id, "provider", "Sweep DJs");
     prov2Ws = await seedWorkspace(prov2.id, "provider", "Far DJs");
     const L = async (ws: string, name: string, extra: Record<string, unknown>) => ((await db.from("listings").insert({ workspace_id: ws, name, kind: "service", category: "dj", published: true, response_hours: 4, lat: 51.5, lng: -0.12, ...extra }).select("id").single()).data as Id).id;
-    listing = await L(provWs, "Test DJ", { emergency_supply: true });
+    await L(provWs, "Test DJ", { emergency_supply: true });   // the provider's emergency-pool listing (build lines use their own, see item())
     venueListing = await L(provWs, "Test Hall", { kind: "venue", category: "venue" });
     farListing = await L(prov2Ws, "Far DJ", { emergency_supply: true, lat: 55.95, lng: -3.19 }); // Edinburgh — out of a 40km London radius
     event = ((await db.from("events").insert({ owner_id: org.id, name: "Marketplace test", starts_at: new Date(Date.now() + 20 * day).toISOString(), venue_listing_id: venueListing }).select("id").single()).data as Id).id;
@@ -136,7 +140,10 @@ test.describe("marketplace lifecycle", () => {
     const c = (await db.from("booking_cancellations").select("status,requires_review").eq("id", cid as string).single()).data as { status: string; requires_review: boolean };
     expect(c).toEqual({ status: "manual_review", requires_review: true });
     expect((await rpc(orgC, "decide_cancellation", { p_cancellation: cid, p_accept: true, p_note: "", p_refund: 300 })).error?.message).toMatch(/admin_review_required/);
-    expect((await rpc(admC, "decide_cancellation", { p_cancellation: cid, p_accept: true, p_note: "Goodwill full refund", p_refund: 300 })).error).toBeNull();
+    // DEC-107 (202611116002, backend-queue 2026-11-11 playbook §1–§2): staff only recommend and never set a refund amount; accepting
+    // applies the policy agreed at booking (a different amount needs a party settlement or an independent award).
+    expect((await rpc(admC, "decide_cancellation", { p_cancellation: cid, p_accept: true, p_note: "Goodwill full refund", p_refund: 300 })).error?.message).toMatch(/recommendation_only/);
+    expect((await rpc(admC, "decide_cancellation", { p_cancellation: cid, p_accept: true, p_note: "Accepted under the booking terms", p_refund: null })).error).toBeNull();
 
     const provCancel = await item("confirmed", { deposit: 250 });
     expect((await rpc(provC, "request_cancellation", { p_item: provCancel, p_party: "customer", p_kind: "full", p_reason: "Pretending to be the customer" })).error?.message).toMatch(/invalid_party/);

@@ -1,0 +1,239 @@
+{
+ "leaf_weighted": 23.5,
+ "leaves": 4,
+ "leaves_passed": 0,
+ "page_line_drift": 61.3,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Neon Nights Festival Ticket Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p10/ticket-neon-1536x1024.png",
+ "size": [
+  1222,
+  815
+ ],
+ "regions": 5,
+ "passed": 0,
+ "weighted_drift": 37.5,
+ "worst": [
+  {
+   "design": [
+    741,
+    337,
+    450,
+    472
+   ],
+   "ours": [
+    744,
+    601,
+    456,
+    173
+   ],
+   "iou": 0.361,
+   "box_drift": 63.9,
+   "line_drift": 60.7,
+   "drift": 63.9,
+   "dx": 3,
+   "dy": 264,
+   "dw": 6,
+   "dh": -299
+  },
+  {
+   "design": [
+    744,
+    534,
+    445,
+    100
+   ],
+   "ours": [
+    746,
+    493,
+    454,
+    95
+   ],
+   "iou": 0.375,
+   "box_drift": 62.5,
+   "line_drift": 82.8,
+   "drift": 62.5,
+   "dx": 2,
+   "dy": -41,
+   "dw": 9,
+   "dh": -5
+  },
+  {
+   "design": [
+    744,
+    339,
+    445,
+    71
+   ],
+   "ours": [
+    746,
+    328,
+    454,
+    150
+   ],
+   "iou": 0.461,
+   "box_drift": 53.9,
+   "line_drift": 77.3,
+   "drift": 53.9,
+   "dx": 2,
+   "dy": -11,
+   "dw": 9,
+   "dh": 79
+  },
+  {
+   "design": [
+    744,
+    647,
+    445,
+    147
+   ],
+   "ours": [
+    744,
+    601,
+    456,
+    173
+   ],
+   "iou": 0.644,
+   "box_drift": 35.6,
+   "line_drift": 41.5,
+   "drift": 35.6,
+   "dx": 0,
+   "dy": -46,
+   "dw": 11,
+   "dh": 26
+  },
+  {
+   "design": [
+    31,
+    100,
+    1163,
+    224
+   ],
+   "ours": [
+    25,
+    93,
+    1177,
+    217
+   ],
+   "iou": 0.899,
+   "box_drift": 10.1,
+   "line_drift": 70.0,
+   "drift": 10.1,
+   "dx": -6,
+   "dy": -7,
+   "dw": 14,
+   "dh": -7
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    31,
+    100,
+    1163,
+    224
+   ],
+   "ours": [
+    25,
+    93,
+    1177,
+    217
+   ],
+   "iou": 0.899,
+   "box_drift": 10.1,
+   "line_drift": 70.0,
+   "drift": 10.1,
+   "dx": -6,
+   "dy": -7,
+   "dw": 14,
+   "dh": -7
+  },
+  {
+   "design": [
+    741,
+    337,
+    450,
+    472
+   ],
+   "ours": [
+    744,
+    601,
+    456,
+    173
+   ],
+   "iou": 0.361,
+   "box_drift": 63.9,
+   "line_drift": 60.7,
+   "drift": 63.9,
+   "dx": 3,
+   "dy": 264,
+   "dw": 6,
+   "dh": -299
+  },
+  {
+   "design": [
+    744,
+    339,
+    445,
+    71
+   ],
+   "ours": [
+    746,
+    328,
+    454,
+    150
+   ],
+   "iou": 0.461,
+   "box_drift": 53.9,
+   "line_drift": 77.3,
+   "drift": 53.9,
+   "dx": 2,
+   "dy": -11,
+   "dw": 9,
+   "dh": 79
+  },
+  {
+   "design": [
+    744,
+    534,
+    445,
+    100
+   ],
+   "ours": [
+    746,
+    493,
+    454,
+    95
+   ],
+   "iou": 0.375,
+   "box_drift": 62.5,
+   "line_drift": 82.8,
+   "drift": 62.5,
+   "dx": 2,
+   "dy": -41,
+   "dw": 9,
+   "dh": -5
+  },
+  {
+   "design": [
+    744,
+    647,
+    445,
+    147
+   ],
+   "ours": [
+    744,
+    601,
+    456,
+    173
+   ],
+   "iou": 0.644,
+   "box_drift": 35.6,
+   "line_drift": 41.5,
+   "drift": 35.6,
+   "dx": 0,
+   "dy": -46,
+   "dw": 11,
+   "dh": 26
+  }
+ ]
+}

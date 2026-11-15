@@ -139,7 +139,7 @@ export default function LandingPage() {
           {([["/build-an-event", CalendarDays, "Build an Event", "Plan your celebration or gathering"], ["/organisers", UsersRound, "Run Events Professionally", "For organisers and event managers"], ["/providers", Store, "List Your Business", "For venues and suppliers"]] as const).map(([h, I, t, s], i) =>
             <li key={h} data-rv="rise" style={vars({ "--d": 120 + i * 90 })}><TLink href={h} event="persona_route_select" surface={S} variant={`close_${t}`} className="gpl-close-link"><span className="gpl-close-ic"><I size={24} aria-hidden="true" /></span><span><b>{t}<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></b><small>{s}</small></span></TLink></li>)}
         </ul>
-        <p className="gpl-close-note" data-rv="fade" style={vars({ "--d": 420 })}><ShieldCheck size={18} aria-hidden="true" /><b>Creating an account is free.</b><span>Join the side that fits you — <TLink href={HREF.startBuilding} surface={S} variant="close_signup" className="gp-link">get started</TLink>.</span></p>
+        <p className="gpl-close-note" data-rv="fade" style={vars({ "--d": 420 })}><ShieldCheck size={18} aria-hidden="true" /><b>A connected, trusted event network.</b><span>Join the side that fits you — <TLink href={HREF.startBuilding} surface={S} variant="close_signup" className="gp-link">creating an account is free</TLink>.</span></p>
       </Scope>
     </section>
   </>;

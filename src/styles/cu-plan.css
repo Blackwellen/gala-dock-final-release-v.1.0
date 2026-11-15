@@ -99,12 +99,12 @@
   .c-root .cp-grid { height: auto; }
   .c-root .cp-main { padding: 8px; }
   .c-root .cp-main > .k-between { flex-direction: column; align-items: stretch; gap: 8px; }
-  .c-root .cp-main > .k-between > .k-row { justify-content: space-between; }
+  .c-root .cp-main > .k-between > .k-row { justify-content: space-between; flex-wrap: wrap; row-gap: 8px; } /* R1: 14px overflow at 390 */
   .c-root .cp-month ul, .c-root .cp-cat ul { margin-left: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px; }
   .c-root .cp-month li, .c-root .cp-cat li { padding: 9px 10px; border: 1px solid var(--k-line); border-radius: 10px; background: #fff; }
 }
 @media (max-width: 480px) {
-  .c-root .cp-main > .k-between > .k-row { flex-wrap: nowrap; gap: 6px; }
+  .c-root .cp-main > .k-between > .k-row { flex-wrap: wrap; gap: 6px; } /* R1: wraps (44px touch targets no longer fit one row at 375–390) */
   .c-root .cp-main > .k-between > .k-row .k-select { width: 92px; min-width: 0; }
   .c-root .cp-main > .k-between > .k-row .k-btn { padding: 0 10px; white-space: nowrap; }
   .c-root .cp-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }

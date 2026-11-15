@@ -16,8 +16,13 @@ test.describe("P1 build_items payment guard", () => {
   let custC: SupabaseClient, orgC: SupabaseClient, provC: SupabaseClient;
   let P: string, O: string, venue: string, dj: string, E1: string, E2: string;
   const wss: string[] = [];
+  // 202611116011 (backend-queue 2026-11-11, canvas + map builder): one OPEN line per event + listing (build_items_event_listing_open_uidx).
+  // Each line therefore gets its own listing of the same kind, so the guard is tested per line rather than tripping the unique index.
+  const fresh = async (listing: string) => (await one(db.from("listings").insert(listing === venue
+    ? { workspace_id: P, name: `P1 Guard Hall ${Math.random().toString(36).slice(2, 7)}`, kind: "venue", category: "venue", published: false }
+    : { workspace_id: P, name: `P1 Guard DJ ${Math.random().toString(36).slice(2, 7)}`, kind: "service", category: "dj", published: false }).select("id").single())).id;
   const line = async (event: string, listing: string | null, status: string, extra: Record<string, unknown> = {}) =>
-    (await one(db.from("build_items").insert({ event_id: event, listing_id: listing, category: listing === venue ? "venue" : "dj", title: `P1 ${status}`, status, amount: 1200, deposit: 300, ...extra }).select("id").single())).id;
+    (await one(db.from("build_items").insert({ event_id: event, listing_id: listing && (listing === venue || listing === dj) ? await fresh(listing) : listing, category: listing === venue ? "venue" : "dj", title: `P1 ${status}`, status, amount: 1200, deposit: 300, ...extra }).select("id").single())).id;
   const status = async (id: string) => (await one<{ status: string }>(db.from("build_items").select("status").eq("id", id).single())).status;
   const jobs = async (id: string) => (await db.from("provider_jobs").select("id", { count: "exact", head: true }).eq("build_item_id", id)).count ?? 0;
 
@@ -82,7 +87,7 @@ test.describe("P1 build_items payment guard", () => {
 
   test("legitimate buyer edits keep working", async () => {
     // Draft composition: add, re-price an estimate, reorder, annotate, swap role, delete.
-    const s = (await one(custC.from("build_items").insert({ event_id: E1, listing_id: dj, category: "dj", title: "P1 DJ idea", status: "suggested", amount: 400, price_basis: "estimate" }).select("id").single())).id;
+    const s = (await one(custC.from("build_items").insert({ event_id: E1, listing_id: await fresh(dj), category: "dj", title: "P1 DJ idea", status: "suggested", amount: 400, price_basis: "estimate" }).select("id").single())).id;
     expect((await custC.from("build_items").update({ amount: 450, notes: "60s soul", sort: 3, role: "backup", title: "P1 DJ (soul)" }).eq("id", s)).error).toBeNull();
     // Request line (organizer RFQ shape): inserted as 'sent' with its request.
     const req = (await one(orgC.from("provider_requests").insert({ reference: `RQ-P1${Date.now() % 1e6}`, event_id: E2, created_by: orgOwner.id, category: "dj", title: "P1 RFQ", status: "sent" }).select("id").single())).id;
@@ -94,7 +99,7 @@ test.describe("P1 build_items payment guard", () => {
     expect((await custC.from("build_items").update({ notes: "keep", sort: 9 }).eq("id", q)).error).toBeNull();
     expect((await custC.from("build_items").update({ status: "cancelled" }).eq("id", q)).error).toBeNull();
     expect(await status(q)).toBe("cancelled");
-    const d = (await one(custC.from("build_items").insert({ event_id: E1, listing_id: dj, category: "dj", title: "P1 delete me", status: "draft" }).select("id").single())).id;
+    const d = (await one(custC.from("build_items").insert({ event_id: E1, listing_id: await fresh(dj), category: "dj", title: "P1 delete me", status: "draft" }).select("id").single())).id;
     expect((await custC.from("build_items").delete().eq("id", d)).error).toBeNull();
     // Off-platform line (no listing, nothing payable through Gala Dock) can still be recorded as confirmed by the organiser.
     const off = await line(E2, null, "quoted", { category: "decor" });

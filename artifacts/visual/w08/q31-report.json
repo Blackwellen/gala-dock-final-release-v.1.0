@@ -1,0 +1,217 @@
+[
+ {
+  "name": "q31-trust",
+  "url": "/admin/trust",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Trust & Safety",
+  "restricted": true,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-verification",
+  "url": "/admin/trust/verification",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Verification review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-verification-decided",
+  "url": "/admin/trust/verification?tab=decided",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Verification review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-verification-appeals",
+  "url": "/admin/trust/verification?tab=appeals",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Verification review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-risk",
+  "url": "/admin/trust/risk",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Risk review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-risk-holds",
+  "url": "/admin/trust/risk?tab=holds",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Risk review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-risk-tickets",
+  "url": "/admin/trust/risk?tab=tickets",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Risk review",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-support",
+  "url": "/admin/support",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Support",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-support-case",
+  "url": "/admin/support/c0000000-0000-4000-8000-000000004421",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Case SUP-4421",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-support-case-actions",
+  "url": "/admin/support/c0000000-0000-4000-8000-000000004421?tab=actions",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Case SUP-4421",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-support-case-activity",
+  "url": "/admin/support/c0000000-0000-4000-8000-000000004421?tab=activity",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Case SUP-4421",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-support-macros",
+  "url": "/admin/support/macros",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Macros and SLAs",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-privacy",
+  "url": "/admin/support/privacy",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Privacy requests",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-privacy-holds",
+  "url": "/admin/support/privacy?tab=holds",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Privacy requests",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-privacy-retention",
+  "url": "/admin/support/privacy?tab=retention",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Privacy requests",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-privacy-fixtures",
+  "url": "/admin/support/privacy?tab=fixtures",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Privacy requests",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-health",
+  "url": "/admin/health",
+  "status": 200,
+  "overflow": 0,
+  "h1": "System health",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-health-jobs",
+  "url": "/admin/health/jobs",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Jobs and dead letters",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-health-jobs-outbox",
+  "url": "/admin/health/jobs?tab=outbox",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Jobs and dead letters",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-maintenance",
+  "url": "/admin/maintenance",
+  "status": 200,
+  "overflow": 0,
+  "h1": "Maintenance",
+  "restricted": false,
+  "error": false,
+  "errors": []
+ },
+ {
+  "name": "q31-trust-verification-phone",
+  "url": "/admin/trust/verification",
+  "overflow": 0
+ },
+ {
+  "name": "q31-health-jobs-phone",
+  "url": "/admin/health/jobs",
+  "overflow": 0
+ },
+ {
+  "name": "q31-support-case-phone",
+  "url": "/admin/support/c0000000-0000-4000-8000-000000004421?tab=actions",
+  "overflow": 0
+ }
+]

@@ -1,0 +1,1220 @@
+[
+ {
+  "route": "/account/events",
+  "pattern": "/account/events",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/book",
+  "pattern": "/account/events/[id]/book",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/build",
+  "pattern": "/account/events/[id]/build",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets",
+  "pattern": "/account/events/[id]/guests-tickets",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/messages",
+  "pattern": "/account/events/[id]/messages",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/money",
+  "pattern": "/account/events/[id]/money",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe",
+  "pattern": "/account/events/[id]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan",
+  "pattern": "/account/events/[id]/plan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/scan",
+  "pattern": "/account/events/[id]/scan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/tickets/setup",
+  "pattern": "/account/events/[id]/tickets/setup",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/help",
+  "pattern": "/account/help",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/inbox",
+  "pattern": "/account/inbox",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account",
+  "pattern": "/account",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/reviews",
+  "pattern": "/account/reviews",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/saved",
+  "pattern": "/account/saved",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/tickets",
+  "pattern": "/account/tickets",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/tickets/d6122963-3531-4587-8969-3e902269640d",
+  "pattern": "/account/tickets/[id]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/account/tickets/d6122963-3531-4587-8969-3e902269640d/resale",
+  "pattern": "/account/tickets/[id]/resale",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/plan",
+  "pattern": "/plan",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/mfa",
+  "pattern": "/mfa",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/onboarding",
+  "pattern": "/onboarding",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/onboarding/customer",
+  "pattern": "/onboarding/[flow]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent",
+  "pattern": "/organizer/agent",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent/policy",
+  "pattern": "/organizer/agent/policy",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/agent/runs/38fc8da4-e2f8-4dd5-948b-71b3dda4856c",
+  "pattern": "/organizer/agent/runs/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/calendar",
+  "pattern": "/organizer/calendar",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/new",
+  "pattern": "/organizer/events/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/events",
+  "pattern": "/organizer/events",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/live",
+  "pattern": "/organizer/events/[id]/live",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/map",
+  "pattern": "/organizer/events/[id]/map",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/media",
+  "pattern": "/organizer/events/[id]/media",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/page",
+  "pattern": "/organizer/events/[id]/page",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228",
+  "pattern": "/organizer/events/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion/new",
+  "pattern": "/organizer/events/[id]/promotion/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion",
+  "pattern": "/organizer/events/[id]/promotion",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/promotion/promoters/b5e5710f-aab0-4e82-accf-15a4d602a949",
+  "pattern": "/organizer/events/[id]/promotion/promoters/[promoterId]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/scan",
+  "pattern": "/organizer/events/[id]/scan",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/template",
+  "pattern": "/organizer/events/[id]/template",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/tickets/setup",
+  "pattern": "/organizer/events/[id]/tickets/setup",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/events/392fdf17-4e5c-4473-987c-251dc0a97228/virtual",
+  "pattern": "/organizer/events/[id]/virtual",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/help",
+  "pattern": "/organizer/help",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/inbox",
+  "pattern": "/organizer/inbox",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/emergency",
+  "pattern": "/organizer/marketplace/emergency",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/marketplace/emergency/3396b8a3-54f4-46df-a022-fcea2157a671",
+  "pattern": "/organizer/marketplace/emergency/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/marketplace",
+  "pattern": "/organizer/marketplace",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/marketplace/requests/new",
+  "pattern": "/organizer/marketplace/requests/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/marketplace/venue/095c7874-a84f-4456-80b3-ddb6c0d15aa3",
+  "pattern": "/organizer/marketplace/[type]/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/media",
+  "pattern": "/organizer/media",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/money/invoices/new",
+  "pattern": "/organizer/money/invoices/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/money/invoices/b7b745d6-5ba8-4e6f-818b-084ec453fcb0",
+  "pattern": "/organizer/money/invoices/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/money",
+  "pattern": "/organizer/money",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer",
+  "pattern": "/organizer",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/promotions/new",
+  "pattern": "/organizer/promotions/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/proposals/new",
+  "pattern": "/organizer/proposals/new",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/clients",
+  "pattern": "/organizer/sales/clients",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/clients/a67d7481-35b4-4270-b081-95f0bf021068",
+  "pattern": "/organizer/sales/clients/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/contracts",
+  "pattern": "/organizer/sales/contracts",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/contracts/3b00186d-0216-401a-ad99-7cf32c33ce49",
+  "pattern": "/organizer/sales/contracts/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/leads/0147f801-c32e-422c-9563-87fde2790ef8",
+  "pattern": "/organizer/sales/leads/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales",
+  "pattern": "/organizer/sales",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/sales/proposals/1ea59c66-d40f-435f-a139-9674ee47edec",
+  "pattern": "/organizer/sales/proposals/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/settings",
+  "pattern": "/organizer/settings",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/team/my-shifts",
+  "pattern": "/organizer/team/my-shifts",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/team",
+  "pattern": "/organizer/team",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/team/8fa5c0c7-5e14-400f-bee8-34aecc574c7e",
+  "pattern": "/organizer/team/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/tickets",
+  "pattern": "/organizer/tickets",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/organizer/tickets-promotion",
+  "pattern": "/organizer/tickets-promotion",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/studio/e5139ad8-067a-40b8-b225-c3610f639447",
+  "pattern": "/studio/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/agent",
+  "pattern": "/provider/agent",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/agent/policy",
+  "pattern": "/provider/agent/policy",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/agent/runs/fd637c1d-d007-4a6f-bcf0-f125482ecbb1",
+  "pattern": "/provider/agent/runs/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/bookings/new",
+  "pattern": "/provider/bookings/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/bookings",
+  "pattern": "/provider/bookings",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/bookings/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+  "pattern": "/provider/bookings/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/calendar",
+  "pattern": "/provider/calendar",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/emergency",
+  "pattern": "/provider/emergency",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/help",
+  "pattern": "/provider/help",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/inbox",
+  "pattern": "/provider/inbox",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/listings",
+  "pattern": "/provider/listings/[[...type]]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/media",
+  "pattern": "/provider/media",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/menus",
+  "pattern": "/provider/menus",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/menus/12490843-3694-4bb3-be91-2b1998c8824d",
+  "pattern": "/provider/menus/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/money",
+  "pattern": "/provider/money",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/money/statement",
+  "pattern": "/provider/money/statement",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/money/tax-details",
+  "pattern": "/provider/money/tax-details",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/opportunities",
+  "pattern": "/provider/opportunities",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/opportunities/aa4528da-48ac-4b1d-9147-8f432bcb762d",
+  "pattern": "/provider/opportunities/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/opportunities/aa4528da-48ac-4b1d-9147-8f432bcb762d/quote",
+  "pattern": "/provider/opportunities/[id]/quote",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/packages/new",
+  "pattern": "/provider/packages/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/packages/bc246b8a-2c25-46bc-8c20-c57fc2ad5450",
+  "pattern": "/provider/packages/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider",
+  "pattern": "/provider",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/reviews",
+  "pattern": "/provider/reviews",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/search",
+  "pattern": "/provider/search",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/services/new",
+  "pattern": "/provider/services/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/services/7319d6b6-7d4f-41b2-b638-d2d6171ca7d1",
+  "pattern": "/provider/services/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/settings",
+  "pattern": "/provider/settings",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/team/my-shifts",
+  "pattern": "/provider/team/my-shifts",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/team",
+  "pattern": "/provider/team",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/team/afc2c7ae-88e2-4cdb-ac8a-552b52a75f98",
+  "pattern": "/provider/team/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/new",
+  "pattern": "/provider/venues/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/logistics",
+  "pattern": "/provider/venues/[id]/logistics",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5",
+  "pattern": "/provider/venues/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/new",
+  "pattern": "/provider/venues/[id]/spaces/new",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/provider/venues/327451a6-0693-47f6-bbec-a480fe805db5/spaces/2bc82343-c905-43dc-8f6b-f341a369fd7a",
+  "pattern": "/provider/venues/[id]/spaces/[spaceId]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/partner/apply",
+  "pattern": "/partner/apply",
+  "label": "partner",
+  "state": "artifacts/auth/r1-partner.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/partner",
+  "pattern": "/partner",
+  "label": "partner",
+  "state": "artifacts/auth/r1-partner.json",
+  "set": "full"
+ },
+ {
+  "route": "/promoter",
+  "pattern": "/promoter",
+  "label": "promoter",
+  "state": "artifacts/auth/r1-promoter.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/agent-integrations/credits",
+  "pattern": "/admin/agent-integrations/credits",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/agent-integrations",
+  "pattern": "/admin/agent-integrations",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/analytics",
+  "pattern": "/admin/analytics",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce/advertising",
+  "pattern": "/admin/commerce/advertising",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce",
+  "pattern": "/admin/commerce",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/commerce/payout-pauses",
+  "pattern": "/admin/commerce/payout-pauses",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce/payouts",
+  "pattern": "/admin/commerce/payouts",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce/reconciliation",
+  "pattern": "/admin/commerce/reconciliation",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce/transactions/98c2f9cd-d9c8-4bd8-b651-247b6b4d77fb",
+  "pattern": "/admin/commerce/transactions/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/commerce/vat",
+  "pattern": "/admin/commerce/vat",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/compliance",
+  "pattern": "/admin/compliance",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/conversations",
+  "pattern": "/admin/conversations",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/conversations/request",
+  "pattern": "/admin/conversations/request",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/disputes",
+  "pattern": "/admin/disputes",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/events",
+  "pattern": "/admin/events",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/health/jobs",
+  "pattern": "/admin/health/jobs",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/health",
+  "pattern": "/admin/health",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/maintenance",
+  "pattern": "/admin/maintenance",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/marketplace",
+  "pattern": "/admin/marketplace",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/moderation",
+  "pattern": "/admin/moderation",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin",
+  "pattern": "/admin",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/partners",
+  "pattern": "/admin/partners",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/settings",
+  "pattern": "/admin/settings",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/support/macros",
+  "pattern": "/admin/support/macros",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/support",
+  "pattern": "/admin/support",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/support/privacy",
+  "pattern": "/admin/support/privacy",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/support/1f50bf1f-652c-4ba2-9609-57191a5df26e",
+  "pattern": "/admin/support/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/tickets/force-majeure",
+  "pattern": "/admin/tickets/force-majeure",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/tickets",
+  "pattern": "/admin/tickets",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/disputes",
+  "pattern": "/admin/trust/disputes",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/message-reports",
+  "pattern": "/admin/trust/message-reports",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust",
+  "pattern": "/admin/trust",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/review-replies",
+  "pattern": "/admin/trust/review-replies",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/risk",
+  "pattern": "/admin/trust/risk",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/verification",
+  "pattern": "/admin/trust/verification",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/trust/6e3ce9a7-b8c2-47bc-88ef-2d5e88fb1ce0",
+  "pattern": "/admin/trust/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/users",
+  "pattern": "/admin/users",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/users/bb42662d-51b5-4adb-b8a0-c42422683cf2",
+  "pattern": "/admin/users/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/workspaces",
+  "pattern": "/admin/workspaces",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/admin/workspaces/6a66b922-a463-4ce8-ba7a-8ff112e0b168",
+  "pattern": "/admin/workspaces/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "reduced"
+ },
+ {
+  "route": "/messages/971bafbc-cd03-4b0e-937e-3cb7d7802a4b",
+  "pattern": "/messages/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/messages/b2f4381d-4b22-4003-8ac4-96fc1ff1633d",
+  "pattern": "/provider/messages/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/beo/fd2d615b-4090-4bda-bc2e-4aa77dedc701",
+  "pattern": "/provider/beo/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f",
+  "pattern": "/provider/quotes/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/quotes/8a71efed-181c-4a1a-8aed-d5b700f3165f/print",
+  "pattern": "/provider/quotes/[id]/print",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/emergency/3396b8a3-54f4-46df-a022-fcea2157a671",
+  "pattern": "/provider/emergency/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/requests/6c44d895-083e-49e8-bb25-10a01b040d21",
+  "pattern": "/organizer/marketplace/requests/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/bookings/01a2f55f-b71e-4e4c-8bda-f36c9402fb64",
+  "pattern": "/organizer/marketplace/bookings/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/marketplace/bookings/01a2f55f-b71e-4e4c-8bda-f36c9402fb64/catering",
+  "pattern": "/organizer/marketplace/bookings/[id]/catering",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/23328297-ab77-487a-8045-1b9d1d30d587",
+  "pattern": "/account/events/[id]/bookings/[item]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/23328297-ab77-487a-8045-1b9d1d30d587/catering",
+  "pattern": "/account/events/[id]/bookings/[item]/catering",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/account/tickets/bed396e6-8f9e-42bd-b755-1043ab3599a6/print",
+  "pattern": "/account/tickets/[id]/print",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/disputes/f85186de-9531-433f-ab86-04d764b30c47",
+  "pattern": "/organizer/disputes/[id]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/disputes/f85186de-9531-433f-ab86-04d764b30c47",
+  "pattern": "/provider/disputes/[id]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/door/c3decf80-c54f-4525-9caa-f9e2a86f12f1",
+  "pattern": "/door/[eventId]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/agent/routines",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/agent/routines",
+  "pattern": "/provider/agent/[section]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/agent/approvals",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/agent/approvals",
+  "pattern": "/provider/agent/[section]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/organizer/agent/history",
+  "pattern": "/organizer/agent/[section]",
+  "label": "organizer",
+  "state": "artifacts/auth/r1-organizer.json",
+  "set": "full"
+ },
+ {
+  "route": "/provider/agent/history",
+  "pattern": "/provider/agent/[section]",
+  "label": "provider",
+  "state": "artifacts/auth/r1-provider.json",
+  "set": "full"
+ },
+ {
+  "route": "/promoter/687dac07-cfe8-485e-95ed-dbc49299a28e",
+  "pattern": "/promoter/[promoterId]",
+  "label": "promoter",
+  "state": "artifacts/auth/r1-promoter.json",
+  "set": "full"
+ },
+ {
+  "route": "/r/R1M5D38A5/consent",
+  "pattern": "/r/[code]/consent",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/checkout/r1-qa-ec8346/confirmation?order=GD-5A81871AC6",
+  "pattern": "/checkout/[event]/confirmation",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/tickets/accept/lpPENpkzy6FyGmnbhmFv3YUcXNwFNJKw",
+  "pattern": "/tickets/accept/[token]",
+  "label": "promoter",
+  "state": "artifacts/auth/r1-promoter.json",
+  "set": "full"
+ },
+ {
+  "route": "/checkout/elite-sounds-night",
+  "pattern": "/checkout/[event]",
+  "label": "customer",
+  "state": "artifacts/auth/r1-customer.json",
+  "set": "full"
+ },
+ {
+  "route": "/admin/marketplace/listings/327451a6-0693-47f6-bbec-a480fe805db5",
+  "pattern": "/admin/marketplace/listings/[id]",
+  "label": "admin",
+  "state": "artifacts/auth/r1-admin.json",
+  "set": "full"
+ }
+]

@@ -92,7 +92,13 @@ test.describe("media brand kit, fonts and comments", () => {
     await expect(page.getByLabel("Design name")).toHaveValue("Brand poster", { timeout: 30_000 });
     await page.getByRole("button", { name: "Brand", exact: true }).click();
     await page.getByRole("button", { name: "Apply Dock blue" }).click();
-    await expect(page.getByRole("status").filter({ hasText: /^Saved$/ })).toBeVisible({ timeout: 15_000 });
+    // Owner rule 2026-11-15: no server auto-save. The edit shows Unsaved and stays off the server until Save / Ctrl+S.
+    const saveStatus = page.locator(".st-save");
+    await expect(saveStatus).toHaveText("Unsaved");
+    await page.waitForTimeout(3_000);   // longer than the old auto-save debounce: still nothing written
+    expect(((await db.from("designs").select("document").eq("id", design).single()).data!.document as typeof doc).pages[0]!.background).toEqual({ type: "solid", color: "#ffffff" });
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(saveStatus).toHaveText("Saved", { timeout: 15_000 });
     const { data: saved } = await db.from("designs").select("document").eq("id", design).single();
     expect((saved!.document as typeof doc).pages[0]!.background).toEqual({ type: "solid", color: "#0b08f8" });
     await page.getByRole("button", { name: /^Comments/ }).click();

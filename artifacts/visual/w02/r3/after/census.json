@@ -1,0 +1,2141 @@
+{
+ "results": [
+  {
+   "route": "/home",
+   "name": "home",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/home",
+   "controls": 62,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Home · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Good morning, Alex"
+    ]
+   },
+   "docH": 1292
+  },
+  {
+   "route": "/discover",
+   "name": "discover",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/discover",
+   "controls": 84,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Discover · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Discover incredible events, venues and services"
+    ]
+   },
+   "docH": 1092
+  },
+  {
+   "route": "/account/events",
+   "name": "events",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events",
+   "controls": 71,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My Events · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "My Events"
+    ]
+   },
+   "docH": 1358
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+   "name": "event",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+   "controls": 51,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1072
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+   "name": "build",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+   "controls": 75,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Build · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1629
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+   "name": "plan",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+   "controls": 98,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 2920
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+   "name": "guests",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+   "controls": 107,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Guests & Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1610
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+   "name": "money",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+   "controls": 45,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Money · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1220
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+   "name": "messages",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+   "controls": 48,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Messages · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1036
+  },
+  {
+   "route": "/account/tickets",
+   "name": "tickets",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets",
+   "controls": 56,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "My Tickets"
+    ]
+   },
+   "docH": 1046
+  },
+  {
+   "route": "/account/tickets/d6122963-3531-4587-8969-3e902269640d",
+   "name": "ticket-neon",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/d6122963-3531-4587-8969-3e902269640d",
+   "controls": 33,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1618
+  },
+  {
+   "route": "/account/saved",
+   "name": "saved",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/saved",
+   "controls": 155,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Saved · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Saved"
+    ]
+   },
+   "docH": 3355
+  },
+  {
+   "route": "/account/reviews",
+   "name": "reviews",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/reviews",
+   "controls": 61,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Reviews · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Reviews"
+    ]
+   },
+   "docH": 1145
+  },
+  {
+   "route": "/account",
+   "name": "account",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account",
+   "controls": 42,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My Account · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "My Account"
+    ]
+   },
+   "docH": 1190
+  },
+  {
+   "route": "/plan?step=1",
+   "name": "wiz1",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=1",
+   "controls": 35,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1039
+  },
+  {
+   "route": "/plan?step=2&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "name": "wiz2",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=2&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "controls": 80,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1051
+  },
+  {
+   "route": "/plan?step=3&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "name": "wiz3",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=3&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "controls": 40,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/plan?step=4&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "name": "wiz4",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=4&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "controls": 35,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1058
+  },
+  {
+   "route": "/plan?step=5&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "name": "wiz5",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=5&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "controls": 34,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1058
+  },
+  {
+   "route": "/plan?step=6&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "name": "wiz6",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/plan?step=6&event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "controls": 35,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Plan an Event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Plan an Event"
+    ]
+   },
+   "docH": 1182
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+   "name": "book1",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=1",
+   "controls": 59,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Booking request · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Booking Request"
+    ]
+   },
+   "docH": 1351
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2",
+   "name": "book2",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2",
+   "controls": 39,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Booking request · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Booking Request"
+    ]
+   },
+   "docH": 1261
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+   "name": "ts1",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+   "controls": 70,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket setup · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Ticket Setup"
+    ]
+   },
+   "docH": 1106
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+   "name": "ts2",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+   "controls": 37,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket setup · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Ticket Setup"
+    ]
+   },
+   "docH": 1045
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3",
+   "name": "ts3",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=3",
+   "controls": 27,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket setup · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Ticket Setup"
+    ]
+   },
+   "docH": 1196
+  },
+  {
+   "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale",
+   "name": "resale",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Official resale · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Sunset Sessions"
+    ]
+   },
+   "docH": 1227
+  },
+  {
+   "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale?step=2",
+   "name": "resale2",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/resale?step=2",
+   "controls": 18,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Official resale · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Sunset Sessions"
+    ]
+   },
+   "docH": 1227
+  },
+  {
+   "route": "/checkout/neon-nights",
+   "name": "checkout",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/checkout/neon-nights",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Checkout",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?tab=tickets",
+   "name": "wed-tickets",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?tab=tickets",
+   "controls": 41,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Guests & Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex & Taylor Wedding"
+    ]
+   },
+   "docH": 1073
+  },
+  {
+   "route": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets?tab=tickets",
+   "name": "bday-tickets-off",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets?tab=tickets",
+   "controls": 34,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Guests & Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Alex's 30th Birthday"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets?tab=tickets",
+   "name": "kids-tickets-off",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets?tab=tickets",
+   "controls": 38,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Guests & Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Maya's 6th Birthday — Little Explorers"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe",
+   "name": "kids-event",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe",
+   "controls": 39,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My event · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Maya's 6th Birthday — Little Explorers"
+    ]
+   },
+   "docH": 1045
+  },
+  {
+   "route": "/events/future-of-live-events-webinar/register",
+   "name": "webinar-register",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/future-of-live-events-webinar/register",
+   "controls": 17,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, follow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Future of Live Events 2027 (Webinar)"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/checkout/sunset-sessions",
+   "name": "checkout-sunset",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/checkout/sunset-sessions",
+   "controls": 13,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Checkout",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Sunset Sessions"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb",
+   "name": "q29-ticket",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb",
+   "controls": 34,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Taste & Tango Food Fest"
+    ]
+   },
+   "docH": 2119
+  },
+  {
+   "route": "/account/tickets?t=fa33d047-250c-4a08-b3c0-ad513a954d70:GLD-2025-0201:upcoming",
+   "name": "q29-wallet",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets?t=fa33d047-250c-4a08-b3c0-ad513a954d70:GLD-2025-0201:upcoming",
+   "controls": 57,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "My Tickets · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "My Tickets"
+    ]
+   },
+   "docH": 1098
+  },
+  {
+   "route": "/account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2",
+   "name": "ticket-neon-2",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2",
+   "controls": 33,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Ticket · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1618
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1",
+   "name": "bookings-1",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1",
+   "controls": 28,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Booking · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Taste & Tango Catering"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1/catering",
+   "name": "catering",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1/catering",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Catering · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Catering · Taste & Tango Catering"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/print",
+   "name": "print",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/print",
+   "controls": 16,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Print ticket · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Sunset Sessions"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/inbox",
+   "name": "inbox",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/inbox",
+   "controls": 14,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Messages · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Messages"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/account/help",
+   "name": "help",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/account/help",
+   "controls": 43,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Help Centre · Gala Dock",
+    "canonical": null,
+    "robots": null,
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "How can we help?"
+    ]
+   },
+   "docH": 2464
+  },
+  {
+   "route": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "name": "rsvp-bad",
+   "w": 1536,
+   "h": 1024,
+   "status": 404,
+   "finalPath": "/rsvp/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "controls": 10,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill"
+   ],
+   "meta": {
+    "title": "Your RSVP · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "This RSVP link isn't valid"
+    ]
+   },
+   "docH": 1024
+  },
+  {
+   "route": "/events/neon-nights/register",
+   "name": "neon-register",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/events/neon-nights/register",
+   "controls": 12,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Register · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, follow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Neon Nights Festival"
+    ]
+   },
+   "docH": 1024
+  }
+ ],
+ "links": [
+  {
+   "href": "/discover",
+   "status": 200
+  },
+  {
+   "href": "/account/inbox",
+   "status": 200
+  },
+  {
+   "href": "/plan",
+   "status": 200
+  },
+  {
+   "href": "/account/events",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money",
+   "status": 200
+  },
+  {
+   "href": "/home",
+   "status": 200
+  },
+  {
+   "href": "/account/saved",
+   "status": 200
+  },
+  {
+   "href": "/account/help",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=events&results=1",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe",
+   "status": 200
+  },
+  {
+   "href": "/events/3de9a340-9dbe-41f5-8623-61d2eeba530a",
+   "status": 200
+  },
+  {
+   "href": "/events/33bf57f8-9848-4956-beb3-a60ce6b6421e",
+   "status": 200
+  },
+  {
+   "href": "/events/0c581646-59e8-4634-b999-09d6e1d77590",
+   "status": 200
+  },
+  {
+   "href": "/events/d2e039d4-1249-40d4-ac54-9d8d19d002c2",
+   "status": 200
+  },
+  {
+   "href": "/events/971a8a20-d2fd-4aab-bb50-eb1667fe782d",
+   "status": 200
+  },
+  {
+   "href": "/events/cba35ef8-3aa1-4e11-8247-a375e937e04d",
+   "status": 200
+  },
+  {
+   "href": "/events/72b0acc7-e204-4e2b-9ffe-a72ccf590ba1",
+   "status": 200
+  },
+  {
+   "href": "/events/715550f5-7aea-4c3b-adb3-11822fa1c4e7",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets/15651ef4-f685-4727-a242-966aea0a6f1f",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb",
+   "status": 200
+  },
+  {
+   "href": "/account/saved?tab=venues",
+   "status": 200
+  },
+  {
+   "href": "/venues/the-loft-london",
+   "status": 200
+  },
+  {
+   "href": "/services/elite-sounds-dj",
+   "status": 200
+  },
+  {
+   "href": "/services/taste-co-catering",
+   "status": 200
+  },
+  {
+   "href": "/home?day=2026-10-28",
+   "status": 200
+  },
+  {
+   "href": "/home?day=2026-10-30",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=checklist",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=events&results=1&when=weekend",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1&q=rooftop",
+   "status": 200
+  },
+  {
+   "href": "/plan?step=1",
+   "status": 200
+  },
+  {
+   "href": "/account/saved?tab=events",
+   "status": 200
+  },
+  {
+   "href": "/events/neon-nights",
+   "status": 200
+  },
+  {
+   "href": "/discover?",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=services",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=tonight&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=weekend&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=music&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=nightlife&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=food&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=comedy&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=family&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=corporate&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?chip=wedding&results=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?results=1",
+   "status": 200
+  },
+  {
+   "href": "/events/summer-rooftop-party",
+   "status": 200
+  },
+  {
+   "href": "/events/taste-tango-fest",
+   "status": 200
+  },
+  {
+   "href": "/events/comedy-central-live",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1",
+   "status": 200
+  },
+  {
+   "href": "/venues/riverside-events-center",
+   "status": 200
+  },
+  {
+   "href": "/venues/the-harper",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=services&results=1",
+   "status": 200
+  },
+  {
+   "href": "/services/taste-catering-co",
+   "status": 200
+  },
+  {
+   "href": "/services/luxe-event-decor",
+   "status": 200
+  },
+  {
+   "href": "/discover?results=1&view=map",
+   "status": 200
+  },
+  {
+   "href": "/discover?results=1&view=list",
+   "status": 200
+  },
+  {
+   "href": "/account/events?tab=past",
+   "status": 200
+  },
+  {
+   "href": "/account/events?tab=drafts",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/build",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/money",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/money?tab=payments",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan?tab=day",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money?tab=payments",
+   "status": 200
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c",
+   "status": 200
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/build",
+   "status": 200
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/money",
+   "status": 200
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/money?tab=payments",
+   "status": 200
+  },
+  {
+   "href": "/account/events/c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "status": 200
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan?tab=checklist",
+   "status": 200
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/plan",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages",
+   "status": 200
+  },
+  {
+   "href": "/account/events?upgrade=efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?item=a45159c5-17ae-445b-8099-b2ddcb15b9df",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?item=665763cf-9f61-4e74-955f-8e6b19e229a1",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?item=7a64650d-9ab3-4739-8944-06c62efd09da",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?item=dd72319b-ab38-4afc-b56f-f1eb45eb631d",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=venue",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=food",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=drinks",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=entertainment",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=styling",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=media",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=transport",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/build?cat=extras",
+   "status": 200
+  },
+  {
+   "href": "/plan?step=6&event=efd4d0af-9437-4b0b-99cf-af7816fa2a62",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&view=map&results=1",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=day",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?win=week&from=2026-10-19",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?win=week&from=2026-11-02",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=timeline&f=all",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=timeline&f=todo",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=timeline&f=in_progress",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/plan?tab=timeline&f=done",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?tab=tickets",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?tab=checkin",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?f=confirmed",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?f=pending",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?f=declined",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/guests-tickets?f=invited",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=1",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/scan",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money?tab=refunds",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/money?layout=cards",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=d5248f53-dffc-4941-aa0f-e5b48148421a",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=2a11b490-b3ac-4ee8-8db6-0d6efd1428d2",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=f30153c3-bf0d-4b02-abc3-7d877ca7e002",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=c78289b1-1105-4f3b-8756-51a111d04f3b",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=8a4f28a6-4ae3-4544-9040-d6f54e85a756",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=b2e926ca-c555-478d-bcdc-7fb6351ecba9",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?listing=90ee927e-622b-477b-87cd-44428ef9a9f9",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?step=2&pay=a20054a4-1baf-4595-97c4-a6fb2aeb4775",
+   "status": 200
+  },
+  {
+   "href": "/help",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?tab=venue",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?tab=supplier",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=c35537ab-34ad-4f68-ac16-956ffe15c1a8",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=b2f4381d-4b22-4003-8ac4-96fc1ff1633d",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=064c5f95-9bda-4a1d-992a-cd1769949ee2",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=1b82b4b3-481b-4a52-8ee8-54df46ff8f1a",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=68cc4a4e-18e2-43d7-89d4-2c32b0d1d2a2",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=f8037423-f411-42ef-af16-eea4f24e37e7",
+   "status": 200
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/messages?thread=1f3465d7-b627-40dc-99df-678e0c72ed1f",
+   "status": 200
+  },
+  {
+   "href": "/venues/d5248f53-dffc-4941-aa0f-e5b48148421a",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets?tab=past",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets?tab=resale",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets?t=392fdf17-4e5c-4473-987c-251dc0a97228%3AGLD-2025-0147%3Aupcoming",
+   "status": 200
+  },
+  {
+   "href": "/api/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2/ics",
+   "status": "skipped"
+  },
+  {
+   "href": "/account/tickets?t=2ac86a01-7e12-4400-91df-b9fd37827102%3AGLD-2025-0188%3Aupcoming",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets?t=fa33d047-250c-4a08-b3c0-ad513a954d70%3AGLD-2025-0201%3Aupcoming",
+   "status": 200
+  },
+  {
+   "href": "/api/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb/ics",
+   "status": "skipped"
+  },
+  {
+   "href": "/account/tickets?t=c3decf80-c54f-4525-9caa-f9e2a86f12f1%3AGLD-2025-0215%3Aupcoming",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets/0feb2889-b71f-4881-a47c-a31cf8a601dd",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets?t=none",
+   "status": 200
+  },
+  {
+   "href": "/help?topic=tickets",
+   "status": 200
+  },
+  {
+   "href": "/account/tickets/d6122963-3531-4587-8969-3e902269640d/print",
+   "status": 200
+  },
+  {
+   "href": "/api/tickets/d6122963-3531-4587-8969-3e902269640d/pdf",
+   "status": "skipped"
+  },
+  {
+   "href": "/account/tickets/d6122963-3531-4587-8969-3e902269640d",
+   "status": 200
+  },
+  {
+   "href": "/api/tickets/d6122963-3531-4587-8969-3e902269640d/ics",
+   "status": "skipped"
+  },
+  {
+   "href": "/venues/riverside-park-events-venue",
+   "status": 200
+  },
+  {
+   "href": "/account/saved?tab=services",
+   "status": 200
+  },
+  {
+   "href": "/events/sunset-sessions",
+   "status": 200
+  },
+  {
+   "href": "/events/elite-sounds-night",
+   "status": 200
+  },
+  {
+   "href": "/events/community-summer-fair",
+   "status": 200
+  },
+  {
+   "href": "/venues/riverside-manor",
+   "status": 200
+  },
+  {
+   "href": "/venues/skyline-events-space",
+   "status": 200
+  },
+  {
+   "href": "/venues/olympic-stadium",
+   "status": 200
+  },
+  {
+   "href": "/venues/riverside-arena",
+   "status": 200
+  },
+  {
+   "href": "/services/sweet-petals",
+   "status": 200
+  },
+  {
+   "href": "/services/dj-marcus-lee",
+   "status": 200
+  },
+  {
+   "href": "/services/elegant-events-decor",
+   "status": 200
+  },
+  {
+   "href": "/services/sound-lighting-pro",
+   "status": 200
+  },
+  {
+   "href": "/services/gala-bites-catering",
+   "status": 200
+  },
+  {
+   "href": "/services/sax-groove-live",
+   "status": 200
+  },
+  {
+   "href": "/services/gourmet-catering-co",
+   "status": 200
+  },
+  {
+   "href": "/services/riverside-dj-sound",
+   "status": 200
+  },
+  {
+   "href": "/services/snapshot-photobooth",
+   "status": 200
+  },
+  {
+   "href": "/services/event-marquees-uk",
+   "status": 200
+  },
+  {
+   "href": "/account/saved?tab=events&compare=venues",
+   "status": 200
+  },
+  {
+   "href": "/venues/the-grand-hall",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews?tab=submitted",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews?item=f01e6bd5-e3b3-46cf-9233-4dd800004b61",
+   "status": 200
+  },
+  {
+   "href": "/account/events/b490d057-209d-467a-9369-5baf9512720c/money",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews?item=fb648e0e-7918-4d65-a2e9-0f374efe3229",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews?item=0351664c-4dd6-47ee-95c7-51d250f41fed",
+   "status": 200
+  },
+  {
+   "href": "/help?topic=review-policy",
+   "status": 200
+  },
+  {
+   "href": "/account/reviews?item=f01e6bd5-e3b3-46cf-9233-4dd800004b61&draft=1",
+   "status": 200
+  },
+  {
+   "href": "/account",
+   "status": 200
+  },
+  {
+   "href": "/account?tab=payments",
+   "status": 200
+  },
+  {
+   "href": "/account?tab=notifications",
+   "status": 200
+  },
+  {
+   "href": "/account?tab=security",
+   "status": 200
+  },
+  {
+   "href": "/api/account/export",
+   "status": "skipped"
+  },
+  {
+   "href": "/discover?tab=venues&results=1&q=wedding",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1&q=party",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1&q=conference",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=services&results=1&q=catering",
+   "status": 200
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=1",
+   "status": 200
+  },
+  {
+   "href": "/discover?tab=venues&results=1&guests=50&date=2027-09-20",
+   "status": 200
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=2",
+   "status": "error apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → G"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=3",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=4",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=5",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/discover?tab=venues&results=1&guests=50",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=6&tweak=budget",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=6&tweak=unique",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/discover?tab=services&results=1&q=live%20band",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/plan?event=c43ed800-c85f-49d2-a98f-8ea34b187b10&step=6&tweak=outdoor",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/book?item=f827aebd-41a0-482d-9605-973cb6e0fdcb&step=1",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/tickets/setup?step=2",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/help?topic=ticketing-terms",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/plan",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/messages",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events?upgrade=ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets?tab=tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/guests-tickets?tab=checkin",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/ff9ba902-3f25-4f4f-99b4-c9e4ce0faa9c/scan",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/messages",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events?upgrade=0d6676e6-5760-4c01-9dd2-477806b95ffe",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets?tab=tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/guests-tickets?tab=checkin",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/tickets/setup?step=1",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/0d6676e6-5760-4c01-9dd2-477806b95ffe/scan",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/events/future-of-live-events-webinar",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/privacy",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb/print",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/api/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb/pdf",
+   "status": "skipped"
+  },
+  {
+   "href": "/virtual/replay/01441e02-cae8-47a6-872e-f7f558c9ccb4",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/tickets/aff95ac1-edca-43e1-a71a-c7ad014f0ceb/join?session=b460c456-5b79-4242-8dbc-33255943f046",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/tickets/c9daeed6-6ada-4ff7-8f24-5c86ae2d15c7",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2/print",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/api/tickets/d79d754c-c2b1-471d-9c6f-72ef9b496fc2/pdf",
+   "status": "skipped"
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1/catering",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/events/efd4d0af-9437-4b0b-99cf-af7816fa2a62/bookings/665763cf-9f61-4e74-955f-8e6b19e229a1",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/api/tickets/15651ef4-f685-4727-a242-966aea0a6f1f/pdf",
+   "status": "skipped"
+  },
+  {
+   "href": "/account/help/buying-tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/transfer-resale",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/plan-personal-event",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/customer-account",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/media-studio",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/gala-agent",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/money-payouts",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/venue-maps",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/payment-protection",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/refunds-cancellations",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/security-mfa",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/privacy-data",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/reviews",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/getting-started-organizers",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/events",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/marketplace-booking",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/tickets",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/event-day-check-in",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/virtual-events",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/team",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/listings",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/provider-getting-started",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  },
+  {
+   "href": "/account/help/developers-api",
+   "status": "error apiRequestContext.get: connect ECONNREFUSED ::1:3107\nconnect"
+  }
+ ]
+}

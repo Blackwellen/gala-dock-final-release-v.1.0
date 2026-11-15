@@ -2,7 +2,7 @@
 .c-root { background: var(--k-page); }
 /* Top bar, measured from the 1536px references: mark + wordmark 34→211, search 257→827 (42 tall), nav pushed right,
    three 34px icon tiles 13px apart, 44px avatar + chevron, 40px right gutter. Full width at every desktop size. */
-.c-top { position: sticky; top: 0; z-index: 40; height: 68px; display: flex; align-items: center; padding: 0 40px 0 34px; background: #fff; border-bottom: 1px solid var(--k-line); }
+.c-top { position: sticky; top: 0; z-index: 40; height: var(--k-top-h, 66px); display: flex; align-items: center; padding: 0 40px 0 34px; background: #fff; border-bottom: 1px solid var(--k-line); }
 .c-logo { flex-shrink: 0; display: flex; align-items: center; margin-right: 46px; }
 .c-logo .gd-lockup { --gd-h: 44px; }
 .c-search { flex: 0 1 570px; min-width: 260px; margin-right: 31px; }
@@ -91,3 +91,15 @@
 @media (max-width: 600px) { .k-dialog .k-row, .k-dialog .k-between { flex-wrap: wrap; } .k-dialog .k-row > .k-btn { flex: 1 1 auto; } }
 /* Regression triage: plan board view switch + Share plan stayed on one nowrap row at 320 (doc 59px wider than the window). */
 @media (max-width: 360px) { .c-root .cp-main > .k-between > .k-row { flex-wrap: wrap !important; row-gap: 8px; min-width: 0; } }
+
+/* R1 large screens (owner: full width, adaptive — no single stretched column): on very wide windows the ticket and review
+   lists lay their cards out two across instead of one card stretched to ~1,800px (event cards keep one column: their
+   image / actions overlay needs the full card width). */
+@media (min-width: 1800px) {
+  .c-root .tk-list:has(> li + li), .c-root .rv-list:has(> li + li) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+/* R1: booking detail was capped at 760px (46% of a 2048 screen). Full width; on wide screens the hospitality and lifecycle panels
+   sit side by side under the title. */
+@media (min-width: 1400px) { .c-root .cu-bkd:has(> * + * + * + *) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } .c-root .cu-bkd > :is(a, header) { grid-column: 1 / -1; } }
+/* R1: the account security checklist runs two columns on very wide screens. */
+@media (min-width: 1800px) { .c-root .ac-card > ul:has(> li + li + li + li) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; } }

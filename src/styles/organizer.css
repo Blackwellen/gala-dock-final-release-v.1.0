@@ -1,5 +1,5 @@
 /* Organizer workspace shell: 222px sidebar + 66px top bar (from 1536px references). */
-.o-root { --o-side: 222px; --o-top: 66px; background: var(--k-page); }
+.o-root { --o-side: 222px; --o-top: var(--k-top-h, 66px); background: var(--k-page); }
 .o-top { position: sticky; top: 0; z-index: 40; height: var(--o-top); display: flex; align-items: center; gap: 0; padding: 0 22px; background: #fff; border-bottom: 1px solid var(--k-line); }
 .o-logo { display: flex; align-items: center; flex-shrink: 0; width: 190px; margin-right: 14px; }
 .o-logo .gd-lockup { --gd-h: 44px; }

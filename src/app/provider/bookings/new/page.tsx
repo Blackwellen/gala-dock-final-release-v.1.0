@@ -1,3 +1,4 @@
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
@@ -75,7 +76,7 @@ export default async function NewBooking(props: PageProps<"/provider/bookings/ne
       spaces={venueSpaces.map(s => ({ id: s.id, name: s.name, image: s.image, capacity: Math.max(s.capacity_seated ?? 0, s.capacity_standing ?? 0), seated: s.capacity_seated, indoor: s.indoor, rate: s.rate_hourly }))}
       layouts={Object.fromEntries((await rows<{ id: string; layouts: Record<string, number> }>(ctx.db.from("spaces").select("id,layouts").in("id", venueSpaces.map(s => s.id).length ? venueSpaces.map(s => s.id) : ["00000000-0000-0000-0000-000000000000"]))).map(s => [s.id, s.layouts]))}
       packages={packages.filter(p => p.listing_id === venue.id)} busy={busy} dayStart={day} reqStart={reqStart} reqEnd={reqEnd} />}
-    {step === 3 && venue && <StepPricing draft={draft} venue={{ id: venue.id, name: venue.name, image: venue.image }} space={venueSpaces.find(s => s.id === draft.spaceId) ?? null}
+    {step === 3 && venue && <StepPricing currency={workspaceLocale(ctx.workspace.settings).currency} draft={draft} venue={{ id: venue.id, name: venue.name, image: venue.image }} space={venueSpaces.find(s => s.id === draft.spaceId) ?? null}
       packages={packages.filter(p => p.listing_id === venue.id)} services={services.map(s => ({ id: s.id, name: s.name, category: labelOf("service_category", s.category), price: Number(s.price_from), unit: s.price_unit, image: s.image }))}
       taxBps={taxBps} defaults={{ hire: commercial.rate_from ?? Number(venueSpaces.find(s => s.id === draft.spaceId)?.rate_hourly ?? 0), minimumSpend: commercial.minimum_spend ?? 0, depositPct: commercial.deposit_pct ?? 25 }}
       policies={Object.fromEntries(Object.entries(POLICIES).map(([k, v]) => [k, v.label]))} conflict={busy.find(b => b.spaceId === draft.spaceId)?.conflict?.label ?? null} />}

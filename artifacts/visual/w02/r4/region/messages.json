@@ -1,0 +1,481 @@
+{
+ "leaf_weighted": 31.6,
+ "leaves": 10,
+ "leaves_passed": 3,
+ "page_line_drift": 28.6,
+ "design": "C:/Users/PC/Documents/Blackwellen/Built/Gala Dock/Designs/customer & Organizer workspace/Gala\u00b7Dock Wedding Messaging Dashboard.png",
+ "ours": "C:/Users/PC/AppData/Local/Temp/claude/c--Users-PC-Documents-Blackwellen-Built-Gala-Dock/92185747-57a6-40fb-ba41-cf24f325ddad/scratchpad/b4-w02/cap/p11/messages-1536x1024.png",
+ "size": [
+  1536,
+  1024
+ ],
+ "regions": 13,
+ "passed": 5,
+ "weighted_drift": 18.1,
+ "worst": [
+  {
+   "design": [
+    33,
+    685,
+    380,
+    154
+   ],
+   "ours": [
+    105,
+    754,
+    307,
+    74
+   ],
+   "iou": 0.388,
+   "box_drift": 61.2,
+   "line_drift": 64.7,
+   "drift": 61.2,
+   "dx": 72,
+   "dy": 69,
+   "dw": -73,
+   "dh": -80
+  },
+  {
+   "design": [
+    423,
+    866,
+    734,
+    135
+   ],
+   "ours": [
+    426,
+    940,
+    730,
+    60
+   ],
+   "iou": 0.442,
+   "box_drift": 55.8,
+   "line_drift": 2.0,
+   "drift": 55.8,
+   "dx": 3,
+   "dy": 74,
+   "dw": -4,
+   "dh": -75
+  },
+  {
+   "design": [
+    33,
+    839,
+    380,
+    162
+   ],
+   "ours": [
+    34,
+    904,
+    378,
+    74
+   ],
+   "iou": 0.454,
+   "box_drift": 54.6,
+   "line_drift": 46.7,
+   "drift": 54.6,
+   "dx": 1,
+   "dy": 65,
+   "dw": -2,
+   "dh": -88
+  },
+  {
+   "design": [
+    662,
+    594,
+    428,
+    79
+   ],
+   "ours": [
+    681,
+    573,
+    408,
+    73
+   ],
+   "iou": 0.501,
+   "box_drift": 49.9,
+   "line_drift": 91.4,
+   "drift": 49.9,
+   "dx": 19,
+   "dy": -21,
+   "dw": -20,
+   "dh": -6
+  },
+  {
+   "design": [
+    102,
+    763,
+    311,
+    76
+   ],
+   "ours": [
+    105,
+    754,
+    307,
+    74
+   ],
+   "iou": 0.756,
+   "box_drift": 24.4,
+   "line_drift": 76.3,
+   "drift": 24.4,
+   "dx": 3,
+   "dy": -9,
+   "dw": -4,
+   "dh": -2
+  },
+  {
+   "design": [
+    104,
+    607,
+    309,
+    77
+   ],
+   "ours": [
+    105,
+    604,
+    307,
+    74
+   ],
+   "iou": 0.882,
+   "box_drift": 11.8,
+   "line_drift": 34.2,
+   "drift": 11.8,
+   "dx": 1,
+   "dy": -3,
+   "dw": -2,
+   "dh": -3
+  },
+  {
+   "design": [
+    1188,
+    323,
+    306,
+    128
+   ],
+   "ours": [
+    1190,
+    330,
+    301,
+    122
+   ],
+   "iou": 0.923,
+   "box_drift": 7.7,
+   "line_drift": 25.6,
+   "drift": 7.7,
+   "dx": 2,
+   "dy": 7,
+   "dw": -5,
+   "dh": -6
+  },
+  {
+   "design": [
+    102,
+    379,
+    321,
+    74
+   ],
+   "ours": [
+    105,
+    379,
+    307,
+    75
+   ],
+   "iou": 0.944,
+   "box_drift": 5.6,
+   "line_drift": 8.8,
+   "drift": 5.6,
+   "dx": 3,
+   "dy": 0,
+   "dw": -14,
+   "dh": 1
+  }
+ ],
+ "all": [
+  {
+   "design": [
+    32,
+    72,
+    1476,
+    144
+   ],
+   "ours": [
+    32,
+    74,
+    1476,
+    143
+   ],
+   "iou": 0.979,
+   "box_drift": 2.1,
+   "line_drift": 4.4,
+   "drift": 2.1,
+   "dx": 0,
+   "dy": 2,
+   "dw": 0,
+   "dh": -1
+  },
+  {
+   "design": [
+    59,
+    91,
+    125,
+    112
+   ],
+   "ours": [
+    59,
+    94,
+    124,
+    109
+   ],
+   "iou": 0.965,
+   "box_drift": 3.5,
+   "line_drift": 41.2,
+   "drift": 3.5,
+   "dx": 0,
+   "dy": 3,
+   "dw": -1,
+   "dh": -3
+  },
+  {
+   "design": [
+    33,
+    278,
+    380,
+    101
+   ],
+   "ours": [
+    34,
+    279,
+    378,
+    100
+   ],
+   "iou": 0.985,
+   "box_drift": 1.5,
+   "line_drift": 4.2,
+   "drift": 1.5,
+   "dx": 1,
+   "dy": 1,
+   "dw": -2,
+   "dh": -1
+  },
+  {
+   "design": [
+    1169,
+    279,
+    339,
+    722
+   ],
+   "ours": [
+    1168,
+    277,
+    340,
+    723
+   ],
+   "iou": 0.993,
+   "box_drift": 0.7,
+   "line_drift": 43.4,
+   "drift": 0.7,
+   "dx": -1,
+   "dy": -2,
+   "dw": 1,
+   "dh": 1
+  },
+  {
+   "design": [
+    1188,
+    323,
+    306,
+    128
+   ],
+   "ours": [
+    1190,
+    330,
+    301,
+    122
+   ],
+   "iou": 0.923,
+   "box_drift": 7.7,
+   "line_drift": 25.6,
+   "drift": 7.7,
+   "dx": 2,
+   "dy": 7,
+   "dw": -5,
+   "dh": -6
+  },
+  {
+   "design": [
+    102,
+    379,
+    321,
+    74
+   ],
+   "ours": [
+    105,
+    379,
+    307,
+    75
+   ],
+   "iou": 0.944,
+   "box_drift": 5.6,
+   "line_drift": 8.8,
+   "drift": 5.6,
+   "dx": 3,
+   "dy": 0,
+   "dw": -14,
+   "dh": 1
+  },
+  {
+   "design": [
+    103,
+    453,
+    310,
+    75
+   ],
+   "ours": [
+    105,
+    454,
+    307,
+    74
+   ],
+   "iou": 0.977,
+   "box_drift": 2.3,
+   "line_drift": 0.9,
+   "drift": 2.3,
+   "dx": 2,
+   "dy": 1,
+   "dw": -3,
+   "dh": -1
+  },
+  {
+   "design": [
+    662,
+    594,
+    428,
+    79
+   ],
+   "ours": [
+    681,
+    573,
+    408,
+    73
+   ],
+   "iou": 0.501,
+   "box_drift": 49.9,
+   "line_drift": 91.4,
+   "drift": 49.9,
+   "dx": 19,
+   "dy": -21,
+   "dw": -20,
+   "dh": -6
+  },
+  {
+   "design": [
+    104,
+    607,
+    309,
+    77
+   ],
+   "ours": [
+    105,
+    604,
+    307,
+    74
+   ],
+   "iou": 0.882,
+   "box_drift": 11.8,
+   "line_drift": 34.2,
+   "drift": 11.8,
+   "dx": 1,
+   "dy": -3,
+   "dw": -2,
+   "dh": -3
+  },
+  {
+   "design": [
+    33,
+    685,
+    380,
+    154
+   ],
+   "ours": [
+    105,
+    754,
+    307,
+    74
+   ],
+   "iou": 0.388,
+   "box_drift": 61.2,
+   "line_drift": 64.7,
+   "drift": 61.2,
+   "dx": 72,
+   "dy": 69,
+   "dw": -73,
+   "dh": -80
+  },
+  {
+   "design": [
+    102,
+    763,
+    311,
+    76
+   ],
+   "ours": [
+    105,
+    754,
+    307,
+    74
+   ],
+   "iou": 0.756,
+   "box_drift": 24.4,
+   "line_drift": 76.3,
+   "drift": 24.4,
+   "dx": 3,
+   "dy": -9,
+   "dw": -4,
+   "dh": -2
+  },
+  {
+   "design": [
+    33,
+    839,
+    380,
+    162
+   ],
+   "ours": [
+    34,
+    904,
+    378,
+    74
+   ],
+   "iou": 0.454,
+   "box_drift": 54.6,
+   "line_drift": 46.7,
+   "drift": 54.6,
+   "dx": 1,
+   "dy": 65,
+   "dw": -2,
+   "dh": -88
+  },
+  {
+   "design": [
+    423,
+    866,
+    734,
+    135
+   ],
+   "ours": [
+    426,
+    940,
+    730,
+    60
+   ],
+   "iou": 0.442,
+   "box_drift": 55.8,
+   "line_drift": 2.0,
+   "drift": 55.8,
+   "dx": 3,
+   "dy": 74,
+   "dw": -4,
+   "dh": -75
+  }
+ ]
+}

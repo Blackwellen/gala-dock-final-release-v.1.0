@@ -9,8 +9,9 @@ import { rateLimit, sameOrigin } from "@/lib/security";
 import { paymentDeps } from "@/lib/payments/server";
 import { createTicketDirectCheckout } from "@/lib/payments/service";
 import { connectedMerchantStripe } from "@/lib/payments/stripe-client";
-import { toMinor } from "@/lib/payments/rules";
+import { isCheckoutCurrency, toMinorUnits } from "@/lib/i18n/money";
 import { CHECKOUT_COOKIE, summarise, finalise } from "@/lib/checkout";
+import { requestSanctioned, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 
 /**
  * Q58: a new order replaces this token's pending ones. Their Stripe Checkout sessions are expired on the seller's account too, so an
@@ -41,6 +42,9 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return json({ error: "Please sign in to complete your order.", login: true }, 401);
   if (!(await rateLimit(`checkout:${user.id}`, 12, 300))) return json({ error: "Too many attempts — please wait a few minutes." }, 429);
+  // Q74 (D4): no payment from a comprehensively sanctioned country/region (edge geolocation; Stripe screens cards too).
+  const sanctioned = requestSanctioned(request.headers);
+  if (sanctioned) return json({ error: SANCTIONS_COPY.checkout(sanctioned.name), sanctioned: true }, 451);
   const body = await request.json().catch(() => null) as { event?: string; acceptTerms?: boolean; termsVersion?: string } | null;
   // DEC-107 express term at the first payment (version, user, time); demo/QA exempt. The gate and its write path ship together.
   const terms = await customerTermsGate(sb as never, body ?? {}, "checkout");
@@ -53,6 +57,10 @@ export async function POST(request: NextRequest) {
   if (!sum.lines.length || !sum.expiresAt || new Date(sum.expiresAt).getTime() < Date.now() + 30_000) return json({ error: "Your reservation has expired — please choose your tickets again.", expired: true }, 410);
   const { data: ev } = await sb.from("events_public").select("id,name,slug").eq("id", eventId).maybeSingle();
   if (!ev) return json({ error: "Event not found." }, 404);
+  // Q72: the order is in the event's currency (checkout_quote; the order insert guard pins it). Two-decimal currencies only.
+  const currency = String(sum.currency || "GBP").toUpperCase();
+  if (!isCheckoutCurrency(currency)) return json({ error: `Online payment in ${currency} isn't available yet — contact the organiser.` }, 409);
+  const toMinor = (n: number | string) => toMinorUnits(n, currency);
   // gd_ref = "CODE:event-slug" from /r/[code]; it only counts for the event it was issued for.
   const [rc, rslug, rch] = ref.split(":"), refCode = /^[A-Za-z0-9_-]{2,32}$/.test(rc ?? "") && rslug === ev.slug ? rc : null;
   // Q27: the channel the consented link came through (link/qr/social/email); older cookies have none.
@@ -74,12 +82,13 @@ export async function POST(request: NextRequest) {
   if (admittedOk === false) return json({ error: "Your waiting-room slot has expired or hasn’t opened yet — please rejoin the queue.", queue: true }, 409);
   const orderRef = `GD-${randomBytes(5).toString("hex").toUpperCase()}`;
   await expireSuperseded(db, token);
-  const { data: saved, error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency: "GBP", status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode, ref_channel: refChannel, client_hash: clientHash }).select("fee,fee_vat,commission").single();
+  const { data: saved, error: oe } = await db.from("checkout_orders").insert({ order_ref: orderRef, event_id: eventId, buyer_id: user.id, token, amount: sum.subtotal, fee: sum.fee, commission: sum.commission, currency, status: "pending", lines: sum.lines, kind: sum.kind, ref_code: refCode, ref_channel: refChannel, client_hash: clientHash }).select("fee,fee_vat,commission").single();
   if (oe || !saved) {
     // Q20: the order insert is checked against the server quote, per-customer tier limits and code usage limits.
     const m = oe?.message ?? "";
     if (/customer_limit/.test(m) && !/code_customer_limit/.test(m)) return json({ error: "You’ve reached the per-customer limit for one of these tickets." }, 409);
     if (/code_exhausted|code_customer_limit/.test(m)) return json({ error: "That code has reached its usage limit — remove it to continue.", code: true }, 409);
+    if (/currency_not_supported/.test(m)) return json({ error: "Online payment in this event's currency isn't available yet — contact the organiser." }, 409);
     if (/quote_mismatch/.test(m)) return json({ error: "Your selection changed — please review your order and try again.", expired: true }, 409);
     return json({ error: "Couldn’t create your order. Please try again." }, 500);
   }
@@ -118,7 +127,7 @@ export async function POST(request: NextRequest) {
     await Promise.all([db.from("ticket_holds").update({ expires_at: until }).eq("token", token), db.from("event_seats").update({ hold_expires_at: until }).eq("hold_token", token).eq("status", "held"), db.from("resale_holds").update({ expires_at: until }).eq("token", token)]);
     const commission = Number((saved as { commission?: number }).commission ?? sum.commission);
     const r = await createTicketDirectCheckout(deps, {
-      orderRef, eventId, eventName: ev.name, sellerWorkspaceId: seller, currency: "GBP", customerEmail: user.email ?? "",
+      orderRef, eventId, eventName: ev.name, sellerWorkspaceId: seller, currency, customerEmail: user.email ?? "",
       lines: sum.lines.map(l => ({ name: l.name, unitMinor: toMinor(l.unit), qty: l.qty, description: l.seats.length ? l.seats.join(", ") : undefined })),
       bookingFeeMinor: toMinor(fee), commissionMinor: toMinor(commission),
       feeRule: { kind: sum.kind, booking_fee_minor: toMinor(fee), commission_minor: toMinor(commission), fee_vat_minor: toMinor(Number((saved as { fee_vat?: number }).fee_vat ?? 0)), snapshotted_at: new Date().toISOString() },

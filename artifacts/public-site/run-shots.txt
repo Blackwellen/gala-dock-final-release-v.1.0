@@ -1,0 +1,32 @@
+
+Running 28 tests using 1 worker
+
+[1/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › landing @390
+[2/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › organisers @390
+[3/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › providers @390
+[4/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › build-an-event @390
+[5/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › developers @390
+[6/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › about @390
+[7/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › pricing @390
+[8/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › landing @768
+[9/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › organisers @768
+[10/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › providers @768
+[11/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › build-an-event @768
+[12/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › developers @768
+[13/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › about @768
+[14/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › pricing @768
+[15/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › landing @1280
+[16/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › organisers @1280
+[17/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › providers @1280
+[18/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › build-an-event @1280
+[19/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › developers @1280
+[20/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › about @1280
+[21/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › pricing @1280
+[22/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › landing @1536
+[23/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › organisers @1536
+[24/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › providers @1536
+[25/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › build-an-event @1536
+[26/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › developers @1536
+[27/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › about @1536
+[28/28] [desktop] › tests\e2e\public\blueprint-shots.spec.ts:11:9 › pricing @1536
+  28 passed (2.1m)

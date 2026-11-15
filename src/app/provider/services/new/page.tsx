@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, CircleCheck, CircleAlert } from "lucide-react";
@@ -46,8 +47,8 @@ export default async function AddService(props: PageProps<"/provider/services/ne
     <header className="wz-head"><h1>{editing ? `Edit ${s!.name}` : "Add Service"}</h1><p>{SUB[step - 1]}</p></header>
     <ol className="wz-steps" aria-label="Steps">{STEPS.map((t, i) => <li key={t} className={i + 1 < step ? "done" : i + 1 === step ? "on" : ""} aria-current={i + 1 === step ? "step" : undefined}>
       {s && i + 1 !== step ? <Link href={url(i + 1)}><span>{i + 1 < step ? <Check aria-hidden="true" /> : i + 1}</span>{t}</Link> : <><span>{i + 1}</span>{t}</>}</li>)}</ol><StepFocus step={step} />
-    {step === 1 && <SvcStep1 s={s} svc={svc} next={s ? url(2) : "/provider/services/new?service={service}&step=2"} />}
-    {step === 2 && s && <SvcStep2 s={s} svc={svc} pkgs={pkgs} back={url(1)} next={url(3)} />}
+    {step === 1 && <SvcStep1 unit={workspaceLocale(ctx.workspace.settings).distance} s={s} svc={svc} next={s ? url(2) : "/provider/services/new?service={service}&step=2"} />}
+    {step === 2 && s && <SvcStep2 currency={workspaceLocale(ctx.workspace.settings).currency} s={s} svc={svc} pkgs={pkgs} back={url(1)} next={url(3)} />}
     {step === 3 && s && <SvcStep3 s={s} svc={svc} back={url(2)} next={url(4)} verify={verify} enquiryOnly={enquiryOnlyCountry(ctx.workspace.settings)} />}
     {step === 4 && s && <div className="vw vw-s5"><PhotoManager venueId={s.id} initial={[s.image, ...(s.gallery ?? [])].filter(Boolean)} initialAlts={((s.details ?? {}) as { photo_alt?: Record<string, string> }).photo_alt} />
       <div className="vw-foot"><Link href={url(3)} className="ws-btn outline"><ArrowLeft aria-hidden="true" />Back</Link><span className="ws-spacer" /><span className="vw-stepof">Step 4 of 5</span>

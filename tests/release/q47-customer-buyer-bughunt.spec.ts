@@ -51,7 +51,7 @@ test.describe("Q47 customer buyer bug hunt", () => {
   });
 
   test("event page and checkout: slug-less events link to a real checkout, one payment request at a time, pending orders re-check", () => {
-    expect(src("src/app/events/[slug]/page.tsx")).toMatch(/<TicketPicker slug=\{slugOrId\}/);
+    expect(src("src/app/events/[slug]/page.tsx")).toMatch(/<TicketPicker[^>]*slug=\{slugOrId\}/);
     const c = src("src/app/checkout/[event]/client.tsx");
     expect(c).toMatch(/if \(payLock\.current\) return;/);
     expect(c).toMatch(/\.catch\(\(\) => null\);\n/);

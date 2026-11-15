@@ -1,3 +1,4 @@
+import { currencySymbol } from "@/lib/i18n/money";
 import Link from "next/link";
 import { EnquiryOnlyNote } from "../../_components/enquiry-only";
 import { Sparkles, CircleCheck, Info, ArrowLeft, ArrowRight, Save, Building2, Wrench, Clock3, Users, Tag, MapPin, Zap, Mail, HelpCircle, Plus, Star } from "lucide-react";
@@ -35,7 +36,8 @@ export function PackagePreview({ p, parent }: { p: PackageRow | null; parent: Li
   </VenuePreview>;
 }
 
-export function PkgStep1({ p, parent, listings, options, next, presetListing }: { p: PackageRow | null; parent: Listing | null; listings: Listing[]; options: Parameters<typeof InclusionsEditor>[0]["options"]; next: string; presetListing: string | null }) {
+export function PkgStep1({ p, parent, listings, options, next, presetListing, currency = "GBP" }: { p: PackageRow | null; parent: Listing | null; listings: Listing[]; options: Parameters<typeof InclusionsEditor>[0]["options"]; next: string; presetListing: string | null ; currency?: string }) {
+  const sym = currencySymbol(currency);   // Q76: the provider's own currency
   const d = p?.details ?? {}, chosen = parent?.id ?? presetListing ?? listings.find(l => l.kind === "venue")?.id ?? listings[0]?.id;
   const addOns = p?.add_ons ?? [];
   return <div className="vw pkw-s1">
@@ -58,7 +60,7 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
         <p className="vw-info"><Info aria-hidden="true" />Capacity can’t exceed the linked spaces’ safe limits — layouts are checked when the package is booked.</p></section>
       <section className="ws-panel pkw-addons"><h2>Optional add-ons</h2><p>Add optional extras to enhance this package.</p>
         <ul>{[0, 1, 2, 3].map(i => { const a = addOns[i]; return <li key={i}><input name={`addon_name_${i}`} defaultValue={a?.name ?? ""} placeholder={["Photo booth", "Decor & styling", "Extended bar", "Add-on"][i]} aria-label={`Add-on ${i + 1}`} />
-          <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Detail" aria-label={`Add-on ${i + 1} detail`} /><span className="vw-money"><em>£</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
+          <input name={`addon_desc_${i}`} defaultValue={a?.desc ?? ""} placeholder="Detail" aria-label={`Add-on ${i + 1} detail`} /><span className="vw-money"><em>{sym}</em><input name={`addon_price_${i}`} type="number" min={0} defaultValue={a?.price ?? ""} aria-label={`Add-on ${i + 1} price`} /></span>
           <label className="vw-switch"><input type="checkbox" name={`addon_on_${i}`} defaultChecked={a?.enabled ?? true} aria-label={`Offer add-on ${i + 1}`} /><i aria-hidden="true" /></label></li>; })}</ul></section>
       <section className="ws-panel pkw-feat"><h2>Key features</h2><p>Highlight what makes this package special.</p>
         <div className="svw-checks pkw-checks">{[...new Set([...FEATURES, ...(d.features ?? [])])].map(f => <label key={f}><input type="checkbox" name="features" value={f} defaultChecked={(d.features ?? []).includes(f)} />{f}</label>)}</div>
@@ -75,14 +77,15 @@ export function PkgStep1({ p, parent, listings, options, next, presetListing }: 
   </div>;
 }
 
-export function PkgStep2({ p, parent, days, back, next, label, enquiryOnly = null }: { p: PackageRow; parent: Listing | null; days: Record<string, DayState>; back?: string; next: string; label?: string; enquiryOnly?: string | null }) {
+export function PkgStep2({ p, parent, days, back, next, label, enquiryOnly = null, currency = "GBP" }: { p: PackageRow; parent: Listing | null; days: Record<string, DayState>; back?: string; next: string; label?: string; enquiryOnly?: string | null ; currency?: string }) {
+  const sym = currencySymbol(currency);   // Q76: the provider's own currency
   const d = p.details, r = d.restrictions ?? {}, model = d.pricing?.model ?? "fixed", canc = d.cancellation ?? [{ window: "More than 30 days", refund: 100 }, { window: "15 – 30 days", refund: 50 }, { window: "7 – 14 days", refund: 25 }, { window: "Less than 7 days", refund: 0 }];
   return <ActionForm action={savePackagePricing.bind(null, p.id, next)} className="vw pkw-s2">
     <div className="pkw-col pkw-col-a">
     <section className="ws-panel pkw-price"><h2>Pricing &amp; payment</h2><p>Set how this package is priced and how customers pay.</p>
       <div className="svw-models pkw-models">{([["fixed", "Fixed price", "One price for the full package"], ["from", "From price", "Show a starting price range."], ["quote", "Quote only", "No public price, customers must request a quote."]] as const).map(([k, l, sub]) =>
         <label key={k}><input type="radio" name="model" value={k} defaultChecked={model === k} /><span><b>{l}</b><small>{sub}</small></span></label>)}</div>
-      <div className="pkw-pricerow"><label>Package price (GBP) <i>*</i><span className="vw-money"><em>£</em><input name="price" type="number" min={0} defaultValue={Number(p.base_price) || ""} /></span></label>
+      <div className="pkw-pricerow"><label>Package price ({currency}) <i>*</i><span className="vw-money"><em>{sym}</em><input name="price" type="number" min={0} defaultValue={Number(p.base_price) || ""} /></span></label>
         <label>Basis<select name="basis" className="ws-select" defaultValue={p.price_basis}><option value="fixed">Per package</option><option value="per_person">Per person</option><option value="hourly">Per hour</option></select></label>
         <label>Deposit required <i>*</i><span className="vw-money"><input name="deposit" type="number" min={0} max={100} defaultValue={p.deposit_pct} /><em className="r">%</em></span></label>
         <span className="pkw-depamt">{Number(p.base_price) > 0 ? money((Number(p.base_price) * p.deposit_pct) / 100) : "—"}</span></div>

@@ -51,7 +51,7 @@
 .mk-quote dl div{background:#fff;border:1px solid var(--mk-border);border-radius:8px;padding:8px 10px}
 .mk-quote dt{font-size:11px;color:var(--mk-muted)}.mk-quote dd{margin:2px 0 0;font-weight:700}
 /* Full pages (emergency supply, disputes, booking detail) */
-.mk-page{display:grid;gap:16px;max-width:1180px}
+.mk-page{display:grid;gap:16px} /* R1: no width cap (owner: full screen); copy keeps its 80ch measure */
 .mk-page-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
 .mk-page-head h1{font-size:22px;margin:0 0 4px;font-weight:700}
 .mk-page-head p{margin:0;color:var(--mk-muted)}

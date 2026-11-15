@@ -1,3 +1,4 @@
+import { workspaceLocale } from "@/lib/i18n/workspace";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -84,7 +85,7 @@ export default async function ServiceProfile(props: PageProps<"/provider/service
     </header>
     <Tabs base={`/provider/services/${s.id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "pricing", label: "Pricing & Packages" }, { key: "availability", label: "Availability & Requirements" }, { key: "media", label: "Media & Performance" }]} />
 
-    {tab === "pricing" && <SvcStep2 s={s} svc={svc} pkgs={pkgs} next={`/provider/services/${s.id}?tab=pricing`} label="Save changes" />}
+    {tab === "pricing" && <SvcStep2 currency={workspaceLocale(ctx.workspace.settings).currency} s={s} svc={svc} pkgs={pkgs} next={`/provider/services/${s.id}?tab=pricing`} label="Save changes" />}
     {tab === "availability" && <SvcStep3 s={s} svc={svc} next={`/provider/services/${s.id}?tab=availability`} verify={verify} label="Save changes" />}
     {tab === "media" && <div className="svp-media"><PhotoManager venueId={s.id} initial={photos} initialAlts={((s.details ?? {}) as { photo_alt?: Record<string, string> }).photo_alt} />
       <section className="ws-kpis pv-kpis" aria-label="Performance">

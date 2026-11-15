@@ -8,6 +8,8 @@ import { flowSteps, ruleIssues, validateStep, type Flow, type Values } from "@/l
 import type { Json } from "@/types/database";
 import { COUNTRIES } from "@/lib/master-data";
 import { CONNECT_COPY, isConnectCountrySupported, resolveCountryCode, workspaceCountryValue } from "@/lib/payments/connect-countries";
+import { scheduleTwentyLead } from "@/lib/crm/twenty-intake-schedule";
+import { requestSanctioned, sanctionedJurisdiction, sanctionsErrorMessage, SANCTIONS_COPY } from "@/lib/legal/sanctions";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 
@@ -53,8 +55,11 @@ export async function POST(request: Request) {
   if (!draft && index > 0) return json({ error: "Start with step 1 to create your workspace.", next: `/onboarding/${flow}?step=1` }, 409);
 
   const capabilities = flow === "provider" ? (index === 0 ? undefined : draft?.capabilities ?? []) : undefined;
-  const { values, errors } = validateStep(flow, step, body.values, { capabilities, ownerEmail: user.email?.toLowerCase() });
+  const { values, errors } = validateStep(flow, step, body.values, { capabilities, ownerEmail: user.email?.toLowerCase(), country: resolveCountryCode(workspaceCountryValue(draft?.settings), COUNTRIES) });
   if (Object.keys(errors).length) return json({ errors }, 422);
+  // Q74 (D4): a sanctioned business country (or a set-up from a sanctioned country/region) is refused; the database refuses too.
+  const sanctioned = sanctionedJurisdiction(values.country) ?? (index === 0 ? requestSanctioned(request.headers) : null);
+  if (sanctioned) return json({ error: SANCTIONS_COPY.businessCountry(sanctioned.name), errors: { country: SANCTIONS_COPY.businessCountry(sanctioned.name) }, sanctioned: true }, 422);
   if (!ownsPath(values.logo) || ![...((values.photos as string[]) ?? []), ...Object.values((values.documents as Values) ?? {})].every(ownsPath)) return json({ error: "Upload files again before saving." }, 400);
 
   if (flow === "provider" && step === "rules") {
@@ -80,14 +85,14 @@ export async function POST(request: Request) {
       // A concurrent request created the draft first; reuse it.
       const { data } = await supabase.from("workspaces").select("id").eq("owner_id", user.id).eq("kind", flow).eq("onboarding_complete", false).single();
       workspaceId = data?.id;
-    } else if (insert.error) return json({ error: "Could not create your workspace. Please try again." }, 500);
+    } else if (insert.error) return json({ error: sanctionsErrorMessage(insert.error) ?? "Could not create your workspace. Please try again." }, sanctionsErrorMessage(insert.error) ? 422 : 500);
     else workspaceId = insert.data.id;
     if (!workspaceId) return json({ error: "Could not create your workspace. Please try again." }, 500);
   }
   const update: { settings: Json; onboarding_step: string; name?: string; capabilities?: string[] } = { settings, onboarding_step: step };
   if (index === 0) { update.name = String(values.name); if (flow === "provider") update.capabilities = values.capabilities as string[]; }
   const saved = await supabase.from("workspaces").update(update).eq("id", workspaceId);
-  if (saved.error) return json({ error: "Could not save this step. Please try again." }, 500);
+  if (saved.error) return json({ error: sanctionsErrorMessage(saved.error) ?? "Could not save this step. Please try again." }, sanctionsErrorMessage(saved.error) ? 422 : 500);
 
   if (flow === "provider" && step === "offer") {
     const record = { workspace_id: workspaceId, name: String(values.listing_name), kind: String(values.kind), description: String(values.description), location: String(values.location), details: { ...values, source: "onboarding" } as Json };
@@ -134,6 +139,28 @@ export async function POST(request: Request) {
   if (flow === "provider" && body.action === "publish") {
     const { data: listing } = await supabase.from("listings").select("id").eq("workspace_id", workspaceId).eq("details->>source", "onboarding").maybeSingle();
     if (listing) publish = (await supabase.rpc("publish_listing", { p_listing: listing.id })).data;
+  }
+  // Copy the new organiser / provider into the owner's Twenty CRM (after the response; never blocks onboarding; off by default).
+  // Customers (attendees) returned above and are never sent. Marketing consent only when the optional register box was ticked.
+  if (user.email && (flow === "organizer" || flow === "provider")) {
+    const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+    const [firstName, ...rest] = String(meta.full_name ?? "").trim().split(/\s+/);
+    const first = settings[steps[0].key] as Record<string, unknown> | undefined;
+    const company = typeof first?.name === "string" ? first.name : undefined;
+    const offer = settings.offer as Record<string, unknown> | undefined;
+    const venue = /venue/i.test(String(offer?.kind ?? ""));
+    scheduleTwentyLead({
+      brand: "gala_dock", formType: flow === "organizer" ? "signup" : "supplier_signup",
+      roles: [flow === "organizer" ? "gd_a_organiser" : venue ? "gd_b_venue" : "gd_b_supplier"],
+      side: flow === "organizer" ? "a_customer" : "b_supply", email: user.email,
+      firstName, lastName: rest.join(" "), company, landingPath: `/onboarding/${flow}`,
+      consent: meta.marketing_opt_in === true ? {
+        version: "gd-2026-11-v1", source: "galadock:/register",
+        wording: "Send me product updates, event insights, and special offers (from Gala Dock) (optional)",
+      } : undefined,
+      opportunity: flow === "organizer" ? { name: `${company ?? user.email} (Gala Dock organiser signup)` } : undefined,
+      application: flow === "provider" ? { type: venue ? "venue" : "supplier", categories: ((values.capabilities as string[] | undefined) ?? (draft?.capabilities as string[] | undefined) ?? []).join(", ") } : undefined,
+    });
   }
   return json({ workspaceId, complete: true, next: `/${flow}`, invites, publish });
 }

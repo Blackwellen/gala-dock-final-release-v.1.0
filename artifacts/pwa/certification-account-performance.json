@@ -1,0 +1,92 @@
+{
+  "mode": "local production, Chrome lab, 390x844 DPR3, 4x CPU, 1.6Mbps/150ms",
+  "limits": "Single sample per route; automation menu duration is not INP; no field or physical-device certification.",
+  "report": [
+    {
+      "role": "customer",
+      "route": "/account",
+      "lcp": 2616,
+      "cls": 0.02873721514091017,
+      "longTasks": 5,
+      "shifts": [
+        {
+          "value": 0.02873721514091017,
+          "sources": [
+            {
+              "node": "ac-fields",
+              "previous": {
+                "x": 34,
+                "y": 450.375,
+                "width": 322,
+                "height": 233.359375,
+                "top": 450.375,
+                "right": 356,
+                "bottom": 683.734375,
+                "left": 34
+              },
+              "current": {
+                "x": 34,
+                "y": 469.21875,
+                "width": 322,
+                "height": 271.109375,
+                "top": 469.21875,
+                "right": 356,
+                "bottom": 740.328125,
+                "left": 34
+              }
+            },
+            {
+              "node": "ce-card ac-card",
+              "previous": {
+                "x": 0,
+                "y": 705.734375,
+                "width": 390,
+                "height": 138.265625,
+                "top": 705.734375,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 762.328125,
+                "width": 390,
+                "height": 81.671875,
+                "top": 762.328125,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "node": "#text",
+              "previous": {
+                "x": 47,
+                "y": 829.53125,
+                "width": 296,
+                "height": 14.46875,
+                "top": 829.53125,
+                "right": 343,
+                "bottom": 844,
+                "left": 47
+              },
+              "current": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0,
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ]
+        }
+      ],
+      "ttfb": 253,
+      "bytes": 566635,
+      "automationMenuMs": 564
+    }
+  ]
+}

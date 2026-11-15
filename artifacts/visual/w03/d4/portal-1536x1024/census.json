@@ -1,0 +1,31 @@
+{
+ "results": [
+  {
+   "route": "/portal/parties/7571e08a-565c-4123-9321-1468f3b755e2",
+   "name": "portal-party",
+   "w": 1536,
+   "h": 1024,
+   "status": 200,
+   "finalPath": "/portal/parties/7571e08a-565c-4123-9321-1468f3b755e2",
+   "controls": 11,
+   "unnamed": [],
+   "dead": 0,
+   "overflowX": false,
+   "scrollWidth": 1536,
+   "offenders": [],
+   "errors": [],
+   "meta": {
+    "title": "Partner portal · Gala Dock",
+    "canonical": null,
+    "robots": "noindex, nofollow",
+    "ogTitle": null,
+    "ogImage": null,
+    "h1": [
+     "Comedy Central Live"
+    ]
+   },
+   "docH": 1024
+  }
+ ],
+ "links": []
+}

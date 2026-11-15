@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { normalisePhone } from "@/lib/i18n/countries";
 import { revalidatePath } from "next/cache";
 import { getCustomer } from "@/lib/data/context";
 import { stripe, stripeKey, stripePublishableKey } from "@/lib/stripe";
@@ -17,8 +18,11 @@ const Profile = z.object({ full_name: z.string().trim().min(2).max(120), phone: 
 
 export async function saveProfile(input: unknown): Promise<ActionResult> {
   const p = Profile.safeParse(input); if (!p.success) return { ok: false, error: profileFieldError(String(p.error.issues[0]?.path[0] ?? "")) };
+  // Q72: phone numbers are stored in E.164 ("+447700900123"); a national number is read in the profile's country.
+  let phone = p.data.phone;
+  if (phone) { const ph = normalisePhone(phone, p.data.country); if (!ph.ok) return { ok: false, error: ph.error }; phone = ph.e164; }
   const ctx = await getCustomer();
-  const { error } = await ctx.supabase.rpc("update_my_profile", { p: p.data });
+  const { error } = await ctx.supabase.rpc("update_my_profile", { p: { ...p.data, phone } });
   if (error) return { ok: false, error: error.message.includes("invalid_phone") ? "Enter a valid phone number." : error.message.includes("invalid_dob") ? "Enter a valid date of birth (13+)." : error.message.includes("invalid_name") ? "Enter your full name." : "Could not save your profile." };
   bump(); return { ok: true, message: "Profile updated." };
 }

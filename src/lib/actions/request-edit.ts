@@ -81,7 +81,7 @@ export async function inviteToRequest(requestId: string, listingIds: string[]): 
   try {
     const admin = createAdminClient();
     const { data: owners } = await admin.from("workspaces").select("id,owner_id").in("id", [...new Set((listings ?? []).map(l => l.workspace_id))]);
-    if (owners?.length) await admin.from("notifications").insert(owners.map(w => ({ user_id: w.owner_id, kind: r.emergency ? "emergency_request" : "request_received", title: `${r.emergency ? "Emergency request" : "New request"}: ${r.title}`.slice(0, 160), body: `${ev.name} · respond by ${new Date(deadline).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`, link: "/provider" })));
+    if (owners?.length) await admin.from("notifications").insert(owners.map(w => ({ user_id: w.owner_id, workspace_id: w.id, kind: r.emergency ? "emergency_request" : "request_received", title: `${r.emergency ? "Emergency request" : "New request"}: ${r.title}`.slice(0, 160), body: `${ev.name} · respond by ${new Date(deadline).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`, link: "/provider" })) as never);
   } catch { /* best-effort, as for sendRequest */ }
   await writeAudit(ctx.user.id, ctx.workspace.id, "request.invited", { request_id: r.id, recipients: ids.length, text: `${ids.length} provider${ids.length === 1 ? "" : "s"} invited to ${r.reference}` });
   revalidatePath(`/organizer/marketplace/requests/${r.id}`); revalidatePath(`/organizer/events/${r.event_id}`);

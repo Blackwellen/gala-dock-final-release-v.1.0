@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { untyped } from "@/lib/workspace/db";
 
 import { emailHtml, escapeHtml } from "./layout";
-import { isReservedRecipient } from "./rules";
+import { isReservedRecipient, unsubscribeHeaders, unsubscribeToken } from "./rules";
 
 /**
  * Transactional email delivery (release spec §76–77) via Resend's REST API. Configuration: RESEND_API_KEY (or RESEND_API), optional
@@ -15,25 +15,31 @@ const fromAddress = () => process.env.EMAIL_FROM || "Gala Dock <no-reply@mail.ga
 const replyTo = () => process.env.EMAIL_REPLY_TO || "support@galadock.com";
 export const emailConfigured = () => Boolean(apiKey());
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.galadock.com").replace(/\/+$/, "");
+/** Q75: HMAC key for one-click unsubscribe tokens (EMAIL_UNSUBSCRIBE_SECRET; falls back to CRON_SECRET, purpose-separated in rules.ts). */
+export const unsubscribeSecret = () => process.env.EMAIL_UNSUBSCRIBE_SECRET || process.env.CRON_SECRET || "";
 const EYEBROW: Record<string, string> = { security: "Account security", payments: "Payments", tickets: "Tickets", quotes: "Bookings & quotes", messages: "Messages", reminders: "Reminder", event_updates: "Event update" };
 const CTA: Record<string, string> = { security: "Review your account", payments: "View payment details", tickets: "View tickets", quotes: "Open in Gala Dock", messages: "Reply in Gala Dock", reminders: "Take a look", event_updates: "View in Gala Dock" };
 
-export function render(o: { subject: string; body: string; link?: string | null; category: string }) {
+export function render(o: { subject: string; body: string; link?: string | null; category: string; user_id?: string | null }) {
   const url = o.link ? (o.link.startsWith("http") ? o.link : `${site()}${o.link}`) : null;
   const prefs = `${site()}/account?tab=notifications`;
   const essential = ["security", "payments"].includes(o.category);
-  const footer = essential ? "You’re receiving this because it concerns your account’s security or payments." : `You can change which emails you get in your notification settings: ${prefs}`;
+  // Q75: optional mail also carries a one-click unsubscribe for its category (the page asks for one confirming click: link scanners
+  // only GET, and GET never changes anything).
+  const tok = !essential && o.user_id ? unsubscribeToken(unsubscribeSecret(), o.user_id, o.category) : null;
+  const unsub = tok ? `${site()}/api/email/unsubscribe?t=${tok}` : null;
+  const footer = essential ? "You’re receiving this because it concerns your account’s security or payments." : `You can change which emails you get in your notification settings: ${prefs}${unsub ? `\nUnsubscribe from these emails: ${unsub}` : ""}`;
   const text = `${o.subject}\n\n${o.body}${url ? `\n\nOpen in Gala Dock: ${url}` : ""}\n\n—\nGala Dock · Blackwellen Limited · VAT No. GB508480488\n${footer}`;
   const html = emailHtml({
     preheader: o.body.split("\n")[0]!.slice(0, 140), eyebrow: EYEBROW[o.category] ?? "Gala Dock", heading: o.subject,
     bodyHtml: `<p style="margin:0">${escapeHtml(o.body).replace(/\n{2,}/g, '</p><p style="margin:14px 0 0">').replace(/\n/g, "<br>")}</p>`,
     cta: url ? { label: CTA[o.category] ?? "Open in Gala Dock", url } : null,
-    footerNote: essential ? escapeHtml(footer) : `You can change which emails you get in your <a href="${escapeHtml(prefs)}" style="color:#7a80b8;text-decoration:underline">notification settings</a>.`,
+    footerNote: essential ? escapeHtml(footer) : `You can change which emails you get in your <a href="${escapeHtml(prefs)}" style="color:#7a80b8;text-decoration:underline">notification settings</a>.${unsub ? ` <a href="${escapeHtml(unsub)}" style="color:#7a80b8;text-decoration:underline">Unsubscribe from these emails</a>.` : ""}`,
   });
   return { text, html };
 }
 
-type Row = { id: string; to_email: string; subject: string; body: string; link: string | null; category: string; attempts: number };
+type Row = { id: string; user_id: string | null; to_email: string; subject: string; body: string; link: string | null; category: string; attempts: number; notification_id?: string | null };
 
 /** Drains the outbox. Idempotent per row (Resend Idempotency-Key = outbox id). */
 export async function drainOutbox(limit = 25) {
@@ -50,13 +56,19 @@ export async function drainOutbox(limit = 25) {
     // Q05: hard bounces and complaints (Resend webhook → email_suppressions) are never mailed again.
     const { data: sup } = await db.from("email_suppressions").select("reason").eq("email", r.to_email.trim().toLowerCase()).maybeSingle();
     if (sup) { await db.from("email_outbox").update({ status: "suppressed", last_error: `suppressed: ${sup.reason}`, lease_until: null }).eq("id", r.id); continue; }
+    // Q52: a message alert already read in the app (conversation opened, or the bell) is not emailed afterwards.
+    if (r.category === "messages" && r.notification_id) {
+      const { data: n } = await db.from("notifications").select("read_at,muted").eq("id", r.notification_id).maybeSingle();
+      // muted = in-app switched off (marked read on arrival), so the email is the only alert and still goes.
+      if (n?.read_at && !n.muted) { await db.from("email_outbox").update({ status: "suppressed", last_error: "read in the app before sending", lease_until: null }).eq("id", r.id); continue; }
+    }
     const { text, html } = render(r);
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST", signal: AbortSignal.timeout(15_000),
         headers: { Authorization: `Bearer ${apiKey()}`, "Content-Type": "application/json", "Idempotency-Key": `outbox-${r.id}` },
         body: JSON.stringify({ from: fromAddress(), to: [r.to_email], subject: r.subject, text, html, reply_to: replyTo(),
-          headers: ["security", "payments"].includes(r.category) ? undefined : { "List-Unsubscribe": `<${site()}/account?tab=notifications>` } }),
+          headers: unsubscribeHeaders(site(), unsubscribeSecret(), r.user_id, r.category) }),
       });
       const j = await res.json().catch(() => ({})) as { id?: string; message?: string };
       if (res.ok) { sent++; await db.from("email_outbox").update({ status: "sent", sent_at: new Date().toISOString(), provider_id: j.id ?? null, last_error: null, lease_until: null }).eq("id", r.id); }

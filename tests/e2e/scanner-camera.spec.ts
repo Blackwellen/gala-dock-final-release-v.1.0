@@ -273,11 +273,13 @@ test.describe("Scanner camera path (fake capture device)", () => {
       // With the list downloaded: an offline scan is provisional, then reconciles on reconnect.
       const v = await mk();
       await page.getByRole("button", { name: /Download for offline|Refresh offline list/ }).click();
-      await expect(page.getByRole("status")).toContainText("for offline use");
+      // Scoped to the scanner: the topbar global search also has an sr-only role=status live region (8d09d8e).
+      const report = page.locator(".sc").getByRole("status");
+      await expect(report).toContainText("for offline use");
       await ctx.setOffline(true);
       await check(v.code); await expect(result(page)).toHaveText("Provisionally admitted (offline)");
       await ctx.setOffline(false);
-      await expect(page.getByRole("status")).toContainText(/Synced \d+ offline scans/, { timeout: 30_000 });
+      await expect(report).toContainText(/Synced \d+ offline scans/, { timeout: 30_000 });
       await expect.poll(async () => ((await db.from("check_ins").select("result").eq("ticket_id", v.id)).data ?? []).map(r => (r as { result: string }).result)).toContain("admitted");
       await ctx.close();
 

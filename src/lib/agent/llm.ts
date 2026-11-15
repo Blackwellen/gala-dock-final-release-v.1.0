@@ -10,7 +10,8 @@ import { isContentFilter, isRetryableStatus, retryDelayMs } from "./resilience";
  */
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 export type Tier = "fast" | "standard" | "deep";
-export type Meter = { workspaceId: string | null; userId: string | null; runId?: string | null; purpose: string };
+/** traceId (Q75): links this call's ai_usage_events row to an Ask / compile request; a run's calls inherit agent_runs.trace_id. */
+export type Meter = { workspaceId: string | null; userId: string | null; runId?: string | null; purpose: string; traceId?: string | null };
 export function agentConfigured() {
   return Boolean(process.env.AZURE_OPENAI_API_KEY && process.env.AZURE_OPENAI_ENDPOINT && process.env.AGENT_MODEL_MINI);
 }
@@ -96,8 +97,10 @@ export async function chat(messages: ChatMessage[], opts: { model?: "mini" | "na
       const u = j.usage ?? {};
       if (opts.meter) {
         // Metering failures are logged but never lose the answer; the usage row is the cost source of truth.
-        const { error } = await admin.rpc("record_ai_usage" as never, { p_workspace: opts.meter.workspaceId, p_user: opts.meter.userId, p_run: opts.meter.runId ?? null, p_purpose: opts.meter.purpose,
-          p_model: priceKey(t), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0 } as never);
+        // Q75: traced — the Azure request id (apim-request-id / x-request-id) and our trace id are stored with the usage row.
+        const { error } = await admin.rpc("record_ai_usage_traced" as never, { p_workspace: opts.meter.workspaceId, p_user: opts.meter.userId, p_run: opts.meter.runId ?? null, p_purpose: opts.meter.purpose,
+          p_model: priceKey(t), p_input: u.prompt_tokens ?? 0, p_cached: u.prompt_tokens_details?.cached_tokens ?? 0, p_output: u.completion_tokens ?? 0,
+          p_trace: opts.meter.traceId ?? null, p_request_id: res.headers.get("apim-request-id") ?? res.headers.get("x-request-id") ?? null } as never);
         if (error) console.error("ai_usage_record_failed", error.message);
       }
       if (j.choices?.[0]?.finish_reason === "content_filter") throw new AgentSafetyError(SAFETY_REFUSAL);

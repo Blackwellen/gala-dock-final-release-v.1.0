@@ -1,0 +1,335 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/release/pwa-completion-workflows.spec.ts",
+      "--project=desktop",
+      "--reporter=list,json",
+      "--output=artifacts/pwa/test-maximum-workflows"
+    ],
+    "configFile": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\playwright.config.ts",
+    "rootDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/test-maximum-workflows",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [
+          "/responsive/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/artifacts/pwa/test-maximum-workflows",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "responsive",
+        "name": "responsive",
+        "testDir": "C:/Users/PC/Documents/Blackwellen - Business Files/gala-dock-final-release/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/responsive/"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "desktop",
+        "testDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "snapshotDir": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests",
+        "testIgnore": {},
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "baseURL": "http://localhost:3120",
+          "trace": "retain-on-failure",
+          "launchOptions": {
+            "executablePath": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+          },
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "desktop"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "release\\pwa-completion-workflows.spec.ts",
+      "file": "release/pwa-completion-workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "PWA completed planning and request controls",
+          "file": "release/pwa-completion-workflows.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "date-impact dialog opens from Plan and changes an uncommitted event preserving local time and duration",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1144,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\", waiting until \"load\"\u001b[22m\n\n    at login (C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts:75:16)\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\release\\pwa-completion-workflows.spec.ts:18:3",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                          "column": 16,
+                          "line": 75
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mphase1\\helpers.ts:75\n\n  73 |     if (result.error) throw result.error;\n  74 |     await page.context().addCookies(jar);\n> 75 |     await page.goto(`${BASE}${next ?? \"/continue\"}`);\n     |                ^\n  76 |     return;\n  77 |   }\n  78 |   await page.goto(`${BASE}/login${next ? `?next=${encodeURIComponent(next)}` : \"\"}`);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                            "column": 16,
+                            "line": 75
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/account/events/c44d131e-cd3e-48cc-bd3c-446dad0b2612/plan\", waiting until \"load\"\u001b[22m\n\n\n   at phase1\\helpers.ts:75\n\n  73 |     if (result.error) throw result.error;\n  74 |     await page.context().addCookies(jar);\n> 75 |     await page.goto(`${BASE}${next ?? \"/continue\"}`);\n     |                ^\n  76 |     return;\n  77 |   }\n  78 |   await page.goto(`${BASE}/login${next ? `?next=${encodeURIComponent(next)}` : \"\"}`);\n    at login (C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts:75:16)\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\release\\pwa-completion-workflows.spec.ts:18:3"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:00:27.733Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-1a536-ing-local-time-and-duration-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-1a536-ing-local-time-and-duration-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-1a536-ing-local-time-and-duration-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                        "column": 16,
+                        "line": 75
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "de6821c092cd373b65e6-e91e4fe774da4c4afc9c",
+              "file": "release/pwa-completion-workflows.spec.ts",
+              "line": 17,
+              "column": 6
+            },
+            {
+              "title": "date RPC denies a different owner and direct edits cannot bypass provider commitments",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 546,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:00:31.987Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de6821c092cd373b65e6-94d86365e0a4c25ed0d7",
+              "file": "release/pwa-completion-workflows.spec.ts",
+              "line": 26,
+              "column": 6
+            },
+            {
+              "title": "request selections, strategy and priority survive reload and create the authoritative ordered request",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1168,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\", waiting until \"load\"\u001b[22m\n\n    at login (C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts:75:16)\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\release\\pwa-completion-workflows.spec.ts:32:54",
+                        "location": {
+                          "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                          "column": 16,
+                          "line": 75
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mphase1\\helpers.ts:75\n\n  73 |     if (result.error) throw result.error;\n  74 |     await page.context().addCookies(jar);\n> 75 |     await page.goto(`${BASE}${next ?? \"/continue\"}`);\n     |                ^\n  76 |     return;\n  77 |   }\n  78 |   await page.goto(`${BASE}/login${next ? `?next=${encodeURIComponent(next)}` : \"\"}`);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                            "column": 16,
+                            "line": 75
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3120/organizer/marketplace/requests/new?event=aa09daa9-79e8-4df1-9675-b1329a9c5a0c&listing=2c128b74-2cdc-4dc5-a056-41b993e325ad&step=1\", waiting until \"load\"\u001b[22m\n\n\n   at phase1\\helpers.ts:75\n\n  73 |     if (result.error) throw result.error;\n  74 |     await page.context().addCookies(jar);\n> 75 |     await page.goto(`${BASE}${next ?? \"/continue\"}`);\n     |                ^\n  76 |     return;\n  77 |   }\n  78 |   await page.goto(`${BASE}/login${next ? `?next=${encodeURIComponent(next)}` : \"\"}`);\n    at login (C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts:75:16)\n    at C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\release\\pwa-completion-workflows.spec.ts:32:54"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:00:33.619Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-c6252-thoritative-ordered-request-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-c6252-thoritative-ordered-request-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\artifacts\\pwa\\test-maximum-workflows\\release-pwa-completion-wor-c6252-thoritative-ordered-request-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PC\\Documents\\Blackwellen - Business Files\\gala-dock-final-release\\tests\\phase1\\helpers.ts",
+                        "column": 16,
+                        "line": 75
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "de6821c092cd373b65e6-23f9e4cf335ac8528fe4",
+              "file": "release/pwa-completion-workflows.spec.ts",
+              "line": 31,
+              "column": 6
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T00:00:26.096Z",
+    "duration": 9975.252,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

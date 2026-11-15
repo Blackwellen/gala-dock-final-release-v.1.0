@@ -11,7 +11,7 @@ import { requireAdminPermission } from "@/lib/admin/context";
 import { rows } from "@/lib/workspace/db";
 import { delta, requestTime } from "@/lib/workspace/format";
 import { Head, Kpi, TabBar, Pill, Pager, buckets, cumulative } from "../_b/kit";
-import { ParamSelect, SearchParam, Menu, RowCheck } from "../_b/ui";
+import { ParamSelect, SearchParam, Menu } from "../_b/ui";
 import { stamp, ago } from "../_b/format";
 import { controlRun, decideAgentApproval, setIntegration, startAdminRun } from "../_b/actions";
 
@@ -118,11 +118,10 @@ export default async function AgentPage(props: PageProps<"/admin/agent-integrati
             <Link className="adb-btn adag-fbtn" href={tab === "runs" ? "/admin/agent-integrations" : `/admin/agent-integrations?tab=${tab}`} scroll={false}><Filter aria-hidden="true" />Clear filters</Link>
           </div>
           <div className="adb-table-wrap"><table className="adb-table adag-table">
-            <colgroup>{[34, 82, 128, 98, 86, 56, 66, 128, 108, 70].map((w, i) => <col key={i} style={{ width: `${(w / 856) * 100}%` }} />)}</colgroup>
-            <thead><tr><th><RowCheck label="Select all" /></th><th>Run ID</th><th>Agent</th><th>Type</th><th>Status</th><th>Steps</th><th>Duration</th><th>Started at</th><th>Triggered by</th><th className="r">Actions</th></tr></thead>
+            <colgroup>{[82, 128, 98, 86, 56, 66, 128, 108, 70].map((w, i) => <col key={i} style={{ width: `${(w / 822) * 100}%` }} />)}</colgroup>
+            <thead><tr><th>Run ID</th><th>Agent</th><th>Type</th><th>Status</th><th>Steps</th><th>Duration</th><th>Started at</th><th>Triggered by</th><th className="r">Actions</th></tr></thead>
             <tbody>{list.slice((page - 1) * per, page * per).map(r => { const [Icon, col] = AGENT[agentOf(r)] ?? [Bot, "#1a1af2"], total = r.plan?.length ?? 0, done = r.plan?.filter(p => p.status === "done").length ?? 0;
               return <tr key={r.id}>
-                <td><RowCheck label={`Select ${runRef(r)}`} /></td>
                 <td className="adag-m">{runRef(r)}</td>
                 <td><span className="adag-agent"><i style={{ background: col }}><Icon aria-hidden="true" /></i>{agentOf(r)}</span></td>
                 <td className="adag-m">{r.run_type || r.goal}</td>
