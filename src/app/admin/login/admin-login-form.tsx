@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ShieldCheck, LockKeyhole, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { Turnstile, TURNSTILE_SITE_KEY } from "@/components/turnstile";
 
 const noop = () => () => {};
 const GENERIC = "The email or password you entered is incorrect.";
@@ -17,6 +18,9 @@ export function AdminLoginForm({ reason }: { reason?: string }) {
   const [error, setError] = useState(reason === "insufficient" ? "This account doesn’t have Platform Admin access." : reason === "idle" ? "You were signed out after 30 minutes of inactivity. Sign in again to continue." : "");
   const [show, setShow] = useState(false);
   const [pending, start] = useTransition();
+  // Supabase Auth bot protection (Turnstile) applies to every password sign-in, including staff: send the token when configured.
+  const [captcha, setCaptcha] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
   // Never allow a pre-hydration native submit (it would place credentials in the URL).
   const ready = useSyncExternalStore(noop, () => true, () => false);
 
@@ -26,9 +30,11 @@ export function AdminLoginForm({ reason }: { reason?: string }) {
     const password = String(data.get("password") ?? "");
     setError("");
     if (!email || !password) { setError("Enter your work email and password."); return; }
+    if (TURNSTILE_SITE_KEY && !captcha) { setError("Please complete the security check."); return; }
     start(async () => {
       const supabase = createClient();
-      const { data: session, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: session, error: signInError } = await supabase.auth.signInWithPassword({ email, password, ...(TURNSTILE_SITE_KEY ? { options: { captchaToken: captcha } } : {}) });
+      if (TURNSTILE_SITE_KEY) setCaptchaReset(n => n + 1);   // tokens are single-use
       if (signInError || !session.user) { setError(GENERIC); return; }
       await supabase.rpc("log_auth_event", { p_event: "auth.login" });
       // Admins may read other admin rows (permission management), so always scope to the signed-in user.
@@ -51,6 +57,7 @@ export function AdminLoginForm({ reason }: { reason?: string }) {
     <label className="adm-field"><span>Password</span>
       <span className="adm-input"><LockKeyhole aria-hidden="true" /><input name="password" type={show ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" required />
         <button type="button" onClick={() => setShow(s => !s)} aria-label={show ? "Hide password" : "Show password"}>{show ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button></span></label>
+    <Turnstile onToken={setCaptcha} resetKey={captchaReset} />
     {error && <p className="adm-error" role="alert">{error}</p>}
     <button className="adm-submit" type="submit" disabled={pending || !ready}>{pending ? "Signing in…" : "Continue to verification"}</button>
     <p className="adm-note"><ShieldCheck aria-hidden="true" />Two-factor verification is required for every Admin session. All access is audited.</p>
