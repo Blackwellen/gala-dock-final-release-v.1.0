@@ -44,3 +44,6 @@
 }
 /* R1 wide screens: a full-page approvals / routines / history list runs two columns of rows instead of one ~1,300px+ row each. */
 @media (min-width: 1600px) { .ag-solo :is(.ag-aps, .ag-rts, .ag-hist):has(> li + li + li) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; } }
+/* 2026-11-16: `.ag-r2 { 1.08fr .92fr }` above sits after the ≤1300px block and re-applied two columns on every screen — on phones
+   the run history and approvals sat side by side at ~150px each (titles one word per line, chips over the text). Restate the stack. */
+@media (max-width: 1300px) { .ag-r2 { grid-template-columns: minmax(0, 1fr); } }

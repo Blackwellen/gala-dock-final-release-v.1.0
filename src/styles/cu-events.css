@@ -135,3 +135,12 @@
   .c-root .me-grid > .k-col:first-child > .me-card .me-draft-acts { margin-top: 0; }
   .c-root .me-grid > .k-col:first-child > .me-card .me-kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 }
+/* 2026-11-16: (tablet 721–1100) the draft card's five-step progress was capped at 100% − 230px beside "Continue Planning", so
+   its labels ran together ("DetailsVenueProvidersPayments") and under the button. On tablets the progress takes the card's full
+   width and the buttons wrap below it. (≤374) the four money tiles left ~60px each and "0 / 0 confirmed" ran into the next
+   tile — two per row on the narrowest phones. */
+@media (min-width: 721px) and (max-width: 1100px) { .me-steps.sm { max-width: none; flex: 1 1 100%; } .me-card .me-draft-acts { flex-wrap: wrap; } }
+@media (max-width: 374px) { .c-root .me-card .me-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* (phones ≤480) the tiles stack icon box over label in a fixed 54px tile, so "0 / 0 confirmed" ran out of the tile into the next
+   row. The empty icon box goes (its icon is already hidden here) and the tile grows with its text. */
+@media (max-width: 480px) { .c-root .me-card .me-kpis .me-kpi-ic { display: none; } .c-root .me-card .me-kpi { height: auto; min-height: 44px; } }

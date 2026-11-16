@@ -377,3 +377,7 @@
 /* R1: any table inside a card / panel that isn't already in a scroller scrolls inside the card at narrow widths (organiser settings →
    team at 320px pushed the page to 405px). Wide screens are unaffected: the table still fills its card. */
 @media (max-width: 1100px) { :is(.k-card, .ws-panel, .ce-card) table:not(:is(.k-table-wrap, .adb-table-wrap, [class*="table-wrap"]) table) { display: block; max-width: 100%; overflow-x: auto; position: relative; } }
+/* 2026-11-16 (phones ≤760): a card header row holding a title + intro and its buttons squeezed one or the other (button labels
+   spilling out, or the intro one word per line beside "Use template / Add tier"). Buttons keep their label width (touch layer),
+   and the row wraps them under the title instead. */
+@media (max-width: 760px) { :is(.k-between, .tp-ch):has(> .k-btn, > :is(div, span, .k-row) > .k-btn) { flex-wrap: wrap; row-gap: 10px; } }

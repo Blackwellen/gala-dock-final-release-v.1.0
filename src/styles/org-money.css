@@ -46,3 +46,10 @@
 .pr-approve-list { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow: auto; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .pr-approve-list label { display: flex; gap: 8px; align-items: center; }
 .pr-offplatform { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; margin: 8px 0 12px; }
+/* 2026-11-16 (phones ≤560): "Profitability by event" kept four columns (photo · name · 130px bar · %), leaving the event name a
+   one-word-per-line sliver that ran into the profit figure; the income legend sat beside a 156px donut with ~14px for its labels.
+   Name and % share the first line, the profit bar takes the line under the name, and the legend drops under the donut. */
+@media (max-width: 560px) {
+  .mn-prof li { grid-template-columns: 44px minmax(0, 1fr) auto; row-gap: 4px; } .mn-prof li > .mn-pb { grid-row: 2; grid-column: 2 / -1; }
+  .mn-donut-row { flex-wrap: wrap; justify-content: center; } .mn-donut-row ul { flex: 1 1 220px; }
+}

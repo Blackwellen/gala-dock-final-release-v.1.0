@@ -178,3 +178,8 @@
 
 /* W01 consistency pass: public action buttons share the 40px workspace action height. */
 /* (superseded by the token block in customer.css) */
+/* 2026-11-16 ("headers warp" on item/profile pages, tablet landscape + small laptops): the hero copy kept its 860px measure while
+   the photo mosaic (560px, 420px below 1280) sits absolutely on the right, so between ~900 and ~1500px the description and the
+   capacity fact ran underneath the photos ("250-capacity Ma…", "4…"). The copy now stops short of the mosaic. */
+@media (min-width: 901px) { .pl3-hero-copy { max-width: min(860px, calc(100% - 560px - 64px)); } }
+@media (min-width: 901px) and (max-width: 1279px) { .pl3-hero-copy { max-width: calc(100% - 420px - 64px); } }

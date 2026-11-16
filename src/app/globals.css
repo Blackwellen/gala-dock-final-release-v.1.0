@@ -1277,3 +1277,36 @@ fieldset.notification-grid>legend{font-weight:680;font-size:15px;margin-bottom:1
 @media (max-width:1200px){.setup-header{min-width:0;gap:12px;padding-inline:20px}.setup-header>nav{min-width:0;flex:0 1 auto;overflow-x:auto;scrollbar-width:none}.setup-header>.setup-search{min-width:0;flex:1 1 140px}}
 /* Gala Dock prices with VAT wording (src/components/billing/vat-price.tsx): ex-VAT line, then the inc-VAT line. */
 .vat-price { display: inline-grid; gap: 2px; min-width: 0; } .vat-inc { font-size: .9em; }
+/* 2026-11-16 owner bug (onboarding words "go funny" on tablets): the interest tiles kept five columns beside the story rail, so
+   each label had ~20px and `overflow-wrap:anywhere` broke it into letters ("Mu/sic/&/Co/nce/rts"); the notification cards did
+   the same ("Ev/en/t"). Tiles now fill the row at a readable minimum width, labels break only between words, and the
+   notification cards stack when three do not fit. The story rail's headline scales with the rail instead of running out of it,
+   and on the narrow rail the floating "Free to start" card sits under the features instead of over them. */
+.onboarding-page .choice-group .choice,.onboarding-page .choice-group .choice *{overflow-wrap:break-word}
+@media (max-width:1365px){
+  .onboarding-page .choice-group.with-images{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))!important}
+  .onboarding-page fieldset.notification-grid.notification-grid,.onboarding-page .notification-grid.notification-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .onboarding-page .notification-grid label>span:not(.icon-tile){min-width:9em}
+}
+@media (min-width:701px) and (max-width:1250px){
+  .onboarding-page .setup-story{width:34%}
+  .onboarding-page .setup-story-content{padding:28px 24px}
+  .onboarding-page.onboarding-page .setup-story.setup-story h1{font-size:clamp(28px,3.6vw,44px)!important;line-height:1.06;letter-spacing:-1px;overflow-wrap:break-word}
+  /* the step row (4–6 numbered circles with centred labels) does not fit a ~230px rail: the labels ran into each other
+     ("OperatingBrand, Payments"). In the rail it becomes a vertical step list: number beside its label, no connectors. */
+  .onboarding-page .setup-story .setup-steps{flex-direction:column;gap:6px;margin:0 0 22px!important}
+  .onboarding-page .setup-story .setup-steps>li{flex-direction:row;align-items:center;gap:10px;padding:0!important}
+  .onboarding-page .setup-story .setup-steps>li:after{display:none!important}
+  .onboarding-page .setup-story .setup-steps span{flex-shrink:0}
+  .onboarding-page .setup-story .setup-steps small{margin:0!important;max-width:none!important;text-align:start;font-size:12px!important;line-height:1.3}
+  .onboarding-page .setup-story-description{font-size:15px}
+  .onboarding-page .setup-story .setup-proof{position:relative;inset:auto;margin:24px 24px 0;flex-wrap:wrap}
+  .onboarding-page .setup-story .setup-photo-strip{display:none}
+  /* the rail's photo artwork is drawn for the 1536px composition; in this narrower rail the features sat on top of it */
+  .onboarding-page.onboarding-page .setup-story.setup-story{background:radial-gradient(ellipse at 95% 0%,#dbeaff,transparent 60%),#f3f8ff!important}
+  /* "Popular organizer types": name and description ran together ("Event Management CompanyWeddings, corporate") */
+  .onboarding-page .organizer-type b,.onboarding-page .organizer-type small{display:block}
+}
+/* 2026-11-16 (tablets 701–1100px): the auth story headline is pinned at 65px for the 1448px composition, so in the half-width
+   story column "Extraordinary" ran out of the column and was cut ("Extraordinar"). Scale it with the window below 1101px. */
+@media (min-width:701px) and (max-width:1100px){.auth-page.auth-page .auth-story .story-content.story-content h1{font-size:clamp(32px,4.6vw,65px)!important;line-height:1.05!important;letter-spacing:-1.5px;overflow-wrap:break-word}}

@@ -202,6 +202,34 @@ function inspect({ touch, wide, full, gmarkMax, W }) {
     if (lines >= 2 && cpl > 110) { if (++ll <= 4) { mark(el); F.push({ kind: "line-length", sel: path(el), detail: `${Math.round(cpl)} ch/line over ${lines} lines` }); } }
   }
 
+  // 7b. text overlap (2026-11-16 owner bug: tab letters merging, wizard step words breaking, headers warping). Overflow/clipping checks
+  // pass when a 44px-wide tab spills its label into the next one, so measure the glyphs themselves: every visible text run's line boxes
+  // (Range.getClientRects, trimmed to the glyph core) must not intersect another element's text, lines of one run must not overlap
+  // each other, and a label must not spill out of its own box (scrollWidth > clientWidth with overflow visible). Fixed chrome is skipped.
+  {
+    const vis = new Map(), skip = el => { if (vis.has(el)) return vis.get(el); let v = true; for (let e = el; e && e !== de; e = e.parentElement) { const s = cs(e); if (s.display === "none" || s.visibility === "hidden" || Number(s.opacity) < 0.05 || s.position === "fixed") { v = false; break; } if (e.tagName === "DETAILS" && !e.open && e !== el && !el.closest("summary")) { v = false; break; } if (s.clipPath === "inset(50%)" || (/hidden|clip/.test(s.overflow) && e.getBoundingClientRect().width <= 1)) { v = false; break; } } vis.set(el, !v); return !v; };
+    const boxes = [], spillEls = new Set(); let nLine = 0, nOver = 0, nSpill = 0, nBreak = 0;
+    const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.trim() ? 1 : 2 });
+    for (let n; (n = tw.nextNode());) {
+      const el = n.parentElement; if (!el || /^(SCRIPT|STYLE|NOSCRIPT|TITLE)$/.test(el.tagName) || el.closest("[aria-hidden=true], svg, .gp-sr, .k-sr, .sr-only, .visually-hidden, nextjs-portal") || skip(el)) continue;
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      let clip = null; for (let e = el; e && e !== document.body; e = e.parentElement) { const s = cs(e); if (/(hidden|auto|scroll|clip)/.test(s.overflowX + s.overflowY)) { const c = e.getBoundingClientRect(); clip = clip ? { l: Math.max(clip.l, c.left), r: Math.min(clip.r, c.right), t: Math.max(clip.t, c.top), b: Math.min(clip.b, c.bottom) } : { l: c.left, r: c.right, t: c.top, b: c.bottom }; } }
+      const runs = [];
+      for (const b of rg.getClientRects()) { let L = b.left, R = b.right, T = b.top, B = b.bottom; if (clip) { L = Math.max(L, clip.l); R = Math.min(R, clip.r); T = Math.max(T, clip.t); B = Math.min(B, clip.b); } if (R - L < 2 || B - T < 2) continue; const k = (B - T) * 0.18; runs.push({ l: L, r: R, t: T + k, b: B - k, el }); }
+      for (let i = 1; i < runs.length; i++) { const a = runs[i - 1], c = runs[i]; if (c.t > a.t + 2 && c.t < a.b - 2 && c.l < a.r && a.l < c.r && ++nLine <= 3) { mark(el); F.push({ kind: "text-line-overlap", sel: path(el), detail: `"${txt(el)}" lines overlap ${Math.round(a.b - c.t)}px` }); } }
+      boxes.push(...runs);
+      // a word of 4+ letters split across two lines ("Mu/sic", "Marketplac/e"): overflow-wrap:anywhere in a column narrower than the word
+      if (runs.length > 1 && nBreak < 3) { const re = /[A-Za-zÀ-ɏ]{4,}/g; let m; while ((m = re.exec(n.nodeValue))) { const wr = document.createRange(); wr.setStart(n, m.index); wr.setEnd(n, m.index + m[0].length); if (new Set([...wr.getClientRects()].filter(b => b.width > 0.5).map(b => Math.round(b.top))).size > 1) { nBreak++; mark(el); F.push({ kind: "text-word-break", sel: path(el), detail: `"${m[0]}" split across lines in "${txt(el)}"` }); break; } } }
+      const s = cs(el); if (s.overflowX === "visible" && s.display !== "inline" && el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 2 && !spillEls.has(el)) { spillEls.add(el); if (++nSpill <= 4) { mark(el); F.push({ kind: "text-spill", sel: path(el), detail: `"${txt(el)}" ${el.scrollWidth}px in ${el.clientWidth}px` }); } }
+    }
+    boxes.sort((a, b) => a.t - b.t);
+    for (let i = 0; i < boxes.length && nOver <= 4; i++) for (let j = i + 1; j < boxes.length && boxes[j].t < boxes[i].b; j++) {
+      const a = boxes[i], c = boxes[j]; if (a.el === c.el || a.el.contains(c.el) || c.el.contains(a.el)) continue;
+      const w = Math.min(a.r, c.r) - Math.max(a.l, c.l), h = Math.min(a.b, c.b) - Math.max(a.t, c.t);
+      if (w > 2 && h > 2) { if (++nOver <= 4) { mark(a.el); mark(c.el); F.push({ kind: "text-overlap", sel: `${path(a.el)} ⨯ ${sel(c.el)}`, detail: `"${txt(a.el)}" / "${txt(c.el)}" ${Math.round(w)}×${Math.round(h)}` }); } break; }
+    }
+  }
+
   // 8. single stretched column on wide screens: a grid/list of ≥3 siblings stacked one per row in a wide container
   if (wide) {
     let n = 0;

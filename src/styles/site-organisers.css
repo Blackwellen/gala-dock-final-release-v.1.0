@@ -402,3 +402,8 @@
 
 /* Q71: short windows — a sticky copy column taller than the window would hide its own CTA. */
 @media (max-height: 720px) { .gpo-agent-copy { position: static; } }
+/* 2026-11-16: the seven-stage stepper (Plan → Settle) kept seven columns inside the half-width overview card on tablets and phone
+   landscape (~50px each), so "Completed", "In progress" and "Upcoming" ran into each other. Four per row below 1366px (the
+   phone layout), three on the narrowest phones. */
+@media (max-width: 1365px) { .gpo-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 12px; } .gpo-steps::before { display: none; } }
+@media (max-width: 420px) { .gpo-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

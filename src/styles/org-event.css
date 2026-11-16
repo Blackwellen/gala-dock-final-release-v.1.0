@@ -240,3 +240,5 @@
 .eh-compact { display: grid; gap: 6px; margin-bottom: 16px; min-width: 0; }
 .eh-compact .eh-tabs { margin: 0; }
 .eh-compact .k-tabs { overflow-x: auto; scrollbar-width: none; }
+/* 2026-11-16 (narrow phones): four legend columns left "Committed" wider than its column, touching the next swatch. Two per row there. */
+@media (max-width: 374px) { .ov-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

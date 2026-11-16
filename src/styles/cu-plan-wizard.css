@@ -203,3 +203,6 @@
 /* Q70: on short desktop / landscape screens the sticky rail (6 steps + help + Discard draft) is taller than the viewport, and a
    sticky box never scrolls, so "Discard draft" and the help card were unreachable. Below 820px tall the rail scrolls with the page. */
 @media (min-width: 1001px) and (max-height: 820px) { .pw-rail { position: static; } }
+/* 2026-11-16 (1001–1365px, small laptops / tablet landscape): "Save and exit" is pinned over the right of the header row, so the
+   intro line ran underneath it and was cut mid-word. Keep the intro clear of the button. */
+@media (min-width: 1001px) and (max-width: 1365px) { .pw-title > p { padding-inline-end: 270px; } }

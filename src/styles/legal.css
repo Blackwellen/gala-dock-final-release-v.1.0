@@ -1,5 +1,8 @@
 /* Legal documents — readable single column on the public look. */
-.lg{min-height:100dvh;background:#f7f9fd;color:#1d2068}
+/* 2026-11-16: scoped to the legal page root (the element holding .lg-body). A bare `.lg` also matched every "lg" size modifier
+   (.tk-date.lg, .k-btn.lg, Tile lg) once this sheet was loaded via the legal update banner — e.g. the ticket page date badge
+   became a full-screen-tall strip over the hero. */
+.lg:has(> .lg-body){min-height:100dvh;background:#f7f9fd;color:#1d2068}
 /* Q71: full width (no cap); the document keeps a readable measure (≤80ch) inside its card. */
 .lg-body{margin:0 auto;padding:28px clamp(16px,3.05vw,47px) 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
 .lg-doc{min-width:0;overflow-wrap:anywhere}.lg-doc :is(p,li,h1,h2,h3,.lg-meta){max-width:80ch}

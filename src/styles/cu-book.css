@@ -245,3 +245,9 @@
    24px past the window. Buttons keep their natural width and the bar / summary rows wrap instead. */
 .k-root.c-root .bk-bar { flex-wrap: wrap; row-gap: 8px; } .k-root.c-root .bk-bar > :is(.k-btn, a, button) { flex-shrink: 0; }
 .k-root.c-root .bk-sum .k-between { flex-wrap: wrap; row-gap: 6px; } .k-root.c-root .bk-sum .k-between > .k-btn { flex-shrink: 0; }
+/* 2026-11-16 (1001–1279px, tablet landscape / small laptop): the three-column booking layout leaves the middle column ~430px, but
+   the request summary kept its 220px photo beside the item list (item name one word per line under its price) and the date row
+   kept date + times + "Flexible dates" on one line (times cut to "16:0"). Use the stacked summary and wrapping date row here too. */
+@media (max-width: 1279px) { .bk-sel { grid-template-columns: minmax(0, 1fr); } .bk-sum { flex-direction: column; } .bk-sum > img { width: 100%; } .bk-date { flex-wrap: wrap; gap: 10px; } }
+/* (1001–1365) "Save and exit" is pinned over the right of the title row; keep the intro line clear of it (it was cut mid-word). */
+@media (min-width: 1001px) and (max-width: 1365px) { .bk-title .ce-sub { padding-inline-end: 250px; } }

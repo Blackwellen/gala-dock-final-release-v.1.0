@@ -16,7 +16,7 @@
     :where(li > a, dd > a, h2 > a, h3 > a, h4 > a, nav > a, footer a, .gp-link, .k-link, .co-back, .gf-back, .auth-field a, .auth-help a, .auth-security a, .dir-chips > a, p.gp-small > a, .hc-jump a, .pe3-tabs a) {
     display: inline-flex; align-items: center; }
   :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
-    :is(li > a, dd > a, h2 > a, h3 > a, h4 > a, nav > a, footer a, a[class]:not(p a, .gp-sr, .k-sr), [class*="-acts"] > a, .gp-link, .k-link, .co-back, .gf-back, .auth-field a, .auth-help a, .auth-security a, .dir-chips > a, p.gp-small > a, .hc-jump a, .pe3-tabs a) {
+    :is(li > a, dd > a, h2 > a, h3 > a, h4 > a, nav > a, footer a, a[class]:not(p a, label a, .gp-sr, .k-sr), [class*="-acts"] > a, .gp-link, .k-link, .co-back, .gf-back, .auth-field a, .auth-help a, .auth-security a, .dir-chips > a, p.gp-small > a, .hc-jump a, .pe3-tabs a) {
     min-height: 44px !important; min-width: 44px !important; }
   :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .gd-legal-footer, .gd-brandbar, .c-root:has(> .gd-brandbar))
     :is(.gp-logo, .co-logo, .gd-brandbar-logo, .gp-footer-logo) { min-height: 44px !important; min-width: 44px !important; align-items: center; }
@@ -25,6 +25,15 @@
   footer.gp-footer.dir-footer a { min-height: 44px !important; min-width: 44px !important; }
   .gp-nav a { min-height: 44px !important; }
   .pub-root :is(.dir-day, .la-btn) { min-height: 44px !important; }
+  /* Tab strips (2026-11-16 owner bug "tab letters merge at phone sizes"): an explicit min-width replaces a flex item's automatic
+     minimum (its label width), so a strip wider than the screen squeezed every tab down to 44px and the nowrap labels ran into
+     each other. Strip items keep their natural width; the strip scrolls sideways as designed. The same goes for nowrap text links
+     ("View all →") in a header row: they keep their label width instead of spilling over the text beside them. A strip with a fixed
+     height grows with its now-44px items instead of cutting their labels in half. */
+  :is(.gp-root, .gp-header, .gp-footer, .gp-sheet, .pub-root, .auth-page, .co, .c-root:has(> .gd-brandbar))
+    :is(:is([class*="tabs"], [class*="tablist"], [role="tablist"], [class*="-seg"], [class*="chips"], [class*="-pills"]) > :is(a, button, [role="tab"]), .gp-link, .gp-btn, .k-link, .k-btn, a[class*="-link"], [class*="-sec-h"] > a, [class*="-ph"] > a) { flex-shrink: 0 !important; }
+  :is(.gp-root, .pub-root, .auth-page, .co, .c-root:has(> .gd-brandbar))
+    :is([class*="tabs"], [class*="tablist"], [role="tablist"], [class*="-seg"]):has(> :is(a, button, [role="tab"])) { height: auto !important; }
 }
 
 /* ── R1 signed-in workspaces (customer .c-root, organiser .o-root, provider/admin .ws-app, partner/promoter .pt-app, door scanner .sc, onboarding .onboarding-page) on touch input:
@@ -49,11 +58,19 @@
   .mb :is(.mb-bar, .mb-zoom) button { min-width: 44px !important; min-height: 44px !important; }
   /* checkboxes that are not inside a label (table row selection, distribution lists) get a 44px box of their own */
   :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .st) :is(td, th, li) > input:is([type="checkbox"], [type="radio"]) { min-width: 44px; min-height: 44px; margin: 0; }
-  /* switches */
-  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) .k-toggle { min-width: 44px !important; min-height: 44px !important; }
+  /* switches: a 44 × 44 hit box, but the painted track stays the kit's 34 × 20 pill (content-box background) and the knob sits
+     inside it. Growing the switch itself turned the pill into a 44px blue disc with a knob in its corner (2026-11-16). */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) .k-toggle { box-sizing: border-box !important; width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; padding: 12px 5px !important; background-clip: content-box !important; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) .k-toggle::after { top: 14px !important; inset-inline-start: 7px !important; }
   /* compound inputs with a fixed height (price / quantity steppers) grow with their now-44px parts instead of clipping them */
   :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is(.ts-step, [class*="stepper"], .k-input-icon) { height: auto !important; min-height: 44px; }
   /* standalone links: tab strips, "View all" / section links, back controls — rows a finger can hit (links in sentences exempt) */
   :where(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :where([class*="tabs"] > a, [class*="tablist"] > a, [class*="crumbs"] a, td a, [class*="-seg"] > a, [role="tablist"] > a, a[class*="-link"], .k-link, [class*="-sec-h"] > a, [class*="-ph"] > a, .pwa-back, td small > a, li > a, li > div > a, [class*="-foot"] > a, [class*="-meta"] > a, article > a, main > a, header > a, [class*="-row"] > a, li b > a, li span > a, [class*="filters"] > a, [class*="-body"] > a, [class*="card"] .k-between > a, nav > a, span > b > a, dd a, [class*="-map"] > a, [class*="-map"] p > a, [class*="-tags"] > a) { display: inline-flex; align-items: center; }
-  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is([class*="tabs"] > a, [class*="tablist"] > a, [class*="crumbs"] a, a[class]:not(p a, .k-sr, .sr-only, .gp-sr, .pwa-tabs a), [class*="-seg"] > :is(a, button), [role="tablist"] > :is(a, button), a[class*="-link"], .k-link, [class*="-sec-h"] > a, [class*="-ph"] > a, .pwa-back, section > a, td a, li > a, li > div > a, [class*="-foot"] > a, [class*="-meta"] > a, article > a, main > a, header > a, [class*="-row"] > a, li b > a, li span > a, [class*="filters"] > a, [class*="-body"] > a, [class*="card"] a:not(p a), nav > a, span > b > a, dd a, [class*="-map"] > a, [class*="-map"] p > a, [class*="-tags"] > a):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-height: 44px !important; min-width: 44px; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .sc, .onboarding-page, .st) :is([class*="tabs"] > a, [class*="tablist"] > a, [class*="crumbs"] a, a[class]:not(p a, label a, .k-sr, .sr-only, .gp-sr, .pwa-tabs a), [class*="-seg"] > :is(a, button), [role="tablist"] > :is(a, button), a[class*="-link"], .k-link, [class*="-sec-h"] > a, [class*="-ph"] > a, .pwa-back, section > a, td a, li > a, li > div > a, [class*="-foot"] > a, [class*="-meta"] > a, article > a, main > a, header > a, [class*="-row"] > a, li b > a, li span > a, [class*="filters"] > a, [class*="-body"] > a, [class*="card"] a:not(p a), nav > a, span > b > a, dd a, [class*="-map"] > a, [class*="-map"] p > a, [class*="-tags"] > a):not(:is(.st-stage, .mb-canvas, .sp, .pcal-mini, [class*="pb-st"], .k-cal, [class*="calendar"], [class*="-cal-"]) *) { min-height: 44px !important; min-width: 44px; }
+  /* tab strips, segmented controls and nowrap section links: same squeeze as the public strips above — keep each at its label
+     width; a strip with a fixed height (e.g. the 28px sales-pace range switch) grows with its 44px items instead of clipping them */
+  :is(.c-root, .o-root, .ws-app, .pt-app, .pwa-sheet, .sc, .onboarding-page, .st)
+    :is(:is([class*="tabs"], [class*="tablist"], [role="tablist"], [class*="-seg"], [class*="chips"], [class*="-pills"]) > :is(a, button, [role="tab"]), .k-link, .k-btn, .ws-btn, a[class*="-link"], [class*="-sec-h"] > a, [class*="-ph"] > a) { flex-shrink: 0 !important; }
+  :is(.c-root, .o-root, .ws-app, .pt-app, .pwa-sheet, .sc, .onboarding-page, .st)
+    :is([class*="tabs"], [class*="tablist"], [role="tablist"], [class*="-seg"]):not(.pwa-tabs):has(> :is(a, button, [role="tab"])) { height: auto !important; }
 }

@@ -55,3 +55,6 @@
 @media (min-width: 1280px) { .c-root .sv { padding: 0 10px 0 13px; } }
 /* W02 pass 4 — phone (≤480px), PWA #223: compact page title and subtitle like the other app screens. */
 @media (max-width: 480px) { .c-root .sv-head { margin: 0 0 10px; } .c-root .sv-head h1 { font-size: 20px; } .c-root .sv-head p { font-size: 12px; margin-top: 2px; } }
+/* 2026-11-16: the three card actions shared one row at min-width 0, so on tablets and phones "View venue" ran into "Check
+   availability" and both were clipped. Each action keeps its label width; the row wraps when they do not fit. */
+.sv-acts { flex-wrap: wrap; } .sv-acts > .sv-btn, .sv-acts > div { min-width: fit-content !important; }

@@ -220,3 +220,6 @@ svg.green{color:#16b67a}svg.red{color:#ec2f52}svg.blue{color:#4b55a8}
 /* W12 wizard sweep (≤520): .qb-cost drops to 2 tracks but .qb-total kept `grid-column: 2/4`, so the grid grew an implicit third
    track and squashed the label (same defect as the plan-wizard tiles) — end the total at the last explicit line. */
 @media (max-width:520px){.qb-total{grid-column:2/-1}}
+/* 2026-11-16 (phones): "Save as draft" and "Continue to review & send" shared one row and the primary label ran out of its
+   button at 320–390px. The two buttons keep their label width and stack when they do not fit side by side. */
+.qb-foot{flex-wrap:wrap}.qb-foot .ws-btn{flex:1 1 auto;min-width:fit-content!important}

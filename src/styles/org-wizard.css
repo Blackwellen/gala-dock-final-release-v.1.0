@@ -73,3 +73,11 @@
    (z-index 65), so it was hidden while scrolling the RFQ, proposal and lead wizards — park it above the tab bar (as the
    provider wizards do in provider-pwa.css). */
 @media (max-width: 1279px) { .k-root.o-root .wz-foot { bottom: calc(var(--pwa-bottom, 70px) + 10px); } }
+/* 2026-11-16 (≤1279, phone/tablet): the step's text span matched `li > span` above and became a flex row, so the title and its
+   sub-line sat side by side in a ~170px step and the sub-line wrapped one word per line into the next step's number. Stack
+   them (title over sub-line) and let long titles wrap between words. */
+@media (max-width: 1279px) {
+  .o-root .wz-steps li > span:not(.n) { display: block; min-width: 0; margin-inline-start: 12px; }
+  .o-root .wz-steps li > a > span:not(.n) { min-width: 0; }
+  .o-root .wz-steps b, .o-root .wz-steps small { overflow-wrap: break-word; }
+}

@@ -53,7 +53,7 @@
 .tp-models b { display: block; font-size: 13.5px; font-weight: 650; } .tp-models small { display: block; margin-top: 3px; font-size: 12px; color: var(--k-ink-2); line-height: 1.4; }
 .tp-tick { position: absolute; right: 10px; top: 10px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--k-blue); color: #fff; }
 .tp-capg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
-.tp-brk { background: #f7f9fe; } .tp-brkg { display: flex; align-items: center; gap: 22px; } .tp-donut { flex-shrink: 0; }
+.tp-brk { background: #f7f9fe; } .tp-brkg { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; } /* the legend drops under the donut when the card is narrow (tablet), so tier names keep their width */ .tp-brkg > .tp-legend { flex: 1 1 210px; } .tp-donut { flex-shrink: 0; }
 .tp-dn { font-size: 15px; font-weight: 750; fill: var(--k-ink); } .tp-dl { font-size: 6.4px; fill: var(--k-ink-2); }
 .tp-legend { list-style: none; margin: 0; padding: 0; flex: 1; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
 .tp-legend li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 48px; align-items: center; gap: 9px; font-size: 12px; color: var(--k-ink-2); } .tp-legend i { width: 9px; height: 9px; border-radius: 50%; } .tp-legend b { font-weight: 600; color: var(--k-ink); } .tp-legend small { text-align: right; font-size: 11.5px; color: var(--k-muted); }
@@ -205,10 +205,13 @@
 @media (max-width: 1400px) { .tp-a-right { grid-area: auto / 2 / auto / 3; outline: 0; } }
 @media (max-width: 1100px) { .tp-a-right { grid-column: 1; } }
 .tp-g2b { grid-template-columns: minmax(0, 1fr) 340px; }
+/* 2026-11-16: this rule sits after the ≤1100 media block above and re-applied the desktop columns on every screen —
+   step 2 kept a 340px rail beside a ~20px tier column on phones (one letter per line under the rail). Restate the stacked layout. */
+@media (max-width: 1100px) { .tp-g2b { grid-template-columns: minmax(0, 1fr); } }
 .tp-tt { min-width: 900px; } .tp-tt th, .tp-tt td { padding-left: 5px; padding-right: 5px; } .tp-tn { min-width: 190px; }
 .tp-tt .tp-in.sm { width: 80px; } .tp-tt td:nth-child(5) .tp-in.sm { width: 66px; } .tp-bare.rel { max-width: 96px; }
 .tp-st { flex-direction: column; align-items: flex-start; gap: 3px; } .tp-st em { height: 18px; padding: 0 6px; font-size: 10px; }
-.tp-fc .tp-ch h2 { font-size: var(--k-title-card); } .tp-secl { grid-template-columns: repeat(2, 1fr); }
+.tp-fc .tp-ch h2 { font-size: var(--k-title-card); } .tp-secl { grid-template-columns: repeat(2, 1fr); } @media (max-width: 760px) { .tp-secl { grid-template-columns: minmax(0, 1fr); } }
 .tp-disp { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--k-line-2); border-radius: 9px; } .tp-disp > b { font-size: 12.5px; font-weight: 550; } .tp-disp > small { font-size: 11px; color: var(--k-muted); }
 .tp-seg3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; } .tp-seg3 button { height: 30px; border: 1px solid var(--k-line) !important; border-radius: 7px; font-size: 12px; color: var(--k-ink-2); } .tp-seg3 button[data-on] { border-color: var(--k-blue) !important; background: var(--k-blue-soft); color: var(--k-blue); font-weight: 600; }
 .tp-disp .tp-qr { font-size: 12px; color: var(--k-ink-2); }
@@ -226,3 +229,6 @@
   .tp-ptabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; }
   .tp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tp-kpis b { font-size: 18px; overflow-wrap: anywhere; }
 }
+/* 2026-11-16 (touch): with 44px buttons the zoom stack (+ / − / reset) grew up over the "Map layers" panel and hid its labels
+   ("Capacity", "Accessibility"). Keep the zoom stack in the opposite corner on touch screens. */
+@media (pointer: coarse) { .tp-zoom { left: auto; right: 10px; } }

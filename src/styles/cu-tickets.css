@@ -223,3 +223,9 @@
 }
 /* W12 (390): the "More options" button sat past the card edge — let the footer groups wrap and keep the menu button whole. */
 @media (max-width: 480px) { .c-root .tk-card .tk-foot, .c-root .tk-card .tk-foot > div { flex-wrap: wrap; min-width: 0; max-width: 100%; gap: 6px; } .c-root .tk-card .tk-foot .tk-more { flex-shrink: 0; } }
+/* 2026-11-16 (phones ≤480): the name, venue and time sit below the photo in dark text here, but the desktop rule
+   `.td-hero h1, .td-hero p { color: #fff !important }` still won, so they were white on the light page (invisible). */
+@media (max-width: 480px) {
+  .c-root .td-hero .td-hero-in :is(h1, h2, p) { color: var(--k-ink) !important; }
+  .c-root .td-hero .td-hero-in p { color: var(--k-ink-2) !important; } .c-root .td-hero .td-hero-in p svg { color: var(--k-muted); }
+}

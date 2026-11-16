@@ -113,7 +113,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                   <div className="k-row k-xs k-muted mk-meta"><MapPin size={12} />{l.city}, UK{l.capacity_max && <><span>•</span>{num(l.capacity_max)} capacity</>}{l.details?.setting ? <><span>•</span>{String(l.details.setting)}</> : l.kind === "service" ? <><span>•</span>{l.category}</> : null}</div>
                   <div className="k-row k-wrap" style={{ gap: 5 }}>{l.tags.slice(0, 4).map(t => <Tag key={t}>{t}</Tag>)}</div>
                   <p className="mk-desc">{l.description}</p>
-                  <div className="k-row k-xs" style={{ gap: 8 }}><Chip tone={AV[a.state]}>{a.label}</Chip>{ev && <span className="k-muted" title={f.reasons.join(" · ")}>{f.score}% fit · {f.reasons[0] ?? ""}</span>}<span className="k-row k-muted" style={{ gap: 3, marginLeft: "auto" }}>{l.emergency_supply && <><Zap size={11} />Emergency · </>}<Clock size={11} />{l.response_hours}h</span></div>
+                  <div className="k-row k-xs k-wrap" style={{ gap: 8 }}><Chip tone={AV[a.state]}>{a.label}</Chip>{ev && <span className="k-muted" title={f.reasons.join(" · ")}>{f.score}% fit · {f.reasons[0] ?? ""}</span>}<span className="k-row k-muted" style={{ gap: 3, marginLeft: "auto", flexShrink: 0, whiteSpace: "nowrap" }}>{l.emergency_supply && <><Zap size={11} />Emergency · </>}<Clock size={11} />{l.response_hours}h</span></div>
                   <div className="k-grid k-g2" style={{ gap: 8 }}><Link className="k-btn outline" href={href(l)}>View details</Link><Link className="k-btn primary" href={reqHref(l)}><CalendarDays size={14} />{l.instant_book ? "Book" : "Request availability"}</Link></div>
                 </div>
               </article>; })}</div>}
