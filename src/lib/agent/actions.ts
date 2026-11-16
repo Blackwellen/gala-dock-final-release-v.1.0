@@ -120,7 +120,7 @@ export async function approveBatch(runId: string, batchKey: string): Promise<R<n
 export async function askAgent(workspaceId: string, question: string): Promise<R<{ answer: string; sources: string[] }>> {
   const s = await seat(workspaceId); if (!s) return { ok: false, error: "You don’t have access to this workspace." };
   if (!(await rateLimit(`agent-ask:${s.user.id}`, 40, 3600))) return { ok: false, error: "Too many questions this hour." };
-  const r = await ask(s.user.id, workspaceId, s.kind, question);
+  const r = await ask(s.user.id, workspaceId, s.kind, question, { client: s.sb, page: "the Gala Agent page (Ask)" });   // limits read as this person
   if (!r.ok) return r;
   await untyped(createAdminClient() as never).from("agent_runs").insert({ workspace_id: workspaceId, user_id: s.user.id, surface: s.kind, mode: "ask", goal: question.slice(0, 2000), status: "completed",
     summary: r.answer.slice(0, 4000), result: r.answer.slice(0, 2000), tokens: r.tokens, progress: 100, finished_at: new Date().toISOString(), plan: r.sources });

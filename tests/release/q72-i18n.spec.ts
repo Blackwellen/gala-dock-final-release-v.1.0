@@ -273,7 +273,7 @@ test.describe("Q72 · wiring (source checks)", () => {
     expect(src("src/app/provider/venues/new/actions.ts")).not.toMatch(/countrycodes=gb,ie/);
     expect(src("src/lib/maps/geocode.ts")).toMatch(/process\.env\.MAP_TILER_API_KEY/);
     expect(src("src/app/layout.tsx")).toMatch(/<html lang=\{DEFAULT_LOCALE\}/);
-    expect(src("src/app/api/agent/ask/route.ts")).toMatch(/localeDirective\(/); expect(src("src/lib/agent/runtime.ts")).toMatch(/localeDirective\(/);
+    expect(src("src/app/api/agent/ask/route.ts")).toMatch(/await ask\(user\.id/); expect(src("src/lib/agent/runtime.ts")).toMatch(/const locale = localeDirective\(/);   // 2026-11-16: page Ask delegates to runtime.ask (groundingFor) expect(src("src/lib/agent/runtime.ts")).toMatch(/localeDirective\(/);
     expect(src("src/lib/agent/runtime.ts")).not.toMatch(/anthropic/i);
   });
 

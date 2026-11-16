@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProvider } from "@/lib/provider/context";
 import { rateLimit, sameOrigin } from "@/lib/security";
-import { providerSnapshot, askProviderAgent } from "@/lib/provider/agent";
+import { providerSnapshot, askProviderAgent, providerGrounding } from "@/lib/provider/agent";
 import { AgentBudgetError, AgentSafetyError } from "@/lib/agent/llm";
 
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -18,8 +18,11 @@ export async function POST(request: Request) {
   const message = String(body?.message ?? "").trim().slice(0, 2000);
   if (message.length < 2) return json({ error: "Ask Gala Agent something." }, 400);
   const history = (body?.history ?? []).filter(h => (h.role === "user" || h.role === "assistant") && typeof h.content === "string").map(h => ({ role: h.role, content: h.content.slice(0, 2000) })).slice(-8);
+  // 2026-11-16: identity + live limits on every turn; an exhausted / switched-off workspace gets the reason without a model call.
+  const g = await providerGrounding(db, workspace.id, userId);
+  if (g.blocked) return json({ error: g.blocked, budget: true }, 402);
   let budget: string | null = null, refused: string | null = null;
-  const out = await askProviderAgent(await providerSnapshot(db, workspace.id), message, history, { workspaceId: workspace.id, userId, purpose: "provider_chat" })
+  const out = await askProviderAgent(await providerSnapshot(db, workspace.id), message, history, { workspaceId: workspace.id, userId, purpose: "provider_chat" }, g.text)
     .catch(e => { if (e instanceof AgentBudgetError) budget = e.message; else if (e instanceof AgentSafetyError) refused = e.message; return undefined; });
   if (budget) return json({ error: budget, budget: true }, 402);
   if (refused) return json({ error: refused, refused: true }, 422);   // Q53: content filter → plain refusal, not "try again"

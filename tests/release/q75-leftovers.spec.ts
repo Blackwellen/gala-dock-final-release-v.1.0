@@ -8,6 +8,7 @@ import { lintMigration } from "../../scripts/db/lint.mjs";
 import { stripeDashboardUrl } from "../../src/app/admin/(console)/_b/format";
 import { unsubscribeToken, verifyUnsubscribeToken, unsubscribeHeaders, isOptionalEmailCategory } from "../../src/lib/email/rules";
 import * as registry from "../../src/lib/agent/registry";
+import * as grounding from "../../src/lib/agent/grounding";
 import * as plan from "../../src/lib/agent/plan";
 import * as minimiseMod from "../../src/lib/agent/minimise";
 import * as prompt from "../../src/lib/agent/prompt";
@@ -210,7 +211,7 @@ test.describe("Q53 run time limit (fixture workspace)", () => {
       "./locale": { localeDirective: () => "" }, "@/lib/i18n/workspace": { workspaceLocale: () => ({ timezone: "Europe/London", currency: "GBP" }) },
       "./llm": { chat: async () => { throw new Error("no model in this test"); }, agentConfigured: () => false, SAFETY: "S", dataBlock: prompt.dataBlock, AgentBudgetError, AgentSafetyError },
       "./resilience": resilience, "@/lib/media/document": { PRESETS: [], posterFromEvent: () => ({}) }, "./watch": watch, "./registry": registry, "./minimise": minimiseMod,
-      "./plan": plan, "./skills": skills, "./schedule-db": { routineNextRun: async () => null },
+      "./plan": plan, "./skills": skills, "./schedule-db": { routineNextRun: async () => null }, "./grounding": grounding,
     });
     await db.from("agent_policies").upsert({ workspace_id: ws, mode: "execute_with_approval", max_run_minutes: 5, kill_switch: false });
     const lease = new Date(Date.now() + 15 * 60_000).toISOString();

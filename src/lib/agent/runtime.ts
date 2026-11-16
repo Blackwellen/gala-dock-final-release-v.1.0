@@ -13,6 +13,7 @@ import { minimise } from "./minimise";
 import { parsePlan, MAX_STEPS } from "./plan";
 import { SKILL, routeTier } from "./skills";
 import { routineNextRun } from "./schedule-db";
+import { ambiguityQuestion, ambiguousEvent, ANSWER_STYLE, creditBlock, toolErrorText, type IndexedEvent, gateSteps, gateTool, limitSummary, loadWorkspaceLimits, platformIdentity, tidyAnswer, workspaceFacts, type Surface } from "./grounding";
 
 /**
  * Durable Gala Agent runtime (§4–7, §12–14, §104–108). Every substantive job is an agent_runs row with persisted steps;
@@ -108,14 +109,20 @@ async function governedCall(run: Run, step: Step, tool: Tool, input: Record<stri
 }
 
 // ───────────────────────── planning ─────────────────────────
-const PLANNER = (surface: string, catalog: unknown, now: string) => `${SAFETY}
-You are planning a Gala Agent run for the ${surface} workspace. ${now}
+export const PLANNER = (surface: string, catalog: unknown, now: string) => `${SAFETY}
+${now}
+You are planning a Gala Agent run for the ${surface} workspace.
 Return JSON only: {"interpretation":{"summary":string,"scope":string[]},"confidence":0-1,"steps":[{"tool":string,"input":object,"why":string}]}
 Rules:
 - Use only these tools, with inputs matching their schema exactly (ids are UUIDs you got from earlier read steps or the goal; never invent ids): ${JSON.stringify(catalog)}
 - Start with read tools (R0) to gather facts; you may reference outputs of earlier steps with the token "$step<N>.<field>" only for ids.
-- Prefer the fewest steps (max ${MAX_STEPS}). Commitments (R4) will be sent to a human for approval — include them only when clearly needed.
-- If the goal is unclear or unsafe, return zero steps and explain in interpretation.summary.`;
+- Prefer the fewest steps (max ${MAX_STEPS}). Commitments (R4) will be sent to a human for approval — include them only when clearly needed; when the goal explicitly asks for one (with its id), include that step: the person approves or rejects it on an approval card. Copy ids character for character.
+- Respect the WORKSPACE limits above: never plan an action the plan, credits or Agent policy don't allow — say in interpretation.summary what the limit is and what the person can do instead. Note when an amount is above the booking authority (only the owner can approve it).
+- For a multi-part goal (for example planning a whole event), read the facts first, then draft the plan with draft.note; add internal tasks with task.create only on an existing event.
+- Event-scoped tools (venues.rank, event.budget, event.readiness, event.feasibility, tickets.sales, task.create …) only for the event the goal is about, using its id from the EVENTS index. NEVER point them at "$step1.id" of events.list or at another event just because it exists. When the goal is a NEW event that isn't in the index, use marketplace.search (venue, catering, entertainment, staff … with city, guests and max_price) and calendar.upcoming for clashes, then draft.note.
+- draft.note bodies are written now, before the tool results exist: make them a complete, specific plan from the goal (timeline back from the date, budget split in the currency with amounts that add up to the cap, per-head costs, supplier categories to book, approvals needed, risks) and say that the shortlists are in the run results.
+- If the goal is unclear or ambiguous, return zero steps and ask one clear question in interpretation.summary. In particular: if the EVENTS index has more than one upcoming event with the name the goal uses (a recurring series) and the goal gives no date, do not pick one — list their dates and ask which; if no event matches the name, say so and list the closest names. If it is unsafe, return zero steps and explain.
+- interpretation.summary is shown to the person: make it specific (what you will check, what you will draft, what needs approval).`;
 
 export async function planRun(db: Db, run: Run) {
   await assertAgentEnabled(run.workspace_id);   // refuse before any model spend
@@ -136,23 +143,47 @@ export async function planRun(db: Db, run: Run) {
   const missionHint = usable?.mission.length ? `
 Mission template for "${usable.title}" (follow this order, skip steps that don't apply; use mission.wait_for {item_id} after asking a provider so the run pauses for their answer): ${usable.mission.join(" → ")}` : "";
   // Q72: today's date, time zone, reply language and currency come from the workspace (and the run owner's language preference).
-  const [{ data: wsLoc }, { data: owner }] = await Promise.all([
-    db.from("workspaces").select("settings").eq("id", run.workspace_id).maybeSingle(),
-    db.from("profiles").select("language").eq("id", run.user_id).maybeSingle(),
-  ]);
-  const wl = workspaceLocale((wsLoc as { settings?: unknown } | null)?.settings);
-  const r = await chat([{ role: "system", content: PLANNER(surface, catalog, localeDirective({ language: (owner as { language?: string } | null)?.language, timezone: wl.timezone, currency: wl.currency })) + missionHint }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
-    { json: true, maxTokens: 1600, tier, meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
+  // 2026-11-16: plus Gala Dock's identity and the workspace's live plan, capabilities, credits, plan limits and Agent policy.
+  const g = await groundingFor(run.user_id, run.workspace_id, surface);
+  const blocked = creditBlock(g.limits);
+  if (blocked) throw new AgentBudgetError(blocked);
+  const eventRows = surface === "organizer" ? await eventList(run.workspace_id) : [];
+  const index = indexText(eventRows);
+  // Tools the live limits rule out (plan without agent.actions, policy mode, allow-list) are not offered; the planner is told which
+  // and why, so it can explain the limit instead of silently dropping the request. A plan that still names one is parsed against the
+  // full list so the gate below reports it (rather than parsePlan dropping it as unknown).
+  const full = catalogFor(surface, policy, { actions: true }).filter(c => !usable || usable.tools.includes(c.id));
+  const unavailable = full.flatMap(c => { const t = TOOL.get(c.id); const gt = t ? gateTool(g.limits, t, {}) : null; return gt && !gt.ok ? [{ id: c.id, why: gt.message }] : []; });
+  const offered = catalog.filter(c => !unavailable.some(u => u.id === c.id));
+  const r = await chat([{ role: "system", content: PLANNER(surface, offered, g.system) + missionHint + (index ? `\nEVENTS (id | name | date | status):\n${index}` : "")
+    + (unavailable.length ? `\nUNAVAILABLE right now (never plan these; if the goal needs one, say which limit stops it and what to do instead): ${unavailable.map(u => `${u.id}: ${u.why}`).join(" | ")}` : "") }, { role: "user", content: `<goal>${run.goal.slice(0, 2000)}</goal>` }],
+    { json: true, maxTokens: 3000, tier, meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "plan" } });
   // The plan is untrusted model output: parsePlan keeps only catalogue tools with schema-valid inputs and backward references (Q41).
-  const parsed = parsePlan(r.text, catalog);
-  const plan = { interpretation: { summary: parsed.summary, scope: parsed.scope }, confidence: parsed.confidence ?? undefined };
-  const steps = parsed.steps;
+  const parsed = parsePlan(r.text, full);
+  // Limits before proposing (owner request 2026-11-16): a step the plan, policy or spend caps don't allow is removed and explained
+  // instead of being proposed and then refused by the database; approval notes (owner-only above booking authority) are kept.
+  // Live QA: the model once mistyped an event id by one character. An event_id that isn't one of this workspace's events is dropped
+  // here (the database would refuse it as not_found mid-run) and reported with the plan.
+  const known = new Set(eventRows.map(e => e.id));
+  const badIds = surface === "organizer" ? parsed.steps.filter(s => typeof s.input?.event_id === "string" && !String(s.input.event_id).startsWith("$") && !known.has(String(s.input.event_id))) : [];
+  const limitsReport = gateSteps(g.limits, parsed.steps.filter(s => !badIds.includes(s)));
+  for (const s of badIds) limitsReport.blocked.push({ tool: s.tool, code: "unknown_event", message: `${TOOL.get(s.tool)?.title ?? s.tool} was left out: its event id isn't one of this workspace's events.` });
+  // A recurring series named without a date: ask which one instead of acting on whichever the model picked (live QA 2026-11-16).
+  const amb = surface === "organizer" ? ambiguousEvent(run.goal, eventRows) : null;
+  // Ask back when the series is ambiguous and the plan acts on one of its events, or the plan is empty (nothing else to do); also when the
+  // planner itself returned zero steps with a question.
+  const ambStep = Boolean(amb && (!limitsReport.steps.length || limitsReport.steps.some(s => Object.values(s.input ?? {}).some(v => amb.some(e => e.id === v)))));
+  const askBack = !ambStep && !limitsReport.steps.length && !limitsReport.blocked.length && parsed.summary.trim().endsWith("?") ? parsed.summary.trim() : null;
+  const steps = ambStep ? [] : limitsReport.steps;
+  const plan = { interpretation: { summary: ambStep ? ambiguityQuestion(amb!, g.limits.timezone) : limitSummary(parsed.summary, limitsReport, steps.length), scope: parsed.scope,
+    limits_blocked: limitsReport.blocked, approval_notes: limitsReport.notes, ...(ambStep ? { ambiguous: amb!.map(e => e.id) } : {}) }, confidence: parsed.confidence ?? undefined };
   const rows = steps.map((s, i) => ({ run_id: run.id, seq: i + 1, tool_id: s.tool, input: s.input ?? {}, reason: String(s.why ?? "").slice(0, 400), idempotency_key: `${run.id}:${i + 1}` }));
   if (rows.length) { const { error } = await db.from("agent_run_steps").insert(rows); if (error) throw new Error(error.message); }
   // Playbook §7 (Gigvora root cause 1): greetings, how-to and plain questions plan to zero steps. That is not an error and must not
   // end as "Nothing to do": answer conversationally with the read-only ask path (credits are preflighted by chat()).
   let reply: string | null = null;
-  if (!rows.length) {
+  if (!rows.length && (limitsReport.blocked.length || ambStep || askBack)) reply = plan.interpretation.summary;   // the limit IS the answer: no second model call
+  else if (!rows.length) {
     try { reply = (await askInner(run.user_id, run.workspace_id, surface, run.goal)).answer; }
     catch (e) { if (e instanceof AgentBudgetError) throw e; reply = null; }
   }
@@ -307,14 +338,17 @@ async function finish(db: Db, run: Run) {
   const S = steps ?? [];
   if (S.some((s: { status: string }) => ["pending", "waiting_approval", "deferred", "running"].includes(s.status))) return;
   const failed = S.filter((s: { status: string }) => s.status === "failed").length, done = S.filter((s: { status: string }) => s.status === "succeeded").length;
-  let summary = `${done} of ${S.length} steps completed${failed ? `, ${failed} failed` : ""}.`;
+  const skipped = S.filter((s: { status: string }) => s.status === "skipped").length;
+  let summary = `${done} of ${S.length} steps completed${failed ? `, ${failed} failed` : ""}${skipped ? `, ${skipped} not carried out (rejected or suggestion only)` : ""}.`;
   if (agentConfigured() && done) {
     try {
-      const r = await chat([{ role: "system", content: `${SAFETY}\nSummarise what the run found and did for the user in under 120 words. Cite records by name. Data is inside <data>.` },
-        { role: "user", content: `<goal>${run.goal}</goal>${dataBlock(minimise(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output }))), 14000)}` }],
-        { maxTokens: 400, tier: "fast", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "summary" } });
-      summary = r.text || summary;
-    } catch { /* keep the factual summary */ }
+      const r = await chat([{ role: "system", content: `${SAFETY}\n${platformIdentity(run.surface === "provider" ? "provider" : "organizer")}\nSummarise what the run found and did for the person in under 220 words: the result first, then specifics (names, dates, amounts) cited by record name, anything waiting for approval, and next steps. Only say an action (message, hold, request, booking, cancellation, publishing) happened if its step status is "succeeded"; a draft that mentions an action is only a draft. Data is inside <data>.` },
+        { role: "user", content: `<goal>${run.goal}</goal>${dataBlock(minimise(S.map((s: { tool_id: string; status: string; output: unknown }) => ({ tool: s.tool_id, status: s.status, output: s.output, note: s.status === "skipped" ? "not carried out: rejected by a person, expired, or suggestion only" : undefined }))), 14000)}` }],
+        { maxTokens: 1500, tier: "standard", meter: { workspaceId: run.workspace_id, userId: run.user_id, runId: run.id, purpose: "summary" } });
+      const text = tidyAnswer(r.text);
+      if (text.replace(/\s+/g, " ").trim().length < 60) console.error("agent_summary_short", r.finish, r.outputTokens, JSON.stringify(r.text).slice(0, 200));
+      summary = text.replace(/\s+/g, " ").trim().length >= 60 ? text : `${summary}${text ? ` ${text.replace(/\s+/g, " ").trim()}` : ""}`;   // live QA: a headings-only reply ("Result Next steps") keeps the factual line
+    } catch (e) { console.error("agent_summary_failed", (e as Error).message.slice(0, 200)); /* keep the factual summary */ }
   }
   await setStatus(db, run, failed && !done ? "failed" : failed ? "partially_completed" : "completed", { summary, result: summary.slice(0, 2000), progress: 100, finished_at: new Date().toISOString(), lease_until: null, waiting_reason: "" });
   await audit(db, run, "agent.finished", { done, failed });
@@ -353,41 +387,84 @@ export async function applyApproval(approvalId: string, approverId: string) {
 }
 
 // ───────────────────────── ask mode (read-only, synchronous) ─────────────────────────
-export async function ask(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
-  if (!agentConfigured()) return { ok: false as const, error: "Gala Agent isn’t configured in this environment." };
-  try { await assertAgentEnabled(workspaceId); return await askInner(userId, workspaceId, surface, question); }
+/** Options for an Ask: the person's own RLS client (limits are read as them), the page they are on and its record snapshot. */
+export type AskOptions = { client?: unknown; page?: string | null; context?: string | null; eventId?: string | null; purpose?: string };
+export async function ask(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string, opts: AskOptions = {}) {
+  if (!agentConfigured()) return { ok: false as const, code: "unconfigured" as const, error: "Gala Agent isn’t configured in this environment." };
+  try { await assertAgentEnabled(workspaceId); return await askInner(userId, workspaceId, surface, question, opts); }
   catch (e) {
-    if (e instanceof AgentBudgetError) return { ok: false as const, error: e.message };
-    if (e instanceof AgentSafetyError) return { ok: false as const, error: e.message };
-    if ((e as Error).message.startsWith("refused:")) return { ok: false as const, error: (e as Error).message.replace(/^refused: [a-z_]+ — /, "") };
+    if (e instanceof AgentBudgetError) return { ok: false as const, code: "credits" as const, error: e.message };
+    if (e instanceof AgentSafetyError) return { ok: false as const, code: "refused" as const, error: e.message };
+    if ((e as Error).message.startsWith("refused:")) return { ok: false as const, code: "refused" as const, error: (e as Error).message.replace(/^refused: [a-z_]+ — /, "") };
     // Q53: a model outage (after llm.ts retries) is a plain message, not an unhandled server-action exception.
     console.error("agent_ask_failed", (e as Error).message.slice(0, 200));
-    return { ok: false as const, error: "Gala Agent couldn’t answer just now. Please try again in a moment." };
+    return { ok: false as const, code: "error" as const, error: "Gala Agent couldn’t answer just now. Please try again in a moment." };
   }
 }
-async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string) {
+
+/**
+ * Identity + live limits for one turn (owner request 2026-11-16). Read as the person when their client is given (page Ask, agent
+ * page); the worker has no session, so it reads with the service client scoped to the run's workspace. Also returns the locale
+ * directive (today's date, zone, language, currency) so every entry point states the same facts.
+ */
+export async function groundingFor(userId: string, workspaceId: string, surface: Surface, opts: { client?: unknown; page?: string | null; timezone?: string | null; currency?: string | null } = {}) {
+  const db = svc();
+  const [{ data: ws }, { data: me }] = await Promise.all([
+    db.from("workspaces").select("settings").eq("id", workspaceId).maybeSingle(),
+    db.from("profiles").select("language").eq("id", userId).maybeSingle(),
+  ]);
+  const wl = workspaceLocale((ws as { settings?: unknown } | null)?.settings);
+  const timezone = opts.timezone ?? wl.timezone, currency = opts.currency ?? wl.currency;
+  const limits = await loadWorkspaceLimits((opts.client ?? createAdminClient()) as never, createAdminClient() as never, workspaceId, userId, surface, { timezone, currency });
+  const locale = localeDirective({ language: (me as { language?: string } | null)?.language, timezone, currency });
+  return { limits, locale, system: `${platformIdentity(surface)}\n${workspaceFacts(limits, opts.page)}\n${locale}` };
+}
+
+/** Compact index of the workspace's events (id, name, date, status) so the tool picker can pass real event ids. */
+async function eventList(workspaceId: string): Promise<IndexedEvent[]> {
+  const { data } = await svc().from("events").select("id,name,starts_at,status").eq("workspace_id", workspaceId).order("starts_at").limit(60);
+  return (data ?? []) as IndexedEvent[];
+}
+function indexText(rows: IndexedEvent[]) {
+  return rows.map(e => `${e.id} | ${e.name} | ${e.starts_at?.slice(0, 10) ?? "no date"} | ${e.status}`).join("\n");
+}
+
+export const ASK_PICK_RULES = `Choose up to 4 read-only tools whose results would answer the question with real workspace data. Return JSON {"calls":[{"tool":string,"input":object}]}.
+- Call tools whenever the answer depends on this workspace's records (events, budgets, readiness, suppliers and requests, tickets, payables, conflicts, compliance, campaigns, inbox, designs). Prefer data over guessing.
+- Use event ids from the EVENTS index (or the current page's event id); match names loosely and prefer the next upcoming date. Never invent ids. If no event matches the name, don't call an event tool.
+- Return {"calls":[]} only for greetings, questions about Gala Dock, your role, plan, credits or limits (already in WORKSPACE), or when no tool fits.`;
+
+async function askInner(userId: string, workspaceId: string, surface: "organizer" | "provider", question: string, opts: AskOptions = {}) {
   const traceId = randomUUID();   // Q75: one id for this Ask's model calls (ai_usage_events.trace_id) and its tool-call audit rows
+  const g = await groundingFor(userId, workspaceId, surface, { client: opts.client, page: opts.page });
+  // Limits first: an exhausted or switched-off workspace gets a plain explanation, not a model call (ai_preflight still enforces it).
+  const blocked = creditBlock(g.limits);
+  if (blocked) throw new AgentBudgetError(blocked);
   // Q53: the workspace's Agent policy allow-list applies to Ask too (it used the default policy, so a blocked tool still answered).
   const policy = await loadPolicy(svc(), workspaceId);
   const catalog = catalogFor(surface, policy).filter(c => c.risk === "R0" && c.id !== "mission.wait_for");
-  const pick = await chat([{ role: "system", content: `${SAFETY}\nChoose up to 3 read-only tools to answer the question. Return JSON {"calls":[{"tool":string,"input":object}]}. Tools: ${JSON.stringify(catalog)}` },
-    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 500, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick", traceId } });
+  const index = surface === "organizer" ? indexText(await eventList(workspaceId)) : "";
+  const pick = await chat([{ role: "system", content: `${SAFETY}\n${g.system}\n${ASK_PICK_RULES}\nTools: ${JSON.stringify(catalog)}${index ? `\nEVENTS (id | name | date | status):\n${index}` : ""}${opts.eventId ? `\nThe current page's event id: ${opts.eventId}` : ""}` },
+    { role: "user", content: question.slice(0, 1500) }], { json: true, maxTokens: 900, tier: "fast", meter: { workspaceId, userId, purpose: "tool_pick", traceId } });
   let calls: { tool: string; input: Record<string, unknown> }[] = [];
-  try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 3); } catch { /* answer without data */ }
+  try { calls = (JSON.parse(pick.text).calls ?? []).filter((c: { tool: string }) => catalog.some(x => x.id === c.tool)).slice(0, 4); } catch { /* answer without data */ }
   const results = [];
   for (const c of calls) {
     const input = c.input && typeof c.input === "object" && !Array.isArray(c.input) ? c.input : {};
+    // Live QA: for an event that doesn't exist the picker sometimes guessed a non-UUID id. That is "no such record", not a tool error.
+    if (!TOOL.get(c.tool)!.input.safeParse(input).success) { results.push({ tool: c.tool, error: "not called: no matching record (the question named something that isn't in this workspace, or the id was missing)" }); continue; }
     try { results.push({ tool: c.tool, data: await invoke(userId, workspaceId, TOOL.get(c.tool)!, input, { agent: true }) }); await auditAsk(userId, workspaceId, surface, c.tool, input, null, "ask", traceId); }
-    catch (e) { const m = (e as Error).message.slice(0, 200); results.push({ tool: c.tool, error: m }); await auditAsk(userId, workspaceId, surface, c.tool, input, m, "ask", traceId); }
+    catch (e) { const m = (e as Error).message.slice(0, 200); results.push({ tool: c.tool, error: toolErrorText(m) }); await auditAsk(userId, workspaceId, surface, c.tool, input, m, "ask", traceId); }
   }
   // Conversation layer (playbook §7, Gigvora root cause 3): the last few exchanges with this person in this workspace.
   const { data: prior } = await svc().from("agent_runs").select("goal,result,summary").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "completed")
     .order("created_at", { ascending: false }).limit(6);
   const history = ((prior ?? []) as { goal: string; result: string | null; summary: string | null }[]).reverse()
     .flatMap(h => [{ role: "user" as const, content: h.goal.slice(0, 600) }, { role: "assistant" as const, content: String(h.result ?? h.summary ?? "").slice(0, 800) }]);
-  const answer = await chat([{ role: "system", content: `${SAFETY}\nYou are Gala Agent, a helpful assistant inside Gala Dock. Reply conversationally and briefly to greetings and how-to questions. If the person wants something done, say you can propose a run they confirm. Answer using only the data. Link records using their "link" values as markdown links. If data is missing say so. Read-only: suggest actions, don't claim to have taken any.` },
-    ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${dataBlock(minimise(results))}` }], { maxTokens: 700, tier: "standard", meter: { workspaceId, userId, purpose: "answer", traceId } });
-  return { ok: true as const, answer: answer.text, sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
+  const records = opts.context ? `${dataBlock({ page_records: opts.context }, 12000)}` : "";
+  const answer = await chat([{ role: "system", content: `${SAFETY}\n${g.system}\n${ANSWER_STYLE}\nGreetings get a short friendly reply that says what you can help with here. If the person wants something done, say what you would prepare and that you can start a run they confirm (Do mode on the Gala Agent page); this Ask is read-only, so never claim to have taken an action. Tool results are in <data>; a tool "error" means that read failed — say so and what it means (for example no access, or no such record).` },
+    ...history, { role: "user", content: `<question>${question.slice(0, 1500)}</question>${records}${dataBlock(minimise(results))}` }], { maxTokens: 2000, tier: "standard", meter: { workspaceId, userId, purpose: opts.purpose ?? "answer", traceId } });
+  return { ok: true as const, answer: tidyAnswer(answer.text), sources: results.map(r => r.tool), tokens: pick.tokens + answer.tokens };
 }
 
 /**

@@ -5,6 +5,7 @@ import { test, expect } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { admin, cleanup, createUser, seedWorkspace, signedIn } from "../phase1/helpers";
 import * as registry from "../../src/lib/agent/registry";
+import * as grounding from "../../src/lib/agent/grounding";
 import * as plan from "../../src/lib/agent/plan";
 import * as minimiseMod from "../../src/lib/agent/minimise";
 import * as prompt from "../../src/lib/agent/prompt";
@@ -161,7 +162,7 @@ const runtime = load<Runtime>("src/lib/agent/runtime.ts", {
   "./locale": { localeDirective: () => "" }, "@/lib/i18n/workspace": { workspaceLocale: () => ({ timezone: "Europe/London", currency: "GBP" }) },   // i18n lane imports (stubs)
   "./llm": { chat: fakeChat, agentConfigured: () => true, SAFETY: "SAFETY", dataBlock: prompt.dataBlock, AgentBudgetError, AgentSafetyError },
   "./resilience": resilience, "@/lib/media/document": { PRESETS: [{ id: "a3", w: 1, h: 1, label: "A3" }], posterFromEvent: () => ({}) },
-  "./watch": watch, "./registry": registry, "./minimise": minimiseMod, "./plan": plan, "./skills": skills, "./schedule-db": { routineNextRun: async () => null },
+  "./watch": watch, "./registry": registry, "./minimise": minimiseMod, "./plan": plan, "./skills": skills, "./schedule-db": { routineNextRun: async () => null }, "./grounding": grounding,
 });
 
 test.describe("Q53 runtime turn loop (scripted model, fixture workspaces)", () => {
@@ -308,9 +309,9 @@ test.describe("Q53 runtime turn loop (scripted model, fixture workspaces)", () =
     const { data: au } = await db.from("audit_events").select("event,actor_id,metadata").eq("workspace_id", wsA).eq("event", "agent.tool_called").contains("metadata", { via: "ask" });
     expect(au!.some(x => x.actor_id === owner.id && (x.metadata as { tool: string }).tool === "events.list" && Array.isArray((x.metadata as { arg_keys: unknown }).arg_keys))).toBe(true);
     model = { tool_pick: '{"calls":[]}', answer: new Error("agent_http_500") };
-    expect(await runtime.ask(owner.id, wsA, "organizer", "Hello")).toEqual({ ok: false, error: "Gala Agent couldn’t answer just now. Please try again in a moment." });
+    expect(await runtime.ask(owner.id, wsA, "organizer", "Hello")).toEqual({ ok: false, code: "error", error: "Gala Agent couldn’t answer just now. Please try again in a moment." });   // 2026-11-16: ask() also returns a code (credits / refused / error) for the route
     model = { tool_pick: new AgentSafetyError("Gala Agent can’t help with that request.") };
-    expect(await runtime.ask(owner.id, wsA, "organizer", "something filtered")).toEqual({ ok: false, error: "Gala Agent can’t help with that request." });
+    expect(await runtime.ask(owner.id, wsA, "organizer", "something filtered")).toEqual({ ok: false, code: "refused", error: "Gala Agent can’t help with that request." });
     await db.from("agent_policies").update({ allowed_tools: null }).eq("workspace_id", wsA);
   });
 

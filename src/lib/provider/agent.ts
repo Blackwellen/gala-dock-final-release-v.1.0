@@ -1,6 +1,8 @@
 import "server-only";
 import type { Db } from "@/lib/workspace/db";
 import { agentConfigured, chat, type Meter } from "@/lib/agent/llm";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { creditBlock, loadWorkspaceLimits, platformIdentity, workspaceFacts } from "@/lib/agent/grounding";
 
 const clip = (s: unknown, n = 160) => String(s ?? "").replace(/\s+/g, " ").slice(0, n);
 const d = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
@@ -48,12 +50,20 @@ export function parseProviderReply(text: string): { reply: string; proposals: Pr
 /** One model call: a reply plus zero or more proposals. Returns null when the model isn't configured. Never writes anything itself.
  *  Azure OpenAI only (owner decision 2026-10-28). Metered (Q28): preflighted against the provider workspace's AI budget and recorded
  *  in ai_usage_events like every other Gala Agent call; a cap refusal throws AgentBudgetError (route → 402). */
-export async function askProviderAgent(snapshot: string, goal: string, history: { role: "user" | "assistant"; content: string }[] = [], meter?: Meter) {
+/** Identity + live provider-workspace limits (plan, capabilities, credits, listing/seat limits, Agent policy), read as the person
+ *  (`db` is their RLS client; has_capability needs the service client, after getProvider() has checked membership). */
+export async function providerGrounding(db: Db, workspaceId: string, userId: string) {
+  const limits = await loadWorkspaceLimits(db as never, createAdminClient() as never, workspaceId, userId, "provider");
+  return { limits, text: `${platformIdentity("provider")}\n${workspaceFacts(limits, "the provider Gala Agent chat")}`, blocked: creditBlock(limits) };
+}
+
+export async function askProviderAgent(snapshot: string, goal: string, history: { role: "user" | "assistant"; content: string }[] = [], meter?: Meter, grounding?: string) {
   if (!agentConfigured()) return null;
   if (!meter?.workspaceId) throw new Error("provider_agent_meter_required");
   const { text } = await chat([
-    { role: "system", content: `You are Gala Agent, an operations teammate for an events provider on Gala Dock (venues and services marketplace, UK, GBP, Europe/London time).
-Answer using ONLY the workspace snapshot provided. If something isn't in the snapshot, say you can't see it. Be concise and specific (dates, names, amounts).
+    { role: "system", content: `${grounding ?? "You are Gala Agent, the built-in assistant of Gala Dock (the connected event platform), working for an events provider."}
+You are their operations teammate inside Gala Dock (venues and services marketplace).
+Answer using ONLY the workspace snapshot and the WORKSPACE facts provided. If something isn't there, say exactly what is missing and where in Gala Dock to find it. Be specific: lead with the answer, then names, dates, amounts and statuses; use short bullets when there is more than one point. Questions about Gala Dock, your role, the plan, credits or limits are answered from IDENTITY and WORKSPACE.
 You can PROPOSE actions; a human must approve each one and nothing happens until they do. Only propose when clearly useful. Allowed actions and payload use:
 - availability.block: payload.id = space or listing id, starts/ends = ISO datetimes. - listing.pause / listing.unpause: payload.id = listing id.
 - hold.release: payload.id = request id whose hold should be released. - message.reply: payload.id = thread id, body = the message text (polite, professional, British English).
