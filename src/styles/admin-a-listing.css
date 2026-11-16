@@ -93,3 +93,7 @@
 .al-details .al-desc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 /* R1: space tags wrap instead of being cut off ("Banquet Cabaret Theatre" at 1200px). */
 .al-spaces .al-tags{flex-wrap:wrap;overflow:visible}
+/* 2026-11-16: the rule above sits after the ≤640 block and re-applied four columns on phones (status pill squeezed). */
+@media (max-width:640px){.al-spaces li{grid-template-columns:50px minmax(0,1fr)}
+  /* QA 2026-11-16: tags and the status pill wrapped into the 50px thumb column (pill clipped) — keep them under the name */
+  .al-spaces li>:nth-child(n+3){grid-column:2;justify-self:start}}

@@ -168,3 +168,6 @@
 /* Closed popovers take no space: Chrome lays out a closed <details>' content invisibly, which made forms and buttons inside
    Edit/⋯ popovers measure as overflowing their panels. */
 .adb-pop:not([open])>.adb-pop-body{display:none}
+/* 2026-11-16 (phones): case tabs were flex:1 with a zero basis, so on 320–390px "Overview", "Messages 0" and "Linked records 0"
+   were squeezed below their label width and ran together. Each tab keeps its label width; the row already wraps on phones. */
+.ads-ctabs a{flex:1 0 auto}

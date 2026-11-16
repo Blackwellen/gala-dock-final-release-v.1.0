@@ -78,3 +78,6 @@ a.ap-member:hover{border-color:#cfd9f4}
 .ap-note-ico svg{width:14px!important;height:14px!important}
 @media (max-width:1180px){.ap-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.ap-grid,.ap-grid.two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.ap-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.aa-line-tabs a{padding:10px 12px}}
+/* 2026-11-16 (phones ≤480): label · status · 126px button left the status ~40px, so "View details" sat over "Unverified".
+   The label takes its own line; status and button share the line under it. */
+@media (max-width:480px){.ap-sec>div{grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding:4px 0}.ap-sec>div>dt{grid-column:1/-1}}

@@ -20,3 +20,11 @@
 .sc-log li{display:grid;grid-template-columns:70px 1fr auto;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid #f1f4fa}
 .sc-log b.ok{color:#0f8a4e}.sc-log b.warn{color:#b45f00}.sc-log b.bad{color:#c4142b}
 .sc-offline small{color:#5157a4}
+/* 2026-11-16: the door page (/door/[eventId]) renders the scanner outside the workspace, where marketplace.css (home of .mk-btn)
+   is not loaded — "Start scanning", "Check", "Search" and "Download for offline" were bare text with the icon touching the label.
+   The same button look, scoped to the scanner. */
+.sc .mk-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 14px;border-radius:9px;font:inherit;font-weight:600;font-size:13px;cursor:pointer;border:1px solid transparent;white-space:nowrap}
+.sc .mk-btn.primary{background:var(--ws-blue,#0038fd);color:#fff}
+.sc .mk-btn.ghost{background:#fff;border-color:#dfe6f5;color:var(--ws-ink,#0d0d63)}
+.sc .mk-btn.danger{background:#fff;border-color:#f6c6ce;color:#c4142b}
+.sc .mk-btn:disabled{opacity:.55;cursor:not-allowed}

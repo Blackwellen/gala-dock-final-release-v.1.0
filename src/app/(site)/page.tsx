@@ -13,6 +13,7 @@ import { Lifecycle } from "@/components/site/landing/lifecycle";
 import { Marketplace } from "@/components/site/landing/marketplace";
 import { RecordTree } from "@/components/site/landing/record-tree";
 import { LegacyHash } from "@/components/site/legacy-hash";
+import { GALA_DOCK_INTRO_READY, IntroVideoButton } from "@/components/site/intro-video";
 import "@/styles/site-landing.css";
 
 export const metadata = pageMetadata({
@@ -44,7 +45,8 @@ export default function LandingPage() {
           <p className="gp-lead">Plan events, source venues and suppliers, sell tickets, manage operations and bring the whole event together through one connected platform.</p>
           <div className="gp-cta-row">
             <TLink href="/build-an-event" event="hero_primary_cta" surface={S} variant="build_an_event" className="gp-btn gp-btn--primary">Build an Event<ArrowRight size={18} className="gp-arrow" aria-hidden="true" /></TLink>
-            <TLink href="#three-ways" event="hero_secondary_cta" surface={S} variant="explore" className="gp-btn gp-btn--ghost"><Compass size={19} className="gp-play" aria-hidden="true" />Explore Gala Dock</TLink>
+            {GALA_DOCK_INTRO_READY ? <IntroVideoButton surface={S} />
+              : <TLink href="#three-ways" event="hero_secondary_cta" surface={S} variant="explore" className="gp-btn gp-btn--ghost"><Compass size={19} className="gp-play" aria-hidden="true" />Explore Gala Dock</TLink>}
           </div>
           <ul className="gpl-trust" aria-label="Who Gala Dock is for">
             {([["/build-an-event", UsersRound, "For Customers", "Bring your event to life"], ["/organisers", CalendarDays, "For Organisers", "Plan, sell and deliver"], ["/providers", Store, "For Providers", "Find work and grow"]] as const).map(([h, I, t, s]) =>

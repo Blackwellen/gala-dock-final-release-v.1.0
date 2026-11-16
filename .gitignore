@@ -61,3 +61,8 @@ next-env.d.ts
 .vercel
 /artifacts/tmp/
 /.next-pwa-maximum/
+
+# QA screenshot dumps (1.7 GB on 2026-11-16): kept locally, not in git. JSON/MD evidence is still committed.
+/artifacts/visual/**/*.png
+/artifacts/pwa/**/*.png
+/artifacts/release/**/*.png

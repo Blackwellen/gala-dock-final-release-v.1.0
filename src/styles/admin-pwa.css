@@ -97,3 +97,16 @@
   .ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) h1 { font-size: 28px; }
   .ws-app.admin :is(.aa .ws-page-head, .ao-head, .adb-head) > div > p { font-size: 14px; }
 }
+/* 2026-11-16 (phones/small tablets ≤760): the fixed-layout admin tables (transactions, payouts) were squeezed to the screen, so
+   header labels overlapped ("AmountFeesNet") and every cell read "£…". Inside their scroll wrappers they keep a readable
+   width and scroll sideways instead. */
+@media (max-width:760px){.ws-app.admin :is(.adb-table-wrap,.aa-table-scroll)>table{min-width:720px}
+  /* tables that scroll themselves (section > table, e.g. risk signals and holds): cells keep a minimum width so the row scrolls
+     instead of squeezing ids to 4 characters per line, and a cell's secondary line sits under its label ("chargeback" over
+     "payment.chargeback" instead of "chargebackpayment.chargeback"). */
+  .ws-app.admin section>table.adb-table :is(td,th){min-width:96px}
+  .ws-app.admin .adb-table td>small{display:block}}
+/* 2026-11-16 QA: the same run-together ("chargebackpayment.chargeback", "orderpi_95…") showed on 768–1024 tablets too */
+/* and the transactions table at 768 still truncated every amount ("£58....") with "Actions" over "Payment provider" */
+@media (min-width:761px) and (max-width:1024px){.ws-app.admin .adb-table td>small{display:block}
+  .ws-app.admin :is(.adb-table-wrap,.aa-table-scroll)>table{min-width:900px}}

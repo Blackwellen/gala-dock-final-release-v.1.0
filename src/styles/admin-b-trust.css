@@ -83,3 +83,5 @@
 
 /* W12/W13: long case titles (e.g. "Risk: payout / payout_destination_changed") break and clamp with an ellipsis; full text in title */
 .ads-title a { overflow-wrap: anywhere; text-overflow: ellipsis; }
+/* the empty state ("No automated indicators recorded.") is a lone span and fell into the 16px icon column — one word per line */
+.ads-risk li>span:only-child{grid-column:1/-1}

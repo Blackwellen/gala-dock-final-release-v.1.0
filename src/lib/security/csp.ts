@@ -31,6 +31,8 @@ const SUPABASE = "https://*.supabase.co";
 const R2 = "https://*.r2.cloudflarestorage.com";
 const MAPTILER = "https://api.maptiler.com";
 const VIDEO = "https://www.youtube-nocookie.com https://player.vimeo.com";
+/** Brand intro films (R2 `marketing-videos` bucket via its Cloudflare custom domain). */
+const INTROS = "https://media.blackwellen-operations.cloud";
 
 /**
  * The policy for one response. `framePath` decides frame-ancestors (public event pages may be framed by this origin for the
@@ -48,8 +50,8 @@ export function buildCsp({ nonce, mode, dev, path = "/" }: { nonce: string; mode
     "font-src 'self' data: https://fonts.gstatic.com",
     // Uploads are served same-origin (/api/media/asset) or as presigned R2 / Supabase storage URLs; map tiles via /api/maps/tile
     // (MapTiler, OSM fallback redirect); Stripe card brand images; Google profile avatars from Google sign-in.
-    `img-src 'self' data: blob: ${SUPABASE} ${R2} ${MAPTILER} https://tile.openstreetmap.org https://*.stripe.com https://*.googleusercontent.com`,
-    `media-src 'self' blob: data: ${SUPABASE} ${R2}`,
+    `img-src 'self' data: blob: ${SUPABASE} ${R2} ${MAPTILER} https://tile.openstreetmap.org https://*.stripe.com https://*.googleusercontent.com ${INTROS}`,
+    `media-src 'self' blob: data: ${SUPABASE} ${R2} ${INTROS}`,
     // Same-origin covers the analytics route (/api/analytics) and the dev HMR socket; Supabase REST/auth/realtime; Stripe API;
     // MapTiler / Nominatim geocoding; presigned R2 uploads; Google Fonts CSS + files fetched by the Studio exporter.
     `connect-src 'self' ${SUPABASE} wss://*.supabase.co https://api.stripe.com ${MAPTILER} https://nominatim.openstreetmap.org ${R2} https://fonts.googleapis.com https://fonts.gstatic.com`,

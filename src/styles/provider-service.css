@@ -280,3 +280,7 @@
   .svw-s3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"avail cap" "avail resp" "holds sync" "ready verify" "side side" "foot foot"}
   .svw-side3{grid-row:auto}
 }
+/* 2026-11-16 (phones ≤560): the add-on rows kept icon · name · 76px price · 92px unit on one line (the ≤860 two-column rule is
+   overridden by the later desktop rule), leaving the name/description inputs ~30px wide. Name and description take the full
+   row beside the icon; price and unit sit underneath them. */
+@media (max-width:560px){.svw-addons li{grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);row-gap:6px}.svw-addons li>.svw-ao-ic{grid-row:1/3;align-self:start}.svw-addons li>.svw-ao-txt{grid-column:2/-1}.svw-addons li>.vw-money{grid-column:2}.svw-addons li>select{grid-column:3}}

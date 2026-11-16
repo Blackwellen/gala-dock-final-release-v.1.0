@@ -1,0 +1,15 @@
+/* Hero intro film: opens over the page on a blacked-out backdrop (src/components/site/intro-video.tsx). */
+.gp-iv-len { margin-left: 2px; padding: 2px 8px; border-radius: 999px; background: var(--gp-blue-mist, #eef2ff); color: var(--gp-blue, #0038fd); font-size: 12px; font-weight: 600; line-height: 1.5; }
+.gp-iv { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 64px 24px 24px; background: rgba(3, 5, 12, .92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: gp-iv-in .22s ease-out both; }
+.gp-iv-box { position: relative; display: grid; }
+/* 16:9 — as wide as the screen allows without exceeding its height */
+.gp-iv-box--landscape { width: min(1280px, calc(100vw - 48px), calc((100dvh - 88px) * 16 / 9)); aspect-ratio: 16 / 9; }
+/* 9:16 — as tall as the screen allows without exceeding its width */
+.gp-iv-box--vertical { height: min(calc(100dvh - 88px), calc((100vw - 48px) * 16 / 9)); aspect-ratio: 9 / 16; }
+.gp-iv-video { width: 100%; height: 100%; border-radius: 14px; background: #000; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .8); }
+.gp-iv-x { position: absolute; top: -54px; right: 0; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .22); background: rgba(255, 255, 255, .1); color: #fff; cursor: pointer; transition: background-color .15s, transform .15s; }
+.gp-iv-x:hover { background: rgba(255, 255, 255, .2); }
+.gp-iv-x:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (max-width: 560px) { .gp-iv { padding: 64px 12px 12px; } .gp-iv-box--landscape { width: min(calc(100vw - 24px), calc((100dvh - 76px) * 16 / 9)); } .gp-iv-box--vertical { height: min(calc(100dvh - 76px), calc((100vw - 24px) * 16 / 9)); } .gp-iv-video { border-radius: 10px; } }
+@keyframes gp-iv-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .gp-iv { animation: none; } }
