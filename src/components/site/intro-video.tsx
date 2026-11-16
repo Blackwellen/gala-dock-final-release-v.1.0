@@ -8,7 +8,7 @@ import "@/styles/site-intro-video.css";
 /** Brand intro films, served from the R2 `marketing-videos` bucket via its Cloudflare custom domain. */
 export const INTRO_HOST = "https://media.blackwellen-operations.cloud";
 /** Set to true once galadock-intro-{vertical,landscape}-share.mp4 are uploaded; until then the hero keeps its Explore button. */
-export const GALA_DOCK_INTRO_READY = false;
+export const GALA_DOCK_INTRO_READY = true;
 
 const src = (o: "vertical" | "landscape") => `${INTRO_HOST}/gala-dock/intro/galadock-intro-${o}-share.mp4`;
 
