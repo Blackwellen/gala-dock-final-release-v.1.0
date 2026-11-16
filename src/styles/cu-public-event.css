@@ -134,3 +134,59 @@
 .pe-branded .pe3-tabs a.on { color: var(--org-accent); box-shadow: inset 0 -3px 0 var(--org-accent); }
 .pe-branded .pe3-org { border-top: 3px solid var(--org-accent); }
 .pe-branded .pe3-org-row .pe-org-av { background: var(--org-accent); color: var(--org-accent-on); }
+
+/* 2026-11-16 (owner: "the tabs don't change the page, look at all the blank space"): real section tabs + two-column body.
+   Overview shows every section; any other tab shows only its own. The ticket card sits in a sticky right rail beside the
+   content (so the column beside it never runs out), and takes the main view on the Tickets tab. Tabs: src/components/public/event-tabs.tsx. */
+.pe3-tabs { position: sticky; top: var(--gp-header-h, 76px); z-index: 20; background: var(--k-bg, #f7f9fc); }
+.pe3-tabs [role="tablist"] { display: flex; gap: 8px; }
+.pe3-tabs button { padding: 18px 22px 16px; font: inherit; font-size: 15px; color: var(--k-ink-2); white-space: nowrap; background: none; border: 0; cursor: pointer; border-radius: 0; }
+.pe3-tabs button:hover { color: var(--k-blue); }
+.pe3-tabs button.on { color: var(--k-blue); font-weight: 600; box-shadow: inset 0 -3px 0 var(--k-blue); }
+.pe3-tabs button:focus-visible { outline: 2px solid var(--k-blue); outline-offset: -4px; }
+.pe-branded .pe3-tabs button.on { color: var(--org-accent); box-shadow: inset 0 -3px 0 var(--org-accent); }
+.pe3-body { display: grid; grid-template-columns: minmax(0, 1fr) 460px; gap: 22px; align-items: start; }
+.pe3-body.no-rail, .pe3-body[data-tab="tickets"] { grid-template-columns: minmax(0, 1fr); }
+.pe3-main { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.pe3-main > div:empty, .pe3-body [data-panel][hidden] { display: none !important; }
+.pe3-body[data-tab="tickets"] .pe3-main { display: none; }
+/* The rail follows the reader below the sticky tab bar; a ticket list taller than the window scrolls inside the card
+   (public-site.css Q71 rule), here sized for the header + tab bar. */
+.pe3-rail { position: sticky; top: calc(var(--gp-header-h, 76px) + 70px); }
+.pe3-rail .pe3-tickets { position: static; }
+@media (min-width: 1001px) { .pub-root .pe3-rail .pe3-tickets { max-height: calc(100dvh / var(--k-zoom, 1) - var(--gp-header-h, 76px) - 92px); } }
+.pe3-body[data-tab="tickets"] .pe3-rail { width: 100%; max-width: 760px; margin: 0 auto; position: static; }
+.pub-root .pe3-body[data-tab="tickets"] .pe3-tickets { max-height: none; overflow: visible; }
+.pe3-body [data-panel] { scroll-margin-top: calc(var(--gp-header-h, 76px) + 72px); }
+/* Wide sections sized for the main column (they used to span the whole page). */
+.pe3-main .pe3-venue-g { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .pe3-main .pe3-venue-map { grid-column: 1 / -1; }
+.pe3-main .pe3-artists { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pe3-main .pe3-photos-g { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pe3-main .pe3-sim-g, .pe3-main .pe3-exp-g { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pe3-main .pe3-three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .pe3-main .pe3-three > .pe3-access { grid-column: 1 / -1; }
+.pe3-main .pe3-three.n1 { grid-template-columns: minmax(0, 1fr); }
+.pe3-main .pe3-faqrow { grid-template-columns: minmax(0, 1fr); }
+.pe3-main .pe3-minis { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.pe3-body.no-rail .pe3-venue-g { grid-template-columns: 585px minmax(0, 1fr) 380px; } .pe3-body.no-rail .pe3-venue-map { grid-column: auto; }
+@media (max-width: 1279px) { .pe3-body { grid-template-columns: minmax(0, 1fr) 380px; } .pe3-main .pe3-artists { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pe3-main .pe3-photos-g { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .pe3-main .pe3-three, .pe3-main .pe3-sim-g, .pe3-main .pe3-exp-g, .pe3-main .pe3-venue-g { grid-template-columns: minmax(0, 1fr); } }
+/* Tablet portrait and phones: one column; the ticket card follows "About this event" on Overview. */
+@media (max-width: 900px) {
+  .pe3-body { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .pe3-main { display: contents; }
+  .pe3-main > * { order: 2; } .pe3-main > .pe3-lead { order: 0; }
+  .pe3-rail { order: 1; position: static; }
+  .pe3-tabs { margin-inline: calc(-1 * clamp(16px, 3.05vw, 47px)); padding-inline: clamp(16px, 3.05vw, 47px); overflow-x: auto; scrollbar-width: none; }
+  .pe3-tabs::-webkit-scrollbar { display: none; }
+  .pe3-tabs button { padding: 14px 12px 12px; font-size: 14px; min-height: 44px; }
+}
+@media (max-width: 600px) { .pe3-main .pe3-artists { grid-template-columns: 1fr 1fr; } .pe3-main .pe3-photos-g { grid-template-columns: 1fr 1fr; } .pe3-main .pe3-sim-g, .pe3-main .pe3-exp-g { grid-template-columns: minmax(0, 1fr); } }
+/* Phones: on a single-section tab the section comes first and the ticket card follows it. */
+@media (max-width: 900px) { .pe3-body:not([data-tab="all"]) .pe3-rail { order: 3; } }
+/* Ticket tiers: a wrapping flex row put a long description (e.g. "Opens automatically when General Admission sells out.") on its
+   own line, leaving the radio alone above it and the status/price stacked under. Fixed columns: radio · name · price, stepper below. */
+.pe-tier { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 8px; align-items: center; }
+.pe-tier > .pe-price { justify-self: end; align-self: start; display: flex; flex-direction: column; align-items: flex-end; }
+.pe-tier > .pe-price em { white-space: nowrap; }
+.pe-tier > .pe-qty { grid-column: 2 / -1; justify-self: start; }
+@media (max-width: 380px) { .pe-tier { grid-template-columns: 16px minmax(0, 1fr); } .pe-tier > .pe-price { grid-column: 2; justify-self: start; align-items: flex-start; } }

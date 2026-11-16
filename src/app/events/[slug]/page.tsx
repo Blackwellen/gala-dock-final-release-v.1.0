@@ -23,6 +23,7 @@ import { parseFeeConfig, priceWithFees } from "@/lib/public/fees";
 import { parseVideo, watchUrl } from "@/lib/public/video";
 import { VideoEmbed } from "@/components/public/video-embed";
 import { loadEventExtras } from "@/lib/public/event-extras";
+import { EventTabs } from "@/components/public/event-tabs";
 import { BannerStrip, SponsorsSection, OnlineSection, DatesSection, MerchSection, AccessFacts } from "@/components/public/event-sections";
 import { EventGettingThere } from "@/components/public/event-getting-there";
 import { loadGettingThere } from "@/lib/public/getting-there";
@@ -195,31 +196,32 @@ export default async function PublicEventPage({ params, searchParams }: { params
   const TAB: Partial<Record<Block, [string, string] | null>> = { performers: showLineup ? ["lineup", "Line-up"] : null, programme: showSchedule ? ["schedule", "Programme"] : x.virtual?.sessions.length ? ["online", "Online"] : null, venue: ["venue", "Venue"], getting_there: gt ? ["getting-there", "Getting there"] : null, map: hasMap ? ["event-map", "Map"] : null, sponsors: x.extras.partners.length ? ["sponsors", "Sponsors"] : null, gallery: photos.length ? ["photos", "Photos"] : null, faqs: faqs.length ? ["faqs", "FAQ"] : null, related: (related ?? []).length ? ["related", "Similar events"] : null };
 
   // About + ticket card share the top row (wherever the first of them is placed); organiser / details / accessibility share the info row.
-  const rows: ReactNode[] = []; const tabs: [string, string][] = []; let top = false, info = false;
+  // Every row is a panel (data-panel = its tab; "about" = Overview only). The ticket card lives in the sticky right rail.
+  const rows: ReactNode[] = []; const tabs: [string, string][] = []; let top = false, info = false; let rail: ReactNode = null;
   for (const b of blockOrder(s)) {
     if (b === "hero" || !on(b)) continue;
     if (b === "about" || b === "tickets") {
       if (top) continue; top = true;
       const showAbout = on("about"), showTickets = on("tickets");
       if (showAbout) tabs.push(["about", "Overview"]); if (showTickets) tabs.push(["tickets", "Tickets"]);
-      rows.push(<div key="top" className={`pe3-top${showAbout && showTickets ? "" : " solo"}`}>
-        {showAbout && <section id="about" className="ce-card pe3-about"><h2>About this event</h2><p>{e.description}</p>
+      if (showAbout) rows.push(<div key="top" className="pe3-block pe3-lead" data-panel="about">
+        <section id="about" className="ce-card pe3-about"><h2>About this event</h2><p>{e.description}</p>
           {video && <div id="video"><VideoEmbed video={video} poster={(s.hero_image as string) || e.cover_image || null} title={`${e.name} video`} /></div>}
           {features.length > 0 && <ul className="pe3-minis">{features.slice(0, 4).map((f, i) => { const I = FEAT[f] ?? Sparkles; return <li key={f}><span><I size={20} aria-hidden /></span><p><b>{f}</b>{highlights[i] ? <small>{highlights[i]}</small> : null}</p></li>; })}</ul>}
-          {photos[1] && on("gallery") && <a className="pe3-banner" href="#photos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[1]} alt="" /><span><b>Event highlights</b><small>{photos.length} photos from the organiser</small></span></a>}</section>}
-        {showTickets && <aside id="tickets" className="ce-card pe3-tickets"><div className="k-between"><h2>Get your tickets</h2><span className={`pe-sale ${sale[1]}`}><CheckCircle2 size={13} />{sale[0]}</span></div>
-          <TicketPicker currency={CUR} slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} resale={resaleCount} fee={fee} /></aside>}
-      </div>);
-      const dates = <DatesSection key="dates" extras={x.extras} series={x.series} parent={x.parent} tz={TZ} />; rows.push(dates);
-      if (x.series || x.parent || x.extras.passes.length || x.extras.sub_events.length || x.extras.days.length > 1) tabs.push(["dates", "Dates"]);
-      rows.push(<MerchSection key="merch" merch={x.merch} url={safeMerchUrl(s.merch_url)} />);
+          {photos[1] && on("gallery") && <a className="pe3-banner" href="#photos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={photos[1]} alt="" /><span><b>Event highlights</b><small>{photos.length} photos from the organiser</small></span></a>}</section></div>);
+      if (showTickets) rail = <div className="pe3-rail" data-panel="rail"><aside id="tickets" className="ce-card pe3-tickets"><div className="k-between"><h2>Get your tickets</h2><span className={`pe-sale ${sale[1]}`}><CheckCircle2 size={13} />{sale[0]}</span></div>
+          <TicketPicker currency={CUR} slug={slugOrId} tiers={tk} signedIn={!!user} eventId={e.id} launch={launch} sellerReady={sellerReady} waitlist={waitlist} resale={resaleCount} fee={fee} /></aside></div>;
+      const hasDates = !!(x.series || x.parent || x.extras.passes.length || x.extras.sub_events.length || x.extras.days.length > 1);
+      rows.push(<div key="dates" className="pe3-block" data-panel={hasDates ? "dates" : "about"}><DatesSection extras={x.extras} series={x.series} parent={x.parent} tz={TZ} /></div>);
+      if (hasDates) tabs.push(["dates", "Dates"]);
+      rows.push(<div key="merch" className="pe3-block" data-panel="about"><MerchSection merch={x.merch} url={safeMerchUrl(s.merch_url)} /></div>);
       continue;
     }
     if (b === "organiser" || b === "accessibility") {
       if (info) continue; info = true;
       const showOrg = on("organiser"), showAccess = on("accessibility");
       tabs.push(["info", "Info"]);
-      rows.push(<div key="info" id="info" className={`pe3-three n${1 + Number(showOrg) + Number(showAccess)}`}>
+      rows.push(<div key="info" id="info" data-panel="info" className={`pe3-three n${1 + Number(showOrg) + Number(showAccess)}`}>
         {showOrg && <section className="ce-card pe3-org"><h2>Organiser</h2>{o ? <><div className="pe3-org-row">{o.cover_image ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={o.cover_image} alt="" /> : <span className="pe-org-av">{o.name.slice(0, 1)}</span>}<span className="k-grow"><b>{o.name}{o.verified && <i><BadgeCheck size={12} />Verified</i>}</b><small>Event organiser · {o.events_count} events</small></span>
             {e.workspace_id && <FollowButton kind="organizer" subject={e.workspace_id} label="Follow" initial={!!followRow} signedIn={!!user} next={`/events/${slugOrId}`} />}</div>
           {e.workspace_id && <Link className="k-link" href={`/organizers/${e.workspace_id}`}>View organiser profile <ArrowRight size={13} /></Link>}</> : <p className="k-small">Organiser details aren&apos;t public.</p>}</section>}
@@ -238,8 +240,8 @@ export default async function PublicEventPage({ params, searchParams }: { params
       continue;
     }
     const node = sections[b]; if (!node) continue;
-    rows.push(<div key={b} className="pe3-block" data-block={b}>{node}</div>);
     const tab = TAB[b]; if (tab) tabs.push(tab);
+    rows.push(<div key={b} className="pe3-block" data-block={b} data-panel={tab ? tab[0] : "about"}>{node}</div>);
   }
 
   // Layout after the public event reference (PUB-239): full-bleed hero, section tabs, then the organiser's block order.
@@ -263,9 +265,9 @@ export default async function PublicEventPage({ params, searchParams }: { params
           {video && (on("about") ? <a className="k-btn ghost-light" href="#video"><PlayCircle size={17} />Watch video</a> : <a className="k-btn ghost-light" href={watchUrl(video)} target="_blank" rel="noopener noreferrer nofollow"><PlayCircle size={17} />Watch video</a>)}</div>}</div>
       {on("gallery") && photos.length > 1 && <div className="pe3-thumbs">{photos.slice(1, 5).map((p, i) => <a key={p + i} href="#photos" className="pe3-th" aria-label={`View photo ${i + 2}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={p} alt="" /></a>)}{photos.length > 5 && <a href="#photos" className="pe3-th more" aria-label={`View all ${photos.length} photos`}>+{photos.length - 5}</a>}</div>}
     </section>
-    <nav className="pe3-tabs" aria-label="Sections">{tabs.map(([id, l], i) => <a key={id} href={`#${id}`} className={i === 0 ? "on" : ""}>{l}</a>)}</nav>
+    <EventTabs tabs={tabs} />
     <BannerStrip banners={x.banners} />
-    {rows}
+    <div className={`pe3-body${rail ? "" : " no-rail"}`} data-tab="all"><div className="pe3-main">{rows}</div>{rail}</div>
     {/* Q74 (D8, Online Safety Act s.20): report this event page. */}
     {!preview && <div style={{ maxWidth: 1180, margin: "8px auto 24px", padding: "0 16px" }}><ReportContentButton subject="event" id={e.id} name={e.name} signedIn={!!user} next={`/events/${slugOrId}`} /></div>}
     {relatedAds.length > 0 && <SponsoredRow items={relatedAds} title="Sponsored events" />}
