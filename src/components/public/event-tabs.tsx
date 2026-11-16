@@ -45,7 +45,8 @@ export function EventTabs({ tabs }: { tabs: [string, string][] }) {
   }, [apply, ids]);
 
   useEffect(() => {
-    if (location.hash) open(location.hash, true);
+    // Initial tab from the URL, after paint (the server renders the full Overview).
+    const first = requestAnimationFrame(() => { if (location.hash) open(location.hash, true); });
     const onHash = () => open(location.hash, true);
     // In-page anchors anywhere on the event page (hero CTAs, thumbnails, "View full schedule", highlights banner).
     const onClick = (e: MouseEvent) => {
@@ -57,7 +58,7 @@ export function EventTabs({ tabs }: { tabs: [string, string][] }) {
     window.addEventListener("hashchange", onHash);
     window.addEventListener("popstate", onHash);
     document.addEventListener("click", onClick);
-    return () => { window.removeEventListener("hashchange", onHash); window.removeEventListener("popstate", onHash); document.removeEventListener("click", onClick); };
+    return () => { cancelAnimationFrame(first); window.removeEventListener("hashchange", onHash); window.removeEventListener("popstate", onHash); document.removeEventListener("click", onClick); };
   }, [open]);
 
   const choose = (id: string) => {
