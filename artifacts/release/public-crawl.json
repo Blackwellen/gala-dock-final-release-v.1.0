@@ -1,0 +1,1639 @@
+{
+ "pages": {
+  "/@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/organisers@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/providers@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/build-an-event@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/developers@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/about@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/pricing@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/calendar@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/in/london@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/neon-nights@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/venues/riverside-arena@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/services/elite-sounds-dj@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/help@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/terms@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/privacy@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/cookies@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/ticket-terms@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/accessibility@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/legal@1536": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/organisers@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/providers@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/build-an-event@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/developers@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/about@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/pricing@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/calendar@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/in/london@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/events/neon-nights@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/venues/riverside-arena@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/services/elite-sounds-dj@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/help@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/terms@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/privacy@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/cookies@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/ticket-terms@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/accessibility@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  },
+  "/legal@390": {
+   "status": 200,
+   "errors": [],
+   "csp": []
+  }
+ },
+ "links": {
+  "/": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/organisers": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/providers": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/build-an-event": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/developers": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/about": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/pricing": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/login": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/register": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/register?next=/plan": {
+   "status": 200,
+   "from": [
+    "/",
+    "/build-an-event"
+   ]
+  },
+  "/events": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/discover?tab=venues&results=1": {
+   "status": 307,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/discover?tab=services&results=1": {
+   "status": 307,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/events/calendar": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/help/developers-api": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/help": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/terms": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/privacy": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/cookies": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/ticket-terms": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/accessibility": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal": {
+   "status": 200,
+   "from": [
+    "/",
+    "/organisers",
+    "/providers",
+    "/build-an-event",
+    "/developers",
+    "/about",
+    "/pricing",
+    "/events",
+    "/events/calendar",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01",
+    "/help",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/register?next=/onboarding/organizer?step=1": {
+   "status": 200,
+   "from": [
+    "/organisers",
+    "/pricing"
+   ]
+  },
+  "/register?next=/onboarding/provider?step=1": {
+   "status": 200,
+   "from": [
+    "/providers",
+    "/pricing"
+   ]
+  },
+  "/help/where-you-can-get-paid": {
+   "status": 200,
+   "from": [
+    "/providers",
+    "/help",
+    "/terms"
+   ]
+  },
+  "/help/payment-protection": {
+   "status": 200,
+   "from": [
+    "/build-an-event",
+    "/help"
+   ]
+  },
+  "/login?next=%2Forganizer%2Fsettings%3Ftab%3Ddevelopers": {
+   "status": 200,
+   "from": [
+    "/developers"
+   ]
+  },
+  "/api/v1/openapi.json": {
+   "status": 200,
+   "from": [
+    "/developers"
+   ]
+  },
+  "/help?topic=sales": {
+   "status": 307,
+   "from": [
+    "/pricing"
+   ]
+  },
+  "/events/category/nightlife": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/charity": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/comedy": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/community": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/festival": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/food_drink": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/party": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/category/webinar": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events?when=today": {
+   "status": 200,
+   "from": [
+    "/events"
+   ]
+  },
+  "/events?when=weekend": {
+   "status": 200,
+   "from": [
+    "/events"
+   ]
+  },
+  "/events?when=month": {
+   "status": 200,
+   "from": [
+    "/events"
+   ]
+  },
+  "/events/hope-starts-here-charity-ball": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/warehouse-sessions-bassline": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/calendar",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/future-of-live-events-webinar": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/neon-nights": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/sunset-sessions": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/summer-rooftop-party": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/taste-tango-fest": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/events/neon-nights",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/comedy-central-live": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/elite-sounds-night": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events/community-summer-fair": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/events?m=2026-10": {
+   "status": 200,
+   "from": [
+    "/events"
+   ]
+  },
+  "/events?m=2026-12": {
+   "status": 200,
+   "from": [
+    "/events"
+   ]
+  },
+  "/events/calendar?range=today&date=2026-11-15": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/calendar"
+   ]
+  },
+  "/events/calendar?range=weekend&date=2026-11-22": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/calendar"
+   ]
+  },
+  "/events/in/london": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london",
+    "/events/neon-nights"
+   ]
+  },
+  "/events/in/manchester": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/in/online": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/register?intent=organizer": {
+   "status": 200,
+   "from": [
+    "/events",
+    "/events/in/london"
+   ]
+  },
+  "/events/calendar?range=weekend&date=2026-11-15": {
+   "status": 200,
+   "from": [
+    "/events/calendar"
+   ]
+  },
+  "/events/calendar?range=month&date=2026-11-15": {
+   "status": 200,
+   "from": [
+    "/events/calendar"
+   ]
+  },
+  "/events/calendar?range=weekend&date=2026-11-08": {
+   "status": 200,
+   "from": [
+    "/events/calendar"
+   ]
+  },
+  "/login?next=%2Fevents%2Fin%2Flondon": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/in/london?when=today": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/in/london?when=weekend": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/in/london?when=month": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/calendar?city=london": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/in/london?m=2026-10": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/in/london?m=2026-12": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/events/calendar?range=weekend&date=2026-11-22&city=london": {
+   "status": 200,
+   "from": [
+    "/events/in/london"
+   ]
+  },
+  "/p/alex-events-winter-nights": {
+   "status": 200,
+   "from": [
+    "/events/neon-nights"
+   ]
+  },
+  "/login?next=%2Fevents%2Fneon-nights": {
+   "status": 200,
+   "from": [
+    "/events/neon-nights"
+   ]
+  },
+  "/venues/riverside-park-events-venue": {
+   "status": 200,
+   "from": [
+    "/events/neon-nights"
+   ]
+  },
+  "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01": {
+   "status": 200,
+   "from": [
+    "/events/neon-nights"
+   ]
+  },
+  "/login?next=%2Faccount%2Fsaved%3Ftab%3Dvenues%26compare%3Dvenues": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/login?next=%2Fvenues%2Friverside-arena": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/login?next=/venues/riverside-arena": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/plan": {
+   "status": 307,
+   "from": [
+    "/venues/riverside-arena",
+    "/services/elite-sounds-dj"
+   ]
+  },
+  "/services/gala-bites-catering": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/venues/southbank-events-arena": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/venues/docklands-arena": {
+   "status": 200,
+   "from": [
+    "/venues/riverside-arena"
+   ]
+  },
+  "/login?next=%2Faccount%2Fsaved%3Ftab%3Dservices%26compare%3Dservices": {
+   "status": 200,
+   "from": [
+    "/services/elite-sounds-dj"
+   ]
+  },
+  "/login?next=%2Fservices%2Felite-sounds-dj": {
+   "status": 200,
+   "from": [
+    "/services/elite-sounds-dj"
+   ]
+  },
+  "/login?next=/services/elite-sounds-dj": {
+   "status": 200,
+   "from": [
+    "/services/elite-sounds-dj"
+   ]
+  },
+  "/services/dj-marcus-lee": {
+   "status": 200,
+   "from": [
+    "/services/elite-sounds-dj"
+   ]
+  },
+  "/login?next=%2Forganizers%2F75e6c471-8d5e-4b9f-b076-ff10cf209f01": {
+   "status": 200,
+   "from": [
+    "/organizers/75e6c471-8d5e-4b9f-b076-ff10cf209f01"
+   ]
+  },
+  "/help/media-studio": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/money-payouts": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/where-gala-dock-is-available": {
+   "status": 200,
+   "from": [
+    "/help",
+    "/terms"
+   ]
+  },
+  "/help/venue-maps": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/refunds-cancellations": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/security-mfa": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/privacy-data": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/reviews": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/getting-started-organizers": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/events": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/marketplace-booking": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/tickets": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/event-day-check-in": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/virtual-events": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/gala-agent": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/team": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/tax-details-for-hmrc": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/listings": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/provider-getting-started": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/buying-tickets": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/transfer-resale": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/plan-personal-event": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/help/customer-account": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/login?next=/help%23contact": {
+   "status": 200,
+   "from": [
+    "/help"
+   ]
+  },
+  "/data-retention": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/acceptable-use": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/community-standards": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/complaints": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/customer-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/resale-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/cancellation-refund-policy": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/payment-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/disputes-policy": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/standard-booking-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/organiser-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/supplier-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/venue-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/data-processing-addendum": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/subscription-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/ai-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/partner-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/promoter-terms": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/content-template-policy": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/ip-takedown": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/safeguarding": {
+   "status": 200,
+   "from": [
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/ticket-terms",
+    "/accessibility",
+    "/legal"
+   ]
+  },
+  "/legal/archive/terms-2026-10": {
+   "status": 200,
+   "from": [
+    "/terms"
+   ]
+  },
+  "/legal/archive/privacy-2026-10": {
+   "status": 200,
+   "from": [
+    "/privacy"
+   ]
+  },
+  "/legal/archive/cookies-2026-10": {
+   "status": 200,
+   "from": [
+    "/cookies"
+   ]
+  },
+  "/legal/archive/ticket-terms-2026-10": {
+   "status": 200,
+   "from": [
+    "/ticket-terms"
+   ]
+  }
+ },
+ "badLinks": [],
+ "checks": [
+  {
+   "name": "landing lifecycle stages switch",
+   "ok": true,
+   "detail": "7/7"
+  },
+  {
+   "name": "hero scroll cue reaches #three-ways",
+   "ok": true,
+   "detail": "top=92"
+  },
+  {
+   "name": "pricing kind switch",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "pricing FAQ opens and closes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "help contact form present (signed out) with Turnstile",
+   "ok": false,
+   "detail": "fields=4 turnstile=false"
+  },
+  {
+   "name": "contact form posts and shows server validation",
+   "ok": true,
+   "detail": "status=400"
+  },
+  {
+   "name": "contact honeypot accepted silently",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "mobile menu opens/closes",
+   "ok": true,
+   "detail": "items=8"
+  },
+  {
+   "name": "three-ways dots select a track",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}
