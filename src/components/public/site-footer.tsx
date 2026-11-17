@@ -24,7 +24,7 @@ export function SiteFooter() {
       </div>
       <div className="gp-footer-bottom">
         <p>© {new Date().getFullYear()} Gala Dock. Gala Dock is a trading name of {LEGAL.entity.name}, registered in England and Wales (company number {LEGAL.entity.number}). Registered office: {LEGAL.entity.address}.</p>
-        <p className="gp-footer-region">United Kingdom · GBP (£)</p>
+        <p className="gp-footer-region">United Kingdom · GBP (£) · <a href="https://status.blackwellen-operations.cloud/status/galadock" target="_blank" rel="noopener noreferrer">System status</a></p>
       </div>
     </div>
   </footer>;
